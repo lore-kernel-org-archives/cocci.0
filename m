@@ -1,54 +1,26 @@
-From: eric@regit.org (Eric Leblond)
-Date: Sat, 22 Sep 2012 10:29:15 +0200
-Subject: [Cocci] Unwanted space added at end of line
-Message-ID: <1348302555.11590.8.camel@ice-age.regit.org>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sat, 22 Sep 2012 16:51:16 +0200 (CEST)
+Subject: [Cocci]  mailing list
+Message-ID: <alpine.DEB.2.02.1209221645080.1899@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hello,
+Everyone on the old mailing list should have been moved to the new one. 
+Please let me know if you did not receive an invitation message.  The new 
+list is subscribed to the old list, I hope that messages sent to the old 
+list will arrive somehow on the new one, but please use the new one in the 
+future:
 
-I've just wrote a really simple SMPL (attached to the mail). It makes a
-modification on the code which is the following:
+cocci at systeme.lip6.fr
 
-- if (x == NULL) S1
-+ if (unlikely(x == NULL)) S1
+I subscribed gmane to the new list, and it is putting messages to the new 
+list with messages to the old list, which is the desired behavior.  There 
+is archive at mail-archive.com.  In that case, the group name is not in 
+the email address, so there are now two mail-archive.com archives.
 
-The result is semantically correct but there is spaces at end of line as
-shown in the example below:
-
-@@ -173,8 +173,8 @@ DefragContextNew(void)
-     DefragContext *dc;
- 
-     dc = SCCalloc(1, sizeof(*dc));
--    if (dc == NULL)
--        return NULL;<- no space
-+    if (unlikely(dc == NULL))
-+        return NULL;   <- 4 space here 
-
-I've tried to look@coccinelle code but I'm unable to find a way to a
-solution.
-
-Am I missing an option ?
-
-BR,
---
-Eric Leblond
-
--------------- next part --------------
-@istested@
-identifier x;
-statement S1;
-identifier func =~ "(SCMalloc|SCStrdup|SCCalloc)";
-@@
-
-x = func(...)
-... when != x
-- if (x == NULL) S1
-+ if (unlikely(x == NULL)) S1
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 190 bytes
-Desc: This is a digitally signed message part
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20120922/52ec3cfa/attachment.asc>
+julia
+_______________________________________________
+Cocci mailing list
+Cocci at diku.dk
+http://lists.diku.dk/mailman/listinfo/cocci
+(Web access from inside DIKUs LAN only)
