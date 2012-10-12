@@ -1,46 +1,55 @@
-From: elezegarcia@gmail.com (Ezequiel Garcia)
-Date: Wed, 26 Sep 2012 13:02:53 -0300
-Subject: [Cocci] Help with SMPL
-In-Reply-To: <506326D7.4040802@metafoo.de>
-References: <CA+MoWDrEmG1NowmRpB3S_4MnnxOk1q9=fo-tkCmL3PLrgn5K0w@mail.gmail.com>
- <50631EE2.4030208@metafoo.de>
- <CALF0-+WC8EG861-szF3yQQEpawvv8QS4j7qZTqZGKy08-8=Ekg@mail.gmail.com>
- <506326D7.4040802@metafoo.de>
-Message-ID: <CALF0-+W50QX3jtxT1PHoUkFwC4Ybdwr3LmAToEuR5pU9qV-8Hw@mail.gmail.com>
+From: nicolas.palix@imag.fr (Nicolas Palix)
+Date: Fri, 12 Oct 2012 10:48:50 +0200
+Subject: [Cocci] [PATCH] Coccicheck: Improvement for online checking with
+	'make C=[12]'
+Message-ID: <1350031730-20822-1-git-send-email-nicolas.palix@imag.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, Sep 26, 2012 at 1:01 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
-> On 09/26/2012 05:40 PM, Ezequiel Garcia wrote:
->> Hi,
->>
->> On Wed, Sep 26, 2012 at 12:27 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->>> On 09/26/2012 04:36 PM, Peter Senna Tschudin wrote:
->>>> Dear List,
->>>>
->>>> I'm trying to make a semantic patch for the case described on the patch:
->>>> http://www.mail-archive.com/linux-media at vger.kernel.org/msg52660.html
->>>>
->>
->> More cases like these:
->>
->> http://patchwork.linuxtv.org/patch/13100/
->>
->> This is part of a whole patchset with subject:
->>
->> media: XXX: Replace struct memcpy with struct assignment
->>
->> The type of src and dst structs should match, but in some buggy code
->> that may not be true.
->
-> I suppose these should not be auto-converted since there is clearly a bug
-> somewhere. The following cocci patch can be used to find locations where
-> memcpy is used and the types of "to" and "from" do not match, but the size
-> parameter is sizeof one of them.
->
+This patch replaces an old workaround by a new spatch option,
+and adds support for online checking of external modules.
 
-True. This should not be auto-converted but rather be used as warning:
-"Hey! you're doing some very bad things here"
+The ignore_unknown_options is present in coccinelle
+since the version 0.2.3 of spatch. Most of the distribution
+(if not all) already provide a RC of the 1.0.0 version.
 
-Thanks,
-Ezequiel.
+This new option allows to preserve all gcc options, e.g. -I,
+while checking code. Other gcc-specific options are
+discarded by spatch.
+
+The support for external modules is also added.
+
+Signed-off-by: Nicolas Palix <nicolas.palix@imag.fr>
+---
+ scripts/coccicheck |   16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/scripts/coccicheck b/scripts/coccicheck
+index 823e972..b06b3cd 100755
+--- a/scripts/coccicheck
++++ b/scripts/coccicheck
+@@ -5,14 +5,14 @@ SPATCH="`which ${SPATCH:=spatch}`"
+ if [ "$C" = "1" -o "$C" = "2" ]; then
+     ONLINE=1
+ 
+-# This requires Coccinelle >= 0.2.3
+-#    FLAGS="-ignore_unknown_options -very_quiet"
+-#    OPTIONS=$*
+-
+-# Workaround for Coccinelle < 0.2.3
+-	FLAGS="-I $srctree/include -very_quiet"
+-	shift $(( $# - 1 ))
+-	OPTIONS=$1
++    # The ignore_unknown_options flag requires Coccinelle >= 0.2.3
++    FLAGS="-ignore_unknown_options -very_quiet"
++    if [ "$KBUILD_EXTMOD" = "" ] ; then
++        OPTIONS="-dir $srctree $*"
++    else
++        OPTIONS="-dir $KBUILD_EXTMOD -patch $srctree -I $srctree/include -I $KBUILD_EXTMOD/include $*"
++    fi
++
+ else
+     ONLINE=0
+     FLAGS="-very_quiet"
+-- 
+1.7.9.5
