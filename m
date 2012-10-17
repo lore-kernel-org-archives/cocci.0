@@ -1,55 +1,71 @@
-From: nicolas.palix@imag.fr (Nicolas Palix)
-Date: Fri, 12 Oct 2012 10:48:50 +0200
-Subject: [Cocci] [PATCH] Coccicheck: Improvement for online checking with
-	'make C=[12]'
-Message-ID: <1350031730-20822-1-git-send-email-nicolas.palix@imag.fr>
+From: itismohit@gmail.com (Mohit Gupta)
+Date: Wed, 17 Oct 2012 17:33:17 +0000 (UTC)
+Subject: [Cocci] Mysterious parsing issue.
+Message-ID: <loom.20121017T191721-59@post.gmane.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-This patch replaces an old workaround by a new spatch option,
-and adds support for online checking of external modules.
+Hi,
 
-The ignore_unknown_options is present in coccinelle
-since the version 0.2.3 of spatch. Most of the distribution
-(if not all) already provide a RC of the 1.0.0 version.
+I am trying to parse this c file containing macros. ( C file and the macro file
+is pasted below.)  This parses fine, if I uncomment the first line "STATIC int
+abc;" 
 
-This new option allows to preserve all gcc options, e.g. -I,
-while checking code. Other gcc-specific options are
-discarded by spatch.
+If I uncomment the line but change the order so as to make the first line as "
+INT funcf ARGS((char *));" . Then again it gives parsing issues.
 
-The support for external modules is also added.
+Is the parsing supposed to be dependent on order of statements or preclusion of
+another statement ? Are we looking at a potential bug ?
 
-Signed-off-by: Nicolas Palix <nicolas.palix@imag.fr>
----
- scripts/coccicheck |   16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+Kindly help. 
 
-diff --git a/scripts/coccicheck b/scripts/coccicheck
-index 823e972..b06b3cd 100755
---- a/scripts/coccicheck
-+++ b/scripts/coccicheck
-@@ -5,14 +5,14 @@ SPATCH="`which ${SPATCH:=spatch}`"
- if [ "$C" = "1" -o "$C" = "2" ]; then
-     ONLINE=1
- 
--# This requires Coccinelle >= 0.2.3
--#    FLAGS="-ignore_unknown_options -very_quiet"
--#    OPTIONS=$*
--
--# Workaround for Coccinelle < 0.2.3
--	FLAGS="-I $srctree/include -very_quiet"
--	shift $(( $# - 1 ))
--	OPTIONS=$1
-+    # The ignore_unknown_options flag requires Coccinelle >= 0.2.3
-+    FLAGS="-ignore_unknown_options -very_quiet"
-+    if [ "$KBUILD_EXTMOD" = "" ] ; then
-+        OPTIONS="-dir $srctree $*"
-+    else
-+        OPTIONS="-dir $KBUILD_EXTMOD -patch $srctree -I $srctree/include -I $KBUILD_EXTMOD/include $*"
-+    fi
-+
- else
-     ONLINE=0
-     FLAGS="-very_quiet"
--- 
-1.7.9.5
+Thanks,Mohit
+
+Command : spatch --parse-c simple.c --macro-file simple_macro
+
+// simple.c :
+
+//STATIC int abc;
+
+INT funcf ARGS((char *));
+
+char *g ARGS((char *));
+
+INT funcf (char *c)
+{
+        return 1;
+}
+
+char *g (char *c)
+{
+        return "junk";
+}
+
+
+//end of simple.c
+
+//simple_macro
+#define ARGS(m)   m
+
+#define STATIC static
+
+#define INT int
+//end of simple_macro
+
+
+//parsing error :
+
+(ONCE) CPP-MACRO: found known macro = INT
+(ONCE) CPP-MACRO: found known macro = ARGS
+TYPEDEF:_handle_typedef=false. Not normal if dont come from exn
+ERROR-RECOV: found sync col 0 at line 7
+parsing pass4: try again
+TYPEDEF:_handle_typedef=false. Not normal if dont come from exn
+ERROR-RECOV: found sync col 0 at line 7
+semantic error two or more data types: t ((((0, 2)))) ii [((("INT", 21, 5, 0,
+"simple.c")), (0), ((0, 0, 0, 0)))]
+typeD Tag8 ((["funcf"; ((("funcf", 25, 5, 4, "simple.c")), (0), ((0, 0, 0,
+0)))]), 0) ii2 0
+
+ =File "simple.c", line 5, column 15,  charpos = 36
+    around = '(', whole content = INT funcf ARGS((char *));
