@@ -1,17 +1,23 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 26 Oct 2012 12:55:40 +0200
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Fri, 26 Oct 2012 06:47:36 -0700 (PDT)
 Subject: [Cocci] semantic patches for C preprocessing constructs?
-In-Reply-To: <alpine.DEB.2.02.1210251318530.1955@hadrien>
+In-Reply-To: <508A6C2C.5030608@users.sourceforge.net>
 References: <CAP6exYJCAAPUyc4K8dYfLG23Aekb1nEC=O4Cv-R2AL4TEEtABw@mail.gmail.com>
  <alpine.DEB.2.02.1210251318530.1955@hadrien>
-Message-ID: <508A6C2C.5030608@users.sourceforge.net>
+ <508A6C2C.5030608@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.02.1210260646230.1977@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> It is not possible to match on cpp code, only t generate it.
+On Fri, 26 Oct 2012, SF Markus Elfring wrote:
 
-This feature is one of the items that are in the wish list already.
-Are you looking for more software developers to implement it?
+> > It is not possible to match on cpp code, only t generate it.
+>
+> This feature is one of the items that are in the wish list already.
+> Are you looking for more software developers to implement it?
 
-Regards,
-Markus
+Not especially.  If someoen wants to, I guess that would be useful, but it
+would require quite substantial changes, and thus a good understanding of
+both ocaml and the existing code.
+
+julia
