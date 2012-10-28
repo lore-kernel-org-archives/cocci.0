@@ -1,23 +1,24 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 26 Oct 2012 06:47:36 -0700 (PDT)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sun, 28 Oct 2012 10:14:46 +0100
 Subject: [Cocci] semantic patches for C preprocessing constructs?
-In-Reply-To: <508A6C2C.5030608@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.02.1210260646230.1977@hadrien>
 References: <CAP6exYJCAAPUyc4K8dYfLG23Aekb1nEC=O4Cv-R2AL4TEEtABw@mail.gmail.com>
  <alpine.DEB.2.02.1210251318530.1955@hadrien>
  <508A6C2C.5030608@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1210260646230.1977@hadrien>
+ <alpine.DEB.2.02.1210260646230.1977@hadrien>
+Message-ID: <508CF786.7050503@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, 26 Oct 2012, SF Markus Elfring wrote:
+> If someoen wants to, I guess that would be useful, but it would require
+> quite substantial changes, and thus a good understanding of both
+> ocaml and the existing code.
 
-> > It is not possible to match on cpp code, only t generate it.
->
-> This feature is one of the items that are in the wish list already.
-> Are you looking for more software developers to implement it?
+Are there any chances to reduce the dependency on the syntax of a specific
+programming language like "OCaml"?
 
-Not especially.  If someoen wants to, I guess that would be useful, but it
-would require quite substantial changes, and thus a good understanding of
-both ocaml and the existing code.
+How do you think about to talk a bit more about general data structures,
+modules, classes and corresponding interfaces?
 
-julia
+Regards,
+Markus
