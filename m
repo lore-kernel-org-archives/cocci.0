@@ -1,74 +1,123 @@
-From: peter.senna@gmail.com (Peter Senna Tschudin)
-Date: Fri, 9 Nov 2012 12:12:52 +0100
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Fri, 9 Nov 2012 22:29:13 +0100 (CET)
 Subject: [Cocci] [Review needed] Ensure that calls to d_find_alias() are
  followed by dput().
 In-Reply-To: <509C118D.3010109@gmail.com>
 References: <509B0B81.50304@gmail.com>
  <alpine.DEB.2.02.1211080820540.1945@localhost6.localdomain6>
  <509C118D.3010109@gmail.com>
-Message-ID: <CA+MoWDqOY+7eiVHiAYHYa+BDiF=1JXLLvqSySQFaOi-s9YCMKA@mail.gmail.com>
+Message-ID: <alpine.DEB.2.02.1211092221370.2302@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi Cyril,
+I have attached a new version.  I put some more headers at the top of the 
+file.  For the Confidence you should put High, Moderate, or Low.  I put 
+Moderate, but perhaps you will think that something else is better.
 
-I found the same 2 matches using your V1 script, but the second looks
-as a false positive. It tries to fix the code fixed by the patch:
+Exists causes the rule to match when there is a single control-flow path 
+through the function that satisfies the specified pattern.  Without it, 
+all paths from the first thing that matches are required to match the 
+pattern, unless * is used (context mode).
 
-http://permalink.gmane.org/gmane.linux.kernel.commits.head/348204
+<... P ...> allows 0 or more occurrences of P within the path matched by 
+<... ...>.  It is just like ... except that it allows the occurrences of P 
+(that you might want to modify, collect the position of etc.)
 
-See:
+<+... P ...+> is like <... P ...> except that it requires that there is at 
+least one occurrence of P in the control-flow path.
 
-[peter at ace linux-next]$ make coccicheck MODE=org
+I am not sure that Peter's false positive is really a false positive.  The 
+missing dput is at the beginning of the function, whereas the patch 
+addressed the end of the function.  Perhaps the author of the patch 
+thought about the function an realized that a dput wasn't needed at the 
+beginning.  But the patch at least doesn't say why.
 
-Please check for false positives in the output before submitting a patch.
-When using "patch" mode, carefully review the patch before submitting it.
+Semantic patches for integration into Linux should be sent to Michal Marek 
+<mmarek@suse.cz>, as well as to the people at COCCINELLE/Semantic Patches 
+(SmPL) in MAINTAINERS.
 
-Processing d_find_alias.cocci
-with option(s) ""
+thanks,
+julia
+-------------- next part --------------
+/// Make sure calls to d_find_alias() have a corresponding call to dput().
+//
+// Keywords: d_find_alias, dput
+//
+// Confidence: Moderate?
+// URL: http://coccinelle.lip6.fr/
+// Options: -include_headers
 
-Message example to submit a patch:
- The semantic patch that makes this Org report is available
- in scripts/coccinelle/d_find_alias.cocci.
+virtual context
+virtual org
+virtual patch
+virtual report
 
- More information about semantic patching is available at
- http://coccinelle.lip6.fr/
+@initialize:python depends on org || report@
+msg = "Missing call to dput() at line %s."
 
-warning: rule starting on line 106: inherited metavariable dent not
-used in the -, +, or context code
-* TODO [[view:/home/peter/devel/git/ksfc/kernels/linux-next/drivers/iommu/tegra-smmu.c::face=ovl-face1::linb=1039::colb=1::cole=5][Missing
-call to dput() at line 1056.]]
-* TODO [[view:/home/peter/devel/git/ksfc/kernels/linux-next/fs/ceph/export.c::face=ovl-face1::linb=59::colb=16::cole=22][Missing
-call to dput() at line 64.]]
+@r exists@
+local idexpression struct dentry *dent;
+expression E, E1;
+statement S1, S2;
+position p1, p2;
+@@
+(
+	if (!(dent at p1 = d_find_alias(...))) S1
+|
+	dent at p1 = d_find_alias(...)
+)
 
-[]'s
+<...when != dput(dent)
+    when != if (...) { <+... dput(dent) ...+> }
+    when != true !dent || ...
+    when != dent = E
+    when != E = dent
+if (!dent || ...) S2
+...>
+(
+	return <+...dent...+>;
+|
+	return @p2 ...;
+|
+	dent at p2 = E1;
+|
+	E1 = dent;
+)
 
-Peter
-
-On Thu, Nov 8, 2012 at 9:09 PM, Cyril Roelandt <tipecaml@gmail.com> wrote:
-> On 11/08/2012 08:21 AM, Julia Lawall wrote:
->>
->> How many cases do you find?
->>
->
-> Well, only 2 cases (in drivers/iommu/tegra-smmu.c and fs/ceph/export.c).
-> It's worth noticing that the d_find_alias() function is only called 20 times
-> though, so this seems to be quite a common mistake.
->
-> I attached an updated semantic patch, to deal with cases where the dentry is
-> assigned a new value and dput() has not been called.
->
->
-> WBR,
-> Cyril Roelandt.
->
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+@depends on context@
+local idexpression struct dentry *r.dent;
+position r.p1,r.p2;
+@@
+* dent at p1 = ...
+  ...
+(
+* return at p2 ...;
+|
+* dent at p2
+)
 
 
+@script:python depends on org@
+p1 << r.p1;
+p2 << r.p2;
+@@
+cocci.print_main("Missing call to dput()",p1)
+cocci.print_secs("",p2)
 
---
-Peter
+@depends on patch@
+local idexpression struct dentry *r.dent;
+position r.p2;
+@@
+(
++ dput(dent);
+  return @p2 ...;
+|
++ dput(dent);
+  dent@p2 = ...;
+)
+
+@script:python depends on report@
+p1 << r.p1;
+p2 << r.p2;
+@@
+coccilib.report.print_report(p1[0], msg % (p2[0].line))
