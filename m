@@ -1,54 +1,33 @@
-From: tipecaml@gmail.com (Cyril Roelandt)
-Date: Thu, 22 Nov 2012 00:51:19 +0100
-Subject: [Cocci] [Review needed] Ensure that calls to d_find_alias() are
- followed by dput().
-In-Reply-To: <alpine.DEB.2.02.1211092221370.2302@localhost6.localdomain6>
-References: <509B0B81.50304@gmail.com>
- <alpine.DEB.2.02.1211080820540.1945@localhost6.localdomain6>
- <509C118D.3010109@gmail.com>
- <alpine.DEB.2.02.1211092221370.2302@localhost6.localdomain6>
-Message-ID: <50AD68F7.7050607@gmail.com>
+From: hlovdal@gmail.com (=?UTF-8?B?SMOla29uIEzDuHZkYWw=?=)
+Date: Sun, 18 Nov 2012 00:16:38 +0100
+Subject: [Cocci] rewrite C preprocessor
+In-Reply-To: <CAP6exYJmah2MZkd5XSukArznvYbe3fn38Q9o5ppJDj7Z9JNd5Q@mail.gmail.com>
+References: <CAP6exYJmah2MZkd5XSukArznvYbe3fn38Q9o5ppJDj7Z9JNd5Q@mail.gmail.com>
+Message-ID: <CAACXqO9BuS70TtXvcLk1Y=DjibJHP8B0VEzeWs1V=a7K9L+5NQ@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 11/09/2012 10:29 PM, Julia Lawall wrote:
-> I have attached a new version. I put some more headers at the top of the
-> file. For the Confidence you should put High, Moderate, or Low. I put
-> Moderate, but perhaps you will think that something else is better.
->
+On 24 October 2012 23:59, ron minnich <rminnich@gmail.com> wrote:
+> Somebody asked me about a way to semantically patch
+> #ifdef X
+> to
+> #if configured(X)
 
-Thanks!
+As already suggested, a script in sed/perl should be able to give you a
+quick result for a relative low investment, although it would likely not
+distinguish comments/strings from code and possibly not be so robust,
+so there is a need for manual inspection of the result.
 
-> Exists causes the rule to match when there is a single control-flow path
-> through the function that satisfies the specified pattern. Without it,
-> all paths from the first thing that matches are required to match the
-> pattern, unless * is used (context mode).
->
-> <... P ...> allows 0 or more occurrences of P within the path matched by
-> <... ...>. It is just like ... except that it allows the occurrences of
-> P (that you might want to modify, collect the position of etc.)
->
-> <+... P ...+> is like <... P ...> except that it requires that there is
-> at least one occurrence of P in the control-flow path.
->
+If you want to write something that is more robust I would suggest taking
+the source of stripcmt, http://www.bdc.cx/software/stripcmt/, and modify
+that. The source of that tool is very simple, just complicated enough
+to keep a states of being inside strings/comments, and then some code
+to remove comments which you can remove and then just add some code to
+recognise #ifdef X for your task.
 
-Ok, thanks for your explanation.
-
-> I am not sure that Peter's false positive is really a false positive.
-> The missing dput is at the beginning of the function, whereas the patch
-> addressed the end of the function. Perhaps the author of the patch
-> thought about the function an realized that a dput wasn't needed at the
-> beginning. But the patch at least doesn't say why.
->
-
-Indeed, it was not a false positive, the patch got applied in -mm recently.
-
-> Semantic patches for integration into Linux should be sent to Michal
-> Marek <mmarek@suse.cz>, as well as to the people at COCCINELLE/Semantic
-> Patches (SmPL) in MAINTAINERS.
->
-
-Ok, I did that, thanks a lot.
-
-
-Cyril Roelandt.
+BR H?kon L?vdal
+_______________________________________________
+Cocci mailing list
+Cocci at diku.dk
+http://lists.diku.dk/mailman/listinfo/cocci
+(Web access from inside DIKUs LAN only)
