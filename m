@@ -1,29 +1,63 @@
 From: hlovdal@gmail.com (=?UTF-8?B?SMOla29uIEzDuHZkYWw=?=)
-Date: Sun, 18 Nov 2012 00:16:38 +0100
-Subject: [Cocci] rewrite C preprocessor
-In-Reply-To: <CAP6exYJmah2MZkd5XSukArznvYbe3fn38Q9o5ppJDj7Z9JNd5Q@mail.gmail.com>
-References: <CAP6exYJmah2MZkd5XSukArznvYbe3fn38Q9o5ppJDj7Z9JNd5Q@mail.gmail.com>
-Message-ID: <CAACXqO9BuS70TtXvcLk1Y=DjibJHP8B0VEzeWs1V=a7K9L+5NQ@mail.gmail.com>
+Date: Sat, 17 Nov 2012 23:44:53 +0100
+Subject: [Cocci] About conditional compilation
+In-Reply-To: <SNT128-DS99EFC247F02BA51F061C09CFE0@phx.gbl>
+References: <SNT128-DS99EFC247F02BA51F061C09CFE0@phx.gbl>
+Message-ID: <CAACXqO_eBrXsRXpvSPXBsGttRsh+Y5-OAZSoK2HMHGv0ADjREQ@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 24 October 2012 23:59, ron minnich <rminnich@gmail.com> wrote:
-> Somebody asked me about a way to semantically patch
-> #ifdef X
-> to
-> #if configured(X)
+On 20 June 2012 08:10, yafo lee <yafo.lee@live.cn> wrote:
+> Hi guys, I wanna delete conditional compilation code such as #ifdef, can
+> Coccinelle do that?
 
-As already suggested, a script in sed/perl should be able to give you a
-quick result for a relative low investment, although it would likely not
-distinguish comments/strings from code and possibly not be so robust,
-so there is a need for manual inspection of the result.
+The unifdef program, http://dotat.at/prog/unifdef/,  is created
+specifically for such tasks:
 
-If you want to write something that is more robust I would suggest taking
-the source of stripcmt, http://www.bdc.cx/software/stripcmt/, and modify
-that. The source of that tool is very simple, just complicated enough
-to keep a states of being inside strings/comments, and then some code
-to remove comments which you can remove and then just add some code to
-recognise #ifdef X for your task.
+
+(hlovdal) localhost:/tmp/test>cat test.c
+#ifdef CONFIG_PM_SLEEP
+static int alx_suspend(struct device *dev)
+{
+        struct pci_dev *pdev = to_pci_dev(dev);
+        int retval;
+        bool wakeup;
+
+        retval = alx_shutdown_internal(pdev, &wakeup);
+        if (retval)
+                return retval;
+
+        if (wakeup) {
+                pci_prepare_to_sleep(pdev);
+        } else {
+                pci_wake_from_d3(pdev, false);
+                pci_set_power_state(pdev, PCI_D3hot);
+        }
+
+        return 0;
+}
+#endif
+(hlovdal) localhost:/tmp/test>unifdef -DCONFIG_PM_SLEEP test.c
+static int alx_suspend(struct device *dev)
+{
+        struct pci_dev *pdev = to_pci_dev(dev);
+        int retval;
+        bool wakeup;
+
+        retval = alx_shutdown_internal(pdev, &wakeup);
+        if (retval)
+                return retval;
+
+        if (wakeup) {
+                pci_prepare_to_sleep(pdev);
+        } else {
+                pci_wake_from_d3(pdev, false);
+                pci_set_power_state(pdev, PCI_D3hot);
+        }
+
+        return 0;
+}
+(hlovdal) localhost:/tmp/test>
 
 BR H?kon L?vdal
 _______________________________________________
