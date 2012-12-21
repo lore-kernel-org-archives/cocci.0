@@ -1,30 +1,24 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 11 Dec 2012 14:16:36 +0100 (CET)
+From: rrh@cs.aau.dk (Rene Rydhof Hansen)
+Date: Fri, 21 Dec 2012 14:03:51 +0100
 Subject: [Cocci] new version
-Message-ID: <alpine.DEB.2.02.1212111410080.2091@hadrien>
+In-Reply-To: <alpine.DEB.2.02.1212111410080.2091@hadrien>
+References: <alpine.DEB.2.02.1212111410080.2091@hadrien>
+Message-ID: <20121221140351.7349d9b6@vidarr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-1.0.0-rc16 is now available.  The following are the main changes since the
-previous release:
+> 1.0.0-rc16 is now available.  The following are the main changes
+> since the previous release:
 
-* A little bit of C++ code, specifically namespace specifications, is now
-supported in SmPL code.
+Only just noticed your post; rc16 is now also in github.
 
-* There is a small improvement to the handling of the case where several
-variables are declared at once in the C code.  Previously, a pattern like
-- int x; would cause a crash if it matched the declaration of x in int
-x,y;.  Now the match just does not succeed, making is possible for the
-semantic patch to continue.  This allows eg:
+BTW, did you come to a decision wrt. tracking the source more closely
+on github?
 
-(
-- int x;
-|
-  int x at p;
-)
 
-and then printing an error message for the locations represented by p.
+/rrh
 
-* Various unparsing improvements.
-
-julia
+-- 
+Rene Rydhof Hansen
+email: rrh at cs.aau.dk
+phone: (+45) 9940 7514
