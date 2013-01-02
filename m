@@ -1,11 +1,13 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 2 Jan 2013 21:19:37 +0100 (CET)
+Date: Wed, 2 Jan 2013 21:22:51 +0100 (CET)
 Subject: [Cocci] Problem with variable declared with macro
 In-Reply-To: <CAACXqO9uArVgbnU=pGYWGgczHY_tCR6+0yOyBPYA22iP0OgahA@mail.gmail.com>
 References: <CAACXqO9uArVgbnU=pGYWGgczHY_tCR6+0yOyBPYA22iP0OgahA@mail.gmail.com>
-Message-ID: <alpine.DEB.2.02.1301022116120.2022@localhost6.localdomain6>
+Message-ID: <alpine.DEB.2.02.1301022120020.2022@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
+
+
 
 On Wed, 2 Jan 2013, H?kon L?vdal wrote:
 
@@ -41,6 +43,14 @@ On Wed, 2 Jan 2013, H?kon L?vdal wrote:
 > ERROR-RECOV: found sync end of #define, line 5
 > parsing pass2: try again
 > ERROR-RECOV: found sync end of #define, line 5
+
+On the other hand, it does mention that it is resynchronizing here.  And 
+that is what it looks like it is doing from the bad/BAD messages below. 
+If MACRO1 is not getting changed, it is probably because it has been 
+recognized as a macro to skip, and so no change can be made to it.
+
+julia
+
 > parse error
 > = File "macro_problem.c", line 6, column 0,  charpos = 64
 >    around = '', whole content =
@@ -57,18 +67,9 @@ On Wed, 2 Jan 2013, H?kon L?vdal wrote:
 >
 > This seems extremely basic, so I do not understand what the problem is here.
 > Adding MACROSTATEMENT did not make any difference. Can someone explain?
-
-MACROSTATEMENT is only understood in the standard.h file.
-
-It can't parse the int i because of the missing semicolon.
-
-Then it doesn't parse what comes afterwards, because it has not 
-resynchronized (I think).
-
-If that is the problem, then the C parser should really resynchronize 
-after coming to the newline in a macro definition.
-
-Christian, could you look into that?
-
-thanks,
-julia
+>
+> BR H?kon L?vdal
+> _______________________________________________
+> Cocci mailing list
+> Cocci at systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
