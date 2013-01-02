@@ -1,57 +1,38 @@
-From: hlovdal@gmail.com (=?UTF-8?B?SMOla29uIEzDuHZkYWw=?=)
-Date: Wed, 2 Jan 2013 21:07:28 +0100
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Wed, 2 Jan 2013 21:28:32 +0100 (CET)
 Subject: [Cocci] Problem with variable declared with macro
-Message-ID: <CAACXqO9uArVgbnU=pGYWGgczHY_tCR6+0yOyBPYA22iP0OgahA@mail.gmail.com>
+In-Reply-To: <CAACXqO9uArVgbnU=pGYWGgczHY_tCR6+0yOyBPYA22iP0OgahA@mail.gmail.com>
+References: <CAACXqO9uArVgbnU=pGYWGgczHY_tCR6+0yOyBPYA22iP0OgahA@mail.gmail.com>
+Message-ID: <alpine.DEB.2.02.1301022125250.2022@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-I have a problem with some macros that I have trimmed down to the following:
+Actually, I was totally off on my explanation.
 
-
-$ more macro_problem.c*
-::::::::::::::
-macro_problem.c
-::::::::::::::
-
-//#define MACRO1(id) MACROSTATEMENT
+It won't parse
 
 #define MACRO1(id) \
 int id
 
-MACRO1(dummy2);
+It doesn't accept incomplete statements.  I think it has a special case 
+for while ... do (...).
 
-::::::::::::::
-macro_problem.cocci
-::::::::::::::
-
-@@
-@@
+But the reason why the use of MACRO1 doesn't get changed has nothing to do 
+with that.  The problem is that it is at top level, and with just
 
 -MACRO1
 +MACRO2
 
-$ /tmp/coccinelle/bin/spatch  --verbose-parsing --parse-error-msg
---sp-file macro_problem.cocci macro_problem.c
-init_defs_builtins: /tmp/coccinelle/share/coccinelle/standard.h
-HANDLING: macro_problem.c
-ERROR-RECOV: found sync end of #define, line 5
-parsing pass2: try again
-ERROR-RECOV: found sync end of #define, line 5
-parse error
- = File "macro_problem.c", line 6, column 0,  charpos = 64
-    around = '', whole content =
-badcount: 3
-bad: #define MACRO1(id) MACROSTATEMENT
-bad:
-bad: #define MACRO1(id) \
-BAD:!!!!! int id
-$ /tmp/coccinelle/bin/spatch  --version
-spatch version 1.0.0-rc15 with Python support and with PCRE support
-$
-(although this is really rc16, compiled from latest git version).
+the code is expected to be inside a function definition.
 
+The following semantic patch works fine:
 
-This seems extremely basic, so I do not understand what the problem is here.
-Adding MACROSTATEMENT did not make any difference. Can someone explain?
+@@
+declarer name MACRO1, MACRO2;
+@@
 
-BR H?kon L?vdal
+-MACRO1
++MACRO2
+  (...);
+
+julia
