@@ -1,12 +1,35 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 9 Jan 2013 18:23:23 +0100 (CET)
+From: thierry.reding@avionic-design.de (Thierry Reding)
+Date: Wed, 9 Jan 2013 20:36:05 +0100
 Subject: [Cocci] Matching outside of blocks
 In-Reply-To: <CA+MoWDpyz1+mWF-DCqgnY-b4ksgreyK9EMu0U21j95U9aKj7kA@mail.gmail.com>
 References: <20130109123454.GA29477@avionic-0098.adnet.avionic-design.de>
  <CA+MoWDpyz1+mWF-DCqgnY-b4ksgreyK9EMu0U21j95U9aKj7kA@mail.gmail.com>
-Message-ID: <alpine.DEB.2.02.1301091811250.2053@localhost6.localdomain6>
+Message-ID: <20130109193604.GA11410@avionic-0098.adnet.avionic-design.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
+
+On Wed, Jan 09, 2013 at 03:01:34PM -0200, Peter Senna Tschudin wrote:
+> Hi,
+> 
+> What version of Coccinelle are you using? I suggest you try the latest
+> one available at:
+> http://coccinelle.lip6.fr/download.php
+
+I use 1.0.0-rc15, which is the latest available in Arch Linux AUR. Last
+time I tried to install manually there were some problems and I was
+lazy. =)
+
+> On Wed, Jan 9, 2013 at 10:34 AM, Thierry Reding
+> <thierry.reding@avionic-design.de> wrote:
+> > Hi,
+> >
+> > I'm trying to come up with a semantic patch to modify the meaning of the
+> > devm_request_and_ioremap() functions return value. The goal is to return
+> > an ERR_PTR() encoded errno in order to allow the proper error code to be
+> > propagated to the caller.
+> Will you change the function itself so it will return ERR_PRT() encoded errno?
+
+Yes, that's the plan.
 
 > I made some changes for patch mode:
 > @@
@@ -18,67 +41,12 @@ List-Id: cocci@systeme.lip6.fr
 > if
 > -(e == NULL)
 > +(IS_ERR(e))
-
-Actually, a slightly more defensive thing to do is
-
-if (
--   e == NULL
-+   IS_ERR(e)
- || ...)
-
-This will allow the null test to be anywhere in a toplevel ||, ie
-
-   !e || x    x || !e   a || b || !e   a || !e || b
-
 > {
 > <...
 > -       return ...;
 > +       return PTR_ERR(e);
 > ...>
 > }
-
-I started typing a long explanation as to why this was not a good idea, 
-but now I realize that actually it is a good idea.  If you put
-
-if (e == NULL) {
-  ...
-  return ...;
-}
-
-then the ... above the return will jump over gotos.  For pattern matching 
-(ie report mode) this is probably what you want.  But for actual patching, 
-this is not what you want at all.  Functions that use devm functions often 
-use gotos for their error handling, so there is just one return at the end 
-of the function that is shared by everyone.  You certainly don't want to 
-turn this into a call to PTR_ERR.  By using <... ...> you stay within the 
-simple case where the return is right up between the braces of the if 
-header.
-
-On the other hand there are probably a lot of cases that you could 
-transform automatically that you are missing.  The common thing to do is 
-say ret = -EXXX for some XXX, where ret is later returned.  Probably what 
-you would like to do is:
-
-if (e == NULL) {  // fill in the modification on the test
-  ... when any
-- ret = E;
-+ ret = PTR_ERR(e);
-  ...
-  return ret;
-}
-
-This should be put in a separate rule after the one with the <... ...>.
-
-When any allows there to be any assignment before ret = E.  What you are 
-interested in is the last assignment, in particular the last assignment of 
-the value that is returned.  Not putting anything on the ... at the end 
-will give you this shortest path property.  If you are really worried 
-about gotos, you could also put when != goto l; where l is an identifier 
-metavariable on the first ...  But I think that the chance of a problem 
-there is minimal.
-
-julia
-
 > 
 > You can save this text in a .cocci file then use it with:
 > $ cd /linux-source
@@ -86,8 +54,9 @@ julia
 > 
 > Note that some isomorphisms like e = NULL and !e are automatically
 > taken care for you. Check Coccinelle iso file for more details.
-> 
-> >
+
+Okay, that's certainly a lot simpler. Thanks.
+
 > > This seems to work fine for most cases, but I've come across a tricky
 > > one in drivers/gpio/gpio-mxs.c. The code looks roughly like this:
 > >
@@ -124,8 +93,10 @@ julia
 >         if (!base)
 >                 return PTR_ERR(base);
 > }
-> 
-> >
+
+Right, now that you mention it, of_iomap() doesn't return ERR_PTR() at
+all, so the common if (!base) needs to be split up anyway.
+
 > > I wonder what I need to change to make this case work. From my very
 > > limited understanding of coccinelle it would seem that the issue is that
 > > the devm_request_and_ioremap() call and the return value check are in
@@ -137,24 +108,20 @@ julia
 > cases and do the exceptions manually.
 > 2 - Even for changes made by Coccinelle I would double check if the
 > proposed transformation is what I was expecting.
+
+Yes, that sounds like a good plan. I was going to review the generated
+patches anyway, but this one non-trivial case (and probably others) may
+need more thought and manual conversion might be safest anyway.
+
 > 3 - There are a lot of examples at: coccinellery.org
-> 
-> >
-> > Thanks,
-> > Thierry
-> >
-> > _______________________________________________
-> > Cocci mailing list
-> > Cocci at systeme.lip6.fr
-> > https://systeme.lip6.fr/mailman/listinfo/cocci
-> >
-> 
-> 
-> 
-> --
-> Peter
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
-> 
+
+Nice, I hadn't tumbled upon that one yet. Thanks for the reference.
+
+Thierry
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 836 bytes
+Desc: not available
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20130109/8e564fdb/attachment-0001.asc>
