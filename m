@@ -1,121 +1,101 @@
 From: thierry.reding@avionic-design.de (Thierry Reding)
-Date: Wed, 9 Jan 2013 20:36:05 +0100
+Date: Wed, 9 Jan 2013 20:45:12 +0100
 Subject: [Cocci] Matching outside of blocks
-In-Reply-To: <CA+MoWDpyz1+mWF-DCqgnY-b4ksgreyK9EMu0U21j95U9aKj7kA@mail.gmail.com>
+In-Reply-To: <alpine.DEB.2.02.1301091811250.2053@localhost6.localdomain6>
 References: <20130109123454.GA29477@avionic-0098.adnet.avionic-design.de>
  <CA+MoWDpyz1+mWF-DCqgnY-b4ksgreyK9EMu0U21j95U9aKj7kA@mail.gmail.com>
-Message-ID: <20130109193604.GA11410@avionic-0098.adnet.avionic-design.de>
+ <alpine.DEB.2.02.1301091811250.2053@localhost6.localdomain6>
+Message-ID: <20130109194512.GB11410@avionic-0098.adnet.avionic-design.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, Jan 09, 2013 at 03:01:34PM -0200, Peter Senna Tschudin wrote:
-> Hi,
+On Wed, Jan 09, 2013 at 06:23:23PM +0100, Julia Lawall wrote:
+> > I made some changes for patch mode:
+> > @@
+> > expression e;
+> > @@
+> > 
+> > e = devm_request_and_ioremap(...);
+> > ...
+> > if
+> > -(e == NULL)
+> > +(IS_ERR(e))
 > 
-> What version of Coccinelle are you using? I suggest you try the latest
-> one available at:
-> http://coccinelle.lip6.fr/download.php
-
-I use 1.0.0-rc15, which is the latest available in Arch Linux AUR. Last
-time I tried to install manually there were some problems and I was
-lazy. =)
-
-> On Wed, Jan 9, 2013 at 10:34 AM, Thierry Reding
-> <thierry.reding@avionic-design.de> wrote:
-> > Hi,
-> >
-> > I'm trying to come up with a semantic patch to modify the meaning of the
-> > devm_request_and_ioremap() functions return value. The goal is to return
-> > an ERR_PTR() encoded errno in order to allow the proper error code to be
-> > propagated to the caller.
-> Will you change the function itself so it will return ERR_PRT() encoded errno?
-
-Yes, that's the plan.
-
-> I made some changes for patch mode:
-> @@
-> expression e;
-> @@
+> Actually, a slightly more defensive thing to do is
 > 
-> e = devm_request_and_ioremap(...);
-> ...
-> if
-> -(e == NULL)
-> +(IS_ERR(e))
-> {
-> <...
-> -       return ...;
-> +       return PTR_ERR(e);
-> ...>
+> if (
+> -   e == NULL
+> +   IS_ERR(e)
+>  || ...)
+> 
+> This will allow the null test to be anywhere in a toplevel ||, ie
+> 
+>    !e || x    x || !e   a || b || !e   a || !e || b
+
+Okay, I'll roll that into the semantic patch. I haven't seen any
+occurrence where the check is used in a composite condition, but you
+never know.
+
+> > {
+> > <...
+> > -       return ...;
+> > +       return PTR_ERR(e);
+> > ...>
+> > }
+> 
+> I started typing a long explanation as to why this was not a good idea, 
+> but now I realize that actually it is a good idea.  If you put
+> 
+> if (e == NULL) {
+>   ...
+>   return ...;
 > }
 > 
-> You can save this text in a .cocci file then use it with:
-> $ cd /linux-source
-> $ spatch -dir . /tmp/file.cocci
+> then the ... above the return will jump over gotos.  For pattern matching 
+> (ie report mode) this is probably what you want.  But for actual patching, 
+> this is not what you want at all.  Functions that use devm functions often 
+> use gotos for their error handling, so there is just one return at the end 
+> of the function that is shared by everyone.  You certainly don't want to 
+> turn this into a call to PTR_ERR.  By using <... ...> you stay within the 
+> simple case where the return is right up between the braces of the if 
+> header.
 > 
-> Note that some isomorphisms like e = NULL and !e are automatically
-> taken care for you. Check Coccinelle iso file for more details.
-
-Okay, that's certainly a lot simpler. Thanks.
-
-> > This seems to work fine for most cases, but I've come across a tricky
-> > one in drivers/gpio/gpio-mxs.c. The code looks roughly like this:
-> >
-> >         if (np) {
-> >                 ...
-> >                 base = of_iomap(parent, 0);
-> >                 ...
-> >         } else {
-> >                 iores = platform_get_resource(...);
-> >                 base = devm_request_and_ioremap(...);
-> >         }
-> >         if (!base)
-> >                 return -EADDRNOTAVAIL;
-> >
-> > The odd thing is that in report mode this case is actually detected, but
-> > the patch mode doesn't generate a hunk for this occurrence.
+> On the other hand there are probably a lot of cases that you could 
+> transform automatically that you are missing.  The common thing to do is 
+> say ret = -EXXX for some XXX, where ret is later returned.  Probably what 
+> you would like to do is:
 > 
-> The position variable is storing the position of
-> devm_request_and_ioremap, this is why the report mode detect it. The
-> problem is that base could receive its content from
-> devm_request_and_ioremap(...); or from of_iomap(parent, 0);. For this
-> case I would manually add different return for each case. Something
-> like:
-> 
-> if (np) {
->         ...
->         base = of_iomap(parent, 0);
->         ...
->         if (!base)
->                 return -EADDRNOTAVAIL;
-> } else {
->         iores = platform_get_resource(...);
->         base = devm_request_and_ioremap(...);
->         if (!base)
->                 return PTR_ERR(base);
+> if (e == NULL) {  // fill in the modification on the test
+>   ... when any
+> - ret = E;
+> + ret = PTR_ERR(e);
+>   ...
+>   return ret;
 > }
+> 
+> This should be put in a separate rule after the one with the <... ...>.
 
-Right, now that you mention it, of_iomap() doesn't return ERR_PTR() at
-all, so the common if (!base) needs to be split up anyway.
+I've currently only tested this on a few driver subdirectories to check
+that it generally works, but yes, something like the above could be
+useful to match more cases.
 
-> > I wonder what I need to change to make this case work. From my very
-> > limited understanding of coccinelle it would seem that the issue is that
-> > the devm_request_and_ioremap() call and the return value check are in
-> > different blocks, but I have no idea how to take that into account. Then
-> > again, maybe the problem is something completely different.
-> >
-> > Does anybody have any hints?
-> 1 - I would work on a Coccinelle script that works for the common
-> cases and do the exceptions manually.
-> 2 - Even for changes made by Coccinelle I would double check if the
-> proposed transformation is what I was expecting.
+While we're at it, I was going to follow up with another semantic patch
+to remove error messages in the devm_request_and_ioremap() errors paths
+because the function outputs an error message itself already. In many
+cases this results in an if block becoming a single line, so CodingStyle
+requires the { } to be removed. Is there any way to do that
+automatically?
 
-Yes, that sounds like a good plan. I was going to review the generated
-patches anyway, but this one non-trivial case (and probably others) may
-need more thought and manual conversion might be safest anyway.
+> When any allows there to be any assignment before ret = E.  What you are 
+> interested in is the last assignment, in particular the last assignment of 
+> the value that is returned.  Not putting anything on the ... at the end 
+> will give you this shortest path property.  If you are really worried 
+> about gotos, you could also put when != goto l; where l is an identifier 
+> metavariable on the first ...  But I think that the chance of a problem 
+> there is minimal.
 
-> 3 - There are a lot of examples at: coccinellery.org
-
-Nice, I hadn't tumbled upon that one yet. Thanks for the reference.
+Thanks for explaining this. I had been wondering about "when any". I'm
+very new to coccinelle so there's still a lot to learn.
 
 Thierry
 -------------- next part --------------
@@ -124,4 +104,4 @@ Name: not available
 Type: application/pgp-signature
 Size: 836 bytes
 Desc: not available
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20130109/8e564fdb/attachment-0001.asc>
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20130109/38be7c1d/attachment.asc>
