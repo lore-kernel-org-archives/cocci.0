@@ -1,81 +1,69 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 9 Jan 2013 21:14:25 +0100 (CET)
-Subject: [Cocci] Matching outside of blocks
-In-Reply-To: <20130109194512.GB11410@avionic-0098.adnet.avionic-design.de>
-References: <20130109123454.GA29477@avionic-0098.adnet.avionic-design.de>
- <CA+MoWDpyz1+mWF-DCqgnY-b4ksgreyK9EMu0U21j95U9aKj7kA@mail.gmail.com>
- <alpine.DEB.2.02.1301091811250.2053@localhost6.localdomain6>
- <20130109194512.GB11410@avionic-0098.adnet.avionic-design.de>
-Message-ID: <alpine.DEB.2.02.1301092106190.2053@localhost6.localdomain6>
+From: hlovdal@gmail.com (=?UTF-8?B?SMOla29uIEzDuHZkYWw=?=)
+Date: Tue, 15 Jan 2013 17:14:54 +0100
+Subject: [Cocci] Two identical declarer macros handled differently
+Message-ID: <CAACXqO_gsGeqAyNEVYUuLgciCEF6TdyMmrYWZN_kXztTw84yuA@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> While we're at it, I was going to follow up with another semantic patch
-> to remove error messages in the devm_request_and_ioremap() errors paths
-> because the function outputs an error message itself already. In many
-> cases this results in an if block becoming a single line, so CodingStyle
-> requires the { } to be removed. Is there any way to do that
-> automatically?
+Hi list. I started writing a script to be a grep for a declarer macro and
+print its arguments. For one of the source files however, it produced
+a false positive by printing arguments for another declarer macro as
+well. Investigating this, I found the following which I think is at
+least related, if not the same issue.
 
-One solution would be to put eg
+With the following two identical D1 and D2 macros, coccinelle fails to
+handle D1.
 
-if (...)
-- {
-(
-  goto l;
-|
-  return ...;
-)
-- }
+$?more declarer_test.c declarer_test-d2.cocci
+::::::::::::::
+declarer_test.c
+::::::::::::::
 
-at the end of your semantic patch.  That will affect everything, but if 
-you don't mind doing a little extra work on the side, it could be helpful 
-to submit patches to fix up those as well.
+static void foo(void *arg)
+{
+}
+D1(foo, 0, 0, 0, 0);
 
-The other solution is to do it as part of removing the printing command.  
-That is, to first have a rule that does something like (you can fill in 
-all the transformation parts that I have left out):
+static void bar(void *arg)
+{
+}
+D2(bar, 0, 0, 0, 0);
 
-x = devm...;
-... when != x = e
-if (x == NULL || ...)
-- {
-- f(...,c,...);
-  return ...;
-- }
+::::::::::::::
+declarer_test-d2.cocci
+::::::::::::::
+@r@
+declarer name D1;
+declarer name D2;
+expression E1, E2, E3, E4, E5;
+@@
+        D2(E1, E2, E3, E4, E5);
 
-And then have a second rule that does the more general case where the { } 
-don't need to be removed.
+@script:python@
+e1 << r.E1;
+e2 << r.E2;
+e3 << r.E3;
+e4 << r.E4;
+e5 << r.E5;
+@@
+print "MATCH: 1: %s, 2: %s, 3: %s, 4: %s, 5: %s" % (e1, e2, e3, e4, e5)
 
-c should be declared as char [] c;
+$?spatch --sp-file declarer_test-d2.cocci declarer_test.c
+init_defs_builtins: /usr/share/coccinelle/standard.h
+HANDLING: declarer_test.c
+MATCH: 1: bar, 2: 0, 3: 0, 4: 0, 5: 0
+$?diff declarer_test-d*
+6c6
+<       D1(E1, E2, E3, E4, E5);
+---
+>       D2(E1, E2, E3, E4, E5);
+$?spatch --sp-file declarer_test-d1.cocci declarer_test.c
+init_defs_builtins: /usr/share/coccinelle/standard.h
+HANDLING: declarer_test.c
+$
 
-I'm just assuming that anything with a string argument is undesirable. On 
-the other hand, there is no way to match something like
-KERN_EMERG "string".  Another alternative would be just to put all of the 
-names of the error reporting functions that you know of.  You can also put 
-them in a ( | ), ie
 
-(
-- printk(...);
-|
-- f(...,c,...);
-)
+So when trying to print D2 it succeeds, but it fails for D1.
+Am I doing something wrong here?
 
-It take the first match that works out, so you don't have to worry about 
-the cases being disjoint.
-
-julia
-
-> > When any allows there to be any assignment before ret = E.  What you are 
-> > interested in is the last assignment, in particular the last assignment of 
-> > the value that is returned.  Not putting anything on the ... at the end 
-> > will give you this shortest path property.  If you are really worried 
-> > about gotos, you could also put when != goto l; where l is an identifier 
-> > metavariable on the first ...  But I think that the chance of a problem 
-> > there is minimal.
-> 
-> Thanks for explaining this. I had been wondering about "when any". I'm
-> very new to coccinelle so there's still a lot to learn.
-> 
-> Thierry
-> 
+BR H?kon L?vdal
