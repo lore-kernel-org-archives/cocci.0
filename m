@@ -1,160 +1,46 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 15 Jan 2013 22:13:42 +0100 (CET)
-Subject: [Cocci] Two identical declarer macros handled differently
-In-Reply-To: <CA+MoWDq10KzZ-ogDpT1G4NTbUv5xQ8NYysrTqLfpqxkYASAQQw@mail.gmail.com>
-References: <CAACXqO_gsGeqAyNEVYUuLgciCEF6TdyMmrYWZN_kXztTw84yuA@mail.gmail.com>
- <CA+MoWDpHWt1aiinQv5YoGfZJOB+D1gmirB5ihKskQpvLtpfGyA@mail.gmail.com>
- <CA+MoWDq10KzZ-ogDpT1G4NTbUv5xQ8NYysrTqLfpqxkYASAQQw@mail.gmail.com>
-Message-ID: <alpine.DEB.2.02.1301152213150.1981@hadrien>
+From: bernd.schubert@itwm.fraunhofer.de (Bernd Schubert)
+Date: Tue, 22 Jan 2013 14:34:34 +0100
+Subject: [Cocci] [PATCH 1/2] coccicheck: Allow the user to give a VERBOSE=
+	argument
+Message-ID: <20130122133434.2543274.86646.stgit@fsdevel3>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, 15 Jan 2013, Peter Senna Tschudin wrote:
+Simply running "make coccicheck" returns very verbose output and warnings
+might not be noticed.  Allow the user to set the verbosity level.
 
-> There is macro definition at:
-> https://github.com/coccinelle/coccinelle/blob/master/standard.h#L656
->
-> #define D1(x) MACROSTATEMENT
 
-I am sure that this is the problem.  We should really not have such
-definitions.
+Signed-off-by: Bernd Schubert <bernd.schubert@itwm.fraunhofer.de>
+CC: Julia Lawall <Julia.Lawall@lip6.fr>
+CC: Nicolas Palix <nicolas.palix@imag.fr>
+CC: cocci at systeme.lip6.fr
+---
+ scripts/coccicheck |    8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-julia
-
->
-> That may be related to this issue. Note the spatch message:
-> init_defs_builtins: /usr/local/share/coccinelle/standard.h
->
->
-> On Tue, Jan 15, 2013 at 2:43 PM, Peter Senna Tschudin
-> <peter.senna@gmail.com> wrote:
-> > Hi H?kon L?vdal,
-> >
-> > I do not know why, but the problem disappeared when I changed the "D1" name.
-> >
-> > $ more test.c test.cocci
-> > ::::::::::::::
-> > test.c
-> > ::::::::::::::
-> > static void foo(void *arg)
-> > {
-> > }
-> > DD1(foo, 0, 0, 0, 0);
-> >
-> > static void bar(void *arg)
-> > {
-> > }
-> > DD2(bar, 0, 0, 0, 0);
-> >
-> > ::::::::::::::
-> > test.cocci
-> > ::::::::::::::
-> > @r@
-> > declarer name DD1;
-> > declarer name DD2;
-> > expression E1, E2, E3, E4, E5;
-> > @@
-> >         DD1(E1, E2, E3, E4, E5);
-> >
-> > @script:python@
-> > e1 << r.E1;
-> > e2 << r.E2;
-> > e3 << r.E3;
-> > e4 << r.E4;
-> > e5 << r.E5;
-> > @@
-> > print "MATCH: 1: %s, 2: %s, 3: %s, 4: %s, 5: %s" % (e1, e2, e3, e4, e5)
-> >
-> > $ spatch /tmp/test.c /tmp/test.cocci
-> > init_defs_builtins: /usr/local/share/coccinelle/standard.h
-> > HANDLING: /tmp/test.c
-> > MATCH: 1: foo, 2: 0, 3: 0, 4: 0, 5: 0
-> >
-> > Can you reproduce this?
-> >
-> > []'s
-> >
-> > Peter
-> >
-> > On Tue, Jan 15, 2013 at 2:14 PM, H?kon L?vdal <hlovdal@gmail.com> wrote:
-> >> Hi list. I started writing a script to be a grep for a declarer macro and
-> >> print its arguments. For one of the source files however, it produced
-> >> a false positive by printing arguments for another declarer macro as
-> >> well. Investigating this, I found the following which I think is at
-> >> least related, if not the same issue.
-> >>
-> >> With the following two identical D1 and D2 macros, coccinelle fails to
-> >> handle D1.
-> >>
-> >> $ more declarer_test.c declarer_test-d2.cocci
-> >> ::::::::::::::
-> >> declarer_test.c
-> >> ::::::::::::::
-> >>
-> >> static void foo(void *arg)
-> >> {
-> >> }
-> >> D1(foo, 0, 0, 0, 0);
-> >>
-> >> static void bar(void *arg)
-> >> {
-> >> }
-> >> D2(bar, 0, 0, 0, 0);
-> >>
-> >> ::::::::::::::
-> >> declarer_test-d2.cocci
-> >> ::::::::::::::
-> >> @r@
-> >> declarer name D1;
-> >> declarer name D2;
-> >> expression E1, E2, E3, E4, E5;
-> >> @@
-> >>         D2(E1, E2, E3, E4, E5);
-> >>
-> >> @script:python@
-> >> e1 << r.E1;
-> >> e2 << r.E2;
-> >> e3 << r.E3;
-> >> e4 << r.E4;
-> >> e5 << r.E5;
-> >> @@
-> >> print "MATCH: 1: %s, 2: %s, 3: %s, 4: %s, 5: %s" % (e1, e2, e3, e4, e5)
-> >>
-> >> $ spatch --sp-file declarer_test-d2.cocci declarer_test.c
-> >> init_defs_builtins: /usr/share/coccinelle/standard.h
-> >> HANDLING: declarer_test.c
-> >> MATCH: 1: bar, 2: 0, 3: 0, 4: 0, 5: 0
-> >> $ diff declarer_test-d*
-> >> 6c6
-> >> <       D1(E1, E2, E3, E4, E5);
-> >> ---
-> >>>       D2(E1, E2, E3, E4, E5);
-> >> $ spatch --sp-file declarer_test-d1.cocci declarer_test.c
-> >> init_defs_builtins: /usr/share/coccinelle/standard.h
-> >> HANDLING: declarer_test.c
-> >> $
-> >>
-> >>
-> >> So when trying to print D2 it succeeds, but it fails for D1.
-> >> Am I doing something wrong here?
-> >>
-> >> BR H?kon L?vdal
-> >> _______________________________________________
-> >> Cocci mailing list
-> >> Cocci at systeme.lip6.fr
-> >> https://systeme.lip6.fr/mailman/listinfo/cocci
-> >
-> >
-> >
-> > --
-> > Peter
->
->
->
-> --
-> Peter
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+diff --git a/scripts/coccicheck b/scripts/coccicheck
+index 1a49d1c..eab0b00 100755
+--- a/scripts/coccicheck
++++ b/scripts/coccicheck
+@@ -2,6 +2,12 @@
+ 
+ SPATCH="`which ${SPATCH:=spatch}`"
+ 
++if [ -z "$VERBOSE" ] ; then
++	RUN_VERBOSE=0
++else
++	RUN_VERBOSE=$VERBOSE
++fi
++
+ if [ "$C" = "1" -o "$C" = "2" ]; then
+     ONLINE=1
+ 
+@@ -55,7 +61,7 @@ coccinelle () {
+ #
+ #    $SPATCH -D $MODE $FLAGS -parse_cocci $COCCI $OPT > /dev/null
+ 
+-    if [ "$ONLINE" = "0" ] ; then
++    if [ "$RUN_VERBOSE" != "0" ] ; then
+ 
+ 	FILE=`echo $COCCI | sed "s|$srctree/||"`
+ 
