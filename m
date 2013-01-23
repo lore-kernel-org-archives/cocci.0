@@ -1,127 +1,132 @@
-From: nicolas.palix@imag.fr (Nicolas Palix)
-Date: Wed, 23 Jan 2013 09:29:55 +0100
-Subject: [Cocci] [PATCH 1/2] coccicheck: Allow the user to give a
-	VERBOSE= argument
-In-Reply-To: <50FEAAC6.3090409@itwm.fraunhofer.de>
-References: <20130122133434.2543274.86646.stgit@fsdevel3>
- <CAAxaTiOCLyNJt0Bmqg+7t1knByKfSUpiCDCGm85vtHveDJDzGw@mail.gmail.com>
- <50FEAAC6.3090409@itwm.fraunhofer.de>
-Message-ID: <CAAxaTiPYFccAfmXG6jvO5+aLreyiHDQqdTajgqtVJ1vCH0zoyw@mail.gmail.com>
+From: peter.senna@gmail.com (Peter Senna Tschudin)
+Date: Wed, 23 Jan 2013 19:40:15 -0200
+Subject: [Cocci] [PATCH] scripts/coccinelle/misc/memcpy-assign.cocci:
+	Replace memcpy with struct assignment
+Message-ID: <1358977215-2720-1-git-send-email-peter.senna@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi,
+There are kinds of memcpy() that are error-prone. Its replacement with
+a struct assignment is prefered because it's type-safe and much easier
+to read. This semantic patch looks for memcpy() that can be replaced by
+struct assignment.
 
-On Tue, Jan 22, 2013 at 4:05 PM, Bernd Schubert
-<bernd.schubert@itwm.fraunhofer.de> wrote:
-> Hello Nicolas,
->
->
-> On 01/22/2013 03:31 PM, Nicolas Palix wrote:
->>
->> Hi,
->>
->> Thank you Bernd for your proposition.
->>
->> I added Michal in CC, who is responsible for the integration.
->
->
-> Oh, sorry, I CCed everyone, but forgot Michal.
+Inspired by patches sent by Ezequiel Garcia <elezegarcia@gmail.com>
 
-Michal, should we consider adding you to the MAINTAINERS of Coccinelle ?
+Signed-off-by: Peter Senna Tschudin <peter.senna@gmail.com>
+---
+ scripts/coccinelle/misc/memcpy-assign.cocci | 103 ++++++++++++++++++++++++++++
+ 1 file changed, 103 insertions(+)
+ create mode 100644 scripts/coccinelle/misc/memcpy-assign.cocci
 
->
->
->>
->> I was wondering if the V variable which already exists would not be better
->> than introducing a new variable. Bernd, is there any reason to not use V ?
->
->
-> I'm fine using 'V' either.
-
-OK. Could you resubmit with V, please ?
-
->
->
->>
->> Your patch also remove the check of the ONLINE variable. In doing so,
->> I think that your patch will badly interfere with the online checking
->> performed with the C variable. Am I missing something ?
->
->
-> Hmm, I probably should have told in the patch description that verbosity
-> defaults to 0 now. Shall I revert or make an extra patch for that? With the
-> current patch and ONLINE != 0 nothing will change.
-
-I am personally fine with cutting off the verbosity by default.
-Could you add a comment on how to turn it on in the initial
-message of the ONLINE mode which is currently only about false positives,
-and add few words in the change log ?
-
-About your other patch, could you resubmit it with V too ?
-
-Thanks.
-
-Regards,
-
->
->
-> Cheers,
-> Bernd
->
->
->
->>
->> Regards,
->>
->> On Tue, Jan 22, 2013 at 2:34 PM, Bernd Schubert
->> <bernd.schubert@itwm.fraunhofer.de> wrote:
->>>
->>> Simply running "make coccicheck" returns very verbose output and warnings
->>> might not be noticed.  Allow the user to set the verbosity level.
->>>
->>>
->>> Signed-off-by: Bernd Schubert <bernd.schubert@itwm.fraunhofer.de>
->>> CC: Julia Lawall <Julia.Lawall@lip6.fr>
->>> CC: Nicolas Palix <nicolas.palix@imag.fr>
->>> CC: cocci at systeme.lip6.fr
->>> ---
->>>   scripts/coccicheck |    8 +++++++-
->>>   1 file changed, 7 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/scripts/coccicheck b/scripts/coccicheck
->>> index 1a49d1c..eab0b00 100755
->>> --- a/scripts/coccicheck
->>> +++ b/scripts/coccicheck
->>> @@ -2,6 +2,12 @@
->>>
->>>   SPATCH="`which ${SPATCH:=spatch}`"
->>>
->>> +if [ -z "$VERBOSE" ] ; then
->>> +       RUN_VERBOSE=0
->>> +else
->>> +       RUN_VERBOSE=$VERBOSE
->>> +fi
->>> +
->>>   if [ "$C" = "1" -o "$C" = "2" ]; then
->>>       ONLINE=1
->>>
->>> @@ -55,7 +61,7 @@ coccinelle () {
->>>   #
->>>   #    $SPATCH -D $MODE $FLAGS -parse_cocci $COCCI $OPT > /dev/null
->>>
->>> -    if [ "$ONLINE" = "0" ] ; then
->>> +    if [ "$RUN_VERBOSE" != "0" ] ; then
->>>
->>>          FILE=`echo $COCCI | sed "s|$srctree/||"`
->>>
->>>
->>
->>
->>
->
-
-
-
+diff --git a/scripts/coccinelle/misc/memcpy-assign.cocci b/scripts/coccinelle/misc/memcpy-assign.cocci
+new file mode 100644
+index 0000000..5c1fd75
+--- /dev/null
++++ b/scripts/coccinelle/misc/memcpy-assign.cocci
+@@ -0,0 +1,103 @@
++//
++// Replace memcpy with struct assignment.
++//
++// Confidence: Moderate
++// Copyright: (C) 2012 Peter Senna Tschudin, INRIA/LIP6.  GPLv2.
++// URL: http://coccinelle.lip6.fr/
++// Comments:
++// Options: --no-includes --include-headers
++
++virtual patch
++virtual report
++virtual context
++virtual org
++
++ at r1 depends on !patch@
++identifier struct_name;
++struct struct_name to;
++struct struct_name from;
++struct struct_name *top;
++struct struct_name *fromp;
++position p;
++@@
++memcpy at p(\(&(to)\|top\), \(&(from)\|fromp\), \(sizeof(to)\|sizeof(from)\|sizeof(struct struct_name)\|sizeof(*top)\|sizeof(*fromp)\))
++
++ at script:python depends on report@
++p << r1.p;
++@@
++coccilib.report.print_report(p[0],"Replace memcpy with struct assignment")
++
++ at depends on context@
++position r1.p;
++@@
++*memcpy at p(...);
++
++ at script:python depends on org@
++p << r1.p;
++@@
++cocci.print_main("Replace memcpy with struct assignment",p)
++
++ at depends on patch@
++identifier struct_name;
++struct struct_name to;
++struct struct_name from;
++@@
++(
++-memcpy(&(to), &(from), sizeof(to));
+++to = from;
++|
++-memcpy(&(to), &(from), sizeof(from));
+++to = from;
++|
++-memcpy(&(to), &(from), sizeof(struct struct_name));
+++to = from;
++)
++
++ at depends on patch@
++identifier struct_name;
++struct struct_name to;
++struct struct_name *from;
++@@
++(
++-memcpy(&(to), from, sizeof(to));
+++to = *from;
++|
++-memcpy(&(to), from, sizeof(*from));
+++to = *from;
++|
++-memcpy(&(to), from, sizeof(struct struct_name));
+++to = *from;
++)
++
++ at depends on patch@
++identifier struct_name;
++struct struct_name *to;
++struct struct_name from;
++@@
++(
++-memcpy(to, &(from), sizeof(*to));
+++ *to = from;
++|
++-memcpy(to, &(from), sizeof(from));
+++ *to = from;
++|
++-memcpy(to, &(from), sizeof(struct struct_name));
+++ *to = from;
++)
++
++@depends on patch@
++identifier struct_name;
++struct struct_name *to;
++struct struct_name *from;
++@@
++(
++-memcpy(to, from, sizeof(*to));
+++ *to = *from;
++|
++-memcpy(to, from, sizeof(*from));
+++ *to = *from;
++|
++-memcpy(to, from, sizeof(struct struct_name));
+++ *to = *from;
++)
++
 -- 
-Nicolas Palix
+1.7.11.7
