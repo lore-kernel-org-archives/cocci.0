@@ -1,73 +1,68 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 28 Jan 2013 23:04:38 +0100 (CET)
-Subject: [Cocci] Prepending '*' to an expression (Was: [PATCH V2]
- scripts/coccinelle/misc/memcpy-assign.cocci: Replace memcpy with struct
- assignment)
-In-Reply-To: <51059238.1090009@redhat.com>
-References: <1358978790-2990-1-git-send-email-peter.senna@gmail.com>
- <510173B3.9090002@redhat.com>
- <CA+MoWDq-Ne6GYUHe-OtrF1MvUv1ou+xPZZfid+TvndLgbpF5Dg@mail.gmail.com>
- <51059238.1090009@redhat.com>
-Message-ID: <alpine.DEB.2.02.1301282303220.2060@hadrien>
+From: bernd.schubert@itwm.fraunhofer.de (Bernd Schubert)
+Date: Tue, 29 Jan 2013 17:03:37 +0100
+Subject: [Cocci] [PATCH 2 1/2] coccicheck: Allow the user to give a V=
+ (verbose) argument
+Message-ID: <20130129160337.28754.31558.stgit@localhost.localdomain>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, 27 Jan 2013, Michael Stefaniuc wrote:
+Do not run with verbosity on/off depending on the ONLINE variable,
+which gets set with C=1 or C=2, but allow the user to set the
+verbosity using kernel default make V= paramemter.
+Verbosity is off by default now.
 
-> Hello Peter,
->
-> On 01/26/2013 02:28 AM, Peter Senna Tschudin wrote:
-> > Thank you for testing.
-> >
-> > I made changes on the semantic patch. I believe it fixed the problem.
-> > Can you test it?
-> while it does fix the issue it makes the cocci script less readable and
-> works only in that particular case. Not sure it is worth the effort as
-> the bad generated patch can be trivially detected and easily fixed
-> manually. My email was more of a bug report / feature request for
-> coccinelle than an improvement request to the script.
->
-> Though I've noticed an other issue with the script: Any reason you use
-> "Options: --no-includes"? While it does speed up things it misses quite
-> a few cases as a lot of types are defined in the headers.
 
-I think it should be --all-includes or even --recursive-includes
+Signed-off-by: Bernd Schubert <bernd.schubert@itwm.fraunhofer.de>
+CC: Julia Lawall <Julia.Lawall@lip6.fr>
+CC: Nicolas Palix <nicolas.palix@imag.fr>
+CC: cocci at systeme.lip6.fr
+CC: Michal Marek <mmarek@suse.cz>
+---
+ Documentation/coccinelle.txt |    4 ++++
+ scripts/coccicheck           |   11 ++++++++++-
+ 2 files changed, 14 insertions(+), 1 deletion(-)
 
-julia.
-
->
-> bye
-> 	michael
->
-> > On Thu, Jan 24, 2013 at 3:47 PM, Michael Stefaniuc <mstefani@redhat.com> wrote:
-> >> Hello,
-> >>
-> >> On 01/23/2013 11:06 PM, Peter Senna Tschudin wrote:
-> >>> There are error-prone memcpy() that can be replaced by struct
-> >>> assignment that are type-safe and much easier to read. This semantic
-> >>> patch looks for memcpy() that can be replaced by struct assignment.
-> >> thanks for the script by Peter this script as it proved useful for Wine
-> >> too. Though in one case it generated the wrong patch.
-> >>
-> >> @@
-> >> struct struct_name to;
-> >> struct struct_name from;
-> >> @@
-> >>
-> >> 'to' and 'from' above are expressions and not identifiers; that's a
-> >> feature. The bug happened in the replacement
-> >> - memcpy(foos + count, &foo, sizeof(struct foo_t));
-> >> + *foos + count = foo;
-> >>
-> >> Shouldn't cocinelle automatically add the parenthesis when prepending a
-> >> '*' or '&' to an expression which isn't an identifier?
-> >>
-> >>
-> >> The script itself is "safe" as the compiler will error out on that
-> >> patch. And the people that just take generated patches and submit them
-> >> without even compiling them deserve the public tar and feathering ;)
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+diff --git a/Documentation/coccinelle.txt b/Documentation/coccinelle.txt
+index cf44eb6..dffa2d6 100644
+--- a/Documentation/coccinelle.txt
++++ b/Documentation/coccinelle.txt
+@@ -87,6 +87,10 @@ As any static code analyzer, Coccinelle produces false
+ positives. Thus, reports must be carefully checked, and patches
+ reviewed.
+ 
++To enable verbose messages set the V= variable, for example:
++
++   make coccicheck MODE=report V=1
++
+ 
+  Using Coccinelle with a single semantic patch
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+diff --git a/scripts/coccicheck b/scripts/coccicheck
+index 1a49d1c..f8f15a2 100755
+--- a/scripts/coccicheck
++++ b/scripts/coccicheck
+@@ -2,6 +2,15 @@
+ 
+ SPATCH="`which ${SPATCH:=spatch}`"
+ 
++# The verbosity may be set by the environmental parameter V=
++# as for example with 'make V=1 coccicheck'
++
++if [ -n "$V" -a "$V" != "0" ]; then
++	VERBOSE=1
++else
++	VERBOSE=0
++fi
++
+ if [ "$C" = "1" -o "$C" = "2" ]; then
+     ONLINE=1
+ 
+@@ -55,7 +64,7 @@ coccinelle () {
+ #
+ #    $SPATCH -D $MODE $FLAGS -parse_cocci $COCCI $OPT > /dev/null
+ 
+-    if [ "$ONLINE" = "0" ] ; then
++    if [ $VERBOSE -ne 0 ] ; then
+ 
+ 	FILE=`echo $COCCI | sed "s|$srctree/||"`
+ 
