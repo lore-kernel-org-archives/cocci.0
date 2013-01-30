@@ -1,56 +1,70 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 29 Jan 2013 22:42:19 +0100 (CET)
-Subject: [Cocci] Prepending '*' to an expression (Was: [PATCH V2]
- scripts/coccinelle/misc/memcpy-assign.cocci: Replace memcpy with struct
- assignment)
-In-Reply-To: <5108415F.1020603@redhat.com>
-References: <1358978790-2990-1-git-send-email-peter.senna@gmail.com>
- <510173B3.9090002@redhat.com>
- <CA+MoWDq-Ne6GYUHe-OtrF1MvUv1ou+xPZZfid+TvndLgbpF5Dg@mail.gmail.com>
- <51059238.1090009@redhat.com> <alpine.DEB.2.02.1301282303220.2060@hadrien>
- <5108415F.1020603@redhat.com>
-Message-ID: <alpine.DEB.2.02.1301292240410.2023@localhost6.localdomain6>
+From: wharms@bfs.de (walter harms)
+Date: Wed, 30 Jan 2013 09:21:28 +0100
+Subject: [Cocci] coccinelle and bitmask arithmetic
+In-Reply-To: <1359482637.15135.7.camel@joe-AO722>
+References: <20130127194039.GA18787@elgon.mountain>	
+ <1359317078.14406.12.camel@joe-AO722> <20130127201947.GO16282@mwanda>	
+ <9561.1359474916@turing-police.cc.vt.edu>	
+ <1359475998.4196.26.camel@joe-AO722>	
+ <alpine.DEB.2.02.1301291847070.3339@hadrien>
+ <1359482637.15135.7.camel@joe-AO722>
+Message-ID: <5108D808.6010405@bfs.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, 29 Jan 2013, Michael Stefaniuc wrote:
 
-> Hello Julia,
+
+Am 29.01.2013 19:03, schrieb Joe Perches:
+> On Tue, 2013-01-29 at 18:49 +0100, Julia Lawall wrote:
+>> How about the following (from today's linux-next).  They appear to be
+>> trying to do the same calculation, once with + and once with |.
 > 
-> On 01/28/2013 11:04 PM, Julia Lawall wrote:
-> > On Sun, 27 Jan 2013, Michael Stefaniuc wrote:
-> > 
-> >> Hello Peter,
-> >>
-> >> On 01/26/2013 02:28 AM, Peter Senna Tschudin wrote:
-> >>> Thank you for testing.
-> >>>
-> >>> I made changes on the semantic patch. I believe it fixed the problem.
-> >>> Can you test it?
-> >> while it does fix the issue it makes the cocci script less readable and
-> >> works only in that particular case. Not sure it is worth the effort as
-> >> the bad generated patch can be trivially detected and easily fixed
-> >> manually. My email was more of a bug report / feature request for
-> >> coccinelle than an improvement request to the script.
-> >>
-> >> Though I've noticed an other issue with the script: Any reason you use
-> >> "Options: --no-includes"? While it does speed up things it misses quite
-> >> a few cases as a lot of types are defined in the headers.
-> > 
-> > I think it should be --all-includes or even --recursive-includes
-> no clue what the policy in the Kernel is but --recursive-includes is
-> quite heavy handed as a default. I have one --recursive-includes still
-> running for Wine and it accumulated until now over 1126 CPU minutes
-> (Intel i5 mobile CPU with 2.4 GHz). It found 5 more cases while
-> --no-includes found 11 and --local-includes additional 32. The
-> --local-includes finished in less than 30 minutes (didn't time it exactly).
+> (cc'ing the original developer and Russell King)
+> 
+> Likely the it8152_pci_platform_notify uses should use +
+> 
+>> arch/arm/common/it8152.c
+>>
+>> int dma_set_coherent_mask(struct device *dev, u64 mask)
+>> {
+>>         if (mask >= PHYS_OFFSET + SZ_64M - 1)
+>>                 return 0;
+>>
+>>         return -EIO;
+>> }
+>>
 
-OK.  It depends on how much type information is needed.  A compromise 
-could be to make a rule without type information that makes clear that one 
-has less confidence in the result.  Then the user could just go look up 
-the type information if needed.
+Great hit Joe :)
 
--all_includes could be good then.  It only includes what is specifically 
-referenced in the current file.
+Sometimes i am really surprised what code can be found
+in the kernal and it is still working.
+Having no clue of the code i suspect somebody tries to
+check is mask outside the range it should read
+PHYS_OFFSET |( SZ_64M - 1)
+maybe someone should tell them that
+1+1=10 while 1|1=1
+It does not seem to matter here (or ... ?)
 
-julia
+really perplexed,
+
+wh
+
+
+>> static int it8152_pci_platform_notify(struct device *dev)
+>> {
+>>         if (dev->bus == &pci_bus_type) {
+>>                 if (dev->dma_mask)
+>>                         *dev->dma_mask = (SZ_64M - 1) | PHYS_OFFSET;
+>>                 dev->coherent_dma_mask = (SZ_64M - 1) | PHYS_OFFSET;
+>>                 dmabounce_register_dev(dev, 2048, 4096, it8152_needs_bounce);
+>>         }
+>>         return 0;
+>> }
+> 
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe kernel-janitors" in
+> the body of a message to majordomo at vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+> 
