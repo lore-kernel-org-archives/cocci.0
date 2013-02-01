@@ -1,58 +1,80 @@
-From: linux@arm.linux.org.uk (Russell King - ARM Linux)
-Date: Wed, 30 Jan 2013 18:23:42 +0000
-Subject: [Cocci] coccinelle and bitmask arithmetic
-In-Reply-To: <1359564809.32305.23.camel@joe-AO722>
-References: <20130127201947.GO16282@mwanda>
- <9561.1359474916@turing-police.cc.vt.edu>
- <1359475998.4196.26.camel@joe-AO722>
- <alpine.DEB.2.02.1301291847070.3339@hadrien>
- <1359482637.15135.7.camel@joe-AO722> <5108D808.6010405@bfs.de>
- <20130130111420.GG23505@n2100.arm.linux.org.uk>
- <alpine.DEB.2.02.1301301220290.1990@hadrien>
- <20130130113533.GI23505@n2100.arm.linux.org.uk>
- <1359564809.32305.23.camel@joe-AO722>
-Message-ID: <20130130182342.GS23505@n2100.arm.linux.org.uk>
+From: nicolas.palix@imag.fr (Nicolas Palix)
+Date: Fri, 1 Feb 2013 10:05:54 +0100
+Subject: [Cocci] [PATCH 2 1/2] coccicheck: Allow the user to give a V=
+	(verbose) argument
+In-Reply-To: <20130129160337.28754.31558.stgit@localhost.localdomain>
+References: <20130129160337.28754.31558.stgit@localhost.localdomain>
+Message-ID: <CAAxaTiMGRTDe1g1HScQf8gKL4ygwt2iQbbNsbAQKDwY5KOHTkw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, Jan 30, 2013 at 08:53:29AM -0800, Joe Perches wrote:
-> On Wed, 2013-01-30 at 11:35 +0000, Russell King - ARM Linux wrote:
-> > On Wed, Jan 30, 2013 at 12:21:21PM +0100, Julia Lawall wrote:
-> > > On Wed, 30 Jan 2013, Russell King - ARM Linux wrote:
-> > > > So, _either_ logical OR or addition works.
-> > > >
-> > > > If we _did_ end up with a PHYS_OFFSET with bits less than bit 26 set
-> > > > here, we'd have bigger problems - because the base of RAM in PCI space
-> > > > will not correspond with PHYS_OFFSET and all the DMA mapping stuff breaks.
-> > > 
-> > > The "problem" is that the computation is done inconsistently within the
-> > > same file.  Sometimes with + and sometimes with |.
-> > 
-> > And I say that is not a problem; if it _does_ become a problem, there are
-> > bigger problems that would also need solving, which given a multi-subarch
-> > kernel become a lot lot harder.
-> > 
-> > Sure, we can just change them to all be a bitwise OR (sorry, not logical)
-> > but that's really only half the story.
-> 
-> As far as I can tell, there'd be a lot of +'s to
-> change in arch/arm and only 2 uses of | in it8152.c
-> 
-> $ git grep -P "\(?\s*SZ_\d+[A-Z]\s*-\s*1\s*\)?\s*\|" arch/arm
-> arch/arm/common/it8152.c:                       *dev->dma_mask = (SZ_64M - 1) | PHYS_OFFSET;
-> arch/arm/common/it8152.c:               dev->coherent_dma_mask = (SZ_64M - 1) | PHYS_OFFSET;
-> 
-> $ git grep -P "\+\s*\(?\s*SZ_\d+[A-Z]\b\s*-\s*1\s*\)?" arch/arm | wc -l
-> 460
-> 
-> I think consistently using + would make it simpler
-> for some possible future conversion.
+On Tue, Jan 29, 2013 at 5:03 PM, Bernd Schubert
+<bernd.schubert@itwm.fraunhofer.de> wrote:
+> Do not run with verbosity on/off depending on the ONLINE variable,
+> which gets set with C=1 or C=2, but allow the user to set the
+> verbosity using kernel default make V= paramemter.
+> Verbosity is off by default now.
+>
+>
+> Signed-off-by: Bernd Schubert <bernd.schubert@itwm.fraunhofer.de>
+> CC: Julia Lawall <Julia.Lawall@lip6.fr>
+> CC: Nicolas Palix <nicolas.palix@imag.fr>
+Acked-by: Nicolas Palix <nicolas.palix@imag.fr>
 
-Respectfully, I really don't care about this at the present time.  There's
-bigger fish (and kernel developers) that need frying - such as fixing the
-ARM kernel so it actually boots on the platforms that it used to before
-all this DT crap and DMA crap came along and sodded things up.
+> CC: cocci at systeme.lip6.fr
+> CC: Michal Marek <mmarek@suse.cz>
+> ---
+>  Documentation/coccinelle.txt |    4 ++++
+>  scripts/coccicheck           |   11 ++++++++++-
+>  2 files changed, 14 insertions(+), 1 deletion(-)
+>
+> diff --git a/Documentation/coccinelle.txt b/Documentation/coccinelle.txt
+> index cf44eb6..dffa2d6 100644
+> --- a/Documentation/coccinelle.txt
+> +++ b/Documentation/coccinelle.txt
+> @@ -87,6 +87,10 @@ As any static code analyzer, Coccinelle produces false
+>  positives. Thus, reports must be carefully checked, and patches
+>  reviewed.
+>
+> +To enable verbose messages set the V= variable, for example:
+> +
+> +   make coccicheck MODE=report V=1
+> +
+>
+>   Using Coccinelle with a single semantic patch
+>  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> diff --git a/scripts/coccicheck b/scripts/coccicheck
+> index 1a49d1c..f8f15a2 100755
+> --- a/scripts/coccicheck
+> +++ b/scripts/coccicheck
+> @@ -2,6 +2,15 @@
+>
+>  SPATCH="`which ${SPATCH:=spatch}`"
+>
+> +# The verbosity may be set by the environmental parameter V=
+> +# as for example with 'make V=1 coccicheck'
+> +
+> +if [ -n "$V" -a "$V" != "0" ]; then
+> +       VERBOSE=1
+> +else
+> +       VERBOSE=0
+> +fi
+> +
+>  if [ "$C" = "1" -o "$C" = "2" ]; then
+>      ONLINE=1
+>
+> @@ -55,7 +64,7 @@ coccinelle () {
+>  #
+>  #    $SPATCH -D $MODE $FLAGS -parse_cocci $COCCI $OPT > /dev/null
+>
+> -    if [ "$ONLINE" = "0" ] ; then
+> +    if [ $VERBOSE -ne 0 ] ; then
+>
+>         FILE=`echo $COCCI | sed "s|$srctree/||"`
+>
+>
 
-The issue you refer to above is petty in comparison; the above works
-fine, which is more than can be said about the platform I've just tried to
-boot.  Sorry.
+
+
+-- 
+Nicolas Palix
