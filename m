@@ -1,47 +1,48 @@
 From: mstefani@redhat.com (Michael Stefaniuc)
-Date: Wed, 06 Feb 2013 15:37:59 +0100
-Subject: [Cocci] Prepending '*' to an expression (Was: [PATCH V2]
- scripts/coccinelle/misc/memcpy-assign.cocci: Replace memcpy with struct
- assignment)
-In-Reply-To: <5108415F.1020603@redhat.com>
-References: <1358978790-2990-1-git-send-email-peter.senna@gmail.com>
- <510173B3.9090002@redhat.com>
- <CA+MoWDq-Ne6GYUHe-OtrF1MvUv1ou+xPZZfid+TvndLgbpF5Dg@mail.gmail.com>
- <51059238.1090009@redhat.com> <alpine.DEB.2.02.1301282303220.2060@hadrien>
- <5108415F.1020603@redhat.com>
-Message-ID: <51126AC7.70605@redhat.com>
+Date: Thu, 07 Feb 2013 22:46:39 +0100
+Subject: [Cocci] Wrong --parse-c stats
+Message-ID: <511420BF.50704@redhat.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 01/29/2013 10:38 PM, Michael Stefaniuc wrote:
-> On 01/28/2013 11:04 PM, Julia Lawall wrote:
->> On Sun, 27 Jan 2013, Michael Stefaniuc wrote:
->>> On 01/26/2013 02:28 AM, Peter Senna Tschudin wrote:
->>>> Thank you for testing.
->>>>
->>>> I made changes on the semantic patch. I believe it fixed the problem.
->>>> Can you test it?
->>> while it does fix the issue it makes the cocci script less readable and
->>> works only in that particular case. Not sure it is worth the effort as
->>> the bad generated patch can be trivially detected and easily fixed
->>> manually. My email was more of a bug report / feature request for
->>> coccinelle than an improvement request to the script.
->>>
->>> Though I've noticed an other issue with the script: Any reason you use
->>> "Options: --no-includes"? While it does speed up things it misses quite
->>> a few cases as a lot of types are defined in the headers.
->>
->> I think it should be --all-includes or even --recursive-includes
-> no clue what the policy in the Kernel is but --recursive-includes is
-> quite heavy handed as a default. I have one --recursive-includes still
-> running for Wine and it accumulated until now over 1126 CPU minutes
-The --recursive-includes run finally finished after accumulating 4240
-minutes of CPU time. There was no visible slowdown nor memory leak
-during the run which is pretty cool.
+Hello,
 
-> (Intel i5 mobile CPU with 2.4 GHz). It found 5 more cases while
-> --no-includes found 11 and --local-includes additional 32. The
-> --local-includes finished in less than 30 minutes (didn't time it exactly).
+not sure if somebody is interested: while running --parse-c on the Wine
+source I've noticed impossible stats for 3 C files. As those are test
+files those are heavy macro (ab)users.
+
+dlls/quartz/tests/dsoundrender.c
+http://source.winehq.org/git/wine.git/blob_plain/HEAD:/dlls/quartz/tests/dsoundrender.c
+NB total files = 1; perfect = 0; pbs = 0; timeout = 0; =========> 0%
+nb good = 1124,  nb passed = 25 =========> 2.224199% passed
+nb good = 1124,  nb bad = -891 =========> 482.403433% good
+
+
+dlls/quartz/tests/videorenderer.c
+http://source.winehq.org/git/wine.git/blob_plain/HEAD:/dlls/quartz/tests/videorenderer.c
+NB total files = 1; perfect = 0; pbs = 0; timeout = 0; =========> 0%
+nb good = 522,  nb passed = 20 =========> 3.831418% passed
+nb good = 522,  nb bad = -358 =========> 318.292683% good
+
+
+dlls/msxml3/tests/domdoc.c
+http://source.winehq.org/git/wine.git/blob_plain/HEAD:/dlls/msxml3/tests/domdoc.c
+NB total files = 1; perfect = 0; pbs = 0; timeout = 0; =========> 0%
+nb good = 135789,  nb passed = 1051 =========> 0.773995% passed
+nb good = 135789,  nb bad = -124421 =========> 1194.484518% good
+
+
+I was using my Wine macro file
+http://people.redhat.com/mstefani/wine/coccinelle/macros for the above
+runs. For the quartz files it doesn't makes much difference to run
+without a --macros-file but the msxml3 test file gives a different
+interesting result:
+
+dlls/msxml3/tests/domdoc.c
+NB total files = 1; perfect = 0; pbs = 1; timeout = 0; =========> 0%
+nb good = 0,  nb passed = 168 =========> inf% passed
+nb good = 0,  nb bad = 3250 =========> 0.000000% good
+
 
 bye
 	michael
