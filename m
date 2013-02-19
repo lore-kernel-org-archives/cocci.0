@@ -1,25 +1,154 @@
 From: tipecaml@gmail.com (Cyril Roelandt)
-Date: Sun, 17 Feb 2013 20:56:52 +0100
-Subject: [Cocci] [PATCH 0/5] Remove redundant NULL checks.
-In-Reply-To: <alpine.DEB.2.02.1302150751250.2039@localhost6.localdomain6>
-References: <1360641713-24895-1-git-send-email-tipecaml@gmail.com>
- <alpine.DEB.2.02.1302120731570.2264@localhost6.localdomain6>
- <511AB4C2.4010400@gmail.com>
- <alpine.DEB.2.02.1302122313050.2232@localhost6.localdomain6>
- <511D8A2C.3080204@gmail.com>
- <alpine.DEB.2.02.1302150751250.2039@localhost6.localdomain6>
-Message-ID: <51213604.3010308@gmail.com>
+Date: Tue, 19 Feb 2013 21:44:12 +0100
+Subject: [Cocci] [Coccinellery] drop_continue/cont.cocci broken ?
+Message-ID: <5123E41C.30603@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 02/15/2013 07:53 AM, Julia Lawall wrote:
-> If you are using glimpse or idutils it should continue doing that for the
-> iterations and complete in a reasonable amount of time.
+Hi!
 
-Indeed. There are __lots__ of matches, so I guess I'll mostly send 
-patches to the staging tree where they'll probably be welcome.
+I think the drop_continue/cont.cocci script is broken. Here is a simple 
+semantic patch extracted from it:
 
 
-Thanks for your help!
+$ cat foo.cocci
+@@
+statement S;
+@@
+for (...;...;...) {
+   ...
+   if (...)
+- {
+     S
+-   continue;
+- }
+}
 
-Cyril.
+
+A simple C file:
+
+$ cat continue.c
+static void
+foo(int max)
+{
+	int i;
+	for (i = 0; i < max; i++) {
+		do_stuff();
+		if (i == 42) {
+			do_stg_else();
+			continue;
+		}
+	}
+}
+
+$ spatch -sp_file foo.cocci continue.c --debug --verbose-parsing
+init_defs_builtins: /home/cyril/opt/spatch/share/coccinelle/standard.h
+-----------------------------------------------------------------------
+processing semantic patch file: foo.cocci
+with isos from: /home/cyril/opt/spatch/share/coccinelle/standard.iso
+-----------------------------------------------------------------------
+@@
+statement S;
+@@
+for (...;...;...) {
+   ...
+   if (...)
+- {
+     S
+-   continue;
+- }
+}
+
+warning: iso braces1 does not match the code below on line 4
+{
+   ...
+   if (...) {
+     S
+     continue;
+   }
+}
+braces must be all minus (plus code allowed) or all
+context (plus code not allowed in the body) to match:
+{
+   ...
+   if (...) {
+     S
+     continue;
+   }
+}
+HANDLING: continue.c
+-----------------------------------------------------------------------
+let's go
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+rule starting on line 1 =
+-----------------------------------------------------------------------
+dependencies for rule rule starting on line 1 satisfied:
+binding in = []
+binding relevant in = []
+      transformation info returned:
+           transform state: 18
+                with rule_elem: -{
+
+                with binding: []
+           transform state: 20
+                with rule_elem: -continue-;
+                with binding: []
+      binding out = []
+      transform one node: 20
+      transform one node: 18
+PB: found closing brace alone in fuzzy parsing
+ERROR-RECOV: end of file while in recovery mode
+parsing pass2: try again
+ERROR-RECOV: end of file while in recovery mode
+parse error
+  = File "/tmp/cocci_small_output-5101-1385aa.c", line 11, column 0, 
+charpos = 118
+     around = '}', whole content = }
+badcount: 1
+bad: 	}
+BAD:!!!!! }
+ALREADY AT END
+-----------------------------------------------------------------------
+Finished
+-----------------------------------------------------------------------
+PB: found closing brace alone in fuzzy parsing
+ERROR-RECOV: end of file while in recovery mode
+parsing pass2: try again
+ERROR-RECOV: end of file while in recovery mode
+parse error
+  = File "/tmp/cocci-output-5101-f0bc97-continue.c", line 11, column 0, 
+  charpos = 118
+     around = '}', whole content = }
+badcount: 1
+bad: 	}
+BAD:!!!!! }
+ALREADY AT END
+diff =
+--- continue.c
++++ /tmp/cocci-output-5101-f0bc97-continue.c
+@@ -4,9 +4,8 @@ foo(int max)
+  	int i;
+  	for (i = 0; i < max; i++) {
+  		do_stuff();
+-		if (i == 42) {
++		if (i == 42)
+  			do_stg_else();
+-			continue;
+  		}
+  	}
+  }
+Check duplication for 1 files
+
+
+
+
+There is a missing closing brace in the resulting code. I can reproduce 
+this with both 1.0-rc12 (packaged in Debian) and 1.0-rc16. The same 
+thing happens when using "*" instead of "-", and when using the "break" 
+keyword instead of the "continue" keyword.
+
+
+WBR,
+Cyril Roelandt.
