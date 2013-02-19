@@ -1,154 +1,38 @@
-From: tipecaml@gmail.com (Cyril Roelandt)
-Date: Tue, 19 Feb 2013 21:44:12 +0100
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Tue, 19 Feb 2013 23:05:21 +0100 (CET)
 Subject: [Cocci] [Coccinellery] drop_continue/cont.cocci broken ?
-Message-ID: <5123E41C.30603@gmail.com>
+In-Reply-To: <5123E41C.30603@gmail.com>
+References: <5123E41C.30603@gmail.com>
+Message-ID: <alpine.DEB.2.02.1302192304080.2092@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi!
+Actually, I changed it as follows, for the for loop case:
 
-I think the drop_continue/cont.cocci script is broken. Here is a simple 
-semantic patch extracted from it:
-
-
-$ cat foo.cocci
 @@
 statement S;
 @@
+
 for (...;...;...) {
-   ...
-   if (...)
-- {
-     S
+  ...
+  if (...)
+  {
++   DROP_ME();
+    S
 -   continue;
-- }
-}
-
-
-A simple C file:
-
-$ cat continue.c
-static void
-foo(int max)
-{
-	int i;
-	for (i = 0; i < max; i++) {
-		do_stuff();
-		if (i == 42) {
-			do_stg_else();
-			continue;
-		}
-	}
-}
-
-$ spatch -sp_file foo.cocci continue.c --debug --verbose-parsing
-init_defs_builtins: /home/cyril/opt/spatch/share/coccinelle/standard.h
------------------------------------------------------------------------
-processing semantic patch file: foo.cocci
-with isos from: /home/cyril/opt/spatch/share/coccinelle/standard.iso
------------------------------------------------------------------------
-@@
-statement S;
-@@
-for (...;...;...) {
-   ...
-   if (...)
-- {
-     S
--   continue;
-- }
-}
-
-warning: iso braces1 does not match the code below on line 4
-{
-   ...
-   if (...) {
-     S
-     continue;
-   }
-}
-braces must be all minus (plus code allowed) or all
-context (plus code not allowed in the body) to match:
-{
-   ...
-   if (...) {
-     S
-     continue;
-   }
-}
-HANDLING: continue.c
------------------------------------------------------------------------
-let's go
------------------------------------------------------------------------
------------------------------------------------------------------------
------------------------------------------------------------------------
-rule starting on line 1 =
------------------------------------------------------------------------
-dependencies for rule rule starting on line 1 satisfied:
-binding in = []
-binding relevant in = []
-      transformation info returned:
-           transform state: 18
-                with rule_elem: -{
-
-                with binding: []
-           transform state: 20
-                with rule_elem: -continue-;
-                with binding: []
-      binding out = []
-      transform one node: 20
-      transform one node: 18
-PB: found closing brace alone in fuzzy parsing
-ERROR-RECOV: end of file while in recovery mode
-parsing pass2: try again
-ERROR-RECOV: end of file while in recovery mode
-parse error
-  = File "/tmp/cocci_small_output-5101-1385aa.c", line 11, column 0, 
-charpos = 118
-     around = '}', whole content = }
-badcount: 1
-bad: 	}
-BAD:!!!!! }
-ALREADY AT END
------------------------------------------------------------------------
-Finished
------------------------------------------------------------------------
-PB: found closing brace alone in fuzzy parsing
-ERROR-RECOV: end of file while in recovery mode
-parsing pass2: try again
-ERROR-RECOV: end of file while in recovery mode
-parse error
-  = File "/tmp/cocci-output-5101-f0bc97-continue.c", line 11, column 0, 
-  charpos = 118
-     around = '}', whole content = }
-badcount: 1
-bad: 	}
-BAD:!!!!! }
-ALREADY AT END
-diff =
---- continue.c
-+++ /tmp/cocci-output-5101-f0bc97-continue.c
-@@ -4,9 +4,8 @@ foo(int max)
-  	int i;
-  	for (i = 0; i < max; i++) {
-  		do_stuff();
--		if (i == 42) {
-+		if (i == 42)
-  			do_stg_else();
--			continue;
-  		}
-  	}
   }
-Check duplication for 1 files
+}
 
+@@
+statement S;
+@@
+  if (...)
+- {
+-   DROP_ME();
+    S
+- }
 
+I just hope that no one puts a call to DROP_ME at the top of an if...  
+It's not foolproof, but it does allow the rule to do the transformation.
 
-
-There is a missing closing brace in the resulting code. I can reproduce 
-this with both 1.0-rc12 (packaged in Debian) and 1.0-rc16. The same 
-thing happens when using "*" instead of "-", and when using the "break" 
-keyword instead of the "continue" keyword.
-
-
-WBR,
-Cyril Roelandt.
+julia
