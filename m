@@ -1,27 +1,21 @@
 From: mmarek@suse.cz (Michal Marek)
-Date: Fri, 22 Feb 2013 11:25:04 +0100
-Subject: [Cocci] [PATCH V2]
-	scripts/coccinelle/misc/memcpy-assign.cocci:	Replace memcpy
-	with struct assignment
-In-Reply-To: <1358978790-2990-1-git-send-email-peter.senna@gmail.com>
-References: <1358978790-2990-1-git-send-email-peter.senna@gmail.com>
-Message-ID: <20130222102503.GD12402@pobox.suse.cz>
+Date: Fri, 22 Feb 2013 11:44:31 +0100
+Subject: [Cocci] [PATCH] scripts/coccinelle: find constant additions
+	that could	be bit ors
+In-Reply-To: <1359821995-27910-1-git-send-email-Julia.Lawall@lip6.fr>
+References: <1359821995-27910-1-git-send-email-Julia.Lawall@lip6.fr>
+Message-ID: <20130222104431.GF12402@pobox.suse.cz>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, Jan 23, 2013 at 08:06:30PM -0200, Peter Senna Tschudin wrote:
-> There are error-prone memcpy() that can be replaced by struct
-> assignment that are type-safe and much easier to read. This semantic
-> patch looks for memcpy() that can be replaced by struct assignment.
+On Sat, Feb 02, 2013 at 05:19:55PM +0100, Julia Lawall wrote:
+> From: Julia Lawall <Julia.Lawall@lip6.fr>
 > 
-> Inspired by patches sent by Ezequiel Garcia <elezegarcia@gmail.com>
+> Semantic patch (http://coccinelle.lip6.fr/) to check for constants that are
+> added but are used elsewhere as bitmasks.
 > 
-> Signed-off-by: Peter Senna Tschudin <peter.senna@gmail.com>
-> ---
-> Changes from V1:
->  Updated commit message
->  Changed Confidence comment to High on the semantic patch
+> Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
-Applied to kbuild.git#misc, thanks.
+Applied to kbuild.git#misc.
 
 Michal
