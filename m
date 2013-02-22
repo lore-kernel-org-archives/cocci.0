@@ -1,27 +1,27 @@
 From: mmarek@suse.cz (Michal Marek)
-Date: Fri, 22 Feb 2013 11:41:43 +0100
-Subject: [Cocci] [PATCH 2 1/2] coccicheck: Allow the user to give a
-	V=	(verbose) argument
-In-Reply-To: <20130129160342.28754.96853.stgit@localhost.localdomain>
- <20130129160337.28754.31558.stgit@localhost.localdomain>
-References: <20130129160342.28754.96853.stgit@localhost.localdomain>
- <20130129160337.28754.31558.stgit@localhost.localdomain>
-Message-ID: <20130222104143.GE12402@pobox.suse.cz>
+Date: Fri, 22 Feb 2013 11:25:04 +0100
+Subject: [Cocci] [PATCH V2]
+	scripts/coccinelle/misc/memcpy-assign.cocci:	Replace memcpy
+	with struct assignment
+In-Reply-To: <1358978790-2990-1-git-send-email-peter.senna@gmail.com>
+References: <1358978790-2990-1-git-send-email-peter.senna@gmail.com>
+Message-ID: <20130222102503.GD12402@pobox.suse.cz>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, Jan 29, 2013 at 05:03:37PM +0100, Bernd Schubert wrote:
-> Do not run with verbosity on/off depending on the ONLINE variable,
-> which gets set with C=1 or C=2, but allow the user to set the
-> verbosity using kernel default make V= paramemter.
-> Verbosity is off by default now.
-
-On Tue, Jan 29, 2013 at 05:03:42PM +0100, Bernd Schubert wrote:
-> On my system one of the tests failed with
-> "Fatal error: exception Failure("No OCaml compiler found! Install either ocamlopt or ocamlopt.opt")".
+On Wed, Jan 23, 2013 at 08:06:30PM -0200, Peter Senna Tschudin wrote:
+> There are error-prone memcpy() that can be replaced by struct
+> assignment that are type-safe and much easier to read. This semantic
+> patch looks for memcpy() that can be replaced by struct assignment.
 > 
-> Investigating such issues is easier if the executed command line is being shown.
+> Inspired by patches sent by Ezequiel Garcia <elezegarcia@gmail.com>
+> 
+> Signed-off-by: Peter Senna Tschudin <peter.senna@gmail.com>
+> ---
+> Changes from V1:
+>  Updated commit message
+>  Changed Confidence comment to High on the semantic patch
 
-I applied both patches to kbuild.git#misc, thanks.
+Applied to kbuild.git#misc, thanks.
 
 Michal
