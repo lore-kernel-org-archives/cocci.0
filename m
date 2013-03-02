@@ -1,72 +1,62 @@
 From: nicolas.palix@imag.fr (Nicolas Palix)
-Date: Sat,  2 Mar 2013 22:36:26 +0100
-Subject: [Cocci] [PATCH 2/4] Coccinelle: Cleanup the setting of the FLAGS
-	and OPTIONS variables
+Date: Sat,  2 Mar 2013 22:36:27 +0100
+Subject: [Cocci] [PATCH 3/4] Coccinelle: Add support to the SPFLAGS variable
 In-Reply-To: <1362260188-14138-1-git-send-email-nicolas.palix@imag.fr>
 References: <1362260188-14138-1-git-send-email-nicolas.palix@imag.fr>
-Message-ID: <1362260188-14138-2-git-send-email-nicolas.palix@imag.fr>
+Message-ID: <1362260188-14138-3-git-send-email-nicolas.palix@imag.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-The FLAGS variable is factorized independently of the ONLINE mode.
-The OPTIONS variable is now based on LINUXINCLUDE and explicit
-includes are thus removed.
-
-The format of the -I option differs between gcc and spatch.
-The COCCIINCLUDE is used to adapt the format. This rewritting
-needs bash.
+The SPFLAGS variable allows to pass additional options
+to spatch, e.g. -use_glimpse.
 
 Signed-off-by: Nicolas Palix <nicolas.palix@imag.fr>
 ---
- scripts/coccicheck |   25 +++++++++++++------------
- 1 file changed, 13 insertions(+), 12 deletions(-)
+ Documentation/coccinelle.txt |   11 ++++++++++-
+ scripts/coccicheck           |    2 +-
+ 2 files changed, 11 insertions(+), 2 deletions(-)
 
+diff --git a/Documentation/coccinelle.txt b/Documentation/coccinelle.txt
+index dffa2d6..18de785 100644
+--- a/Documentation/coccinelle.txt
++++ b/Documentation/coccinelle.txt
+@@ -114,7 +114,7 @@ To apply Coccinelle to a specific directory, M= can be used.
+ For example, to check drivers/net/wireless/ one may write:
+ 
+     make coccicheck M=drivers/net/wireless/
+-    
++
+ To apply Coccinelle on a file basis, instead of a directory basis, the
+ following command may be used:
+ 
+@@ -134,6 +134,15 @@ MODE variable explained above.
+ In this mode, there is no information about semantic patches
+ displayed, and no commit message proposed.
+ 
++ Additional flags
++~~~~~~~~~~~~~~~~~~
++
++Additional flags can be passed to spatch through the SPFLAGS
++variable.
++
++    make SPFLAGS=--use_glimpse coccicheck
++
++See spatch --help to learn more about spatch options.
+ 
+  Proposing new semantic patches
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 diff --git a/scripts/coccicheck b/scripts/coccicheck
-index 7f0d6a6..cdde8e0 100755
+index cdde8e0..6d492c0 100755
 --- a/scripts/coccicheck
 +++ b/scripts/coccicheck
-@@ -1,4 +1,4 @@
--#!/bin/sh
-+#!/bin/bash
- 
- SPATCH="`which ${SPATCH:=spatch}`"
- 
-@@ -11,24 +11,25 @@ else
+@@ -11,7 +11,7 @@ else
  	VERBOSE=0
  fi
  
-+FLAGS="-very_quiet"
-+
-+# spatch only allows include directories with the syntax "-I include"
-+# while gcc also allows "-Iinclude" and "-include include"
-+COCCIINCLUDE=${LINUXINCLUDE//-I/-I }
-+COCCIINCLUDE=${COCCIINCLUDE//-include/-I}
-+
- if [ "$C" = "1" -o "$C" = "2" ]; then
-     ONLINE=1
+-FLAGS="-very_quiet"
++FLAGS="$SPFLAGS -very_quiet"
  
--# This requires Coccinelle >= 0.2.3
--#    FLAGS="-ignore_unknown_options -very_quiet"
--#    OPTIONS=$*
--
--# Workaround for Coccinelle < 0.2.3
--	FLAGS="-I $srctree/include -very_quiet"
--	shift $(( $# - 1 ))
--	OPTIONS=$1
-+    # Take only the last argument, which is the C file to test
-+    shift $(( $# - 1 ))
-+    OPTIONS="$COCCIINCLUDE $1"
- else
-     ONLINE=0
--    FLAGS="-very_quiet"
-     if [ "$KBUILD_EXTMOD" = "" ] ; then
--        OPTIONS="-dir $srctree"
-+        OPTIONS="-dir $srctree $COCCIINCLUDE"
-     else
--        OPTIONS="-dir $KBUILD_EXTMOD -patch $srctree -I $srctree/include -I $KBUILD_EXTMOD/include"
-+        OPTIONS="-dir $KBUILD_EXTMOD -patch $srctree $COCCIINCLUDE"
-     fi
- fi
- 
+ # spatch only allows include directories with the syntax "-I include"
+ # while gcc also allows "-Iinclude" and "-include include"
 -- 
 1.7.10.4
