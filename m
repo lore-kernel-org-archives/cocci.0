@@ -1,44 +1,33 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 2 Mar 2013 22:18:33 +0100 (CET)
-Subject: [Cocci] 1.0.0-rc16: Further fine-tuning for the build system?
-In-Reply-To: <513268ED.5070703@users.sourceforge.net>
-References: <513268ED.5070703@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1303022218010.2033@localhost6.localdomain6>
+From: nicolas.palix@imag.fr (Nicolas Palix)
+Date: Sat,  2 Mar 2013 22:36:25 +0100
+Subject: [Cocci] [PATCH 1/4] Coccinelle: Restore coccicheck verbosity in
+	ONLINE mode (C=1 or C=2)
+Message-ID: <1362260188-14138-1-git-send-email-nicolas.palix@imag.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+A recent patch have introduce the VERBOSE variable and comments
+now depend on it. However, the message printed for each cocci file
+such not be printed when the ONLINE mode is active, whatever is
+the value of VERBOSE.
 
+Signed-off-by: Nicolas Palix <nicolas.palix@imag.fr>
+---
+ scripts/coccicheck |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Sat, 2 Mar 2013, SF Markus Elfring wrote:
-
-> Hello,
-> 
-> I try to regenerate your current software from the Git repository on my openSUSE
-> system. I stumble on the following issue.
-> 
-> elfring at Sonne:~/Projekte/Coccinelle/Bau> ../lokal/configure --enable-opt
-> --enable-ocaml --enable-python --enable-release
-> configure: loading site script /usr/share/site/x86_64-unknown-linux-gnu
-> configure: configuring coccinelle 1.0.0-rc15 in
-> /home/elfring/Projekte/Coccinelle/Bau
-> ...
-> configure: configuring package menhirLib
-> checking for OCaml findlib package menhirLib... not found
-> configure: OCaml package menhirLib is not available
-> checking for a bundled substitute of menhirLib... not available
-> configure: error: OCaml package menhirLib is required. Please make sure it is
-> available.
-> 
-> 
-> This library is installed under the directory "/usr/local/share/menhir" and is
-> found if I let the configuration script run while the source "lokal" is also the
-> working directory.
-> Would you like to adjust any configuration checks to support an
-> "out-of-source-tree build"? (How do you think about to store generated files in
-> a separate directory hierarchy here?)
-> https://github.com/coccinelle/coccinelle/blob/abad11c5570b7b9bbae5ff92b3050cf68fe3fd14/configure.ac#L146
-
-I'm not completely sure what you are proposing.  Perhaps you could just 
-make a patch that does what you want?
-
-julia
+diff --git a/scripts/coccicheck b/scripts/coccicheck
+index 85d3189..7f0d6a6 100755
+--- a/scripts/coccicheck
++++ b/scripts/coccicheck
+@@ -72,7 +72,7 @@ coccinelle () {
+ #
+ #    $SPATCH -D $MODE $FLAGS -parse_cocci $COCCI $OPT > /dev/null
+ 
+-    if [ $VERBOSE -ne 0 ] ; then
++    if [ $VERBOSE -ne 0 -a $ONLINE -eq 0 ] ; then
+ 
+ 	FILE=`echo $COCCI | sed "s|$srctree/||"`
+ 
+-- 
+1.7.10.4
