@@ -1,40 +1,30 @@
-From: nicolas.palix@imag.fr (Nicolas Palix)
-Date: Sat,  2 Mar 2013 22:36:28 +0100
-Subject: [Cocci] [PATCH 4/4] Coccinelle: Fix patch output when coccicheck is
-	used with M= and C=
-In-Reply-To: <1362260188-14138-1-git-send-email-nicolas.palix@imag.fr>
-References: <1362260188-14138-1-git-send-email-nicolas.palix@imag.fr>
-Message-ID: <1362260188-14138-4-git-send-email-nicolas.palix@imag.fr>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sun, 03 Mar 2013 21:21:19 +0100
+Subject: [Cocci] Addition of source code documentation generation to the
+	build system?
+Message-ID: <5133B0BF.8000608@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-When the M variable is used, the -patch option should be given
-to spatch. This patch fixes the case where C is used.
+Hello,
 
-Signed-off-by: Nicolas Palix <nicolas.palix@imag.fr>
----
- scripts/coccicheck |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+I try to generate some documentation from the source files of your current software.
 
-diff --git a/scripts/coccicheck b/scripts/coccicheck
-index 6d492c0..06fcb33 100755
---- a/scripts/coccicheck
-+++ b/scripts/coccicheck
-@@ -29,10 +29,14 @@ else
-     if [ "$KBUILD_EXTMOD" = "" ] ; then
-         OPTIONS="-dir $srctree $COCCIINCLUDE"
-     else
--        OPTIONS="-dir $KBUILD_EXTMOD -patch $srctree $COCCIINCLUDE"
-+        OPTIONS="-dir $KBUILD_EXTMOD $COCCIINCLUDE"
-     fi
- fi
- 
-+if [ "$KBUILD_EXTMOD" != "" ] ; then
-+    OPTIONS="-patch $srctree $OPTIONS"
-+fi
-+
- if [ ! -x "$SPATCH" ]; then
-     echo 'spatch is part of the Coccinelle project and is available at http://coccinelle.lip6.fr/'
-     exit 1
--- 
-1.7.10.4
+elfring at Sonne:~/Projekte/Coccinelle/lokal> MY_DIR=../Probe/Doku/ &&
+MY_NAMES=${MY_DIR}file_name_list11.txt && find . \( -name '*.ml' -o -name
+'*.mli' \) -a ! -name 'myocamlbuild.ml' -type f -fprint0 $MY_NAMES &&
+ocamldoc.opt -d ${MY_DIR} -I commons -I commons/ocamlextra -I
+commons/ocollection -I globals -I engine -I parsing_c -I parsing_cocci -I ctl -I
+ocaml -I ocamlsexp -I python -I popl09 -I extra -I /usr/local/share/menhir -I
+bundles/pcre -I bundles/pycaml -dot -o ${MY_DIR}my_graph.gv -html $(sed 's/\x0/
+/g' $MY_NAMES)
+
+
+I get a couple of error messages because my approach is incomplete so far. I
+stumble on technical challenges here.
+Would you like to suggest an improved way for the construction of include
+directories and file names which should be passed to the command?
+Are there any chances to adapt it to the chosen build configuration?
+
+Regards,
+Markus
