@@ -1,32 +1,41 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Mon, 04 Mar 2013 13:20:30 +0100
-Subject: [Cocci] Addition of source code documentation generation to the
- build system?
-In-Reply-To: <alpine.DEB.2.02.1303041106480.1984@hadrien>
-References: <5133B0BF.8000608@users.sourceforge.net>
- <alpine.DEB.2.02.1303041106480.1984@hadrien>
-Message-ID: <5134918E.7090304@users.sourceforge.net>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Mon, 4 Mar 2013 13:37:36 +0100 (CET)
+Subject: [Cocci] 1.0.0-rc16: Further fine-tuning for the build system?
+In-Reply-To: <alpine.DEB.2.02.1303041334270.1984@hadrien>
+References: <513268ED.5070703@users.sourceforge.net>
+ <alpine.DEB.2.02.1303022218010.2033@localhost6.localdomain6>
+ <51348708.1000005@users.sourceforge.net>
+ <alpine.DEB.2.02.1303041334270.1984@hadrien>
+Message-ID: <alpine.DEB.2.02.1303041336480.1984@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Maybe you could use find with the -exec argument, if it is acceptable to
-> work on only one file at a time?
-
-I do not see that this suggestion works here because I understand the tool
-"ocamldoc" in the way that it wants to get all relevant parameters (including
-the source file names) passed at once.
 
 
-> I wouldn't know how to make it sensitive to the configuration.
+On Mon, 4 Mar 2013, Julia Lawall wrote:
 
-My attempt with the tool "find" alone leads to unwanted results. I would like to
-avoid to maintain file name list manually.
-It seems that your repository contains 321 OCaml source files from which
-documentation information can eventually be extracted.
+> On Mon, 4 Mar 2013, SF Markus Elfring wrote:
+>
+> > > I'm not completely sure what you are proposing.
+> >
+> > Have you got any idea why I get a result like the following?
+> >
+> > elfring at Sonne:~/Projekte/Coccinelle/Bau> ocamlfind query camlp4 && ocamlfind
+> > query menhirLib
+> > /usr/lib64/ocaml/camlp4
+> > ocamlfind: Package `menhirLib' not found
+> >
+> >
+> > Are there any configuration challenges to consider with the use of a locally
+> > installed variant in comparison to the version for this library which you also
+> > bundle with your software?
+>
+> I don't know what strategy ocamlfind follows, in detail.  Perhaps it would
+> be more reasonable to take up the problem with them, since it is a general
+> problem?
 
-Your tool "spatch" reuses also some other software components. I see it as a
-configuration challenge to exclude source files from these dependencies for the
-suggested documentation process.
+If they say that it is not their problem, then I guess we could do
+something.  But it seems strange for every piece of software that uses
+ocamlfind to have to repeat the same piece of code.
 
-Regards,
-Markus
+julia
