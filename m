@@ -1,30 +1,30 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 4 Mar 2013 13:48:56 +0100 (CET)
-Subject: [Cocci] 1.0.0-rc16: Further fine-tuning for the build system?
-In-Reply-To: <513496F5.1070309@users.sourceforge.net>
-References: <513268ED.5070703@users.sourceforge.net>
- <alpine.DEB.2.02.1303022218010.2033@localhost6.localdomain6>
- <51348708.1000005@users.sourceforge.net>
- <alpine.DEB.2.02.1303041334270.1984@hadrien>
- <513496F5.1070309@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1303041346370.1984@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Mon, 04 Mar 2013 13:57:16 +0100
+Subject: [Cocci] Addition of source code documentation generation to the
+ build system?
+In-Reply-To: <alpine.DEB.2.02.1303041338350.1984@hadrien>
+References: <5133B0BF.8000608@users.sourceforge.net>
+ <alpine.DEB.2.02.1303041106480.1984@hadrien>
+ <5134918E.7090304@users.sourceforge.net>
+ <alpine.DEB.2.02.1303041338350.1984@hadrien>
+Message-ID: <51349A2C.609@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, 4 Mar 2013, SF Markus Elfring wrote:
+> On the other hand, I'm not sure what the purpose of all of this is.
 
-> > I'm not sure to understand the relevance of the fact that we bundle the
-> > library.  The problem is that ocamlfind is not finding what you expect it
-> > to find.
->
-> Is the OCaml package "menhirLib" generally found in your configuration even if
-> you try out a different build directory?
+I hope to achieve a better understanding for your software by the presentation
+style from the tool "ocamldoc". (It supports also to generate Graphviz files.)
 
-I have one machine where it is not installed and one machine where it is
-installed in the standard place.
 
-I'm not sure to understand "try different build directory".  You mean you
-want to put the executable in a place that is different than the source
-code?
+> If it is only to be able to write ocaml code that processes the C abstract
+> syntax tree, then it should be enough to consider the files in the
+> parser_c directory.  These are however the ones where there is a risk of a
+> missing mli file.
 
-julia
+I guess that it is still a configuration challenge to set some variables in a
+way so that all dependencies like needed modules can be resolved for the
+documentation.
+
+Regards,
+Markus
