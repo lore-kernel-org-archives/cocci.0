@@ -1,37 +1,25 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 4 Mar 2013 14:09:46 +0100 (CET)
-Subject: [Cocci] Addition of source code documentation generation to the
- build system?
-In-Reply-To: <51349A2C.609@users.sourceforge.net>
-References: <5133B0BF.8000608@users.sourceforge.net>
- <alpine.DEB.2.02.1303041106480.1984@hadrien>
- <5134918E.7090304@users.sourceforge.net>
- <alpine.DEB.2.02.1303041338350.1984@hadrien>
- <51349A2C.609@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1303041408220.1984@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Mon, 04 Mar 2013 14:14:22 +0100
+Subject: [Cocci] 1.0.0-rc16: Further fine-tuning for the build system?
+In-Reply-To: <alpine.DEB.2.02.1303041346370.1984@hadrien>
+References: <513268ED.5070703@users.sourceforge.net>
+ <alpine.DEB.2.02.1303022218010.2033@localhost6.localdomain6>
+ <51348708.1000005@users.sourceforge.net>
+ <alpine.DEB.2.02.1303041334270.1984@hadrien>
+ <513496F5.1070309@users.sourceforge.net>
+ <alpine.DEB.2.02.1303041346370.1984@hadrien>
+Message-ID: <51349E2E.90705@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, 4 Mar 2013, SF Markus Elfring wrote:
+> I'm not sure to understand "try different build directory".  You mean you
+> want to put the executable in a place that is different than the source
+> code?
 
-> > On the other hand, I'm not sure what the purpose of all of this is.
->
-> I hope to achieve a better understanding for your software by the presentation
-> style from the tool "ocamldoc". (It supports also to generate Graphviz files.)
->
->
-> > If it is only to be able to write ocaml code that processes the C abstract
-> > syntax tree, then it should be enough to consider the files in the
-> > parser_c directory.  These are however the ones where there is a risk of a
-> > missing mli file.
->
-> I guess that it is still a configuration challenge to set some variables in a
-> way so that all dependencies like needed modules can be resolved for the
-> documentation.
+Yes. - It is the purpose to store such generated files by an "out-of-source-tree
+build" separately.
+http://programmers.stackexchange.com/questions/88792/automake-how-to-keep-the-source-tree-clean
+http://stackoverflow.com/questions/1783111/fix-source-file-search-path-when-doing-out-of-source-autotools-build-within-emac
 
-It seems like a separate issue.  With the proper -I arguments, which you
-can get from the makefile of the parser_c directory, ocamldoc should be
-able to figure things out for itself, assuming make depend has been run
-first.
-
-julia
+Regards,
+Markus
