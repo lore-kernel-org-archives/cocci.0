@@ -1,8 +1,8 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 05 Mar 2013 21:44:26 +0100
+Date: Thu, 07 Mar 2013 10:55:25 +0100
 Subject: [Cocci] Addition of source code documentation generation to the
  build system?
-In-Reply-To: <CANrVCd1rFXSmrtCCWq6K8E81wSq6n1MdztQuN-9vY16dBtsd_A@mail.gmail.com>
+In-Reply-To: <5136592A.6080105@users.sourceforge.net>
 References: <5133B0BF.8000608@users.sourceforge.net>
  <alpine.DEB.2.02.1303041106480.1984@hadrien>
  <5134918E.7090304@users.sourceforge.net>
@@ -17,16 +17,17 @@ References: <5133B0BF.8000608@users.sourceforge.net>
  <alpine.DEB.2.02.1303051145190.1954@hadrien>
  <5135F21A.2080809@users.sourceforge.net>
  <CANrVCd1rFXSmrtCCWq6K8E81wSq6n1MdztQuN-9vY16dBtsd_A@mail.gmail.com>
-Message-ID: <5136592A.6080105@users.sourceforge.net>
+ <5136592A.6080105@users.sourceforge.net>
+Message-ID: <5138640D.7050106@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> It is neither clear to me that what you want is actually possible.
+> http://xenbits.xen.org/gitweb/?p=xen.git;a=blob;f=docs/configure.ac;h=5c3f5e8b60717c83256814bde98de82dab0d2bc9;hb=748e38f4719ea739f39b9529664e2221d6f8a394
 
-How do you think about a result like
-"http://xen.org/files/XenCloud/ocamldoc/codedoc.html"?
-(I hope that a helpful display can also be achieved without a custom generator.)
-http://xenbits.xen.org/gitweb/?p=xen.git;a=blob;f=docs/configure.ac;h=5c3f5e8b60717c83256814bde98de82dab0d2bc9;hb=748e38f4719ea739f39b9529664e2221d6f8a394
+I'm sorry. - I picked up a link from the wrong source code repository.
+An other link is appropriate if you are eventually interested to look at an
+alternative documentation approach for an application programming interface.
+https://github.com/xen-org/xen-api/tree/master/ocaml/doc
 
 Regards,
 Markus
