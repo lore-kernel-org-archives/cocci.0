@@ -1,49 +1,45 @@
 From: Brice.Goglin@inria.fr (Brice Goglin)
-Date: Fri, 15 Mar 2013 16:03:14 +0100
+Date: Fri, 15 Mar 2013 19:06:26 +0100
 Subject: [Cocci] "virtual rule patch not supported"
-In-Reply-To: <CAAxaTiOFoDmDm+38XhALBp0ZtMNbpg7D8td-K7H2A30PRGkgRA@mail.gmail.com>
+In-Reply-To: <CAAxaTiPSJzj=hPtsXfPjpmMw3RDqNyLJO=XjfBHUmPA6QUrgRA@mail.gmail.com>
 References: <513D94DC.9090708@inria.fr>
  <alpine.DEB.2.02.1303130946150.1933@hadrien>
  <CAAxaTiOFoDmDm+38XhALBp0ZtMNbpg7D8td-K7H2A30PRGkgRA@mail.gmail.com>
-Message-ID: <51433832.1010906@inria.fr>
+ <51433832.1010906@inria.fr>
+ <CAAxaTiPqLReMT5=8YZCmWWG4oQC0ARreo48qDwT1qCedXxBMsA@mail.gmail.com>
+ <CAAxaTiPSJzj=hPtsXfPjpmMw3RDqNyLJO=XjfBHUmPA6QUrgRA@mail.gmail.com>
+Message-ID: <51436322.4000503@inria.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Le 15/03/2013 15:49, Nicolas Palix a ?crit :
-> Hi,
+Le 15/03/2013 16:14, Nicolas Palix a ?crit :
+> Alternatively, you could use 'make coccicheck MODE=report' as every
+> cocci file currently provide at least this mode
+
+Yes that works thanks.
+
+> or we could swap patch and report for the chain mode.
+
+[...]
+
+> One may improve the handling of the chain mode, and skip unavailable
+> modes instead of falling back to the next one in case of error...
 >
-> On Wed, Mar 13, 2013 at 9:47 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
->> On Mon, 11 Mar 2013, Brice Goglin wrote:
->>
->>> Hello,
->>> I am running the kernel 3.9-rc2 coccicheck script on some of my module,
->>> and I get the following message:
->>>   virtual rule patch not supported
->> I guess it doesn't crash?  It is possible that some semantic patch just
->> doesn't support the patch option.  I don't remember if it is possible to
->> specify several options, and to have them tried in order?  That could be a
->> nice feature.  If not, I think that there is an option that tries all of
->> the options in a fixed order.  Nicolas?
->>
-> According to the cocci files, every coccicheck mode could not be proposed.
-> It is indeed some time impossible to propose a bug correction because
-> several options are available for a single bug report and the semantic
-> patch is not designed to choose one.
->
-> The current basic modes are: patch, report, context, org
-> The 'chain' mode tries the following mode is order: patch || report ||
-> context || org.
-> Recently, the 'rep+ctxt' mode have been added for report and context modes.
->
-> If you haven't specify the mode, it defaults to chain. The patch mode
-> is thus tried first.
-> If it fails, coccicheck falls back to the report mode.
+> Do you volunteer ?
 >
 
-In short, this warning is harmless ?
+If it's just a matter of adding grep before run_cmd, the attached patch
+seems to work.
 
-Should it be disabled in the kernel by default ? Most people that uses
-coccicheck in the kernel don't know much about it, and they don't write
-the rules directly, so they may be afraid by the warning just like me.
+But I don't have enough knowledge about all this to decide what's the
+best thing to do among everything you said above.
 
 Brice
+ 
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: coccichain.patch
+Type: text/x-patch
+Size: 1854 bytes
+Desc: not available
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20130315/a868b193/attachment-0001.bin>
