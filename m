@@ -1,121 +1,74 @@
-From: lars@metafoo.de (Lars-Peter Clausen)
-Date: Wed, 13 Mar 2013 09:49:46 +0100
-Subject: [Cocci] how to consider castings in semantic patchs
-In-Reply-To: <CAHCmPpPznDVsBwcPVhgrBwq1ejBt7i7U8WDj3+iCoBjsBnGm4Q@mail.gmail.com>
-References: <CAHCmPpPznDVsBwcPVhgrBwq1ejBt7i7U8WDj3+iCoBjsBnGm4Q@mail.gmail.com>
-Message-ID: <51403DAA.3060102@metafoo.de>
+From: nicolas.palix@imag.fr (Nicolas Palix)
+Date: Fri, 15 Mar 2013 15:49:57 +0100
+Subject: [Cocci] "virtual rule patch not supported"
+In-Reply-To: <alpine.DEB.2.02.1303130946150.1933@hadrien>
+References: <513D94DC.9090708@inria.fr>
+ <alpine.DEB.2.02.1303130946150.1933@hadrien>
+Message-ID: <CAAxaTiOFoDmDm+38XhALBp0ZtMNbpg7D8td-K7H2A30PRGkgRA@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 03/12/2013 02:51 PM, Andr?s More wrote:
-> Hi, I've been playing with Coccinele, I find it really useful.
-> 
-> I'm trying to create a semantic patch to rename a structure (and its
-> fields).
-> I could get almost everything in place in several patches: the structure
-> gets renamed, also variables of that type, also their attributes. However,
-> the code (not mine) uses some explicit castings and I couldn't find a way
-> to cover those cases also.
-> 
-> I've tried to follow the documented grammar but I think I got lost without
-> finding how to declare such castings.
-> 
-> I'm appending the last version of the semantic patch I've been working on
-> just to give the rough idea how what I am trying to describe. The code is a
-> Linux kernel staging driver (VIA VT6656), using their own Ethernet packet
-> struct.
-> 
-> Thanks, I will really appreciate any hints on how to consider explicit
-> casting.
-> 
-> -- Andres
-> 
-
 Hi,
 
-If you typedef PS802_11Header coccinelle will also be able to handle the cast.
+On Wed, Mar 13, 2013 at 9:47 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
+> On Mon, 11 Mar 2013, Brice Goglin wrote:
+>
+>> Hello,
+>> I am running the kernel 3.9-rc2 coccicheck script on some of my module,
+>> and I get the following message:
+>>   virtual rule patch not supported
+>
+> I guess it doesn't crash?  It is possible that some semantic patch just
+> doesn't support the patch option.  I don't remember if it is possible to
+> specify several options, and to have them tried in order?  That could be a
+> nice feature.  If not, I think that there is an option that tries all of
+> the options in a fixed order.  Nicolas?
+>
 
-@@
-typedef PS802_11Header;
-@@
--PS802_11Header
-+struct ieee80211_hdr
+According to the cocci files, every coccicheck mode could not be proposed.
+It is indeed some time impossible to propose a bug correction because
+several options are available for a single bug report and the semantic
+patch is not designed to choose one.
 
-- Lars
+The current basic modes are: patch, report, context, org
+The 'chain' mode tries the following mode is order: patch || report ||
+context || org.
+Recently, the 'rep+ctxt' mode have been added for report and context modes.
 
-> Sample Line not covered
-> pMACHeader = (PS802_11Header) (pbyRxBufferAddr + cbHeaderSize);
-> 
-> Semantic patch I could get done
-> $ cat test.cocci
-> @rule1@
-> identifier h;
-> @@
-> -PSEthernetHeader h;
-> +struct ethhdr * h;
-> 
-> @rule2@
-> identifier h;
-> @@
-> -PS802_11Header h;
-> +struct ieee80211_hdr *h;
-> 
-> @rule5@
-> identifier h;
-> @@
-> -SEthernetHeader h;
-> +struct ethhdr h;
-> 
-> @rule6@
-> identifier h;
-> @@
-> -S802_11Header h;
-> +struct ieee80211_hdr h;
-> 
-> @rule3@
-> struct ethhdr *h;
-> @@
-> (
-> -h->abyDstAddr
-> +h->h_dest
-> |
-> -h->abySrcAddr
-> +h->h_source
-> |
-> -h->wType
-> +h->h_proto
-> )
-> 
-> @rule4@
-> struct ieee80211_hdr *h;
-> @@
-> (
-> -h->wFrameCtl
-> +h->frame_control
-> |
-> -h->wDurationID
-> +h->duration_id
-> |
-> -h->abyAddr1
-> +h->addr1
-> |
-> -h->abyAddr2
-> +h->addr2
-> |
-> -h->abyAddr3
-> +h->addr3
-> |
-> -h->wSeqCtl
-> +h->seq_ctrl
-> |
-> -h->abyAddr4
-> +h->addr4
-> )
-> 
-> 
-> 
-> 
+If you haven't specify the mode, it defaults to chain. The patch mode
+is thus tried first.
+If it fails, coccicheck falls back to the report mode.
+
+The following command will give you the available modes for each cocci file
+distributed with the Linux kernel
+
+      find scripts/coccinelle -name *.cocci -exec grep -H virtual \{} \;
+
+Hope it helps.
+
+Regards.
+
+> julia
+>
+>> Things seem to work fine aside of this message. Anything to be worried
+>> about?
+>> I already upgraded to coccinelle 1.0-rc16 (from Debian experimental)
+>> since rc12 didn't accept orplus.cocci. Anything else to upgrade to avoid
+>> the message?
+>> Thanks
+>> Brice
+>>
+>> _______________________________________________
+>> Cocci mailing list
+>> Cocci at systeme.lip6.fr
+>> https://systeme.lip6.fr/mailman/listinfo/cocci
+>>
 > _______________________________________________
 > Cocci mailing list
 > Cocci at systeme.lip6.fr
 > https://systeme.lip6.fr/mailman/listinfo/cocci
+
+
+
+-- 
+Nicolas Palix
