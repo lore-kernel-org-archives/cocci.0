@@ -1,88 +1,125 @@
-From: eric@regit.org (Eric Leblond)
-Date: Tue, 19 Mar 2013 18:53:43 +0100
-Subject: [Cocci] Have coccinelle follow typedef ?
-In-Reply-To: <alpine.DEB.2.02.1303191817500.1999@hadrien>
-References: <1363709777.30419.20.camel@tiger2>
- <alpine.DEB.2.02.1303191817500.1999@hadrien>
-Message-ID: <1363715623.5243.7.camel@tiger2>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Fri, 22 Mar 2013 18:31:47 +0100 (CET)
+Subject: [Cocci] Invitation to the thesis defense of Suman Saha (fwd)
+Message-ID: <alpine.DEB.2.02.1303221829451.1935@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+If you are in the Paris area and are interested in bug finding in C code,
+you may be interested in coming to the following PhD defense on Monday.
+We plan to make the tool developed as part of this PhD publicly available
+shortly.  It has already been used to find quite a number of
+resource-release omission faults in Linux, as well as some other systems
+software.
+
+julia
+
+---------- Forwarded message ----------
+Date: Thu, 21 Mar 2013 13:30:17 +0100
+From: Suman <suman.saha@lip6.fr>
+To: Tout LIP6 <tout-lip6@lip6.fr>
+Subject: Invitation to the thesis defense of Suman Saha
+
+
 Hello,
 
-On Tue, 2013-03-19 at 18:18 +0100, Julia Lawall wrote:
-> 
-> On Tue, 19 Mar 2013, Eric Leblond wrote:
-> 
-> > Hello,
-> >
-> > I've got the following construction in a code:
-> >  typedef struct Packet_ {
-> > 	struct Flow_ * flow;
-> >  } Packet;
-> > and in an other include file:
-> >  typedef struct Flow_ {
-> > 	...
-> >  } Flow;
-> >
-> > My problem here is that if p is a Packet then p->flow is a Flow at least
-> > from a developer point of view. But coccinelle is not detecting the
-> > match "Flow f" do not match on a "p->flow".
-> >
-> > I've thought about adding a new isomorphism to solve this but I don't
-> > like the idea...
-> >
-> > How could I fix this issue ?
-> 
-> --all-includes?
-> 
-> I thik the type inferencer should be aware of typedefs, if it sees the
-> definition.
+I am pleased to invite you to my thesis defense.
 
-Thanks a lot for your answer but it does not work.
+My thesis is entitled "Improving the Quality of Error-Handling Code in
+Systems Software using Function-Local Information"
 
-I've added a direct inclusion of file definition in my source file to be
-sure include containing definitions will be found by coccinelle.
-When adding --recurse-includes and/or --all-includes it is able to find
-that p->flow is a "struct Flow_ *" but it does not inference it as a
-Flow:
+The defense will take place Monday, March 25th at 14:00 pm at Jussieu in
+room 25-26/101
 
-Running: spatch --recursive-includes --all-includes -sp_file /tmp/tmpQ678Iv.cocci detect-engine-tag.c.
-init_defs_builtins: /usr/share/coccinelle/standard.h
-HANDLING: detect-engine-tag.c
-detect-engine-tag.c:241 (Flow *f):     if (f->tag_list == NULL)
-detect-engine-tag.c:246 (Flow *f):     DetectTagDataEntry *iter = f->tag_list;
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+-----------------------
 
-with /tmp/tmpQ678Iv.cocci being
+Abstract
 
-        @init@
-        Flow *p;
-        Flow ps;
-        position p1;
-        @@
-        
-        (
-        p at p1->tag_list
-        |
-        ps at p1.tag_list
-        )
-        
-        @Some python code to print p1@
+Adequate error-handling code is essential to the reliability of any systems
+software. On an error, such code is responsible for releasing acquired
+resources to restore the system to a viable state. Omitting such operations
+leads not only to memory leaks, but also to system crashes and deadlocks.
 
-If I look for "struct Flow_" (simple substitution in the @init@), I've
-got:
+The C language does not provide any abstractions for exception handling or
+other forms of error handling, leaving programmers to devise their own
+conventions for detecting and handling errors. The Linux coding style
+guidelines suggest placing error handling code at the end of each function,
+where it can be reached by gotos whenever an error is detected. This coding
+style has the advantage of putting all of the error-handling code in one
+place, which eases understanding and maintenance, and reduces code
+duplication. Nevertheless, this coding style is not always applied. In the
+first part of the thesis, we propose an automatic program transformation
+that transforms error-handling code into this style. We have implemented
+this algorithm as a tool and have applied this tool to five directories
+(drivers, fs, net, arch, and sound) in Linux 3.6 kernel source code as well
+as to five widely used open-source systems software projects: PostgreSQL,
+Apache, Wine, Python, and PHP. This tool successfully converts 22% of the
+conditionals containing state-restoring error-handling code that have the
+scope to merge code into one, from the basic strategy to the goto-based
+strategy.
 
-Running: spatch --recursive-includes --all-includes -sp_file /tmp/tmpmSk2Cm.cocci detect-engine-tag.c.
-init_defs_builtins: /usr/share/coccinelle/standard.h
-HANDLING: detect-engine-tag.c
-detect-engine-tag.c:121 (struct Flow_ *p->flow):     if (p->flow->tag_list != NULL) {
-detect-engine-tag.c:122 (struct Flow_ *p->flow):         iter = p->flow->tag_list;
+Even when error handling code is structured according to the Linux coding
+style guidelines, the management of the releasing of allocated resources
+remains a continual problem in ensuring the robustness of systems software.
+Finding such faults is very challenging due to the difficulty of
+systematically reproducing system errors and the diversity of system
+resources and their associated resource release operations. To address these
+issues, over 10 years of research has focused on macroscopic approaches that
+globally scan a code base for common resource-release operations. Such
+approaches are notorious for their high rates of false positives, while at
+the same time, in practice, they leave many faults undetected.
 
-with p being a Packet. So the definition of Packet has been found.
+In the second part of the thesis, we propose a novel microscopic approach to
+finding resource- release faults in systems software, taking into account
+such software?s diversity of resource types and resource-release operations.
+Rather than generalizing from the results of a complete scan of the source
+code, our approach achieves precision and scalability by focusing on the
+error-handling code of each function. Using a tool, Hector, that we have
+developed based on this approach, we have found 485 faults in 19 different C
+systems software projects, including Linux, Python, and Apache, with a false
+positive rate of 23%, well below the 30% that has been reported to be
+acceptable to developers. Some of these faults are exploitable by an
+unprivileged malicious user, making it possible to crash the entire system.
 
-I've been trying this latest coccinelle git.
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+-----------------------
 
-BR,
--- 
-Eric Leblond <eric@regit.org>
-Blog: https://home.regit.org/
+The jury will be composed of:
+
+Reporters:
+
+
+? Mme. Sandrine BLAZY, Professor, University of Rennes 1.
+
+
+? M. Laurent R?VEILL?RE, Associate Professor, HDR, University of Bordeaux 1
+
+Examiners :
+
+
+? M. Ola f SPINCZYK, Professor, Technische Universit?t Dortmund
+
+
+? M. Yannis SMARAGDAKIS, Associate Professor, University of Athens
+
+
+? M. Fabrice KORDON, Professor, Universit? P & M. Curie
+
+
+Thesis supervisors :
+
+
+? M. Gilles MULLER, DR, INRIA
+
+? Mme. Julia LAWALL, DR, INRIA
+
+
+
+Kind regards?
+Suman Saha
+regal.lip6.fr/~Suman.Saha/
