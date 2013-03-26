@@ -1,45 +1,34 @@
-From: Brice.Goglin@inria.fr (Brice Goglin)
-Date: Fri, 15 Mar 2013 19:06:26 +0100
-Subject: [Cocci] "virtual rule patch not supported"
-In-Reply-To: <CAAxaTiPSJzj=hPtsXfPjpmMw3RDqNyLJO=XjfBHUmPA6QUrgRA@mail.gmail.com>
-References: <513D94DC.9090708@inria.fr>
- <alpine.DEB.2.02.1303130946150.1933@hadrien>
- <CAAxaTiOFoDmDm+38XhALBp0ZtMNbpg7D8td-K7H2A30PRGkgRA@mail.gmail.com>
- <51433832.1010906@inria.fr>
- <CAAxaTiPqLReMT5=8YZCmWWG4oQC0ARreo48qDwT1qCedXxBMsA@mail.gmail.com>
- <CAAxaTiPSJzj=hPtsXfPjpmMw3RDqNyLJO=XjfBHUmPA6QUrgRA@mail.gmail.com>
-Message-ID: <51436322.4000503@inria.fr>
+From: j.lancia@serma.com (LANCIA Julien)
+Date: Tue, 26 Mar 2013 14:29:06 +0000
+Subject: [Cocci] Control flow query across files
+Message-ID: <13CEBF2EC72707459166C3356C1FEC8B7C3B22E0@ST-PES-MBX-01.serma.local>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Le 15/03/2013 16:14, Nicolas Palix a ?crit :
-> Alternatively, you could use 'make coccicheck MODE=report' as every
-> cocci file currently provide at least this mode
+Hello,
+I've stumbled accross coccinelle and I'm interested in using it to perform queries on the control flow graph (quite similarly to what have been done in "Finding Error Handling Bugs in OpenSSL using Coccinelle" by Lawall and al.).
+However, I wonder if it is possible to perform queries on the control flow graph that span across a single C file.
 
-Yes that works thanks.
+An example to be clear:
 
-> or we could swap patch and report for the chain mode.
+fileA.h : f(), g(), h()
+fileA.c : f() calls g() calls h() calls i()
 
-[...]
+fileA.h : i() j() k()
+fileA.c : i() calls j() calls k()
 
-> One may improve the handling of the chain mode, and skip unavailable
-> modes instead of falling back to the next one in case of error...
->
-> Do you volunteer ?
->
+Is it possible with coccinelle to match the query
+f()
+...
+k()
 
-If it's just a matter of adding grep before run_cmd, the attached patch
-seems to work.
+that spans across fileA.c and fileB.c ?
 
-But I don't have enough knowledge about all this to decide what's the
-best thing to do among everything you said above.
+Thanks in advance for your help,
+Regards,
 
-Brice
- 
+Julien Lancia
+
 -------------- next part --------------
-A non-text attachment was scrubbed...
-Name: coccichain.patch
-Type: text/x-patch
-Size: 1854 bytes
-Desc: not available
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20130315/a868b193/attachment-0001.bin>
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20130326/98a420b0/attachment-0001.html>
