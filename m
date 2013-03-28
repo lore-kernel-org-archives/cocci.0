@@ -1,92 +1,56 @@
-From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Thu, 28 Mar 2013 05:04:30 -0700
-Subject: [Cocci] [PATCH 4/4] fb: add helpers to enable and test for the
-	skip_vt_switch
-In-Reply-To: <1364472270-9297-1-git-send-email-mcgrof@do-not-panic.com>
-References: <1364472270-9297-1-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <1364472270-9297-5-git-send-email-mcgrof@do-not-panic.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Thu, 28 Mar 2013 14:10:37 +0100 (CET)
+Subject: [Cocci] Control flow query across files
+In-Reply-To: <13CEBF2EC72707459166C3356C1FEC8B7C3B22E0@ST-PES-MBX-01.serma.local>
+References: <13CEBF2EC72707459166C3356C1FEC8B7C3B22E0@ST-PES-MBX-01.serma.local>
+Message-ID: <alpine.DEB.2.02.1303281408320.1928@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-From: "Luis R. Rodriguez" <mcgrof@do-not-panic.com>
+On Tue, 26 Mar 2013, LANCIA Julien wrote:
 
-This adds helpers to enable and test for the skip_vt_switch.
-This gets us two things:
+>
+> Hello,
+>
+> I?ve stumbled accross coccinelle and I?m interested in using it to perform queries on the control flow graph
+> (quite similarly to what have been done in ?Finding Error Handling Bugs in OpenSSL using Coccinelle? by Lawall
+> and al.).
+>
+> However, I wonder if it is possible to perform queries on the control flow graph that span across a single C
+> file.
+>
+> ?
+>
+> An example to be clear:
+>
+> ?
+>
+> fileA.h : f(), g(), h()
+>
+> fileA.c : f() calls g() calls h() calls i()
+>
+> ?
+>
+> fileA.h : i() j() k()
+>
+> fileA.c : i() calls j() calls k()
+>
+> ?
+>
+> Is it possible with coccinelle to match the query
+>
+> f()
+>
+> ?
+>
+> k()
+>
+> ?
+>
+> that spans across fileA.c and fileB.c ?
 
-1) It allows us to require less collateral evolutions
-   should we need changes on the fb_info data structure
-   later (perhaps a bitmap flag).
+No, ... doesn't work that way.  You can use the iteration facility to do
+interprocedural analysis.  If you have the coccinelle source code, you can
+see an example in demos/iteration.cocci
 
-2) Allows this feature to be backported with 0 delta
-   required on the upstream drivers, we'd just require
-   the static inline to do a no-op.
-
-1) may be worth while considering, 2) is a new consideration
-I'm trying to get others to evaluate to help with automatically
-backporting the Linux kernel. This is the first time I am
-aware someone argues for it.
-
-Cc: cocci at systeme.lip6.fr
-Cc: backports at vger.kernel.org
-Cc: linux-kernel at vger.kernel.org
-Cc: Julia Lawall <julia.lawall@lip6.fr>
-Cc: Rodrigo Vivi <rodrigo.vivi@gmail.com>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Jesse Barnes <jbarnes@virtuousgeek.org>
-Cc: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Luis R. Rodriguez <mcgrof@do-not-panic.com>
----
- drivers/gpu/drm/i915/intel_fb.c |    2 +-
- drivers/video/fbmem.c           |    2 +-
- include/linux/fb.h              |   10 ++++++++++
- 3 files changed, 12 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/gpu/drm/i915/intel_fb.c b/drivers/gpu/drm/i915/intel_fb.c
-index 8d81c929..c0f306c 100644
---- a/drivers/gpu/drm/i915/intel_fb.c
-+++ b/drivers/gpu/drm/i915/intel_fb.c
-@@ -151,7 +151,7 @@ static int intelfb_create(struct drm_fb_helper *helper,
- 	info->screen_size = size;
- 
- 	/* This driver doesn't need a VT switch to restore the mode on resume */
--	info->skip_vt_switch = true;
-+	fb_enable_skip_vt_switch(info);
- 
- 	drm_fb_helper_fill_fix(info, fb->pitches[0], fb->depth);
- 	drm_fb_helper_fill_var(info, &ifbdev->helper, sizes->fb_width, sizes->fb_height);
-diff --git a/drivers/video/fbmem.c b/drivers/video/fbmem.c
-index ccd44b0..daffadc 100644
---- a/drivers/video/fbmem.c
-+++ b/drivers/video/fbmem.c
-@@ -1645,7 +1645,7 @@ static int do_register_framebuffer(struct fb_info *fb_info)
- 	if (!fb_info->modelist.prev || !fb_info->modelist.next)
- 		INIT_LIST_HEAD(&fb_info->modelist);
- 
--	if (fb_info->skip_vt_switch)
-+	if (fb_skip_vt_switch_isset(fb_info))
- 		pm_vt_switch_required(fb_info->dev, false);
- 	else
- 		pm_vt_switch_required(fb_info->dev, true);
-diff --git a/include/linux/fb.h b/include/linux/fb.h
-index d49c60f..d534966 100644
---- a/include/linux/fb.h
-+++ b/include/linux/fb.h
-@@ -505,6 +505,16 @@ struct fb_info {
- 	bool skip_vt_switch; /* no VT switch on suspend/resume required */
- };
- 
-+static inline void fb_enable_skip_vt_switch(struct fb_info *info)
-+{
-+	info->skip_vt_switch = true;
-+}
-+
-+static inline bool fb_skip_vt_switch_isset(struct fb_info *info)
-+{
-+	return info->skip_vt_switch;
-+}
-+
- static inline struct apertures_struct *alloc_apertures(unsigned int max_num) {
- 	struct apertures_struct *a = kzalloc(sizeof(struct apertures_struct)
- 			+ max_num * sizeof(struct aperture), GFP_KERNEL);
--- 
-1.7.10.4
+julia
