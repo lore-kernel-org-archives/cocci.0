@@ -1,56 +1,33 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 28 Mar 2013 14:10:37 +0100 (CET)
-Subject: [Cocci] Control flow query across files
-In-Reply-To: <13CEBF2EC72707459166C3356C1FEC8B7C3B22E0@ST-PES-MBX-01.serma.local>
-References: <13CEBF2EC72707459166C3356C1FEC8B7C3B22E0@ST-PES-MBX-01.serma.local>
-Message-ID: <alpine.DEB.2.02.1303281408320.1928@hadrien>
+From: jbarnes@virtuousgeek.org (Jesse Barnes)
+Date: Thu, 28 Mar 2013 08:39:43 -0700
+Subject: [Cocci] [PATCH] compat/compat-drivers/linux-next: fb
+	skip_vt_switch
+In-Reply-To: <1364472270-9297-1-git-send-email-mcgrof@do-not-panic.com>
+References: <1364472270-9297-1-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <20130328083943.01e61b4b@jbarnes-desktop>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, 26 Mar 2013, LANCIA Julien wrote:
+On Thu, 28 Mar 2013 05:04:26 -0700
+"Luis R. Rodriguez" <mcgrof@do-not-panic.com> wrote:
 
->
-> Hello,
->
-> I?ve stumbled accross coccinelle and I?m interested in using it to perform queries on the control flow graph
-> (quite similarly to what have been done in ?Finding Error Handling Bugs in OpenSSL using Coccinelle? by Lawall
-> and al.).
->
-> However, I wonder if it is possible to perform queries on the control flow graph that span across a single C
-> file.
->
-> ?
->
-> An example to be clear:
->
-> ?
->
-> fileA.h : f(), g(), h()
->
-> fileA.c : f() calls g() calls h() calls i()
->
-> ?
->
-> fileA.h : i() j() k()
->
-> fileA.c : i() calls j() calls k()
->
-> ?
->
-> Is it possible with coccinelle to match the query
->
-> f()
->
-> ?
->
-> k()
->
-> ?
->
-> that spans across fileA.c and fileB.c ?
+> The new commit by Jesse that extended the fb_info with a skip_vt_switch
+> element is the simplest example of a data structure expansion. We'd backport
+> this by adding a static inline to compat so that new kernels muck with the
+> new element and for older kernels this would be a no-op. This reduces the
+> size of the backport and unclutters the required patch with #idefs, and
+> insteads leaves only a replacement of the usage of the new elements with
+> a static inline, this however would still be required on our end:
+> 
+> 	-      info->skip_vt_switch = true;
+> 	+      fb_enable_skip_vt_switch(info);
+> 
+> So we'd then have to just add this static inline change for each new driver...
+> There may be a way to get SmPL to do this for us...
 
-No, ... doesn't work that way.  You can use the iteration facility to do
-interprocedural analysis.  If you have the coccinelle source code, you can
-see an example in demos/iteration.cocci
+Yeah I'm not attached to the direct structure reference; a couple of
+inlines are just as easy to read.  So no argument from me.
 
-julia
+Thanks,
+-- 
+Jesse Barnes, Intel Open Source Technology Center
