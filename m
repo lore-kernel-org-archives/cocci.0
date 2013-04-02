@@ -1,5 +1,5 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 2 Apr 2013 17:48:56 +0200 (CEST)
+Date: Tue, 2 Apr 2013 18:21:22 +0200 (CEST)
 Subject: [Cocci] Analysis for Linux source files
 In-Reply-To: <515AF991.4070006@users.sourceforge.net>
 References: <515AAF16.7000706@users.sourceforge.net>
@@ -9,23 +9,31 @@ References: <515AAF16.7000706@users.sourceforge.net>
  <515AF683.5000701@users.sourceforge.net>
  <alpine.DEB.2.02.1304021721450.1939@hadrien>
  <515AF991.4070006@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1304021748060.1939@hadrien>
+Message-ID: <alpine.DEB.2.02.1304021819250.1939@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, 2 Apr 2013, SF Markus Elfring wrote:
+I get the problem on the following code:
 
-> > The empty list problem is entirely unrelated to the python problem.
->
-> Can I do anything about it from my side?
->
->
-> > Unfortunately, the wiki machine is not alive any more...
->
-> Under which address will the description of the Pycaml interface (Coccinelle
-> API) become available again?
+irqreturn_t
+nouveau_irq_handler(DRM_IRQ_ARGS)
+{
+        struct drm_device *dev = arg;
+        struct nouveau_device *device = nouveau_dev(dev);
+        struct nouveau_mc *pmc = nouveau_mc(device);
+        u32 stat;
 
-Ideally there would be a man page, like there is for the ocaml interface.
-I can try to look into putting that together.
+        stat = nv_rd32(device, 0x000100);
+        if (stat == 0 || stat == ~0)
+                return IRQ_NONE;
+
+        nv_subdev(pmc)->intr(nv_subdev(pmc));
+        return IRQ_HANDLED;
+}
+
+I would suspect that there is some inconsistency in how it is parsing this
+kind of argument list.  It seems to parse it OK, but then not be able to
+match it against a pattern like ...,x,...  I can look at it in more detail
+tomorrow.
 
 julia
