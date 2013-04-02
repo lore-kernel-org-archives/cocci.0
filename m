@@ -1,5 +1,5 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 2 Apr 2013 17:23:06 +0200 (CEST)
+Date: Tue, 2 Apr 2013 17:24:17 +0200 (CEST)
 Subject: [Cocci] Analysis for Linux source files
 In-Reply-To: <515AF683.5000701@users.sourceforge.net>
 References: <515AAF16.7000706@users.sourceforge.net>
@@ -7,9 +7,14 @@ References: <515AAF16.7000706@users.sourceforge.net>
  <515ACBBD.3050309@users.sourceforge.net>
  <alpine.DEB.2.02.1304021446260.1939@hadrien>
  <515AF683.5000701@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1304021721450.1939@hadrien>
+Message-ID: <alpine.DEB.2.02.1304021723390.1939@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
+
+Again, to understand the problem, I need the .cocci file, and preferably
+the .c file as well.  Preferably a small .c file that shows the problem.
+
+julia
 
 On Tue, 2 Apr 2013, SF Markus Elfring wrote:
 
@@ -23,9 +28,7 @@ On Tue, 2 Apr 2013, SF Markus Elfring wrote:
 > http://lists.diku.dk/pipermail/cocci/2011-December/002373.html
 >
 > It works again if I delete the attribute access ".ident"
-
-The empty list problem is entirely unrelated to the python problem.
-
+>
 > elfring at Sonne:~/Projekte/Coccinelle/lokal/demos/pass-through> spatch -sp_file
 > list_pass-through_functions2.cocci pt1.c
 > init_defs_builtins: /usr/share/coccinelle/standard.h
@@ -37,15 +40,8 @@ The empty list problem is entirely unrelated to the python problem.
 >
 >
 > Was the Pycaml interface changed anyhow in the meantime?
-
-No, I don't think so.
-
 > Is the corresponding Coccinelle API still described by a Wiki document?
-
-Unfortunately, the wiki machine is not alive any more...
-
-julia
-
+>
 >
 > elfring at Sonne:~/Projekte/Coccinelle/lokal/demos/pass-through>
 > XY=/usr/src/linux-stable/ && spatch -sp_file list_pass-through_functions2.cocci \
