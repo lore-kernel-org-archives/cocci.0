@@ -1,33 +1,47 @@
-From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Fri, 29 Mar 2013 00:29:44 -0700
-Subject: [Cocci] [PATCH] compat/compat-drivers/linux-next: fb
-	skip_vt_switch
-In-Reply-To: <alpine.DEB.2.02.1303290720350.2023@localhost6.localdomain6>
-References: <1364472270-9297-1-git-send-email-mcgrof@do-not-panic.com>
- <20130328083943.01e61b4b@jbarnes-desktop>
- <alpine.DEB.2.02.1303281718490.1928@hadrien>
- <CAB=NE6WbNwPqEPYsASAPaECe4qbAWdd4=eJ402ib+CzZbT69=g@mail.gmail.com>
- <alpine.DEB.2.02.1303281909570.1928@hadrien>
- <CAB=NE6VPRu8DvneVdwd=pXF0ngi5OifNTpZtX3pLi50i116_OA@mail.gmail.com>
- <alpine.DEB.2.02.1303282328200.2022@localhost6.localdomain6>
- <CAB=NE6WX5Dv9p2jrNwe9GxfH=EUm596uvSspsLQ5-Uuonc6Fqg@mail.gmail.com>
- <alpine.DEB.2.02.1303290720350.2023@localhost6.localdomain6>
-Message-ID: <CAB=NE6U2-4uc90p5Os1kUp6QWChMcjarCMR7af0g=XUbGEXjGg@mail.gmail.com>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Tue, 02 Apr 2013 12:12:38 +0200
+Subject: [Cocci] Analysis for Linux source files
+Message-ID: <515AAF16.7000706@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, Mar 28, 2013 at 11:21 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
->> > I looked in today's linux-next, and there seems to be only one
->> > initialization of this field, to true, and one test of this field.  So
->> > perhaps the case for setting the field to false just isn't needed.
->>
->> Oh sorry now I get what you mean! I thought about this -- and yes I
->> decided to not add a bool false setting for the structure field given
->> that the assumption is this would not be something dynamic, and data
->> structure would be kzalloc()'d so by default they are 0.
->
-> What do you do about the test, though?
+Hello,
 
-Return the value.
+I try out a bit of static source code analysis again by the following command.
 
-  Luis
+elfring at Sonne:~/Projekte/Coccinelle/lokal/demos/pass-through>
+XY=/usr/src/linux-stable/ && spatch -sp_file list_pass-through_functions.cocci \
+-dir $XY \
+-I ${XY}include \
+-I ${XY}usr/include \
+-I ${XY}arch/ia64/include \
+-I ${XY}arch/ia64/include/uapi \
+-I ${XY}arch/x86/include \
+-I ${XY}arch/x86/include/generated \
+-I /usr/include \
+-I /usr/include/c++/4.7/tr1 \
+-recursive_includes \
+>list_pass-through_functions-linux.txt \
+2>list_pass-through_functions-linux-errors.txt
+
+
+I notice results like the following in my log file.
+
+...
+HANDLING: /usr/src/linux-stable/init/noinitramfs.c
+EXN:Failure("empty list, max_min_ii_by_pos")
+Note: processing took    85.2s: /usr/src/linux-stable/init/noinitramfs.c
+HANDLING: /usr/src/linux-stable/init/do_mounts_md.c
+EXN:Failure("empty list, max_min_ii_by_pos")
+Note: processing took   109.5s: /usr/src/linux-stable/init/do_mounts_md.c
+...
+
+
+Can the shown error message be avoided?
+What does it really mean?
+
+openSUSE package: coccinelle 1.0.0-27.6
+spatch version 1.0.0-rc14 with Python support and with Str regexp support
+
+Regards,
+Markus
