@@ -1,39 +1,21 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 2 Apr 2013 18:21:22 +0200 (CEST)
-Subject: [Cocci] Analysis for Linux source files
-In-Reply-To: <515AF991.4070006@users.sourceforge.net>
-References: <515AAF16.7000706@users.sourceforge.net>
- <alpine.DEB.2.02.1304021344310.1939@hadrien>
- <515ACBBD.3050309@users.sourceforge.net>
- <alpine.DEB.2.02.1304021446260.1939@hadrien>
- <515AF683.5000701@users.sourceforge.net>
- <alpine.DEB.2.02.1304021721450.1939@hadrien>
- <515AF991.4070006@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1304021819250.1939@hadrien>
+Date: Sun, 7 Apr 2013 07:39:55 +0200 (CEST)
+Subject: [Cocci] 1.0.0-rc17
+Message-ID: <alpine.DEB.2.02.1304070739340.1972@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-I get the problem on the following code:
+Version 1.0.0-rc17 has been released.  Some changes are:
 
-irqreturn_t
-nouveau_irq_handler(DRM_IRQ_ARGS)
-{
-        struct drm_device *dev = arg;
-        struct nouveau_device *device = nouveau_dev(dev);
-        struct nouveau_mc *pmc = nouveau_mc(device);
-        u32 stat;
+- allow __ at the beginning of a struct or union name
 
-        stat = nv_rd32(device, 0x000100);
-        if (stat == 0 || stat == ~0)
-                return IRQ_NONE;
+- unparsing with precedence (insertion of parentheses when needed)
 
-        nv_subdev(pmc)->intr(nv_subdev(pmc));
-        return IRQ_HANDLED;
-}
+- Type metavariables no longer match a case where there is no type in the
+C code.
 
-I would suspect that there is some inconsistency in how it is parsing this
-kind of argument list.  It seems to parse it OK, but then not be able to
-match it against a pattern like ...,x,...  I can look at it in more detail
-tomorrow.
+- An expression list metavariable can now be attached with @ to a
+parameter list metavariable, to allow using the parameter names as an
+argument list.
 
 julia
