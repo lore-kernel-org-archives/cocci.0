@@ -1,9 +1,8 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 7 Apr 2013 14:11:29 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sun, 07 Apr 2013 14:13:55 +0200
 Subject: [Cocci] 1.0.0-rc17: Further fine-tuning for the build system?
-In-Reply-To: <5161618D.7050505@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.02.1304071410400.1951@hadrien>
 References: <513268ED.5070703@users.sourceforge.net>
- <alpine.DEB.2.02.1303022218010.2033@localhost6.localdomain6>
  <51348708.1000005@users.sourceforge.net>
  <alpine.DEB.2.02.1303041334270.1984@hadrien>
  <5134C06D.4070906@users.sourceforge.net>
@@ -22,49 +21,16 @@ References: <513268ED.5070703@users.sourceforge.net>
  <516158D8.7040304@users.sourceforge.net>
  <alpine.DEB.2.02.1304071340020.1951@hadrien>
  <5161618D.7050505@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1304071410400.1951@hadrien>
+ <alpine.DEB.2.02.1304071410400.1951@hadrien>
+Message-ID: <51616303.80800@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, 7 Apr 2013, SF Markus Elfring wrote:
+>>> I don't want to make changes that are inessential and that I don't understand.
+>>
+>> Would you like adjust Automake details?
 
-> >> Are you the project leader for this software?
-> >
-> > Yes, but build systems are very tricky and entirely out of my expertise.
->
-> I can eventually help to become used to the usual software development in this
-> application area.
->
->
-> > As long as the system builds in some way, I don't see the need for
-> > supporting every possible exotic combination.
->
-> I hope that mistakes will be fixed in the near future.
->
->
-> > Notably, building the software from some directory other than the one
-> > in which the software is located seems completely unnecessary, as far
-> > as I can see.
->
-> If you want to improve the Autotools setup, you will get this feature easily.
-> The usefulness of "out-of-source builds / parallel build trees" might become
-> obvious if more configuration variants will be considered for the software
-> generation.
->
->
-> > I don't want to make changes that are inessential and that I don't understand.
->
-> Would you like adjust Automake details?
->
-> How do you think about to start corrections with the selection of corresponding
-> make file names?
->
->
-> > Any thing that one person proposes would have to be reviewed by someone else.
->
-> Would Rene perform such review tasks eventually since he was involved as a
-> Github committer?
+Which update candidate would you like to improve next here?
 
-I don't think so.  The required expertises are quite different.
-
-julia
+Regards,
+Markus
