@@ -1,7 +1,7 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 07 Apr 2013 13:30:32 +0200
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sun, 7 Apr 2013 13:43:58 +0200 (CEST)
 Subject: [Cocci] 1.0.0-rc17: Further fine-tuning for the build system?
-In-Reply-To: <alpine.DEB.2.02.1304071319140.1951@hadrien>
+In-Reply-To: <516158D8.7040304@users.sourceforge.net>
 References: <513268ED.5070703@users.sourceforge.net>
  <alpine.DEB.2.02.1303022218010.2033@localhost6.localdomain6>
  <51348708.1000005@users.sourceforge.net>
@@ -19,19 +19,31 @@ References: <513268ED.5070703@users.sourceforge.net>
  <alpine.DEB.2.02.1304071302110.1951@hadrien>
  <5161551D.3040108@users.sourceforge.net>
  <alpine.DEB.2.02.1304071319140.1951@hadrien>
-Message-ID: <516158D8.7040304@users.sourceforge.net>
+ <516158D8.7040304@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.02.1304071340020.1951@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> Who does maintain the affected build specification and corresponding
->> configuration scripts now?
-> 
-> No one.
+On Sun, 7 Apr 2013, SF Markus Elfring wrote:
 
-Your answer surprises me. Are you the project leader for this software?
+> >> Who does maintain the affected build specification and corresponding
+> >> configuration scripts now?
+> >
+> > No one.
+>
+> Your answer surprises me. Are you the project leader for this software?
 
-Would you like to integrate any update suggestions for this area from me into
-your source code repository?
+Yes, but build systems are very tricky and entirely out of my expertise.
+As long as the system builds in some way, I don't see the need for
+supporting every possible exotic combination.  Notably, building the
+software from some directory other than the one in which the software is
+located seems completely unnecessary, as far as I can see.
 
-Regards,
-Markus
+> Would you like to integrate any update suggestions for this area from me into
+> your source code repository?
+
+Perhaps, but perhaps not.  I don't want to make changes that are
+inessential and that I don't understand.  Any thing that one person
+proposes would have to be reviewed by someone else.
+
+julia
