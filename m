@@ -1,7 +1,7 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 7 Apr 2013 13:20:06 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sun, 07 Apr 2013 13:30:32 +0200
 Subject: [Cocci] 1.0.0-rc17: Further fine-tuning for the build system?
-In-Reply-To: <5161551D.3040108@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.02.1304071319140.1951@hadrien>
 References: <513268ED.5070703@users.sourceforge.net>
  <alpine.DEB.2.02.1303022218010.2033@localhost6.localdomain6>
  <51348708.1000005@users.sourceforge.net>
@@ -18,19 +18,20 @@ References: <513268ED.5070703@users.sourceforge.net>
  <51614F9A.8000504@users.sourceforge.net>
  <alpine.DEB.2.02.1304071302110.1951@hadrien>
  <5161551D.3040108@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1304071319140.1951@hadrien>
+ <alpine.DEB.2.02.1304071319140.1951@hadrien>
+Message-ID: <516158D8.7040304@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, 7 Apr 2013, SF Markus Elfring wrote:
+>> Who does maintain the affected build specification and corresponding
+>> configuration scripts now?
+> 
+> No one.
 
-> > Arie does not work for the project any more.
->
-> Thanks for this information.
->
-> Who does maintain the affected build specification and corresponding
-> configuration scripts now?
+Your answer surprises me. Are you the project leader for this software?
 
-No one.
+Would you like to integrate any update suggestions for this area from me into
+your source code repository?
 
-julia
+Regards,
+Markus
