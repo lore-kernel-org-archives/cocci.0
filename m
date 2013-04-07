@@ -1,7 +1,7 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 7 Apr 2013 13:43:58 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sun, 07 Apr 2013 14:07:41 +0200
 Subject: [Cocci] 1.0.0-rc17: Further fine-tuning for the build system?
-In-Reply-To: <516158D8.7040304@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.02.1304071340020.1951@hadrien>
 References: <513268ED.5070703@users.sourceforge.net>
  <alpine.DEB.2.02.1303022218010.2033@localhost6.localdomain6>
  <51348708.1000005@users.sourceforge.net>
@@ -20,30 +20,47 @@ References: <513268ED.5070703@users.sourceforge.net>
  <5161551D.3040108@users.sourceforge.net>
  <alpine.DEB.2.02.1304071319140.1951@hadrien>
  <516158D8.7040304@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1304071340020.1951@hadrien>
+ <alpine.DEB.2.02.1304071340020.1951@hadrien>
+Message-ID: <5161618D.7050505@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, 7 Apr 2013, SF Markus Elfring wrote:
+>> Are you the project leader for this software?
+> 
+> Yes, but build systems are very tricky and entirely out of my expertise.
 
-> >> Who does maintain the affected build specification and corresponding
-> >> configuration scripts now?
-> >
-> > No one.
->
-> Your answer surprises me. Are you the project leader for this software?
+I can eventually help to become used to the usual software development in this
+application area.
 
-Yes, but build systems are very tricky and entirely out of my expertise.
-As long as the system builds in some way, I don't see the need for
-supporting every possible exotic combination.  Notably, building the
-software from some directory other than the one in which the software is
-located seems completely unnecessary, as far as I can see.
 
-> Would you like to integrate any update suggestions for this area from me into
-> your source code repository?
+> As long as the system builds in some way, I don't see the need for
+> supporting every possible exotic combination.
 
-Perhaps, but perhaps not.  I don't want to make changes that are
-inessential and that I don't understand.  Any thing that one person
-proposes would have to be reviewed by someone else.
+I hope that mistakes will be fixed in the near future.
 
-julia
+
+> Notably, building the software from some directory other than the one
+> in which the software is located seems completely unnecessary, as far
+> as I can see.
+
+If you want to improve the Autotools setup, you will get this feature easily.
+The usefulness of "out-of-source builds / parallel build trees" might become
+obvious if more configuration variants will be considered for the software
+generation.
+
+
+> I don't want to make changes that are inessential and that I don't understand.
+
+Would you like adjust Automake details?
+
+How do you think about to start corrections with the selection of corresponding
+make file names?
+
+
+> Any thing that one person proposes would have to be reviewed by someone else.
+
+Would Rene perform such review tasks eventually since he was involved as a
+Github committer?
+
+Regards,
+Markus
