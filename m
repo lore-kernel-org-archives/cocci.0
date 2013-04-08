@@ -1,18 +1,18 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 8 Apr 2013 16:54:27 +0200 (CEST)
+Date: Mon, 8 Apr 2013 16:56:34 +0200 (CEST)
 Subject: [Cocci] Analysis for Linux source files
 In-Reply-To: <1365431375.3314.42.camel@zamolxis.metaware.tm.fr>
 References: <mailman.1.1364983201.25969.cocci@systeme.lip6.fr>
  <1365431375.3314.42.camel@zamolxis.metaware.tm.fr>
-Message-ID: <alpine.DEB.2.02.1304081653140.1963@hadrien>
+Message-ID: <alpine.DEB.2.02.1304081655220.1963@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Thanks very much for the report.  I thought that my fix had solved the
-problem, but it doesn't seem to have been a complete solution, because I
-still see the problem on this example.
-
-I will look into it.
+Actually, what result would you prefer?  In the previous fix that I made,
+I just caused the missing type, which was hidden under a macro, to make
+the match fail.  In this case, though perhaps you would prefer T to be
+bound to int?  That might cause some problemes, though, because it is not
+a real "int" in the source code...
 
 julia
 
