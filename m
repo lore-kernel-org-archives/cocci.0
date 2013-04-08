@@ -1,47 +1,24 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 8 Apr 2013 10:59:41 +0200 (CEST)
-Subject: [Cocci] parameter list to expression list?
-In-Reply-To: <51628671.3040508@redhat.com>
-References: <515076A4.1030701@redhat.com>
- <alpine.DEB.2.02.1303252225550.2046@localhost6.localdomain6>
- <5150D63B.9000806@redhat.com> <alpine.DEB.2.02.1303271828220.1904@hadrien>
- <51628671.3040508@redhat.com>
-Message-ID: <alpine.DEB.2.02.1304081059280.1963@hadrien>
+From: mmarek@suse.cz (Michal Marek)
+Date: Mon, 08 Apr 2013 15:52:42 +0200
+Subject: [Cocci] [PATCH 1/4] Coccinelle: Restore coccicheck verbosity in
+ ONLINE mode (C=1 or C=2)
+In-Reply-To: <1362260188-14138-1-git-send-email-nicolas.palix@imag.fr>
+References: <1362260188-14138-1-git-send-email-nicolas.palix@imag.fr>
+Message-ID: <5162CBAA.5020506@suse.cz>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, 8 Apr 2013, Michael Stefaniuc wrote:
+On 2.3.2013 22:36, Nicolas Palix wrote:
+> A recent patch have introduce the VERBOSE variable and comments
+> now depend on it. However, the message printed for each cocci file
+> such not be printed when the ONLINE mode is active, whatever is
+> the value of VERBOSE.
+> 
+> Signed-off-by: Nicolas Palix <nicolas.palix@imag.fr>
+> ---
+>  scripts/coccicheck |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-> Hello Julia,
->
-> On 03/27/2013 06:31 PM, Julia Lawall wrote:
-> > Could you try the attached patch?  The line numbers are almost certain not
-> > to work out, but maybe it will be able to figure out what to do.
-> sorry for the late reply. The patch works like a charm.
+I applied these four to kbuild.git#misc.
 
-Great.  It is in rc17.
-
-julia
-
->
-> Thanks!
-> bye
-> 	michael
->
-> >
-> > The idea is to do the following:
-> >
-> > @r@
-> > parameter list P;
-> > expression list E;
-> > @@
-> >
-> > main(P at E) {
-> > + foo(E);
-> >   return 0;
-> > }
-> >
-> > julia
-> >
->
->
+Michal
