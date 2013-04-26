@@ -1,64 +1,46 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 15 Apr 2013 16:29:29 +0200 (CEST)
-Subject: [Cocci] Analysis for Linux source files
-In-Reply-To: <1365433540.3314.49.camel@zamolxis.metaware.tm.fr>
-References: <mailman.1.1364983201.25969.cocci@systeme.lip6.fr>
- <1365431375.3314.42.camel@zamolxis.metaware.tm.fr>
- <alpine.DEB.2.02.1304081655220.1963@hadrien>
- <1365433540.3314.49.camel@zamolxis.metaware.tm.fr>
-Message-ID: <alpine.DEB.2.02.1304151626120.1961@hadrien>
+From: rjones@redhat.com (Richard W.M. Jones)
+Date: Fri, 26 Apr 2013 09:14:34 +0100
+Subject: [Cocci] 1.0.0-rc16: Further fine-tuning for the build system?
+In-Reply-To: <5144D0F8.3040302@users.sourceforge.net>
+References: <51348708.1000005@users.sourceforge.net>
+ <alpine.DEB.2.02.1303041334270.1984@hadrien>
+ <5134C06D.4070906@users.sourceforge.net>
+ <alpine.DEB.2.02.1303041645030.1984@hadrien>
+ <5134C654.3050706@users.sourceforge.net>
+ <CANrVCd3SaNhoMzaLFYsrkB6gX7vz9Nxb5L85be48pFNZ03Q6CA@mail.gmail.com>
+ <5138B81B.2040100@users.sourceforge.net>
+ <CANrVCd3HS+i84W01R-pZv5B1jz_r9HJVjJfVh1OxN1mGMmxAuA@mail.gmail.com>
+ <5138C95F.8010608@users.sourceforge.net>
+ <5144D0F8.3040302@users.sourceforge.net>
+Message-ID: <20130426081434.GA3645@redhat.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Attached is a patch.  The line numbers may be off, but it should apply to
-the latest version.  It causes a match failure for the following semantic
-patch:
+On Sat, Mar 16, 2013 at 09:07:20PM +0100, SF Markus Elfring wrote:
+> > I have got the impression that there are more update candidates to consider
+> > since the macro call "AM_INIT_AUTOMAKE" was added.
+> 
+> Are you going to update and complete any components from your build
+> specification and corresponding configuration scripts?
 
-@r@
-type T;
-identifier x;
-position p;
-@@
+[Since you asked me in private email to contribute to
+this discussion ...]
 
-T at p x;
+I think you're being unreasonable asking the Coccinelle developers to
+fix things, and hardly specifying what the problem is (from what I can
+gather it's something to do with separated builds not working?).
 
-@script:python@
-T << r.T;
-@@
+In any case, supply patches, with clear explanations behind each one.
 
-print "before"
-print T
-print "after"
+So far I see one patch, probably incomplete, and no clear explanation
+for it.
 
-when applied to the following code:
+http://people.redhat.com/rjones/how-to-supply-code-to-open-source-projects/
 
-int main () {
-  register x;
-  return 0;
-}
+Rich.
 
-The type metavariable would have been matched to the implicit "int", but
-this implicit int doesn't have a position, so the match of the position
-variable fails.  On the other hand, there is no more crash.
-
-julia
--------------- next part --------------
-diff --git a/engine/cocci_vs_c.ml b/engine/cocci_vs_c.ml
-index 4d12515..26a479c 100644
---- a/engine/cocci_vs_c.ml
-+++ b/engine/cocci_vs_c.ml
-@@ -2820,7 +2820,13 @@ and (fullTypebis: (A.typeC, Ast_c.fullType) matcher) =
- 	match ty with
- 	  B.NoType -> false
- 	| _ -> true in
--      if type_present
-+      let position_required_but_unavailable =
-+	match A.get_pos_var ida with
-+	  [] -> false
-+	| _ ->
-+	    let (tyq, (ty, tyii)) = typb in
-+	    List.for_all Ast_c.is_fake tyii in
-+      if type_present && not position_required_but_unavailable
-       then
- 	let max_min _ =
- 	  Lib_parsing_c.lin_col_by_pos (Lib_parsing_c.ii_of_type typb) in
+-- 
+Richard Jones, Virtualization Group, Red Hat http://people.redhat.com/~rjones
+virt-top is 'top' for virtual machines.  Tiny program with many
+powerful monitoring features, net stats, disk stats, logging, etc.
+http://people.redhat.com/~rjones/virt-top
