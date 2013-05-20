@@ -1,65 +1,43 @@
-From: strnape1@fel.cvut.cz (strnape1 at fel.cvut.cz)
-Date: Wed, 08 May 2013 18:28:14 +0200
-Subject: [Cocci] [PATCH] scripts: Coccinelle script for pci_free_consistent()
-Message-ID: <20130508182814.Horde.hakqXtmsOi7FNBjwBV1zlw1@wimap.feld.cvut.cz>
+From: wsa@the-dreams.de (Wolfram Sang)
+Date: Mon, 20 May 2013 19:34:06 +0200
+Subject: [Cocci] isomorphism with unlikely
+Message-ID: <20130520173406.GB5890@katana>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Created coccinelle script for reporting missing pci_free_consistent() calls.
+Hi,
 
-Signed-off-by: Petr Strnad <strnape1@fel.cvut.cz>
----
-/// Find missing pci_free_consistent for every pci_alloc_consistent.
-///
-// Confidence: Moderate
-// Copyright: (C) 2013 Petr Strnad.  GPLv2.
-// URL: http://coccinelle.lip6.fr/
-// Keywords: pci_free_consistent, pci_alloc_consistent
-// Options: --no-includes --include-headers
+using 1.0-rc16 from debian, I use the following semantic patch:
 
-virtual report
-virtual org
-
-@search@
-local idexpression id;
-expression x,y,z,e;
-position p1,p2;
-type T;
 @@
-
-id = pci_alloc_consistent at p1(x,y,&z)
-... when != e = id
-if (id == NULL || ...) { ... return ...; }
-... when != pci_free_consistent(x,y,id,z)
-     when != if (id) { ... pci_free_consistent(x,y,id,z) ... }
-     when != if (y) { ... pci_free_consistent(x,y,id,z) ... }
-     when != e = (T)id
-     when exists
+expression r, p, n;
+@@
+	r = platform_get_resource(p, IORESOURCE_MEM, n);
+	...
 (
-return 0;
+-	if (!r) { ... }
 |
-return 1;
+-	if (unlikely(!r)) { ... }
 |
-return id;
-|
-return at p2 ...;
+-	if (unlikely(r == NULL)) { ... }
 )
 
-@script:python depends on report@
-p1 << search.p1;
-p2 << search.p2;
-@@
+and running against the latest kernel tree (~3.10-rc1):
 
-msg = "ERROR: missing pci_free_consistent; pci_alloc_consistent on  
-line %s and return without freeing on line %s" % (p1[0].line,p2[0].line)
-coccilib.report.print_report(p2[0],msg)
+spatch --sp-file unlikely_iso.cocci ~/Kernel/linux/drivers/net/ethernet/renesas/sh_eth.c
 
-@script:python depends on org@
-p1 << search.p1;
-p2 << search.p2;
-@@
+gives me a match:
 
-msg = "ERROR: missing pci_free_consistent; pci_alloc_consistent on  
-line %s and return without freeing on line %s" % (p1[0].line,p2[0].line)
-cocci.print_main(msg,p1)
-cocci.print_secs("",p2)
+-	if (unlikely(res == NULL)) {
+...
+
+Note that I have two alternations with 'unlikely' because using '!r'
+alone will not give me a match. I guess the isomorphism is skipped for
+some reason when used as an argument of unlikely. If so, is it possible
+to enforce it somehow? Or would it be even better to make 'unlikely' an
+isomorphism itself, so that the semantic patch doesn't need to know
+anything about 'unlikely'?
+
+Thanks,
+
+   Wolfram
