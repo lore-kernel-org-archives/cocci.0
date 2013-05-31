@@ -1,28 +1,151 @@
 From: neleai@seznam.cz (=?utf-8?B?T25kxZllaiBCw61sa2E=?=)
-Date: Thu, 30 May 2013 00:09:23 +0200
-Subject: [Cocci] Converting old-style function definitions.
-In-Reply-To: <alpine.DEB.2.02.1305291835300.2246@hadrien>
-References: <20130529162209.GA30955@domone.kolej.mff.cuni.cz>
- <alpine.DEB.2.02.1305291835300.2246@hadrien>
-Message-ID: <20130529220923.GB25088@domone.kolej.mff.cuni.cz>
+Date: Fri, 31 May 2013 11:58:01 +0200
+Subject: [Cocci] Slow processing
+Message-ID: <20130531095801.GA8771@domone.kolej.mff.cuni.cz>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, May 29, 2013 at 06:37:04PM +0200, Julia Lawall wrote:
-> On Wed, 29 May 2013, Ond?ej B?lka wrote:
-> 
-> >
-> > Hi,
-> >
-> > I am interested in common cleanup to convert K&R function
-> > definitions to ISO ones (As gcc warning in -Wold-style-definition).
-> >
-> > Probably someone already wrote spatch so I ask here who?
-> 
-> Unfortunately, it is not supported.  The Coccinelle C parser makes at
-> least an attempt to parse K&R function definitions, but the SmPL parser,
-> ie the parser of the transformation specification language, doesn't accept
-> them.
-> 
-Thanks, it looks that I will take plan B, parse -Wold-style-definition
-output and try convert corresponding lines by script.
+Hi, 
+coccinelle is very slow for certain files. As example I took unused
+variable removal, which takes around 45s.
+
+Is this known bug? Or how hard would be to fix it?
+
+A testcase follows:
+
+Note: processing took    43.6s: ./time/test_time.c
+
+// Copyright: (C) 2009 Gilles Muller, Julia Lawall, INRIA, DIKU.  GPLv2.
+
+@@
+type T;
+identifier i;
+constant C;
+@@
+
+(
+extern T i;
+|
+- T i;
+  <+... when != i
+- i = C;
+  ...+>
+)
+
+
+
+/* Copyright (C) 1991-2013 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
+
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
+
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with the GNU C Library; if not, see
+   <http://www.gnu.org/licenses/>.  */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+
+int
+main (int argc, char **argv)
+{
+  time_t t;
+  register struct tm *tp;
+  struct tm tbuf;
+  int lose = 0;
+
+  --argc;
+  ++argv;
+
+  do
+    {
+      char buf[BUFSIZ];
+      if (argc > 0)
+	{
+	  static char buf[BUFSIZ];
+	  sprintf (buf, "TZ=%s", *argv);
+	  if (putenv (buf))
+	    {
+	      puts ("putenv failed.");
+	      lose = 1;
+	    }
+	  else
+	    puts (buf);
+	}
+      tzset ();
+      tbuf.tm_year = 72;
+      tbuf.tm_mon = 0;
+      tbuf.tm_mday = 31;
+      tbuf.tm_hour = 6;
+      tbuf.tm_min = 14;
+      tbuf.tm_sec = 50;
+      tbuf.tm_isdst = -1;
+    doit:;
+      t = mktime (&tbuf);
+      if (t == (time_t) -1)
+	{
+	  puts ("mktime() failed?");
+	  lose = 1;
+	}
+      tp = localtime (&t);
+      if (tp == NULL)
+	{
+	  puts ("localtime() failed.");
+	  lose = 1;
+	}
+      else if (strftime (buf, sizeof (buf), "%a %b %d %X %Z %Y", tp) == 0)
+	{
+	  puts ("strftime() failed.");
+	  lose = 1;
+	}
+      else
+	puts (buf);
+      if (tbuf.tm_year == 101)
+	{
+	  tbuf.tm_year = 97;
+	  tbuf.tm_mon = 0;
+	  goto doit;
+	}
+      ++argv;
+    } while (--argc > 0);
+
+  {
+#define	SIZE	256
+    char buffer[SIZE];
+    time_t curtime;
+    struct tm *loctime;
+
+    curtime = time (NULL);
+
+    loctime = localtime (&curtime);
+
+    fputs (asctime (loctime), stdout);
+
+    strftime (buffer, SIZE, "Today is %A, %B %d.\n", loctime);
+    fputs (buffer, stdout);
+    strftime (buffer, SIZE, "The time is %I:%M %p.\n", loctime);
+    fputs (buffer, stdout);
+
+    loctime->tm_year = 72;
+    loctime->tm_mon = 8;
+    loctime->tm_mday = 12;
+    loctime->tm_hour = 20;
+    loctime->tm_min = 49;
+    loctime->tm_sec = 05;
+    curtime = mktime (loctime);
+    strftime (buffer, SIZE, "%D %T was %w the %jth.\n", loctime);
+    fputs (buffer, stdout);
+  }
+
+  return (lose ? EXIT_FAILURE : EXIT_SUCCESS);
+}
