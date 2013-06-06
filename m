@@ -1,32 +1,51 @@
 From: nicolas.palix@imag.fr (Nicolas Palix)
-Date: Thu,  6 Jun 2013 23:30:57 +0200
-Subject: [Cocci] [PATCH 2/2] Coccinelle: Update the Coccinelle section of
-	MAINTAINERS
-In-Reply-To: <1370554257-8864-1-git-send-email-nicolas.palix@imag.fr>
-References: <1370554257-8864-1-git-send-email-nicolas.palix@imag.fr>
-Message-ID: <1370554257-8864-2-git-send-email-nicolas.palix@imag.fr>
+Date: Thu,  6 Jun 2013 23:39:52 +0200
+Subject: [Cocci] [PATCH 1/2] Coccinelle: Make 'report' the default mode
+Message-ID: <1370554793-9152-1-git-send-email-nicolas.palix@imag.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Add Michal Marek and the misc branch of the kbuild tree
-in the Coccinelle section of MAINTAINERS.
----
- MAINTAINERS | 2 ++
- 1 file changed, 2 insertions(+)
+It appears that the 'report' mode is the one always
+provided by the semantic patches included in the kernel.
+It is thus more natural to select it by default.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 3d7782b..73b1b3a 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2098,7 +2098,9 @@ COCCINELLE/Semantic Patches (SmPL)
- M:	Julia Lawall <Julia.Lawall@lip6.fr>
- M:	Gilles Muller <Gilles.Muller@lip6.fr>
- M:	Nicolas Palix <nicolas.palix@imag.fr>
-+M:	Michal Marek <mmarek@suse.cz>
- L:	cocci at systeme.lip6.fr (moderated for non-subscribers)
-+T:	git git://git.kernel.org/pub/scm/linux/kernel/git/mmarek/kbuild.git misc
- W:	http://coccinelle.lip6.fr/
- S:	Supported
- F:	scripts/coccinelle/
+The 'chain' mode is however kept and the 'patch' mode
+is still the first tried in that case.
+
+Signed-off-by: Nicolas Palix <nicolas.palix@imag.fr>
+---
+
+I forgot to sign the previous emails. 
+
+ scripts/coccicheck | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/scripts/coccicheck b/scripts/coccicheck
+index 06fcb33..9d8780c 100755
+--- a/scripts/coccicheck
++++ b/scripts/coccicheck
+@@ -44,11 +44,19 @@ fi
+ 
+ if [ "$MODE" = "" ] ; then
+     if [ "$ONLINE" = "0" ] ; then
+-	echo 'You have not explicitly specified the mode to use. Using default "chain" mode.'
+-	echo 'All available modes will be tried (in that order): patch, report, context, org'
++	echo 'You have not explicitly specified the mode to use. Using default "report" mode.'
++	echo 'Available modes are the following: patch, report, context, org'
+ 	echo 'You can specify the mode with "make coccicheck MODE=<mode>"'
++	echo 'Note however that some modes are not implemented by some semantic patches.'
++    fi
++    MODE="report"
++fi
++
++if [ "$MODE" = "chain" ] ; then
++    if [ "$ONLINE" = "0" ] ; then
++	echo 'You have selected the "chain" mode.'
++	echo 'All available modes will be tried (in that order): patch, report, context, org'
+     fi
+-    MODE="chain"
+ elif [ "$MODE" = "report" -o "$MODE" = "org" ] ; then
+     FLAGS="$FLAGS -no_show_diff"
+ fi
 -- 
 1.8.1.2
