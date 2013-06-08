@@ -1,54 +1,38 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 8 Jun 2013 20:53:19 +0200 (CEST)
+From: wsa@the-dreams.de (Wolfram Sang)
+Date: Sat, 8 Jun 2013 21:02:17 +0200
 Subject: [Cocci] Removing pointer declaration
-In-Reply-To: <20130608172853.GA2997@katana>
+In-Reply-To: <alpine.DEB.2.02.1306082052560.1968@localhost6.localdomain6>
 References: <20130608172853.GA2997@katana>
-Message-ID: <alpine.DEB.2.02.1306082052560.1968@localhost6.localdomain6>
+ <alpine.DEB.2.02.1306082052560.1968@localhost6.localdomain6>
+Message-ID: <20130608190217.GB2997@katana>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sat, 8 Jun 2013, Wolfram Sang wrote:
+Hi Julia,
 
-> Hi,
+On Sat, Jun 08, 2013 at 08:53:19PM +0200, Julia Lawall wrote:
+> On Sat, 8 Jun 2013, Wolfram Sang wrote:
 > 
-> This spatch:
+> > Hi,
+> > 
+> > This spatch:
+> > 
+> > @@
+> > int *p;
 > 
-> @@
-> int *p;
+> This should be "identifier p".
 
-This should be "identifier p".
+I noticed meanwhile. Is it because the type cannot be checked because
+the pointer has not been declared yet? And, in general, can I get some
+more info about what went wrong besides "parse error" somehow? --debug
+didn't help.
 
-julia
+Thanks!
 
-> @@
-> 
-> -	int *p;
-> 
-> with this code:
-> 
-> 
-> int main()
-> {
-> 	int *a;
-> 
-> 	return 0;
-> }
-> 
-> results in:
-> 
-> Fatal error: exception Failure("minus: parse error: 
->  = File "test.cocci", line 5, column 7,  charpos = 22
->     around = 'p', whole content = -	int *p;
-> ")
-> 
-> using:
-> 
-> spatch version 1.0.0-rc15 with Python support and with PCRE support
-> (although dpkg says it is rc16)
-> 
-> Am I doing something wrong?
-> 
-> Thanks,
-> 
->    Wolfram
-> 
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 836 bytes
+Desc: Digital signature
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20130608/837973f5/attachment.asc>
