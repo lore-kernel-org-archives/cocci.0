@@ -1,18 +1,29 @@
-From: mstefani@redhat.com (Michael Stefaniuc)
-Date: Mon, 10 Jun 2013 09:34:40 +0200
-Subject: [Cocci] Removing pointer declaration
-In-Reply-To: <20130608172853.GA2997@katana>
-References: <20130608172853.GA2997@katana>
-Message-ID: <51B58190.3030801@redhat.com>
+From: mmarek@suse.cz (Michal Marek)
+Date: Fri, 14 Jun 2013 15:32:57 +0200
+Subject: [Cocci] [PATCH 1/2] Coccinelle: Make 'report' the default mode
+In-Reply-To: <1370554793-9152-2-git-send-email-nicolas.palix@imag.fr>
+ <1370554793-9152-1-git-send-email-nicolas.palix@imag.fr>
+Message-ID: <20130614133256.GA5402@sepie.suse.cz>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 06/08/2013 07:28 PM, Wolfram Sang wrote:
-> using:
+On Thu, Jun 06, 2013 at 11:39:52PM +0200, Nicolas Palix wrote:
+> It appears that the 'report' mode is the one always
+> provided by the semantic patches included in the kernel.
+> It is thus more natural to select it by default.
 > 
-> spatch version 1.0.0-rc15 with Python support and with PCRE support
-> (although dpkg says it is rc16)
-Yeah, coccinelle rc17 reports as version 1.0.0-rc15 too.
+> The 'chain' mode is however kept and the 'patch' mode
+> is still the first tried in that case.
+> 
+> Signed-off-by: Nicolas Palix <nicolas.palix@imag.fr>
 
-bye
-	michael
+On Thu, Jun 06, 2013 at 11:39:53PM +0200, Nicolas Palix wrote:
+> Add Michal Marek and the misc branch of the kbuild tree
+> in the Coccinelle section of MAINTAINERS.
+> 
+> Signed-off-by: Nicolas Palix <nicolas.palix@imag.fr>
+
+I applied both patches to kbuild.git#misc.
+
+Thanks,
+Michal
