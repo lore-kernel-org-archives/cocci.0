@@ -1,29 +1,21 @@
 From: mmarek@suse.cz (Michal Marek)
-Date: Fri, 14 Jun 2013 15:32:57 +0200
-Subject: [Cocci] [PATCH 1/2] Coccinelle: Make 'report' the default mode
-In-Reply-To: <1370554793-9152-2-git-send-email-nicolas.palix@imag.fr>
- <1370554793-9152-1-git-send-email-nicolas.palix@imag.fr>
-Message-ID: <20130614133256.GA5402@sepie.suse.cz>
+Date: Fri, 14 Jun 2013 15:34:01 +0200
+Subject: [Cocci] [PATCH] scripts/coccinelle: check for field address
+ argument to kfree
+In-Reply-To: <1370708502-21907-1-git-send-email-Julia.Lawall@lip6.fr>
+References: <1370708502-21907-1-git-send-email-Julia.Lawall@lip6.fr>
+Message-ID: <20130614133401.GB5402@sepie.suse.cz>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, Jun 06, 2013 at 11:39:52PM +0200, Nicolas Palix wrote:
-> It appears that the 'report' mode is the one always
-> provided by the semantic patches included in the kernel.
-> It is thus more natural to select it by default.
+On Sat, Jun 08, 2013 at 06:21:42PM +0200, Julia Lawall wrote:
+> From: Julia Lawall <Julia.Lawall@lip6.fr>
 > 
-> The 'chain' mode is however kept and the 'patch' mode
-> is still the first tried in that case.
+> The argument to kfree should not be the address of a structure field.
 > 
-> Signed-off-by: Nicolas Palix <nicolas.palix@imag.fr>
+> Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
-On Thu, Jun 06, 2013 at 11:39:53PM +0200, Nicolas Palix wrote:
-> Add Michal Marek and the misc branch of the kbuild tree
-> in the Coccinelle section of MAINTAINERS.
-> 
-> Signed-off-by: Nicolas Palix <nicolas.palix@imag.fr>
-
-I applied both patches to kbuild.git#misc.
+Applied to kbuild.git#misc.
 
 Thanks,
 Michal
