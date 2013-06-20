@@ -1,107 +1,72 @@
-From: nicolas.palix@imag.fr (Nicolas Palix)
-Date: Thu, 20 Jun 2013 14:00:19 +0200
-Subject: [Cocci] [PATCH] Coccinelle: Update the documentation
-In-Reply-To: <CAK9yfHyM7OrOtxWN56J06RAVBc-q0idDdhFjYzT3=opw-bZuXA@mail.gmail.com>
-References: <CAK9yfHyM7OrOtxWN56J06RAVBc-q0idDdhFjYzT3=opw-bZuXA@mail.gmail.com>
-Message-ID: <1371729619-18719-1-git-send-email-nicolas.palix@imag.fr>
+From: volanschi@metaware.fr (Nic Volanschi (R&D))
+Date: Thu, 20 Jun 2013 14:14:13 +0200
+Subject: [Cocci] metavariables for initialize/finalize
+In-Reply-To: <mailman.1.1371722402.18703.cocci@systeme.lip6.fr>
+References: <mailman.1.1371722402.18703.cocci@systeme.lip6.fr>
+Message-ID: <1371730453.3207.16.camel@zamolxis.metaware.tm.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
- - The new default mode is 'report'.
- - The available modes are detailed a bit more.
- - Some information about the use of spatch options are
-   also given concerning the use of indexing tools.
+Personally, I think that adapting old patches to add the second @@ in
+any initialization & finalization rule is very easy to do, even
+automatically. So I see no problem for breaking the backward
+compatibility on this matter, if it simplifies the implementation.
 
-Signed-off-by: Nicolas Palix <nicolas.palix@imag.fr>
----
-v2: Fix typo reported by Sachin Kamat
+Nic.
 
- Documentation/coccinelle.txt |   39 ++++++++++++++++++++++++++-------------
- 1 file changed, 26 insertions(+), 13 deletions(-)
+On Thu, 2013-06-20 at 12:00 +0200, cocci-request at systeme.lip6.fr wrote:
 
-diff --git a/Documentation/coccinelle.txt b/Documentation/coccinelle.txt
-index 408439d..81a329f 100644
---- a/Documentation/coccinelle.txt
-+++ b/Documentation/coccinelle.txt
-@@ -48,7 +48,7 @@ A Coccinelle-specific target is defined in the top level
- Makefile. This target is named 'coccicheck' and calls the 'coccicheck'
- front-end in the 'scripts' directory.
- 
--Four modes are defined: patch, report, context, and org. The mode to
-+Four basic modes are defined: patch, report, context, and org. The mode to
- use is specified by setting the MODE variable with 'MODE=<mode>'.
- 
- 'patch' proposes a fix, when possible.
-@@ -62,18 +62,24 @@ diff-like style.Lines of interest are indicated with '-'.
- 'org' generates a report in the Org mode format of Emacs.
- 
- Note that not all semantic patches implement all modes. For easy use
--of Coccinelle, the default mode is "chain" which tries the previous
--modes in the order above until one succeeds.
-+of Coccinelle, the default mode is "report".
- 
--To make a report for every semantic patch, run the following command:
-+Two other modes provide some common combinations of these modes.
- 
--	make coccicheck MODE=report
-+'chain' tries the previous modes in the order above until one succeeds.
- 
--NB: The 'report' mode is the default one.
-+'rep+ctxt' runs successively the report mode and the context mode.
-+	   It should be used with the C option (described later)
-+	   which checks the code on a file basis.
- 
--To produce patches, run:
-+Examples:
-+	To make a report for every semantic patch, run the following command:
- 
--	make coccicheck MODE=patch
-+		make coccicheck MODE=report
-+
-+	To produce patches, run:
-+
-+		make coccicheck MODE=patch
- 
- 
- The coccicheck target applies every semantic patch available in the
-@@ -129,26 +135,33 @@ To check only newly edited code, use the value 2 for the C flag, i.e.
- 
-     make C=2 CHECK="scripts/coccicheck"
- 
-+In these modes, which works on a file basis, there is no information
-+about semantic patches displayed, and no commit message proposed.
-+
- This runs every semantic patch in scripts/coccinelle by default. The
- COCCI variable may additionally be used to only apply a single
- semantic patch as shown in the previous section.
- 
--The "chain" mode is the default. You can select another one with the
-+The "report" mode is the default. You can select another one with the
- MODE variable explained above.
- 
--In this mode, there is no information about semantic patches
--displayed, and no commit message proposed.
--
-  Additional flags
- ~~~~~~~~~~~~~~~~~~
- 
- Additional flags can be passed to spatch through the SPFLAGS
- variable.
- 
--    make SPFLAGS=--use_glimpse coccicheck
-+    make SPFLAGS=--use-glimpse coccicheck
-+    make SPFLAGS=--use-idutils coccicheck
- 
- See spatch --help to learn more about spatch options.
- 
-+Note that the '--use-glimpse' and '--use-idutils' options
-+require external tools for indexing the code. None of them is
-+thus active by default. However, by indexing the code with
-+one of these tools, and according to the cocci file used,
-+spatch could proceed the entire code base more quickly.
-+
-  Proposing new semantic patches
- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- 
--- 
-1.7.9.5
+> ----------------------------------------------------------------------
+> 
+> Message: 1
+> Date: Wed, 19 Jun 2013 23:37:23 +0200 (CEST)
+> From: Julia Lawall <julia.lawall@lip6.fr>
+> To: cocci at systeme.lip6.fr
+> Subject: [Cocci] metavariables for initialize/finalize
+> Message-ID:
+> 	<alpine.DEB.2.02.1306192330420.2023@localhost6.localdomain6>
+> Content-Type: TEXT/PLAIN; charset=US-ASCII
+> 
+> SmPL allows defining initialize and finalize script rules that are rnu 
+> before and after the treatment of any files, repectively.  They are useful 
+> for managing counters, hash tables, etc. and for defining frequently used 
+> script functions.
+> 
+> At the moment, they do not allow the declaration of any metavariables.  In 
+> particular the syntax is, eg:
+> 
+> @initialize:python@
+> 
+> python code
+> 
+> without the second @@ as found in all other kinds of rules.
+> 
+> The problem is that this makes it impossible to refer to command line 
+> arguments (ie virtual identifiers) in the initialize and finalize rules, 
+> which can be useful.
+> 
+> One possibility would be to add metavariable declarations, as found 
+> elsewhere.  This would mean adding @@ to any existing semantic patches 
+> that contain initialize and finalize rules.
+> 
+> Another option would be to make the second @@ optional.  This preserves 
+> backward compatability, but it makes the language more complex, and it is 
+> not so easy to implement, because normally I don't parse the script code.
+> 
+> A third option would be to make it possible to refer to eg virtual.xyz 
+> directly in the script code, regardless of the language.  These would then 
+> get replaced by their values from the command line before passing the code 
+> to the interpreter of the script language.
+> 
+> What do you think?  I prefer the fist option, because the language remains 
+> (indeed, becomes more) uniform.  But the backward compatability is an 
+> issue.  On the other hand, maybe most people don't use initialize and 
+> finalize rules?
+> 
+> Thanks,
+> julia
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20130620/ea85c568/attachment.html>
