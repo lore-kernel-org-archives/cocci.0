@@ -1,7 +1,9 @@
 From: nicolas.palix@imag.fr (Nicolas Palix)
-Date: Thu, 20 Jun 2013 13:11:41 +0200
-Subject: [Cocci] [PATCH 2/3] Coccinelle: Update the documentation
-Message-ID: <1371726701-24970-1-git-send-email-nicolas.palix@imag.fr>
+Date: Thu, 20 Jun 2013 14:00:19 +0200
+Subject: [Cocci] [PATCH] Coccinelle: Update the documentation
+In-Reply-To: <CAK9yfHyM7OrOtxWN56J06RAVBc-q0idDdhFjYzT3=opw-bZuXA@mail.gmail.com>
+References: <CAK9yfHyM7OrOtxWN56J06RAVBc-q0idDdhFjYzT3=opw-bZuXA@mail.gmail.com>
+Message-ID: <1371729619-18719-1-git-send-email-nicolas.palix@imag.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -12,11 +14,13 @@ List-Id: cocci@systeme.lip6.fr
 
 Signed-off-by: Nicolas Palix <nicolas.palix@imag.fr>
 ---
+v2: Fix typo reported by Sachin Kamat
+
  Documentation/coccinelle.txt |   39 ++++++++++++++++++++++++++-------------
  1 file changed, 26 insertions(+), 13 deletions(-)
 
 diff --git a/Documentation/coccinelle.txt b/Documentation/coccinelle.txt
-index 408439d..1aa9a40 100644
+index 408439d..81a329f 100644
 --- a/Documentation/coccinelle.txt
 +++ b/Documentation/coccinelle.txt
 @@ -48,7 +48,7 @@ A Coccinelle-specific target is defined in the top level
@@ -37,7 +41,7 @@ index 408439d..1aa9a40 100644
 +of Coccinelle, the default mode is "report".
  
 -To make a report for every semantic patch, run the following command:
-+Two other modes provide some common combinaisons of these modes.
++Two other modes provide some common combinations of these modes.
  
 -	make coccicheck MODE=report
 +'chain' tries the previous modes in the order above until one succeeds.
