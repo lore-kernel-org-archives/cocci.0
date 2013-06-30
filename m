@@ -1,94 +1,121 @@
-From: nicolas.palix@imag.fr (Nicolas Palix)
-Date: Tue, 25 Jun 2013 15:03:10 +0200
-Subject: [Cocci] [PATCH] scripts: Coccinelle script for
-	pci_free_consistent()
-In-Reply-To: <20130508230308.Horde.hkDwg5wWGGBzmzKnqIjUhg1@wimap.feld.cvut.cz>
-References: <20130508230308.Horde.hkDwg5wWGGBzmzKnqIjUhg1@wimap.feld.cvut.cz>
-Message-ID: <CAAxaTiPTtNTpo8DAE628=En=sa0hTzeOJ19DoxE9GwdiQnrUqg@mail.gmail.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sun, 30 Jun 2013 14:02:59 +0200 (CEST)
+Subject: [Cocci] function prototypes
+Message-ID: <alpine.DEB.2.02.1306301401140.2021@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, May 8, 2013 at 11:03 PM,  <strnape1@fel.cvut.cz> wrote:
-> Created coccinelle script for reporting missing pci_free_consistent() calls.
->
-> Signed-off-by: Petr Strnad <strnape1@fel.cvut.cz>
+Nic Volanschi had a problem with changes to a function header not being 
+correctly propagated to the function prototype.  A patch is below.
 
-Signed-off-by: Nicolas Palix <nicolas.palix@imag.fr>
+julia
 
-> ---
-> diff --git a/scripts/coccinelle/free/pci_free_consistent.cocci
-> b/scripts/coccinelle/free/pci_free_consistent.cocci
-> new file mode 100644
-> index 0000000..43600cc
-> --- /dev/null
-> +++ b/scripts/coccinelle/free/pci_free_consistent.cocci
-> @@ -0,0 +1,52 @@
-> +/// Find missing pci_free_consistent for every pci_alloc_consistent.
-> +///
-> +// Confidence: Moderate
-> +// Copyright: (C) 2013 Petr Strnad.  GPLv2.
-> +// URL: http://coccinelle.lip6.fr/
-> +// Keywords: pci_free_consistent, pci_alloc_consistent
-> +// Options: --no-includes --include-headers
-> +
-> +virtual report
-> +virtual org
-> +
-> + at search@
-> +local idexpression id;
-> +expression x,y,z,e;
-> +position p1,p2;
-> +type T;
-> +@@
-> +
-> +id = pci_alloc_consistent at p1(x,y,&z)
-> +... when != e = id
-> +if (id == NULL || ...) { ... return ...; }
-> +... when != pci_free_consistent(x,y,id,z)
-> +    when != if (id) { ... pci_free_consistent(x,y,id,z) ... }
->
-> +    when != if (y) { ... pci_free_consistent(x,y,id,z) ... }
-> +    when != e = (T)id
-> +    when exists
-> +(
-> +return 0;
-> +|
-> +return 1;
-> +|
-> +return id;
-> +|
-> +return at p2 ...;
-> +)
-> +
-> + at script:python depends on report@
-> +p1 << search.p1;
-> +p2 << search.p2;
-> +@@
-> +
-> +msg = "ERROR: missing pci_free_consistent; pci_alloc_consistent on line %s
-> and return without freeing on line %s" % (p1[0].line,p2[0].line)
-> +coccilib.report.print_report(p2[0],msg)
-> +
-> + at script:python depends on org@
-> +p1 << search.p1;
-> +p2 << search.p2;
-> +@@
-> +
-> +msg = "ERROR: missing pci_free_consistent; pci_alloc_consistent on line %s
-> and return without freeing on line %s" % (p1[0].line,p2[0].line)
-> +cocci.print_main(msg,p1)
-> +cocci.print_secs("",p2)
->
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe kernel-janitors"
-> in
-> the body of a message to majordomo at vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+---
 
-
-
---
-Nicolas Palix
-Tel: +33 4 76 51 46 27
-http://membres-liglab.imag.fr/palix/
+diff --git a/parsing_cocci/function_prototypes.ml b/parsing_cocci/function_prototypes.ml
+index 6d7c77a..1244d6a 100644
+--- a/parsing_cocci/function_prototypes.ml
++++ b/parsing_cocci/function_prototypes.ml
+@@ -221,7 +221,10 @@ let new_name name =
+   ct := !ct + 1;
+   name^"__"^(string_of_int n)
+ 
+-let rec rename_param old_name all param =
++let new_iname name index =
++  name^"__"^(string_of_int index)
++
++let rec rename_param old_name all param index =
+   match Ast0.unwrap param with
+     Ast0.Param(ty,Some id) when all ->
+       (match Ast0.unwrap id with
+@@ -237,24 +240,34 @@ let rec rename_param old_name all param =
+ 	   Ast0.rewrap param (Ast0.Param(ty,Some new_id)))
+       |	_ -> ([],param))
+   | Ast0.Pdots(d) ->
+-      let nm = (old_name,new_name "__P") in
+-      let nml = (old_name,new_name "__n") in
++      let nm = (old_name,new_iname "__P" index) in
++      let nml = (old_name,new_iname "__n" index) in
+       let new_id =
+ 	Ast0.rewrap param
+ 	  (Ast0.MetaParamList(Ast0.rewrap_mcode d nm,
+ 			      Ast0.MetaListLen (Ast0.rewrap_mcode d nml),
+ 			      Ast0.Pure)) in
+-      ([Ast.MetaParamListDecl(Ast.NONE,nm,Ast.MetaLen nml);
+-	 Ast.MetaListlenDecl(nml)],
++      (* only add the new metavariable declarations for the function
++	 definition case.  For the prototype case they should be inherited *)
++      ((if not all
++      then [Ast.MetaParamListDecl(Ast.NONE,nm,Ast.MetaLen nml);
++	     Ast.MetaListlenDecl(nml)]
++      else []),
+        new_id)
+   | Ast0.OptParam(p) ->
+-      let (metavars,p) = rename_param old_name all p in
++      let (metavars,p) = rename_param old_name all p index in
+       (metavars,Ast0.rewrap param (Ast0.OptParam(p)))
+   | Ast0.UniqueParam(p) ->
+-      let (metavars,p) = rename_param old_name all p in
++      let (metavars,p) = rename_param old_name all p index in
+       (metavars,Ast0.rewrap param (Ast0.UniqueParam(p)))
+   | _ -> ([],param)
+ 
++let iota l =
++  let rec loop n = function
++      [] -> []
++    | x::xs -> n :: (loop (n+1) xs) in
++  loop 1 l
++
+ (* try to convert names in the - parameter list to new metavariables, to
+ account for spelling mistakes on the part of the programmer *)
+ let fresh_names old_name mdef dec =
+@@ -267,9 +280,10 @@ let fresh_names old_name mdef dec =
+ 	    Ast0.FunctionType(ty,lp,params,rp) ->
+ 	      let (metavars,newdec) =
+ 		let (metavars,l) =
++		  let params = Ast0.undots params in
+ 		  List.split
+-		    (List.map (rename_param old_name true)
+-		       (Ast0.undots params)) in
++		    (List.map2 (rename_param old_name true)
++		       params (iota params)) in
+ 		(List.concat metavars,
+ 		 Ast0.rewrap dec
+ 		   (Ast0.Decl
+@@ -286,9 +300,10 @@ let fresh_names old_name mdef dec =
+ 		match Ast0.unwrap mdef with
+ 		  Ast0.FunDecl(x,fninfo,name,lp,params,rp,lb,body,rb) ->
+ 		    let (def_metavars,def_l) =
++		      let params = Ast0.undots params in
+ 		      List.split
+-			(List.map (rename_param old_name false)
+-			   (Ast0.undots params)) in
++			(List.map2 (rename_param old_name false)
++			   params (iota params)) in
+ 		    (List.concat def_metavars,
+ 		     Ast0.rewrap mdef
+ 		       (Ast0.FunDecl(x,fninfo,name,lp,
+@@ -383,8 +398,21 @@ let reinsert mdefs minus =
+ 	      with Not_found -> x)
+ 	  | _ -> x)
+       | Ast0.CODE(rule_elem_dots) ->
+-	  (* let's hope there are no functions in here... *)
+-	  x
++	  (match Ast0.undots rule_elem_dots with
++	    [f] ->
++	      (match Ast0.unwrap f with
++		Ast0.FunDecl(_,fninfo,name,lp,params,rp,lbrace,body,rbrace) ->
++		  (try
++		    Ast0.rewrap x
++		      (Ast0.CODE
++			 (Ast0.rewrap x (Ast0.DOTS [List.assoc name table])))
++		  with Not_found -> x)
++	      | _ ->
++	      (* let's hope there are no functions in here... *)
++	      x)
++	  | _ ->
++	      (* let's hope there are no functions in here... *)
++	      x)
+       |	_ -> x)
+     minus
+ 
