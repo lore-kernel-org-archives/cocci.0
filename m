@@ -1,44 +1,76 @@
-From: mmarek@suse.cz (Michal Marek)
-Date: Wed, 03 Jul 2013 16:04:33 +0200
-Subject: [Cocci] [PATCH 3/3] Coccinelle: Update the options used to the
- new option scheme
-In-Reply-To: <CAAxaTiMgaCp17um0NnF2gbWDoRZnb2GOq-50LRAvV_dDdEsjRg@mail.gmail.com>
-References: <1371726656-24928-1-git-send-email-nicolas.palix@imag.fr>
- <1371726656-24928-2-git-send-email-nicolas.palix@imag.fr>
- <51D428F4.6020003@suse.cz>
- <CAAxaTiMgaCp17um0NnF2gbWDoRZnb2GOq-50LRAvV_dDdEsjRg@mail.gmail.com>
-Message-ID: <51D42F71.9030701@suse.cz>
+From: nicolas.palix@imag.fr (Nicolas Palix)
+Date: Wed,  3 Jul 2013 16:41:01 +0200
+Subject: [Cocci] [PATCH] Coccinelle: Update information about the minimal
+	version required
+Message-ID: <1372862461-14633-1-git-send-email-nicolas.palix@imag.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 3.7.2013 15:52, Nicolas Palix wrote:
-> Hi,
-> 
-> On Wed, Jul 3, 2013 at 3:36 PM, Michal Marek <mmarek@suse.cz> wrote:
->> On 20.6.2013 13:10, Nicolas Palix wrote:
->>> spatch has changed its option scheme.
->>> E.g., --no_show_diff is now --no-show-diff
->>>
->>> This patch updates:
->>>  - scripts/coccicheck
->>>  - Semantic patches under scripts/coccinelle/
->>
->> Will the new syntax work with older spatch versions?
->> I mean, it's
->> probably fair to require a recent version, but it should be documented IMO.
-> 
-> It is the opposite. The new spatch still supports the old
-> naming scheme. The more conventional naming has been introduced
-> in spatch version 1.0.0-rc11 in March 2012. I will send a new patch to
-> document that point.
+The naming convention of options has changed one year ago.
+The options have been recently updated in the cocci file
+and in scripts/coccicheck. This patch also adds this information
+in the documentation.
 
-Thanks.
+Signed-off-by: Nicolas Palix <nicolas.palix@imag.fr>
+---
+ Documentation/coccinelle.txt |   19 ++++++++-----------
+ scripts/coccicheck           |    5 +++++
+ 2 files changed, 13 insertions(+), 11 deletions(-)
 
-
->> Also, there was no patch 2/3 in this series, only 1/3 and 3/3.
-> 
-> It seems you finally found the v2 of this one. :)
-
-Yes :).
-
-Michal
+diff --git a/Documentation/coccinelle.txt b/Documentation/coccinelle.txt
+index 81a329f..7f773d5 100644
+--- a/Documentation/coccinelle.txt
++++ b/Documentation/coccinelle.txt
+@@ -6,15 +6,17 @@ Copyright 2010 Gilles Muller <Gilles.Muller@lip6.fr>
+  Getting Coccinelle
+ ~~~~~~~~~~~~~~~~~~~~
+ 
+-The semantic patches included in the kernel use the 'virtual rule'
+-feature which was introduced in Coccinelle version 0.1.11.
++The semantic patches included in the kernel use features and options
++which are provided by Coccinelle version 1.0.0-rc11 and above.
++Using earlier versions will fail as the option names used by
++the Coccinelle files and coccicheck have been updated.
+ 
+-Coccinelle (>=0.2.0) is available through the package manager
++Coccinelle is available through the package manager
+ of many distributions, e.g. :
+ 
+- - Debian (>=squeeze)
+- - Fedora (>=13)
+- - Ubuntu (>=10.04 Lucid Lynx)
++ - Debian
++ - Fedora
++ - Ubuntu
+  - OpenSUSE
+  - Arch Linux
+  - NetBSD
+@@ -36,11 +38,6 @@ as a regular user, and install it with
+ 
+         sudo make install
+ 
+-The semantic patches in the kernel will work best with Coccinelle version
+-0.2.4 or later.  Using earlier versions may incur some parse errors in the
+-semantic patch code, but any results that are obtained should still be
+-correct.
+-
+  Using Coccinelle on the Linux kernel
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 
+diff --git a/scripts/coccicheck b/scripts/coccicheck
+index d3757ad..bbf901a 100755
+--- a/scripts/coccicheck
++++ b/scripts/coccicheck
+@@ -1,5 +1,10 @@
+ #!/bin/bash
+ 
++#
++# This script requires at least spatch
++# version 1.0.0-rc11.
++#
++
+ SPATCH="`which ${SPATCH:=spatch}`"
+ 
+ trap kill_running SIGTERM SIGINT
+-- 
+1.7.9.5
