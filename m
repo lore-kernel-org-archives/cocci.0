@@ -1,26 +1,21 @@
 From: mmarek@suse.cz (Michal Marek)
-Date: Wed, 03 Jul 2013 15:36:52 +0200
-Subject: [Cocci] [PATCH 3/3] Coccinelle: Update the options used to the
- new option scheme
-In-Reply-To: <1371726656-24928-2-git-send-email-nicolas.palix@imag.fr>
-References: <1371726656-24928-1-git-send-email-nicolas.palix@imag.fr>
- <1371726656-24928-2-git-send-email-nicolas.palix@imag.fr>
-Message-ID: <51D428F4.6020003@suse.cz>
+Date: Wed, 3 Jul 2013 15:42:14 +0200
+Subject: [Cocci] [PATCH] Coccinelle: Update the documentation
+In-Reply-To: <1371729619-18719-1-git-send-email-nicolas.palix@imag.fr>
+References: <CAK9yfHyM7OrOtxWN56J06RAVBc-q0idDdhFjYzT3=opw-bZuXA@mail.gmail.com>
+ <1371729619-18719-1-git-send-email-nicolas.palix@imag.fr>
+Message-ID: <20130703134214.GC30955@sepie.suse.cz>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 20.6.2013 13:10, Nicolas Palix wrote:
-> spatch has changed its option scheme.
-> E.g., --no_show_diff is now --no-show-diff
+On Thu, Jun 20, 2013 at 02:00:19PM +0200, Nicolas Palix wrote:
+>  - The new default mode is 'report'.
+>  - The available modes are detailed a bit more.
+>  - Some information about the use of spatch options are
+>    also given concerning the use of indexing tools.
 > 
-> This patch updates:
->  - scripts/coccicheck
->  - Semantic patches under scripts/coccinelle/
+> Signed-off-by: Nicolas Palix <nicolas.palix@imag.fr>
 
-Will the new syntax work with older spatch versions? I mean, it's
-probably fair to require a recent version, but it should be documented IMO.
+Applied to kbuild.git#misc, thanks.
 
-Also, there was no patch 2/3 in this series, only 1/3 and 3/3.
-
-Thanks,
 Michal
