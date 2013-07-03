@@ -1,21 +1,22 @@
 From: mmarek@suse.cz (Michal Marek)
-Date: Wed, 3 Jul 2013 15:42:14 +0200
-Subject: [Cocci] [PATCH] Coccinelle: Update the documentation
-In-Reply-To: <1371729619-18719-1-git-send-email-nicolas.palix@imag.fr>
-References: <CAK9yfHyM7OrOtxWN56J06RAVBc-q0idDdhFjYzT3=opw-bZuXA@mail.gmail.com>
- <1371729619-18719-1-git-send-email-nicolas.palix@imag.fr>
-Message-ID: <20130703134214.GC30955@sepie.suse.cz>
+Date: Wed, 03 Jul 2013 15:26:54 +0200
+Subject: [Cocci] [PATCH v3] coccicheck: span checks across CPUs
+In-Reply-To: <CAAxaTiMxZV4gLmB6=hm4WBWPj6D+V-g+puU1Gm_E_Zzhm8UEWw@mail.gmail.com>
+References: <20130618214929.GA15976@www.outflux.net>
+ <CAAxaTiMxZV4gLmB6=hm4WBWPj6D+V-g+puU1Gm_E_Zzhm8UEWw@mail.gmail.com>
+Message-ID: <51D4269E.4090204@suse.cz>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, Jun 20, 2013 at 02:00:19PM +0200, Nicolas Palix wrote:
->  - The new default mode is 'report'.
->  - The available modes are detailed a bit more.
->  - Some information about the use of spatch options are
->    also given concerning the use of indexing tools.
+On 18.6.2013 23:51, Nicolas Palix wrote:
+> On Tue, Jun 18, 2013 at 11:49 PM, Kees Cook <keescook@chromium.org> wrote:
+>> This adds parallelism by default to the "coccicheck" target using
+>> spatch's "-max" and "-index" arguments.
+>>
+>> Signed-off-by: Kees Cook <keescook@chromium.org>
 > 
 > Signed-off-by: Nicolas Palix <nicolas.palix@imag.fr>
 
-Applied to kbuild.git#misc, thanks.
+Applied to kbuild.git#misc.
 
 Michal
