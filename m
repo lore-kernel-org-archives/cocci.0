@@ -1,22 +1,31 @@
-From: mmarek@suse.cz (Michal Marek)
-Date: Wed, 03 Jul 2013 23:00:04 +0200
-Subject: [Cocci] [PATCH] Coccinelle: Update information about the
- minimal version required
-In-Reply-To: <1372862461-14633-1-git-send-email-nicolas.palix@imag.fr>
-References: <1372862461-14633-1-git-send-email-nicolas.palix@imag.fr>
-Message-ID: <51D490D4.2080808@suse.cz>
+From: cristian.bercaru@freescale.com (Cristian Bercaru)
+Date: Tue, 9 Jul 2013 18:21:18 +0300
+Subject: [Cocci] [PATCH] invoke arguments the right way in coccinelle script
+Message-ID: <1373383278-3339-1-git-send-email-cristian.bercaru@freescale.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Dne 3.7.2013 16:41, Nicolas Palix napsal(a):
-> The naming convention of options has changed one year ago.
-> The options have been recently updated in the cocci file
-> and in scripts/coccicheck. This patch also adds this information
-> in the documentation.
-> 
-> Signed-off-by: Nicolas Palix <nicolas.palix@imag.fr>
+Because the command line arguments were invoked incorrectly
+'make coccicheck' failed to run 'irqf_oneshot.cocci' and all tests that
+followed. Fixed that.
 
-I applied this and the patch that changes the options to kbuild.git#misc.
+Signed-off-by: Cristian Bercaru <cristian.bercaru@freescale.com>
+---
+ scripts/coccinelle/misc/irqf_oneshot.cocci | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-Michal
+diff --git a/scripts/coccinelle/misc/irqf_oneshot.cocci b/scripts/coccinelle/misc/irqf_oneshot.cocci
+index 6cfde94..5cca680 100644
+--- a/scripts/coccinelle/misc/irqf_oneshot.cocci
++++ b/scripts/coccinelle/misc/irqf_oneshot.cocci
+@@ -4,7 +4,7 @@
+ //
+ // Confidence: Good
+ // Comments:
+-// Options: --no-includes
++// Options: -no_includes
+ 
+ virtual patch
+ virtual context
+-- 
+1.7.11.7
