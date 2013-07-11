@@ -1,50 +1,83 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 11 Jul 2013 14:17:59 +0200 (CEST)
+From: wagi@monom.org (Daniel Wagner)
+Date: Thu, 11 Jul 2013 14:38:52 +0200
 Subject: [Cocci] gboolean -> bool conversion
-In-Reply-To: <51DE944F.1000903@monom.org>
+In-Reply-To: <alpine.DEB.2.02.1307111417120.2253@hadrien>
 References: <51DE6A05.9050008@monom.org>
  <alpine.DEB.2.02.1307111026390.2253@hadrien> <51DE75BF.3060207@monom.org>
  <51DE81CC.3010805@monom.org> <alpine.DEB.2.02.1307111221320.2253@hadrien>
- <51DE944F.1000903@monom.org>
-Message-ID: <alpine.DEB.2.02.1307111417120.2253@hadrien>
+ <51DE944F.1000903@monom.org> <alpine.DEB.2.02.1307111417120.2253@hadrien>
+Message-ID: <51DEA75C.10309@monom.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Maybe the patch below will get rid of the already tagged token problem and
-allow you to get rid of the ++..
+Hi Julia,
 
-julia
+On 07/11/2013 02:17 PM, Julia Lawall wrote:
+> Maybe the patch below will get rid of the already tagged token problem and
+> allow you to get rid of the ++..
 
-diff --git a/engine/transformation_c.ml b/engine/transformation_c.ml
-index 3368ca7..348ec17 100644
---- a/engine/transformation_c.ml
-+++ b/engine/transformation_c.ml
-@@ -340,6 +340,28 @@ module XTRANS = struct
- 	    Some(Ast_cocci.CONTEXT(old_pos,old_modif),
- 		 (clean_env tin.binding)::oldenvs)
+Thanks for the quick fix. Indeed, this fixes the 'already tagged' 
+problem. The result is now:
 
-+    (* non ++ but same modif for two reasons *)
-+    | (Ast_cocci.MINUS(old_pos,old_inst,old_adj,old_modif),
-+       Ast_cocci.MINUS(new_pos,new_inst,new_adj,new_modif))
-+	when old_pos = new_pos &&
-+	  old_modif = strip_minus_code new_modif &&
-+	  List.mem (clean_env tin.binding) oldenvs ->
-+
-+          cocciinforef :=
-+	    Some(Ast_cocci.MINUS(old_pos,Common.union_set old_inst new_inst,
-+				 old_adj,old_modif),
-+		 oldenvs)
-+
-+    | (Ast_cocci.CONTEXT(old_pos,old_modif),
-+       Ast_cocci.CONTEXT(new_pos,new_modif))
-+	when old_pos = new_pos &&
-+	  old_modif = strip_context_code new_modif &&
-+	  List.mem (clean_env tin.binding) oldenvs ->
-+	    (* iteration only allowed on context; no way to replace something
-+	       more than once; now no need for iterable; just check a flag *)
-+
-+          cocciinforef := Some(Ast_cocci.CONTEXT(old_pos,old_modif),oldenvs)
-+
-     | _ ->
-           (* coccionly:
-           if !Flag.sgrep_mode2
+  struct info {
+-       gboolean data;
++       bool data;
+  };
+
+-static gboolean timer_cb(gpointer user_data)
++static bool timer_cb(gpointer user_data)
+  {
+         struct info *info = user_data;
+
+-       info->data = FALSE;
++       info->data = false;
+
+         return FALSE;
+  }
+
+-static gboolean is_enabled(gboolean flag)
++static bool is_enabled(bool flag)
+  {
+         return !flag;
+  }
+
+  int main(int argc, char *argv[])
+  {
+-       gboolean b = TRUE;
+-       gboolean c, d;
+-       gboolean e = FALSE, g, f = TRUE;
+-       gboolean h = is_ensbled(b);
++       bool b = true;
++       bool c, d;
++       bool e = false, g, f = true;
++       bool h = is_ensbled(b);
+         struct info *info;
+
+         info = g_new0(struct info, 1);
+-       info->data = TRUE;
++       info->data = true;
+
+         g_timeout(delay, timer_cb, &info);
+
+
+I am pondering if it would be possible to say
+
+- gboolean
+	when != 'static gboolean func(gpointer)'
++ bool
+
+
+cheers,
+daniel
+
+ps: I the install step didn't work for me:
+
+$ make install
+cp: cannot create regular file ?ocaml/coccilib/coccilib.cmi?: No such 
+file or directory
+make: *** [ocaml/coccilib/coccilib.cmi] Error 1
+
+Doing a mkdir before the install step fixed it for me.
+
+$ mkdir ocaml/coccili
+$ make install
