@@ -1,28 +1,26 @@
 From: wagi@monom.org (Daniel Wagner)
-Date: Mon, 29 Jul 2013 16:58:29 +0200
-Subject: [Cocci] Formatting issue
-In-Reply-To: <alpine.DEB.2.02.1307291110020.2271@hadrien>
+Date: Mon, 29 Jul 2013 16:59:30 +0200
+Subject: [Cocci] Formatting issues
+In-Reply-To: <20130729092851.GA8704@domone.kolej.mff.cuni.cz>
 References: <51E6B08E.9030600@monom.org>
  <alpine.DEB.2.02.1307171706400.2113@hadrien> <51E6B532.8010909@monom.org>
  <alpine.DEB.2.02.1307171728420.2113@hadrien>
  <20130717155132.GA20499@domone.kolej.mff.cuni.cz>
  <51F62B0C.2040906@monom.org> <alpine.DEB.2.02.1307291047250.2271@hadrien>
- <51F630D7.1070701@monom.org> <alpine.DEB.2.02.1307291110020.2271@hadrien>
-Message-ID: <51F68315.3020806@monom.org>
+ <51F630D7.1070701@monom.org> <20130729092851.GA8704@domone.kolej.mff.cuni.cz>
+Message-ID: <51F68352.1060107@monom.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 07/29/2013 11:14 AM, Julia Lawall wrote:
-> On Mon, 29 Jul 2013, Daniel Wagner wrote:
->
+On 07/29/2013 11:28 AM, Ond?ej B?lka wrote:
+> On Mon, Jul 29, 2013 at 11:07:35AM +0200, Daniel Wagner wrote:
 >> On 07/29/2013 10:49 AM, Julia Lawall wrote:
 >>>>> I now try to convince others to use first option as this allows all
 >>>>> submitted patches have perfect formatting because formatter took care of
 >>>>> it. This can save few round trips when reviewer wants space after comma
 >>>>> etc.
 >>>>
->>>> The main problem I see is as soon you start modifing the output from
->>>> spatch by
+>>>> The main problem I see is as soon you start modifing the output from spatch by
 >>>> hand you risk to introduce an error and as soon one does several rounds of
 >>>> review it one will introduce an error.
 >>>>
@@ -39,58 +37,14 @@ On 07/29/2013 11:14 AM, Julia Lawall wrote:
 >>> generating code, it doesn't see the AST any more, only tokens, so it has
 >>> limited information.
 >>
->> I understand that in reality this is a hard problem. Something what I would
->> helpful here would be a list of lines (emacs/vim parseable) where the the
->> result line is too long, presumed that detecting of long lines is easy.
->
-> Perhaps there already exists a tool or emacs mode to do this?
-
-Yes, as I said I was falling back to use checkpatch.pl to find the 
-offending lines. My point is that coccinelle already knows where it did 
-write too long lines, why not just report it?
-
->>> In any case, the huge indent was just a bug, so hopefully the result will
->>> be somewhat better in the future.
+>> I understand that in reality this is a hard problem. Something what
+>> I would helpful here would be a list of lines (emacs/vim parseable)
+>> where the the result line is too long, presumed that detecting of
+>> long lines is easy.
 >>
->> Yes, that one is gone. Thanks again.
->>
->> Okay, maybe I am overdoing it with my wishlist. I am trying to prepare another
->> semantic patch and I see that coccinelle's parser is not too happy with
->> certain code. Most of the time I just need to add the right macro to my
->> standard.h to make coccinelle happy. My wish would be that coccinelle wouldn't
->> just ignore that file instead just stop and yell at me: "Parser error: ...".
->> Did I overlook such an option?
->
-> It doesn't do this by default, because almost all files contain things it
-> can't parse, and most of the time the problem is not related to the code
-> you want to process.
- >
-> You can use the --verbose-parsing option to get all
-> of the information about parsing.  But there is a lot of it, and you
-> should know that Coccinelle makes a number of attempts to parse each
-> function, and so you can get parse errors on the earlier attempts even
-> when it succeeds on later attempts.
- >
-> Usually, it is sufficient to run spatch -parse_c {your code} a few times,
-> and see what are the top 10 failure tokens that it reports at the end.
+> I already did it in stylepp. You need to install it
 
-Right, '-parse_c' was what I was looking for. Now I see where the parse 
-finally chokes.
-
-Hmm, a simple define is too much:
-
-N6ADDR_ALL_DHCP_RELAY_AGENTS_AND_SERVERS_MC_INIT: present in 1 parsing 
-errors
-example:
-
-        #define IN6ADDR_ALL_DHCP_RELAY_AGENTS_AND_SERVERS_MC_INIT \
-         { { { 0xff,0x02,0,0,0,0,0,0,0,0,0,0,0,0x1,0,0x2 } } } /* 
-ff02::1:2 */
-        static const struct in6_addr 
-in6addr_all_dhcp_relay_agents_and_servers_mc =
-
-
-https://git.kernel.org/cgit/network/connman/connman.git/tree/gdhcp/common.c#n465
+Thanks, I give it a try.
 
 cheers,
 daniel
