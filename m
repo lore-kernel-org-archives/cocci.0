@@ -1,54 +1,94 @@
-From: neleai@seznam.cz (=?utf-8?B?T25kxZllaiBCw61sa2E=?=)
-Date: Mon, 29 Jul 2013 17:59:20 +0200
-Subject: [Cocci] Formatting issues
-In-Reply-To: <51F68352.1060107@monom.org>
-References: <51E6B08E.9030600@monom.org>
- <alpine.DEB.2.02.1307171706400.2113@hadrien>
- <51E6B532.8010909@monom.org>
- <alpine.DEB.2.02.1307171728420.2113@hadrien>
- <20130717155132.GA20499@domone.kolej.mff.cuni.cz>
- <51F62B0C.2040906@monom.org>
- <alpine.DEB.2.02.1307291047250.2271@hadrien>
- <51F630D7.1070701@monom.org>
- <20130729092851.GA8704@domone.kolej.mff.cuni.cz>
- <51F68352.1060107@monom.org>
-Message-ID: <20130729155920.GA10905@domone.kolej.mff.cuni.cz>
+From: volanschi@metaware.fr (Nic Volanschi (R&D))
+Date: Tue, 30 Jul 2013 14:36:32 +0200
+Subject: [Cocci] transforming non-pointer arguments in a call
+Message-ID: <1375187792.3200.33.camel@zamolxis.metaware.tm.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, Jul 29, 2013 at 04:59:30PM +0200, Daniel Wagner wrote:
-> On 07/29/2013 11:28 AM, Ond?ej B?lka wrote:
-> >On Mon, Jul 29, 2013 at 11:07:35AM +0200, Daniel Wagner wrote:
-> >>On 07/29/2013 10:49 AM, Julia Lawall wrote:
-> >>>It's a simple rule in theory, but not so simple in practice.  Pretty
-> >>>printing is a hard problem, because doing a good job requires knowing both
-> >>>what you have seen before and what is coming up.  Also, when Coccinelle is
-> >>>generating code, it doesn't see the AST any more, only tokens, so it has
-> >>>limited information.
-> >>
-> >>I understand that in reality this is a hard problem. Something what
-> >>I would helpful here would be a list of lines (emacs/vim parseable)
-> >>where the the result line is too long, presumed that detecting of
-> >>long lines is easy.
-> >>
-> >I already did it in stylepp. You need to install it
-> 
-> Thanks, I give it a try.
-> 
-I now also wrote a similar tool,
+Hi list,
 
-stylepp_restrict_formater
+I'm trying to implement a transformation over the actual arguments
+passed in a function call, ensuring that all variables are pointers: for
+every variable argument that is not a pointer, a '&' operator should be
+added.
 
-It reverts changes on lines that were not touched in last commit so you
-could use following:
+For instance, in the following C file:
 
-apply patch,
-git commit
-for I in `git diff --name-only HEAD^`; do
-  run favourite formatter
-done
-stylepp_restrict_formatter
+#include <stdio.h>
+#define ISRT "insert"
 
-It does not handle formatters that split lines yet.
-A source is at script/stylepp_restrict_formatter src/_restrict_formatter.c 
-so you could try to add it.
+int ctdli() {}
+
+typedef struct {int i; int j;} COMPLEX;
+
+int main() {
+  int n = 3;
+  COMPLEX *strp;
+  COMPLEX str;
+  ctdli();
+  ctdli("none");
+  ctdli(1);
+  ctdli("insert", 2, 3.0);
+  ctdli(3, "insert", 2, 3.0);
+  ctdli(n, "insert", 2, 3.0);
+  ctdli(n+1, "insert", 2, 3.0, "quatre");
+  ctdli("insert", 2, 3.0);
+  ctdli("insert", str, 2, 3.0);
+  ctdli(3, "insert", 2, str, 3.0);
+  ctdli(n, "insert", 2, 3.0, str);
+  ctdli(ISRT, 2, str, str);
+  ctdli("insert", strp, 2, 3.0);
+  ctdli(n-1, "insert", 2, strp, 3.0);
+  ctdli(n, "insert", 2, 3.0, strp);
+  ctdli(2, "insert", strp, strp);
+  ctdli("insert", str, strp, 3.0);
+  ctdli(3, "insert", strp, str, 3.0);
+  ctdli(n, "insert", strp, 3.0, str);
+  printf("hi\n");
+}
+
+the following calls should be changed:
+
+-  ctdli(n, "insert", 2, 3.0);
++  ctdli(&n, "insert", 2, 3.0);
+   ctdli(n+1, "insert", 2, 3.0, "quatre");
+   ctdli("insert", 2, 3.0);
+-  ctdli("insert", str, 2, 3.0);
+-  ctdli(3, "insert", 2, str, 3.0);
+-  ctdli(n, "insert", 2, 3.0, str);
+-  ctdli(ISRT, 2, str, str);
++  ctdli("insert", &str, 2, 3.0);
++  ctdli(3, "insert", 2, &str, 3.0);
++  ctdli(n, "insert", 2, 3.0, &str);
++  ctdli(ISRT, 2, &str, &str);
+   ctdli("insert", strp, 2, 3.0);
+   ctdli(n-1, "insert", 2, strp, 3.0);
+   ctdli(n, "insert", 2, 3.0, strp);
+   ctdli(2, "insert", strp, strp);
+-  ctdli("insert", str, strp, 3.0);
+-  ctdli(3, "insert", strp, str, 3.0);
+-  ctdli(n, "insert", strp, 3.0, str);
++  ctdli("insert", &str, strp, 3.0);
++  ctdli(3, "insert", strp, &str, 3.0);
++  ctdli(n, "insert", strp, 3.0, &str);
+
+I tried the following rule to do this:
+
+@@ idexpression *ptr; idexpression e; @@
+ ctdli(...,
+(
+ ptr
+|
+-e
++&e
+)
+  , ...)
+
+This rule correctly changed the first 4 calls above, but not the last 3
+ones: whenever the call contains at least one pointer argument (strp),
+the other non-pointer arguments (str) are no more changed.
+
+Is this a bug or a feature?
+If it is a feature, somehow related to the semantics of "...", how can I
+transform every non-pointer variable argument to a pointer?
+Nic.
