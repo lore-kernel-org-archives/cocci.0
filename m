@@ -1,71 +1,87 @@
-From: eric@regit.org (Eric Leblond)
-Date: Fri, 02 Aug 2013 11:32:27 +0200
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Fri, 2 Aug 2013 11:37:49 +0200 (CEST)
 Subject: [Cocci] Question on expression meaning
-Message-ID: <1375435947.11948.89.camel@ice-age.regit.org>
+In-Reply-To: <1375435947.11948.89.camel@ice-age.regit.org>
+References: <1375435947.11948.89.camel@ice-age.regit.org>
+Message-ID: <alpine.DEB.2.02.1308021134400.2035@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hello,
+On Fri, 2 Aug 2013, Eric Leblond wrote:
 
-I'm trying to achieve the following:
+> Hello,
+>
+> I'm trying to achieve the following:
+>
+> void DecodeIPV6(ThreadVars *tv, DecodeThreadVars *dtv, Packet *p, uint8_t *pkt, uint16_t len, PacketQueue *pq)
+> {
+> ...
+>    /* now process the Ext headers and/or the L4 Layer */
+>    switch(IPV6_GET_NH(p)) {
+>        case IPPROTO_TCP:
+>            IPV6_SET_L4PROTO (p, IPPROTO_TCP);
+> -            return DecodeTCP(tv, dtv, p, pkt + IPV6_HEADER_LEN, IPV6_GET_PLEN(p), pq);
+> +	      DecodeTCP(tv, dtv, p, pkt + IPV6_HEADER_LEN, IPV6_GET_PLEN(p), pq);
+> +            return;
+>
+> DecodeTCP being a function returning void too. In fact Solaris compiler
+> does not accept void function to return a void function.
+>
+> My first try was:
+>
+> @@
+> identifier f;
+> identifier g;
+> @@
+>
+> void f(...)
+> {
+> ...
+> - return g(...);
+> + g(...);
+> + return;
+> ...
+> }
+>
+> But this does not work because the ... can not be put on - + lines.
+>
+> I've tried the not specific semantic patch:
+>
+> @@
+> identifier f;
+> expression E;
+> @@
+>
+> void f(...)
+> {
+> ...
+> - return E;
+> + E;
+> + return;
+> ...
+> }
+>
+> But it does not work for function (it works for "return 42;"). Any idea ?
 
-void DecodeIPV6(ThreadVars *tv, DecodeThreadVars *dtv, Packet *p, uint8_t *pkt, uint16_t len, PacketQueue *pq)
-{
-...
-    /* now process the Ext headers and/or the L4 Layer */
-    switch(IPV6_GET_NH(p)) {
-        case IPPROTO_TCP:
-            IPV6_SET_L4PROTO (p, IPPROTO_TCP);
--            return DecodeTCP(tv, dtv, p, pkt + IPV6_HEADER_LEN, IPV6_GET_PLEN(p), pq);
-+	      DecodeTCP(tv, dtv, p, pkt + IPV6_HEADER_LEN, IPV6_GET_PLEN(p), pq);
-+            return;
+It is quite strange that it does not work for a function call.  I will 
+look into it.
 
-DecodeTCP being a function returning void too. In fact Solaris compiler
-does not accept void function to return a void function.
+But if you want to focus on function calls, what could be best is the 
+following (not tested):
 
-My first try was:
-
-@@
-identifier f;
-identifier g;
-@@
-
-void f(...)
-{
-...
-- return g(...);
-+ g(...);
+- return
+     g(...);
 + return;
-...
-}
 
-But this does not work because the ... can not be put on - + lines.
+That way you preserve the spacing and newlines in the function call. 
+There could be some other formatting problems in the result, though.
 
-I've tried the not specific semantic patch:
+The other solution would be to make the argument of g be a metavariable 
+declared as:
 
-@@
-identifier f;
-expression E;
-@@
+expression list es;
 
-void f(...)
-{
-...
-- return E;
-+ E;
-+ return;
-...
-}
+Then you can remove it and add it back.  But you will probably lose any 
+newlines within es.
 
-But it does not work for function (it works for "return 42;"). Any idea ?
-
-BR,
---
-Eric
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 190 bytes
-Desc: This is a digitally signed message part
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20130802/f03fb3e2/attachment.asc>
+julia
