@@ -1,33 +1,29 @@
 From: rminnich@gmail.com (ron minnich)
-Date: Thu, 1 Aug 2013 08:22:41 -0700
-Subject: [Cocci]  changing type to struct
-Message-ID: <CAP6exYKuBk5LsNQLornHMCxXb0eAxY4HYC4Q1c3Pvj2zBVa=HA@mail.gmail.com>
+Date: Wed, 7 Aug 2013 08:21:24 -0700
+Subject: [Cocci]  disjunction and parens
+Message-ID: <CAP6exY+yyWBN5LPF7fT5KHuGe8VM4z0R5ywJ08Pq2rwOO3Hxaw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Sorry for this obvious question, but I am restarting on coccinnelle
-and could use a jumpstart.
+I've never been sure what to do about this error:
 
-I have types named
-Chan
+[rminnich at localhost akaros]$ spatch --sp-file !$ kern/src/chan.c
+spatch --sp-file scripts/spatch/waserror.cocci kern/src/chan.c
+init_defs_builtins: /usr/share/coccinelle/standard.h
+Fatal error: exception Failure("normal parenthesis in line 5 matched
+to disjunction parenthesis on line 7 column 0
 
-and would like to change them to this:
-struct chan
-
-Here is my first failing pass.
+Spatch is:
 
 @@
-identifier d;
+type T;
+identifier f;
 @@
--Chan
-+struct chan
-d
+T F(...,
++struct errbuf *errbuf
+){...}
 
-fails badly ...
-
-er, hints, I've been out of this game for a while.
-
-ron
+What did I do wrong here?
 _______________________________________________
 Cocci mailing list
 Cocci at diku.dk
