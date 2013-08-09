@@ -1,36 +1,37 @@
 From: mstefani@redhat.com (Michael Stefaniuc)
-Date: Fri, 09 Aug 2013 12:56:20 +0200
-Subject: [Cocci] disjunction and parens
-In-Reply-To: <CAP6exY+yyWBN5LPF7fT5KHuGe8VM4z0R5ywJ08Pq2rwOO3Hxaw@mail.gmail.com>
-References: <CAP6exY+yyWBN5LPF7fT5KHuGe8VM4z0R5ywJ08Pq2rwOO3Hxaw@mail.gmail.com>
-Message-ID: <5204CAD4.9020507@redhat.com>
+Date: Fri, 09 Aug 2013 13:05:09 +0200
+Subject: [Cocci] OK, this time I *promise* I'm stuck
+In-Reply-To: <CAP6exYJwt0HpKsACRGRY0PBd-Ez7PE=NZyDsKGabRSUxpHk=Xw@mail.gmail.com>
+References: <CAP6exYJwt0HpKsACRGRY0PBd-Ez7PE=NZyDsKGabRSUxpHk=Xw@mail.gmail.com>
+Message-ID: <5204CCE5.8030508@redhat.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 08/07/2013 05:21 PM, ron minnich wrote:
-> I've never been sure what to do about this error:
-> 
-> [rminnich at localhost akaros]$ spatch --sp-file !$ kern/src/chan.c
-> spatch --sp-file scripts/spatch/waserror.cocci kern/src/chan.c
-> init_defs_builtins: /usr/share/coccinelle/standard.h
-> Fatal error: exception Failure("normal parenthesis in line 5 matched
-> to disjunction parenthesis on line 7 column 0
-> 
-> Spatch is:
-> 
+On 08/01/2013 05:56 PM, ron minnich wrote:
 > @@
-> type T;
-> identifier f;
+> function f;
+> identifier d;
 > @@
-> T F(...,
-> +struct errbuf *errbuf
-> ){...}
-> 
-> What did I do wrong here?
-) is special when it is on the first column in a line. If you add a
-space before it, it will just work. It is a good practice to start code
-matching lines with a space; like the context lines in the unified diff
-format.
+> f(...,
+> -Chan *d,
+> +struct chan *d,
+>  ...);
+
+There are multiple issues with this:
+- function is not a metavariable, coccinelle assumes that f is an
+expression of type "function".
+- f( ) is a function call not a function definition.
+- coccinelle doesn't detects that "Chan" is a type.
+
+@@
+identifier f, d;
+typedef Chan;
+type T;
+@@
+ T f(...,
+-Chan
++struct chan
+ *d, ...);
 
 bye
 	michael
