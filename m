@@ -1,99 +1,132 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 11 Aug 2013 23:16:37 +0200 (CEST)
-Subject: [Cocci] [PATCH v3] coccinelle: replace 0/1 with false/true in
- functions returning bool
-In-Reply-To: <1376255112-22787-1-git-send-email-linux@rasmusvillemoes.dk>
-References: <1376071193-21146-1-git-send-email-linux@rasmusvillemoes.dk>
- <1376255112-22787-1-git-send-email-linux@rasmusvillemoes.dk>
-Message-ID: <alpine.DEB.2.02.1308112315150.2072@localhost6.localdomain6>
+From: Julia.Lawall@lip6.fr (Julia Lawall)
+Date: Mon, 12 Aug 2013 15:21:23 +0200
+Subject: [Cocci] [PATCH] scripts/coccinelle/misc/warn.cocci: use WARN
+Message-ID: <1376313683-32276-1-git-send-email-Julia.Lawall@lip6.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Acked-by: Julia Lawall <Julia.Lawall@lip6.fr>
+From: Julia Lawall <Julia.Lawall@lip6.fr>
 
+Use WARN(1,...) rather than printk followed by WARN(1).
 
-On Sun, 11 Aug 2013, Rasmus Villemoes wrote:
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
-> This semantic patch replaces "return {0,1};" with "return
-> {false,true};" in functions returning bool.
-> 
-> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-> ---
-> v2: Simplified script, and eliminate whitespace mangling at the same
-> time. Thanks to Julia Lawall.
-> 
-> v3: Further improvements from Julia. In particular, it now also does
-> header files.
-> 
->  scripts/coccinelle/misc/boolreturn.cocci |   58 ++++++++++++++++++++++++++++++
->  1 file changed, 58 insertions(+)
->  create mode 100644 scripts/coccinelle/misc/boolreturn.cocci
-> 
-> diff --git a/scripts/coccinelle/misc/boolreturn.cocci b/scripts/coccinelle/misc/boolreturn.cocci
-> new file mode 100644
-> index 0000000..a43c7b0
-> --- /dev/null
-> +++ b/scripts/coccinelle/misc/boolreturn.cocci
-> @@ -0,0 +1,58 @@
-> +/// Return statements in functions returning bool should use
-> +/// true/false instead of 1/0.
-> +//
-> +// Confidence: High
-> +// Options: --no-includes --include-headers
-> +
-> +virtual patch
-> +virtual report
-> +virtual context
-> +
-> + at r1 depends on patch@
-> +identifier fn;
-> +typedef bool;
-> +symbol false;
-> +symbol true;
-> +@@
-> +
-> +bool fn ( ... )
-> +{
-> +<...
-> +return
-> +(
-> +- 0
-> ++ false
-> +|
-> +- 1
-> ++ true
-> +)
-> +  ;
-> +...>
-> +}
-> +
-> + at r2 depends on report || context@
-> +identifier fn;
-> +position p;
-> +@@
-> +
-> +bool fn ( ... )
-> +{
-> +<...
-> +return
-> +(
-> +* 0 at p
-> +|
-> +* 1 at p
-> +)
-> +  ;
-> +...>
-> +}
-> +
-> +
-> + at script:python depends on report@
-> +p << r2.p;
-> +fn << r2.fn;
-> +@@
-> +
-> +msg = "WARNING: return of 0/1 in function '%s' with return type bool" % fn
-> +coccilib.report.print_report(p[0], msg)
-> -- 
-> 1.7.9.5
-> 
-> 
+---
+ scripts/coccinelle/misc/warn.cocci |  109 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 109 insertions(+)
+
+diff --git a/scripts/coccinelle/misc/warn.cocci b/scripts/coccinelle/misc/warn.cocci
+new file mode 100644
+index 0000000..fda8c35
+--- /dev/null
++++ b/scripts/coccinelle/misc/warn.cocci
+@@ -0,0 +1,109 @@
++/// Use WARN(1,...) rather than printk followed by WARN_ON(1)
++///
++// Confidence: High
++// Copyright: (C) 2012 Julia Lawall, INRIA/LIP6.  GPLv2.
++// Copyright: (C) 2012 Gilles Muller, INRIA/LiP6.  GPLv2.
++// URL: http://coccinelle.lip6.fr/
++// Comments:
++// Options: -no_includes -include_headers
++
++virtual patch
++virtual context
++virtual org
++virtual report
++
++ at bad1@
++position p;
++@@
++
++printk(...);
++printk at p(...);
++WARN_ON(1);
++
++ at r1 depends on context || report || org@
++position p != bad1.p;
++@@
++
++ printk at p(...);
++*WARN_ON(1);
++
++ at script:python depends on org@
++p << r1.p;
++@@
++
++cocci.print_main("printk + WARN_ON can be just WARN",p)
++
++ at script:python depends on report@
++p << r1.p;
++@@
++
++msg = "SUGGESTION: printk + WARN_ON can be just WARN"
++coccilib.report.print_report(p[0],msg)
++
++ at ok1 depends on patch@
++expression list es;
++position p != bad1.p;
++@@
++
++-printk at p(
+++WARN(1,
++  es);
++-WARN_ON(1);
++
++ at depends on patch@
++expression list ok1.es;
++@@
++
++if (...)
++- {
++  WARN(1,es);
++- }
++
++// --------------------------------------------------------------------
++
++ at bad2@
++position p;
++@@
++
++printk(...);
++printk at p(...);
++WARN_ON_ONCE(1);
++
++ at r2 depends on context || report || org@
++position p != bad1.p;
++@@
++
++ printk at p(...);
++*WARN_ON_ONCE(1);
++
++ at script:python depends on org@
++p << r2.p;
++@@
++
++cocci.print_main("printk + WARN_ON_ONCE can be just WARN_ONCE",p)
++
++ at script:python depends on report@
++p << r2.p;
++@@
++
++msg = "SUGGESTION: printk + WARN_ON_ONCE can be just WARN_ONCE"
++coccilib.report.print_report(p[0],msg)
++
++ at ok2 depends on patch@
++expression list es;
++position p != bad2.p;
++@@
++
++-printk at p(
+++WARN_ONCE(1,
++  es);
++-WARN_ON_ONCE(1);
++
++@depends on patch@
++expression list ok2.es;
++@@
++
++if (...)
++- {
++  WARN_ONCE(1,es);
++- }
