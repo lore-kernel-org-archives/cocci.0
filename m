@@ -1,169 +1,57 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 26 Aug 2013 21:48:20 +0200 (CEST)
+From: wsa@the-dreams.de (Wolfram Sang)
+Date: Mon, 26 Aug 2013 22:17:31 +0200
 Subject: [Cocci] if statements including assignments
-In-Reply-To: <20130826192608.GA3117@katana>
+In-Reply-To: <alpine.DEB.2.02.1308262139330.2044@localhost6.localdomain6>
 References: <20130826192608.GA3117@katana>
-Message-ID: <alpine.DEB.2.02.1308262139330.2044@localhost6.localdomain6>
+ <alpine.DEB.2.02.1308262139330.2044@localhost6.localdomain6>
+Message-ID: <20130826201730.GB3117@katana>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, 26 Aug 2013, Wolfram Sang wrote:
 
-> Hi,
+> > I'd basically need something like:
+> > 
+> > 	if (... when != var)
 > 
-> I'd basically need something like:
+> This is not really clear enough for me to understand what you do want to 
+> do.  I imagine that you want something like
 > 
-> 	if (... when != var)
-> 
-> to match. I couldn't find a way to express it. This is needed since
-> there are constructs like:
-> 
-> 	if (var = something())
-> 
-> which I don't want to match since they assign var a value which is fine
-> in my case.
+> (
+> if (pattern_you_like) S1 else S2
+> |
+> * if (pattern_you_dont_like)
+>   S1 else S2
+> )
 
-This is not really clear enough for me to understand what you do want to 
-do.  I imagine that you want something like
+Ah, so I was on a good path since I ended up with something similar...
 
-(
-if (pattern_you_like) S1 else S2
-|
-* if (pattern_you_dont_like)
-  S1 else S2
-)
+> Where pattern_you_like might be <+... var ...+>, if you like everything 
+> that somewhere contains var.
 
-Where pattern_you_like might be <+... var ...+>, if you like everything 
-that somewhere contains var.
+... and this hint made it work, thanks a lot! Before that I was using
 
-I would really rather that all assignments in if tests disappear, because 
-they make more than one way of expressing the same thing, and thus 
-complicate other semantic patches.  I made the attached semantic patch to 
-remove them in cases where one could safely put the assignment just before 
-the if, but it touched over 1100 files in the Linux kernel, so I ran out 
-of courage...
+	if (var = ...) S
 
-julia
+as pattern_I_like. But that never matched and thus always ended up in
+the pattern_i_dont_like branch.
+
+> I would really rather that all assignments in if tests disappear,
+
++1. They are often annoying.
+
+> the if, but it touched over 1100 files in the Linux kernel, so I ran out 
+> of courage...
+
+:)
+
+Thanks,
+
+   Wolfram
+
 -------------- next part --------------
-@ok@
-expression e,e1,e2;
-statement S1,S2,S1a,S2a;
-position p;
-type T;
-identifier i;
-iterator I;
-@@
-
-(
-if (...) S1a else S2a
-|
-while (...) S1a
-|
-for (...;...;...) S1a
-|
-I (...) S1a
-|
-T i;
-|
- e;
-)
-if at p (
-(
- (e1 = e2) != 0
-|
- (e1 = e2) == 0
-|
- (e1 = e2) != NULL
-|
- (e1 = e2) == NULL
-|
- IS_ERR(e1 = e2)
-)
- ) S1 else S2
-
-@@
-expression e1,e2;
-statement S1,S2;
-position ok.p;
-@@
-
-+e1 = e2;
-if at p (
-(
-- (e1 = e2)
-+ e1
- != 0
-|
-- (e1 = e2)
-+ e1
- == 0
-|
-- (e1 = e2)
-+ e1
- != NULL
-|
-- (e1 = e2)
-+ e1
- == NULL
-|
- IS_ERR(
--   e1 = e2
-+   e1
- )
-)
- ) S1 else S2
-
-@alsook@
-expression e1,e2;
-statement S1,S2;
-position p;
-@@
-
-{
-if at p (
-(
- (e1 = e2) != 0
-|
- (e1 = e2) == 0
-|
- (e1 = e2) != NULL
-|
- (e1 = e2) == NULL
-|
- IS_ERR(e1 = e2)
-)
- ) S1 else S2
-... when any
-}
-
-@@
-expression e1,e2;
-statement S1,S2;
-position alsook.p;
-@@
-
-+e1 = e2;
-if at p (
-(
-- (e1 = e2)
-+ e1
- != 0
-|
-- (e1 = e2)
-+ e1
- == 0
-|
-- (e1 = e2)
-+ e1
- != NULL
-|
-- (e1 = e2)
-+ e1
- == NULL
-|
- IS_ERR(
--   e1 = e2
-+   e1
- )
-)
- ) S1 else S2
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 836 bytes
+Desc: Digital signature
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20130826/ad752540/attachment.asc>
