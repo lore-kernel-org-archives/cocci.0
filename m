@@ -1,14 +1,32 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 24 Aug 2013 11:57:46 +0200 (CEST)
-Subject: [Cocci] release of 1.0.0-rc18
-Message-ID: <alpine.DEB.2.02.1308241154250.2197@localhost6.localdomain6>
+From: wsa@the-dreams.de (Wolfram Sang)
+Date: Mon, 26 Aug 2013 21:26:08 +0200
+Subject: [Cocci] if statements including assignments
+Message-ID: <20130826192608.GA3117@katana>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Coccinelle version 1.0.0-rc18 has been released.  Most of the changes are 
-bugs fixes, related to position variables, function prototypes, and pretty 
-printing.  It is not possible to match and transform some kinds of 
-pragmas.  There is also some support for IBM C's decimal type, with the 
---ibm option.
+Hi,
 
-julia
+I'd basically need something like:
+
+	if (... when != var)
+
+to match. I couldn't find a way to express it. This is needed since
+there are constructs like:
+
+	if (var = something())
+
+which I don't want to match since they assign var a value which is fine
+in my case.
+
+Thanks,
+
+   Wolfram
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 836 bytes
+Desc: Digital signature
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20130826/d6e5c95f/attachment.asc>
