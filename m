@@ -1,57 +1,102 @@
-From: wsa@the-dreams.de (Wolfram Sang)
-Date: Mon, 26 Aug 2013 22:17:31 +0200
-Subject: [Cocci] if statements including assignments
-In-Reply-To: <alpine.DEB.2.02.1308262139330.2044@localhost6.localdomain6>
-References: <20130826192608.GA3117@katana>
- <alpine.DEB.2.02.1308262139330.2044@localhost6.localdomain6>
-Message-ID: <20130826201730.GB3117@katana>
+From: volanschi@metaware.fr (Nic Volanschi (R&D))
+Date: Wed, 28 Aug 2013 15:19:32 +0200
+Subject: [Cocci] problem with the order of added statements
+Message-ID: <1377695972.3192.26.camel@zamolxis.metaware.tm.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hi,
 
-> > I'd basically need something like:
-> > 
-> > 	if (... when != var)
-> 
-> This is not really clear enough for me to understand what you do want to 
-> do.  I imagine that you want something like
-> 
-> (
-> if (pattern_you_like) S1 else S2
-> |
-> * if (pattern_you_dont_like)
->   S1 else S2
-> )
+I'm trying to instrument a program with traces, by adding calls to
+trace() at the beginning of each block. In particular, at the beginning
+of an "if" branch and after the "if". So my rule is very simple:
 
-Ah, so I was on a good path since I ended up with something similar...
+--- trace.cocci:
+@@ statement s1; @@
+ if(...)
++{trace("ifth");
+  s1
++}
++trace("endif");
 
-> Where pattern_you_like might be <+... var ...+>, if you like everything 
-> that somewhere contains var.
+The rule works as expected except when the "then" branch contains a
+control flow statement such as return or break. For example, on the
+following file:
 
-... and this hint made it work, thanks a lot! Before that I was using
+--- trace.c:
+short VerDate(char *pcDate)
+{
+  short sRetour = 0;
+  if ( pcDate == 0 ) {
+    sRetour = 1;
+  }
+  if ( pcDate == 0 )
+    sRetour = 1;
+  if ( pcDate == 0 ) {
+    sRetour = 1;
+    return sRetour;
+  }
+  return sRetour;
+}
 
-	if (var = ...) S
+the rule generates the following instrumented program:
 
-as pattern_I_like. But that never matched and thus always ended up in
-the pattern_i_dont_like branch.
+--- trace.c.cocci-res:
+short VerDate(char *pcDate)
+{
+  short sRetour = 0;
+  if ( pcDate == 0 ) { trace("ifth");
+  {
+    sRetour = 1;
+  }
+}
+trace("endif");
+  if ( pcDate == 0 ) { trace("ifth");
+  sRetour = 1;
+}
+trace("endif");
+  if ( pcDate == 0 ) { trace("ifth");
+  {
+}
+trace("endif");
+    sRetour = 1;
+    return sRetour;
+  }
+  return sRetour;
+}
 
-> I would really rather that all assignments in if tests disappear,
+That is:
+- the trace("ifth") is correctly added in all three cases at the
+beginning of the "if-then" branch
+- the trace("endif") is correcty added in the first two cases after the
+"if", BUT in the middle of the third "if"!
 
-+1. They are often annoying.
+Is the problem in my rule or is in its application?
 
-> the if, but it touched over 1100 files in the Linux kernel, so I ran out 
-> of courage...
+Cheers,
+Nic.
 
-:)
+PS. I sort of turned around the problem by splitting my rule in two:
 
-Thanks,
+--- trace2.cocci:
+@@ statement s1; @@
+ if(...)
++{trace("ifth");
+  s1
++}
 
-   Wolfram
+@@ statement s1; @@
+ if(...) s1
++trace("endif");
 
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 836 bytes
-Desc: Digital signature
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20130826/ad752540/attachment.asc>
+In this case, the third trace("endif") is correctly added after the
+"if", but the produced code is still a bit strange, as it contains an
+emtpy block:
+
+  if ( pcDate == 0 ) { trace("ifth");
+  {
+}
+    sRetour = 1;
+    return sRetour;
+  }
+  trace("endif");
