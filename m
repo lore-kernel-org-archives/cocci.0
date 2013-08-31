@@ -1,59 +1,60 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 31 Aug 2013 08:57:52 +0200 (CEST)
-Subject: [Cocci] very simple transformations
-In-Reply-To: <CAP6exYKho8Ano_a82RFj=EzEK6Zfk=5Kz1=SJfomF77CDUKoag@mail.gmail.com>
-References: <CAP6exYKho8Ano_a82RFj=EzEK6Zfk=5Kz1=SJfomF77CDUKoag@mail.gmail.com>
-Message-ID: <alpine.DEB.2.02.1308310853450.1977@localhost6.localdomain6>
+Date: Sat, 31 Aug 2013 09:00:22 +0200 (CEST)
+Subject: [Cocci] "already tagged token"
+In-Reply-To: <CAP6exYKDFuKbmqRjRmtkq1p2Oou06bVpwLt5cGgcp=7TJSJcqw@mail.gmail.com>
+References: <CAP6exYKDFuKbmqRjRmtkq1p2Oou06bVpwLt5cGgcp=7TJSJcqw@mail.gmail.com>
+Message-ID: <alpine.DEB.2.02.1308310859160.1977@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 On Fri, 30 Aug 2013, ron minnich wrote:
 
-> I've got a file with the following sorts of things
+> I have this rule:
 > 
-> void f(uint x)
+> @@
+> typedef Conv;
+> @@
+> -Conv
+> +struct conv
+> 
+> And this file:
+> 
+> static Chan*
+> ipopen(Chan* c, int omode)
 > {
->   uint z;
+>         Conv *cv, *nc;
 > }
 > 
-> I'd like to transform all instances of uint to unsigned int. Doable
-> with coccinnelle?
-
-This seems straightforward:
-
-@@
-typedef uint;
-@@
-
-- uint
-+ unsigned int
-
-Perhaps you were missing the typedef.
-
-> Also:
-> IPhdr x;
-> needs to become
-> struct iphdr x;
-> in all parameters and declarations. Also likely trivial, I can't seem
-> to get anything to work.
-
-This should be the same.
-
-> Now a really harder one:
-> Plan 9 C to C
-> I have things like
-> void x(char *, int, int i)
-> {
-> ...
-> }
+> And this error:
 > 
-> The unnamed params are how we indicate in plan 9 that the parameter is
-> unused. But coccinnelle throws an error, as it's not really valid. Any
-> thoughts on this one?
+> init_defs_builtins: /usr/share/coccinelle/standard.h
+> HANDLING: /tmp/die.c
+> 
+> previous modification:
+> MINUS
+>   >>> struct conv
+> 
+> According to environment 0:
+> 
+> 
+> current modification:
+> MINUS
+>   >>> struct conv
+> 
+> According to environment 0:
+> 
+> 
+> Fatal error: exception Failure("rule starting on line 7: already tagged token:
+> C code context
+> File "/tmp/die.c", line 4, column 1,  charpos = 43
+>     around = 'Conv', whole content =    Conv *cv, *nc;")
+> 
+> and zero clue :-)
+> 
+> is there a simple way out of this one?
 
-At the moment, that's not possible.  I don't think the C parser will 
-parse the code, and I'm sure that the SmPL parser won't parse the semantic 
-patch that you would need.  But I think it would be easy to add.  I can 
-try to do that when I finish with Nic's if problems.
+Upgrade your version of Coccinelle.  It works fine for me, but I have done 
+some work on multi-variable declarations recently (before the release of 
+rc18).
 
 julia
