@@ -1,76 +1,39 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 29 Aug 2013 15:14:20 +0200 (CEST)
-Subject: [Cocci] already tagged fake token
-In-Reply-To: <1377780874.3212.63.camel@zamolxis.metaware.tm.fr>
-References: <1377773643.3212.47.camel@zamolxis.metaware.tm.fr>
- <alpine.DEB.2.02.1308291351450.2249@hadrien>
- <1377780874.3212.63.camel@zamolxis.metaware.tm.fr>
-Message-ID: <alpine.DEB.2.02.1308291514060.2249@hadrien>
+From: rminnich@gmail.com (ron minnich)
+Date: Fri, 30 Aug 2013 20:39:17 -0700
+Subject: [Cocci] very simple transformations
+Message-ID: <CAP6exYKho8Ano_a82RFj=EzEK6Zfk=5Kz1=SJfomF77CDUKoag@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 29 Aug 2013, Nic Volanschi (R&D) wrote:
+I've got a file with the following sorts of things
 
-> On Thu, 2013-08-29 at 13:53 +0200, Julia Lawall wrote:
-> > Perhaps to solve all of the problems, you could just put braces around all
-> > if branches first?  It seems likely that this will nto work in a generic
-> > way, with a metavariable S, but you can make rules like
-> >
-> > @@
-> > statement S;
-> > @@
-> >
-> > if (...)
-> > +{
-> >   return ...;
-> > +}
-> > else S
-> >
-> > To get all of the possibilities.
->
-> I see what you mean. In fact, to solve the problem it would suffice to
-> add braces only around "else" branches, so your rule would be rather:
->
-> @@ statement S; expression E; @@
->  if (...) S else
-> +{
->   \(return ...; \| E; \| <other-simple-stmt-patterns...> \)
-> +}
->
-> But the problematic case is exactly the one causing the problem, in
-> which the "else" branch is an unbraced "if-then-else" statement. If we
-> write the rule for that case:
->
-> @@ statement s1, s2, s3; expression e; @@
->  if(...)
->   s1
->  else
-> +{
->   if(...) s2 else s3
-> +}
->
-> It applies well when you have just one "else if", but not when there are
-> more of them:
->
-> --- test.c:
-> void GetInfoDestTV(short sNoFo)
-> {
->   if(sNoFo == 1)
->     printf("one");
->   else if(sNoFo == 2)
->     printf("two");
->   else if(sNoFo == 3)
->     printf("two");
->   else
->     printf("other");
-> }
->
-> In this case, I'll get the same error as in my initial rule:
->
-> Fatal error: exception Failure("rule starting on line 1: already tagged
-> fake token
-> ")
+void f(uint x)
+{
+  uint z;
+}
 
-OK, I agree.
+I'd like to transform all instances of uint to unsigned int. Doable
+with coccinnelle?
 
-julia
+Also:
+IPhdr x;
+needs to become
+struct iphdr x;
+in all parameters and declarations. Also likely trivial, I can't seem
+to get anything to work.
+
+Now a really harder one:
+Plan 9 C to C
+I have things like
+void x(char *, int, int i)
+{
+...
+}
+
+The unnamed params are how we indicate in plan 9 that the parameter is
+unused. But coccinnelle throws an error, as it's not really valid. Any
+thoughts on this one?
+
+Thanks in advance.
+
+ron
