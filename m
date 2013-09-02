@@ -1,107 +1,86 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 1 Sep 2013 12:15:30 +0200 (CEST)
-Subject: [Cocci] already tagged fake token
-In-Reply-To: <1377773643.3212.47.camel@zamolxis.metaware.tm.fr>
-References: <1377773643.3212.47.camel@zamolxis.metaware.tm.fr>
-Message-ID: <alpine.DEB.2.02.1309011214560.2017@localhost6.localdomain6>
+Date: Mon, 2 Sep 2013 15:21:44 +0200 (CEST)
+Subject: [Cocci] coccinelle-1.0.0-rc18
+In-Reply-To: <54AA37D70A06414FB8288E4A5662904A01024F7392@NB-EX-MBX01.diasemi.com>
+References: <54AA37D70A06414FB8288E4A5662904A01024F2DD4@NB-EX-MBX01.diasemi.com>
+ <alpine.DEB.2.02.1308240806340.1996@localhost6.localdomain6>
+ <54AA37D70A06414FB8288E4A5662904A01024F7392@NB-EX-MBX01.diasemi.com>
+Message-ID: <alpine.DEB.2.02.1309021519440.2250@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-A patch to fix this is attached.  There is no need for ++
+On Mon, 2 Sep 2013, Jamal Khashan wrote:
+
+> Hi Julia,
+>
+> Thanks for feedback, sorry for the late reply, I was on Vacation for a week, but here's the output requested
+>
+> # lsb_release -a
+> No LSB modules are available.
+> Distributor ID: Ubuntu
+> Description:    Ubuntu 10.04.4 LTS
+> Release:        10.04
+> Codename:       lucid
+> #
+
+I think this version is a bit old?  Do you have the possibility to
+upgrade.  On the other hand, it is the same version that I have at home,
+so I can try to reproduce the problem.
+
+> # pkg-config --exists --print-errors python-2.6
+> Package python-2.6 was not found in the pkg-config search path.
+> Perhaps you should add the directory containing `python-2.6.pc'
+> to the PKG_CONFIG_PATH environment variable
+> No package 'python-2.6' found
+> #
+
+Do you just need to install python 2.6?  Did you install it separately
+from ubuntu?
+
+I don't know much about pkg-config.  Maybe someone else knows why you
+might have some software installed but pkg-config can't find it.
 
 julia
 
-On Thu, 29 Aug 2013, Nic Volanschi (R&D) wrote:
-
-> Hi,
-> 
-> I stumbled against another issue when trying to apply the following rule
-> on nested if/else if/.../else structures:
-> 
-> --- trace.cocci:
-> @@ statement s1, s2; @@
->  if(...)
->   s1
->  else
-> +{trace("ifelel");
->   s2
-> +}
-> 
-> --- test.c:
-> void GetInfoDestTV(short sNoFo)
-> {
->   if(sNoFo == 1)
->     printf("one");
->   else if(sNoFo == 2)
->     printf("two");
->   else
->     printf("other");
-> }
-> 
-> 
-> Applying the patch results in:
-> faketoken/$ spatch -c trace.cocci test.c
-> init_defs_builtins: /usr/local/share/coccinelle/standard.h
-> HANDLING: test.c     
-> previous modification:
-> CONTEXT
->   >>> }
-> According to environment 0:
-> current modification:
-> CONTEXT
->   >>> }
-> According to environment 0:
-> Fatal error: exception Failure("rule starting on line 1: already tagged
-> fake token
-> ")
-> 
-> I can see that the problem comes from the fact that the rule tries to
-> add several "}" after the last ";" which is the ending token for both
-> the inside and the outside if.
-> Indeed, if I add braces around the inside if, the problem disappears, as
-> there are now different tokens ending the inside and the outside if.
-> 
-> I tried to change the "+" markers to "++" in the patch, but this doesn't
-> help.
-> So is there a known way to get around this error?
-> 
-> Nic.
-> 
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
-> 
--------------- next part --------------
-diff --git a/parsing_cocci/context_neg.ml b/parsing_cocci/context_neg.ml
-index 9df052b..2d6fb96 100644
---- a/parsing_cocci/context_neg.ml
-+++ b/parsing_cocci/context_neg.ml
-@@ -413,12 +413,21 @@ let classify is_minus all_marked table code =
-       |	Ast0.FunDecl((info,bef),_,_,_,_,_,_,_,_)
-       | Ast0.Decl((info,bef),_) ->
- 	  bind (nc_mcode ((),(),info,bef,(),-1)) (k s)
--      | Ast0.IfThen(_,_,_,_,_,(info,aft,adj))
--      | Ast0.IfThenElse(_,_,_,_,_,_,_,(info,aft,adj))
--      | Ast0.Iterator(_,_,_,_,_,(info,aft,adj))
--      | Ast0.While(_,_,_,_,_,(info,aft,adj))
--      | Ast0.For(_,_,_,_,_,_,_,_,(info,aft,adj)) ->
--	  bind (k s) (nc_mcode ((),(),info,aft,(),adj))
-+      (* For these, the info of the aft mcode is derived from the else
-+	 branch.  These might not correspond for a context if, eg if
-+	 only the else branch is replaced.  Thus we take instead the
-+	 info of the starting keyword.  In a context case, these will be
-+	 the same on the - and + sides.  All that is used as an offset,
-+	 and it is only used as a key, so this is safe to do. For an
-+         iterator, we take the left parenthesis, which should have the
-+	 same property. *)
-+      | Ast0.IfThen(start,_,_,_,_,(info,aft,adj))
-+      | Ast0.IfThenElse(start,_,_,_,_,_,_,(info,aft,adj))
-+      | Ast0.Iterator(_,start,_,_,_,(info,aft,adj))
-+      | Ast0.While(start,_,_,_,_,(info,aft,adj))
-+      | Ast0.For(start,_,_,_,_,_,_,_,(info,aft,adj)) ->
-+	  let mcode_info (_,_,info,_,_,_) = info in
-+	  bind (k s) (nc_mcode ((),(),mcode_info start,aft,(),adj))
-       |	_ -> k s
- 
- ) in
+> Thanks and best regards,
+>
+> Jamal Khashan
+> Dialog Semiconductors IT Helpdesk
+> Direct Dial: +49 (0)7021 805 555
+> Jamal.Khashan at diasemi.com |  www.diasemi.com
+> Dialog Semiconductor GmbH, Neue Strasse 95, 73230 Kirchheim /Teck, Germany
+>
+>
+> -----Original Message-----
+> From: Julia Lawall [mailto:julia.lawall at lip6.fr]
+> Sent: Saturday, August 24, 2013 8:12 AM
+> To: Jamal Khashan
+> Cc: 'cocci at systeme.lip6.fr'
+> Subject: Re: [Cocci] coccinelle-1.0.0-rc18
+>
+> > I am having difficulties enabling python scripting with
+> > coccinelle-1.0.0-rc18 as follows
+>
+> What OS/distribution are you using?  Perhaps the problem could be that you have python 2.6?  I have 2.7.
+>
+> Maybe you should try something like
+>
+> pkg-config --exists --print-errors python-2.6
+>
+> julia
+> ________________________________
+>
+> Dialog Semiconductor GmbH
+> Neue Str. 95
+> D-73230 Kirchheim
+> Managing Directors: Dr. Jalal Bagherli, Jean-Michel Richard
+> Chairman of the Supervisory Board: Gregorio Reyes
+> Commercial register: Amtsgericht Stuttgart: HRB 231181
+> UST-ID-Nr. DE 811121668
+>
+> Legal Disclaimer: This e-mail communication (and any attachment/s) is confidential and contains proprietary information, some or all of which may be legally privileged. It is intended solely for the use of the individual or entity to which it is addressed. Access to this email by anyone else is unauthorized. If you are not the intended recipient, any disclosure, copying, distribution or any action taken or omitted to be taken in reliance on it, is prohibited and may be unlawful.
+>
+> Please consider the environment before printing this e-mail
+>
+>
+>
