@@ -1,17 +1,68 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 19 Sep 2013 10:54:14 +0200 (CEST)
-Subject: [Cocci] Lots of "failing here" with -rc18
-In-Reply-To: <523AB69F.6000300@metafoo.de>
-References: <523AB69F.6000300@metafoo.de>
-Message-ID: <alpine.DEB.2.02.1309191052420.2251@hadrien>
+From: volanschi@metaware.fr (Nic Volanschi (R&D))
+Date: Fri, 27 Sep 2013 09:54:41 +0200
+Subject: [Cocci] multiple fields declaration
+Message-ID: <1380268481.3191.15.camel@zamolxis.metaware.tm.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Since -rc18 when running coccicheck on the kernel I get lots of "failing
-> here true true" messages for certain cocci scripts. Is there something going
-> wrong when processing those scripts or is this just a debug message?
+Hi,
 
-It's a debug message.  Sorry about that.  If you have the source code,
-just get rid of that line (grep for "failing here %b %b").
+I found an unfortunate asymmetry on matching an identifier declared in a
+multiple declaration. In short, it works fine on a multiple variables
+declaration, but not on a multiple fields declaration.
 
-julia
+For example, the following semantic patch, adding parentheses around
+uses of integer variables and integer fields:
+
+--- intvar2.cocci:
+@findvar@ identifier i; @@
+ int i;
+
+@expression@ identifier findvar.i; @@
++(
+  i
++)
+
+@findfld@ identifier id, id3; @@
+ struct {
+ ...
+ int id;
+ ...} id3;
+
+@expression@ identifier x, findfld.id; @@
++(
+  x.id
++)
+
+---
+applied on the following program:
+
+--- intvar2.c:
+#include <stdio.h>
+
+struct {
+  int f1, f2;
+  int f3;
+} s;
+
+int main() {
+  int i1, i2;
+  int i3;
+  i1 = 11;
+  i2 = 22;
+  i3 = 33;
+  printf("%d, %d, %d\n", i1, i2, i3);
+  s.f1 = 44;
+  s.f2 = 55;
+  s.f3 = 66;
+  printf("{%d, %d, %d}\n", s.f1, s.f2, s.f3);
+}
+
+---
+transforms variables i1, i2, i3, and field f3, but not fields f1 and f2.
+
+Is it possible to turn around this problem? Or even better, to fix
+it...?
+
+Thanks,
+Nic.
