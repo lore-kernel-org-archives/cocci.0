@@ -1,28 +1,25 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 1 Oct 2013 10:50:05 +0200 (CEST)
-Subject: [Cocci] ASE tutorial
-In-Reply-To: <alpine.DEB.2.02.1310010915240.2080@localhost6.localdomain6>
-References: <alpine.DEB.2.02.1310010915240.2080@localhost6.localdomain6>
-Message-ID: <alpine.DEB.2.02.1310011049260.2080@localhost6.localdomain6>
+From: wsa@the-dreams.de (Wolfram Sang)
+Date: Sun, 6 Oct 2013 15:49:21 +0200
+Subject: [Cocci] [PATCH] scripts/coccinelle/api: remove
+ devm_request_and_ioremap.cocci
+In-Reply-To: <1376562633-16204-1-git-send-email-wsa@the-dreams.de>
+References: <1376562633-16204-1-git-send-email-wsa@the-dreams.de>
+Message-ID: <20131006134921.GA4173@katana>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Note that there will also be a tutorial with the Real Time Linux Workshop 
-in Lugano Switzerland on October 31:
-
-https://www.osadl.org/RTLWS-Agenda.rtlws15-agenda.0.html
-
-julia
-
-On Tue, 1 Oct 2013, Julia Lawall wrote:
-
-> The early registration for the Coccinelle tutorial in Palo Alto on the 
-> afternoon of November 11 ends today.  Afterwards the price goes from $375 
-> to $500.
+On Thu, Aug 15, 2013 at 12:30:25PM +0200, Wolfram Sang wrote:
+> Use of this function is discouraged in favour of
+> devm_ioremap_resource(). Don't advertise it.
 > 
-> julia
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
-> 
+> Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
+
+Ping.
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 836 bytes
+Desc: Digital signature
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20131006/27cce88a/attachment.asc>
