@@ -1,25 +1,25 @@
-From: wsa@the-dreams.de (Wolfram Sang)
-Date: Sun, 6 Oct 2013 15:49:21 +0200
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sun, 6 Oct 2013 15:53:27 +0200 (CEST)
 Subject: [Cocci] [PATCH] scripts/coccinelle/api: remove
  devm_request_and_ioremap.cocci
-In-Reply-To: <1376562633-16204-1-git-send-email-wsa@the-dreams.de>
+In-Reply-To: <20131006134921.GA4173@katana>
 References: <1376562633-16204-1-git-send-email-wsa@the-dreams.de>
-Message-ID: <20131006134921.GA4173@katana>
+ <20131006134921.GA4173@katana>
+Message-ID: <alpine.DEB.2.02.1310061552541.2037@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, Aug 15, 2013 at 12:30:25PM +0200, Wolfram Sang wrote:
-> Use of this function is discouraged in favour of
-> devm_ioremap_resource(). Don't advertise it.
+On Sun, 6 Oct 2013, Wolfram Sang wrote:
+
+> On Thu, Aug 15, 2013 at 12:30:25PM +0200, Wolfram Sang wrote:
+> > Use of this function is discouraged in favour of
+> > devm_ioremap_resource(). Don't advertise it.
+> > 
+> > Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
+
+Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+
 > 
-> Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
-
-Ping.
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 836 bytes
-Desc: Digital signature
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20131006/27cce88a/attachment.asc>
+> Ping.
+> 
+> 
