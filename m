@@ -1,25 +1,23 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 9 Oct 2013 15:52:18 +0200 (CEST)
+Date: Thu, 10 Oct 2013 08:35:19 +0200 (CEST)
 Subject: [Cocci] problem with a (contorted) macro
 In-Reply-To: <1381324407.3213.42.camel@zamolxis.metaware.tm.fr>
 References: <1381311937.3213.23.camel@zamolxis.metaware.tm.fr>
  <alpine.DEB.2.02.1310091155210.2237@hadrien>
  <1381324407.3213.42.camel@zamolxis.metaware.tm.fr>
-Message-ID: <alpine.DEB.2.02.1310091549140.2237@hadrien>
+Message-ID: <alpine.DEB.2.02.1310100834020.2043@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Actually, the problem is not really what it would seem...
+In the file parsing_c/unparse_cocci.ml, in the function:
 
-The if rule applies, and then the unparser does not know where to put the
-close brace (for some reason), so it puts it in the leftmost column.
-Then when the parser tries to parse the result, it fails on its first
-parsing attempt (normal), because it does not take into account the TRNIV1
-macro definition.  Before its second attempt, it resynchronizes, which
-amounts to finding a close brace in the leftmost column.  Now the function
-is cut in half, and is completely unparseable.
+      let prnl x =
+	(if unindent_before x then unindent true);
+	force_newline() in
 
-I will see how to put the added brace in the right place, or at least not
-in the leftmost column.
+Try getting rid of the first line.
+
+It is not a good solution because the code may be less well pretty 
+printed, but it may work.
 
 julia
