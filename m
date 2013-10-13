@@ -1,23 +1,50 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 10 Oct 2013 08:35:19 +0200 (CEST)
-Subject: [Cocci] problem with a (contorted) macro
-In-Reply-To: <1381324407.3213.42.camel@zamolxis.metaware.tm.fr>
-References: <1381311937.3213.23.camel@zamolxis.metaware.tm.fr>
- <alpine.DEB.2.02.1310091155210.2237@hadrien>
- <1381324407.3213.42.camel@zamolxis.metaware.tm.fr>
-Message-ID: <alpine.DEB.2.02.1310100834020.2043@localhost6.localdomain6>
+From: wsa@the-dreams.de (Wolfram Sang)
+Date: Sun, 13 Oct 2013 15:30:31 +0200
+Subject: [Cocci] [bug] file not found with id-utils and include-headers
+Message-ID: <20131013133031.GA6372@katana>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-In the file parsing_c/unparse_cocci.ml, in the function:
+Hi,
 
-      let prnl x =
-	(if unindent_before x then unindent true);
-	force_newline() in
+using the latest Debian package from testing (rc18) and the following
+spatch on the Linux Kernel:
 
-Try getting rid of the first line.
+@@
+expression e;
+@@
+-	INIT_COMPLETION(e);
++	reinit_completion(&e);
 
-It is not a good solution because the code may be less well pretty 
-printed, but it may work.
 
-julia
+Running with:
+
+spatch --sp-file /tmp/reinit_completion.cocci --use-idutils --include-headers ./
+
+I get:
+
+init_defs_builtins: /usr/share/coccinelle/standard.h
+got files
+HANDLING: INIT_COMPLETION drivers/hid/hid-wiimote.h
+egrep: INIT_COMPLETION: No such file or directory
+EXN:Sys_error("INIT_COMPLETION drivers/hid/hid-wiimote.h: No such file or directory")
+...
+
+The following files are processeed correctly. This call works on the
+file which fails above:
+
+spatch --sp-file /tmp/reinit_completion.cocci --include-headers ./drivers/hid/
+
+I hope you can reproduce.
+
+Regards,
+
+   Wolfram
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 836 bytes
+Desc: Digital signature
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20131013/e3f85649/attachment.asc>
