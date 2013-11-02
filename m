@@ -1,101 +1,72 @@
 From: josh@joshtriplett.org (Josh Triplett)
-Date: Sat, 2 Nov 2013 06:36:49 -0700
-Subject: [Cocci] Matching an absence of statements before the closing brace
- of a function?
-Message-ID: <20131102133648.GA4190@leaf>
+Date: Sat, 2 Nov 2013 07:32:37 -0700
+Subject: [Cocci] [PATCH] coccinelle: Add a script to find and remove
+ unnecessary ifs with no body
+Message-ID: <20131102143236.GA18084@leaf>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-I wanted to write a semantic patch that matched (and removed) "return;"
-at the end of a void function.  I've attached the full .cocci file
-written for coccicheck, but the key bit looks like this:
+This script matches code like:
 
-@@
-identifier fn;
-@@
-void fn ( ... )
-{
-...
-- return;
-}
+if (foo) {}
 
-However, that patch also produces results like this:
+and either eliminates it (if foo has no side effects) or replaces it
+with foo (if foo has side effects).
 
---- a/drivers/scsi/aacraid/dpcsup.c
-+++ b/drivers/scsi/aacraid/dpcsup.c
-@@ -255,7 +255,6 @@ static void aac_aif_callback(void *conte
- 	    cpu_to_le32(NoMoreAifDataAvailable)) {
- 		aac_fib_complete(fibptr);
- 		aac_fib_free(fibptr);
--		return;
- 	}
- 
- 	aac_intr_normal(dev, 0, 1, 0, fibptr->hw_fib_va);
+Works perfectly in report mode; the results of patch mode are
+semantically correct but may still benefit from further simplification.
 
-I'm guessing that either coccinelle didn't pair the braces (so that the
-'}' matches close braces other than the one matching fn's opening brace)
-or coccinelle allowed extra statements before the logical end of the
-function despite the lack of '...'.
+Signed-off-by: Josh Triplett <josh@joshtriplett.org>
+---
+ scripts/coccinelle/misc/unnecessary-if.cocci | 40 ++++++++++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
+ create mode 100644 scripts/coccinelle/misc/unnecessary-if.cocci
 
-How can I write this patch such that it requires an absence of
-statements between the return and the end of the function?
-
-Note that matching the "return;" in the following would be fine from a
-control-flow perspective:
-
-void f(void)
-{
-	if (e) {
-		return;
-	}
-}
-
-But matching the "return;" in the following is not OK:
-
-void f(void)
-{
-	if (e) {
-		return;
-	}
-	f2();
-}
-
-- Josh Triplett
--------------- next part --------------
-/// void functions don't need return statements at the end.
-//
-// Confidence: High
-// Options: --no-includes --include-headers
-
-virtual patch
-virtual report
-virtual context
-
-@r1 depends on patch@
-identifier fn;
-@@
-void fn ( ... )
-{
-...
-- return;
-}
-
-@r2 depends on report || context@
-identifier fn;
-position p;
-@@
-
-void fn ( ... )
-{
-...
-return;@p
-}
-
-
-@script:python depends on report@
-p << r2.p;
-fn << r2.fn;
-@@
-
-msg = "WARNING: unnecessary return@end of function '%s'" % fn
-coccilib.report.print_report(p[0], msg)
+diff --git a/scripts/coccinelle/misc/unnecessary-if.cocci b/scripts/coccinelle/misc/unnecessary-if.cocci
+new file mode 100644
+index 0000000..7ed721f
+--- /dev/null
++++ b/scripts/coccinelle/misc/unnecessary-if.cocci
+@@ -0,0 +1,40 @@
++/// Remove unnecessary ifs with no statements.
++//
++// Confidence: High
++// Options: --no-includes --include-headers
++
++virtual patch
++virtual report
++virtual context
++
++ at r1 depends on patch@
++expression E, E2, f;
++@@
++(
++- if (
++      <+... \(f(...)\|++E\|--E\|E++\|E--\|E=E2\) ...+>
++- ) {}
+++ ;
++|
++- if (E) {}
++)
++
++ at r2 depends on report || context@
++expression E, E2, f;
++position p;
++@@
++(
++- if at p (
++      <+... \(f(...)\|++E\|--E\|E++\|E--\|E=E2\) ...+>
++- ) {}
+++ ;
++|
++- if at p (E) {}
++)
++
++ at script:python depends on report@
++p << r2.p;
++@@
++
++msg = "WARNING: Unnecessary if with no body."
++coccilib.report.print_report(p[0], msg)
+-- 
+1.8.4.2
