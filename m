@@ -1,36 +1,25 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 2 Nov 2013 22:01:41 +0100 (CET)
-Subject: [Cocci] Matching an absence of statements before the closing
- brace of a function?
-In-Reply-To: <20131102155224.GX15704@leaf>
-References: <20131102133648.GA4190@leaf>
- <alpine.DEB.2.02.1311021455070.2261@hadrien> <20131102145412.GT15704@leaf>
- <alpine.DEB.2.02.1311021555360.2261@hadrien> <20131102155224.GX15704@leaf>
-Message-ID: <alpine.DEB.2.02.1311022158150.2028@localhost6.localdomain6>
+From: mmarek@suse.cz (Michal Marek)
+Date: Fri, 08 Nov 2013 14:52:40 +0100
+Subject: [Cocci] [PATCHv2] coccinelle: Add a script to find unnecessary
+ ifs with no body
+In-Reply-To: <alpine.DEB.2.02.1311021748590.2261@hadrien>
+References: <20131102143236.GA18084@leaf>
+ <alpine.DEB.2.02.1311021550330.2261@hadrien> <20131102151500.GW15704@leaf>
+ <alpine.DEB.2.02.1311021748590.2261@hadrien>
+Message-ID: <527CECA8.5030408@suse.cz>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> --- a/lib/xz/xz_crc32.c
-> +++ b/lib/xz/xz_crc32.c
-> @@ -43,7 +43,7 @@ XZ_EXTERN void xz_crc32_init(void)
->  		xz_crc32_table[i] = r;
->  	}
->  
-> -	return;
-> +	RETURN;
->  }
->  
->  XZ_EXTERN uint32_t xz_crc32(const uint8_t *buf, size_t size, uint32_t crc)
+On 2.11.2013 17:49, Julia Lawall wrote:
+>> + at r depends on report || context@
+>> +expression E;
+>> +position p;
+>> +@@
+>> +if at p (E) {}
+> 
+> There should be a * in front of the if, to support context mode.
 
-This is indeed a parsing problem.  When it has the whole file, when it
-comes to the definition of xz_crc32 it is able to detect that XZ_EXTERN is
-something that it should ignore.  But after it makes the transformation in
-xz_crc32_init, it reparses just that function and does not obtain this
-information.
+Josh, will you send a v3 with the above fix?
 
-Perhaps it is possible to fix.  But I have the impression that I undid
-something in this regard, because it is not always desirable to use the
-macro information inferred from one part of a file in parsing things
-elsewhere in the file, so fixing this problem may break something else...
-
-julia
+Thanks,
+Michal
