@@ -1,29 +1,28 @@
-From: linux@arm.linux.org.uk (Russell King - ARM Linux)
-Date: Sun, 17 Nov 2013 00:26:51 +0000
+From: wsa@the-dreams.de (Wolfram Sang)
+Date: Sun, 17 Nov 2013 15:06:28 +0100
 Subject: [Cocci] Warning masked by BUG() when CONFIG_BUG is enabled
 In-Reply-To: <87a9h4559j.fsf@natisbad.org>
 References: <87a9h4559j.fsf@natisbad.org>
-Message-ID: <20131117002651.GX16735@n2100.arm.linux.org.uk>
+Message-ID: <20131117140627.GA6744@katana>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sat, Nov 16, 2013 at 11:52:08PM +0100, Arnaud Ebalard wrote:
-> I was kind of curious not to have noticed it during kernel builds for
-> armada 370/xp targets. The reason is the following: on my Armada 370/XP
-> builds, I had CONFIG_BUG=y which makes BUG() call panic() (which never
-> returns).
 
-You're not the first to spot this, and you won't be the last.
+> As a side note, I noticed quite some instances of that pattern (switch
+> statement w/ a 'default' calling BUG()) while more carefully looking at
+> compilation output. I may get slapped for this, but just in case this
+> is indeed something which deserves to be fixed and can be fixed
+> automagically via some semantic patch, I have CC'ed Coccinelle people.
 
-Some very experienced kernel hackers have tried to get this fixed and
-failed.  It seems people actually want the CPU to fall through the
-BUG() sites when people disable CONFIG_BUG - which I think is idiotic.
+I don't think this can be fixed in a generic way. This driver, for
+example, should IMO return -EINVAL when hitting default in probe and
+simply get rid of the other BUG() calls. No need to halt the kernel
+because of a broken match->data.
 
-Arnd (and myself) have worked on this problem, and we came up with a
-very nice solution which didn't increase the size of the kernel and
-didn't make things unsafe.  However, it went nowhere.
-
-It's pointless trying to get this fixed - it's just a complete waste of
-time because of politics.  Find something else to attack.  Just ensure
-you always have CONFIG_BUG enabled if you want a system which will
-produce some kind of report when one of these sites gets hit.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 836 bytes
+Desc: Digital signature
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20131117/ec18a9f3/attachment.asc>
