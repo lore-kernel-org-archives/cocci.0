@@ -1,24 +1,53 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 17 Nov 2013 15:47:52 +0100 (CET)
-Subject: [Cocci] Warning masked by BUG() when CONFIG_BUG is enabled
-In-Reply-To: <20131117140627.GA6744@katana>
-References: <87a9h4559j.fsf@natisbad.org> <20131117140627.GA6744@katana>
-Message-ID: <alpine.DEB.2.02.1311171547130.2013@localhost6.localdomain6>
+From: volanschi@metaware.fr (Nic Volanschi (R&D))
+Date: Mon, 25 Nov 2013 17:05:11 +0100
+Subject: [Cocci] purely syntactic transformations
+Message-ID: <1385395511.3195.64.camel@zamolxis.metaware.tm.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> > As a side note, I noticed quite some instances of that pattern (switch
-> > statement w/ a 'default' calling BUG()) while more carefully looking at
-> > compilation output. I may get slapped for this, but just in case this
-> > is indeed something which deserves to be fixed and can be fixed
-> > automagically via some semantic patch, I have CC'ed Coccinelle people.
+Hi list,
+
+I was thinking that it would be nice to have a Coccinelle option for
+doing purely syntactic transformations, i.e. with no relation to the
+control flow.
+
+Indeed, while handling control-flow-sensitive transformations  is a so
+powerful feature of Coccinelle (no doubt the most powerful one), there
+are a number of simple, local syntactic transformations that become
+artificially difficult because of the control flow handling. Typically,
+there was a long discussion earlier this month about dropping "return;"
+statements at the end of a void function.
+https://systeme.lip6.fr/pipermail/cocci/2013-November/000492.html
+
+Josh Triplett josh at joshtriplett.org wrote:
+> I wanted to write a semantic patch that matched (and removed) "return;"
+> at the end of a void function.  I've attached the full .cocci file
+> written for coccicheck, but the key bit looks like this:
 > 
-> I don't think this can be fixed in a generic way. This driver, for
-> example, should IMO return -EINVAL when hitting default in probe and
-> simply get rid of the other BUG() calls. No need to halt the kernel
-> because of a broken match->data.
+> @@
+> identifier fn;
+> @@
+> void fn ( ... )
+> {
+> ...
+> - return;
+> }
+> 
+> However, that patch also produces results like this:
+> [...]
 
-One could nevertheless perhaps use Coccinelle to find them, if there is 
-some possibility to fix them.
+In summary, in order to take control flow features into account
+(which are irrelevant here), the patch becomes much more complex.
 
-julia
+There are other examples of simple syntactic transformations that
+become artificially complicated, such as instrumenting the code
+with traces, in presence of some return statements. 
+
+So I was wandering if it would be difficult to have a command-line
+option such as --no-control-flow to totally disable the construction
+of the control flow graph and apply the rules simply on the AST.
+
+Any thoughts on that?
+
+Cheers,
+Nic.
