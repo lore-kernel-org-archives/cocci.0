@@ -1,56 +1,40 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 25 Nov 2013 18:38:50 +0100 (CET)
-Subject: [Cocci] purely syntactic transformations
-In-Reply-To: <1385395511.3195.64.camel@zamolxis.metaware.tm.fr>
-References: <1385395511.3195.64.camel@zamolxis.metaware.tm.fr>
-Message-ID: <alpine.DEB.2.02.1311251835250.2285@hadrien>
+From: mstefani@redhat.com (Michael Stefaniuc)
+Date: Wed, 27 Nov 2013 23:26:29 +0100
+Subject: [Cocci] Incorrect skipping on custom types in type list
+Message-ID: <52967195.9040505@redhat.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Josh Triplett josh at joshtriplett.org wrote:
-> > I wanted to write a semantic patch that matched (and removed) "return;"
-> > at the end of a void function.  I've attached the full .cocci file
-> > written for coccicheck, but the key bit looks like this:
-> >
-> > @@
-> > identifier fn;
-> > @@
-> > void fn ( ... )
-> > {
-> > ...
-> > - return;
-> > }
-> >
-> > However, that patch also produces results like this:
-> > [...]
->
-> In summary, in order to take control flow features into account
-> (which are irrelevant here), the patch becomes much more complex.
+Hello,
 
-I think that the problem is actually related to the handling of return.
-Coccinelle considers implicitly that there is a return; at the end of any
-function that does not end with an explicit return.
+@@
+typedef VOID;
+typedef LPVOID;
+typedef PVOID;
+{void *, VOID *, LPVOID, PVOID} ppv;
+identifier QI =~ "_QueryInterface$";
+@@
+* QI(..., ppv)
 
-> There are other examples of simple syntactic transformations that
-> become artificially complicated, such as instrumenting the code
-> with traces, in presence of some return statements.
+executed on
 
-Normally, you can get the effect you want using
-
+int IFoo_QueryInterface(int *iface, long *riid, void **ppv)
 {
-<...
-blah
-...>
+    return IBar_QueryInterface(iface, riid, *ppv);
 }
 
-It doesn't follow the control-flow paths in that case.
+gives:
+$ spatch QI.cocci /tmp/qi.c
+HANDLING: /tmp/qi.c
+No matches found for PVOID
+Skipping:/tmp/qi.c
 
-> So I was wandering if it would be difficult to have a command-line
-> option such as --no-control-flow to totally disable the construction
-> of the control flow graph and apply the rules simply on the AST.
+Putting LPVOID or VOID* last in the type list gives:
+No matches found for LPVOID
+respectively
+No matches found for VOID
 
-There are options no-gotos and no-loops that are probably good enough.  I
-don't think that in the short term I want to make a competely alternative
-tree structure.
+With void* in there I wouldn't have expected it to skip any files at all.
 
-julia
+bye
+	michael
