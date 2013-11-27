@@ -1,46 +1,191 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 27 Nov 2013 23:46:42 +0100 (CET)
-Subject: [Cocci] Incorrect skipping on custom types in type list
-In-Reply-To: <52967195.9040505@redhat.com>
-References: <52967195.9040505@redhat.com>
-Message-ID: <alpine.DEB.2.02.1311272346160.2021@localhost6.localdomain6>
+From: nm@ti.com (Nishanth Menon)
+Date: Wed, 27 Nov 2013 17:15:41 -0600
+Subject: [Cocci] pm_runtime functions and IS_ERR_VALUE (was Re: [PATCH v6]
+ ARM: omap: edma: add suspend suspend/resume hooks)
+In-Reply-To: <5295F99F.6010203@ti.com>
+References: <1384726754-27875-1-git-send-email-zonque@gmail.com>
+ <5295F53C.8040101@ti.com> <5295F806.9030900@gmail.com>
+ <5295F99F.6010203@ti.com>
+Message-ID: <20131127231541.GA8418@kahuna>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, 27 Nov 2013, Michael Stefaniuc wrote:
+Change in subject line + wider forum
 
-> Hello,
+On 19:24-20131127, Sekhar Nori wrote:
+> On Wednesday 27 November 2013 07:17 PM, Daniel Mack wrote:
+> > On 11/27/2013 02:35 PM, Sekhar Nori wrote:
+> >> On Monday 18 November 2013 03:49 AM, Daniel Mack wrote:
+> >>> +static int edma_pm_suspend(struct device *dev)
+> >>> +{
+> >>> +	int j, r;
+> >>> +
+> >>> +	r = pm_runtime_get_sync(dev);
+> >>> +	if (IS_ERR_VALUE(r)) {
+> >>
+> >> So IS_ERR_VALUE() is only for functions which may return a negative
+> >> number outside of MAX_ERRNO as a success indication.
+> >> pm_runtime_get_sync() does not appear to be one of them so just use"
+> >>
+> >> if (r < 0) { .. }
+> > 
+> > That's true. Thanks for catching this, I'll fix it. However, grepping
+> > through the tree, there are quite a lot places where the same mistake is
+> > made.
 > 
-> @@
-> typedef VOID;
-> typedef LPVOID;
-> typedef PVOID;
-> {void *, VOID *, LPVOID, PVOID} ppv;
-> identifier QI =~ "_QueryInterface$";
-> @@
-> * QI(..., ppv)
-> 
-> executed on
-> 
-> int IFoo_QueryInterface(int *iface, long *riid, void **ppv)
-> {
->     return IBar_QueryInterface(iface, riid, *ppv);
-> }
-> 
-> gives:
-> $ spatch QI.cocci /tmp/qi.c
-> HANDLING: /tmp/qi.c
-> No matches found for PVOID
-> Skipping:/tmp/qi.c
-> 
-> Putting LPVOID or VOID* last in the type list gives:
-> No matches found for LPVOID
-> respectively
-> No matches found for VOID
-> 
-> With void* in there I wouldn't have expected it to skip any files at all.
+> Yes, this is a common fallacy. Russell cleaned up a bunch of these a
+> while back.
 
-Thanks for the report.  I will look into it.  I expect to make a new 
-release soon.
+Thinking a little more on this front, to prevent recurrence and fixing
+the ones we already have, how about something like the following
+patch?
 
-julia
+For example, on 3.13-rc1, with omap2plus_defconfig, I see the following:
+http://pastebin.mozilla.org/3681911
+
+-->8--
+>From b7946d214fab72b2e18cd67eec01c377f1cddee8 Mon Sep 17 00:00:00 2001
+From: Nishanth Menon <nm@ti.com>
+Date: Wed, 27 Nov 2013 17:01:20 -0600
+Subject: [RFC PATCH] scripts: Coccinelle script for pm_runtime_* return checks
+ with IS_ERR_VALUE
+
+As indicated by Sekhar in [1], there seems to be a tendency to use
+IS_ERR_VALUE to check the error result for pm_runtime_* functions which
+make no sense considering commit c48cd65 (ARM: OMAP: use consistent
+error checking) - the error values can either be < 0 for error OR
+0, 1 in cases where we have success.
+
+So, setup a coccinelle script to help identify the same.
+
+[1] http://marc.info/?t=138472678100003&r=1&w=2
+
+Cc: Russell King <rmk+kernel@arm.linux.org.uk>
+Reported-by: Sekhar Nori <nsekhar@ti.com>
+Signed-off-by: Nishanth Menon <nm@ti.com>
+---
+ scripts/coccinelle/api/pm_runtime.cocci |  109 +++++++++++++++++++++++++++++++
+ 1 file changed, 109 insertions(+)
+ create mode 100644 scripts/coccinelle/api/pm_runtime.cocci
+
+diff --git a/scripts/coccinelle/api/pm_runtime.cocci b/scripts/coccinelle/api/pm_runtime.cocci
+new file mode 100644
+index 0000000..f01789e
+--- /dev/null
++++ b/scripts/coccinelle/api/pm_runtime.cocci
+@@ -0,0 +1,109 @@
++/// Make sure pm_runtime_* calls does not use unnecessary IS_ERR_VALUE
++//
++// Keywords: pm_runtime
++// Confidence: Medium
++// Copyright (C) 2013 Texas Instruments Incorporated - GPLv2.
++// URL: http://coccinelle.lip6.fr/
++// Options: --include-headers
++
++virtual patch
++virtual context
++virtual org
++virtual report
++
++//----------------------------------------------------------
++//  Detection
++//----------------------------------------------------------
++
++ at runtime_bad_err_handle exists@
++expression ret;
++@@
++(
++ret = \(pm_runtime_idle\|
++	pm_runtime_suspend\|
++	pm_runtime_autosuspend\|
++	pm_runtime_resume\|
++	pm_request_idle\|
++	pm_request_resume\|
++	pm_request_autosuspend\|
++	pm_runtime_get\|
++	pm_runtime_get_sync\|
++	pm_runtime_put\|
++	pm_runtime_put_autosuspend\|
++	pm_runtime_put_sync\|
++	pm_runtime_put_sync_suspend\|
++	pm_runtime_put_sync_autosuspend\|
++	pm_runtime_set_active\|
++	pm_schedule_suspend\|
++	pm_runtime_barrier\|
++	pm_generic_runtime_suspend\|
++	pm_generic_runtime_resume\)(...);
++...
++IS_ERR_VALUE(ret)
++...
++)
++
++//----------------------------------------------------------
++//  For context mode
++//----------------------------------------------------------
++
++ at depends on runtime_bad_err_handle && context@
++identifier pm_runtime_api;
++expression ret;
++@@
++(
++ret = pm_runtime_api(...);
++...
++* IS_ERR_VALUE(ret)
++...
++)
++
++//----------------------------------------------------------
++//  For patch mode
++//----------------------------------------------------------
++
++ at depends on runtime_bad_err_handle && patch@
++identifier pm_runtime_api;
++expression ret;
++@@
++(
++ret = pm_runtime_api(...);
++...
++- IS_ERR_VALUE(ret)
+++ ret < 0
++...
++)
++
++//----------------------------------------------------------
++//  For org and report mode
++//----------------------------------------------------------
++
++ at r depends on runtime_bad_err_handle exists@
++position p1, p2;
++identifier pm_runtime_api;
++expression ret;
++@@
++(
++ret = pm_runtime_api at p1(...);
++...
++IS_ERR_VALUE at p2(ret)
++...
++)
++
++ at script:python depends on org@
++p1 << r.p1;
++p2 << r.p2;
++pm_runtime_api << r.pm_runtime_api;
++@@
++
++cocci.print_main(pm_runtime_api,p1)
++cocci.print_secs("IS_ERR_VALUE",p2)
++
++ at script:python depends on report@
++p1 << r.p1;
++p2 << r.p2;
++pm_runtime_api << r.pm_runtime_api;
++@@
++
++msg = "%s returns < 0 as error. Unecessary IS_ERR_VALUE@line %s" % (pm_runtime_api, p2[0].line)
++coccilib.report.print_report(p1[0],msg)
+-- 
+1.7.9.5
+
+-- 
+Regards,
+Nishanth Menon
