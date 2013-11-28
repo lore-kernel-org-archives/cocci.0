@@ -1,56 +1,35 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 28 Nov 2013 08:12:06 +0100 (CET)
-Subject: [Cocci] v3.13-rc1: parse error with orplus.cocci ?
-In-Reply-To: <5296A0D9.3030003@ti.com>
-References: <5296A0D9.3030003@ti.com>
-Message-ID: <alpine.DEB.2.02.1311280811370.1991@localhost6.localdomain6>
+Date: Thu, 28 Nov 2013 09:42:34 +0100 (CET)
+Subject: [Cocci] Incorrect skipping on custom types in type list
+In-Reply-To: <52967195.9040505@redhat.com>
+References: <52967195.9040505@redhat.com>
+Message-ID: <alpine.DEB.2.10.1311280941190.2092@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, 27 Nov 2013, Nishanth Menon wrote:
-
-> $ spatch --version
-> spatch version 1.0.0-rc10 with Python support and with PCRE support
-
-You need to update your version of Coccinelle.
-
-This semantic patch uses a features that was not implemented in your 
-version.
+A patch is below.  Thanks for the report!
 
 julia
 
-> $ make coccicheck MODE=report J=4 M=kernel/
-> COCCI=./scripts/coccinelle/misc/orplus.cocci
-> 
-> Please check for false positives in the output before submitting a patch.
-> When using "patch" mode, carefully review the patch before submitting it.
-> 
-> 532 533
-> Fatal error: exception Failure("minus: parse error:
->  = File "./scripts/coccinelle/misc/orplus.cocci", line 23, column 5,
-> charpos = 532
->     around = '@', whole content = e | c at i
-> ")
-> 532 533
-> Fatal error: exception Failure("minus: parse error:
->  = File "./scripts/coccinelle/misc/orplus.cocci", line 23, column 5,
-> charpos = 532
->     around = '@', whole content = e | c at i
-> ")
-> 532 533
-> 532 533
-> Fatal error: exception Failure("minus: parse error:
->  = File "./scripts/coccinelle/misc/orplus.cocci", line 23, column 5,
-> charpos = 532
->     around = '@', whole content = e | c at i
-> ")
-> Fatal error: exception Failure("minus: parse error:
->  = File "./scripts/coccinelle/misc/orplus.cocci", line 23, column 5,
-> charpos = 532
->     around = '@', whole content = e | c at i
-> ")
-> 
-> -- 
-> Regards,
-> Nishanth Menon
-> 
+diff --git a/parsing_cocci/get_constants2.ml b/parsing_cocci/get_constants2.ml
+index 80a512c..ed6e038 100644
+--- a/parsing_cocci/get_constants2.ml
++++ b/parsing_cocci/get_constants2.ml
+@@ -309,12 +309,12 @@ let do_get_constants constants keywords env neg_pos =
+   let rec type_collect res = function
+       TC.ConstVol(_,ty) | TC.Pointer(ty) | TC.FunctionPointer(ty)
+     | TC.Array(ty) -> type_collect res ty
+-    | TC.Decimal _ -> keywords "decimal"
++    | TC.Decimal _ -> build_or res (keywords "decimal")
+     | TC.MetaType(tyname,_,_) ->
+-	inherited tyname
+-    | TC.TypeName(s) -> constants s
+-    | TC.EnumName(TC.Name s) -> constants s
+-    | TC.StructUnionName(_,TC.Name s) -> constants s
++	build_or res (inherited tyname)
++    | TC.TypeName(s) -> build_or res (constants s)
++    | TC.EnumName(TC.Name s) -> build_or res (constants s)
++    | TC.StructUnionName(_,TC.Name s) -> build_or res (constants s)
+     | ty -> res in
+
+   (* no point to do anything special for records because glimpse is
