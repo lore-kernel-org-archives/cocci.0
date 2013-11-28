@@ -1,35 +1,193 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 28 Nov 2013 09:42:34 +0100 (CET)
-Subject: [Cocci] Incorrect skipping on custom types in type list
-In-Reply-To: <52967195.9040505@redhat.com>
-References: <52967195.9040505@redhat.com>
-Message-ID: <alpine.DEB.2.10.1311280941190.2092@hadrien>
+From: rjw@rjwysocki.net (Rafael J. Wysocki)
+Date: Thu, 28 Nov 2013 14:13:04 +0100
+Subject: [Cocci] pm_runtime functions and IS_ERR_VALUE (was Re: [PATCH
+	v6] ARM: omap: edma: add suspend suspend/resume hooks)
+In-Reply-To: <20131127231541.GA8418@kahuna>
+References: <1384726754-27875-1-git-send-email-zonque@gmail.com>
+ <5295F99F.6010203@ti.com> <20131127231541.GA8418@kahuna>
+Message-ID: <3296671.QxQGfYsfND@vostro.rjw.lan>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-A patch is below.  Thanks for the report!
+On Wednesday, November 27, 2013 05:15:41 PM Nishanth Menon wrote:
+> Change in subject line + wider forum
+> 
+> On 19:24-20131127, Sekhar Nori wrote:
+> > On Wednesday 27 November 2013 07:17 PM, Daniel Mack wrote:
+> > > On 11/27/2013 02:35 PM, Sekhar Nori wrote:
+> > >> On Monday 18 November 2013 03:49 AM, Daniel Mack wrote:
+> > >>> +static int edma_pm_suspend(struct device *dev)
+> > >>> +{
+> > >>> +	int j, r;
+> > >>> +
+> > >>> +	r = pm_runtime_get_sync(dev);
+> > >>> +	if (IS_ERR_VALUE(r)) {
+> > >>
+> > >> So IS_ERR_VALUE() is only for functions which may return a negative
+> > >> number outside of MAX_ERRNO as a success indication.
+> > >> pm_runtime_get_sync() does not appear to be one of them so just use"
+> > >>
+> > >> if (r < 0) { .. }
+> > > 
+> > > That's true. Thanks for catching this, I'll fix it. However, grepping
+> > > through the tree, there are quite a lot places where the same mistake is
+> > > made.
+> > 
+> > Yes, this is a common fallacy. Russell cleaned up a bunch of these a
+> > while back.
+> 
+> Thinking a little more on this front, to prevent recurrence and fixing
+> the ones we already have, how about something like the following
+> patch?
 
-julia
+Looks reasonable -  if the result survives the auto build testing. :-)
 
-diff --git a/parsing_cocci/get_constants2.ml b/parsing_cocci/get_constants2.ml
-index 80a512c..ed6e038 100644
---- a/parsing_cocci/get_constants2.ml
-+++ b/parsing_cocci/get_constants2.ml
-@@ -309,12 +309,12 @@ let do_get_constants constants keywords env neg_pos =
-   let rec type_collect res = function
-       TC.ConstVol(_,ty) | TC.Pointer(ty) | TC.FunctionPointer(ty)
-     | TC.Array(ty) -> type_collect res ty
--    | TC.Decimal _ -> keywords "decimal"
-+    | TC.Decimal _ -> build_or res (keywords "decimal")
-     | TC.MetaType(tyname,_,_) ->
--	inherited tyname
--    | TC.TypeName(s) -> constants s
--    | TC.EnumName(TC.Name s) -> constants s
--    | TC.StructUnionName(_,TC.Name s) -> constants s
-+	build_or res (inherited tyname)
-+    | TC.TypeName(s) -> build_or res (constants s)
-+    | TC.EnumName(TC.Name s) -> build_or res (constants s)
-+    | TC.StructUnionName(_,TC.Name s) -> build_or res (constants s)
-     | ty -> res in
+Thanks!
 
-   (* no point to do anything special for records because glimpse is
+> For example, on 3.13-rc1, with omap2plus_defconfig, I see the following:
+> http://pastebin.mozilla.org/3681911
+> 
+> -->8--
+> From b7946d214fab72b2e18cd67eec01c377f1cddee8 Mon Sep 17 00:00:00 2001
+> From: Nishanth Menon <nm@ti.com>
+> Date: Wed, 27 Nov 2013 17:01:20 -0600
+> Subject: [RFC PATCH] scripts: Coccinelle script for pm_runtime_* return checks
+>  with IS_ERR_VALUE
+> 
+> As indicated by Sekhar in [1], there seems to be a tendency to use
+> IS_ERR_VALUE to check the error result for pm_runtime_* functions which
+> make no sense considering commit c48cd65 (ARM: OMAP: use consistent
+> error checking) - the error values can either be < 0 for error OR
+> 0, 1 in cases where we have success.
+> 
+> So, setup a coccinelle script to help identify the same.
+> 
+> [1] http://marc.info/?t=138472678100003&r=1&w=2
+> 
+> Cc: Russell King <rmk+kernel@arm.linux.org.uk>
+> Reported-by: Sekhar Nori <nsekhar@ti.com>
+> Signed-off-by: Nishanth Menon <nm@ti.com>
+> ---
+>  scripts/coccinelle/api/pm_runtime.cocci |  109 +++++++++++++++++++++++++++++++
+>  1 file changed, 109 insertions(+)
+>  create mode 100644 scripts/coccinelle/api/pm_runtime.cocci
+> 
+> diff --git a/scripts/coccinelle/api/pm_runtime.cocci b/scripts/coccinelle/api/pm_runtime.cocci
+> new file mode 100644
+> index 0000000..f01789e
+> --- /dev/null
+> +++ b/scripts/coccinelle/api/pm_runtime.cocci
+> @@ -0,0 +1,109 @@
+> +/// Make sure pm_runtime_* calls does not use unnecessary IS_ERR_VALUE
+> +//
+> +// Keywords: pm_runtime
+> +// Confidence: Medium
+> +// Copyright (C) 2013 Texas Instruments Incorporated - GPLv2.
+> +// URL: http://coccinelle.lip6.fr/
+> +// Options: --include-headers
+> +
+> +virtual patch
+> +virtual context
+> +virtual org
+> +virtual report
+> +
+> +//----------------------------------------------------------
+> +//  Detection
+> +//----------------------------------------------------------
+> +
+> + at runtime_bad_err_handle exists@
+> +expression ret;
+> +@@
+> +(
+> +ret = \(pm_runtime_idle\|
+> +	pm_runtime_suspend\|
+> +	pm_runtime_autosuspend\|
+> +	pm_runtime_resume\|
+> +	pm_request_idle\|
+> +	pm_request_resume\|
+> +	pm_request_autosuspend\|
+> +	pm_runtime_get\|
+> +	pm_runtime_get_sync\|
+> +	pm_runtime_put\|
+> +	pm_runtime_put_autosuspend\|
+> +	pm_runtime_put_sync\|
+> +	pm_runtime_put_sync_suspend\|
+> +	pm_runtime_put_sync_autosuspend\|
+> +	pm_runtime_set_active\|
+> +	pm_schedule_suspend\|
+> +	pm_runtime_barrier\|
+> +	pm_generic_runtime_suspend\|
+> +	pm_generic_runtime_resume\)(...);
+> +...
+> +IS_ERR_VALUE(ret)
+> +...
+> +)
+> +
+> +//----------------------------------------------------------
+> +//  For context mode
+> +//----------------------------------------------------------
+> +
+> + at depends on runtime_bad_err_handle && context@
+> +identifier pm_runtime_api;
+> +expression ret;
+> +@@
+> +(
+> +ret = pm_runtime_api(...);
+> +...
+> +* IS_ERR_VALUE(ret)
+> +...
+> +)
+> +
+> +//----------------------------------------------------------
+> +//  For patch mode
+> +//----------------------------------------------------------
+> +
+> + at depends on runtime_bad_err_handle && patch@
+> +identifier pm_runtime_api;
+> +expression ret;
+> +@@
+> +(
+> +ret = pm_runtime_api(...);
+> +...
+> +- IS_ERR_VALUE(ret)
+> ++ ret < 0
+> +...
+> +)
+> +
+> +//----------------------------------------------------------
+> +//  For org and report mode
+> +//----------------------------------------------------------
+> +
+> + at r depends on runtime_bad_err_handle exists@
+> +position p1, p2;
+> +identifier pm_runtime_api;
+> +expression ret;
+> +@@
+> +(
+> +ret = pm_runtime_api at p1(...);
+> +...
+> +IS_ERR_VALUE at p2(ret)
+> +...
+> +)
+> +
+> + at script:python depends on org@
+> +p1 << r.p1;
+> +p2 << r.p2;
+> +pm_runtime_api << r.pm_runtime_api;
+> +@@
+> +
+> +cocci.print_main(pm_runtime_api,p1)
+> +cocci.print_secs("IS_ERR_VALUE",p2)
+> +
+> + at script:python depends on report@
+> +p1 << r.p1;
+> +p2 << r.p2;
+> +pm_runtime_api << r.pm_runtime_api;
+> +@@
+> +
+> +msg = "%s returns < 0 as error. Unecessary IS_ERR_VALUE@line %s" % (pm_runtime_api, p2[0].line)
+> +coccilib.report.print_report(p1[0],msg)
+> 
+-- 
+I speak only for myself.
+Rafael J. Wysocki, Intel Open Source Technology Center.
