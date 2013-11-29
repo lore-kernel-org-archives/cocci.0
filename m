@@ -1,13 +1,25 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 29 Nov 2013 12:05:52 +0100 (CET)
+From: amiddelk@gmail.com (Arie Middelkoop)
+Date: Fri, 29 Nov 2013 13:07:18 +0100
 Subject: [Cocci] version missmatch
 In-Reply-To: <20131129102538.GA11900@opentech.at>
 References: <20131129102538.GA11900@opentech.at>
-Message-ID: <alpine.DEB.2.10.1311291202080.2088@hadrien>
+Message-ID: <CANrVCd1UyZdJWxPc1Oahw6hNH=YL9ipLKfw39z1xXiiuiXBgHg@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, 29 Nov 2013, Nicholas Mc Guire wrote:
+What is written in the "version" file in your coccinelle dir?
+The tarball on the coccinelle website does have version rc18, so if you
+have that one, it cannot have invented rc17 out of thin air...
+
+Also, check the output of configure and also configure.log and scan for
+lines about python, as this gives an indication what it found.
+
+Also, Debian "jessie" has rc18 together with python 2.6.
+
+Arie
+
+
+2013/11/29 Nicholas Mc Guire <der.herr@hofr.at>
 
 >
 > Hi !
@@ -23,10 +35,13 @@ On Fri, 29 Nov 2013, Nicholas Mc Guire wrote:
 > root at Xil:~/coccinelle-1.0.0-rc18# make install
 > root at Xil:~/coccinelle-1.0.0-rc18# export PATH=/usr/local/bin:$PATH
 > root at Xil:~/coccinelle-1.0.0-rc18# patch --version
-> root at Xilinx:/usr/src/janitor/tools/coccinelle-1.0.0-rc18# /usr/local/bin/spatch --version
-> spatch version 1.0.0-rc17 without Python support and with Str regexp support roo
+> root at Xilinx:/usr/src/janitor/tools/coccinelle-1.0.0-rc18#
+> /usr/local/bin/spatch --version
+> spatch version 1.0.0-rc17 without Python support and with Str regexp
+> support roo
 >
->  since I never had rc17 installed I guess something went wrong with packaging ?
+>  since I never had rc17 installed I guess something went wrong with
+> packaging ?
 >
 >  also not sure why it says without python - it reported no errors config or
 >  build ?
@@ -36,14 +51,15 @@ On Fri, 29 Nov 2013, Nicholas Mc Guire wrote:
 >
 >  any idea what is wrong with the install procedure ? (python2.6-dev and
 >  python3.1-dev as well as menhir is installed)
-
-Unfortunately, I understand almost nothing about the build system :(
-
-I will try to be sure that for the next release the name that Coccinelle
-is given matches the name that it actually is...
-
-For python, I'm not sure.  Where is python located on your machine?  I see
-some mentions of python2.7 instead of python2.6.  Maybe you need that
-version?
-
-julia
+>
+>
+> thx!
+> hofrat
+> _______________________________________________
+> Cocci mailing list
+> Cocci at systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20131129/861b0e3e/attachment.html>
