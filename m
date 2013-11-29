@@ -1,47 +1,31 @@
-From: peter.senna@gmail.com (Peter Senna)
-Date: Fri, 29 Nov 2013 14:21:20 +0100
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Fri, 29 Nov 2013 14:27:27 +0100 (CET)
 Subject: [Cocci] version missmatch
 In-Reply-To: <20131129124736.GB31818@opentech.at>
 References: <20131129102538.GA11900@opentech.at>
  <CANrVCd1UyZdJWxPc1Oahw6hNH=YL9ipLKfw39z1xXiiuiXBgHg@mail.gmail.com>
  <alpine.DEB.2.10.1311291309400.2088@hadrien>
  <20131129124736.GB31818@opentech.at>
-Message-ID: <CA+MoWDr-CcXJ=q+VN8FUnxdYqpd7FJmESo6BZ0RpJ4apV3FfaQ@mail.gmail.com>
+Message-ID: <alpine.DEB.2.10.1311291427090.2088@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-As a "workaround", I did before running ./configure:
 
-aclocal -I m4 --install
-autoconf
 
-then:
+On Fri, 29 Nov 2013, Nicholas Mc Guire wrote:
 
-./configure
-make all
-
-then:
-
-./spatch --version
-spatch version 1.0.0-rc18 with Python support and with PCRE support
-
-I've tested this on Fedora 19 and Debian Wheezy. It only worked in
-Fedora. I'm trying to fix the issue, so the workaround will not be
-needed for long.
-
-On Fri, Nov 29, 2013 at 1:47 PM, Nicholas Mc Guire <der.herr@hofr.at> wrote:
 > On Fri, 29 Nov 2013, Julia Lawall wrote:
 >
->> On Fri, 29 Nov 2013, Arie Middelkoop wrote:
->>
->> > What is written in the "version" file in your coccinelle dir?
->> > The tarball on the coccinelle website does have version rc18, so if you have that
->> > one, it cannot have invented rc17 out of thin air...
->>
->> The contents of the version file on the tarball on the website is
->>
->> 1.0.0-rc18
->>
+> > On Fri, 29 Nov 2013, Arie Middelkoop wrote:
+> >
+> > > What is written in the "version" file in your coccinelle dir?
+> > > The tarball on the coccinelle website does have version rc18, so if you have that
+> > > one, it cannot have invented rc17 out of thin air...
+> >
+> > The contents of the version file on the tarball on the website is
+> >
+> > 1.0.0-rc18
+> >
 > right the version file contains
 >
 >  1.0.0-rc18
@@ -62,15 +46,7 @@ On Fri, Nov 29, 2013 at 1:47 PM, Nicholas Mc Guire <der.herr@hofr.at> wrote:
 >
 >  thus something got confused I guess
 >  and is that bug reporting address still valid ?
->
-> thx!
-> hofrat
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
 
+Good point!  Thanks for noticing it.
 
-
--- 
-Peter
+julia
