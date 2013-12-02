@@ -1,19 +1,28 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 29 Nov 2013 16:30:31 +0100
-Subject: [Cocci] version mismatch
-In-Reply-To: <529889AB.5000304@redhat.com>
-References: <20131129102538.GA11900@opentech.at>
- <CANrVCd1UyZdJWxPc1Oahw6hNH=YL9ipLKfw39z1xXiiuiXBgHg@mail.gmail.com>
- <529889AB.5000304@redhat.com>
-Message-ID: <5298B317.4000604@users.sourceforge.net>
+From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
+Date: Mon,  2 Dec 2013 16:46:08 +0100
+Subject: [Cocci] [PATCH 1/2] coccinelle: mkdir ocaml/coccilib/ upon install
+Message-ID: <1385999169-19497-1-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Create the directory before copying files into it.
 
-> This is a common problem that spatch --version is not correct; [...]
+Signed-off-by: Luis R. Rodriguez <mcgrof@do-not-panic.com>
+---
+ Makefile | 1 +
+ 1 file changed, 1 insertion(+)
 
-Do the chances become better to improve the build specification so that
-a command like "autoreconf" will work again?
-
-Regards,
-Markus
+diff --git a/Makefile b/Makefile
+index 2b6c78a..8700df5 100644
+--- a/Makefile
++++ b/Makefile
+@@ -188,6 +188,7 @@ top: $(EXEC).top
+ 
+ # the .cmi file of coccilib
+ ocaml/coccilib/coccilib.cmi: ocaml/coccilib.cmi
++	@mkdir -p ocaml/coccilib/
+ 	cp ocaml/coccilib.cmi ocaml/coccilib/coccilib.cmi
+ 
+ # ocamlbuild version of the main make targets
+-- 
+1.8.4.3
