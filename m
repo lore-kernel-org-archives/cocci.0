@@ -1,36 +1,36 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 2 Jan 2014 14:20:03 +0100 (CET)
-Subject: [Cocci]
-	=?gb2312?b?tPC4tDogtPC4tDogtPC4tDogtPC4tDogIGhpIGFsbCwg?=
-	=?gb2312?b?aG93IHRvIG1hdGNoIHRoZSBhcmdzIGluIGZ1bmN0aW9u?=
-In-Reply-To: <041CF35939B5534D851F16C30DD0B8CF727F5CA5@fzex.ruijie.com.cn>
-References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
- <alpine.DEB.2.02.1401020939060.2182@localhost6.localdomain6>
- <041CF35939B5534D851F16C30DD0B8CF727F485B@fzex.ruijie.com.cn>
- <alpine.DEB.2.02.1401021014460.2182@localhost6.localdomain6>
- <041CF35939B5534D851F16C30DD0B8CF727F488A@fzex.ruijie.com.cn>
- <alpine.DEB.2.02.1401021024400.2182@localhost6.localdomain6>
- <041CF35939B5534D851F16C30DD0B8CF727F5C4F@fzex.ruijie.com.cn>
- <alpine.DEB.2.02.1401021111560.2182@localhost6.localdomain6>
- <041CF35939B5534D851F16C30DD0B8CF727F5CA5@fzex.ruijie.com.cn>
-Message-ID: <alpine.DEB.2.10.1401021418020.2088@hadrien>
+From: eugen@debian.org (Eugeniy Meshcheryakov)
+Date: Thu, 2 Jan 2014 21:36:45 +0100
+Subject: [Cocci] [PATCH] Support for systems without [gs]etitimer API
+Message-ID: <20140102203645.GA26767@localhost.localdomain>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 2 Jan 2014, ??(?? ??) wrote:
+Hi,
 
-> Cocc version? I guess it's got by -v?
-> # spatch -version
-> spatch version 0.2.3 with Python support
-> maybe it is up to date?
+After enabling the testsuite execution when building Debian packages I
+noticed that the testsuite fails on Debian/Hurd. Every testcase was
+failing with Unix_error exception, because while Hurd has getitimer
+function, it just returns ENOSYS error there.
 
-No, it is quite old.  The current version is 1.0.0-rc19
-If you like, you can get it from github:
-https://github.com/coccinelle/coccinelle
+The attached patch detects whether the system has working getitimer
+function, and if not, makes coccinelle use alarm() API instead.
 
-> and old version of grammer pdf is downloaded from: http://www.emn.fr/z-info/coccinelle/docs/main_grammar.pdf
-> thank you tell me the new version of pdf
+With this patch coccinelle builds fine on all Debian architectures with
+386 successful test cases (expected: 377).
 
-OK, that website is quite out of date.  Use coccinelle.lip6.fr.
-
-julia
+Regards,
+Eugeniy Meshcheryakov
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: detect-itimer.diff
+Type: text/x-diff
+Size: 369 bytes
+Desc: not available
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20140102/a1b7f518/attachment.bin>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 198 bytes
+Desc: Digital signature
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20140102/a1b7f518/attachment.asc>
