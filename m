@@ -1,7 +1,7 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 21 Jan 2014 04:34:48 +0100 (CET)
-Subject: [Cocci] how to match this case?
-In-Reply-To: <041CF35939B5534D851F16C30DD0B8CF727F89C4@fzex.ruijie.com.cn>
+From: linjia@ruijie.com.cn (=?gb2312?B?wda8ziizzLb+ILij1t0p?=)
+Date: Tue, 21 Jan 2014 05:52:25 +0000
+Subject: [Cocci] =?gb2312?b?tPC4tDogIGhvdyB0byBtYXRjaCB0aGlzIGNhc2U/?=
+In-Reply-To: <alpine.DEB.2.02.1401210433490.2092@localhost6.localdomain6>
 References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
  <alpine.DEB.2.02.1401020939060.2182@localhost6.localdomain6>
  <041CF35939B5534D851F16C30DD0B8CF727F485B@fzex.ruijie.com.cn>
@@ -15,9 +15,24 @@ References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
  <041CF35939B5534D851F16C30DD0B8CF727F5D5A@fzex.ruijie.com.cn>
  <alpine.DEB.2.02.1401030705560.2150@localhost6.localdomain6>
  <041CF35939B5534D851F16C30DD0B8CF727F89C4@fzex.ruijie.com.cn>
-Message-ID: <alpine.DEB.2.02.1401210433490.2092@localhost6.localdomain6>
+ <alpine.DEB.2.02.1401210433490.2092@localhost6.localdomain6>
+Message-ID: <041CF35939B5534D851F16C30DD0B8CF727F8A3E@fzex.ruijie.com.cn>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
+
+Sorry, I made a mistake , if the checkpoint is local variable, I should write as
+
+-int vp;
+-T I[C];
+-<+...
+-if(vp > C || ...){
+
+-----????-----
+???: Julia Lawall [mailto:julia.lawall at lip6.fr] 
+????: 2014?1?21? 11:35
+???: ??(?? ??)
+??: cocci at systeme.lip6.fr
+??: Re: [Cocci] how to match this case?
 
 
 
@@ -36,7 +51,7 @@ On Tue, 21 Jan 2014, ??(?? ??) wrote:
 > 	 	}	 	
 > 	 b[i] = iParam;	/*  range of I is 0-100?so may overrun array* /
 > 
-> } 
+> }
 > -----------------------------------
 > Now I write a patch to find it, like this
 > 
@@ -58,11 +73,10 @@ On Tue, 21 Jan 2014, ??(?? ??) wrote:
 > 
 > 
 > But it doesn?t work, give me a log:
-> rule starting on line 1: position variables or mixed modifs interfere with comm_assoc isobool (bool (int vp > int C) || ...)
+> rule starting on line 1: position variables or mixed modifs interfere 
+> with comm_assoc isobool (bool (int vp > int C) || ...)
 
-I will look into it, but you could try putting disable comm_assoc in 
-between the initial @@, if you just want to see if your rule is working a 
-little bit.
+I will look into it, but you could try putting disable comm_assoc in between the initial @@, if you just want to see if your rule is working a little bit.
 
 julia
 
