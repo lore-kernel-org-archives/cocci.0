@@ -1,8 +1,12 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 21 Jan 2014 10:22:35 +0100 (CET)
-Subject: [Cocci] infinitly loop in spatch?
-In-Reply-To: <041CF35939B5534D851F16C30DD0B8CF727F8BD2@fzex.ruijie.com.cn>
+Date: Tue, 21 Jan 2014 17:42:02 +0100 (CET)
+Subject: [Cocci] how to match this case?
+In-Reply-To: <041CF35939B5534D851F16C30DD0B8CF727F89C4@fzex.ruijie.com.cn>
 References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
+ <alpine.DEB.2.02.1401020939060.2182@localhost6.localdomain6>
+ <041CF35939B5534D851F16C30DD0B8CF727F485B@fzex.ruijie.com.cn>
+ <alpine.DEB.2.02.1401021014460.2182@localhost6.localdomain6>
+ <041CF35939B5534D851F16C30DD0B8CF727F488A@fzex.ruijie.com.cn>
  <alpine.DEB.2.02.1401021024400.2182@localhost6.localdomain6>
  <041CF35939B5534D851F16C30DD0B8CF727F5C4F@fzex.ruijie.com.cn>
  <alpine.DEB.2.02.1401021111560.2182@localhost6.localdomain6>
@@ -11,73 +15,54 @@ References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
  <041CF35939B5534D851F16C30DD0B8CF727F5D5A@fzex.ruijie.com.cn>
  <alpine.DEB.2.02.1401030705560.2150@localhost6.localdomain6>
  <041CF35939B5534D851F16C30DD0B8CF727F89C4@fzex.ruijie.com.cn>
- <alpine.DEB.2.02.1401210433490.2092@localhost6.localdomain6>
- <041CF35939B5534D851F16C30DD0B8CF727F8A3E@fzex.ruijie.com.cn>
- <alpine.DEB.2.02.1401210730200.2002@localhost6.localdomain6>
- <041CF35939B5534D851F16C30DD0B8CF727F8ACB@fzex.ruijie.com.cn>
- <041CF35939B5534D851F16C30DD0B8CF727F8AEF@fzex.ruijie.com.cn>
- <alpine.DEB.2.02.1401210848170.2002@localhost6.localdomain6>
- <041CF35939B5534D851F16C30DD0B8CF727F8BD2@fzex.ruijie.com.cn>
-Message-ID: <alpine.DEB.2.10.1401211019360.2098@hadrien>
+Message-ID: <alpine.DEB.2.10.1401211741120.2098@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 On Tue, 21 Jan 2014, ??(?? ??) wrote:
 
-> When I use spatch to scan some file, I found it may loop sometimes, did anyone encounter too?
+> Following is a code with bug
+>
+> -----------------------------------
+> void set_timeout_value(int iParam)
+> {
+> 	 int i;
+> 	 byte b[100];
+> 	 i = Geti();
+> 	 if (i > 100 || i < 0){
+> 	 	  return ;
+> 	 	}
+> 	 b[i] = iParam;	/*  range of I is 0-100?so may overrun array* /
+>
+> }
+> -----------------------------------
+> Now I write a patch to find it, like this
+>
+> @@
+> identifier fn, vp;
+> identifier I;
+> type T;
+> expression C;
+> @@
+> -fn(...,int vp,...)
+> -{
+> -T I[C];
+> -<+...
+> -if(vp > C || ...){
+> -...
+> -}
+> -...+>
+> -}
+>
+>
+> But it doesn?t work, give me a log:
+> rule starting on line 1: position variables or mixed modifs interfere with comm_assoc isobool (bool (int vp > int C) || ...)
+>
+> can anyone tell why, thanks
 
-It can run for a very long time, especially when there are nested loops,
-and these loops contain many conditionals.  Basically it is trying all of
-the control-flow paths.  One option is to tell it to ignore loops, with
-the --no-loops option.  This can be unsafe, because it could miss some
-matches from the bottom of the loop back to the top, but that might not be
-relevant to your pattern.  Another option is to put a timeout --timeout
-120, for example (120 seconds).  If it exceeds that time, it will do
-nothing for the file.
+I tried the above code exactly, and I didn't get the problem.
 
-If you want me to look at the problem in more detail, please send the
-semantic patch and some problematic code.
+I also tried removing int i; and changing i > 100 to iParam > 100, and
+then it was able to remove the function definition.
 
 julia
-
-
->
-> If using -debug,  it show pause at 'bind' step
->
-> -----------------------------------------------------------------------
-> HANDLING: /root/windows/ok_file.c
-> -----------------------------------------------------------------------
-> let's go
-> -----------------------------------------------------------------------
-> -----------------------------------------------------------------------
-> -----------------------------------------------------------------------
-> rule starting on line 1 =
-> -----------------------------------------------------------------------
-> dependencies for rule rule starting on line 1 satisfied:
-> binding in = []
-> binding relevant in = []
-> -----------------------------------------------------------------------
-> proto for rule starting on line 1 =
-> -----------------------------------------------------------------------
-> dependencies for rule proto for rule starting on line 1 not satisfied:
-> rule starting on line 1 not satisfied
-> binding in environment = []
-> -----------------------------------------------------------------------
-> Finished
-> -----------------------------------------------------------------------
-> HANDLING: /root/loop_file.c
-> -----------------------------------------------------------------------
-> let's go
-> -----------------------------------------------------------------------
-> -----------------------------------------------------------------------
-> -----------------------------------------------------------------------
-> rule starting on line 1 =
-> -----------------------------------------------------------------------
-> dependencies for rule rule starting on line 1 satisfied:
-> binding in = []
-> binding relevant in = []  <---  step here, then nothing more output.....     :(
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
