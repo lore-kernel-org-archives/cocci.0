@@ -1,34 +1,58 @@
-From: mmarek@suse.cz (Michal Marek)
-Date: Fri, 3 Jan 2014 14:40:10 +0100
-Subject: [Cocci] [PATCH resend] scripts: Coccinelle script for
- pm_runtime_* return checks with IS_ERR_VALUE
-In-Reply-To: <alpine.DEB.2.10.1401031429140.2095@hadrien>
-References: <1385991581-16843-1-git-send-email-nm@ti.com>
- <52C6B3C8.7040509@suse.cz>
- <alpine.DEB.2.10.1401031429140.2095@hadrien>
-Message-ID: <20140103134010.GA1676@sepie.suse.cz>
+From: linjia@ruijie.com.cn (=?gb2312?B?wda8ziizzLb+ILij1t0p?=)
+Date: Tue, 21 Jan 2014 03:24:14 +0000
+Subject: [Cocci] how to match this case?
+In-Reply-To: <alpine.DEB.2.02.1401030705560.2150@localhost6.localdomain6>
+References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
+ <alpine.DEB.2.02.1401020939060.2182@localhost6.localdomain6>
+ <041CF35939B5534D851F16C30DD0B8CF727F485B@fzex.ruijie.com.cn>
+ <alpine.DEB.2.02.1401021014460.2182@localhost6.localdomain6>
+ <041CF35939B5534D851F16C30DD0B8CF727F488A@fzex.ruijie.com.cn>
+ <alpine.DEB.2.02.1401021024400.2182@localhost6.localdomain6>
+ <041CF35939B5534D851F16C30DD0B8CF727F5C4F@fzex.ruijie.com.cn>
+ <alpine.DEB.2.02.1401021111560.2182@localhost6.localdomain6>
+ <041CF35939B5534D851F16C30DD0B8CF727F5CA5@fzex.ruijie.com.cn>
+ <alpine.DEB.2.10.1401021418020.2088@hadrien>
+ <041CF35939B5534D851F16C30DD0B8CF727F5D5A@fzex.ruijie.com.cn>
+ <alpine.DEB.2.02.1401030705560.2150@localhost6.localdomain6>
+Message-ID: <041CF35939B5534D851F16C30DD0B8CF727F89C4@fzex.ruijie.com.cn>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, Jan 03, 2014 at 02:29:35PM +0100, Julia Lawall wrote:
-> 
-> On Fri, 3 Jan 2014, Michal Marek wrote:
-> 
-> > On 2013-12-02 14:39, Nishanth Menon wrote:
-> > > As indicated by Sekhar in [1], there seems to be a tendency to use
-> > > IS_ERR_VALUE to check the error result for pm_runtime_* functions which
-> > > make no sense considering commit c48cd65 (ARM: OMAP: use consistent
-> > > error checking) - the error values can either be < 0 for error OR
-> > > 0, 1 in cases where we have success.
-> > >
-> > > So, setup a coccinelle script to help identify the same.
-> >
-> > Julia, Gilles, do you have any objections to this semantic patch?
-> 
-> No objections.
-> 
-> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+Following is a code with bug
 
-Thanks, applied to kbuild.git#misc.
+-----------------------------------
+void set_timeout_value(int iParam)
+{
+	 int i;
+	 byte b[100];
+	 i = Geti();
+	 if (i > 100 || i < 0){
+	 	  return ;
+	 	}	 	
+	 b[i] = iParam;	/*  range of I is 0-100?so may overrun array* /
 
-Michal
+} 
+-----------------------------------
+Now I write a patch to find it, like this
+
+@@
+identifier fn, vp;
+identifier I;
+type T;
+expression C;
+@@
+-fn(...,int vp,...)
+-{
+-T I[C];
+-<+...
+-if(vp > C || ...){
+-...
+-}
+-...+>
+-}
+
+
+But it doesn?t work, give me a log:
+rule starting on line 1: position variables or mixed modifs interfere with comm_assoc isobool (bool (int vp > int C) || ...)
+
+can anyone tell why, thanks
