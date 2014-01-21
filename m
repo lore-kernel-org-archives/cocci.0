@@ -1,11 +1,10 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 21 Jan 2014 08:48:00 +0100 (CET)
+Date: Tue, 21 Jan 2014 08:48:25 +0100 (CET)
 Subject: [Cocci]
-	=?gb2312?b?tPC4tDogtPC4tDogIGhvdyB0byBtYXRjaCB0aGlzIGNh?=
-	=?gb2312?b?c2U/?=
-In-Reply-To: <041CF35939B5534D851F16C30DD0B8CF727F8ACB@fzex.ruijie.com.cn>
+	=?gb2312?b?tPC4tDogILTwuLQ6ILTwuLQ6ICBob3cgdG8gbWF0Y2gg?=
+	=?gb2312?b?dGhpcyBjYXNlPw==?=
+In-Reply-To: <041CF35939B5534D851F16C30DD0B8CF727F8AEF@fzex.ruijie.com.cn>
 References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
- <041CF35939B5534D851F16C30DD0B8CF727F485B@fzex.ruijie.com.cn>
  <alpine.DEB.2.02.1401021014460.2182@localhost6.localdomain6>
  <041CF35939B5534D851F16C30DD0B8CF727F488A@fzex.ruijie.com.cn>
  <alpine.DEB.2.02.1401021024400.2182@localhost6.localdomain6>
@@ -20,19 +19,30 @@ References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
  <041CF35939B5534D851F16C30DD0B8CF727F8A3E@fzex.ruijie.com.cn>
  <alpine.DEB.2.02.1401210730200.2002@localhost6.localdomain6>
  <041CF35939B5534D851F16C30DD0B8CF727F8ACB@fzex.ruijie.com.cn>
-Message-ID: <alpine.DEB.2.02.1401210847420.2002@localhost6.localdomain6>
+ <041CF35939B5534D851F16C30DD0B8CF727F8AEF@fzex.ruijie.com.cn>
+Message-ID: <alpine.DEB.2.02.1401210848170.2002@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 On Tue, 21 Jan 2014, ??(?? ??) wrote:
 
-> Thanks for remind.
-> But to the "|" operator , I still don?t know how to use, for example, I wrote
+> I see, I should add '()' if I use '|'
 
-You need the () at the beginning and end, like I wrote.
+Yes :)
 
 julia
 
+> 
+> 
+> -----????-----
+> ???: cocci-bounces at systeme.lip6.fr [mailto:cocci-bounces at systeme.lip6.fr] ?? ??(?? ??)
+> ????: 2014?1?21? 14:44
+> ???: Julia Lawall
+> ??: cocci at systeme.lip6.fr
+> ??: [Cocci] ??: ??: how to match this case?
+> 
+> Thanks for remind.
+> But to the "|" operator , I still don?t know how to use, for example, I wrote
 > 
 > 
 > @disable comm_assoc@
@@ -67,7 +77,7 @@ julia
 > ")
 > 
 > -----????-----
-> ???: Julia Lawall [mailto:julia.lawall at lip6.fr] 
+> ???: Julia Lawall [mailto:julia.lawall at lip6.fr]
 > ????: 2014?1?21? 14:32
 > ???: ??(?? ??)
 > ??: cocci at systeme.lip6.fr
@@ -161,4 +171,8 @@ julia
 > > > https://systeme.lip6.fr/mailman/listinfo/cocci
 > > > 
 > > 
+> _______________________________________________
+> Cocci mailing list
+> Cocci at systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
 > 
