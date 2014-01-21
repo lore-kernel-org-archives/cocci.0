@@ -1,9 +1,7 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 21 Jan 2014 08:48:25 +0100 (CET)
-Subject: [Cocci]
-	=?gb2312?b?tPC4tDogILTwuLQ6ILTwuLQ6ICBob3cgdG8gbWF0Y2gg?=
-	=?gb2312?b?dGhpcyBjYXNlPw==?=
-In-Reply-To: <041CF35939B5534D851F16C30DD0B8CF727F8AEF@fzex.ruijie.com.cn>
+From: linjia@ruijie.com.cn (=?gb2312?B?wda8ziizzLb+ILij1t0p?=)
+Date: Tue, 21 Jan 2014 09:11:44 +0000
+Subject: [Cocci] infinitly loop in spatch?
+In-Reply-To: <alpine.DEB.2.02.1401210848170.2002@localhost6.localdomain6>
 References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
  <alpine.DEB.2.02.1401021014460.2182@localhost6.localdomain6>
  <041CF35939B5534D851F16C30DD0B8CF727F488A@fzex.ruijie.com.cn>
@@ -20,159 +18,44 @@ References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
  <alpine.DEB.2.02.1401210730200.2002@localhost6.localdomain6>
  <041CF35939B5534D851F16C30DD0B8CF727F8ACB@fzex.ruijie.com.cn>
  <041CF35939B5534D851F16C30DD0B8CF727F8AEF@fzex.ruijie.com.cn>
-Message-ID: <alpine.DEB.2.02.1401210848170.2002@localhost6.localdomain6>
+ <alpine.DEB.2.02.1401210848170.2002@localhost6.localdomain6>
+Message-ID: <041CF35939B5534D851F16C30DD0B8CF727F8BD2@fzex.ruijie.com.cn>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, 21 Jan 2014, ??(?? ??) wrote:
+When I use spatch to scan some file, I found it may loop sometimes, did anyone encounter too?
 
-> I see, I should add '()' if I use '|'
+If using -debug,  it show pause at 'bind' step 
 
-Yes :)
-
-julia
-
-> 
-> 
-> -----????-----
-> ???: cocci-bounces at systeme.lip6.fr [mailto:cocci-bounces at systeme.lip6.fr] ?? ??(?? ??)
-> ????: 2014?1?21? 14:44
-> ???: Julia Lawall
-> ??: cocci at systeme.lip6.fr
-> ??: [Cocci] ??: ??: how to match this case?
-> 
-> Thanks for remind.
-> But to the "|" operator , I still don?t know how to use, for example, I wrote
-> 
-> 
-> @disable comm_assoc@
-> identifier fn, p;
-> identifier I;
-> type T,T1;
-> expression C;
-> @@
-> -fn(...)
-> -{
-> -int p;
-> -...
-> -T I[C];
-> | 
-> -T I[C];
-> -...
-> -int p;
-> -<+...
-> -if(p > C){
-> -...
-> -}
-> -...+>
-> -}
-> 
-> 
-> 
-> It reports: init_defs_builtins: /usr/share/coccinelle/standard.h
-> 126 127
-> Fatal error: exception Failure("minus: parse error: 
->  = File "os.cocci", line 12, column 0,  charpos = 126
->     around = '|', whole content = |
-> ")
-> 
-> -----????-----
-> ???: Julia Lawall [mailto:julia.lawall at lip6.fr]
-> ????: 2014?1?21? 14:32
-> ???: ??(?? ??)
-> ??: cocci at systeme.lip6.fr
-> ??: Re: ??: [Cocci] how to match this case?
-> 
-> On Tue, 21 Jan 2014, ??(?? ??) wrote:
-> 
-> > Sorry, I made a mistake , if the checkpoint is local variable, I 
-> > should write as
-> > 
-> > -int vp;
->   ...
-> > -T I[C];
-> 
-> Also, you don't know if the array is declared before or after vp.  So you would need 
-> 
-> (
-> - int vp;
->   ...
-> - T I[C];
-> |
-> - T I[C];
->   ...
-> - int vp;
-> )
-> 
-> julia
-> 
-> > -<+...
-> > -if(vp > C || ...){
-> > 
-> > -----????-----
-> > ???: Julia Lawall [mailto:julia.lawall at lip6.fr]
-> > ????: 2014?1?21? 11:35
-> > ???: ??(?? ??)
-> > ??: cocci at systeme.lip6.fr
-> > ??: Re: [Cocci] how to match this case?
-> > 
-> > 
-> > 
-> > On Tue, 21 Jan 2014, ??(?? ??) wrote:
-> > 
-> > > Following is a code with bug
-> > > 
-> > > -----------------------------------
-> > > void set_timeout_value(int iParam)
-> > > {
-> > > 	 int i;
-> > > 	 byte b[100];
-> > > 	 i = Geti();
-> > > 	 if (i > 100 || i < 0){
-> > > 	 	  return ;
-> > > 	 	}	 	
-> > > 	 b[i] = iParam;	/*  range of I is 0-100?so may overrun array* /
-> > > 
-> > > }
-> > > -----------------------------------
-> > > Now I write a patch to find it, like this
-> > > 
-> > > @@
-> > > identifier fn, vp;
-> > > identifier I;
-> > > type T;
-> > > expression C;
-> > > @@
-> > > -fn(...,int vp,...)
-> > > -{
-> > > -T I[C];
-> > > -<+...
-> > > -if(vp > C || ...){
-> > > -...
-> > > -}
-> > > -...+>
-> > > -}
-> > > 
-> > > 
-> > > But it doesn?t work, give me a log:
-> > > rule starting on line 1: position variables or mixed modifs 
-> > > interfere with comm_assoc isobool (bool (int vp > int C) || ...)
-> > 
-> > I will look into it, but you could try putting disable comm_assoc in between the initial @@, if you just want to see if your rule is working a little bit.
-> > 
-> > julia
-> > 
-> > 
-> > > 
-> > > can anyone tell why, thanks
-> > > _______________________________________________
-> > > Cocci mailing list
-> > > Cocci at systeme.lip6.fr
-> > > https://systeme.lip6.fr/mailman/listinfo/cocci
-> > > 
-> > 
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
-> 
+-----------------------------------------------------------------------
+HANDLING: /root/windows/ok_file.c
+-----------------------------------------------------------------------
+let's go
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+rule starting on line 1 = 
+-----------------------------------------------------------------------
+dependencies for rule rule starting on line 1 satisfied:
+binding in = []
+binding relevant in = []
+-----------------------------------------------------------------------
+proto for rule starting on line 1 = 
+-----------------------------------------------------------------------
+dependencies for rule proto for rule starting on line 1 not satisfied:
+rule starting on line 1 not satisfied
+binding in environment = []
+-----------------------------------------------------------------------
+Finished
+-----------------------------------------------------------------------
+HANDLING: /root/loop_file.c
+-----------------------------------------------------------------------
+let's go
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+rule starting on line 1 = 
+-----------------------------------------------------------------------
+dependencies for rule rule starting on line 1 satisfied:
+binding in = []
+binding relevant in = []  <---  step here, then nothing more output.....     :(
