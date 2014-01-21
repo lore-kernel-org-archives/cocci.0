@@ -1,8 +1,8 @@
 From: linjia@ruijie.com.cn (=?gb2312?B?wda8ziizzLb+ILij1t0p?=)
-Date: Tue, 21 Jan 2014 06:43:31 +0000
-Subject: [Cocci] =?gb2312?b?tPC4tDogtPC4tDogIGhvdyB0byBtYXRjaCB0aGlzIGNh?=
-	=?gb2312?b?c2U/?=
-In-Reply-To: <alpine.DEB.2.02.1401210730200.2002@localhost6.localdomain6>
+Date: Tue, 21 Jan 2014 07:04:44 +0000
+Subject: [Cocci] =?gb2312?b?tPC4tDogILTwuLQ6ILTwuLQ6ICBob3cgdG8gbWF0Y2gg?=
+ =?gb2312?b?dGhpcyBjYXNlPw==?=
+In-Reply-To: <041CF35939B5534D851F16C30DD0B8CF727F8ACB@fzex.ruijie.com.cn>
 References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
  <alpine.DEB.2.02.1401020939060.2182@localhost6.localdomain6>
  <041CF35939B5534D851F16C30DD0B8CF727F485B@fzex.ruijie.com.cn>
@@ -19,9 +19,20 @@ References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
  <alpine.DEB.2.02.1401210433490.2092@localhost6.localdomain6>
  <041CF35939B5534D851F16C30DD0B8CF727F8A3E@fzex.ruijie.com.cn>
  <alpine.DEB.2.02.1401210730200.2002@localhost6.localdomain6>
-Message-ID: <041CF35939B5534D851F16C30DD0B8CF727F8ACB@fzex.ruijie.com.cn>
+ <041CF35939B5534D851F16C30DD0B8CF727F8ACB@fzex.ruijie.com.cn>
+Message-ID: <041CF35939B5534D851F16C30DD0B8CF727F8AEF@fzex.ruijie.com.cn>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
+
+I see, I should add '()' if I use '|'
+
+
+-----????-----
+???: cocci-bounces at systeme.lip6.fr [mailto:cocci-bounces at systeme.lip6.fr] ?? ??(?? ??)
+????: 2014?1?21? 14:44
+???: Julia Lawall
+??: cocci at systeme.lip6.fr
+??: [Cocci] ??: ??: how to match this case?
 
 Thanks for remind.
 But to the "|" operator , I still don?t know how to use, for example, I wrote
@@ -59,7 +70,7 @@ Fatal error: exception Failure("minus: parse error:
 ")
 
 -----????-----
-???: Julia Lawall [mailto:julia.lawall at lip6.fr] 
+???: Julia Lawall [mailto:julia.lawall at lip6.fr]
 ????: 2014?1?21? 14:32
 ???: ??(?? ??)
 ??: cocci at systeme.lip6.fr
@@ -153,3 +164,7 @@ julia
 > > https://systeme.lip6.fr/mailman/listinfo/cocci
 > > 
 > 
+_______________________________________________
+Cocci mailing list
+Cocci at systeme.lip6.fr
+https://systeme.lip6.fr/mailman/listinfo/cocci
