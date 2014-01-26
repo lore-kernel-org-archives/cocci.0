@@ -1,10 +1,8 @@
-From: linjia@ruijie.com.cn (=?gb2312?B?wda8ziizzLb+ILij1t0p?=)
-Date: Sun, 26 Jan 2014 07:10:02 +0000
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sun, 26 Jan 2014 03:19:19 -0800 (PST)
 Subject: [Cocci] how to write such matching case?
-In-Reply-To: <alpine.DEB.2.10.1401211019360.2098@hadrien>
+In-Reply-To: <041CF35939B5534D851F16C30DD0B8CF727FCF1B@fzex.ruijie.com.cn>
 References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
- <alpine.DEB.2.02.1401021024400.2182@localhost6.localdomain6>
- <041CF35939B5534D851F16C30DD0B8CF727F5C4F@fzex.ruijie.com.cn>
  <alpine.DEB.2.02.1401021111560.2182@localhost6.localdomain6>
  <041CF35939B5534D851F16C30DD0B8CF727F5CA5@fzex.ruijie.com.cn>
  <alpine.DEB.2.10.1401021418020.2088@hadrien>
@@ -19,44 +17,52 @@ References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
  <alpine.DEB.2.02.1401210848170.2002@localhost6.localdomain6>
  <041CF35939B5534D851F16C30DD0B8CF727F8BD2@fzex.ruijie.com.cn>
  <alpine.DEB.2.10.1401211019360.2098@hadrien>
-Message-ID: <041CF35939B5534D851F16C30DD0B8CF727FCF1B@fzex.ruijie.com.cn>
+ <041CF35939B5534D851F16C30DD0B8CF727FCF1B@fzex.ruijie.com.cn>
+Message-ID: <alpine.DEB.2.10.1401260318480.2217@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-In my project, it's required that if function A is called, and function B must be called following, just like this
+On Sun, 26 Jan 2014, ??(?? ??) wrote:
 
-Foo(...)
-{
-   If ... {
-       A(....);
-       ...
-       B(....);
-   } 
-}
+> In my project, it's required that if function A is called, and function B must be called following, just like this
+>
+> Foo(...)
+> {
+>    If ... {
+>        A(....);
+>        ...
+>        B(....);
+>    }
+> }
+>
+> Or
+>
+> Foo1(...)
+> {
+>         A(....);
+>         B(...);
+>  }
+>
+>
+> How to write a patch to find the missing case? Such as
+>
+> Foo(...)
+> {
+>    If ... {
+>        A(....);
+>        ...
+>    }
+> }
+>
+> Or
+>
+> Foo1(...)
+> {
+>        A(....);
+>        ...
+> }
 
-Or
+A(...)
+... When != B(...)
 
-Foo1(...)
-{
-        A(....);
-        B(...);           
- }
-
-
-How to write a patch to find the missing case? Such as 
-
-Foo(...)
-{
-   If ... {
-       A(....);
-       ...
-   } 
-}
-
-Or
-
-Foo1(...)
-{
-       A(....);
-       ...
-}
+julia
