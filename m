@@ -1,218 +1,72 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 28 Jan 2014 08:24:31 +0100 (CET)
-Subject: [Cocci]
-	=?gb2312?b?tPC4tDogILTwuLQ6ILTwuLQ6IGhvdyB0byB3cml0ZSBz?=
-	=?gb2312?b?dWNoIG1hdGNoaW5nIGNhc2U/?=
-In-Reply-To: <041CF35939B5534D851F16C30DD0B8CF727FD30A@fzex.ruijie.com.cn>
-References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
- <alpine.DEB.2.02.1401210433490.2092@localhost6.localdomain6>
- <041CF35939B5534D851F16C30DD0B8CF727F8A3E@fzex.ruijie.com.cn>
- <alpine.DEB.2.02.1401210730200.2002@localhost6.localdomain6>
- <041CF35939B5534D851F16C30DD0B8CF727F8ACB@fzex.ruijie.com.cn>
- <041CF35939B5534D851F16C30DD0B8CF727F8AEF@fzex.ruijie.com.cn>
- <alpine.DEB.2.02.1401210848170.2002@localhost6.localdomain6>
- <041CF35939B5534D851F16C30DD0B8CF727F8BD2@fzex.ruijie.com.cn>
- <alpine.DEB.2.10.1401211019360.2098@hadrien>
- <041CF35939B5534D851F16C30DD0B8CF727FCF1B@fzex.ruijie.com.cn>
- <alpine.DEB.2.10.1401260318480.2217@hadrien>
- <041CF35939B5534D851F16C30DD0B8CF727FD05B@fzex.ruijie.com.cn>
- <alpine.DEB.2.02.1401271332210.2139@localhost6.localdomain6>
- <041CF35939B5534D851F16C30DD0B8CF727FD228@fzex.ruijie.com.cn>
- <CA+MoWDoW8bYPE=1muhQ4w7tUgPFK9xNDSQzo6idgnvZXkit-yw@mail.gmail.com>
- <041CF35939B5534D851F16C30DD0B8CF727FD30A@fzex.ruijie.com.cn>
-Message-ID: <alpine.DEB.2.02.1401280823560.2162@localhost6.localdomain6>
+From: sachin.kamat@linaro.org (Sachin Kamat)
+Date: Mon, 27 Jan 2014 12:21:22 +0530
+Subject: [Cocci] [PATCH] scripts/coccinelle: Use PTR_ERR_OR_ZERO
+Message-ID: <1390805482-25075-1-git-send-email-sachin.kamat@linaro.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+PTR_RET is deprecated. Do not recommend its usage anymore.
+Use PTR_ERR_OR_ZERO instead.
 
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+---
+ scripts/coccinelle/api/ptr_ret.cocci |   14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-On Tue, 28 Jan 2014, ??(?? ??) wrote:
-
-> Just like this?
-> @@
-> @@
-> * main(...){
->    ...when != reg_process_exit_action(...)
-> }
-> 
-> 
-> I tried, but it seems does not work...
-> 
-> I make the function reg...() called in main(), but it still report main()
-
-Probably because there exists a control flow path in which it is not 
-called.  If you want the forall semantics, put forall in between the 
-initial @@
-
-julia
-
-
-> 
-> -----????-----
-> ???: Peter Senna Tschudin [mailto:peter.senna at gmail.com] 
-> ????: 2014?1?27? 22:12
-> ???: ??(?? ??)
-> ??: Julia Lawall; cocci at systeme.lip6.fr
-> ??: Re: [Cocci] ??: ??: how to write such matching case?
-> 
-> You can try:
-> 
-> @@
-> @@
-> * main () {
->    ...
->    when != Foo(...)
-> }
-> 
-> This semantic patch will match functions named main that do not contain call to function Foo;
-> 
-> On Mon, Jan 27, 2014 at 2:55 PM, ??(?? ??) <linjia@ruijie.com.cn> wrote:
-> > Thanks for explain, but if I want to write a simple match, that is 
-> > function foo must be called in main() e.g.
-> >
-> > int main(...)
-> > {
-> >     ...
-> >     Foo(...);
-> >     ...
-> > }
-> >
-> > I write it as
-> >
-> > @@
-> > @@
-> > main(...) {
-> >   <...
-> >     when != reg_process_exit_action(...)
-> >   ...>
-> > }
-> >
-> > Reports: 53 57
-> > Fatal error: exception Failure("minus: parse error:
-> >  = File "rgos.cocci", line 6, column 2,  charpos = 53
-> >     around = '...>', whole content =   ...>
-> > ")
-> >
-> > What does it mean?
-> >
-> > By the way, I still don?t know when I should use '<'and'>' and when need not?
-> >
-> > -----????-----
-> > ???: Julia Lawall [mailto:julia.lawall at lip6.fr]
-> > ????: 2014?1?27? 20:34
-> > ???: ??(?? ??)
-> > ??: cocci at systeme.lip6.fr
-> > ??: Re: ??: [Cocci] how to write such matching case?
-> >
-> > On Mon, 27 Jan 2014, ??(?? ??) wrote:
-> >
-> >> I wrote this
-> >>
-> >> @@
-> >> @@
-> >> cli_printf(...)
-> >> ... when != cli_client_execmd_fail(...)
-> >>
-> >>
-> >> it reports:
-> >> Fatal error: exception Failure("False should not be in the final 
-> >> result.  Perhaps your rule doesn't contain any +/-/* code, or you 
-> >> have a failed dependency.")
-> >>
-> >>
-> >> But i found there is not 'minus' in an example.cocci either....
-> >
-> > There is a * (indicating a line of interest).  You can use that.  If you use that, you will get an exists semantics for the ... (there exists an execution path that satisfies the property).  Otherwise, you get a foral semantics (all execution paths have to satisfy the property).
-> >
-> > julia
-> >
-> >>
-> >>
-> >> //
-> >> //  Add missing pci_dev_put
-> >> //
-> >> // Target: Linux
-> >> // Copyright:  2012 - LIP6/INRIA
-> >> // License:  Licensed under ISC. See LICENSE or 
-> >> http://www.isc.org/software/license
-> >> // Author: Julia Lawall <Julia.Lawall@lip6.fr> // URL:
-> >> http://coccinelle.lip6.fr/ // URL: http://coccinellery.org/
-> >>
-> >> @@
-> >> local idexpression x;
-> >> expression e;
-> >> @@
-> >>
-> >> *x = pci_get_slot(...)
-> >> ... when != true x == NULL
-> >>     when != pci_dev_put(x)
-> >>     when != e = x
-> >>     when != if (x != NULL) {<+... pci_dev_put(x); ...+>} *return ...;
-> >>
-> >>
-> >>
-> >>
-> >>
-> >> -----????-----
-> >> ???: Julia Lawall [mailto:julia.lawall at lip6.fr]
-> >> ????: 2014?1?26? 19:19
-> >> ???: ??(?? ??)
-> >> ??: cocci at systeme.lip6.fr
-> >> ??: Re: [Cocci] how to write such matching case?
-> >>
-> >> On Sun, 26 Jan 2014, ??(?? ??) wrote:
-> >>
-> >> > In my project, it's required that if function A is called, and 
-> >> > function B must be called following, just like this
-> >> >
-> >> > Foo(...)
-> >> > {
-> >> >    If ... {
-> >> >        A(....);
-> >> >        ...
-> >> >        B(....);
-> >> >    }
-> >> > }
-> >> >
-> >> > Or
-> >> >
-> >> > Foo1(...)
-> >> > {
-> >> >         A(....);
-> >> >         B(...);
-> >> >  }
-> >> >
-> >> >
-> >> > How to write a patch to find the missing case? Such as
-> >> >
-> >> > Foo(...)
-> >> > {
-> >> >    If ... {
-> >> >        A(....);
-> >> >        ...
-> >> >    }
-> >> > }
-> >> >
-> >> > Or
-> >> >
-> >> > Foo1(...)
-> >> > {
-> >> >        A(....);
-> >> >        ...
-> >> > }
-> >>
-> >> A(...)
-> >> ... When != B(...)
-> >>
-> >> julia
-> >>
-> > _______________________________________________
-> > Cocci mailing list
-> > Cocci at systeme.lip6.fr
-> > https://systeme.lip6.fr/mailman/listinfo/cocci
-> 
-> 
-> 
-> --
-> Peter
-> 
+diff --git a/scripts/coccinelle/api/ptr_ret.cocci b/scripts/coccinelle/api/ptr_ret.cocci
+index e18f8402e37c..dd58dab5d411 100644
+--- a/scripts/coccinelle/api/ptr_ret.cocci
++++ b/scripts/coccinelle/api/ptr_ret.cocci
+@@ -7,7 +7,7 @@
+ // URL: http://coccinelle.lip6.fr/
+ // Options: --no-includes --include-headers
+ //
+-// Keywords: ERR_PTR, PTR_ERR, PTR_RET, PTR_ERR_OR_ZERO
++// Keywords: ERR_PTR, PTR_ERR, PTR_ERR_OR_ZERO
+ // Version min: 2.6.39
+ //
+ 
+@@ -62,35 +62,35 @@ position p3;
+ p << r1.p1;
+ @@
+ 
+-coccilib.org.print_todo(p[0], "WARNING: PTR_RET can be used")
++coccilib.org.print_todo(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
+ 
+ 
+ @script:python depends on org@
+ p << r2.p2;
+ @@
+ 
+-coccilib.org.print_todo(p[0], "WARNING: PTR_RET can be used")
++coccilib.org.print_todo(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
+ 
+ @script:python depends on org@
+ p << r3.p3;
+ @@
+ 
+-coccilib.org.print_todo(p[0], "WARNING: PTR_RET can be used")
++coccilib.org.print_todo(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
+ 
+ @script:python depends on report@
+ p << r1.p1;
+ @@
+ 
+-coccilib.report.print_report(p[0], "WARNING: PTR_RET can be used")
++coccilib.report.print_report(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
+ 
+ @script:python depends on report@
+ p << r2.p2;
+ @@
+ 
+-coccilib.report.print_report(p[0], "WARNING: PTR_RET can be used")
++coccilib.report.print_report(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
+ 
+ @script:python depends on report@
+ p << r3.p3;
+ @@
+ 
+-coccilib.report.print_report(p[0], "WARNING: PTR_RET can be used")
++coccilib.report.print_report(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
+-- 
+1.7.9.5
