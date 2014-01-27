@@ -1,11 +1,10 @@
-From: linjia@ruijie.com.cn (=?gb2312?B?wda8ziizzLb+ILij1t0p?=)
-Date: Mon, 27 Jan 2014 01:34:55 +0000
-Subject: [Cocci] =?gb2312?b?tPC4tDogIGhvdyB0byB3cml0ZSBzdWNoIG1hdGNoaW5n?=
- =?gb2312?b?IGNhc2U/?=
-In-Reply-To: <alpine.DEB.2.10.1401260318480.2217@hadrien>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Mon, 27 Jan 2014 13:33:34 +0100 (CET)
+Subject: [Cocci]
+	=?gb2312?b?tPC4tDogIGhvdyB0byB3cml0ZSBzdWNoIG1hdGNoaW5n?=
+	=?gb2312?b?IGNhc2U/?=
+In-Reply-To: <041CF35939B5534D851F16C30DD0B8CF727FD05B@fzex.ruijie.com.cn>
 References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
- <alpine.DEB.2.02.1401021111560.2182@localhost6.localdomain6>
- <041CF35939B5534D851F16C30DD0B8CF727F5CA5@fzex.ruijie.com.cn>
  <alpine.DEB.2.10.1401021418020.2088@hadrien>
  <041CF35939B5534D851F16C30DD0B8CF727F5D5A@fzex.ruijie.com.cn>
  <alpine.DEB.2.02.1401030705560.2150@localhost6.localdomain6>
@@ -20,99 +19,111 @@ References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
  <alpine.DEB.2.10.1401211019360.2098@hadrien>
  <041CF35939B5534D851F16C30DD0B8CF727FCF1B@fzex.ruijie.com.cn>
  <alpine.DEB.2.10.1401260318480.2217@hadrien>
-Message-ID: <041CF35939B5534D851F16C30DD0B8CF727FD05B@fzex.ruijie.com.cn>
+ <041CF35939B5534D851F16C30DD0B8CF727FD05B@fzex.ruijie.com.cn>
+Message-ID: <alpine.DEB.2.02.1401271332210.2139@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-I wrote this 
+On Mon, 27 Jan 2014, ??(?? ??) wrote:
 
-@@
-@@
-cli_printf(...)
-... when != cli_client_execmd_fail(...)
+> I wrote this 
+> 
+> @@
+> @@
+> cli_printf(...)
+> ... when != cli_client_execmd_fail(...)
+> 
+> 
+> it reports:
+> Fatal error: exception Failure("False should not be in the final result.  Perhaps your rule doesn't contain any +/-/* code, or you have a failed dependency.")
+> 
+> 
+> But i found there is not 'minus' in an example.cocci either....
 
-
-it reports:
-Fatal error: exception Failure("False should not be in the final result.  Perhaps your rule doesn't contain any +/-/* code, or you have a failed dependency.")
-
-
-But i found there is not 'minus' in an example.cocci either....
-
-
-//
-//  Add missing pci_dev_put
-//
-// Target: Linux
-// Copyright:  2012 - LIP6/INRIA
-// License:  Licensed under ISC. See LICENSE or http://www.isc.org/software/license
-// Author: Julia Lawall <Julia.Lawall@lip6.fr>
-// URL: http://coccinelle.lip6.fr/ 
-// URL: http://coccinellery.org/ 
-
-@@
-local idexpression x;
-expression e;
-@@
-
-*x = pci_get_slot(...)
-... when != true x == NULL
-    when != pci_dev_put(x)
-    when != e = x
-    when != if (x != NULL) {<+... pci_dev_put(x); ...+>}
-*return ...;
-
-
-
-
-
------????-----
-???: Julia Lawall [mailto:julia.lawall at lip6.fr] 
-????: 2014?1?26? 19:19
-???: ??(?? ??)
-??: cocci at systeme.lip6.fr
-??: Re: [Cocci] how to write such matching case?
-
-On Sun, 26 Jan 2014, ??(?? ??) wrote:
-
-> In my project, it's required that if function A is called, and function B must be called following, just like this
->
-> Foo(...)
-> {
->    If ... {
->        A(....);
->        ...
->        B(....);
->    }
-> }
->
-> Or
->
-> Foo1(...)
-> {
->         A(....);
->         B(...);
->  }
->
->
-> How to write a patch to find the missing case? Such as
->
-> Foo(...)
-> {
->    If ... {
->        A(....);
->        ...
->    }
-> }
->
-> Or
->
-> Foo1(...)
-> {
->        A(....);
->        ...
-> }
-
-A(...)
-... When != B(...)
+There is a * (indicating a line of interest).  You can use that.  If you 
+use that, you will get an exists semantics for the ... (there exists an 
+execution path that satisfies the property).  Otherwise, you get a foral 
+semantics (all execution paths have to satisfy the property).
 
 julia
+
+> 
+> 
+> //
+> //  Add missing pci_dev_put
+> //
+> // Target: Linux
+> // Copyright:  2012 - LIP6/INRIA
+> // License:  Licensed under ISC. See LICENSE or http://www.isc.org/software/license
+> // Author: Julia Lawall <Julia.Lawall@lip6.fr>
+> // URL: http://coccinelle.lip6.fr/ 
+> // URL: http://coccinellery.org/ 
+> 
+> @@
+> local idexpression x;
+> expression e;
+> @@
+> 
+> *x = pci_get_slot(...)
+> ... when != true x == NULL
+>     when != pci_dev_put(x)
+>     when != e = x
+>     when != if (x != NULL) {<+... pci_dev_put(x); ...+>}
+> *return ...;
+> 
+> 
+> 
+> 
+> 
+> -----????-----
+> ???: Julia Lawall [mailto:julia.lawall at lip6.fr] 
+> ????: 2014?1?26? 19:19
+> ???: ??(?? ??)
+> ??: cocci at systeme.lip6.fr
+> ??: Re: [Cocci] how to write such matching case?
+> 
+> On Sun, 26 Jan 2014, ??(?? ??) wrote:
+> 
+> > In my project, it's required that if function A is called, and function B must be called following, just like this
+> >
+> > Foo(...)
+> > {
+> >    If ... {
+> >        A(....);
+> >        ...
+> >        B(....);
+> >    }
+> > }
+> >
+> > Or
+> >
+> > Foo1(...)
+> > {
+> >         A(....);
+> >         B(...);
+> >  }
+> >
+> >
+> > How to write a patch to find the missing case? Such as
+> >
+> > Foo(...)
+> > {
+> >    If ... {
+> >        A(....);
+> >        ...
+> >    }
+> > }
+> >
+> > Or
+> >
+> > Foo1(...)
+> > {
+> >        A(....);
+> >        ...
+> > }
+> 
+> A(...)
+> ... When != B(...)
+> 
+> julia
+> 
