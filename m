@@ -1,5 +1,5 @@
 From: linjia@ruijie.com.cn (=?gb2312?B?wda8ziizzLb+ILij1t0p?=)
-Date: Mon, 27 Jan 2014 00:40:37 +0000
+Date: Mon, 27 Jan 2014 01:34:55 +0000
 Subject: [Cocci] =?gb2312?b?tPC4tDogIGhvdyB0byB3cml0ZSBzdWNoIG1hdGNoaW5n?=
  =?gb2312?b?IGNhc2U/?=
 In-Reply-To: <alpine.DEB.2.10.1401260318480.2217@hadrien>
@@ -20,11 +20,48 @@ References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
  <alpine.DEB.2.10.1401211019360.2098@hadrien>
  <041CF35939B5534D851F16C30DD0B8CF727FCF1B@fzex.ruijie.com.cn>
  <alpine.DEB.2.10.1401260318480.2217@hadrien>
-Message-ID: <041CF35939B5534D851F16C30DD0B8CF727FD008@fzex.ruijie.com.cn>
+Message-ID: <041CF35939B5534D851F16C30DD0B8CF727FD05B@fzex.ruijie.com.cn>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-In SMPL,   'When != something'  means 'something' doesn?t exist ?
+I wrote this 
+
+@@
+@@
+cli_printf(...)
+... when != cli_client_execmd_fail(...)
+
+
+it reports:
+Fatal error: exception Failure("False should not be in the final result.  Perhaps your rule doesn't contain any +/-/* code, or you have a failed dependency.")
+
+
+But i found there is not 'minus' in an example.cocci either....
+
+
+//
+//  Add missing pci_dev_put
+//
+// Target: Linux
+// Copyright:  2012 - LIP6/INRIA
+// License:  Licensed under ISC. See LICENSE or http://www.isc.org/software/license
+// Author: Julia Lawall <Julia.Lawall@lip6.fr>
+// URL: http://coccinelle.lip6.fr/ 
+// URL: http://coccinellery.org/ 
+
+@@
+local idexpression x;
+expression e;
+@@
+
+*x = pci_get_slot(...)
+... when != true x == NULL
+    when != pci_dev_put(x)
+    when != e = x
+    when != if (x != NULL) {<+... pci_dev_put(x); ...+>}
+*return ...;
+
+
 
 
 
