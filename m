@@ -1,72 +1,24 @@
-From: sachin.kamat@linaro.org (Sachin Kamat)
-Date: Mon, 27 Jan 2014 12:21:22 +0530
-Subject: [Cocci] [PATCH] scripts/coccinelle: Use PTR_ERR_OR_ZERO
-Message-ID: <1390805482-25075-1-git-send-email-sachin.kamat@linaro.org>
+From: utsav.sb.patel@gmail.com (Utsav Patel)
+Date: Fri, 31 Jan 2014 06:05:43 +0530
+Subject: [Cocci] Need help in patching
+Message-ID: <CACxTi0bZmwJfHgYuA5PUUGViVkAUAdyeZSDHbwBSoQDQu2=NUQ@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-PTR_RET is deprecated. Do not recommend its usage anymore.
-Use PTR_ERR_OR_ZERO instead.
+Hi, I have just started to use Coccinelle for my final year BTech project
+and I have a question,
+The code i want to patch depends upon some conditions. e.g. replace any
+array[SIZE] having size > 100 with an array[original_size/2]. See, I don't
+want to replace ALL array[size], but only when size>100. So, how do i
+compare a constant from an expression (here in example SIZE) to a value
+(here in example - 100 ) and perform patching depending on that condition
+only?
+I guess I can get all array and their SIZE in python script and compare
+them, but then i don't know how to filter the selected arrays[] and send it
+to another rule to perform patching. Please suggest how can I proceed.
 
-Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
----
- scripts/coccinelle/api/ptr_ret.cocci |   14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
-
-diff --git a/scripts/coccinelle/api/ptr_ret.cocci b/scripts/coccinelle/api/ptr_ret.cocci
-index e18f8402e37c..dd58dab5d411 100644
---- a/scripts/coccinelle/api/ptr_ret.cocci
-+++ b/scripts/coccinelle/api/ptr_ret.cocci
-@@ -7,7 +7,7 @@
- // URL: http://coccinelle.lip6.fr/
- // Options: --no-includes --include-headers
- //
--// Keywords: ERR_PTR, PTR_ERR, PTR_RET, PTR_ERR_OR_ZERO
-+// Keywords: ERR_PTR, PTR_ERR, PTR_ERR_OR_ZERO
- // Version min: 2.6.39
- //
- 
-@@ -62,35 +62,35 @@ position p3;
- p << r1.p1;
- @@
- 
--coccilib.org.print_todo(p[0], "WARNING: PTR_RET can be used")
-+coccilib.org.print_todo(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
- 
- 
- @script:python depends on org@
- p << r2.p2;
- @@
- 
--coccilib.org.print_todo(p[0], "WARNING: PTR_RET can be used")
-+coccilib.org.print_todo(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
- 
- @script:python depends on org@
- p << r3.p3;
- @@
- 
--coccilib.org.print_todo(p[0], "WARNING: PTR_RET can be used")
-+coccilib.org.print_todo(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
- 
- @script:python depends on report@
- p << r1.p1;
- @@
- 
--coccilib.report.print_report(p[0], "WARNING: PTR_RET can be used")
-+coccilib.report.print_report(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
- 
- @script:python depends on report@
- p << r2.p2;
- @@
- 
--coccilib.report.print_report(p[0], "WARNING: PTR_RET can be used")
-+coccilib.report.print_report(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
- 
- @script:python depends on report@
- p << r3.p3;
- @@
- 
--coccilib.report.print_report(p[0], "WARNING: PTR_RET can be used")
-+coccilib.report.print_report(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
--- 
-1.7.9.5
+Thank You,
+Utsav Patel
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20140131/572ae063/attachment.html>
