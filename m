@@ -1,39 +1,82 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 31 Jan 2014 08:01:52 +0100 (CET)
-Subject: [Cocci] Need help in patching
-In-Reply-To: <CACxTi0bZmwJfHgYuA5PUUGViVkAUAdyeZSDHbwBSoQDQu2=NUQ@mail.gmail.com>
-References: <CACxTi0bZmwJfHgYuA5PUUGViVkAUAdyeZSDHbwBSoQDQu2=NUQ@mail.gmail.com>
-Message-ID: <alpine.DEB.2.02.1401310757500.2836@localhost6.localdomain6>
+From: sachin.kamat@linaro.org (Sachin Kamat)
+Date: Thu, 6 Feb 2014 08:39:58 +0530
+Subject: [Cocci] [PATCH] scripts/coccinelle: Use PTR_ERR_OR_ZERO
+In-Reply-To: <1390805482-25075-1-git-send-email-sachin.kamat@linaro.org>
+References: <1390805482-25075-1-git-send-email-sachin.kamat@linaro.org>
+Message-ID: <CAK9yfHzotmve4R_o=i95ybPeEMe5cNyn_ZmRDryzZKYmeL-JYw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, 31 Jan 2014, Utsav Patel wrote:
+On 27 January 2014 12:21, Sachin Kamat <sachin.kamat@linaro.org> wrote:
+> PTR_RET is deprecated. Do not recommend its usage anymore.
+> Use PTR_ERR_OR_ZERO instead.
+>
+> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+> ---
+>  scripts/coccinelle/api/ptr_ret.cocci |   14 +++++++-------
+>  1 file changed, 7 insertions(+), 7 deletions(-)
+>
+> diff --git a/scripts/coccinelle/api/ptr_ret.cocci b/scripts/coccinelle/api/ptr_ret.cocci
+> index e18f8402e37c..dd58dab5d411 100644
+> --- a/scripts/coccinelle/api/ptr_ret.cocci
+> +++ b/scripts/coccinelle/api/ptr_ret.cocci
+> @@ -7,7 +7,7 @@
+>  // URL: http://coccinelle.lip6.fr/
+>  // Options: --no-includes --include-headers
+>  //
+> -// Keywords: ERR_PTR, PTR_ERR, PTR_RET, PTR_ERR_OR_ZERO
+> +// Keywords: ERR_PTR, PTR_ERR, PTR_ERR_OR_ZERO
+>  // Version min: 2.6.39
+>  //
+>
+> @@ -62,35 +62,35 @@ position p3;
+>  p << r1.p1;
+>  @@
+>
+> -coccilib.org.print_todo(p[0], "WARNING: PTR_RET can be used")
+> +coccilib.org.print_todo(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
+>
+>
+>  @script:python depends on org@
+>  p << r2.p2;
+>  @@
+>
+> -coccilib.org.print_todo(p[0], "WARNING: PTR_RET can be used")
+> +coccilib.org.print_todo(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
+>
+>  @script:python depends on org@
+>  p << r3.p3;
+>  @@
+>
+> -coccilib.org.print_todo(p[0], "WARNING: PTR_RET can be used")
+> +coccilib.org.print_todo(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
+>
+>  @script:python depends on report@
+>  p << r1.p1;
+>  @@
+>
+> -coccilib.report.print_report(p[0], "WARNING: PTR_RET can be used")
+> +coccilib.report.print_report(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
+>
+>  @script:python depends on report@
+>  p << r2.p2;
+>  @@
+>
+> -coccilib.report.print_report(p[0], "WARNING: PTR_RET can be used")
+> +coccilib.report.print_report(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
+>
+>  @script:python depends on report@
+>  p << r3.p3;
+>  @@
+>
+> -coccilib.report.print_report(p[0], "WARNING: PTR_RET can be used")
+> +coccilib.report.print_report(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
+> --
+> 1.7.9.5
+>
 
-> Hi, I have just started to use Coccinelle for my final year BTech project
-> and I have a question,The code i want to patch depends upon some conditions.
-> e.g. replace any array[SIZE] having size > 100 with an
-> array[original_size/2]. See, I don't want to replace ALL array[size], but
-> only when size>100. So, how do i compare a constant from an expression (here
-> in example SIZE) to a value (here in example - 100 ) and perform patching
-> depending on that condition only?
-> I guess I can get all array and their SIZE in python script and compare
-> them,
+Gentle ping..
 
-Yes, you would want to do that.
-
-> but then i don't know how to filter the selected arrays[] and send it
-> to another rule to perform patching. Please suggest how can I proceed.
-
-If you find you don't like some information in some python code, you can 
-say cocci.include_match(False).  That will drop the information you tested 
-as well as the complete matching of metavariables that was created at the 
-same time.  Then you can make another matching rule for the same thing 
-that inherits the metavariables that you bound in the first rule.  You may 
-want to add some position variables to be able to rematch exactly the same 
-place, if you don't want to duplicate the entire pattern.  In your second 
-matching rule you can do the transformation.
-
-There is an example in the demos directory of the Coccinelle source tree 
-(http://www.coccinelle.fr).  The name of the example is first.cocci.
-
-julia
+-- 
+With warm regards,
+Sachin
