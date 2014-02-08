@@ -1,61 +1,92 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 8 Feb 2014 18:30:31 +0100 (CET)
-Subject: [Cocci] -o option fails when all files are skipped
-In-Reply-To: <52F64E9F.1080605@burschka.de>
-References: <52F64E9F.1080605@burschka.de>
-Message-ID: <alpine.DEB.2.02.1402081828450.2017@localhost6.localdomain6>
+Date: Sat, 8 Feb 2014 21:11:24 +0100 (CET)
+Subject: [Cocci] [PATCH] scripts/coccinelle: Use PTR_ERR_OR_ZERO
+In-Reply-To: <CAK9yfHzotmve4R_o=i95ybPeEMe5cNyn_ZmRDryzZKYmeL-JYw@mail.gmail.com>
+References: <1390805482-25075-1-git-send-email-sachin.kamat@linaro.org>
+ <CAK9yfHzotmve4R_o=i95ybPeEMe5cNyn_ZmRDryzZKYmeL-JYw@mail.gmail.com>
+Message-ID: <alpine.DEB.2.02.1402082111000.2017@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sat, 8 Feb 2014, Christoph Burschka wrote:
 
-> (Posted earlier at https://github.com/coccinelle/coccinelle/issues/16 )
-> 
-> -----
-> Using the latest source (1.0.0-rc19), I'm trying to run this command:
-> 
-> spatch --no-includes --sp-file repr.cocci in.c -o out.c
-> 
-> This is the output I'm getting:
-> 
-> init_defs_builtins:
-> /home/christoph/Software/install/share/coccinelle/standard.h
-> warning: line 9: should self be a metavariable?
-> warning: line 22: should self be a metavariable?
-> (ONCE) Expected tokens self PyObject PyString_FromString PyString_FromFormat
-> Skipping:in.c
-> Fatal error: exception Failure("-o can not be applied because there are
-> multiple modified files")
-> -----
-> 
-> Apparently this is because the only input file is skipped.
-> 
-> I was assuming that spatch would simply copy the unchanged input file in
-> that case, probably because I misinterpreted the following code block in
-> main.ml:
-> 
->     (match outfiles with
->     | [infile, Some outfile] when infile =$= x && null xs ->
->         Common.command2 ("cp " ^outfile^ " " ^ !output_file)
->     | [infile, None] when infile =$= x && null xs ->
->         Common.command2 ("cp " ^infile^ " " ^ !output_file)
->     | _ ->
->         failwith
-> 
-> (Instead, outfiles is an empty list. I guess it filters out the
-> irrelevant files before reaching this point? Sorry, I've never looked at
-> this source code before today.)
-> 
-> I'm trying to use this tool: https://fedorahosted.org/2to3c/
-> 
-> It applies a collection of semantic patches to a Python2 C extension to
-> upgrade it to Python3... but apparently it fails when any of those
-> patches are irrelevant. Is there a better way to do this?
 
-Personally, I never use -o.  Normally, Coccinelle prints a patch to the 
-standard output, and then you can apply the patch to your code.
+On Thu, 6 Feb 2014, Sachin Kamat wrote:
 
-I can make -o simply copy the file when there is nothing to do, if that is 
-the desired behavior.
+> On 27 January 2014 12:21, Sachin Kamat <sachin.kamat@linaro.org> wrote:
+> > PTR_RET is deprecated. Do not recommend its usage anymore.
+> > Use PTR_ERR_OR_ZERO instead.
 
-julia
+Signed-off-by: Julia Lawall <julia.lawall@lip6.fr>
+
+
+> >
+> > Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+> > ---
+> >  scripts/coccinelle/api/ptr_ret.cocci |   14 +++++++-------
+> >  1 file changed, 7 insertions(+), 7 deletions(-)
+> >
+> > diff --git a/scripts/coccinelle/api/ptr_ret.cocci b/scripts/coccinelle/api/ptr_ret.cocci
+> > index e18f8402e37c..dd58dab5d411 100644
+> > --- a/scripts/coccinelle/api/ptr_ret.cocci
+> > +++ b/scripts/coccinelle/api/ptr_ret.cocci
+> > @@ -7,7 +7,7 @@
+> >  // URL: http://coccinelle.lip6.fr/
+> >  // Options: --no-includes --include-headers
+> >  //
+> > -// Keywords: ERR_PTR, PTR_ERR, PTR_RET, PTR_ERR_OR_ZERO
+> > +// Keywords: ERR_PTR, PTR_ERR, PTR_ERR_OR_ZERO
+> >  // Version min: 2.6.39
+> >  //
+> >
+> > @@ -62,35 +62,35 @@ position p3;
+> >  p << r1.p1;
+> >  @@
+> >
+> > -coccilib.org.print_todo(p[0], "WARNING: PTR_RET can be used")
+> > +coccilib.org.print_todo(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
+> >
+> >
+> >  @script:python depends on org@
+> >  p << r2.p2;
+> >  @@
+> >
+> > -coccilib.org.print_todo(p[0], "WARNING: PTR_RET can be used")
+> > +coccilib.org.print_todo(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
+> >
+> >  @script:python depends on org@
+> >  p << r3.p3;
+> >  @@
+> >
+> > -coccilib.org.print_todo(p[0], "WARNING: PTR_RET can be used")
+> > +coccilib.org.print_todo(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
+> >
+> >  @script:python depends on report@
+> >  p << r1.p1;
+> >  @@
+> >
+> > -coccilib.report.print_report(p[0], "WARNING: PTR_RET can be used")
+> > +coccilib.report.print_report(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
+> >
+> >  @script:python depends on report@
+> >  p << r2.p2;
+> >  @@
+> >
+> > -coccilib.report.print_report(p[0], "WARNING: PTR_RET can be used")
+> > +coccilib.report.print_report(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
+> >
+> >  @script:python depends on report@
+> >  p << r3.p3;
+> >  @@
+> >
+> > -coccilib.report.print_report(p[0], "WARNING: PTR_RET can be used")
+> > +coccilib.report.print_report(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
+> > --
+> > 1.7.9.5
+> >
+> 
+> Gentle ping..
+> 
+> -- 
+> With warm regards,
+> Sachin
+> 
