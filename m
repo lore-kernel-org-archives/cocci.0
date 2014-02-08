@@ -1,82 +1,60 @@
-From: sachin.kamat@linaro.org (Sachin Kamat)
-Date: Thu, 6 Feb 2014 08:39:58 +0530
-Subject: [Cocci] [PATCH] scripts/coccinelle: Use PTR_ERR_OR_ZERO
-In-Reply-To: <1390805482-25075-1-git-send-email-sachin.kamat@linaro.org>
-References: <1390805482-25075-1-git-send-email-sachin.kamat@linaro.org>
-Message-ID: <CAK9yfHzotmve4R_o=i95ybPeEMe5cNyn_ZmRDryzZKYmeL-JYw@mail.gmail.com>
+From: christoph@burschka.de (Christoph Burschka)
+Date: Sat, 08 Feb 2014 16:34:55 +0100
+Subject: [Cocci] -o option fails when all files are skipped
+Message-ID: <52F64E9F.1080605@burschka.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 27 January 2014 12:21, Sachin Kamat <sachin.kamat@linaro.org> wrote:
-> PTR_RET is deprecated. Do not recommend its usage anymore.
-> Use PTR_ERR_OR_ZERO instead.
->
-> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
-> ---
->  scripts/coccinelle/api/ptr_ret.cocci |   14 +++++++-------
->  1 file changed, 7 insertions(+), 7 deletions(-)
->
-> diff --git a/scripts/coccinelle/api/ptr_ret.cocci b/scripts/coccinelle/api/ptr_ret.cocci
-> index e18f8402e37c..dd58dab5d411 100644
-> --- a/scripts/coccinelle/api/ptr_ret.cocci
-> +++ b/scripts/coccinelle/api/ptr_ret.cocci
-> @@ -7,7 +7,7 @@
->  // URL: http://coccinelle.lip6.fr/
->  // Options: --no-includes --include-headers
->  //
-> -// Keywords: ERR_PTR, PTR_ERR, PTR_RET, PTR_ERR_OR_ZERO
-> +// Keywords: ERR_PTR, PTR_ERR, PTR_ERR_OR_ZERO
->  // Version min: 2.6.39
->  //
->
-> @@ -62,35 +62,35 @@ position p3;
->  p << r1.p1;
->  @@
->
-> -coccilib.org.print_todo(p[0], "WARNING: PTR_RET can be used")
-> +coccilib.org.print_todo(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
->
->
->  @script:python depends on org@
->  p << r2.p2;
->  @@
->
-> -coccilib.org.print_todo(p[0], "WARNING: PTR_RET can be used")
-> +coccilib.org.print_todo(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
->
->  @script:python depends on org@
->  p << r3.p3;
->  @@
->
-> -coccilib.org.print_todo(p[0], "WARNING: PTR_RET can be used")
-> +coccilib.org.print_todo(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
->
->  @script:python depends on report@
->  p << r1.p1;
->  @@
->
-> -coccilib.report.print_report(p[0], "WARNING: PTR_RET can be used")
-> +coccilib.report.print_report(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
->
->  @script:python depends on report@
->  p << r2.p2;
->  @@
->
-> -coccilib.report.print_report(p[0], "WARNING: PTR_RET can be used")
-> +coccilib.report.print_report(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
->
->  @script:python depends on report@
->  p << r3.p3;
->  @@
->
-> -coccilib.report.print_report(p[0], "WARNING: PTR_RET can be used")
-> +coccilib.report.print_report(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
-> --
-> 1.7.9.5
->
+(Posted earlier at https://github.com/coccinelle/coccinelle/issues/16 )
 
-Gentle ping..
+-----
+Using the latest source (1.0.0-rc19), I'm trying to run this command:
 
--- 
-With warm regards,
-Sachin
+spatch --no-includes --sp-file repr.cocci in.c -o out.c
+
+This is the output I'm getting:
+
+init_defs_builtins:
+/home/christoph/Software/install/share/coccinelle/standard.h
+warning: line 9: should self be a metavariable?
+warning: line 22: should self be a metavariable?
+(ONCE) Expected tokens self PyObject PyString_FromString PyString_FromFormat
+Skipping:in.c
+Fatal error: exception Failure("-o can not be applied because there are
+multiple modified files")
+-----
+
+Apparently this is because the only input file is skipped.
+
+I was assuming that spatch would simply copy the unchanged input file in
+that case, probably because I misinterpreted the following code block in
+main.ml:
+
+    (match outfiles with
+    | [infile, Some outfile] when infile =$= x && null xs ->
+        Common.command2 ("cp " ^outfile^ " " ^ !output_file)
+    | [infile, None] when infile =$= x && null xs ->
+        Common.command2 ("cp " ^infile^ " " ^ !output_file)
+    | _ ->
+        failwith
+
+(Instead, outfiles is an empty list. I guess it filters out the
+irrelevant files before reaching this point? Sorry, I've never looked at
+this source code before today.)
+
+I'm trying to use this tool: https://fedorahosted.org/2to3c/
+
+It applies a collection of semantic patches to a Python2 C extension to
+upgrade it to Python3... but apparently it fails when any of those
+patches are irrelevant. Is there a better way to do this?
+
+Best regards,
+Christoph
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 246 bytes
+Desc: OpenPGP digital signature
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20140208/d9baa20a/attachment.asc>
