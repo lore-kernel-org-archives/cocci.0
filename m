@@ -1,81 +1,249 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 9 Feb 2014 07:31:05 +0100 (CET)
-Subject: [Cocci] -o option fails when all files are skipped
-In-Reply-To: <52F6A70C.4060108@burschka.de>
-References: <52F64E9F.1080605@burschka.de>
- <alpine.DEB.2.02.1402081828450.2017@localhost6.localdomain6>
- <52F6A70C.4060108@burschka.de>
-Message-ID: <alpine.DEB.2.02.1402090730460.2142@localhost6.localdomain6>
+From: linjia@ruijie.com.cn (=?gb2312?B?wda8ziizzLb+ILij1t0p?=)
+Date: Wed, 12 Feb 2014 02:34:44 +0000
+Subject: [Cocci] =?gb2312?b?tPC4tDogtPC4tDogILTwuLQ6ILTwuLQ6IGhvdyB0byB3?=
+ =?gb2312?b?cml0ZSBzdWNoIG1hdGNoaW5nIGNhc2U/?=
+In-Reply-To: <alpine.DEB.2.02.1401280823560.2162@localhost6.localdomain6>
+References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
+ <alpine.DEB.2.02.1401210433490.2092@localhost6.localdomain6>
+ <041CF35939B5534D851F16C30DD0B8CF727F8A3E@fzex.ruijie.com.cn>
+ <alpine.DEB.2.02.1401210730200.2002@localhost6.localdomain6>
+ <041CF35939B5534D851F16C30DD0B8CF727F8ACB@fzex.ruijie.com.cn>
+ <041CF35939B5534D851F16C30DD0B8CF727F8AEF@fzex.ruijie.com.cn>
+ <alpine.DEB.2.02.1401210848170.2002@localhost6.localdomain6>
+ <041CF35939B5534D851F16C30DD0B8CF727F8BD2@fzex.ruijie.com.cn>
+ <alpine.DEB.2.10.1401211019360.2098@hadrien>
+ <041CF35939B5534D851F16C30DD0B8CF727FCF1B@fzex.ruijie.com.cn>
+ <alpine.DEB.2.10.1401260318480.2217@hadrien>
+ <041CF35939B5534D851F16C30DD0B8CF727FD05B@fzex.ruijie.com.cn>
+ <alpine.DEB.2.02.1401271332210.2139@localhost6.localdomain6>
+ <041CF35939B5534D851F16C30DD0B8CF727FD228@fzex.ruijie.com.cn>
+ <CA+MoWDoW8bYPE=1muhQ4w7tUgPFK9xNDSQzo6idgnvZXkit-yw@mail.gmail.com>
+ <041CF35939B5534D851F16C30DD0B8CF727FD30A@fzex.ruijie.com.cn>
+ <alpine.DEB.2.02.1401280823560.2162@localhost6.localdomain6>
+Message-ID: <041CF35939B5534D851F16C30DD0B8CF727FDDE6@fzex.ruijie.com.cn>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sat, 8 Feb 2014, Christoph Burschka wrote:
+You mean this?
 
-> On 02/08/2014 06:30 PM, Julia Lawall wrote:
-> > On Sat, 8 Feb 2014, Christoph Burschka wrote:
-> > 
-> >> (Posted earlier at https://github.com/coccinelle/coccinelle/issues/16 )
-> >>
-> >> -----
-> >> Using the latest source (1.0.0-rc19), I'm trying to run this command:
-> >>
-> >> spatch --no-includes --sp-file repr.cocci in.c -o out.c
-> >>
-> >> This is the output I'm getting:
-> >>
-> >> init_defs_builtins:
-> >> /home/christoph/Software/install/share/coccinelle/standard.h
-> >> warning: line 9: should self be a metavariable?
-> >> warning: line 22: should self be a metavariable?
-> >> (ONCE) Expected tokens self PyObject PyString_FromString PyString_FromFormat
-> >> Skipping:in.c
-> >> Fatal error: exception Failure("-o can not be applied because there are
-> >> multiple modified files")
-> >> -----
-> >>
-> >> Apparently this is because the only input file is skipped.
-> >>
-> >> I was assuming that spatch would simply copy the unchanged input file in
-> >> that case, probably because I misinterpreted the following code block in
-> >> main.ml:
-> >>
-> >>     (match outfiles with
-> >>     | [infile, Some outfile] when infile =$= x && null xs ->
-> >>         Common.command2 ("cp " ^outfile^ " " ^ !output_file)
-> >>     | [infile, None] when infile =$= x && null xs ->
-> >>         Common.command2 ("cp " ^infile^ " " ^ !output_file)
-> >>     | _ ->
-> >>         failwith
-> >>
-> >> (Instead, outfiles is an empty list. I guess it filters out the
-> >> irrelevant files before reaching this point? Sorry, I've never looked at
-> >> this source code before today.)
-> >>
-> >> I'm trying to use this tool: https://fedorahosted.org/2to3c/
-> >>
-> >> It applies a collection of semantic patches to a Python2 C extension to
-> >> upgrade it to Python3... but apparently it fails when any of those
-> >> patches are irrelevant. Is there a better way to do this?
-> > 
-> > Personally, I never use -o.  Normally, Coccinelle prints a patch to the 
-> > standard output, and then you can apply the patch to your code.
-> > 
-> > I can make -o simply copy the file when there is nothing to do, if that is 
-> > the desired behavior.
-> > 
-> > julia
-> > 
-> 
-> Well, it's probably best if I do it differently.
-> 
-> The project I forked was originally trying to wrap spatch in a string
-> function, so it read the source file, wrote it into a temporary file,
-> then ran spatch on it with -o, then read the output file, *then*
-> generated a diff against the input file... that seems needlessly
-> complicated.
-> Instead, I've changed it to just run spatch and print the diff output
-> that it generates directly.
+@forall@
+@@
+* main(){
+   ...when != reg_process_exit_action(...)
+}
 
-That seems better :)
+And my 'main' function is straightforward without flow control
+
+int main(void)
+{
+    struct AAAA foo;
+    struct AAA foo2;
+    struct BBB foo3, *p;
+    printf("%d\n", sizeof(((struct AAAA*)0)->aa));
+    printf("%d %d %d\n", foo.aa.c, foo2.c, foo3.value); 
+    memset(p, 0, sizeof(*p));    
+    reg_process_exit_action(0, RESTART);    
+    return 0;
+}
+
+
+
+-----????-----
+???: Julia Lawall [mailto:julia.lawall at lip6.fr] 
+????: 2014?1?28? 15:25
+???: ??(?? ??)
+??: Peter Senna Tschudin; cocci at systeme.lip6.fr
+??: Re: ??: [Cocci] ??: ??: how to write such matching case?
+
+
+
+On Tue, 28 Jan 2014, ??(?? ??) wrote:
+
+> Just like this?
+> @@
+> @@
+> * main(...){
+>    ...when != reg_process_exit_action(...) }
+> 
+> 
+> I tried, but it seems does not work...
+> 
+> I make the function reg...() called in main(), but it still report 
+> main()
+
+Probably because there exists a control flow path in which it is not called.  If you want the forall semantics, put forall in between the initial @@
 
 julia
+
+
+> 
+> -----????-----
+> ???: Peter Senna Tschudin [mailto:peter.senna at gmail.com]
+> ????: 2014?1?27? 22:12
+> ???: ??(?? ??)
+> ??: Julia Lawall; cocci at systeme.lip6.fr
+> ??: Re: [Cocci] ??: ??: how to write such matching case?
+> 
+> You can try:
+> 
+> @@
+> @@
+> * main () {
+>    ...
+>    when != Foo(...)
+> }
+> 
+> This semantic patch will match functions named main that do not 
+> contain call to function Foo;
+> 
+> On Mon, Jan 27, 2014 at 2:55 PM, ??(?? ??) <linjia@ruijie.com.cn> wrote:
+> > Thanks for explain, but if I want to write a simple match, that is 
+> > function foo must be called in main() e.g.
+> >
+> > int main(...)
+> > {
+> >     ...
+> >     Foo(...);
+> >     ...
+> > }
+> >
+> > I write it as
+> >
+> > @@
+> > @@
+> > main(...) {
+> >   <...
+> >     when != reg_process_exit_action(...)
+> >   ...>
+> > }
+> >
+> > Reports: 53 57
+> > Fatal error: exception Failure("minus: parse error:
+> >  = File "rgos.cocci", line 6, column 2,  charpos = 53
+> >     around = '...>', whole content =   ...>
+> > ")
+> >
+> > What does it mean?
+> >
+> > By the way, I still don?t know when I should use '<'and'>' and when need not?
+> >
+> > -----????-----
+> > ???: Julia Lawall [mailto:julia.lawall at lip6.fr]
+> > ????: 2014?1?27? 20:34
+> > ???: ??(?? ??)
+> > ??: cocci at systeme.lip6.fr
+> > ??: Re: ??: [Cocci] how to write such matching case?
+> >
+> > On Mon, 27 Jan 2014, ??(?? ??) wrote:
+> >
+> >> I wrote this
+> >>
+> >> @@
+> >> @@
+> >> cli_printf(...)
+> >> ... when != cli_client_execmd_fail(...)
+> >>
+> >>
+> >> it reports:
+> >> Fatal error: exception Failure("False should not be in the final 
+> >> result.  Perhaps your rule doesn't contain any +/-/* code, or you 
+> >> have a failed dependency.")
+> >>
+> >>
+> >> But i found there is not 'minus' in an example.cocci either....
+> >
+> > There is a * (indicating a line of interest).  You can use that.  If you use that, you will get an exists semantics for the ... (there exists an execution path that satisfies the property).  Otherwise, you get a foral semantics (all execution paths have to satisfy the property).
+> >
+> > julia
+> >
+> >>
+> >>
+> >> //
+> >> //  Add missing pci_dev_put
+> >> //
+> >> // Target: Linux
+> >> // Copyright:  2012 - LIP6/INRIA
+> >> // License:  Licensed under ISC. See LICENSE or 
+> >> http://www.isc.org/software/license
+> >> // Author: Julia Lawall <Julia.Lawall@lip6.fr> // URL:
+> >> http://coccinelle.lip6.fr/ // URL: http://coccinellery.org/
+> >>
+> >> @@
+> >> local idexpression x;
+> >> expression e;
+> >> @@
+> >>
+> >> *x = pci_get_slot(...)
+> >> ... when != true x == NULL
+> >>     when != pci_dev_put(x)
+> >>     when != e = x
+> >>     when != if (x != NULL) {<+... pci_dev_put(x); ...+>} *return 
+> >> ...;
+> >>
+> >>
+> >>
+> >>
+> >>
+> >> -----????-----
+> >> ???: Julia Lawall [mailto:julia.lawall at lip6.fr]
+> >> ????: 2014?1?26? 19:19
+> >> ???: ??(?? ??)
+> >> ??: cocci at systeme.lip6.fr
+> >> ??: Re: [Cocci] how to write such matching case?
+> >>
+> >> On Sun, 26 Jan 2014, ??(?? ??) wrote:
+> >>
+> >> > In my project, it's required that if function A is called, and 
+> >> > function B must be called following, just like this
+> >> >
+> >> > Foo(...)
+> >> > {
+> >> >    If ... {
+> >> >        A(....);
+> >> >        ...
+> >> >        B(....);
+> >> >    }
+> >> > }
+> >> >
+> >> > Or
+> >> >
+> >> > Foo1(...)
+> >> > {
+> >> >         A(....);
+> >> >         B(...);
+> >> >  }
+> >> >
+> >> >
+> >> > How to write a patch to find the missing case? Such as
+> >> >
+> >> > Foo(...)
+> >> > {
+> >> >    If ... {
+> >> >        A(....);
+> >> >        ...
+> >> >    }
+> >> > }
+> >> >
+> >> > Or
+> >> >
+> >> > Foo1(...)
+> >> > {
+> >> >        A(....);
+> >> >        ...
+> >> > }
+> >>
+> >> A(...)
+> >> ... When != B(...)
+> >>
+> >> julia
+> >>
+> > _______________________________________________
+> > Cocci mailing list
+> > Cocci at systeme.lip6.fr
+> > https://systeme.lip6.fr/mailman/listinfo/cocci
+> 
+> 
+> 
+> --
+> Peter
+> 
