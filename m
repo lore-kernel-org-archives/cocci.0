@@ -1,10 +1,8 @@
-From: linjia@ruijie.com.cn (=?gb2312?B?wda8ziizzLb+ILij1t0p?=)
-Date: Fri, 14 Feb 2014 07:57:40 +0000
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Fri, 14 Feb 2014 09:56:00 +0100 (CET)
 Subject: [Cocci] Fatal error: exception Failure("no python")
-In-Reply-To: <alpine.DEB.2.02.1402120722020.2039@localhost6.localdomain6>
+In-Reply-To: <041CF35939B5534D851F16C30DD0B8CF727FE284@fzex.ruijie.com.cn>
 References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
- <alpine.DEB.2.02.1401210730200.2002@localhost6.localdomain6>
- <041CF35939B5534D851F16C30DD0B8CF727F8ACB@fzex.ruijie.com.cn>
  <041CF35939B5534D851F16C30DD0B8CF727F8AEF@fzex.ruijie.com.cn>
  <alpine.DEB.2.02.1401210848170.2002@localhost6.localdomain6>
  <041CF35939B5534D851F16C30DD0B8CF727F8BD2@fzex.ruijie.com.cn>
@@ -19,17 +17,27 @@ References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
  <alpine.DEB.2.02.1401280823560.2162@localhost6.localdomain6>
  <041CF35939B5534D851F16C30DD0B8CF727FDDE6@fzex.ruijie.com.cn>
  <alpine.DEB.2.02.1402120722020.2039@localhost6.localdomain6>
-Message-ID: <041CF35939B5534D851F16C30DD0B8CF727FE284@fzex.ruijie.com.cn>
+ <041CF35939B5534D851F16C30DD0B8CF727FE284@fzex.ruijie.com.cn>
+Message-ID: <alpine.DEB.2.10.1402140954210.2118@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-I did some 'apt-get install update' and 'apt-get install upgrade' today
+On Fri, 14 Feb 2014, ??(?? ??) wrote:
 
-Then I found cocc can not work, it reports: Fatal error: exception Failure("no python")
+> I did some 'apt-get install update' and 'apt-get install upgrade' today
+>
+> Then I found cocc can not work, it reports: Fatal error: exception Failure("no python")
+>
+> But I run python -v is ok
+>
+> # python -V
+> Python 2.7.3
+>
+> Why? How can I fix this?
 
-But I run python -v is ok
+Perhaps your python is not in a standard place?
 
-# python -V
-Python 2.7.3
+What distribution of Linux are you using?  What version of Coccinelle do
+you have?
 
-Why? How can I fix this? 
+julia
