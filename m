@@ -1,9 +1,11 @@
-From: linjia@ruijie.com.cn (=?gb2312?B?wda8ziizzLb+ILij1t0p?=)
-Date: Fri, 14 Feb 2014 12:39:51 +0000
-Subject: [Cocci] =?gb2312?b?tPC4tDogIEZhdGFsIGVycm9yOiBleGNlcHRpb24gRmFp?=
- =?gb2312?b?bHVyZSgibm8gcHl0aG9uIik=?=
-In-Reply-To: <alpine.DEB.2.10.1402140954210.2118@hadrien>
+From: linjia@ruijie.com.cn (=?utf-8?B?5p6X5ZiJKOeoi+S6jCDnpo/lt54p?=)
+Date: Fri, 14 Feb 2014 12:43:44 +0000
+Subject: [Cocci] =?utf-8?b?562U5aSNOiAgRmF0YWwgZXJyb3I6IGV4Y2VwdGlvbiBG?=
+ =?utf-8?q?ailure=28=22no_python=22=29?=
+In-Reply-To: <CAAxaTiN=n76TLavcDEj3NBBL5=DdUKWc0b6AeOs_5FTzBhxNDg@mail.gmail.com>
 References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
+ <alpine.DEB.2.02.1401210730200.2002@localhost6.localdomain6>
+ <041CF35939B5534D851F16C30DD0B8CF727F8ACB@fzex.ruijie.com.cn>
  <041CF35939B5534D851F16C30DD0B8CF727F8AEF@fzex.ruijie.com.cn>
  <alpine.DEB.2.02.1401210848170.2002@localhost6.localdomain6>
  <041CF35939B5534D851F16C30DD0B8CF727F8BD2@fzex.ruijie.com.cn>
@@ -19,47 +21,42 @@ References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
  <041CF35939B5534D851F16C30DD0B8CF727FDDE6@fzex.ruijie.com.cn>
  <alpine.DEB.2.02.1402120722020.2039@localhost6.localdomain6>
  <041CF35939B5534D851F16C30DD0B8CF727FE284@fzex.ruijie.com.cn>
- <alpine.DEB.2.10.1402140954210.2118@hadrien>
-Message-ID: <041CF35939B5534D851F16C30DD0B8CF727FE30C@fzex.ruijie.com.cn>
+ <CAAxaTiN=n76TLavcDEj3NBBL5=DdUKWc0b6AeOs_5FTzBhxNDg@mail.gmail.com>
+Message-ID: <041CF35939B5534D851F16C30DD0B8CF727FE31D@fzex.ruijie.com.cn>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+# spatch --version
+spatch version 1.0.0-rc19 without Python support and with Str regexp support
 
+but I didn't make and make install with option '--without-python '
+that is I pressed  ./configure --enable-release, just it
+
+
+and now when I run "/usr/bin/spatch -sp_file ....", all is ok, it seems version 0.2.3 runs
+but "spatch -sp_file " reports fail, seems version 1.0 runs?
 
 -----????-----
-???: Julia Lawall [mailto:julia.lawall at lip6.fr] 
-????: 2014?2?14? 16:56
+???: npalix.work at gmail.com [mailto:npalix.work at gmail.com] ?? Nicolas Palix
+????: 2014?2?14? 17:51
 ???: ??(?? ??)
 ??: cocci at systeme.lip6.fr
 ??: Re: [Cocci] Fatal error: exception Failure("no python")
 
-On Fri, 14 Feb 2014, ??(?? ??) wrote:
+Hi,
 
-> I did some 'apt-get install update' and 'apt-get install upgrade' 
-> today
->
+On Fri, Feb 14, 2014 at 8:57 AM, ??(?? ??) <linjia@ruijie.com.cn> wrote:
 > Then I found cocc can not work, it reports: Fatal error: exception 
 > Failure("no python")
->
-> But I run python -v is ok
->
-> # python -V
-> Python 2.7.3
->
-> Why? How can I fix this?
 
-Perhaps your python is not in a standard place?
+You get is error when spatch has not been compiled with Python support but you are still using cocci file with Python snippet.
 
-I don?t know how python is placed..but the result of whereis is
+Does ' spatch --version' report python support ?
+Such as
+     spatch version 1.0.0-rc15 with Python support and with PCRE support
 
-# whereis python
-python: /usr/bin/python2.6 /usr/bin/python2.7 /usr/bin/python2.7-config /usr/bin/python /etc/python2.6 /etc/python2.7 /etc/python /usr/lib/python2.6 /usr/lib/python2.7 /usr/bin/X11/python2.6 /usr/bin/X11/python2.7 /usr/bin/X11/python2.7-config /usr/bin/X11/python /usr/local/lib/python2.6 /usr/local/lib/python2.7 /usr/include/python2.6 /usr/include/python2.7 /usr/include/python2.7_d /usr/include/python2.6_d /usr/share/python /usr/share/man/man1/python.1.gz
-
-
-
-What distribution of Linux are you using?  What version of Coccinelle do you have?
-~~~~~~~~~~~ uname -ar
-Linux debian 2.6.33.7-co-0.7.9 #1 PREEMPT Sat Apr 9 20:30:51 UTC 2011 i686 GNU/Linux
-
-I installed 0.2.3.firstly,  then installed 1.0.0-rc19
-julia
+Regards,
+--
+Nicolas Palix
+Tel: +33 4 76 51 46 27
+http://lig-membres.imag.fr/palix/
