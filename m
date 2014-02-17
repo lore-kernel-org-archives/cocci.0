@@ -1,9 +1,8 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 15 Feb 2014 07:18:04 +0100 (CET)
-Subject: [Cocci]
-	=?gb2312?b?tPC4tDogILTwuLQ6ICBGYXRhbCBlcnJvcjogZXhjZXB0?=
-	=?gb2312?b?aW9uIEZhaWx1cmUoIm5vIHB5dGhvbiIp?=
-In-Reply-To: <041CF35939B5534D851F16C30DD0B8CF727FE3D7@fzex.ruijie.com.cn>
+From: linjia@ruijie.com.cn (=?utf-8?B?5p6X5ZiJKOeoi+S6jCDnpo/lt54p?=)
+Date: Mon, 17 Feb 2014 01:27:43 +0000
+Subject: [Cocci] =?utf-8?b?562U5aSNOiDnrZTlpI06ICDnrZTlpI06ICBGYXRhbCBl?=
+ =?utf-8?q?rror=3A_exception_Failure=28=22no_python=22=29?=
+In-Reply-To: <alpine.DEB.2.02.1402150713320.1988@localhost6.localdomain6>
 References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
  <041CF35939B5534D851F16C30DD0B8CF727FCF1B@fzex.ruijie.com.cn>
  <alpine.DEB.2.10.1401260318480.2217@hadrien>
@@ -20,9 +19,30 @@ References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
  <041CF35939B5534D851F16C30DD0B8CF727FE31D@fzex.ruijie.com.cn>
  <alpine.DEB.2.10.1402141356280.2118@hadrien>
  <041CF35939B5534D851F16C30DD0B8CF727FE3D7@fzex.ruijie.com.cn>
-Message-ID: <alpine.DEB.2.02.1402150713320.1988@localhost6.localdomain6>
+ <alpine.DEB.2.02.1402150713320.1988@localhost6.localdomain6>
+Message-ID: <041CF35939B5534D851F16C30DD0B8CF727FE569@fzex.ruijie.com.cn>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
+
+Yes, I rerun the configure with enable python, and found lack of the pkg-config python lib 
+
+
+./configure --enable-release --enable-ocaml --enable-python --enable-pcre-syntax
+reports?
+./configure: line 15220: /root/windows/install/coccinelle-master/coccinelle-master/setup/fake-subst.sh: Permission denied
+configure: error: the python scripts feature is enabled but the pkg-config python library is not found
+
+
+
+finally, I directly download the 1.0 version Debian package from https://packages.debian.org/wheezy/i386/coccinelle/download
+
+
+-----????-----
+???: Julia Lawall [mailto:julia.lawall at lip6.fr] 
+????: 2014?2?15? 14:18
+???: ??(?? ??)
+??: Nicolas Palix; cocci at systeme.lip6.fr
+??: Re: ??: [Cocci] ??: Fatal error: exception Failure("no python")
 
 On Sat, 15 Feb 2014, ??(?? ??) wrote:
 
@@ -30,43 +50,36 @@ On Sat, 15 Feb 2014, ??(?? ??) wrote:
 > 
 > 1  I installed cocc by using deb package 'coccinelle_0.2.3.deb-1_i386.deb' at first.   All is ok.
 
-This is not good at all.  But I am not sure why you are using that 
-version.  That is from the old stable version of Debian.  The current 
-stable version is 1.0.0-rc12.
+This is not good at all.  But I am not sure why you are using that version.  That is from the old stable version of Debian.  The current stable version is 1.0.0-rc12.
 
-> 2 Then I think its version may be too low. So I downloaded the source of 
-> version 1.0 and make install.  All is ok.
+> 2 Then I think its version may be too low. So I downloaded the source 
+> of version 1.0 and make install.  All is ok.
 
-Did you run ./configure?  I'm surprised that it owuld let you run make 
-without doing that.  ./configure will normally succeed, but I believe it 
-says at the end what features it managed to find.
+Did you run ./configure?  I'm surprised that it owuld let you run make without doing that.  ./configure will normally succeed, but I believe it says at the end what features it managed to find.
 
-> 3 I made some 'apt-get install upgrade and update' for another reason, I 
-> didn?t think it has something to do with cocc.
+> 3 I made some 'apt-get install upgrade and update' for another reason, 
+> I didn?t think it has something to do with cocc.
 > 
 > 4  the problem occur when I use cocc. 
 > 
-> 5 I found I can run cocc by "/usr/bin/spatch " , but not by "spatch ", I 
-> think there is some chaos in the cocc config now, see following...
+> 5 I found I can run cocc by "/usr/bin/spatch " , but not by "spatch ", 
+> I think there is some chaos in the cocc config now, see following...
 
 Coccinelle goes in /usr/local/bin
 
-> root at debian:~/windows/ctest/cocc# /usr/bin/spatch -version 
-> spatch version 0.2.3 with Python support
-> root at debian:~/windows/ctest/cocc# spatch -version
-> spatch version 1.0.0-rc19 without Python support and with Str regexp support 
-> root at debian:~/windows/ctest/cocc#
+> root at debian:~/windows/ctest/cocc# /usr/bin/spatch -version spatch 
+> version 0.2.3 with Python support root at debian:~/windows/ctest/cocc# 
+> spatch -version spatch version 1.0.0-rc19 without Python support and 
+> with Str regexp support root at debian:~/windows/ctest/cocc#
 
-Clearly it has not found python during the configure operation.  Maybe if 
-you rerun configure and save the output in a file, you will find the 
-problem.
+Clearly it has not found python during the configure operation.  Maybe if you rerun configure and save the output in a file, you will find the problem.
 
 julia
 
 > 
 > 
 > -----????-----
-> ???: Julia Lawall [mailto:julia.lawall at lip6.fr] 
+> ???: Julia Lawall [mailto:julia.lawall at lip6.fr]
 > ????: 2014?2?14? 20:58
 > ???: ??(?? ??)
 > ??: Nicolas Palix; cocci at systeme.lip6.fr
