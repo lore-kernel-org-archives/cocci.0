@@ -1,5 +1,5 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 18 Feb 2014 08:33:43 +0100 (CET)
+Date: Tue, 18 Feb 2014 08:34:36 +0100 (CET)
 Subject: [Cocci]
 	=?gb2312?b?tPC4tDogIHdoYXQgaXMgdGhlIGZ1bmN0aW9uIG9mICdw?=
 	=?gb2312?b?b3NpdGlvbicgaW4gU01QTA==?=
@@ -19,7 +19,7 @@ References: <041CF35939B5534D851F16C30DD0B8CF727F4841@fzex.ruijie.com.cn>
  <041CF35939B5534D851F16C30DD0B8CF727FE613@fzex.ruijie.com.cn>
  <CA+MoWDqML-ZhpOTr1gyzdh9NWgq53y15JX70hOVgpBcQWaDriQ@mail.gmail.com>
  <041CF35939B5534D851F16C30DD0B8CF727FE87E@fzex.ruijie.com.cn>
-Message-ID: <alpine.DEB.2.02.1402180832530.1997@localhost6.localdomain6>
+Message-ID: <alpine.DEB.2.02.1402180833580.1997@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -30,19 +30,13 @@ On Tue, 18 Feb 2014, ??(?? ??) wrote:
 > What the differentce among 'Identifier declaration statement' in metavariable portion?
 > I  just guess they all can be used to express a name of variable or function
 
-Identifier is just the name a.  A declaration has a type and a semicolon.
-For example:
-
-int x;
-
-is a declaration, while
-
-x
-
-is an identifier.
+An identifier can be used to express the name of a variable, a function, a 
+field, the name of a structure, the name of an enum, the name of a 
+#define, etc.
 
 julia
 
+> 
 > For example:
 > 
 > @@
