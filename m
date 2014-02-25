@@ -1,7 +1,7 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 25 Feb 2014 22:44:45 +0100
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Tue, 25 Feb 2014 22:48:52 +0100 (CET)
 Subject: [Cocci] Remove unnecessary null pointer checks?
-In-Reply-To: <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
+In-Reply-To: <530D0ECD.5000004@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
  <530A086E.8010901@users.sourceforge.net>
@@ -16,16 +16,18 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.10.1402251840450.7035@hadrien>
  <530CF8FF.8080600@users.sourceforge.net>
  <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
-Message-ID: <530D0ECD.5000004@users.sourceforge.net>
+ <530D0ECD.5000004@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.02.1402252248440.2047@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Remember that ... matches the shortest path between what is before and 
-> what is after.  So if there is another if test on the same data in the 
-> function, that will cause a failure.  If yo udon't care to have this 
-> constraint, you can put when any on a ...
+On Tue, 25 Feb 2014, SF Markus Elfring wrote:
 
-Which SmPL "when variant" would you recommend here?
+> > Remember that ... matches the shortest path between what is before and 
+> > what is after.  So if there is another if test on the same data in the 
+> > function, that will cause a failure.  If yo udon't care to have this 
+> > constraint, you can put when any on a ...
+> 
+> Which SmPL "when variant" would you recommend here?
 
-Regards,
-Markus
+when any
