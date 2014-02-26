@@ -1,7 +1,7 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 26 Feb 2014 22:01:00 +0100
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Wed, 26 Feb 2014 22:09:07 +0100 (CET)
 Subject: [Cocci] Remove unnecessary null pointer checks?
-In-Reply-To: <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
+In-Reply-To: <530E560C.40706@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
  <530A086E.8010901@users.sourceforge.net>
@@ -18,30 +18,18 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
-Message-ID: <530E560C.40706@users.sourceforge.net>
+ <530E560C.40706@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.02.1402262208050.2221@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> - Do you need any excerpt from my log files?
+> - Does the message 'EXN:Invalid_argument("equal: abstractvalue")'
+> indicate that the desired source code analysis is influenced in unwanted
+> ways?
 
-> On the other hand, you should not be using linux-stable when working on 
-> the Linux kernel.  Patches should apply to linux-next, ie the very latest 
-> version of all of the code.
+No, the semantic patch should be enough to reproduce the problem.  If I 
+need more information, I will ask.  The problem has no impact on the 
+quality of the answers actually obtained.
 
-The discussed semantic patches can be tried out with every version a
-software developer or reviewer might be interested in. I am going to
-retry them with the newest source files as you suggest.
-
-
-
-> This is an unfortunate constraint on the use of PCRE regular expressions.  
-> I will try to track it down.
-
-Thanks for your feedback.
-
-- Do you need any excerpt from my log files?
-- Does the message 'EXN:Invalid_argument("equal: abstractvalue")'
-indicate that the desired source code analysis is influenced in unwanted
-ways?
-
-Regards,
-Markus
+julia
