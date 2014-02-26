@@ -1,7 +1,7 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 26 Feb 2014 08:25:35 +0100
-Subject: [Cocci] Branch layout for if statements with SmPL disjunctions
-In-Reply-To: <alpine.DEB.2.10.1402251014170.2080@hadrien>
+Date: Wed, 26 Feb 2014 09:04:19 +0100
+Subject: [Cocci] Remove unnecessary null pointer checks?
+In-Reply-To: <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
  <530A086E.8010901@users.sourceforge.net>
@@ -12,23 +12,36 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.10.1402241710370.2074@hadrien>
  <530C5E18.1020800@users.sourceforge.net>
  <alpine.DEB.2.10.1402251014170.2080@hadrien>
-Message-ID: <530D96EF.7050306@users.sourceforge.net>
+ <530CD2C4.4050903@users.sourceforge.net>
+ <alpine.DEB.2.10.1402251840450.7035@hadrien>
+ <530CF8FF.8080600@users.sourceforge.net>
+ <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
+Message-ID: <530DA003.8020604@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> ( if (input) is
->> | if (likely(input)) is
->> )
->>   else es
-> 
-> This is not allowed.  Inside a disjunction you need to have complete terms.
+> Remember that ... matches the shortest path between what is before and 
+> what is after.  So if there is another if test on the same data in the 
+> function, that will cause a failure.  If yo udon't care to have this 
+> constraint, you can put when any on a ...
 
-I imagine that it would be nice if parts from an if statement could be written
-in the shown way. Would such an extension be useful for the semantic patch language?
+The following pattern variant does not show a different analysis result.
 
-I can easily adjust my simple pattern here because each if branch will be
-matched by a metavariable. I hope that the corresponding repetition of bigger
-subpatterns can be avoided in the future.
+@is_unnecessary_check@
+expression data;
+identifier work;
+identifier release =~ "^kz?free$";
+position pos;
+type t;
+@@
+ t work at pos(...)
+ {
+  ... when any
+( if (data) release(data);
+| if (likely(data)) release(data);
+)
+  ... when any
+ }
 
 Regards,
 Markus
