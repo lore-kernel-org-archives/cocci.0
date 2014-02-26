@@ -1,7 +1,7 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 26 Feb 2014 21:35:12 +0100 (CET)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 26 Feb 2014 22:01:00 +0100
 Subject: [Cocci] Remove unnecessary null pointer checks?
-In-Reply-To: <530DD06F.4090703@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
  <530A086E.8010901@users.sourceforge.net>
@@ -17,38 +17,31 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530CF8FF.8080600@users.sourceforge.net>
  <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <530DD06F.4090703@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
+ <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
+Message-ID: <530E560C.40706@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> I get an interesting result for example. Do you find it useful?
 
-I checks on the three examples.  They seem technically correct, in that 
-the called function does immediately do a null test on the argument value.  
-Personally, I still think that the null test at the call site conveys 
-useful information, so I would rather have it there, but others may think 
-differently.
+> On the other hand, you should not be using linux-stable when working on 
+> the Linux kernel.  Patches should apply to linux-next, ie the very latest 
+> version of all of the code.
 
-On the other hand, you should not be using linux-stable when working on 
-the Linux kernel.  Patches should apply to linux-next, ie the very latest 
-version of all of the code.
+The discussed semantic patches can be tried out with every version a
+software developer or reviewer might be interested in. I am going to
+retry them with the newest source files as you suggest.
 
-If you are convinced that dropping the null tests is a good idea, then you 
-can submit the patch that makes the change to the relevant maintainers and 
-mailing lists.  Use scripts/get_maintainers.pl in the Linux kernel to find 
-out who to sent it to.  And study the documentation on submitting patches 
-very carefully.
 
-> The log file contains messages like 'EXN:Invalid_argument("equal: abstract
-> value")'. Do they need further considerations?
 
-This is an unfortunate constraint on the use of PCRE regular expressions.  
-I will try to track it down.  Thanks for the report.
+> This is an unfortunate constraint on the use of PCRE regular expressions.  
+> I will try to track it down.
 
-> Is this intermediate source code analysis result good enough to expand the
-> constructive discussion to a mailing list like "kernel janitors"?
+Thanks for your feedback.
 
-I don't think people on the mailing list want to discuss the issue in a 
-general sense.  They just want patches, and may comment on them.
+- Do you need any excerpt from my log files?
+- Does the message 'EXN:Invalid_argument("equal: abstractvalue")'
+indicate that the desired source code analysis is influenced in unwanted
+ways?
 
-julia
+Regards,
+Markus
