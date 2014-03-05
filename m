@@ -1,8 +1,8 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 05 Mar 2014 23:30:53 +0100
-Subject: [Cocci] [PATCH with Coccinelle?] Deletion of unnecessary checks
- before specific function calls
-In-Reply-To: <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
+Date: Wed, 05 Mar 2014 23:48:07 +0100
+Subject: [Cocci] [coccicheck Linux 3.14-rc5 PATCH 1 of 5] Deletion of
+ unnecessary checks before specific function calls
+In-Reply-To: <5317A59D.4@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
  <530A086E.8010901@users.sourceforge.net>
@@ -19,36 +19,56 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
-Message-ID: <5317A59D.4@users.sourceforge.net>
+ <5317A59D.4@users.sourceforge.net>
+Message-ID: <5317A9A7.8080405@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> If you are convinced that dropping the null tests is a good idea, then you 
-> can submit the patch that makes the change to the relevant maintainers and 
-> mailing lists.
+>> If you are convinced that dropping the null tests is a good idea, then you 
+>> can submit the patch that makes the change to the relevant maintainers and 
+>> mailing lists.
 
-Hello,
+>From 48c9c4f61a7d7ea98538e02631a981a429281005 Mon Sep 17 00:00:00 2001
+From: Markus Elfring <elfring@users.sourceforge.net>
+Date: Wed, 5 Mar 2014 18:15:34 +0100
+Subject: [PATCH 1/5] Addition of a semantic patch file for showing unnecessary
+ checks before a few known functions
 
-A couple of functions perform input parameter validation before their
-implementations will try further actions with side effects. Some calling
-functions perform similar safety checks.
+This semantic patch pattern tries to find source code places where a check
+is performed for an expression that is passed to a function (like "kfree")
+which checks this single parameter itself for usability.
+Redundant value or pointer checks can be avoided here.
 
-Functions which release a system resource are often documented in the way that
-they tolerate the passing of a null pointer for example. I do not see a need
-because of this fact that a function caller repeats a corresponding check.
+The pattern contains a special comment in a regular expression for a SmPL
+constraint which supports extensions.
 
-Now I would like to propose such a change again.
+Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+---
+ .../deletions/delete_unnecessary_checks_template1.cocci     | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+ create mode 100644
+scripts/coccinelle/deletions/delete_unnecessary_checks_template1.cocci
 
-1. Extension of the infrastructure for the analysis tool "coccicheck"
-   Semantic patch patterns can help to identify update candidates also in the
-Linux source file hierarchy.
-
-https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable.git/tree/scripts/coccinelle?id=79f0345fefaafb7cde301a830471edd21a37989b
-
-2. Clarification for some automated update suggestions
-   My source code search approach found seventy functions at least which might
-need another review and corresponding corrections for Linux 3.14-rc5. Further
-software development will point out even more potentially open issues.
-
-Regards,
-Markus
+diff --git
+a/scripts/coccinelle/deletions/delete_unnecessary_checks_template1.cocci
+b/scripts/coccinelle/deletions/delete_unnecessary_checks_template1.cocci
+new file mode 100644
+index 0000000..b092051
+--- /dev/null
++++ b/scripts/coccinelle/deletions/delete_unnecessary_checks_template1.cocci
+@@ -0,0 +1,13 @@
++ at Delete_unnecessary_checks@
++expression x;
++identifier release =~ "^(?x)
++(?:
++   (?:kz?|slob_)free
++|
++   (?:
++# Alternation placeholder
++   )
++)$";
++@@
++-if (x)
++    release(x);
+-- 
+1.9.0
