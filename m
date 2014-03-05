@@ -1,8 +1,8 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 1 Mar 2014 14:36:30 +0100 (CET)
-Subject: [Cocci] Improvements for passing of big regular expressions in
- SmPL constraints?
-In-Reply-To: <5311E1EB.6040604@users.sourceforge.net>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 05 Mar 2014 23:30:53 +0100
+Subject: [Cocci] [PATCH with Coccinelle?] Deletion of unnecessary checks
+ before specific function calls
+In-Reply-To: <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
  <530A086E.8010901@users.sourceforge.net>
@@ -18,20 +18,37 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530CF8FF.8080600@users.sourceforge.net>
  <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <530DD06F.4090703@users.sourceforge.net>
- <5311975E.9010805@users.sourceforge.net>
- <alpine.DEB.2.10.1403011413140.2080@hadrien>
- <5311E1EB.6040604@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1403011436220.2080@hadrien>
+ <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
+Message-ID: <5317A59D.4@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sat, 1 Mar 2014, SF Markus Elfring wrote:
+> If you are convinced that dropping the null tests is a good idea, then you 
+> can submit the patch that makes the change to the relevant maintainers and 
+> mailing lists.
 
-> > It would be better to use virtual identifiers.
->
-> Can this SmPL interface be marked and used in the way that an identifier does
-> not contain "plain text" but should be handled as a long regular expression?
+Hello,
 
-No.
+A couple of functions perform input parameter validation before their
+implementations will try further actions with side effects. Some calling
+functions perform similar safety checks.
 
-julia
+Functions which release a system resource are often documented in the way that
+they tolerate the passing of a null pointer for example. I do not see a need
+because of this fact that a function caller repeats a corresponding check.
+
+Now I would like to propose such a change again.
+
+1. Extension of the infrastructure for the analysis tool "coccicheck"
+   Semantic patch patterns can help to identify update candidates also in the
+Linux source file hierarchy.
+
+https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable.git/tree/scripts/coccinelle?id=79f0345fefaafb7cde301a830471edd21a37989b
+
+2. Clarification for some automated update suggestions
+   My source code search approach found seventy functions at least which might
+need another review and corresponding corrections for Linux 3.14-rc5. Further
+software development will point out even more potentially open issues.
+
+Regards,
+Markus
