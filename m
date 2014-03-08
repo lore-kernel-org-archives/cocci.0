@@ -1,8 +1,8 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sat, 08 Mar 2014 16:10:44 +0100
+Date: Sat, 08 Mar 2014 21:01:33 +0100
 Subject: [Cocci] Determination of the number for named function
 	parameters
-In-Reply-To: <alpine.DEB.2.10.1403081514140.2156@hadrien>
+In-Reply-To: <531B32F4.9080004@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
  <530A086E.8010901@users.sourceforge.net>
@@ -20,26 +20,20 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530DD06F.4090703@users.sourceforge.net>
  <531B0D52.5070008@users.sourceforge.net>
  <alpine.DEB.2.10.1403081514140.2156@hadrien>
-Message-ID: <531B32F4.9080004@users.sourceforge.net>
+ <531B32F4.9080004@users.sourceforge.net>
+Message-ID: <531B771D.3020900@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> In declaratin a parameter list, you can also say;
-> 
-> parameter list[n] ps;
-> 
-> and then n is the number of parameters that are matched.
+> I am missing documentation for corresponding data structures I can depend on in
+> further reports.
 
-Thanks for your interesting details.
+The display from the function "pprint.pformat" shows another implementation
+detail in my simple script.
+http://docs.python.org/2/library/pprint.html
 
-I find the use of the element "n" (the name in square brackets) not obvious from
-the Coccinelle manual so far.
-
-But I would like to try more analysis with the data that is passed by the
-metavariable type "parameter list". I have started to look a bit into it by the
-function "pickle.dumps". This kind of display is not so useful for me yet.
-I am missing documentation for corresponding data structures I can depend on in
-further reports.
+Would you like to clarify data analysis according to the current situation
+around "coccilib.elems.TermList instance"?
 
 Regards,
 Markus
