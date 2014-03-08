@@ -1,8 +1,8 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 8 Mar 2014 22:41:29 +0100 (CET)
+Date: Sat, 8 Mar 2014 22:59:44 +0100 (CET)
 Subject: [Cocci] Determination of the number for named function
  parameters
-In-Reply-To: <531B771D.3020900@users.sourceforge.net>
+In-Reply-To: <531B32F4.9080004@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
  <530A086E.8010901@users.sourceforge.net>
@@ -21,25 +21,35 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <531B0D52.5070008@users.sourceforge.net>
  <alpine.DEB.2.10.1403081514140.2156@hadrien>
  <531B32F4.9080004@users.sourceforge.net>
- <531B771D.3020900@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1403082240410.2126@localhost6.localdomain6>
+Message-ID: <alpine.DEB.2.02.1403082257440.2126@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 On Sat, 8 Mar 2014, SF Markus Elfring wrote:
 
-> > I am missing documentation for corresponding data structures I can depend on in
-> > further reports.
+> > In declaratin a parameter list, you can also say;
+> > 
+> > parameter list[n] ps;
+> > 
+> > and then n is the number of parameters that are matched.
 > 
-> The display from the function "pprint.pformat" shows another implementation
-> detail in my simple script.
-> http://docs.python.org/2/library/pprint.html
+> Thanks for your interesting details.
 > 
-> Would you like to clarify data analysis according to the current situation
-> around "coccilib.elems.TermList instance"?
+> I find the use of the element "n" (the name in square brackets) not obvious from
+> the Coccinelle manual so far.
 
-I know nothing about this.  Maybe look at the python code and see what it 
-does.  But I am not sure that using it is the best way to do whjat you 
-want, although I also don't know what you want to do.
+It is the number of elements that have been matched.  You can use it in 
+python code (as a string, I think), in ocaml code (as an integer), or 
+inherit it into another list-typed metavariable.
+
+> But I would like to try more analysis with the data that is passed by the
+> metavariable type "parameter list". I have started to look a bit into it by the
+> function "pickle.dumps". This kind of display is not so useful for me yet.
+> I am missing documentation for corresponding data structures I can depend on in
+> further reports.
+
+What analysis do you want to do?  If you write an ocaml script, you can 
+have access to the comple abstract syntax trees.  Python code only 
+receives a string representation.
 
 julia
