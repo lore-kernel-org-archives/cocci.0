@@ -1,7 +1,8 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Thu, 06 Mar 2014 18:04:22 +0100
-Subject: [Cocci] Remove unnecessary null pointer checks?
-In-Reply-To: <alpine.DEB.2.10.1403061724160.3044@hadrien>
+Date: Sat, 08 Mar 2014 13:30:10 +0100
+Subject: [Cocci] Determination of the number for named function
+	parameters
+In-Reply-To: <530DD06F.4090703@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
  <530A086E.8010901@users.sourceforge.net>
@@ -17,18 +18,17 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530CF8FF.8080600@users.sourceforge.net>
  <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <530DD06F.4090703@users.sourceforge.net>
- <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
- <530E560C.40706@users.sourceforge.net>
- <alpine.DEB.2.02.1402262208050.2221@localhost6.localdomain6>
- <5318345F.6060305@users.sourceforge.net>
- <alpine.DEB.2.10.1403061724160.3044@hadrien>
-Message-ID: <5318AA96.8090405@users.sourceforge.net>
+Message-ID: <531B0D52.5070008@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> I can't reproduce this.  I need the semantic patch.
+> A source code search with the following pattern found 893 functions which check
+> their single parameter.
 
-How do you think about to try out the scripts which I published yesterday evening?
+I am also interested to generate statistics for the declaration of function
+parameters and their use.
+Is it possible to analyse the function parameter list by interfaces from the
+semantic patch language? Can any useful numbers be extracted at this place?
 
 Regards,
 Markus
