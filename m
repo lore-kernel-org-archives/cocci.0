@@ -1,8 +1,8 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 9 Mar 2014 09:12:18 +0100 (CET)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sun, 09 Mar 2014 09:50:25 +0100
 Subject: [Cocci] Determination of the number for named function
- parameters
-In-Reply-To: <531C1FAD.6030009@users.sourceforge.net>
+	parameters
+In-Reply-To: <alpine.DEB.2.02.1403090906180.2030@localhost6.localdomain6>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <530A086E.8010901@users.sourceforge.net>
  <alpine.DEB.2.02.1402231635510.1985@localhost6.localdomain6>
@@ -23,69 +23,67 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <531B771D.3020900@users.sourceforge.net>
  <alpine.DEB.2.02.1403082240410.2126@localhost6.localdomain6>
  <531C1FAD.6030009@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1403090906180.2030@localhost6.localdomain6>
+ <alpine.DEB.2.02.1403090906180.2030@localhost6.localdomain6>
+Message-ID: <531C2B51.1040700@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, 9 Mar 2014, SF Markus Elfring wrote:
+> I didn't implement it, and I never use python.
 
-> >> Would you like to clarify data analysis according to the current situation
-> >> around "coccilib.elems.TermList instance"?
-> > 
-> > I know nothing about this.
+I would struggle with OCaml script development more so far.
+
+
+> Have a special rule for such functions and use position variables to 
+> prevent the rule that matches interesting parameter lists from matching 
+> functions that have satisfied this case:
+
+Thanks for your SmPL pattern suggestion.
+
+
+> @r@
+> position p;
+> identifier f;
+> @@
 > 
-> I am surprised by this feedback.
-
-I didn't implement it, and I never use python.  The thing you are citing 
-was implemented by a masters student for his masters thesis project, and 
-it contains whatever he found useful.
-
-> I assume that a corresponding interface description would be nice if I 
-> look at "man 3cocci Coccilib". How are the chances to improve the 
-> mapping from the OCaml API to the Python binding?
-
-If you would like to have such a thing you are welcome to implement.  In 
-my experience the AST is very rarely useful.
-
-> > But I am not sure that using it is the best way to do whjat you 
-> > want, although I also don't know what you want to do.
+> f at p(void} { ... }
 > 
-> The tool "spatch" counts all elements in a metavariable of the type 
-> "parameter list". I would like to treat list elements that have got the 
-> function parameter type "void" or no name differently.
-> - How can I assign the number "zero" (instead of "1") in this case?
+> @goodfunctions@
+> position p != r.p;
+> parameter list[n] ps;
+> identifier f;
+> @@
+> 
+> f at p(ps) { ... }
 
-Have a special rule for such functions and use position variables to 
-prevent the rule that matches interesting parameter lists from matching 
-functions that have satisfied this case:
+I would prefer to specify a meaningful constraint for the metavariable "ps" somehow.
 
-@r@
-position p;
-identifier f;
-@@
 
-f at p(void} { ... }
+> Or you can just use your python code to see if ps is just the string 
+> "void".
 
-@goodfunctions@
-position p != r.p;
-parameter list[n] ps;
-identifier f;
-@@
+I thought also in a similar direction. But I would like to be sure about the
+passed data structures. I imagine that I would need to inspect the class
+"coccilib.elems.TermList" if the corresponding documentation is unclear.
 
-f at p(ps) { ... }
 
-Or you can just use your python code to see if ps is just the string 
-"void".
+> 
+>> I am also interested a bit in run time optimisation. A passed list should be
+>> sufficient for further computations. I do not really need a count in another
+>> variable which was specified between square brackets of a SmPL rule.
+> 
+> It is hard to imagine why converting all the elements of a list to strings 
+> as is done in the interface to python would be more efficient than just 
+> passing a single number.
 
-> I am also interested a bit in run time optimisation. A passed list should be
-> sufficient for further computations. I do not really need a count in another
-> variable which was specified between square brackets of a SmPL rule.
+I would like to try out two reports at least.
 
-It is hard to imagine why converting all the elements of a list to strings 
-as is done in the interface to python would be more efficient than just 
-passing a single number.
+1. What is the maximum number of named function parameters in a source code base?
+   I need only the value "n" (without the additional data from the related
+metavariable).
 
-Anyway, the runtime cost is not here, in either case.  The runtime cost 
-will be that you have to parse every function of every file.
+2. Comparison for the incidence of unnamed function parameters to all of them
+   The parameter count could be determined from the list of parameter names
+alone, couldn't it?
 
-julia
+Regards,
+Markus
