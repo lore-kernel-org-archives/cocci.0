@@ -1,8 +1,8 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 9 Mar 2014 14:40:23 +0100 (CET)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sun, 09 Mar 2014 14:51:58 +0100
 Subject: [Cocci] Determination of the number for named function
- parameters
-In-Reply-To: <531C6E71.8020807@users.sourceforge.net>
+	parameters
+In-Reply-To: <alpine.DEB.2.10.1403091439160.2101@hadrien>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <530B5FB6.6010207@users.sourceforge.net>
  <alpine.DEB.2.10.1402241710370.2074@hadrien>
@@ -23,26 +23,27 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <531C63B8.6090403@users.sourceforge.net>
  <alpine.DEB.2.10.1403091404230.2101@hadrien>
  <531C6E71.8020807@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1403091439160.2101@hadrien>
+ <alpine.DEB.2.10.1403091439160.2101@hadrien>
+Message-ID: <531C71FE.5010503@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, 9 Mar 2014, SF Markus Elfring wrote:
+> Without knowing what you mean by "data analysis" it is impossible to tell.
 
-> > I have no idea.  I would have sort of expected that it would return a
-> > length of 2, but I guess it is reasonable, and even desirable, that it
-> > does not.  What answer would you like?
->
-> I would expect that it will be treated by the SmPL pattern as a function with a
-> single named parameter at least. I am unsure how the "ellipsis" should be
-> counted and matched in the signature eventually.
->
-> Does this small source file indicate that there might be further difficulties
-> for data analysis of variadic functions?
+I mean the existence check for a parameter like "format" or extraction of a
+position for the function signature.
 
-Without knowing what you mean by "data analysis" it is impossible to tell.
-It is clear that there is some problem with ... matching a parameter-typed
-metavariable.  This could be considered reasonable, because ... is not a
-(single) parameter.
 
-julia
+> It is clear that there is some problem with ... matching a parameter-typed metavariable.
+
+Thanks that you agree to this detail. Would you like to test the handling of
+variadic macros and functions also in other situations?
+
+
+> This could be considered reasonable, because ... is not a (single) parameter.
+
+Is there any special mapping of the "ellipsis" at this place in the semantic
+patch language needed?
+
+Regards,
+Markus
