@@ -1,5 +1,5 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 09 Mar 2014 09:50:25 +0100
+Date: Sun, 09 Mar 2014 13:51:04 +0100
 Subject: [Cocci] Determination of the number for named function
 	parameters
 In-Reply-To: <alpine.DEB.2.02.1403090906180.2030@localhost6.localdomain6>
@@ -24,66 +24,65 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1403082240410.2126@localhost6.localdomain6>
  <531C1FAD.6030009@users.sourceforge.net>
  <alpine.DEB.2.02.1403090906180.2030@localhost6.localdomain6>
-Message-ID: <531C2B51.1040700@users.sourceforge.net>
+Message-ID: <531C63B8.6090403@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
-
-> I didn't implement it, and I never use python.
-
-I would struggle with OCaml script development more so far.
-
 
 > Have a special rule for such functions and use position variables to 
 > prevent the rule that matches interesting parameter lists from matching 
 > functions that have satisfied this case:
 
-Thanks for your SmPL pattern suggestion.
+I have adjusted your suggestion a little bit here.
+
+@no_input@
+identifier fun;
+position pos;
+@@
+ fun at pos(void) { ... }
+
+@input depends on no_input@
+identifier fun;
+parameter list [count] pl;
+position pos != no_input.pos;
+@@
+ fun at pos(pl) { ... }
+
+@script:python collection depends on input@
+fun << input.fun;
+count << input.count;
+places << input.pos;
+@@
+store_positions(fun, count, places)
 
 
-> @r@
-> position p;
-> identifier f;
-> @@
-> 
-> f at p(void} { ... }
-> 
-> @goodfunctions@
-> position p != r.p;
-> parameter list[n] ps;
-> identifier f;
-> @@
-> 
-> f at p(ps) { ... }
+This pattern variant works as expected for a source code example that was
+already mentioned before.
 
-I would prefer to specify a meaningful constraint for the metavariable "ps" somehow.
+elfring@Sonne:~/Projekte/Coccinelle/janitor> spatch.opt --sp-file
+list_function_parameters2.cocci ../Probe/f-ptr-test1.c
+init_defs_builtins: /usr/local/share/coccinelle/standard.h
+HANDLING: ../Probe/f-ptr-test1.c
+function|"parameter count"|"source file"|line|column
+my_log|1|"../Probe/f-ptr-test1.c"|1|6
+my_safe_log|1|"../Probe/f-ptr-test1.c"|6|5
+my_addition|2|"../Probe/f-ptr-test1.c"|25|5
 
 
-> Or you can just use your python code to see if ps is just the string 
-> "void".
+But I wonder about the processing for the following small source file.
 
-I thought also in a similar direction. But I would like to be sure about the
-passed data structures. I imagine that I would need to inspect the class
-"coccilib.elems.TermList" if the corresponding documentation is unclear.
+void my_log(char const * format, ...)
+{
+  /* Write something ... */
+}
+
+elfring at Sonne:~/Projekte/Coccinelle/janitor> spatch.opt --sp-file
+list_function_parameters2.cocci ../Probe/ellipsis-test1.c
+init_defs_builtins: /usr/local/share/coccinelle/standard.h
+HANDLING: ../Probe/ellipsis-test1.c
+No result for this analysis!
 
 
-> 
->> I am also interested a bit in run time optimisation. A passed list should be
->> sufficient for further computations. I do not really need a count in another
->> variable which was specified between square brackets of a SmPL rule.
-> 
-> It is hard to imagine why converting all the elements of a list to strings 
-> as is done in the interface to python would be more efficient than just 
-> passing a single number.
-
-I would like to try out two reports at least.
-
-1. What is the maximum number of named function parameters in a source code base?
-   I need only the value "n" (without the additional data from the related
-metavariable).
-
-2. Comparison for the incidence of unnamed function parameters to all of them
-   The parameter count could be determined from the list of parameter names
-alone, couldn't it?
+I would appreciate your advices.
 
 Regards,
 Markus
