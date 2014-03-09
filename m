@@ -1,10 +1,8 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 9 Mar 2014 08:13:22 +0100 (CET)
-Subject: [Cocci] Determination of the number for named function
- parameters
-In-Reply-To: <531C11E1.5090004@users.sourceforge.net>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sun, 09 Mar 2014 08:18:30 +0100
+Subject: [Cocci] Improvements for the SmPL grammar description?
+In-Reply-To: <alpine.DEB.2.02.1403090808580.2030@localhost6.localdomain6>
 References: <5307CAA2.8060406@users.sourceforge.net>
- <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
  <530A086E.8010901@users.sourceforge.net>
  <alpine.DEB.2.02.1402231635510.1985@localhost6.localdomain6>
  <530A72AA.3000601@users.sourceforge.net>
@@ -23,31 +21,14 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <531B32F4.9080004@users.sourceforge.net>
  <alpine.DEB.2.02.1403082257440.2126@localhost6.localdomain6>
  <531C11E1.5090004@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1403090808580.2030@localhost6.localdomain6>
+ <alpine.DEB.2.02.1403090808580.2030@localhost6.localdomain6>
+Message-ID: <531C15C6.6030306@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> The spaces around the [ ] means that they are tokens.
 
+I would appreciate if the distinction will become easier for such characters.
 
-On Sun, 9 Mar 2014, SF Markus Elfring wrote:
-
-> >> I find the use of the element "n" (the name in square brackets) not obvious from
-> >> the Coccinelle manual so far.
-> > 
-> > It is the number of elements that have been matched.
-> 
-> A part of my difficulty with interpretation of the grammar for the semantic
-> patch language came from this notation.
-> 
-> "metadecl ::= ...
->             | parameter [list] ids ;
->             | parameter list [ id ] ids ;
-> ..."
-> 
-> 
-> Do square brackets indicate in one line that an information is optional while in
-> the other line they should be used as literals?
-
-Yes.  The spaces around the [ ] means that they are tokens.
-
-julia
+Regards,
+Markus
