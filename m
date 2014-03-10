@@ -1,7 +1,7 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 10 Mar 2014 20:24:26 +0100 (CET)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Mon, 10 Mar 2014 22:10:41 +0100
 Subject: [Cocci] Selection of class libraries ...?
-In-Reply-To: <531E04D9.5000605@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.02.1403102022510.2181@localhost6.localdomain6>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <530B5FB6.6010207@users.sourceforge.net>
  <alpine.DEB.2.10.1402241710370.2074@hadrien>
@@ -22,27 +22,22 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <531DFDBC.9010801@users.sourceforge.net>
  <alpine.DEB.2.10.1403101919350.2082@hadrien>
  <531E04D9.5000605@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1403102022510.2181@localhost6.localdomain6>
+ <alpine.DEB.2.02.1403102022510.2181@localhost6.localdomain6>
+Message-ID: <531E2A51.5050000@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, 10 Mar 2014, SF Markus Elfring wrote:
+> Why do you want to do this?  There is a String.set function that allows 
+> you to modify a character of a string.  For a list, if you need to modify 
+> an element then it should be a list of reference cells.  But I think that 
+> in practice it would be strange for either operation to be necessary.
 
-> >> Would you like to suggest any references for class libraries which work in OCaml
-> >> with popular data structures in a way I am used to from other programming languages?
-> >> Is the "convenience" and software speed similar there?
-> > 
-> > I have no idea what you are asking for.
-> 
-> The programming language "OCaml" has got the property that values from standard
-> data types are immutable. Now I am looking for a well-known OCaml class library
-> which supports the modification of data structures like strings and lists in
-> place. I would prefer to reuse an existing one instead of developing another
-> variation for my experiments.
+I would like to avoid unwanted run time behaviour because of unnecessary data
+copying when I will append text lines to a growing list.
+http://ocaml.org/learn/tutorials/comparison_of_standard_containers.html#Listsimmutablesinglylinkedlists
 
-Why do you want to do this?  There is a String.set function that allows 
-you to modify a character of a string.  For a list, if you need to modify 
-an element then it should be a list of reference cells.  But I think that 
-in practice it would be strange for either operation to be necessary.
+I imagine that in-place modification will be a more efficient approach for my
+use case. Is a kind of list buffer available?
 
-julia
+Regards,
+Markus
