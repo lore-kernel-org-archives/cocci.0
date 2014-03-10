@@ -1,57 +1,57 @@
 From: ydroneaud@opteya.com (Yann Droneaud)
-Date: Mon, 10 Mar 2014 23:06:27 +0100
-Subject: [Cocci] [PATCH for v3.14 3/5] IB/nes: returns an error on
-	ib_copy_from_udata() failure instead of NULL
+Date: Mon, 10 Mar 2014 23:06:28 +0100
+Subject: [Cocci] [PATCH for v3.14 4/5] IB/qib: add missing braces in
+	do_qib_user_sdma_queue_create()
 In-Reply-To: <cover.1394485254.git.ydroneaud@opteya.com>
 References: <cover.1394485254.git.ydroneaud@opteya.com>
-Message-ID: <69b8f22f0d52b1c1f97b0af2b5bcecbe14cb1da2.1394485254.git.ydroneaud@opteya.com>
+Message-ID: <f28ab1857476910252cb34ab79a377eef4e85890.1394485254.git.ydroneaud@opteya.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-In case of error while accessing to userspace memory,
-function nes_create_qp() returns NULL instead of an error
-code wrapped through ERR_PTR().
+Commit c804f07248895ff9c moved qib_assign_ctxt() to
+do_qib_user_sdma_queue_create() but dropped the braces
+around the statements.
 
-But NULL is not expected by ib_uverbs_create_qp(), as it
-check for error with IS_ERR().
+This was spotted by coccicheck (coccinelle/spatch):
 
-As page 0 is likely not mapped, it is going to trigger an
-Oops when the kernel will try to dereference NULL pointer
-to access to struct ib_qp's fields.
+$ make C=2 CHECK=scripts/coccicheck drivers/infiniband/hw/qib/
 
-In some rare cases, page 0 could be mapped by userspace,
-which could turn this bug to a vulnerability that could be
-exploited: the function pointers in struct ib_device will be under
-userspace total control.
+  CHECK   drivers/infiniband/hw/qib/qib_file_ops.c
+drivers/infiniband/hw/qib/qib_file_ops.c:1583:2-23: code aligned with following code on line 1587
 
-This was caught when using spatch (aka. coccinelle)
-to rewrite calls to ib_copy_{from,to}_udata().
+This patch adds braces back.
 
-Link: https://www.gitorious.org/opteya/ib-hw-nes-create-qp-null
-Link: https://www.gitorious.org/opteya/coccib/source/75ebf2c1033c64c1d81df13e4ae44ee99c989eba:ib_copy_udata.cocci
 Link: http://marc.info/?i=cover.1394485254.git.ydroneaud at opteya.com
-Cc: Faisal Latif <faisal.latif@intel.com>
-Cc: Tatyana E. Nikolova <tatyana.e.nikolova@intel.com>
+Cc: Mike Marciniszyn <mike.marciniszyn@intel.com>
+Cc: infinipath at intel.com
 Cc: Julia Lawall <julia.lawall@lip6.fr>
 Cc: cocci at systeme.lip6.fr
 Cc: stable at vger.kernel.org
 Signed-off-by: Yann Droneaud <ydroneaud@opteya.com>
 ---
- drivers/infiniband/hw/nes/nes_verbs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/infiniband/hw/qib/qib_file_ops.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/hw/nes/nes_verbs.c b/drivers/infiniband/hw/nes/nes_verbs.c
-index 8308e3634767..eb624611f94b 100644
---- a/drivers/infiniband/hw/nes/nes_verbs.c
-+++ b/drivers/infiniband/hw/nes/nes_verbs.c
-@@ -1186,7 +1186,7 @@ static struct ib_qp *nes_create_qp(struct ib_pd *ibpd,
- 					nes_free_resource(nesadapter, nesadapter->allocated_qps, qp_num);
- 					kfree(nesqp->allocated_buffer);
- 					nes_debug(NES_DBG_QP, "ib_copy_from_udata() Failed \n");
--					return NULL;
-+					return ERR_PTR(-EFAULT);
- 				}
- 				if (req.user_wqe_buffers) {
- 					virt_wqs = 1;
+diff --git a/drivers/infiniband/hw/qib/qib_file_ops.c b/drivers/infiniband/hw/qib/qib_file_ops.c
+index 275f247f9fca..2023cd61b897 100644
+--- a/drivers/infiniband/hw/qib/qib_file_ops.c
++++ b/drivers/infiniband/hw/qib/qib_file_ops.c
+@@ -1578,7 +1578,7 @@ static int do_qib_user_sdma_queue_create(struct file *fp)
+ 	struct qib_ctxtdata *rcd = fd->rcd;
+ 	struct qib_devdata *dd = rcd->dd;
+ 
+-	if (dd->flags & QIB_HAS_SEND_DMA)
++	if (dd->flags & QIB_HAS_SEND_DMA) {
+ 
+ 		fd->pq = qib_user_sdma_queue_create(&dd->pcidev->dev,
+ 						    dd->unit,
+@@ -1586,6 +1586,7 @@ static int do_qib_user_sdma_queue_create(struct file *fp)
+ 						    fd->subctxt);
+ 		if (!fd->pq)
+ 			return -ENOMEM;
++	}
+ 
+ 	return 0;
+ }
 -- 
 1.8.5.3
