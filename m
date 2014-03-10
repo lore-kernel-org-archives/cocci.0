@@ -1,44 +1,51 @@
 From: ydroneaud@opteya.com (Yann Droneaud)
-Date: Mon, 10 Mar 2014 23:06:26 +0100
-Subject: [Cocci] [PATCH for v3.14 2/5] IB/mthca: returns an error on
-	ib_copy_to_udata() failure
+Date: Mon, 10 Mar 2014 23:06:29 +0100
+Subject: [Cocci] [PATCH for v3.14 5/5] IB/qib: fixup indentation in
+	qib_ib_rcv()
 In-Reply-To: <cover.1394485254.git.ydroneaud@opteya.com>
 References: <cover.1394485254.git.ydroneaud@opteya.com>
-Message-ID: <014a0e999228bcbefd32667b341a0fc91a8cd3c9.1394485254.git.ydroneaud@opteya.com>
+Message-ID: <a08e7ae2d1289d8ab028f6cc0909009954a59faf.1394485254.git.ydroneaud@opteya.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-In case of error when writing to userspace, function
-mthca_create_cq() do not set an error code before
-following its error path.
+Commit af061a644a0e4d4778 add some code in qib_ib_rcv() which
+trigger a warning from coccicheck (coccinelle/spatch):
 
-This patch set error code to -EFAULT when ib_copy_to_udata()
-fail.
+$ make C=2 CHECK=scripts/coccicheck drivers/infiniband/hw/qib/
 
-This was caught when using spatch (aka. coccinelle)
-to rewrite call to ib_copy_{from,to}_udata().
+  CHECK   drivers/infiniband/hw/qib/qib_verbs.c
+drivers/infiniband/hw/qib/qib_verbs.c:679:5-32: code aligned with following code on line 681
+  CC [M]  drivers/infiniband/hw/qib/qib_verbs.o
 
-Link: https://www.gitorious.org/opteya/coccib/source/75ebf2c1033c64c1d81df13e4ae44ee99c989eba:ib_copy_udata.cocci
+In fact, according to similar code in qib_kreceive(),
+qib_ib_rcv() code is correct but improperly indented.
+
+This patch fix indentation for the misaligned portion.
+
 Link: http://marc.info/?i=cover.1394485254.git.ydroneaud at opteya.com
+Cc: Mike Marciniszyn <mike.marciniszyn@intel.com>
+Cc: infinipath at intel.com
 Cc: Julia Lawall <julia.lawall@lip6.fr>
 Cc: cocci at systeme.lip6.fr
-Cc: stable at vger.kernel.org
 Signed-off-by: Yann Droneaud <ydroneaud@opteya.com>
 ---
- drivers/infiniband/hw/mthca/mthca_provider.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/infiniband/hw/qib/qib_verbs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/infiniband/hw/mthca/mthca_provider.c b/drivers/infiniband/hw/mthca/mthca_provider.c
-index 5b71d43bd89c..42dde06fdb91 100644
---- a/drivers/infiniband/hw/mthca/mthca_provider.c
-+++ b/drivers/infiniband/hw/mthca/mthca_provider.c
-@@ -695,6 +695,7 @@ static struct ib_cq *mthca_create_cq(struct ib_device *ibdev, int entries,
- 
- 	if (context && ib_copy_to_udata(udata, &cq->cqn, sizeof (__u32))) {
- 		mthca_free_cq(to_mdev(ibdev), cq);
-+		err = -EFAULT;
- 		goto err_free;
- 	}
- 
+diff --git a/drivers/infiniband/hw/qib/qib_verbs.c b/drivers/infiniband/hw/qib/qib_verbs.c
+index 092b0bb1bb78..b53e0a2dc545 100644
+--- a/drivers/infiniband/hw/qib/qib_verbs.c
++++ b/drivers/infiniband/hw/qib/qib_verbs.c
+@@ -678,8 +678,8 @@ void qib_ib_rcv(struct qib_ctxtdata *rcd, void *rhdr, void *data, u32 tlen)
+ 					&rcd->lookaside_qp->refcount))
+ 					wake_up(
+ 					 &rcd->lookaside_qp->wait);
+-					rcd->lookaside_qp = NULL;
+-				}
++				rcd->lookaside_qp = NULL;
++			}
+ 		}
+ 		if (!rcd->lookaside_qp) {
+ 			qp = qib_lookup_qpn(ibp, qp_num);
 -- 
 1.8.5.3
