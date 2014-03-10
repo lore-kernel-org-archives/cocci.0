@@ -1,16 +1,19 @@
-From: d.zlatanidis@gmail.com (Dimitris Zlatanidis)
-Date: Mon, 10 Mar 2014 17:59:43 +0200
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Mon, 10 Mar 2014 17:06:34 +0100 (CET)
 Subject: [Cocci] coccinelle
-Message-ID: <CAP-+ARG0cCH907ztNouoErCPSCU2vPxcVAW0xoiq3cbGaJs4Fg@mail.gmail.com>
+In-Reply-To: <CAP-+ARG0cCH907ztNouoErCPSCU2vPxcVAW0xoiq3cbGaJs4Fg@mail.gmail.com>
+References: <CAP-+ARG0cCH907ztNouoErCPSCU2vPxcVAW0xoiq3cbGaJs4Fg@mail.gmail.com>
+Message-ID: <alpine.DEB.2.10.1403101706160.2082@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hello ,
+On Mon, 10 Mar 2014, Dimitris Zlatanidis wrote:
 
-Coccinelle also available on Slackware
-http://slackbuilds.org/repository/14.1/development/coccinelle/?search=coccinelle
+> Hello ,
+>
+> Coccinelle also available on Slackwarehttp://slackbuilds.org/repository/14.1/development/coccinelle/?search=cocci
+> nelle
 
-Thanks
--------------- next part --------------
-An HTML attachment was scrubbed...
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20140310/b23e3ba2/attachment.html>
+Great!  Thanks for the information.  I will update the web site.
+
+julia
