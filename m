@@ -1,9 +1,8 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 12 Mar 2014 11:10:23 +0100
+Date: Wed, 12 Mar 2014 13:10:40 +0100
 Subject: [Cocci] Clarification for OCaml scripts in SmPL
-In-Reply-To: <alpine.DEB.2.02.1403102215010.2181@localhost6.localdomain6>
+In-Reply-To: <5320328F.5090507@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
- <530C5E18.1020800@users.sourceforge.net>
  <alpine.DEB.2.10.1402251014170.2080@hadrien>
  <530CD2C4.4050903@users.sourceforge.net>
  <alpine.DEB.2.10.1402251840450.7035@hadrien>
@@ -23,103 +22,23 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1403102022510.2181@localhost6.localdomain6>
  <531E2A51.5050000@users.sourceforge.net>
  <alpine.DEB.2.02.1403102215010.2181@localhost6.localdomain6>
-Message-ID: <5320328F.5090507@users.sourceforge.net>
+ <5320328F.5090507@users.sourceforge.net>
+Message-ID: <53204EC0.5030804@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> I imagine that in-place modification will be a more efficient approach for my
->> use case. Is a kind of list buffer available?
-> 
-> You can just add information to the front of the list, and then reverse it 
-> at the end if that is needed.
+> let store_positions fun count places =
+>     current_function := fun;
 
-I am trying to convert Python statements into similar OCaml functionality for
-one of my semantic patch examples.
+Does OCaml not like my name selection here?
+Do I accidentally stumble on another software development "surprise" with
+reserved key words?
+http://ocaml.org/learn/faq.html
 
-@initialize:ocaml@
-@@
-let result = Queue.create ()
-
-let current_function = ref ""
-let current_count = ref ""
-let empty = ""
-let delimiter = "|"
-let quote = "\""
-let quote2 = "\"\""
-let mark text = String.concat empty [quote; text; quote]
-
-let replace text =
-    let length = String.length text in
-    let part = Buffer.create length in
-    for x = 0 to length - 1 do
-        if text.[x] = '"' then
-           Buffer.add_string part quote2
-        else
-           Buffer.add_char part text.[x]
-    done;
-    Buffer.contents part
-
-
-(* Add a source code position to an internal list. *)
-let append place =
-    Queue.add (String.concat delimiter [!current_function;
-                                        !current_count;
-                                        mark (replace place.file);
-                                        string_of_int place.line;
-                                        string_of_int (place.column + 1)]) result
-
-let store_positions fun count places =
-    current_function := fun;
-    current_count := string_of_int count;
-    List.iter append places
-
-@no_input@
-identifier fun;
-position pos;
-@@
- fun at pos(void) { ... }
-
-@input depends on no_input@
-identifier fun;
-parameter list [count] pl;
-position pos != no_input.pos;
-@@
- fun at pos(pl) { ... }
-
-@script:ocaml collection@
-fun << input.fun;
-count << input.count;
-places << input.pos;
-@@
-store_positions fun count places
-
-@finalize:ocaml@
-@@
-if Queue.is_empty result then
-   Printf.eprintf "No result for this analysis!\n"
-else
-   let output text = Printf.printf "%s\r\n" text in
-   Printf.printf "%s\r\n" (String.concat delimiter ["function";
-                                                    "\"parameter count\"";
-                                                    "\"source file\"";
-                                                    "line";
-                                                    "column"]);
-   Queue.iter output result
-
-
-
-The source code from this SmPL finalisation rule works as expected in a OCaml
-command line interface. Now I wonder about the following error message.
-
-elfring@Sonne:~/Projekte/Coccinelle/janitor> spatch.opt --sp-file
-list_function_parameters3.cocci ../Probe/f-ptr-test1.c
-init_defs_builtins: /usr/local/share/coccinelle/standard.h
-File "list_function_parameters3.cocci", line 69, column 27,  charpos = 1914
-    around = '', whole content =    Queue.iter output result
-Fatal error: exception Failure("lexing: empty token")
-
-
-I would appreciate your advices.
+  let store_positions fu count places =
+      current_fu := fu;
+      current_count := string_of_int count;
+      List.iter append places
 
 Regards,
 Markus
