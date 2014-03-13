@@ -1,9 +1,8 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 12 Mar 2014 13:10:40 +0100
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Thu, 13 Mar 2014 19:56:44 -0400 (EDT)
 Subject: [Cocci] Clarification for OCaml scripts in SmPL
 In-Reply-To: <5320328F.5090507@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
- <alpine.DEB.2.10.1402251014170.2080@hadrien>
  <530CD2C4.4050903@users.sourceforge.net>
  <alpine.DEB.2.10.1402251840450.7035@hadrien>
  <530CF8FF.8080600@users.sourceforge.net>
@@ -23,22 +22,14 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <531E2A51.5050000@users.sourceforge.net>
  <alpine.DEB.2.02.1403102215010.2181@localhost6.localdomain6>
  <5320328F.5090507@users.sourceforge.net>
-Message-ID: <53204EC0.5030804@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.10.1403131955490.2146@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> let store_positions fun count places =
->     current_function := fun;
+>    let output text = Printf.printf "%s\r\n" text in
 
-Does OCaml not like my name selection here?
-Do I accidentally stumble on another software development "surprise" with
-reserved key words?
-http://ocaml.org/learn/faq.html
+It's not related to the problem, but I'm not sure to understand "let
+output text = ..."  Normally the left hand side of a let has only one
+variable.
 
-  let store_positions fu count places =
-      current_fu := fu;
-      current_count := string_of_int count;
-      List.iter append places
-
-Regards,
-Markus
+julia
