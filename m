@@ -1,7 +1,7 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 14 Mar 2014 04:48:03 -0400 (EDT)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Fri, 14 Mar 2014 10:01:19 +0100
 Subject: [Cocci] Clarification for OCaml scripts in SmPL
-In-Reply-To: <5322C042.3030700@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.10.1403140445480.2097@hadrien>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <530DD06F.4090703@users.sourceforge.net>
  <531B0D52.5070008@users.sourceforge.net>
@@ -22,37 +22,27 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <5322AC67.8030707@users.sourceforge.net>
  <alpine.DEB.2.10.1403140426110.2097@hadrien>
  <5322C042.3030700@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1403140445480.2097@hadrien>
+ <alpine.DEB.2.10.1403140445480.2097@hadrien>
+Message-ID: <5322C55F.7070804@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, 14 Mar 2014, SF Markus Elfring wrote:
+> Why would a file name contain a quote character.
 
-> > The string in question is the file name from a position variable.  A file
-> > name does not contain a quote character.
->
-> I would prefer to handle also the general case that such strings contain
-> quotation marks eventually.
+I do not really know how often this case happens in the world of detailed data
+processing.
 
-Why would a file name contain a quote character.  And if it does, what
-good will adding exxtra ones do you.  If the name is
 
-foo\"bar
+> And if it does, what good will adding exxtra ones do you.
 
-you will have
+I hope to ensure constraints for the used data formats.
 
-"foo\""bar"
 
-and your string will be misparsed by your database.
+> ... and your string will be misparsed by your database.
 
-julia
+I do not think so. I try to achieve quoting by the discussed function
+implementation so that a column/field in a CSV file will be generally treated as
+a text string.
 
-> It depends on the analysis area if corresponding safety checks for special
-> characters will matter, doesn't it?
->
-> Other example:
-> https://github.com/coccinelle/coccinelle/issues/5
->
-> Regards,
-> Markus
->
+Regards,
+Markus
