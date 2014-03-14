@@ -1,8 +1,9 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 13 Mar 2014 20:19:56 -0400 (EDT)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Fri, 14 Mar 2014 08:14:47 +0100
 Subject: [Cocci] Clarification for OCaml scripts in SmPL
-In-Reply-To: <53204EC0.5030804@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.10.1403132008440.2146@hadrien>
 References: <5307CAA2.8060406@users.sourceforge.net>
+ <530CD2C4.4050903@users.sourceforge.net>
  <alpine.DEB.2.10.1402251840450.7035@hadrien>
  <530CF8FF.8080600@users.sourceforge.net>
  <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
@@ -21,36 +22,23 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <531E2A51.5050000@users.sourceforge.net>
  <alpine.DEB.2.02.1403102215010.2181@localhost6.localdomain6>
  <5320328F.5090507@users.sourceforge.net>
- <53204EC0.5030804@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1403132019170.2146@hadrien>
+ <alpine.DEB.2.10.1403132008440.2146@hadrien>
+Message-ID: <5322AC67.8030707@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, 12 Mar 2014, SF Markus Elfring wrote:
+> Could you explain in words what replace is supposed to do, for example?
 
-> > let store_positions fun count places =
-> >     current_function := fun;
->
-> Does OCaml not like my name selection here?
-> Do I accidentally stumble on another software development "surprise" with
-> reserved key words?
+Yes, of course.
 
-Well, it is not really a surprise.  Fun is indeed a reserved keyword in
-ocaml.
+It should replace each quotation mark in a string by two of this character.
+(Quotes should become duplicated.)
 
-julia
 
-> http://ocaml.org/learn/faq.html
->
->   let store_positions fu count places =
->       current_fu := fu;
->       current_count := string_of_int count;
->       List.iter append places
->
-> Regards,
-> Markus
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+> I never use either for loops or Buffers.
+
+Which elements would you prefer to reuse from the programming language "OCaml"
+for the shown use case?
+
+Regards,
+Markus
