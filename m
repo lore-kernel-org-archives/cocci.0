@@ -1,10 +1,8 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 14 Mar 2014 09:39:30 +0100
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Fri, 14 Mar 2014 04:48:03 -0400 (EDT)
 Subject: [Cocci] Clarification for OCaml scripts in SmPL
-In-Reply-To: <alpine.DEB.2.10.1403140426110.2097@hadrien>
+In-Reply-To: <5322C042.3030700@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
- <530CF8FF.8080600@users.sourceforge.net>
- <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <530DD06F.4090703@users.sourceforge.net>
  <531B0D52.5070008@users.sourceforge.net>
  <alpine.DEB.2.10.1403081514140.2156@hadrien>
@@ -23,21 +21,38 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.10.1403132008440.2146@hadrien>
  <5322AC67.8030707@users.sourceforge.net>
  <alpine.DEB.2.10.1403140426110.2097@hadrien>
-Message-ID: <5322C042.3030700@users.sourceforge.net>
+ <5322C042.3030700@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.10.1403140445480.2097@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> The string in question is the file name from a position variable.  A file
-> name does not contain a quote character.
+On Fri, 14 Mar 2014, SF Markus Elfring wrote:
 
-I would prefer to handle also the general case that such strings contain
-quotation marks eventually.
+> > The string in question is the file name from a position variable.  A file
+> > name does not contain a quote character.
+>
+> I would prefer to handle also the general case that such strings contain
+> quotation marks eventually.
 
-It depends on the analysis area if corresponding safety checks for special
-characters will matter, doesn't it?
+Why would a file name contain a quote character.  And if it does, what
+good will adding exxtra ones do you.  If the name is
 
-Other example:
-https://github.com/coccinelle/coccinelle/issues/5
+foo\"bar
 
-Regards,
-Markus
+you will have
+
+"foo\""bar"
+
+and your string will be misparsed by your database.
+
+julia
+
+> It depends on the analysis area if corresponding safety checks for special
+> characters will matter, doesn't it?
+>
+> Other example:
+> https://github.com/coccinelle/coccinelle/issues/5
+>
+> Regards,
+> Markus
+>
