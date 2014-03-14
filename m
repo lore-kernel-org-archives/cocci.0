@@ -1,7 +1,7 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 14 Mar 2014 04:29:14 -0400 (EDT)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Fri, 14 Mar 2014 09:39:30 +0100
 Subject: [Cocci] Clarification for OCaml scripts in SmPL
-In-Reply-To: <5322AC67.8030707@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.10.1403140426110.2097@hadrien>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <530CF8FF.8080600@users.sourceforge.net>
  <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
@@ -22,23 +22,22 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <5320328F.5090507@users.sourceforge.net>
  <alpine.DEB.2.10.1403132008440.2146@hadrien>
  <5322AC67.8030707@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1403140426110.2097@hadrien>
+ <alpine.DEB.2.10.1403140426110.2097@hadrien>
+Message-ID: <5322C042.3030700@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, 14 Mar 2014, SF Markus Elfring wrote:
+> The string in question is the file name from a position variable.  A file
+> name does not contain a quote character.
 
-> > Could you explain in words what replace is supposed to do, for example?
->
-> Yes, of course.
->
-> It should replace each quotation mark in a string by two of this character.
-> (Quotes should become duplicated.)
+I would prefer to handle also the general case that such strings contain
+quotation marks eventually.
 
-The string in question is the file name from a position variable.  A file
-name does not contain a quote character.  When you print a string, it
-appears as eg "foo", but the only characters in the string are f o and o.
-If you want to put a quote character before and after, The simplest would
-be: Printf.sprintf "\"%s\"" place.file.
+It depends on the analysis area if corresponding safety checks for special
+characters will matter, doesn't it?
 
-julia
+Other example:
+https://github.com/coccinelle/coccinelle/issues/5
+
+Regards,
+Markus
