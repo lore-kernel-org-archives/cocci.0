@@ -1,59 +1,60 @@
-From: gregkh@linuxfoundation.org (Greg Kroah-Hartman)
-Date: Wed, 19 Mar 2014 09:48:55 -0700
-Subject: [Cocci] [PATCH] Coccicheck: Remove memcpy to struct assignment
-	test
-In-Reply-To: <1395237927.12633.29.camel@thorin>
-References: <1395177092-3023-1-git-send-email-peter.senna@gmail.com>
- <1395230578.12633.21.camel@thorin>
- <CA+MoWDoSYu-aSp39vBe7DmayH2iqagHNYP9BC7LefajMXk+FnQ@mail.gmail.com>
- <1395237927.12633.29.camel@thorin>
-Message-ID: <20140319164855.GB27142@kroah.com>
+From: xing.lei@freescale.com (Xing Lei)
+Date: Thu, 20 Mar 2014 07:37:25 +0000
+Subject: [Cocci] question about "Compile spatch with OCaml version >= 3.11"
+Message-ID: <71b57613e06c4c75a6f14366fa6677ff@BL2PR03MB404.namprd03.prod.outlook.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, Mar 19, 2014 at 03:05:27PM +0100, Bernd Petrovitsch wrote:
-> Hi!
-> 
-> On Mit, 2014-03-19 at 14:39 +0100, Peter Senna Tschudin wrote:
-> > On Wed, Mar 19, 2014 at 1:02 PM, Bernd Petrovitsch
-> > <bernd@petrovitsch.priv.at> wrote:
-> > > On Die, 2014-03-18 at 22:11 +0100, Peter Senna Tschudin wrote:
-> > >> The Coccinelle script scripts/coccinelle/misc/memcpy-assign.cocci look
-> > >> for opportunities to replace a call to memcpy by a struct assignment.
-> > >> This patch removes memcpy-assign.cocci as it is not clear that this
-> > >> convention has an impact on the generated code.
-> > >
-> > > Using struct assignment keeps the type check and is just for this reason
-> > > always preferable over memcpy().
-> > What about the assignment hiding that a potentially large memcpy is
-> > happening instead of just a pointer assignment?
-> 
-> It makes no difference if you copy 2KB with a struct assignment or with
-> a memcpy(). IMHO most probably each and every C compiler produces the
-> same code for both cases.
+Hello Engineers of Cocci,
 
-Really?  We have a much different memcpy() function than gcc provides
-for some arches.
 
-> And - more important - I assume that people which actually read the code
-> (to understand the code) also know if the variables there are
-> pointers/ints or a (somewhat large) struct (if only one see an field
-> access in the struct, it should be pretty clear).
-> I don't think it makes actually much sense trying to read source without
-> that ....
+I'm an engineer of Freescale. I had met some problems while analyzing code with coccinelle. Executed 'make coccicheck MODE=report M=drivers/net/ethernet/freescale' to analyze part of kernel code, actually I can get some useful analysis but some error info as well, the error info as below:
 
-You want to make it painfully obvious exactly what the code is doing so
-that I can fix your bugs.  And you can fix mine.  If I see two variables
-being assigned to each other I'll initially assume that they are just
-pointers and not care about them.  But if it's doing a 64Kb memcpy,
-maybe that's not a good thing to be doing at that point in the code.
 
-That's why I don't like these "implicit" memcpy() calls, it hides what
-is going on for no good reason.
 
-Can someone please just remove the check from the kernel as I'm getting
-tired of rejecting patches that do this...
+make coccicheck MODE=report M=drivers/net/ethernet/freescale
 
-thanks,
 
-greg k-h
+
+Please check for false positives in the output before submitting a patch.
+
+When using "patch" mode, carefully review the patch before submitting it.
+
+
+
+drivers/net/ethernet/freescale/fman/Peripherals/FM/fm_muram.c:88:13-20: WARNING: kzalloc should be used for p_FmMuram, instead of kmalloc/memset
+
+drivers/net/ethernet/freescale/fman/Peripherals/FM/fm.c:1494:8-15: WARNING: kzalloc should be used for p_Fm, instead of kmalloc/memset
+
+drivers/net/ethernet/freescale/fman/Peripherals/FM/fm.c:1501:25-32: WARNING: kzalloc should be used for p_Fm -> p_FmStateStruct, instead of kmalloc/memset
+
+[snip]
+Fatal error: exception Failure("OCaml scripting is unsupported. Compile spatch with OCaml version >= 3.11")
+
+Fatal error: exception Failure("OCaml scripting is unsupported. Compile spatch with OCaml version >= 3.11")
+
+[snip]
+
+
+
+BTW. Ocaml's version on my machine is 3.12.
+
+Could you please give me some suggestions for it? Many thanks.
+
+
+
+Best Regards
+
+Xing
+
+
+
+
+
+
+
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20140320/cf3e52dd/attachment.html>
