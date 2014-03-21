@@ -1,28 +1,13 @@
 From: xing.lei@freescale.com (Xing Lei)
-Date: Fri, 21 Mar 2014 03:02:02 +0000
-Subject: [Cocci] [ldup-devel] question about "Compile spatch with OCaml
- version >= 3.11"
-In-Reply-To: <c9c2312cd5de4b69bb720e34be20f302@BL2PR03MB404.namprd03.prod.outlook.com>
+Date: Fri, 21 Mar 2014 02:46:27 +0000
+Subject: [Cocci] question about "Compile spatch with OCaml version >=
+ 3.11"
+In-Reply-To: <CA+MoWDrYeDrgU-POzLZ_1NCKDVBi7M0nXtirAQY8VWLiw_GEkg@mail.gmail.com>
 References: <71b57613e06c4c75a6f14366fa6677ff@BL2PR03MB404.namprd03.prod.outlook.com>
  <CA+MoWDrYeDrgU-POzLZ_1NCKDVBi7M0nXtirAQY8VWLiw_GEkg@mail.gmail.com>
- <c9c2312cd5de4b69bb720e34be20f302@BL2PR03MB404.namprd03.prod.outlook.com>
-Message-ID: <bd9de990d7744ea497ff9a33d7ab0719@BL2PR03MB404.namprd03.prod.outlook.com>
+Message-ID: <c9c2312cd5de4b69bb720e34be20f302@BL2PR03MB404.namprd03.prod.outlook.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
-
-Detailed installation log had been attached, what's more, I had attached the total analysis with coccinelle.
-
-Hope those would help for you. Thanks again.
-
-B.R.
-Xing
-
------Original Message-----
-From: ldup-devel-bounces@gforge.freescale.net [mailto:ldup-devel-bounces at gforge.freescale.net] On Behalf Of Xing Lei
-Sent: Friday, March 21, 2014 10:46 AM
-To: Peter Senna Tschudin
-Cc: ldup-devel at gforge.freescale.net; cocci at systeme.lip6.fr; Bucur Madalin-Cristian-B32716
-Subject: Re: [ldup-devel] [Cocci] question about "Compile spatch with OCaml version >= 3.11"
 
 Hello Peter,
 
@@ -30,7 +15,8 @@ Thanks for your support.
 I had tried to reinstall coccinelle following your instructions, only to meet the error as below:
 
 [snip]
-/usr/local/bin/ocamlc -unsafe -I ../commons -I ../commons/ocamlextra -I ../globals -I ../parsing_cocci -I ../parsing_c -I ../engine -c no_prepare_ocamlcocci.ml File "no_prepare_ocamlcocci.ml", line 12, characters 5-57:
+/usr/local/bin/ocamlc -unsafe -I ../commons -I ../commons/ocamlextra -I ../globals -I ../parsing_cocci -I ../parsing_c -I ../engine -c no_prepare_ocamlcocci.ml
+File "no_prepare_ocamlcocci.ml", line 12, characters 5-57:
 Error: The constructor Ast_cocci.InitialScriptRule expects 5 argument(s),
        but is applied here to 4 argument(s)
 make[5]: *** [no_prepare_ocamlcocci.cmo] Error 2
@@ -53,7 +39,7 @@ Xing
 
 
 -----Original Message-----
-From: Peter Senna Tschudin [mailto:peter.senna at gmail.com]
+From: Peter Senna Tschudin [mailto:peter.senna at gmail.com] 
 Sent: Thursday, March 20, 2014 11:43 PM
 To: Lei Xing-B45279
 Cc: cocci at systeme.lip6.fr; Bucur Madalin-Cristian-B32716
@@ -162,20 +148,3 @@ If all goes right, the error will not be shown anymore.
 
 --
 Peter
-
-
-
-
-_______________________________________________
-ldup-devel mailing list
-ldup-devel at gforge.freescale.net
-http://gforge.freescale.net/mailman/listinfo/ldup-devel
-
--------------- next part --------------
-An embedded and charset-unspecified text was scrubbed...
-Name: output.txt
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20140321/e4191b7b/attachment-0002.txt>
--------------- next part --------------
-An embedded and charset-unspecified text was scrubbed...
-Name: coccinelle_analysis.txt
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20140321/e4191b7b/attachment-0003.txt>
