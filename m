@@ -1,5 +1,5 @@
 From: xing.lei@freescale.com (Xing Lei)
-Date: Tue, 25 Mar 2014 09:15:07 +0000
+Date: Tue, 25 Mar 2014 09:16:59 +0000
 Subject: [Cocci] [ldup-devel] question about "Compile spatch with OCaml
  version >= 3.11"
 In-Reply-To: <CA+MoWDpOC=Zv5VvCjX8qx5i=pe=sqmfLpraqqG+LjJor6Q=hXQ@mail.gmail.com>
@@ -10,19 +10,16 @@ References: <71b57613e06c4c75a6f14366fa6677ff@BL2PR03MB404.namprd03.prod.outlook
  <CA+MoWDqoF_9GwSC6O-v952_CMaVJfXPSjH7FLm8puoRDS9gxRA@mail.gmail.com>
  <b1fb692671434d2a97a151ff9e5c7212@BL2PR03MB404.namprd03.prod.outlook.com>
  <CA+MoWDpOC=Zv5VvCjX8qx5i=pe=sqmfLpraqqG+LjJor6Q=hXQ@mail.gmail.com>
-Message-ID: <6b1ea5db4b75473eab38caae2d05215d@BL2PR03MB404.namprd03.prod.outlook.com>
+Message-ID: <05ca393facee49758f40dc0c6fa95a4f@BL2PR03MB404.namprd03.prod.outlook.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-jenkins at mint-OptiPlex-740 ~ $ sudo apt-get build-dep coccinelle
-Reading package lists... Done
-Building dependency tree
-Reading state information... Done
 E: You must put some 'source' URIs in your sources.list
-jenkins at mint-OptiPlex-740 ~ $
 
+What does the prompt mean?
 
-Thanks
+B.R.
+Xing
 
 -----Original Message-----
 From: Peter Senna Tschudin [mailto:peter.senna at gmail.com] 
