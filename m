@@ -1,26 +1,130 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Thu, 27 Mar 2014 19:59:38 +0100
-Subject: [Cocci] How to exclude volatile data accesses in expressions
-	with SmPL?
-In-Reply-To: <alpine.DEB.2.10.1403271942390.2088@hadrien>
-References: <5307CAA2.8060406@users.sourceforge.net>
- <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
- <53342A9C.9070406@users.sourceforge.net>
- <alpine.DEB.2.10.1403271907390.2088@hadrien>
- <5334705A.9050303@users.sourceforge.net>
- <alpine.DEB.2.10.1403271942390.2088@hadrien>
-Message-ID: <5334751A.2020309@users.sourceforge.net>
+From: eugen@debian.org (Eugeniy Meshcheryakov)
+Date: Fri, 28 Mar 2014 01:15:18 +0100
+Subject: [Cocci] Bug#742779: coccinelle introduces spurious whitespace
+	changes
+In-Reply-To: <20140327113728.14719.79688.reportbug@localhost>
+References: <20140327113728.14719.79688.reportbug@localhost>
+Message-ID: <20140328001518.GA4526@localhost.localdomain>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Coccinelle makes an effort to infer types.  YOu may need to use eg
-> --recursive-includes and --relax-include-path to get the most possible
-> type information.
+forwarded 742779 cocci at systeme.lip6.fr
+thanks
 
-It is nice when a simple filter pattern works in principle. A filter
-pattern which needs the knowledge about all data type details to
-consider relevant constraints will need more time for the data analysis.
-I hope that the corresponding execution speed can also be improved.
+Hello,
+
+I've got the following bug report from a Debian user. It can be easily
+reproduced with RC20. Note that there is no space before equals signs in
+the generated patch.
 
 Regards,
-Markus
+Eugeniy Meshcheryakov
+
+27 ??????? 2014 ? 12:37 +0100 Justus Winter ???????(-??):
+> Package: coccinelle
+> Version: 1.0.0~rc20.deb-1
+> Severity: normal
+> 
+> Dear Maintainer,
+> 
+> coccinelle recently (since I upgraded to jessie I guess) began to
+> introduce spurious whitespace changes for a certain semantic patch.  I
+> made a minimal test case:
+> 
+> % tail test.*
+> ==> test.c <==
+> int main () {
+>   int a = 4;
+>   a = 2;
+>   return a;
+> }
+> 
+> ==> test.cocci <==
+> @@
+> @@
+> +  char *f = "%lu";
+> 
+> main (...) {
+> ...
+> }
+> 
+> Curiously, the string %lu seems to trigger this.  Bad, e.g. the
+> current sid version:
+> 
+> % spatch --version
+> spatch version 1.0.0-rc20 with Python support and with PCRE support
+> % spatch --sp-file test.cocci test.c
+> init_defs_builtins: /usr/share/coccinelle/standard.h
+> HANDLING: test.c
+> diff = 
+> --- test.c
+> +++ /tmp/cocci-output-14372-7762e6-test.c
+> @@ -1,5 +1,6 @@
+> -int main () {
+> -  int a = 4;
+> -  a = 2;
+> +char *f= "%lu";
+> +int main() {
+> +  int a= 4;
+> +  a= 2;
+>    return a;
+>  }
+> 
+> Good, e.g. the version from wheezy:
+> 
+> % spatch --version
+> spatch version 1.0.0-rc12 with Python support and with PCRE support
+> % spatch --sp-file test.cocci test.c
+> init_defs_builtins: /usr/share/coccinelle/standard.h
+> HANDLING: test.c
+> diff = 
+> --- test.c
+> +++ /tmp/cocci-output-17254-5327d1-test.c
+> @@ -1,3 +1,4 @@
+> +char *f = "%lu";
+>  int main () {
+>    int a = 4;
+>    a = 2;
+> 
+> Thanks for your attention :)
+> 
+> -- System Information:
+> Distributor ID:	Debian
+> Description:	Debian GNU/Linux testing (jessie)
+> Release:	testing
+> Codename:	jessie
+> Architecture: amd64 (x86_64)
+> Foreign Architectures: i386
+> 
+> Kernel: Linux 3.13-1-amd64 (SMP w/2 CPU cores)
+> Locale: LANG=en_US.UTF-8, LC_CTYPE=en_US.UTF-8 (charmap=UTF-8)
+> Shell: /bin/sh linked to /bin/dash
+> 
+> Versions of packages coccinelle depends on:
+> ii  libc6                                   2.18-4
+> ii  libpcre-ocaml [libpcre-ocaml-36gi0]     7.0.4-1
+> ii  libpcre3                                1:8.31-2
+> ii  libpycaml-ocaml                         0.82-14+b3
+> ii  libpython2.7                            2.7.6-7
+> ii  ocaml-base-nox [ocaml-base-nox-4.01.0]  4.01.0-3
+> ii  ocaml-findlib                           1.4-2
+> ii  python-glade2                           2.24.0-3+b1
+> ii  python-gobject                          3.10.2-2
+> ii  python-gtk2                             2.24.0-3+b1
+> pn  python:any                              <none>
+> 
+> coccinelle recommends no packages.
+> 
+> Versions of packages coccinelle suggests:
+> pn  coccinelle-doc     <none>
+> pn  vim-addon-manager  <none>
+> 
+> -- no debconf information
+> 
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 181 bytes
+Desc: Digital signature
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20140328/ed623730/attachment.asc>
