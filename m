@@ -1,44 +1,25 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 30 Mar 2014 14:49:20 +0200 (CEST)
+From: derek@knosof.co.uk (Derek M Jones)
+Date: Sun, 30 Mar 2014 13:45:40 +0100
 Subject: [Cocci] Improvements for source code analysis with inclusion of
  header files
-In-Reply-To: <533811B2.4020109@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.10.1403301425110.2092@hadrien>
 References: <5338004F.3090303@users.sourceforge.net>
  <alpine.DEB.2.10.1403301354280.2092@hadrien>
  <53380A7D.9060005@users.sourceforge.net>
  <alpine.DEB.2.10.1403301425110.2092@hadrien>
- <53380F07.9020500@users.sourceforge.net>
- <alpine.DEB.2.10.1403301434580.2092@hadrien>
- <533811B2.4020109@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1403301445260.2092@hadrien>
+Message-ID: <533811F4.7030204@knosof.co.uk>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, 30 Mar 2014, SF Markus Elfring wrote:
+Julia,
 
-> >> 1. Which "C files" are referenced here?
-> >
-> > The ones Coccinelle was asked to work on.
->
-> Do you distinguish headers from source files in this use case?
+> Not sure what more documentation one would want.
 
-No that I recall.
+Coccinelle is getting to be widely used.
 
-> >> 2. File formats for the cache
-> >
-> > Doesn't matter to the user.
->
-> I guess that such information will become more interesting for other software
-> developers, won't it?
+When is the O'Reilly book coming out :-)
 
-I don't think so.  No more than any ordinary user is interested in the
-format that a web browser uses for its cache.
-
-In general, a cache has a short lifetime.  The software changes, or one
-wants to use Coccinelle with other options, and then one would rather
-start over with a new cache.  The cache is mostly useful when one does
-iteration.  In that case, I usually limit the size of the cache as well,
-because the format is not particularly concise.  This further implies that
-it is not useful to anything other than the current run.
-
-julia
+-- 
+Derek M. Jones                  tel: +44 (0) 1252 520 667
+Knowledge Software Ltd          blog:shape-of-code.coding-guidelines.com
+Software analysis               http://www.knosof.co.uk
