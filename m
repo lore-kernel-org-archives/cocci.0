@@ -1,28 +1,41 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 30 Mar 2014 15:00:11 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sun, 30 Mar 2014 15:08:36 +0200
 Subject: [Cocci] Improvements for source code analysis with inclusion of
  header files
-In-Reply-To: <533811F4.7030204@knosof.co.uk>
+In-Reply-To: <alpine.DEB.2.10.1403301445260.2092@hadrien>
 References: <5338004F.3090303@users.sourceforge.net>
  <alpine.DEB.2.10.1403301354280.2092@hadrien>
  <53380A7D.9060005@users.sourceforge.net>
- <alpine.DEB.2.10.1403301425110.2092@hadrien> <533811F4.7030204@knosof.co.uk>
-Message-ID: <alpine.DEB.2.10.1403301459520.2092@hadrien>
+ <alpine.DEB.2.10.1403301425110.2092@hadrien>
+ <53380F07.9020500@users.sourceforge.net>
+ <alpine.DEB.2.10.1403301434580.2092@hadrien>
+ <533811B2.4020109@users.sourceforge.net>
+ <alpine.DEB.2.10.1403301445260.2092@hadrien>
+Message-ID: <53381754.3080204@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+>> Do you distinguish headers from source files in this use case?
+> 
+> No that I recall.
+
+Would you like to support any variant of precompiled header files?
 
 
-On Sun, 30 Mar 2014, Derek M Jones wrote:
+> The software changes, or one wants to use Coccinelle with other options,
+> and then one would rather start over with a new cache.
 
-> Julia,
->
-> > Not sure what more documentation one would want.
->
-> Coccinelle is getting to be widely used.
->
-> When is the O'Reilly book coming out :-)
+I imagine that caches can also be generated for data representations with a
+longer "life time".
 
-I think it will coincide with the release of 1.0.0 :)
 
-julia
+> In that case, I usually limit the size of the cache as well, because the format
+> is not particularly concise.  This further implies that it is not useful
+> to anything other than the current run.
+
+I am becoming a bit more interested in conciseness for relevant data structures.
+How can it be achieved to make the intermediate data storage useful for several
+different source code analysis runs?
+
+Regards,
+Markus
