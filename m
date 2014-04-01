@@ -1,41 +1,108 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 30 Mar 2014 15:08:36 +0200
-Subject: [Cocci] Improvements for source code analysis with inclusion of
- header files
-In-Reply-To: <alpine.DEB.2.10.1403301445260.2092@hadrien>
-References: <5338004F.3090303@users.sourceforge.net>
- <alpine.DEB.2.10.1403301354280.2092@hadrien>
- <53380A7D.9060005@users.sourceforge.net>
- <alpine.DEB.2.10.1403301425110.2092@hadrien>
- <53380F07.9020500@users.sourceforge.net>
- <alpine.DEB.2.10.1403301434580.2092@hadrien>
- <533811B2.4020109@users.sourceforge.net>
- <alpine.DEB.2.10.1403301445260.2092@hadrien>
-Message-ID: <53381754.3080204@users.sourceforge.net>
+From: joe@perches.com (Joe Perches)
+Date: Tue, 01 Apr 2014 10:42:54 -0700
+Subject: [Cocci] coccinelle: trivial linux code style reformatting
+Message-ID: <1396374174.21529.93.camel@joe-AO722>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> Do you distinguish headers from source files in this use case?
-> 
-> No that I recall.
+Hello.
 
-Would you like to support any variant of precompiled header files?
+I tried this little cocci script to remove unnecessary
+uses of return in void functions.
+
+I tried with 2 different versions of spatch and get
+different output content, neither of which is the
+preferred kernel style.
+
+The output is apparently correct and compilable.
+It is just not kernel style.  I'm not sure there
+is a defect really, just wanted to bring it up.
+
+Maybe the first transform could be better written.
+
+$ cat void_return.cocci
+@@
+identifier func;
+expression S;
+@@
+void func(...) {
+...
+	if (...)
+-		return S;
++		{ S; return; }
+...
+}
+
+@@
+identifier func;
+expression S;
+@@
+void func(...) {
+...
+	if (...) {
+...
+-		return S;
++		S;
+	}
+...
+}
+
+@@
+identifier func;
+expression S;
+@@
+void func(...) {
+...
+-	return S;
++	S;
+}
+$
+
+$ ~/coccinelle/spatch --version
+spatch version 1.0.0-rc20 without Python support and with PCRE support
+
+$ ~/coccinelle/spatch -sp-file void_return.cocci drivers/gpu/drm/i915/i915_irq.c
+init_defs_builtins: /usr/local/share/coccinelle/standard.h
+HANDLING: drivers/gpu/drm/i915/i915_irq.c
+diff = 
+--- drivers/gpu/drm/i915/i915_irq.c
++++ /tmp/cocci-output-13176-0a96c4-i915_irq.c
+@@ -2818,7 +2818,10 @@ static void i915_hangcheck_elapsed(unsig
+ 	}
+ 
+ 	if (rings_hung)
+-		return i915_handle_error(dev, true, "Ring hung");
++	{
++		i915_handle_error(dev, true, "Ring hung");
++		return;
++	}
+ 
+ 	if (busy_count)
+ 		/* Reset timer case chip hangs without another request
 
 
-> The software changes, or one wants to use Coccinelle with other options,
-> and then one would rather start over with a new cache.
+and with an older spatch version
 
-I imagine that caches can also be generated for data representations with a
-longer "life time".
+$ spatch --version
+spatch version 1.0.0-rc14 without Python support and with PCRE support
 
-
-> In that case, I usually limit the size of the cache as well, because the format
-> is not particularly concise.  This further implies that it is not useful
-> to anything other than the current run.
-
-I am becoming a bit more interested in conciseness for relevant data structures.
-How can it be achieved to make the intermediate data storage useful for several
-different source code analysis runs?
-
-Regards,
-Markus
+$ spatch -sp-file void_return.cocci drivers/gpu/drm/i915/i915_irq.c
+init_defs_builtins: /usr/local/share/coccinelle/standard.h
+HANDLING: drivers/gpu/drm/i915/i915_irq.c
+diff = 
+--- drivers/gpu/drm/i915/i915_irq.c
++++ /tmp/cocci-output-13258-bc64a5-i915_irq.c
+@@ -2817,8 +2817,11 @@ static void i915_hangcheck_elapsed(unsig
+ 		}
+ 	}
+ 
+-	if (rings_hung)
+-		return i915_handle_error(dev, true, "Ring hung");
++	if (rings_hung) {
++		
++			i915_handle_error(dev, true, "Ring hung");
++			return;		
++		}
+ 
+ 	if (busy_count)
+ 		/* Reset timer case chip hangs without another request
