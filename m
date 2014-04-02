@@ -1,32 +1,22 @@
-From: joe@perches.com (Joe Perches)
-Date: Wed, 02 Apr 2014 00:56:17 -0700
-Subject: [Cocci] Clarification for source code style reformatting
-In-Reply-To: <533BBA12.1040105@users.sourceforge.net>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 02 Apr 2014 10:30:34 +0200
+Subject: [Cocci] "trivial" linux code style reformatting
+In-Reply-To: <alpine.DEB.2.02.1404020749280.2007@localhost6.localdomain6>
 References: <1396374174.21529.93.camel@joe-AO722>
- <533BBA12.1040105@users.sourceforge.net>
-Message-ID: <1396425377.32040.7.camel@joe-AO722>
+ <CA+MoWDr-vry3W3T-duYPYr=H4b3OE0YshuDN9caH56o+WE4CQA@mail.gmail.com>
+ <1396393876.21529.99.camel@joe-AO722>
+ <alpine.DEB.2.02.1404020749280.2007@localhost6.localdomain6>
+Message-ID: <533BCAAA.1050202@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, 2014-04-02 at 09:19 +0200, SF Markus Elfring wrote:
-> > The output is apparently correct and compilable.
-> > It is just not kernel style.  I'm not sure there
-> > is a defect really, just wanted to bring it up.
-> > 
-> > Maybe the first transform could be better written.
-> 
-> It seems that the shown differences in source code formatting come from your
-> first semantic patch rule.
-> Does your update suggestion fit to implementations of functions which had a
-> non-void return type before?
+> Indeed, it works mostly better, because Coccinelle takes charge
+> of the interaction between the ) and the {, but if ther is some
+> specific spacing in E, that will be lost.
 
-void functions cannot have non-void returns.
+Would you like to clarify this implementation detail a bit more?
+Are there any chances that this software will become able to restore a preferred
+source code layout from the matched expressions?
 
-> > $ cat void_return.cocci
-> > @@
-> > identifier func;
-> > expression S;
-> > @@
-> > void func(...) {
-
-This test is only for void functions.
+Regards,
+Markus
