@@ -1,46 +1,79 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 5 Apr 2014 19:47:23 +0200 (CEST)
+From: ralphs@netwinder.org (Ralph Siemsen)
+Date: Sat, 5 Apr 2014 15:32:59 -0400
 Subject: [Cocci] Trivial question about renaming prototypes in .h files
-In-Reply-To: <20140405155421.GA20098@harvey.netwinder.org>
+In-Reply-To: <alpine.DEB.2.02.1404051944510.2029@localhost6.localdomain6>
 References: <20140405155421.GA20098@harvey.netwinder.org>
-Message-ID: <alpine.DEB.2.02.1404051944510.2029@localhost6.localdomain6>
+ <alpine.DEB.2.02.1404051944510.2029@localhost6.localdomain6>
+Message-ID: <20140405193259.GA10489@harvey.netwinder.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sat, 5 Apr 2014, Ralph Siemsen wrote:
+Hi Julia,
 
-> Hi all,
+Thank you very much for your reply.
+
+On Sat, Apr 05, 2014 at 07:47:23PM +0200, Julia Lawall wrote:
 > 
-> Is it possible to apply sematic patches to prototypes in header files?
-> I've experimented with the various -include options, and have tried several
-> different versions of spatch, but I can't seem to make this work.
-> I'm using the basic example 13.1 from the main_grammar.pdf document:
+> I'm not sure to understand what you are trying to do.  This replaces one 
+> expression by another.  There are no expressions in a function prototype.
+
+I was trying to rename a function, globally within a project. The code
+came from http://coccinelle.lip6.fr/docs/main_grammar.pdf on page 14.
+
+By the way, the HTML version of the same document seems to have some
+extraneous symbols such as @M which results in syntax errors from spatch.
+http://coccinelle.lip6.fr/docs/main_grammar013.html#toc1
+
+> If you want to rename the function foo to bar, then you would write:
 > 
 > @@
 > @@
-> -foo()
-> +bar()
 > 
-> This works fine when applied to .c files, but it does not seem to want to
-> rename prototypes in header files. Renaming the .h to a .c does not seem
-> to work either.
+> - foo
+> + bar
+>     () { ... }
 > 
-> Am I missing something obvious?
+> This should update any prototype of the function as well.
 
-I'm not sure to understand what you are trying to do.  This replaces one 
-expression by another.  There are no expressions in a function prototype.
+Thanks, that helps. I'll have to study some more to understand why that
+works. In particular, I would not have expected {...} to match against
+a function prototype, which just has ";" in that position. Perhaps that
+is handled by one of the standard isomophisms?
 
-If you want to rename the function foo to bar, then you would write:
+I have also found that the .h files are only patched correctly when I
+list them explicitly on the command line. Seemingly as a result of this,
+the --dir option does not work for processing .h files:
 
+spatch --sp-file rename.cocci test.c test.h   # works correctly, both .c/.h
+spatch --sp-file rename.cocci test.c          # works correctly, only .c
+spatch --sp-file rename.cocci test.h          # no patch is emitted
+spatch --sp-file rename.cocci --dir .         # only patches .c
+spatch --sp-file rename.coccy --dir . --include-headers # only patches .c
+
+The above tests were done with 1.0.0-rc20 binary from your website. The
+files test.c and test.h are trivial, attached just for reference.
+
+Cheers,
+-Ralph
+-------------- next part --------------
+#include <stdio.h>
+
+int foo(int num)
+{
+	return printf("Hello %d\n", num);
+}
+
+int main(int argc, char **argv)
+{
+	foo(argc);
+	return 0;
+}
+-------------- next part --------------
+int foo(int num);
+-------------- next part --------------
 @@
 @@
 
-- foo
-+ bar
-    () { ... }
-
-This should update any prototype of the function as well.
-
-You may want to try the options --include-headers --no-includes
-
-julia
+-foo
++bar
+   (int num) { ... }
