@@ -1,33 +1,52 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 6 Apr 2014 12:57:51 +0200 (CEST)
+From: volanschi@metaware.fr (Nic Volanschi (R&D))
+Date: Mon, 07 Apr 2014 12:37:54 +0200
 Subject: [Cocci] spatch issue with C struct initialization
-In-Reply-To: <1396770309.2151.4.camel@localhost.localdomain>
-References: <1396513844.24348.13.camel@localhost.localdomain>
- <alpine.DEB.2.10.1404031216060.2090@hadrien>
- <1396531867.24348.27.camel@localhost.localdomain>
- <alpine.DEB.2.10.1404031618260.2090@hadrien>
- <1396535383.24348.38.camel@localhost.localdomain>
- <alpine.DEB.2.10.1404041317240.2088@hadrien> <53401ACD.8010004@redhat.com>
- <alpine.DEB.2.02.1404051717280.2029@localhost6.localdomain6>
- <1396770309.2151.4.camel@localhost.localdomain>
-Message-ID: <alpine.DEB.2.10.1404061255350.2112@hadrien>
+Message-ID: <1396867074.3201.10.camel@zamolxis.metaware.tm.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On Mon, 2014-04-07 at 12:00 +0200, cocci-request at systeme.lip6.fr wrote:
 > Not being an expert on grammar, there is a chance this will work ?
->
->  initializer
->     : assignment_expression
->        | '{' initializer_list '}'
->        | '{' initializer_list ',' '}'
->        | ( type-name ) { initializer-list }
->        | ( type-name ) { initializer-list , }
->
-> If you can point me to the code dealing with it, I can try to play with
-> it a little bit.
+> >
+> >  initializer
+> >     : assignment_expression
+> >        | '{' initializer_list '}'
+> >        | '{' initializer_list ',' '}'
+> >        | ( type-name ) { initializer-list }
+> >        | ( type-name ) { initializer-list , }
+> >
+> > If you can point me to the code dealing with it, I can try to play
+> with
+> > it a little bit.
+> 
+> I think I already tried the same thing.  The problem is that
+> ( type-name )
+> is already buried deep within assignment_expression, for an ordinary
+> cast,
+> so the parser doesn't know which rule to choose.
+> 
+> julia
 
-I think I already tried the same thing.  The problem is that ( type-name )
-is already buried deep within assignment_expression, for an ordinary cast,
-so the parser doesn't know which rule to choose.
+I agree that the "initializer" nonterminal is not the right place to
+extend the grammar, because it would not allow legal statements such as:
 
-julia
+  structure = ((struct foo) {x + y, 'a', 0});
+
+the example coming from:
+http://gcc.gnu.org/onlinedocs/gcc/Compound-Literals.html
+
+Rather, it seems to me that the right place to extend the grammar is the
+"cast_expression" nonterminal:
+
+> cast_expression
+> 	: unary_expression
+> 	| '(' type_name ')' cast_expression
+          | '(' type_name ')' '{' initializer_list '}'
+> 	;
+
+This would not only allow the above legal expression, but should also 
+avoid to introduce a conflict in the grammar.
+
+Hope this helps.
+
+Nic.
