@@ -1,140 +1,38 @@
-From: ning.n.jiang@gmail.com (Ning Jiang)
-Date: Wed, 9 Apr 2014 10:27:09 +0800
-Subject: [Cocci] double_lock.cocci extremely slow for multiple mutex
-	locks check
-In-Reply-To: <CAH3Oq6T+WtBm-6yFP_vuBXK_qKskUGgH_p8Yf=aFQwCtCZt7cw@mail.gmail.com>
-References: <CAH3Oq6SOduFvyppbXFpaJU09ztx7=36L26fHRbw1cCZM2SBmQQ@mail.gmail.com>
- <alpine.DEB.2.10.1404081539310.2185@hadrien>
- <CAH3Oq6T+WtBm-6yFP_vuBXK_qKskUGgH_p8Yf=aFQwCtCZt7cw@mail.gmail.com>
-Message-ID: <CAH3Oq6Q-s3a1yRpLKG+xF0Y2H9HBopRrymp1v2BGokmnCWy4Rw@mail.gmail.com>
+From: johannes@sipsolutions.net (Johannes Berg)
+Date: Thu, 10 Apr 2014 19:51:29 +0200
+Subject: [Cocci] [PATCH] coccinelle: add pycocci wrapper for
+ multithreaded support
+In-Reply-To: <1397152097-315-1-git-send-email-mcgrof@do-not-panic.com>
+ (sfid-20140410_194829_100293_32EF0060)
+References: <1397152097-315-1-git-send-email-mcgrof@do-not-panic.com>
+ (sfid-20140410_194829_100293_32EF0060)
+Message-ID: <1397152289.4757.28.camel@jlt4.sipsolutions.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Another info to assist the debugging. I happen to have two ubuntu machines,
-the newer one has:
-spatch version 1.0.0-rc15 with Python support and with PCRE support
+On Thu, 2014-04-10 at 10:48 -0700, Luis R. Rodriguez wrote:
 
-and the old one has:
-spatch version 0.2.0 with Python support
+> You just pass it a cocci file, a target dir, and in git environments
+> you always want --in-place enabled. Experiments and profiling random
+> cocci files with the Linux kernel show that using just using number of
+> CPUs doesn't scale well given that lots of buckets of files don't require
+> work, as such this uses 10 * number of CPUs for its number of threads.
+> For work that define more general ruler 3 * number of CPUs works better,
+> but for smaller cocci files 3 * number of CPUs performs best right now.
+> To experiment more with what's going on with the multithreading one can enable
+> htop while kicking off a cocci task on the kernel, we want to keep
+> these CPUs busy as much as possible. 
 
-The 0.2.0 doesn't have this problem while 1.0.0-rc15 does.
+That's not really a good benchmark, you want to actually check how
+quickly it finishes ... If you have some IO issues then just keeping the
+CPUs busy trying to do IO won't help at all.
 
 
-On Tue, Apr 8, 2014 at 10:03 PM, Ning Jiang <ning.n.jiang@gmail.com> wrote:
+> Since its just a helper I toss it into the python directory but don't
+> install it. Hope is that we can evolve it there instead of carrying this
+> helper within backports.
 
-> Yes. And if I remove the first appearance of the mutex operation:
->                         mutex_lock(&test_lock);
->                         mutex_unlock(&test_lock);
->
-> The output will be like:
-> real    0m0.975s
-> user    0m0.604s
-> sys     0m0.120s
->
-> If I remove the second appearance. It will be:
-> real    0m3.463s
-> user    0m3.056s
-> sys     0m0.140s
->
-> Anyway, you have the test code so that you can experiment with it.
->
-> Thanks,
-> Ning
->
->
-> On Tue, Apr 8, 2014 at 9:40 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
->
->>
->>
->> On Tue, 8 Apr 2014, Ning Jiang wrote:
->>
->> > Hi,
->> > I met a case when checking my driver by coccicheck. It can be
->> illustrated by
->> > the simplified test-cocci.c.
->> >
->> > #include <linux/mutex.h>
->> >
->> > static DEFINE_MUTEX(test_lock);
->> >
->> > int test_cond;
->> > int cmd;
->> > int type;
->> > int ret;
->> >
->> > int test_cocci_func(void)
->> > {
->> > if (ret == 1)
->> > return -1;
->> >
->> > if (!test_cond) {
->> > switch (cmd) {
->> > case 0:
->> > mutex_lock(&test_lock);
->> > mutex_unlock(&test_lock);
->> > break;
->> > }
->> > }
->> >
->> > if (ret < 0)
->> > return ret;
->> >
->> > if (test_cond) {
->> > switch (cmd) {
->> > case 0:
->> > if (type == 1) {
->> > mutex_lock(&test_lock);
->> > mutex_unlock(&test_lock);
->> > } else if (type == 2) {
->> > mutex_lock(&test_lock);
->> > mutex_unlock(&test_lock);
->> > }
->> > break;
->> > case 1:
->> > if (type == 1) {
->> > mutex_lock(&test_lock);
->> > mutex_unlock(&test_lock);
->> > } else {
->> > mutex_lock(&test_lock);
->> > mutex_unlock(&test_lock);
->> > }
->> > break;
->> > }
->> > }
->> >
->> > return ret;
->> > }
->> >
->> > I run the coccicheck like this:
->> > time make coccicheck V=1 MODE=report M=test-cocci
->> > COCCI=scripts/coccinelle/locks/double_lock.cocci 1>test-cocci-result
->> 2>&1
->> >
->> > It gives the following output:
->> > real    2m1.676s
->> > user    2m0.904s
->> > sys     0m0.160s
->> >
->> > The strange thing is that after I removed the code at the beginning of
->> the
->> > function:
->> > if (ret == 1)
->> > return -1;
->> >
->> > The test result will be much better:
->> > real    0m0.896s
->> > user    0m0.500s
->> > sys     0m0.148s
->> >
->> > Could you please check the issue?
->>
->> I will check it.  But there are numerous problems with switch, so that
->> might be the source of the problem.
->>
->> julia
->
->
->
--------------- next part --------------
-An HTML attachment was scrubbed...
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20140409/9d2620a5/attachment-0001.html>
+If there's a plan to make coccinelle itself multi-threaded, what's the
+point?
+
+johannes
