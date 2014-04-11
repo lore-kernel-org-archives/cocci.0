@@ -1,56 +1,63 @@
-From: mcgrof@suse.com (Luis R. Rodriguez)
-Date: Fri, 11 Apr 2014 21:00:14 +0200
-Subject: [Cocci] [PATCH] coccinelle: add pycocci wrapper
-	for	multithreaded support
-In-Reply-To: <alpine.DEB.2.02.1404110800120.2032@localhost6.localdomain6>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Fri, 11 Apr 2014 22:04:34 +0200 (CEST)
+Subject: [Cocci] Software parallelisation?
+In-Reply-To: <CAGrdgiUtFnTCH+HmhfLhxTmp=btBqx3mYJGQLN6AeaUnxW=YSw@mail.gmail.com>
 References: <1397152097-315-1-git-send-email-mcgrof@do-not-panic.com>
  <1397152289.4757.28.camel@jlt4.sipsolutions.net>
  <20140410175748.GK14815@wotan.suse.de>
- <534783DB.4080200@users.sourceforge.net>
- <alpine.DEB.2.02.1404110800120.2032@localhost6.localdomain6>
-Message-ID: <20140411190014.GL14815@wotan.suse.de>
+ <alpine.DEB.2.02.1404102131390.2201@localhost6.localdomain6>
+ <5347ACF3.9040308@users.sourceforge.net>
+ <CAGrdgiUtFnTCH+HmhfLhxTmp=btBqx3mYJGQLN6AeaUnxW=YSw@mail.gmail.com>
+Message-ID: <alpine.DEB.2.02.1404112154260.2064@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, Apr 11, 2014 at 08:01:04AM +0200, Julia Lawall wrote:
+
+
+On Fri, 11 Apr 2014, Jesper Louis Andersen wrote:
+
+> 
+> On Fri, Apr 11, 2014 at 10:50 AM, SF Markus Elfring
+> <elfring@users.sourceforge.net> wrote:
+>       Would you like to share any more ideas about corresponding
+>       software
+>       improvements?
 > 
 > 
-> On Fri, 11 Apr 2014, SF Markus Elfring wrote:
+> The quick answer: It is currently somewhat hard. Ocaml is not multi-threaded
+> because it does not have a garbage collector able to execute in multiple
+> threads at the same time. This is being worked on seriously now, but is at
+> least 2-3 years out on the horizon for a stable solution.
 > 
-> > > I checked the profile results, the reason the jobs finish is some threads
-> > > had no work or little work.
-> > 
-> > Could you find out during the data processing which parts or files
-> > result in a special application behaviour you would like to point out here?
-> 
-> I don't understand the question at all, but since the various files have 
-> different properties, it is hard to determine automatically in advance how 
-> much work Coccinelle will need to do on each one.
+> So to make cocci faster on the inside requires some multi-processing
+> hackery. Certainly possible, but not as easy.
 
-For the person who might work on enhancing multithreading support, I'd wonder
-if there could be gains of actually putting an effort out first to evaluate
-which files have one rule hit and then adding the file to an activity file lis
-to later be spread between the threads. As you note though it is hard to
-determine this in advance though given that each rule express any change.
+Actually, there is a library from Roberto di Cosmo called Parmap that does 
+a simple but reasonable job.  For Coccinelle there are two problems:
 
-I think one small change which could help, and likely not incur a drastic
-immediate change on architecture could be to not let theads take files / jobs
-list of files, but instead just take say:
+1. The Coccinelle build system is too complex or me to be able to figure 
+out how to include Parmap.  This probably just requires a little time and 
+patience to resolve.
 
-	work_task_n = (files / jobs) / 10
+2. Coccinelle provides initialize and finalize rules.  These are normally 
+used to collect information, eg in a hash table or a global list.  If one 
+treats eg a set of files in parallel, then one would have to specify how 
+to join the information collected by the separate initialize and finalize 
+instances, or somehow implement shared memory in C and use some for of 
+synchronization.  This seems all too complicated for Coccinelle.
 
-The list of files needing work could then be kept on a list protected
-against the threads, and each thread will only die if all the files
-have been worked on already. This would enable keeping number_cpu
-threads only, as each CPU would indeed be busy all the time.
+Point 2 means that parallelism is likely to be provided inside Coccinelle 
+only for semantic patches that don't have initialize and finalize rules.  
+If the semantic patch has initialize and finalize rules, the user should 
+have to explicitly device whether they want to run Coccinelle single 
+threaded or run it in separate files in parallel and combine the results 
+in the end in some other way.
 
-BTW is the patch Acked-by Julia? Can we commit it :)
+Another alternative would be to introduce parallelism within the treatment 
+of a single file, eg running a matching rule on each function in parallel.  
+In preliminary experiments, this didn't seem cost effective.  There is a 
+lot of context information that has to be transmitted to the child 
+processes, and anyway the treatment of most functions is very fast, 
+because there is nothing to do.
 
-  Luis
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: not available
-Type: application/pgp-signature
-Size: 835 bytes
-Desc: not available
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20140411/c1479a3b/attachment.asc>
+julia
