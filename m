@@ -1,31 +1,56 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 11 Apr 2014 21:40:40 +0200
-Subject: [Cocci] Software parallelisation?
-In-Reply-To: <CAGrdgiUtFnTCH+HmhfLhxTmp=btBqx3mYJGQLN6AeaUnxW=YSw@mail.gmail.com>
+From: mcgrof@suse.com (Luis R. Rodriguez)
+Date: Fri, 11 Apr 2014 21:00:14 +0200
+Subject: [Cocci] [PATCH] coccinelle: add pycocci wrapper
+	for	multithreaded support
+In-Reply-To: <alpine.DEB.2.02.1404110800120.2032@localhost6.localdomain6>
 References: <1397152097-315-1-git-send-email-mcgrof@do-not-panic.com>
  <1397152289.4757.28.camel@jlt4.sipsolutions.net>
  <20140410175748.GK14815@wotan.suse.de>
- <alpine.DEB.2.02.1404102131390.2201@localhost6.localdomain6>
- <5347ACF3.9040308@users.sourceforge.net>
- <CAGrdgiUtFnTCH+HmhfLhxTmp=btBqx3mYJGQLN6AeaUnxW=YSw@mail.gmail.com>
-Message-ID: <53484538.9040104@users.sourceforge.net>
+ <534783DB.4080200@users.sourceforge.net>
+ <alpine.DEB.2.02.1404110800120.2032@localhost6.localdomain6>
+Message-ID: <20140411190014.GL14815@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Ocaml is not multi-threaded because it does not have a garbage collector able
-> to execute in multiple threads at the same time. This is being worked on
-> seriously now, but is at least 2-3 years out on the horizon for a stable solution.
+On Fri, Apr 11, 2014 at 08:01:04AM +0200, Julia Lawall wrote:
+> 
+> 
+> On Fri, 11 Apr 2014, SF Markus Elfring wrote:
+> 
+> > > I checked the profile results, the reason the jobs finish is some threads
+> > > had no work or little work.
+> > 
+> > Could you find out during the data processing which parts or files
+> > result in a special application behaviour you would like to point out here?
+> 
+> I don't understand the question at all, but since the various files have 
+> different properties, it is hard to determine automatically in advance how 
+> much work Coccinelle will need to do on each one.
 
-Would you like to point out any concrete discussions about corresponding
-software evolution?
+For the person who might work on enhancing multithreading support, I'd wonder
+if there could be gains of actually putting an effort out first to evaluate
+which files have one rule hit and then adding the file to an activity file lis
+to later be spread between the threads. As you note though it is hard to
+determine this in advance though given that each rule express any change.
 
+I think one small change which could help, and likely not incur a drastic
+immediate change on architecture could be to not let theads take files / jobs
+list of files, but instead just take say:
 
-> So to make cocci faster on the inside requires some multi-processing hackery.
-> Certainly possible, but not as easy.
+	work_task_n = (files / jobs) / 10
 
-I imagine that more fine-tuning could be performed for basic data structures.
-Which ideas have you got in mind for improvements around multi-programming
-approaches here?
+The list of files needing work could then be kept on a list protected
+against the threads, and each thread will only die if all the files
+have been worked on already. This would enable keeping number_cpu
+threads only, as each CPU would indeed be busy all the time.
 
-Regards,
-Markus
+BTW is the patch Acked-by Julia? Can we commit it :)
+
+  Luis
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 835 bytes
+Desc: not available
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20140411/c1479a3b/attachment.asc>
