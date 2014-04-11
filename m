@@ -1,23 +1,28 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 11 Apr 2014 22:55:16 +0200
-Subject: [Cocci] Software parallelisation?
-In-Reply-To: <alpine.DEB.2.02.1404112154260.2064@localhost6.localdomain6>
-References: <1397152097-315-1-git-send-email-mcgrof@do-not-panic.com>
- <1397152289.4757.28.camel@jlt4.sipsolutions.net>
- <20140410175748.GK14815@wotan.suse.de>
- <alpine.DEB.2.02.1404102131390.2201@localhost6.localdomain6>
- <5347ACF3.9040308@users.sourceforge.net>
- <CAGrdgiUtFnTCH+HmhfLhxTmp=btBqx3mYJGQLN6AeaUnxW=YSw@mail.gmail.com>
- <alpine.DEB.2.02.1404112154260.2064@localhost6.localdomain6>
-Message-ID: <534856B4.8000002@users.sourceforge.net>
+From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
+Date: Fri, 11 Apr 2014 15:46:21 -0700
+Subject: [Cocci] [RFC] fix compilation error on
+	ocaml/no_prepare_ocamlcocci.ml
+Message-ID: <20140411224621.GA23218@garbanzo.do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Another alternative would be to introduce parallelism within the treatment 
-> of a single file, eg running a matching rule on each function in parallel.
+Using debian testing with the latest version of ocaml I ran into a
+compilation error with the gforge version of Coccinelle. This fixes it
+and lets me use coccinelle but its unclear if its correct.
 
-Are you interested to reuse an evolving software library in the future?
-http://stellar.cct.lsu.edu/publications/
-
-Regards,
-Markus
+diff --git a/ocaml/no_prepare_ocamlcocci.ml b/ocaml/no_prepare_ocamlcocci.ml
+index 772528b..5d94b3c 100644
+--- a/ocaml/no_prepare_ocamlcocci.ml
++++ b/ocaml/no_prepare_ocamlcocci.ml
+@@ -9,9 +9,9 @@ let prepare coccifile code =
+ 	function
+ 	    Ast_cocci.ScriptRule (name,"ocaml",deps,mv,script_vars,code) ->
+ 	      code :: prev
+-	  | Ast_cocci.InitialScriptRule (name,"ocaml",deps,code) ->
++	  | Ast_cocci.InitialScriptRule (name,"ocaml",deps,mv,code) ->
+ 	      code :: prev
+-	  | Ast_cocci.FinalScriptRule (name,"ocaml",deps,code) ->
++	  | Ast_cocci.FinalScriptRule (name,"ocaml",deps,mv,code) ->
+ 	      code :: prev
+ 	  | _ -> prev)
+       [] code in
