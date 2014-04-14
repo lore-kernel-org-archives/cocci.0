@@ -1,28 +1,40 @@
-From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Fri, 11 Apr 2014 15:46:21 -0700
-Subject: [Cocci] [RFC] fix compilation error on
-	ocaml/no_prepare_ocamlcocci.ml
-Message-ID: <20140411224621.GA23218@garbanzo.do-not-panic.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Mon, 14 Apr 2014 14:05:14 +0200 (CEST)
+Subject: [Cocci] Coccinelle 1.0.0-rc21
+Message-ID: <alpine.DEB.2.10.1404141356250.2601@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Using debian testing with the latest version of ocaml I ran into a
-compilation error with the gforge version of Coccinelle. This fixes it
-and lets me use coccinelle but its unclear if its correct.
+Version 1.0.0-rc21 has been released.  The main changes are as follows:
 
-diff --git a/ocaml/no_prepare_ocamlcocci.ml b/ocaml/no_prepare_ocamlcocci.ml
-index 772528b..5d94b3c 100644
---- a/ocaml/no_prepare_ocamlcocci.ml
-+++ b/ocaml/no_prepare_ocamlcocci.ml
-@@ -9,9 +9,9 @@ let prepare coccifile code =
- 	function
- 	    Ast_cocci.ScriptRule (name,"ocaml",deps,mv,script_vars,code) ->
- 	      code :: prev
--	  | Ast_cocci.InitialScriptRule (name,"ocaml",deps,code) ->
-+	  | Ast_cocci.InitialScriptRule (name,"ocaml",deps,mv,code) ->
- 	      code :: prev
--	  | Ast_cocci.FinalScriptRule (name,"ocaml",deps,code) ->
-+	  | Ast_cocci.FinalScriptRule (name,"ocaml",deps,mv,code) ->
- 	      code :: prev
- 	  | _ -> prev)
-       [] code in
+* To a limited extent, it is possible to make changes within strings.  The
+change has to be either to a coplete format part, or to a complete
+non-format part.  It is not eg possible to change a few characters of the
+non-format part.  An example is as follows:
+
+@@
+@@
+
+"foo
+-%d
++%s
+ bar"
+
+* It is now possible to wrap code, eg braces, around a conditional branch
+that ends in a return. (***)
+
+* The performance problem reported by Ning Jiang seems to be solved. (***)
+
+* The handling of variable declarations that declare more than one
+variable is slightly more robust.
+
+* Pretty printing is slightly improved.
+
+* The demos are now compatible with the addition of metavariables for
+initialize and finalize rules, as done in rc20.
+
+The two changes marked with *** required some significant changes to the
+control-flow graph.  Please let me know about any major degradations in
+performance, correctness, etc.
+
+julia
