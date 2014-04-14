@@ -1,21 +1,24 @@
-From: derek@knosof.co.uk (Derek M Jones)
-Date: Mon, 14 Apr 2014 17:52:10 +0100
-Subject: [Cocci] Coccinelle 1.0.0-rc21
-In-Reply-To: <alpine.DEB.2.10.1404141356250.2601@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Mon, 14 Apr 2014 21:48:51 +0200
+Subject: [Cocci] Coccinelle 1.0.0-rc21: Clarification for
+	"coccilib.elems"?
+In-Reply-To: <534C0C1F.8000808@users.sourceforge.net>
 References: <alpine.DEB.2.10.1404141356250.2601@hadrien>
-Message-ID: <534C123A.9070108@knosof.co.uk>
+ <534BDDD6.9070407@users.sourceforge.net>
+ <alpine.DEB.2.10.1404141525370.2572@hadrien>
+ <534BE66B.8060907@users.sourceforge.net>
+ <alpine.DEB.2.10.1404141622020.2591@hadrien>
+ <534C0C1F.8000808@users.sourceforge.net>
+Message-ID: <534C3BA3.5060806@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Julia,
+> Why does it not work as expected?
 
-> Version 1.0.0-rc21 has been released.  The main changes are as follows:
+It seems that an installation is always needed. (No "shortcut" so far ... ?)
 
-Have to take my shoes and socks off to count the release candidates!
+It would be nice if the desired command will also work from a test directory
+directly.
 
-Time for a real release :-)
-
--- 
-Derek M. Jones                  tel: +44 (0) 1252 520 667
-Knowledge Software Ltd          blog:shape-of-code.coding-guidelines.com
-Software analysis               http://www.knosof.co.uk
+Regards,
+Markus
