@@ -1,30 +1,21 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Mon, 14 Apr 2014 18:45:33 +0200
-Subject: [Cocci] Road map after Coccinelle 1.0.0-rc21?
-In-Reply-To: <alpine.DEB.2.10.1404141725420.2572@hadrien>
+From: derek@knosof.co.uk (Derek M Jones)
+Date: Mon, 14 Apr 2014 17:52:10 +0100
+Subject: [Cocci] Coccinelle 1.0.0-rc21
+In-Reply-To: <alpine.DEB.2.10.1404141356250.2601@hadrien>
 References: <alpine.DEB.2.10.1404141356250.2601@hadrien>
- <534BDDD6.9070407@users.sourceforge.net>
- <alpine.DEB.2.10.1404141525370.2572@hadrien>
- <534BE66B.8060907@users.sourceforge.net>
- <alpine.DEB.2.10.1404141622020.2591@hadrien>
- <534BF121.40607@users.sourceforge.net>
- <alpine.DEB.2.10.1404141634180.2591@hadrien>
- <534BF3B3.90007@users.sourceforge.net>
- <alpine.DEB.2.10.1404141725420.2572@hadrien>
-Message-ID: <534C10AD.1080806@users.sourceforge.net>
+Message-ID: <534C123A.9070108@knosof.co.uk>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> Did you eventually reproduce exceptions from the handling of a bit smaller
->> alternation in a SmPL constraint once more?
-> 
-> Yes, I believe so.
+Julia,
 
-How are the chances to get the filter pattern to work which was created with an
-alternation of 893 function names?
+> Version 1.0.0-rc21 has been released.  The main changes are as follows:
 
-Would you like to reduce the corresponding list of 217 failure situations around
-the message 'EXN:Invalid_argument("equal: abstract value")'?
+Have to take my shoes and socks off to count the release candidates!
 
-Regards,
-Markus
+Time for a real release :-)
+
+-- 
+Derek M. Jones                  tel: +44 (0) 1252 520 667
+Knowledge Software Ltd          blog:shape-of-code.coding-guidelines.com
+Software analysis               http://www.knosof.co.uk
