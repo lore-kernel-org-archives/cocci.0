@@ -1,24 +1,42 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 15 Apr 2014 07:23:40 +0200 (CEST)
-Subject: [Cocci] Coccinelle 1.0.0-rc21
-In-Reply-To: <534C123A.9070108@knosof.co.uk>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Tue, 15 Apr 2014 08:31:01 +0200
+Subject: [Cocci] Road map after Coccinelle 1.0.0-rc21?
+In-Reply-To: <alpine.DEB.2.10.1404150721500.2083@hadrien>
 References: <alpine.DEB.2.10.1404141356250.2601@hadrien>
- <534C123A.9070108@knosof.co.uk>
-Message-ID: <alpine.DEB.2.10.1404150723150.2083@hadrien>
+ <534BDDD6.9070407@users.sourceforge.net>
+ <alpine.DEB.2.10.1404141525370.2572@hadrien>
+ <534BE66B.8060907@users.sourceforge.net>
+ <alpine.DEB.2.10.1404141622020.2591@hadrien>
+ <534BF121.40607@users.sourceforge.net>
+ <alpine.DEB.2.10.1404141634180.2591@hadrien>
+ <534BF3B3.90007@users.sourceforge.net>
+ <alpine.DEB.2.10.1404141725420.2572@hadrien>
+ <534C10AD.1080806@users.sourceforge.net>
+ <alpine.DEB.2.10.1404150721500.2083@hadrien>
+Message-ID: <534CD225.1010207@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, 14 Apr 2014, Derek M Jones wrote:
+>> How are the chances to get the filter pattern to work which was created with an
+>> alternation of 893 function names?
+> 
+> I have already stated that this is not a priority.
 
-> Julia,
->
-> > Version 1.0.0-rc21 has been released.  The main changes are as follows:
->
-> Have to take my shoes and socks off to count the release candidates!
->
-> Time for a real release :-)
+I can understand that.
 
-Actually, I have a small list of significant bugs from Nic that have to be
-addressed first...
 
-julia
+> First, it is not a reasonable use of Cocinelle.
+
+I find this feedback strange.
+
+Static source code analysis on Linux files can result in higher and interesting
+numbers for further consideration of corresponding transformations.
+
+
+> Second, the problem is likely not in Coccinelle but in the regular expression library
+> that is being used.
+
+Which source code places are affected by this software development challenge?
+
+Regards,
+Markus
