@@ -1,34 +1,245 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 15 Apr 2014 11:01:17 +0200
-Subject: [Cocci] Relevance of some regular expressions in SmPL
-In-Reply-To: <alpine.DEB.2.10.1404151048580.2587@hadrien>
-References: <alpine.DEB.2.10.1404141356250.2601@hadrien>
- <534BDDD6.9070407@users.sourceforge.net>
- <alpine.DEB.2.10.1404141525370.2572@hadrien>
- <534BE66B.8060907@users.sourceforge.net>
- <alpine.DEB.2.10.1404141622020.2591@hadrien>
- <534BF121.40607@users.sourceforge.net>
- <alpine.DEB.2.10.1404141634180.2591@hadrien>
- <534BF3B3.90007@users.sourceforge.net>
- <alpine.DEB.2.10.1404141725420.2572@hadrien>
- <534C10AD.1080806@users.sourceforge.net>
- <alpine.DEB.2.10.1404150721500.2083@hadrien>
- <534CD225.1010207@users.sourceforge.net>
- <alpine.DEB.2.10.1404150909470.2587@hadrien>
- <534CE166.1050704@users.sourceforge.net>
- <alpine.DEB.2.10.1404151000060.2587@hadrien>
- <534CF097.6000901@users.sourceforge.net>
- <alpine.DEB.2.10.1404151048580.2587@hadrien>
-Message-ID: <534CF55D.4040201@users.sourceforge.net>
+From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
+Date: Thu, 17 Apr 2014 18:44:02 -0700
+Subject: [Cocci] [PATCH v2] coccinelle: add pycocci wrapper for
+	multithreaded support
+Message-ID: <1397785442-17005-1-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> You can get information from your database, and then call coccinelle from coccinelle
-> using the iteration mechanism (cf demos/iteration.cocci).
+From: "Luis R. Rodriguez" <mcgrof@suse.com>
 
-I do not want to iterate over smaller elements when a SmPL constraint needs all
-relevant information at once. The current SmPL constraint implementation will
-not consult an external data base.
+This is a wrapper for folks which by work on git trees, specifically
+the linux kernel with lots of files and with random task Cocci files.
+The assumption is all you need is multithreaded support and currently only
+a shell script is lying around, but that isn't easily extensible, nor
+is it dynamic. This uses Python to add Coccinelle's mechanisms for
+multithreaded support but also enables all sorts of defaults which
+you'd expect to be enabled when using Coccinelle for Linux kernel
+development.
 
-Regards,
-Markus
+The Linux kernel backports project makes use of this tool on a daily
+basis and as such you can expect more tuning to it. All this is being
+done as Coccinelle's multithreaded support is being revamped but
+that will take a while so we want something easy to use that is
+extensible in the meantime.
+
+The purpose of putting this into Coccinelle is to make the tool generic
+and usable outside of backports. If this tool gets merged into
+Coccinelle we'll just drop this copy and help evolve it within
+Coccinelle.
+
+You just pass it a cocci file, a target dir, and that's it.
+
+Cc: Johannes Berg <johannes.berg@intel.com>
+Cc: backports at vger.kernel.org
+Cc: linux-kernel at vger.kernel.org
+Cc: cocci at systeme.lip6.fr
+Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
+---
+
+This v2 has taken quite a bit of consideration into some additional flags
+to make default, in particular --coccigrep is now used which proved in
+the general case to not require increasing the number of threads depending
+on the type of Cocci patch you produce. This patch also now puts pycocci
+under tool tools/ directory. If I get an ACK I can commit and push.
+
+If you'd like to downlaod this tool I'll try to keep an updated version
+here:
+
+http://drvbp1.linux-foundation.org/~mcgrof/coccinelle/
+
+Its also currently available under the backports project -- until and only
+if Coccinelle does wish to carry this internally in its own repo / releases.
+
+ tools/pycocci | 180 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 180 insertions(+)
+ create mode 100755 tools/pycocci
+
+diff --git a/tools/pycocci b/tools/pycocci
+new file mode 100755
+index 0000000..fde8190
+--- /dev/null
++++ b/tools/pycocci
+@@ -0,0 +1,180 @@
++#!/usr/bin/env python
++#
++# Copyright (c) 2014 Luis R. Rodriguez  <mcgrof@suse.com>
++# Copyright (c) 2013 Johannes Berg <johannes@sipsolutions.net>
++#
++# This file is released under the GPLv2.
++#
++# Python wrapper for Coccinelle for multithreaded support,
++# designed to be used for working on a git tree, and with sensible
++# defaults, specifically for kernel developers.
++
++from multiprocessing import Process, cpu_count, Queue
++import argparse, subprocess, os, sys
++import tempfile, shutil
++
++# simple tempdir wrapper object for 'with' statement
++#
++# Usage:
++# with tempdir.tempdir() as tmpdir:
++#     os.chdir(tmpdir)
++#     do something
++#
++class tempdir(object):
++    def __init__(self, suffix='', prefix='', dir=None, nodelete=False):
++        self.suffix = ''
++        self.prefix = ''
++        self.dir = dir
++        self.nodelete = nodelete
++
++    def __enter__(self):
++        self._name = tempfile.mkdtemp(suffix=self.suffix,
++                                      prefix=self.prefix,
++                                      dir=self.dir)
++        return self._name
++
++    def __exit__(self, type, value, traceback):
++        if self.nodelete:
++            print('not deleting directory %s!' % self._name)
++        else:
++            shutil.rmtree(self._name)
++
++class CoccinelleError(Exception):
++    pass
++class ExecutionError(CoccinelleError):
++    def __init__(self, cmd, errcode):
++        self.error_code = errcode
++        print('Failed command:')
++        print(' '.join(cmd))
++
++class ExecutionErrorThread(CoccinelleError):
++    def __init__(self, errcode, fn, cocci_file, threads, t, logwrite, print_name):
++        self.error_code = errcode
++        logwrite("Failed to apply changes from %s" % print_name)
++
++        logwrite("Specific log output from change that failed using %s" % print_name)
++        tf = open(fn, 'r')
++        for line in tf.read():
++            logwrite('> %s' % line)
++        tf.close()
++
++        logwrite("Full log using %s" % print_name)
++        for num in range(threads):
++            fn = os.path.join(t, '.tmp_spatch_worker.' + str(num))
++            if (not os.path.isfile(fn)):
++                continue
++            tf = open(fn, 'r')
++            for line in tf.read():
++                logwrite('> %s' % line)
++            tf.close()
++            os.unlink(fn)
++
++def spatch(cocci_file, outdir,
++           max_threads, thread_id, temp_dir, ret_q, extra_args=[]):
++    cmd = ['spatch',
++            '--sp-file', cocci_file,
++            '--in-place',
++            '--recursive-includes',
++            '--relax-include-path',
++            '--use-coccigrep',
++            '--timeout', '120',
++            '--dir', outdir ]
++
++    if (max_threads > 1):
++        cmd.extend(['-max', str(max_threads), '-index', str(thread_id)])
++
++    cmd.extend(extra_args)
++
++    fn = os.path.join(temp_dir, '.tmp_spatch_worker.' + str(thread_id))
++    outfile = open(fn, 'w')
++
++    sprocess = subprocess.Popen(cmd,
++                               stdout=outfile, stderr=subprocess.STDOUT,
++                               close_fds=True, universal_newlines=True)
++    sprocess.wait()
++    if sprocess.returncode != 0:
++        raise ExecutionError(cmd, sprocess.returncode)
++    outfile.close()
++    ret_q.put((sprocess.returncode, fn))
++
++def threaded_spatch(cocci_file, outdir, logwrite, num_jobs,
++                    print_name, extra_args=[]):
++    num_cpus = cpu_count()
++    if num_jobs:
++        threads = int(num_jobs)
++    else:
++        threads = num_cpus
++    jobs = list()
++    output = ""
++    ret_q = Queue()
++    with tempdir() as t:
++        for num in range(threads):
++            p = Process(target=spatch, args=(cocci_file, outdir,
++                                             threads, num, t, ret_q,
++                                             extra_args))
++            jobs.append(p)
++        for p in jobs:
++            p.start()
++
++        for num in range(threads):
++            ret, fn = ret_q.get()
++            if ret != 0:
++                raise ExecutionErrorThread(ret, fn, cocci_file, threads, t,
++                                           logwrite, print_name)
++        for job in jobs:
++            p.join()
++
++        for num in range(threads):
++            fn = os.path.join(t, '.tmp_spatch_worker.' + str(num))
++            tf = open(fn, 'r')
++            output = output + tf.read()
++            tf.close()
++            os.unlink(fn)
++        return output
++
++def logwrite(msg):
++    sys.stdout.write(msg)
++    sys.stdout.flush()
++
++def _main():
++    parser = argparse.ArgumentParser(description='Multithreaded Python wrapper for Coccinelle ' +
++                                     'with sensible defaults, targetted specifically ' +
++                                     'for git development environments')
++    parser.add_argument('cocci_file', metavar='<Coccinelle SmPL rules file>', type=str,
++                        help='This is the Coccinelle file you want to use')
++    parser.add_argument('target_dir', metavar='<target directory>', type=str,
++                        help='Target source directory to modify')
++    parser.add_argument('-p', '--profile-cocci', const=True, default=False, action="store_const",
++                        help='Enable profile, this will pass --profile  to Coccinelle.')
++    parser.add_argument('-j', '--jobs', metavar='<jobs>', type=str, default=None,
++                        help='Only use the cocci file passed for Coccinelle, don\'t do anything else, ' +
++                        'also creates a git repo on the target directory for easy inspection ' +
++                        'of changes done by Coccinelle.')
++    parser.add_argument('-v', '--verbose', const=True, default=False, action="store_const",
++                        help='Enable output from Coccinelle')
++    args = parser.parse_args()
++
++    if not os.path.isfile(args.cocci_file):
++        return -2
++
++    extra_spatch_args = []
++    if args.profile_cocci:
++        extra_spatch_args.append('--profile')
++    jobs = 0
++    if args.jobs > 0:
++        jobs = args.jobs
++
++    output = threaded_spatch(args.cocci_file,
++                             args.target_dir,
++                             logwrite,
++                             jobs,
++                             os.path.basename(args.cocci_file),
++                             extra_args=extra_spatch_args)
++    if args.verbose:
++        logwrite(output)
++    return 0
++
++if __name__ == '__main__':
++    ret = _main()
++    if ret:
++        sys.exit(ret)
+-- 
+1.9.1
