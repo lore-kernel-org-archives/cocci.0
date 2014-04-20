@@ -1,32 +1,72 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 20 Apr 2014 21:18:56 +0200
-Subject: [Cocci] Road map after Coccinelle 1.0.0-rc21?
-In-Reply-To: <alpine.DEB.2.02.1404201954580.2204@localhost6.localdomain6>
-References: <alpine.DEB.2.10.1404141356250.2601@hadrien>
- <534BDDD6.9070407@users.sourceforge.net>
- <alpine.DEB.2.10.1404141525370.2572@hadrien>
- <534BE66B.8060907@users.sourceforge.net>
- <alpine.DEB.2.10.1404141622020.2591@hadrien>
- <534BF121.40607@users.sourceforge.net>
- <alpine.DEB.2.10.1404141634180.2591@hadrien>
- <534BF3B3.90007@users.sourceforge.net>
- <alpine.DEB.2.10.1404141725420.2572@hadrien>
- <534C10AD.1080806@users.sourceforge.net>
- <alpine.DEB.2.10.1404150721500.2083@hadrien>
- <534CD225.1010207@users.sourceforge.net>
- <alpine.DEB.2.10.1404150909470.2587@hadrien>
- <534CE166.1050704@users.sourceforge.net>
- <alpine.DEB.2.02.1404201954580.2204@localhost6.localdomain6>
-Message-ID: <53541DA0.1080907@users.sourceforge.net>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sun, 20 Apr 2014 22:29:42 +0200 (CEST)
+Subject: [Cocci] spatch issue with C struct initialization
+In-Reply-To: <1396770309.2151.4.camel@localhost.localdomain>
+References: <1396513844.24348.13.camel@localhost.localdomain>
+ <alpine.DEB.2.10.1404031216060.2090@hadrien>
+ <1396531867.24348.27.camel@localhost.localdomain>
+ <alpine.DEB.2.10.1404031618260.2090@hadrien>
+ <1396535383.24348.38.camel@localhost.localdomain>
+ <alpine.DEB.2.10.1404041317240.2088@hadrien> <53401ACD.8010004@redhat.com>
+ <alpine.DEB.2.02.1404051717280.2029@localhost6.localdomain6>
+ <1396770309.2151.4.camel@localhost.localdomain>
+Message-ID: <alpine.DEB.2.02.1404202223470.2204@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 
-> The problem of the exception due to comparing regular expressions has been resolved.
 
-That is a nice surprise.
+On Sun, 6 Apr 2014, Marcel Apfelbaum wrote:
 
-Now I am curious when I can retry my list of update candidates ... ;-)
+> On Sat, 2014-04-05 at 17:17 +0200, Julia Lawall wrote:
+> > 
+> > 
+> > On Sat, 5 Apr 2014, Michael Stefaniuc wrote:
+> > 
+> > > On 04/04/2014 01:21 PM, Julia Lawall wrote:
+> > > >> bad: static const VMStateDescription vmstate_stellaris_gptm = {
+> > > >> bad:     .name = "stellaris_gptm",
+> > > >> bad:     .version_id = 1,
+> > > >> bad:     .minimum_version_id = 1,
+> > > >> bad:     .minimum_version_id_old = 1,
+> > > >> BAD:!!!!!     .fields      = (VMStateField[]) {
+> > > >> bad:         VMSTATE_UINT32(config, gptm_state),
+> > > >> bad:         VMSTATE_UINT32_ARRAY(mode, gptm_state, 2),
+> > > >> bad:         VMSTATE_UINT32(control, gptm_state),
+> > > >> bad:         VMSTATE_UINT32(state, gptm_state),
+> > > >> bad:         VMSTATE_UINT32(mask, gptm_state),
+> > > >> bad:         VMSTATE_UNUSED(8),
+> > > >> bad:         VMSTATE_UINT32_ARRAY(load, gptm_state, 2),
+> > > >> bad:         VMSTATE_UINT32_ARRAY(match, gptm_state, 2),
+> > > >> bad:         VMSTATE_UINT32_ARRAY(prescale, gptm_state, 2),
+> > > >> bad:         VMSTATE_UINT32_ARRAY(match_prescale, gptm_state, 2),
+> > > >> bad:         VMSTATE_UINT32(rtc, gptm_state),
+> > > >> bad:         VMSTATE_INT64_ARRAY(tick, gptm_state, 2),
+> > > >> bad:         VMSTATE_TIMER_ARRAY(timer, gptm_state, 2),
+> > > >> bad:         VMSTATE_END_OF_LIST()
+> > > >> bad:     }
+> > > >> bad: };
+> > > >>
+> > > >> Judging by the capital "BAD", the ".fields" field is making
+> > > >> the problem. Any way around it?
 
-Regards,
-Markus
+In the end, the problem turned out to be not all what I thought.  
+Actually, the Coccinelle C parser already accepts constructor expressions.  
+The problem is that VMStateField is not recognized as a type.  One 
+approach is to find the header file that defines this type and then give 
+Coccinelle enough information to find it.  There are various options for 
+that:
+
+--all-includes: include all header files that are mentioned in the C file
+--recursive-includes: include also header files that are included from 
+other header files
+--relax-include-path: include a header file that has a unique name, no 
+matter where it is defined in the source tree
+-I path: give the name of a directory in which to search for header files.  
+It is possilble to have more than one -I argument.
+
+If none of this works, then you can also cause it to consider VMStateField 
+to be a macro by adding eg #define VMStateField int to the macro 
+file standard.h.
+
+julia
