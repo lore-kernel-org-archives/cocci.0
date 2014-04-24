@@ -1,80 +1,68 @@
-From: marcel.a@redhat.com (Marcel Apfelbaum)
-Date: Tue, 22 Apr 2014 11:21:43 +0300
-Subject: [Cocci] spatch issue with C struct initialization
-In-Reply-To: <alpine.DEB.2.02.1404202223470.2204@localhost6.localdomain6>
-References: <1396513844.24348.13.camel@localhost.localdomain>
- <alpine.DEB.2.10.1404031216060.2090@hadrien>
- <1396531867.24348.27.camel@localhost.localdomain>
- <alpine.DEB.2.10.1404031618260.2090@hadrien>
- <1396535383.24348.38.camel@localhost.localdomain>
- <alpine.DEB.2.10.1404041317240.2088@hadrien> <53401ACD.8010004@redhat.com>
- <alpine.DEB.2.02.1404051717280.2029@localhost6.localdomain6>
- <1396770309.2151.4.camel@localhost.localdomain>
- <alpine.DEB.2.02.1404202223470.2204@localhost6.localdomain6>
-Message-ID: <1398154903.30055.1.camel@localhost.localdomain>
+From: luis.henriques@canonical.com (Luis Henriques)
+Date: Thu, 24 Apr 2014 09:49:46 +0100
+Subject: [Cocci] [PATCH 3.11 061/182] IB/qib: add missing braces in
+	do_qib_user_sdma_queue_create()
+In-Reply-To: <1398329507-5911-1-git-send-email-luis.henriques@canonical.com>
+References: <1398329507-5911-1-git-send-email-luis.henriques@canonical.com>
+Message-ID: <1398329507-5911-62-git-send-email-luis.henriques@canonical.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, 2014-04-20 at 22:29 +0200, Julia Lawall wrote:
-> 
-> 
-> On Sun, 6 Apr 2014, Marcel Apfelbaum wrote:
-> 
-> > On Sat, 2014-04-05 at 17:17 +0200, Julia Lawall wrote:
-> > > 
-> > > 
-> > > On Sat, 5 Apr 2014, Michael Stefaniuc wrote:
-> > > 
-> > > > On 04/04/2014 01:21 PM, Julia Lawall wrote:
-> > > > >> bad: static const VMStateDescription vmstate_stellaris_gptm = {
-> > > > >> bad:     .name = "stellaris_gptm",
-> > > > >> bad:     .version_id = 1,
-> > > > >> bad:     .minimum_version_id = 1,
-> > > > >> bad:     .minimum_version_id_old = 1,
-> > > > >> BAD:!!!!!     .fields      = (VMStateField[]) {
-> > > > >> bad:         VMSTATE_UINT32(config, gptm_state),
-> > > > >> bad:         VMSTATE_UINT32_ARRAY(mode, gptm_state, 2),
-> > > > >> bad:         VMSTATE_UINT32(control, gptm_state),
-> > > > >> bad:         VMSTATE_UINT32(state, gptm_state),
-> > > > >> bad:         VMSTATE_UINT32(mask, gptm_state),
-> > > > >> bad:         VMSTATE_UNUSED(8),
-> > > > >> bad:         VMSTATE_UINT32_ARRAY(load, gptm_state, 2),
-> > > > >> bad:         VMSTATE_UINT32_ARRAY(match, gptm_state, 2),
-> > > > >> bad:         VMSTATE_UINT32_ARRAY(prescale, gptm_state, 2),
-> > > > >> bad:         VMSTATE_UINT32_ARRAY(match_prescale, gptm_state, 2),
-> > > > >> bad:         VMSTATE_UINT32(rtc, gptm_state),
-> > > > >> bad:         VMSTATE_INT64_ARRAY(tick, gptm_state, 2),
-> > > > >> bad:         VMSTATE_TIMER_ARRAY(timer, gptm_state, 2),
-> > > > >> bad:         VMSTATE_END_OF_LIST()
-> > > > >> bad:     }
-> > > > >> bad: };
-> > > > >>
-> > > > >> Judging by the capital "BAD", the ".fields" field is making
-> > > > >> the problem. Any way around it?
-> 
-> In the end, the problem turned out to be not all what I thought.  
-> Actually, the Coccinelle C parser already accepts constructor expressions.  
-> The problem is that VMStateField is not recognized as a type.  One 
-> approach is to find the header file that defines this type and then give 
-> Coccinelle enough information to find it.  There are various options for 
-> that:
-> 
-> --all-includes: include all header files that are mentioned in the C file
-> --recursive-includes: include also header files that are included from 
-> other header files
-> --relax-include-path: include a header file that has a unique name, no 
-> matter where it is defined in the source tree
-> -I path: give the name of a directory in which to search for header files.  
-> It is possilble to have more than one -I argument.
-> 
-> If none of this works, then you can also cause it to consider VMStateField 
-> to be a macro by adding eg #define VMStateField int to the macro 
-> file standard.h.
+3.11.10.9 -stable review patch.  If anyone has any objections, please let me know.
 
-Hi Julia,
+------------------
 
-Thanks again for the detailed analysis. I will try the options you mentioned.
-Marcel
+From: Yann Droneaud <ydroneaud@opteya.com>
+
+commit 37a967651caf99dd267017023737bd442f5acb3d upstream.
+
+Commit c804f07248895ff9c moved qib_assign_ctxt() to
+do_qib_user_sdma_queue_create() but dropped the braces
+around the statements.
+
+This was spotted by coccicheck (coccinelle/spatch):
+
+$ make C=2 CHECK=scripts/coccicheck drivers/infiniband/hw/qib/
+
+  CHECK   drivers/infiniband/hw/qib/qib_file_ops.c
+drivers/infiniband/hw/qib/qib_file_ops.c:1583:2-23: code aligned with following code on line 1587
+
+This patch adds braces back.
+
+Link: http://marc.info/?i=cover.1394485254.git.ydroneaud at opteya.com
+Cc: Mike Marciniszyn <mike.marciniszyn@intel.com>
+Cc: infinipath at intel.com
+Cc: Julia Lawall <julia.lawall@lip6.fr>
+Cc: cocci at systeme.lip6.fr
+Signed-off-by: Yann Droneaud <ydroneaud@opteya.com>
+Tested-by: Mike Marciniszyn <mike.marciniszyn@intel.com>
+Acked-by: Mike Marciniszyn <mike.marciniszyn@intel.com>
+Signed-off-by: Roland Dreier <roland@purestorage.com>
+Signed-off-by: Luis Henriques <luis.henriques@canonical.com>
+---
+ drivers/infiniband/hw/qib/qib_file_ops.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/infiniband/hw/qib/qib_file_ops.c b/drivers/infiniband/hw/qib/qib_file_ops.c
+index b51a514..72d8781 100644
+--- a/drivers/infiniband/hw/qib/qib_file_ops.c
++++ b/drivers/infiniband/hw/qib/qib_file_ops.c
+@@ -1578,7 +1578,7 @@ static int do_qib_user_sdma_queue_create(struct file *fp)
+ 	struct qib_ctxtdata *rcd = fd->rcd;
+ 	struct qib_devdata *dd = rcd->dd;
  
-> 
-> julia
+-	if (dd->flags & QIB_HAS_SEND_DMA)
++	if (dd->flags & QIB_HAS_SEND_DMA) {
+ 
+ 		fd->pq = qib_user_sdma_queue_create(&dd->pcidev->dev,
+ 						    dd->unit,
+@@ -1586,6 +1586,7 @@ static int do_qib_user_sdma_queue_create(struct file *fp)
+ 						    fd->subctxt);
+ 		if (!fd->pq)
+ 			return -ENOMEM;
++	}
+ 
+ 	return 0;
+ }
+-- 
+1.9.1
