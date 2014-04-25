@@ -1,68 +1,33 @@
-From: luis.henriques@canonical.com (Luis Henriques)
-Date: Thu, 24 Apr 2014 09:49:46 +0100
-Subject: [Cocci] [PATCH 3.11 061/182] IB/qib: add missing braces in
-	do_qib_user_sdma_queue_create()
-In-Reply-To: <1398329507-5911-1-git-send-email-luis.henriques@canonical.com>
-References: <1398329507-5911-1-git-send-email-luis.henriques@canonical.com>
-Message-ID: <1398329507-5911-62-git-send-email-luis.henriques@canonical.com>
+From: javier@dowhile0.org (Javier Martinez Canillas)
+Date: Fri, 25 Apr 2014 14:32:55 +0200
+Subject: [Cocci] semantic patch feasibility
+Message-ID: <CABxcv==X0rP2h2xeD1myS5N=dbNWb8HLJhEyMQ-HK6iU-QFjng@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-3.11.10.9 -stable review patch.  If anyone has any objections, please let me know.
+Hello,
 
-------------------
+I'm a Linux kernel developer doing a big refactoring on the GPIO subsytem.
 
-From: Yann Droneaud <ydroneaud@opteya.com>
+I was wondering if the change I'm doing manually could be automated by
+using cocinelle but I've no experience neither writing semantic
+patches nor the SmPL language grammar.
 
-commit 37a967651caf99dd267017023737bd442f5acb3d upstream.
+So I wanted to ask people familiar with cocinelle whether is feasible
+or not to model my change as a semantic patch so I can start reading
+cocinelle papers and looking at examples or if is too complex for
+cocinelle then I'll continue grepping and manually change as I've been
+doing so far.
 
-Commit c804f07248895ff9c moved qib_assign_ctxt() to
-do_qib_user_sdma_queue_create() but dropped the braces
-around the statements.
+I'm sending as an attachment a very incomplete patch so you can get an
+idea of the type of refactoring that I'm ding.
 
-This was spotted by coccicheck (coccinelle/spatch):
-
-$ make C=2 CHECK=scripts/coccicheck drivers/infiniband/hw/qib/
-
-  CHECK   drivers/infiniband/hw/qib/qib_file_ops.c
-drivers/infiniband/hw/qib/qib_file_ops.c:1583:2-23: code aligned with following code on line 1587
-
-This patch adds braces back.
-
-Link: http://marc.info/?i=cover.1394485254.git.ydroneaud at opteya.com
-Cc: Mike Marciniszyn <mike.marciniszyn@intel.com>
-Cc: infinipath at intel.com
-Cc: Julia Lawall <julia.lawall@lip6.fr>
-Cc: cocci at systeme.lip6.fr
-Signed-off-by: Yann Droneaud <ydroneaud@opteya.com>
-Tested-by: Mike Marciniszyn <mike.marciniszyn@intel.com>
-Acked-by: Mike Marciniszyn <mike.marciniszyn@intel.com>
-Signed-off-by: Roland Dreier <roland@purestorage.com>
-Signed-off-by: Luis Henriques <luis.henriques@canonical.com>
----
- drivers/infiniband/hw/qib/qib_file_ops.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/infiniband/hw/qib/qib_file_ops.c b/drivers/infiniband/hw/qib/qib_file_ops.c
-index b51a514..72d8781 100644
---- a/drivers/infiniband/hw/qib/qib_file_ops.c
-+++ b/drivers/infiniband/hw/qib/qib_file_ops.c
-@@ -1578,7 +1578,7 @@ static int do_qib_user_sdma_queue_create(struct file *fp)
- 	struct qib_ctxtdata *rcd = fd->rcd;
- 	struct qib_devdata *dd = rcd->dd;
- 
--	if (dd->flags & QIB_HAS_SEND_DMA)
-+	if (dd->flags & QIB_HAS_SEND_DMA) {
- 
- 		fd->pq = qib_user_sdma_queue_create(&dd->pcidev->dev,
- 						    dd->unit,
-@@ -1586,6 +1586,7 @@ static int do_qib_user_sdma_queue_create(struct file *fp)
- 						    fd->subctxt);
- 		if (!fd->pq)
- 			return -ENOMEM;
-+	}
- 
- 	return 0;
- }
--- 
-1.9.1
+Thanks a lot for your help and best regards,
+Javier
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: 0001-gpio-add-struct-gpio_chip_ops-to-abstract-GPIO-contr.patch
+Type: text/x-patch
+Size: 55538 bytes
+Desc: not available
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20140425/6da5b328/attachment-0001.bin>
