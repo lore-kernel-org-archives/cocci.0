@@ -1,27 +1,17 @@
-From: wsa@the-dreams.de (Wolfram Sang)
-Date: Fri, 25 Apr 2014 18:34:14 +0200
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Fri, 25 Apr 2014 18:31:43 +0200
 Subject: [Cocci] semantic patch feasibility
-In-Reply-To: <CABxcv==X0rP2h2xeD1myS5N=dbNWb8HLJhEyMQ-HK6iU-QFjng@mail.gmail.com>
+In-Reply-To: <alpine.DEB.2.10.1404251823510.3323@hadrien>
 References: <CABxcv==X0rP2h2xeD1myS5N=dbNWb8HLJhEyMQ-HK6iU-QFjng@mail.gmail.com>
-Message-ID: <20140425163414.GA12354@katana>
+ <535A7186.1020301@users.sourceforge.net>
+ <alpine.DEB.2.10.1404251823510.3323@hadrien>
+Message-ID: <535A8DEF.6070806@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> The attached patch illustrated a number of them.
 
-> So I wanted to ask people familiar with cocinelle whether is feasible
-> or not to model my change as a semantic patch so I can start reading
-> cocinelle papers and looking at examples or if is too complex for
-> cocinelle then I'll continue grepping and manually change as I've been
-> doing so far.
+How do you see the chances for generalisation of this concrete example?
 
-I would do it with Coccinelle. First learning curve may be steep, but
-once mastered, a very flexible tool, if adjustments are needed (e.g.
-because proposed API changes).
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 836 bytes
-Desc: Digital signature
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20140425/dffd5fae/attachment.asc>
+Regards,
+Markus
