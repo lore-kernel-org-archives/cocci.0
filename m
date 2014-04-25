@@ -1,40 +1,50 @@
 From: javier@dowhile0.org (Javier Martinez Canillas)
-Date: Fri, 25 Apr 2014 20:39:21 +0200
+Date: Fri, 25 Apr 2014 20:50:18 +0200
 Subject: [Cocci] semantic patch feasibility
-In-Reply-To: <alpine.DEB.2.10.1404251823510.3323@hadrien>
+In-Reply-To: <alpine.DEB.2.10.1404252000560.2692@hadrien>
 References: <CABxcv==X0rP2h2xeD1myS5N=dbNWb8HLJhEyMQ-HK6iU-QFjng@mail.gmail.com>
  <535A7186.1020301@users.sourceforge.net>
  <alpine.DEB.2.10.1404251823510.3323@hadrien>
-Message-ID: <CABxcv=ntuKOMDKP343vhaQG7Pk=8H5Z1+czki1QF4sZJvTubng@mail.gmail.com>
+ <535A8DEF.6070806@users.sourceforge.net>
+ <alpine.DEB.2.10.1404252000560.2692@hadrien>
+Message-ID: <CABxcv=kpLyPX3ky2GMfPk9WtnmDTUxkKxpkg9Q68vb60WtUzUA@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, Apr 25, 2014 at 6:24 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
+Hello Julia,
+
+On Fri, Apr 25, 2014 at 8:03 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
 >
 >
 > On Fri, 25 Apr 2014, SF Markus Elfring wrote:
 >
->> > I was wondering if the change I'm doing manually could be automated by
->> > using cocinelle but I've no experience neither writing semantic
->> > patches nor the SmPL language grammar.
+>> > The attached patch illustrated a number of them.
 >>
->> I would like to point out a general consideration.
->>
->> Semantic patches can be developed for some use cases. I find that
->> corresponding efforts are only useful if such a generalised patch can be
->> applied to a source code base several times.
->> I doubt that you want to try it out for a single source code adjustment.
->> It might be that a need will appear to perform a transformation once
->> more a bit later, doesn't it?
+>> How do you see the chances for generalisation of this concrete example?
 >
-> I believe that he has hundreds of use cases.  The attached patch
-> illustrated a number of them.
+> I think it should be quite straightforward.  One either takes the
+> assignments out of the function and puts them into a structure
+> initializer, or if there is a structure initializer already, one cuts it
+> up into what is wanted for each of the separate functions.
+>
+> Maybe creating the name of the new structure is an issue?  I didn't look
+> carefully enough to see if there was a pattern.
 >
 > julia
 
-Exactly, there are much more drivers than the ones I already modified
-in the attached patched. It was just to give you an example of the
-level of complexity (or not) of the change I'm doing.
+I'm glad to know that should be straightforward. To name the new
+structure I've been trying to deduce the naming scheme that the
+original driver author used to name the GPIO operations and following
+that convention.
+
+But if for the sake of simplicity we use a standard name that will be
+used on all drivers, that's ok too. After all the structures are
+static and later drivers maintainers can rename the structure if they
+want a more suitable name.
+
+Thanks a lot to Markus and you for the feedback. Now that I know that
+is possible, I'll study the SmPL grammar, look at the examples and ask
+silly questions here if I find issues :-)
 
 Best regards,
 Javier
