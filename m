@@ -1,50 +1,52 @@
-From: javier@dowhile0.org (Javier Martinez Canillas)
-Date: Fri, 25 Apr 2014 20:50:18 +0200
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Fri, 25 Apr 2014 23:25:33 +0200 (CEST)
 Subject: [Cocci] semantic patch feasibility
-In-Reply-To: <alpine.DEB.2.10.1404252000560.2692@hadrien>
+In-Reply-To: <CABxcv==diNNJ+5ZovQb+kmVrWO1v1sc59GeO2nXAs=i2b1gq0Q@mail.gmail.com>
 References: <CABxcv==X0rP2h2xeD1myS5N=dbNWb8HLJhEyMQ-HK6iU-QFjng@mail.gmail.com>
- <535A7186.1020301@users.sourceforge.net>
- <alpine.DEB.2.10.1404251823510.3323@hadrien>
- <535A8DEF.6070806@users.sourceforge.net>
- <alpine.DEB.2.10.1404252000560.2692@hadrien>
-Message-ID: <CABxcv=kpLyPX3ky2GMfPk9WtnmDTUxkKxpkg9Q68vb60WtUzUA@mail.gmail.com>
+ <alpine.DEB.2.10.1404251821570.3323@hadrien>
+ <CABxcv==diNNJ+5ZovQb+kmVrWO1v1sc59GeO2nXAs=i2b1gq0Q@mail.gmail.com>
+Message-ID: <alpine.DEB.2.02.1404252324460.2176@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hello Julia,
 
-On Fri, Apr 25, 2014 at 8:03 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
->
->
-> On Fri, 25 Apr 2014, SF Markus Elfring wrote:
->
->> > The attached patch illustrated a number of them.
->>
->> How do you see the chances for generalisation of this concrete example?
->
-> I think it should be quite straightforward.  One either takes the
-> assignments out of the function and puts them into a structure
-> initializer, or if there is a structure initializer already, one cuts it
-> up into what is wanted for each of the separate functions.
->
-> Maybe creating the name of the new structure is an issue?  I didn't look
-> carefully enough to see if there was a pattern.
->
-> julia
 
-I'm glad to know that should be straightforward. To name the new
-structure I've been trying to deduce the naming scheme that the
-original driver author used to name the GPIO operations and following
-that convention.
+On Fri, 25 Apr 2014, Javier Martinez Canillas wrote:
 
-But if for the sake of simplicity we use a standard name that will be
-used on all drivers, that's ok too. After all the structures are
-static and later drivers maintainers can rename the structure if they
-want a more suitable name.
+> Hello Julia,
+> 
+> On Fri, Apr 25, 2014 at 6:23 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
+> > On Fri, 25 Apr 2014, Javier Martinez Canillas wrote:
+> >
+> >> Hello,
+> >>
+> >> I'm a Linux kernel developer doing a big refactoring on the GPIO subsytem.
+> >>
+> >> I was wondering if the change I'm doing manually could be automated by
+> >> using cocinelle but I've no experience neither writing semantic
+> >> patches nor the SmPL language grammar.
+> >
+> > It looks quite possible.  In looking at the code, though, I wasn't sure
+> > what is your strategy for where to place the new structure definition, in
+> > the case where there was no structure before.  Would it be OK to put it
+> > next to the probe function?
+> >
+> > julia
+> 
+> Thanks a lot for taking the time to look at this!
+> 
+> I've been adding the new structure definition right after all the
+> functions have been defined since that is a common pattern found in
+> other kernel subsystems.
+> 
+> But since this is a cleanup and if is going to be easier to define the
+> semantic patch by placing the structure before the probe function then
+> that works for me too and later drivers maintainers can send
+> incremental patches to change wherever they find more suitable.
 
-Thanks a lot to Markus and you for the feedback. Now that I know that
-is possible, I'll study the SmPL grammar, look at the examples and ask
-silly questions here if I find issues :-)
+Well, you could also put it after the probe function.
 
-Best regards,
-Javier
+You could also find the ending position of all of the functions and put it 
+after the last one, but that could be a bit complicated.
+
+julia
