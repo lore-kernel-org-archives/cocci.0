@@ -1,56 +1,88 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 1 May 2014 12:35:43 +0200 (CEST)
-Subject: [Cocci] changing all arguments in a call
-In-Reply-To: <CAJwHcF6jDP9-L2DcBUKWkLAAvkoJvehaXq4ko-289pokV75e9Q@mail.gmail.com>
-References: <CAJwHcF6jDP9-L2DcBUKWkLAAvkoJvehaXq4ko-289pokV75e9Q@mail.gmail.com>
-Message-ID: <alpine.DEB.2.02.1405011235010.2177@localhost6.localdomain6>
+From: kamal@canonical.com (Kamal Mostafa)
+Date: Thu,  1 May 2014 12:17:16 -0700
+Subject: [Cocci] [3.13.y.z extended stable] Patch "IB/qib: add missing
+	braces in do_qib_user_sdma_queue_create()" has been added to
+	staging queue
+Message-ID: <1398971836-18768-1-git-send-email-kamal@canonical.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 1 May 2014, Akos PASZTORY wrote:
+This is a note to let you know that I have just added a patch titled
 
-> Hi,
-> 
-> what did I mess up below?
-> I was trying to mangle all arguments of a call but the last one is not handled:
-> 
-> $ cat bug.c
-> void foo() {
->     bar(a,b,c);
-> }
-> $ cat bug.cocci
-> @@ expression e; @@
-> bar(...,
-> - e,
-> + XYZ(e),
-> ...)
+    IB/qib: add missing braces in do_qib_user_sdma_queue_create()
 
-Just move the comma out of the transformed part:
+to the linux-3.13.y-queue branch of the 3.13.y.z extended stable tree 
+which can be found at:
 
-@@ expression e; @@
-bar(...,
-- e
-+ XYZ(e)
-,...)
+ http://kernel.ubuntu.com/git?p=ubuntu/linux.git;a=shortlog;h=refs/heads/linux-3.13.y-queue
 
-julia
+This patch is scheduled to be released in version 3.13.11.1.
 
+If you, or anyone else, feels it should not be added to this tree, please 
+reply to this email.
 
-> $ spatch --sp-file bug.cocci bug.c
-> init_defs_builtins: /usr/share/coccinelle/standard.h
-> HANDLING: bug.c
-> diff =
-> --- bug.c
-> +++ /tmp/cocci-output-27316-d0cede-bug.c
-> @@ -1,3 +1,3 @@
->  void foo() {
-> -    bar(a,b,c);
-> +    bar(XYZ(a), XYZ(b), c);
->  }
-> $ spatch --version
-> spatch version 1.0.0-rc21 with Python support and with PCRE support
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
-> 
+For more information about the 3.13.y.z tree, see
+https://wiki.ubuntu.com/Kernel/Dev/ExtendedStable
+
+Thanks.
+-Kamal
+
+------
+
+>From c28d389ea39a2019830ac8dd22ab41832d33006d Mon Sep 17 00:00:00 2001
+From: Yann Droneaud <ydroneaud@opteya.com>
+Date: Mon, 10 Mar 2014 23:06:28 +0100
+Subject: IB/qib: add missing braces in do_qib_user_sdma_queue_create()
+
+commit 37a967651caf99dd267017023737bd442f5acb3d upstream.
+
+Commit c804f07248895ff9c moved qib_assign_ctxt() to
+do_qib_user_sdma_queue_create() but dropped the braces
+around the statements.
+
+This was spotted by coccicheck (coccinelle/spatch):
+
+$ make C=2 CHECK=scripts/coccicheck drivers/infiniband/hw/qib/
+
+  CHECK   drivers/infiniband/hw/qib/qib_file_ops.c
+drivers/infiniband/hw/qib/qib_file_ops.c:1583:2-23: code aligned with following code on line 1587
+
+This patch adds braces back.
+
+Link: http://marc.info/?i=cover.1394485254.git.ydroneaud at opteya.com
+Cc: Mike Marciniszyn <mike.marciniszyn@intel.com>
+Cc: infinipath at intel.com
+Cc: Julia Lawall <julia.lawall@lip6.fr>
+Cc: cocci at systeme.lip6.fr
+Signed-off-by: Yann Droneaud <ydroneaud@opteya.com>
+Tested-by: Mike Marciniszyn <mike.marciniszyn@intel.com>
+Acked-by: Mike Marciniszyn <mike.marciniszyn@intel.com>
+Signed-off-by: Roland Dreier <roland@purestorage.com>
+Signed-off-by: Kamal Mostafa <kamal@canonical.com>
+---
+ drivers/infiniband/hw/qib/qib_file_ops.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/infiniband/hw/qib/qib_file_ops.c b/drivers/infiniband/hw/qib/qib_file_ops.c
+index 275f247..2023cd6 100644
+--- a/drivers/infiniband/hw/qib/qib_file_ops.c
++++ b/drivers/infiniband/hw/qib/qib_file_ops.c
+@@ -1578,7 +1578,7 @@ static int do_qib_user_sdma_queue_create(struct file *fp)
+ 	struct qib_ctxtdata *rcd = fd->rcd;
+ 	struct qib_devdata *dd = rcd->dd;
+
+-	if (dd->flags & QIB_HAS_SEND_DMA)
++	if (dd->flags & QIB_HAS_SEND_DMA) {
+
+ 		fd->pq = qib_user_sdma_queue_create(&dd->pcidev->dev,
+ 						    dd->unit,
+@@ -1586,6 +1586,7 @@ static int do_qib_user_sdma_queue_create(struct file *fp)
+ 						    fd->subctxt);
+ 		if (!fd->pq)
+ 			return -ENOMEM;
++	}
+
+ 	return 0;
+ }
+--
+1.9.1
