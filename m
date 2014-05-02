@@ -1,38 +1,18 @@
 From: kamal@canonical.com (Kamal Mostafa)
-Date: Thu,  1 May 2014 12:17:16 -0700
-Subject: [Cocci] [3.13.y.z extended stable] Patch "IB/qib: add missing
-	braces in do_qib_user_sdma_queue_create()" has been added to
-	staging queue
-Message-ID: <1398971836-18768-1-git-send-email-kamal@canonical.com>
+Date: Fri,  2 May 2014 08:37:26 -0700
+Subject: [Cocci] [PATCH 3.13 058/151] IB/qib: add missing braces in
+	do_qib_user_sdma_queue_create()
+In-Reply-To: <1399045139-4531-1-git-send-email-kamal@canonical.com>
+References: <1399045139-4531-1-git-send-email-kamal@canonical.com>
+Message-ID: <1399045139-4531-59-git-send-email-kamal@canonical.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-This is a note to let you know that I have just added a patch titled
+3.13.11.1 -stable review patch.  If anyone has any objections, please let me know.
 
-    IB/qib: add missing braces in do_qib_user_sdma_queue_create()
+------------------
 
-to the linux-3.13.y-queue branch of the 3.13.y.z extended stable tree 
-which can be found at:
-
- http://kernel.ubuntu.com/git?p=ubuntu/linux.git;a=shortlog;h=refs/heads/linux-3.13.y-queue
-
-This patch is scheduled to be released in version 3.13.11.1.
-
-If you, or anyone else, feels it should not be added to this tree, please 
-reply to this email.
-
-For more information about the 3.13.y.z tree, see
-https://wiki.ubuntu.com/Kernel/Dev/ExtendedStable
-
-Thanks.
--Kamal
-
-------
-
->From c28d389ea39a2019830ac8dd22ab41832d33006d Mon Sep 17 00:00:00 2001
 From: Yann Droneaud <ydroneaud@opteya.com>
-Date: Mon, 10 Mar 2014 23:06:28 +0100
-Subject: IB/qib: add missing braces in do_qib_user_sdma_queue_create()
 
 commit 37a967651caf99dd267017023737bd442f5acb3d upstream.
 
@@ -70,10 +50,10 @@ index 275f247..2023cd6 100644
 @@ -1578,7 +1578,7 @@ static int do_qib_user_sdma_queue_create(struct file *fp)
  	struct qib_ctxtdata *rcd = fd->rcd;
  	struct qib_devdata *dd = rcd->dd;
-
+ 
 -	if (dd->flags & QIB_HAS_SEND_DMA)
 +	if (dd->flags & QIB_HAS_SEND_DMA) {
-
+ 
  		fd->pq = qib_user_sdma_queue_create(&dd->pcidev->dev,
  						    dd->unit,
 @@ -1586,6 +1586,7 @@ static int do_qib_user_sdma_queue_create(struct file *fp)
@@ -81,8 +61,8 @@ index 275f247..2023cd6 100644
  		if (!fd->pq)
  			return -ENOMEM;
 +	}
-
+ 
  	return 0;
  }
---
+-- 
 1.9.1
