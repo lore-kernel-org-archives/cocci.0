@@ -1,46 +1,44 @@
-From: rminnich@gmail.com (ron minnich)
-Date: Mon, 9 Jun 2014 15:04:19 -0700
-Subject: [Cocci] replace waserror/error with goto fail
-Message-ID: <CAP6exYKm8x7-f-dwvNVYuNw=MZHdsRv391Vj5g03hZvCzxQXuw@mail.gmail.com>
+From: mmarek@suse.cz (Michal Marek)
+Date: Mon, 09 Jun 2014 23:50:36 +0200
+Subject: [Cocci] [PATCH] coccinelle/null: solve parse error
+In-Reply-To: <20140528141047.GA4059@himangi-Dell>
+References: <20140528141047.GA4059@himangi-Dell>
+Message-ID: <53962C2C.9030802@suse.cz>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-I have a lot of code with this sort of thing:
+(added the rest of the coccinelle gang to cc)
 
-if (waserror()) {
-    error stuff
-}
-
-if waserror() {
-   more error stuff
-   nexterror() goes to first waserror
-}
-
-if (bad2) error() // goes to second waserror
-
-poperror()
-
-if (bad1) error() // goes to first error
-
-Now, by inspection, one can unwind this stuff but ... any thoughts on
-whether this is doable by spatch?
-
-This could get transformed into:
-
-if (bad2) goto fail2
-
-if (bad1) goto fail1
-
-fail2:
-  fail2 stuff
-fail1:
-   fail1 stuff
-
-
-
-Thanks
-
-ron
--------------- next part --------------
-An HTML attachment was scrubbed...
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20140609/e55151d9/attachment.html>
+Dne 28.5.2014 16:10, Himangi Saraogi napsal(a):
+> This patch solves the parse-error by adding @@ . This is necessary since
+> Coccinelle version 1.0.0-rc20. Also, the comment is added to use a
+> recent version of Coccinelle.
+> 
+> Signed-off-by: Himangi Saraogi <himangi774@gmail.com>
+> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+> ---
+>  scripts/coccinelle/null/badzero.cocci | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/scripts/coccinelle/null/badzero.cocci b/scripts/coccinelle/null/badzero.cocci
+> index d79baf7..5551da2 100644
+> --- a/scripts/coccinelle/null/badzero.cocci
+> +++ b/scripts/coccinelle/null/badzero.cocci
+> @@ -10,7 +10,7 @@
+>  // Copyright: (C) 2012 Julia Lawall, INRIA/LIP6.  GPLv2.
+>  // Copyright: (C) 2012 Gilles Muller, INRIA/LiP6.  GPLv2.
+>  // URL: http://coccinelle.lip6.fr/
+> -// Comments:
+> +// Comments: Requires Coccinelle version 1.0.0-rc20 or later
+>  // Options:
+>  
+>  virtual patch
+> @@ -19,6 +19,7 @@ virtual org
+>  virtual report
+>  
+>  @initialize:ocaml@
+> +@@
+>  let negtable = Hashtbl.create 101
+>  
+>  @depends on patch@
+> 
