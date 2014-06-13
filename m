@@ -1,22 +1,62 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 13 Jun 2014 06:41:48 +0100 (BST)
-Subject: [Cocci] systemd m4 library complex systemd example,
- and coccinelle conversion
-In-Reply-To: <CAB=NE6VSdCxNXWa0QsyrqF7iCBSR3vq+r1NJoZrX=-ADdmTvnw@mail.gmail.com>
-References: <CAB=NE6VSdCxNXWa0QsyrqF7iCBSR3vq+r1NJoZrX=-ADdmTvnw@mail.gmail.com>
-Message-ID: <alpine.DEB.2.10.1406130641090.2578@hadrien>
+From: daniel@ffwll.ch (Daniel Vetter)
+Date: Fri, 13 Jun 2014 11:11:28 +0200
+Subject: [Cocci] Matching partial expressions in macro arguments
+Message-ID: <20140613091128.GJ5821@phenom.ffwll.local>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Lastly -- I was curious if anyone has looked into writing Coccinelle
-> SmPL grammar rules to convert legacy init systems with systemd
-> support. I suspect most unix daemons are rather simple and SmPL rules
-> might be able to transform quite a bit of them. I don't expect
-> Coccinelle might be able to catch the crazy daemons with corner cases
-> as with xen, but you never know, coccinelle is always surprising me
-> with its capabilities.
+Hi all,
 
-I don't know of anyone who has, but it seems like the sort of thing
-Coccinelle is designed for.
+In our testsuite[1] we have a macro to compare 2 integers with a given
+comparison operator, print them on assert failure to stderr for
+diagnotistics and then abort our testcase.
 
-julia
+Usage is e.g.
+
+	igt_assert_cmpint(obj_count, ==, 0);
+
+Now I want to add a simple igt_assert_eq(a, b) macro, so the above example
+should look like
+	
+	igt_assert_eq(obj_count, 0);
+
+I tried to use cocci for the refactoring, but failed. I tried
+
+@@
+expression E1, E2;
+@@
+-igt_assert_cmpint(E1, ==, E2);
++igt_assert_eq(E1, E2);
+
+which failed to parse as a spatch and
+
+@@
+expression E1, E2, E;
+@@
+-igt_assert_cmpint(E1, E E2);
++igt_assert_eq(E1, E2);
+
+which didn't match anything. I didn't find any examples for creative macro
+abuse and using iterator metavariables which helped last time around I've
+stumbled over macros didn't work out either.
+
+Any ideas and suggestions highly welcome, or is this simply not possible
+with cocci?
+
+Example testfile attached.
+
+Thanks, Daniel
+
+1: http://cgit.freedesktop.org/xorg/app/intel-gpu-tools/ - it's for
+testing the intel gfx kernel driver.
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
++41 (0) 79 365 57 48 - http://blog.ffwll.ch
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: prime_self_import.c
+Type: text/x-csrc
+Size: 10498 bytes
+Desc: not available
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20140613/e5686fe7/attachment.bin>
