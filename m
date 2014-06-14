@@ -1,68 +1,42 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 14 Jun 2014 18:00:24 +0200 (CEST)
-Subject: [Cocci] Matching partial expressions in macro arguments
-In-Reply-To: <20140613091128.GJ5821@phenom.ffwll.local>
-References: <20140613091128.GJ5821@phenom.ffwll.local>
-Message-ID: <alpine.DEB.2.02.1406141755470.1962@localhost6.localdomain6>
+Date: Sat, 14 Jun 2014 18:11:51 +0200 (CEST)
+Subject: [Cocci] [PATCH] Coccinelle : Script to detect cast after memory
+ allocation
+In-Reply-To: <1402761961.2756.12.camel@joe-AO725>
+References: <20140614154541.GA4179@himangi-Dell>
+ <1402761961.2756.12.camel@joe-AO725>
+Message-ID: <alpine.DEB.2.02.1406141809050.1962@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, 13 Jun 2014, Daniel Vetter wrote:
+On Sat, 14 Jun 2014, Joe Perches wrote:
 
-> Hi all,
+> On Sat, 2014-06-14 at 21:15 +0530, Himangi Saraogi wrote:
+> > This script detects cases of use of cast for the value returned by
+> > kmalloc, kzalloc, kcalloc, kmem_cache_alloc, kmem_cache_zalloc,
+> > kmem_cache_alloc_node, kmalloc_node and kzalloc_node and removes
+> > the cast as it is not useful. This Coccinelle script replaces
+> > drop_kmalloc_cast.cocci as it removes the casting in more limited
+> > cases of kmalloc, kzalloc and kcalloc.
 > 
-> In our testsuite[1] we have a macro to compare 2 integers with a given
-> comparison operator, print them on assert failure to stderr for
-> diagnotistics and then abort our testcase.
+> Perhaps make this more generic for any void *?
 > 
-> Usage is e.g.
-> 
-> 	igt_assert_cmpint(obj_count, ==, 0);
-> 
-> Now I want to add a simple igt_assert_eq(a, b) macro, so the above example
-> should look like
-> 	
-> 	igt_assert_eq(obj_count, 0);
-> 
-> I tried to use cocci for the refactoring, but failed. I tried
+> Something like:
 > 
 > @@
-> expression E1, E2;
+> void *t;
+> type other;
 > @@
-> -igt_assert_cmpint(E1, ==, E2);
-> +igt_assert_eq(E1, E2);
 > 
-> which failed to parse as a spatch and
-> 
-> @@
-> expression E1, E2, E;
-> @@
-> -igt_assert_cmpint(E1, E E2);
-> +igt_assert_eq(E1, E2);
-> 
-> which didn't match anything. I didn't find any examples for creative macro
-> abuse and using iterator metavariables which helped last time around I've
-> stumbled over macros didn't work out either.
-> 
-> Any ideas and suggestions highly welcome, or is this simply not possible
-> with cocci?
+> -       (other *)t
+> +       t
 
-I don't think it is going to be possible.  == is not considered to be a 
-valid argument by the C parser.  You can make a macro definition for this, 
-but then the C parser will just skip over the whole igt_assert_cmpint 
-call.  No matches will be possible on that part of the code.
+Himangi, could you try it and check that you get at least the results that 
+you get with the current rule?  Because I'm not sure that Coccinelle would 
+have the type information available to know what is the return type of eg
+kmalloc.  Maybe you would need to give the option --recursive-includes.
+
+Perhaps it would be reasonable to add this among the specific functions.  
+That is, t could be part of the disjunctions.
 
 julia
-
-
-> Example testfile attached.
-> 
-> Thanks, Daniel
-> 
-> 1: http://cgit.freedesktop.org/xorg/app/intel-gpu-tools/ - it's for
-> testing the intel gfx kernel driver.
-> -- 
-> Daniel Vetter
-> Software Engineer, Intel Corporation
-> +41 (0) 79 365 57 48 - http://blog.ffwll.ch
-> 
