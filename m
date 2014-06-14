@@ -1,177 +1,68 @@
-From: himangi774@gmail.com (Himangi Saraogi)
-Date: Sat, 14 Jun 2014 21:15:41 +0530
-Subject: [Cocci] [PATCH] Coccinelle : Script to detect cast after memory
-	allocation
-Message-ID: <20140614154541.GA4179@himangi-Dell>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sat, 14 Jun 2014 18:00:24 +0200 (CEST)
+Subject: [Cocci] Matching partial expressions in macro arguments
+In-Reply-To: <20140613091128.GJ5821@phenom.ffwll.local>
+References: <20140613091128.GJ5821@phenom.ffwll.local>
+Message-ID: <alpine.DEB.2.02.1406141755470.1962@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-This script detects cases of use of cast for the value returned by
-kmalloc, kzalloc, kcalloc, kmem_cache_alloc, kmem_cache_zalloc,
-kmem_cache_alloc_node, kmalloc_node and kzalloc_node and removes
-the cast as it is not useful. This Coccinelle script replaces
-drop_kmalloc_cast.cocci as it removes the casting in more limited
-cases of kmalloc, kzalloc and kcalloc.
+On Fri, 13 Jun 2014, Daniel Vetter wrote:
 
-Signed-off-by: Himangi Saraogi <himangi774@gmail.com>
-Acked-by: Julia Lawall <julia.lawall@lip6.fr>
----
- scripts/coccinelle/api/alloc/alloc_cast.cocci      | 72 ++++++++++++++++++++++
- .../coccinelle/api/alloc/drop_kmalloc_cast.cocci   | 67 --------------------
- 2 files changed, 72 insertions(+), 67 deletions(-)
- create mode 100644 scripts/coccinelle/api/alloc/alloc_cast.cocci
- delete mode 100644 scripts/coccinelle/api/alloc/drop_kmalloc_cast.cocci
+> Hi all,
+> 
+> In our testsuite[1] we have a macro to compare 2 integers with a given
+> comparison operator, print them on assert failure to stderr for
+> diagnotistics and then abort our testcase.
+> 
+> Usage is e.g.
+> 
+> 	igt_assert_cmpint(obj_count, ==, 0);
+> 
+> Now I want to add a simple igt_assert_eq(a, b) macro, so the above example
+> should look like
+> 	
+> 	igt_assert_eq(obj_count, 0);
+> 
+> I tried to use cocci for the refactoring, but failed. I tried
+> 
+> @@
+> expression E1, E2;
+> @@
+> -igt_assert_cmpint(E1, ==, E2);
+> +igt_assert_eq(E1, E2);
+> 
+> which failed to parse as a spatch and
+> 
+> @@
+> expression E1, E2, E;
+> @@
+> -igt_assert_cmpint(E1, E E2);
+> +igt_assert_eq(E1, E2);
+> 
+> which didn't match anything. I didn't find any examples for creative macro
+> abuse and using iterator metavariables which helped last time around I've
+> stumbled over macros didn't work out either.
+> 
+> Any ideas and suggestions highly welcome, or is this simply not possible
+> with cocci?
 
-diff --git a/scripts/coccinelle/api/alloc/alloc_cast.cocci b/scripts/coccinelle/api/alloc/alloc_cast.cocci
-new file mode 100644
-index 0000000..6c308ee
---- /dev/null
-+++ b/scripts/coccinelle/api/alloc/alloc_cast.cocci
-@@ -0,0 +1,72 @@
-+/// Remove casting the values returned by memory allocation functions
-+/// like kmalloc, kzalloc, kmem_cache_alloc, kmem_cache_zalloc etc.
-+///
-+//# This makes an effort to find cases of casting of values returned by
-+//# kmalloc, kzalloc, kcalloc, kmem_cache_alloc, kmem_cache_zalloc,
-+//# kmem_cache_alloc_node, kmalloc_node and kzalloc_node and removes
-+//# the casting as it is not required. The result in the patch case may
-+//#need some reformatting.
-+//
-+// Confidence: High
-+// Copyright: 2014, Himangi Saraogi  GPLv2.
-+// Comments:
-+// Options: --no-includes --include-headers
-+//
-+
-+virtual context
-+virtual patch
-+virtual org
-+virtual report
-+
-+//----------------------------------------------------------
-+//  For context mode
-+//----------------------------------------------------------
-+
-+ at depends on context@
-+type T;
-+@@
-+
-+* (T *)
-+  \(kmalloc\|kzalloc\|kcalloc\|kmem_cache_alloc\|kmem_cache_zalloc\|
-+   kmem_cache_alloc_node\|kmalloc_node\|kzalloc_node\)(...)
-+
-+//----------------------------------------------------------
-+//  For patch mode
-+//----------------------------------------------------------
-+
-+ at depends on patch@
-+type T;
-+@@
-+
-+- (T *)
-+  (\(kmalloc\|kzalloc\|kcalloc\|kmem_cache_alloc\|kmem_cache_zalloc\|
-+   kmem_cache_alloc_node\|kmalloc_node\|kzalloc_node\)(...))
-+
-+//----------------------------------------------------------
-+//  For org and report mode
-+//----------------------------------------------------------
-+
-+ at r depends on org || report@
-+type T;
-+position p;
-+@@
-+
-+ (T at p *)\(kmalloc\|kzalloc\|kcalloc\|kmem_cache_alloc\|kmem_cache_zalloc\|
-+   kmem_cache_alloc_node\|kmalloc_node\|kzalloc_node\)(...)
-+
-+ at script:python depends on org@
-+p << r.p;
-+t << r.T;
-+@@
-+
-+coccilib.org.print_safe_todo(p[0], t)
-+
-+ at script:python depends on report@
-+p << r.p;
-+t << r.T;
-+@@
-+
-+msg="WARNING: casting value returned by memory allocation function to (%s *) is useless." % (t)
-+coccilib.report.print_report(p[0], msg)
-+
-+
-diff --git a/scripts/coccinelle/api/alloc/drop_kmalloc_cast.cocci b/scripts/coccinelle/api/alloc/drop_kmalloc_cast.cocci
-deleted file mode 100644
-index bd5d08b..0000000
---- a/scripts/coccinelle/api/alloc/drop_kmalloc_cast.cocci
-+++ /dev/null
-@@ -1,67 +0,0 @@
--///
--/// Casting (void *) value returned by kmalloc is useless
--/// as mentioned in Documentation/CodingStyle, Chap 14.
--///
--// Confidence: High
--// Copyright: 2009,2010 Nicolas Palix, DIKU.  GPLv2.
--// URL: http://coccinelle.lip6.fr/
--// Options: --no-includes --include-headers
--//
--// Keywords: kmalloc, kzalloc, kcalloc
--// Version min: < 2.6.12 kmalloc
--// Version min: < 2.6.12 kcalloc
--// Version min:   2.6.14 kzalloc
--//
--
--virtual context
--virtual patch
--virtual org
--virtual report
--
--//----------------------------------------------------------
--//  For context mode
--//----------------------------------------------------------
--
-- at depends on context@
--type T;
--@@
--
--* (T *)
--  \(kmalloc\|kzalloc\|kcalloc\)(...)
--
--//----------------------------------------------------------
--//  For patch mode
--//----------------------------------------------------------
--
-- at depends on patch@
--type T;
--@@
--
--- (T *)
--  \(kmalloc\|kzalloc\|kcalloc\)(...)
--
--//----------------------------------------------------------
--//  For org and report mode
--//----------------------------------------------------------
--
-- at r depends on org || report@
--type T;
--position p;
--@@
--
-- (T at p *)\(kmalloc\|kzalloc\|kcalloc\)(...)
--
-- at script:python depends on org@
--p << r.p;
--t << r.T;
--@@
--
--coccilib.org.print_safe_todo(p[0], t)
--
--@script:python depends on report@
--p << r.p;
--t << r.T;
--@@
--
--msg="WARNING: casting value returned by k[cmz]alloc to (%s *) is useless." % (t)
--coccilib.report.print_report(p[0], msg)
--- 
-1.9.1
+I don't think it is going to be possible.  == is not considered to be a 
+valid argument by the C parser.  You can make a macro definition for this, 
+but then the C parser will just skip over the whole igt_assert_cmpint 
+call.  No matches will be possible on that part of the code.
+
+julia
+
+
+> Example testfile attached.
+> 
+> Thanks, Daniel
+> 
+> 1: http://cgit.freedesktop.org/xorg/app/intel-gpu-tools/ - it's for
+> testing the intel gfx kernel driver.
+> -- 
+> Daniel Vetter
+> Software Engineer, Intel Corporation
+> +41 (0) 79 365 57 48 - http://blog.ffwll.ch
+> 
