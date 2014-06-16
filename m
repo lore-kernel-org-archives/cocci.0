@@ -1,69 +1,59 @@
-From: himangi774@gmail.com (Himangi Saraogi)
-Date: Sun, 15 Jun 2014 01:51:00 +0530
-Subject: [Cocci] [PATCH] Coccinelle : Script to detect cast after memory
-	allocation
-In-Reply-To: <1402776217.2756.23.camel@joe-AO725>
-References: <20140614154541.GA4179@himangi-Dell>
- <1402761961.2756.12.camel@joe-AO725>
- <alpine.DEB.2.02.1406141809050.1962@localhost6.localdomain6>
- <1402765314.2756.20.camel@joe-AO725>
- <CAB78YHwDpK988sKk5pzXWhuMszyyS=wtk5ETP-B-JBGdwRPxhw@mail.gmail.com>
- <1402776217.2756.23.camel@joe-AO725>
-Message-ID: <CAB78YHx72nAQ8pm9OpONqZUVAUQ+82RSnMu8aWB3oa2AwzzVEw@mail.gmail.com>
+From: daniel@ffwll.ch (Daniel Vetter)
+Date: Mon, 16 Jun 2014 11:10:11 +0200
+Subject: [Cocci] Matching partial expressions in macro arguments
+In-Reply-To: <alpine.DEB.2.02.1406141755470.1962@localhost6.localdomain6>
+References: <20140613091128.GJ5821@phenom.ffwll.local>
+ <alpine.DEB.2.02.1406141755470.1962@localhost6.localdomain6>
+Message-ID: <CAKMK7uFkcL-Co2CSmarewBsgXuzLeB1+h9caZQDHjmbJx8k00g@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 15 June 2014 01:33, Joe Perches <joe@perches.com> wrote:
+On Sat, Jun 14, 2014 at 6:00 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
+> On Fri, 13 Jun 2014, Daniel Vetter wrote:
+>> In our testsuite[1] we have a macro to compare 2 integers with a given
+>> comparison operator, print them on assert failure to stderr for
+>> diagnotistics and then abort our testcase.
+>>
+>> Usage is e.g.
+>>
+>>       igt_assert_cmpint(obj_count, ==, 0);
+>>
+>> Now I want to add a simple igt_assert_eq(a, b) macro, so the above example
+>> should look like
+>>
+>>       igt_assert_eq(obj_count, 0);
+>>
+>> I tried to use cocci for the refactoring, but failed. I tried
+>>
+>> @@
+>> expression E1, E2;
+>> @@
+>> -igt_assert_cmpint(E1, ==, E2);
+>> +igt_assert_eq(E1, E2);
+>>
+>> which failed to parse as a spatch and
+>>
+>> @@
+>> expression E1, E2, E;
+>> @@
+>> -igt_assert_cmpint(E1, E E2);
+>> +igt_assert_eq(E1, E2);
+>>
+>> which didn't match anything. I didn't find any examples for creative macro
+>> abuse and using iterator metavariables which helped last time around I've
+>> stumbled over macros didn't work out either.
+>>
+>> Any ideas and suggestions highly welcome, or is this simply not possible
+>> with cocci?
+>
+> I don't think it is going to be possible.  == is not considered to be a
+> valid argument by the C parser.  You can make a macro definition for this,
+> but then the C parser will just skip over the whole igt_assert_cmpint
+> call.  No matches will be possible on that part of the code.
 
-> On Sun, 2014-06-15 at 01:03 +0530, Himangi Saraogi wrote:
-> > Hi,
->
-> Hi Himangi.
->
-> > I have run the generic rule but it does not detect the cases of
-> > cast where the k[mzc]alloc or the kmem functions are used. I have used
-> > flags like recursive-includes, as suggested by Julia, but not any of the
-> > cases covered by the original script are detected.
->
-> Odd.
->
-> When I tried it I got things like:
->
-> Thanks for your feedback. Sorry, yes it does detect, I had already sent
-patches for the files and hence my tree did not have the casts.
-
-> $ cat void.cocci
-> @@
-> void *t;
-> type other;
-> @@
->
-> -       (other *)t
-> +       t
->
-> $ spatch --version
-> spatch version 1.0.0-rc14 without Python support and with PCRE support
->
-> $ spatch --sp-file void.cocci --recursive-includes
-> drivers/block/cciss_scsi.c
-> drivers/block/cciss_scsi.c
-> +++ /tmp/cocci-output-8427-7875f0-cciss_scsi.c
-> @@ -704,8 +704,7 @@ cciss_scsi_setup(ctlr_info_t *h)
->         struct cciss_scsi_adapter_data_t * shba;
->
->         ccissscsi[h->ctlr].ndevices = 0;
-> -       shba = (struct cciss_scsi_adapter_data_t *)
-> -               kmalloc(sizeof(*shba), GFP_KERNEL);
-> +       shba = kmalloc(sizeof(*shba), GFP_KERNEL);
->         if (shba == NULL)
->                 return;
->         shba->scsi_host = NULL;
->
->
->
-I'll be extending the patch to handle generic cases.
-Thanks
-Himangi
--------------- next part --------------
-An HTML attachment was scrubbed...
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20140615/7d1a3777/attachment.html>
+Ah, I suspected as much. Thanks a lot for your confirmation anyway.
+-Daniel
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
++41 (0) 79 365 57 48 - http://blog.ffwll.ch
