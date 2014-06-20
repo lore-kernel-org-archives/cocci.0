@@ -1,59 +1,17 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 20 Jun 2014 07:22:56 +0200 (CEST)
-Subject: [Cocci] [PATCH] Coccinelle: Script to drop parenthesis in the
- return statements
-In-Reply-To: <1403197152.9958.5.camel@joe-AO725>
-References: <20140619162954.GA4698@himangi-Dell>
- <1403195662.7875.5.camel@joe-AO725>
- <alpine.DEB.2.10.1406191848020.2078@hadrien>
- <1403197152.9958.5.camel@joe-AO725>
-Message-ID: <alpine.DEB.2.02.1406200722120.1990@localhost6.localdomain6>
+Date: Fri, 20 Jun 2014 22:51:08 +0200 (CEST)
+Subject: [Cocci] Linux Plumbers Conference
+Message-ID: <alpine.DEB.2.02.1406202247530.2335@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hello,
 
+I have proposed a microconference on development tools at the 2014 Linux 
+Plumbers Conference (http://www.linuxplumbersconf.org/2014/) in Dusseldorf 
+in October.  If you are interested in participating, either by attending, 
+by giving a presentation, or by suggesting some issues that should be 
+discussed, please let me know.
 
-On Thu, 19 Jun 2014, Joe Perches wrote:
-
-> On Thu, 2014-06-19 at 18:49 +0200, Julia Lawall wrote:
-> > On Thu, 19 Jun 2014, Joe Perches wrote:
-> > > On Thu, 2014-06-19 at 21:59 +0530, Himangi Saraogi wrote:
-> > > > This script detects the use of a parenthesis around return value ot the
-> > > > return statements and removes them as they are unnecessary and against
-> > > > the CodingStyle. A new directory called checkpatch is added for semantic
-> > > > patches that just make patches for what checkpatch does. This will help
-> > > > developers having checkpatch problems, to run the semantic patches in this
-> > > > directory on their code and fix some of them automatically.
-> > >
-> > > checkpatch already has --fix and --fix-inplace options that
-> > > do something similar.
-> > 
-> > OK.  Then it is not worth adding coccinelle scripts for simple changes
-> > like this one.
-> > 
-> > I guess that some of the more complex changes, like choosing an
-> > appropriate error message function, checkpatch does not do?
-> 
-> I'm not quite sure what you're suggesting.
-> 
-> You mean choosing pr_err vs pr_notice or something
-> like finding an active struct <foo> and converting
-> printks to <foo>_<level>(&foo, fmt, ...)
-> 
-> from:
-> {
-> 	struct device *dev;
-> 	...
-> 	printk(KERN_ERR "msg", ...)
-> to:
-> 	dev_err(dev, "msg", ...)
-> 
-> checkpatch definitely can not do that.
-> 
-> Is it something else?
-
-Yes, that is what I was thinking of.  Anyway, we can just test whether 
-checkpatch --fix can d the change before proposing a semantic patch for 
-it.
-
+thanks,
 julia
