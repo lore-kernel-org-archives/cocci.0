@@ -1,39 +1,30 @@
-From: mcgrof@suse.com (Luis R. Rodriguez)
-Date: Sat, 21 Jun 2014 03:57:14 +0200
-Subject: [Cocci] SmPL for automatic request_firmware_nowait() conversion
-Message-ID: <20140621015714.GX4841@wotan.suse.de>
+From: rusty@rustcorp.com.au (Rusty Russell)
+Date: Sat, 21 Jun 2014 09:08:41 +0930
+Subject: [Cocci] Simple replacement of an expression of given type?
+Message-ID: <87y4wrtam6.fsf@rustcorp.com.au>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-I was just porting over an ethernet driver [0] to use request_firmware_nowait()
-since firmware loading seems can take over a minute on one device, while
-at it I noticed no other ethernet drivers yet use this API so figure
-this may be a trend coming if devices are getting as complex as cxgb4.
-The cxgb4 driver happens to even use the firmware API 3 times!
+Hi!
 
-Obviously I considered writing SmPL for this, but one thing which seemed
-hard was that for after the request_firmware_nowait() we tend to tuck
-away into another new call the rest of the code that was in place in the
-original function after the old request_firmware() call. Is there a way
-to dump all that code into the new routine? I think the hardest thing
-would be to also move the right set of variables over. In the third
-patch in this series for example [1] there was a state variable that
-I moved from beign static over to the ethernet private data structure.
-Its hard for me to think of how I can hint to Coccinelle enough information
-about what stuff it needs to move around. I think one hint would be:
+        In my current project, I moved a field from a structure
+(struct block) into another network-endian structure.  I used the
+following patch.cocci to do the fixups:
 
-  "Hey all that code that is static and is used *before* and *after* request_firmware()
-   stuff it into the private data structure"
+        @ rule1 @
+        struct block *b;
+        @@
+        
+        - b->blocknum
+        + le32_to_cpu(b->hdr->depth)
 
-We'd have to infer the private data structure but that's easy and I already know
-that's possible. Is this possible? The only other challenge I thought
-might be tough would be to come up with are rasonable call for the
-completion call, but I guess we can use the original routine name
-where request_firmware() was being used and postfix _completion or something.
+It got 99%, but it missed the two cases where b was actually in another
+structure, ie. "te->block->blocknum".
 
-netdev: how worthy is this effort?
+I *think* this is because I want to substitute any expression of type
+struct block *, rather than only identifiers?
 
-[0] https://lkml.org/lkml/2014/6/20/688
-[1] https://lkml.org/lkml/2014/6/20/691
- 
-  Luis
+But I couldn't understand the documentation enough to do this :(
+
+Clues appreciated!
+Rusty.
