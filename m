@@ -1,37 +1,52 @@
-From: lars@metafoo.de (Lars-Peter Clausen)
-Date: Sat, 21 Jun 2014 08:27:11 +0200
-Subject: [Cocci] Simple replacement of an expression of given type?
-In-Reply-To: <87y4wrtam6.fsf@rustcorp.com.au>
-References: <87y4wrtam6.fsf@rustcorp.com.au>
-Message-ID: <53A525BF.5060205@metafoo.de>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sat, 21 Jun 2014 08:37:01 +0200 (CEST)
+Subject: [Cocci] SmPL for automatic request_firmware_nowait() conversion
+In-Reply-To: <20140621015714.GX4841@wotan.suse.de>
+References: <20140621015714.GX4841@wotan.suse.de>
+Message-ID: <alpine.DEB.2.02.1406210832510.2074@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 06/21/2014 01:38 AM, Rusty Russell wrote:
-> Hi!
->
->          In my current project, I moved a field from a structure
-> (struct block) into another network-endian structure.  I used the
-> following patch.cocci to do the fixups:
->
->          @ rule1 @
->          struct block *b;
->          @@
->
->          - b->blocknum
->          + le32_to_cpu(b->hdr->depth)
->
-> It got 99%, but it missed the two cases where b was actually in another
-> structure, ie. "te->block->blocknum".
->
-> I *think* this is because I want to substitute any expression of type
-> struct block *, rather than only identifiers?
->
-> But I couldn't understand the documentation enough to do this :(
+On Sat, 21 Jun 2014, Luis R. Rodriguez wrote:
 
-This should work. But by default coccinelle does not parse global headers, 
-so if the struct for te is defined in a global header it won't know that 
-te->block is of type 'struct block *'. If that is the case try to run it 
-with --all-includes
+> I was just porting over an ethernet driver [0] to use request_firmware_nowait()
+> since firmware loading seems can take over a minute on one device, while
+> at it I noticed no other ethernet drivers yet use this API so figure
+> this may be a trend coming if devices are getting as complex as cxgb4.
+> The cxgb4 driver happens to even use the firmware API 3 times!
+> 
+> Obviously I considered writing SmPL for this, but one thing which seemed
+> hard was that for after the request_firmware_nowait() we tend to tuck
+> away into another new call the rest of the code that was in place in the
+> original function after the old request_firmware() call. Is there a way
+> to dump all that code into the new routine? I think the hardest thing
+> would be to also move the right set of variables over. In the third
+> patch in this series for example [1] there was a state variable that
+> I moved from beign static over to the ethernet private data structure.
+> Its hard for me to think of how I can hint to Coccinelle enough information
+> about what stuff it needs to move around. I think one hint would be:
+> 
+>   "Hey all that code that is static and is used *before* and *after* request_firmware()
+>    stuff it into the private data structure"
+> 
+> We'd have to infer the private data structure but that's easy and I already know
+> that's possible. Is this possible? The only other challenge I thought
+> might be tough would be to come up with are rasonable call for the
+> completion call, but I guess we can use the original routine name
+> where request_firmware() was being used and postfix _completion or something.
 
-- Lars
+This kind of thing is possible, but complicated.  Basically you have to 
+put { } around what you want to move, then match a statement metavariable 
+against the code that is now surrounded by braces, then find all of the 
+variables that are read without being initialized in the { } region, or 
+that are written by the { } region and used afterwards and arrange to copy 
+them back and forth.  I did this in the context of a project where the 
+goal was to move critical sections into separate functions, but it was 
+around 1000 lines of SmPL code.
+
+If one were doing this in several places onesself, then it would probably 
+be better to do the fixed parts using SmPL and do the more variable parts 
+by hand.  This is not really something that one would want to publoish for 
+others, though.
+
+julia
