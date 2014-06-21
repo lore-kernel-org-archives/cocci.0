@@ -1,32 +1,39 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 20 Jun 2014 23:08:21 +0200 (CEST)
-Subject: [Cocci] Linux Plumbers Conference
-In-Reply-To: <20140620210039.GA3723@katana>
-References: <alpine.DEB.2.02.1406202247530.2335@localhost6.localdomain6>
- <20140620210039.GA3723@katana>
-Message-ID: <alpine.DEB.2.02.1406202307130.2335@localhost6.localdomain6>
+From: mcgrof@suse.com (Luis R. Rodriguez)
+Date: Sat, 21 Jun 2014 03:57:14 +0200
+Subject: [Cocci] SmPL for automatic request_firmware_nowait() conversion
+Message-ID: <20140621015714.GX4841@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+I was just porting over an ethernet driver [0] to use request_firmware_nowait()
+since firmware loading seems can take over a minute on one device, while
+at it I noticed no other ethernet drivers yet use this API so figure
+this may be a trend coming if devices are getting as complex as cxgb4.
+The cxgb4 driver happens to even use the firmware API 3 times!
 
+Obviously I considered writing SmPL for this, but one thing which seemed
+hard was that for after the request_firmware_nowait() we tend to tuck
+away into another new call the rest of the code that was in place in the
+original function after the old request_firmware() call. Is there a way
+to dump all that code into the new routine? I think the hardest thing
+would be to also move the right set of variables over. In the third
+patch in this series for example [1] there was a state variable that
+I moved from beign static over to the ethernet private data structure.
+Its hard for me to think of how I can hint to Coccinelle enough information
+about what stuff it needs to move around. I think one hint would be:
 
-On Fri, 20 Jun 2014, Wolfram Sang wrote:
+  "Hey all that code that is static and is used *before* and *after* request_firmware()
+   stuff it into the private data structure"
 
-> Hi Julia,
-> 
-> > I have proposed a microconference on development tools at the 2014 Linux 
-> > Plumbers Conference (http://www.linuxplumbersconf.org/2014/) in Dusseldorf 
-> > in October.  If you are interested in participating, either by attending, 
-> > by giving a presentation, or by suggesting some issues that should be 
-> > discussed, please let me know.
-> 
-> Great! For sure, I'd like to attend at least. Is the deadline for
-> presentations also July, 11th?
+We'd have to infer the private data structure but that's easy and I already know
+that's possible. Is this possible? The only other challenge I thought
+might be tough would be to come up with are rasonable call for the
+completion call, but I guess we can use the original routine name
+where request_firmware() was being used and postfix _completion or something.
 
-I've added you to the list of potential attendeees.
+netdev: how worthy is this effort?
 
-For the presentations, I'm not sure if there is a hard deadline.  The 
-point at the moment is to get the microconference approved.
-
-thanks,
-julia
+[0] https://lkml.org/lkml/2014/6/20/688
+[1] https://lkml.org/lkml/2014/6/20/691
+ 
+  Luis
