@@ -1,46 +1,41 @@
-From: rusty@rustcorp.com.au (Rusty Russell)
-Date: Sat, 21 Jun 2014 16:36:29 +0930
-Subject: [Cocci] Simple replacement of an expression of given type?
-In-Reply-To: <alpine.DEB.2.02.1406210822590.2074@localhost6.localdomain6>
-References: <87y4wrtam6.fsf@rustcorp.com.au>
- <alpine.DEB.2.02.1406210822590.2074@localhost6.localdomain6>
-Message-ID: <87fviyu4ga.fsf@rustcorp.com.au>
+From: romieu@fr.zoreil.com (Francois Romieu)
+Date: Sat, 21 Jun 2014 12:52:05 +0200
+Subject: [Cocci] SmPL for automatic request_firmware_nowait() conversion
+In-Reply-To: <20140621015714.GX4841@wotan.suse.de>
+References: <20140621015714.GX4841@wotan.suse.de>
+Message-ID: <20140621105205.GA31611@electric-eye.fr.zoreil.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Julia Lawall <julia.lawall@lip6.fr> writes:
-> On Sat, 21 Jun 2014, Rusty Russell wrote:
->
->> Hi!
->> 
->>         In my current project, I moved a field from a structure
->> (struct block) into another network-endian structure.  I used the
->> following patch.cocci to do the fixups:
->> 
->>         @ rule1 @
->>         struct block *b;
->>         @@
->>         
->>         - b->blocknum
->>         + le32_to_cpu(b->hdr->depth)
->> 
->> It got 99%, but it missed the two cases where b was actually in another
->> structure, ie. "te->block->blocknum".
->> 
->> I *think* this is because I want to substitute any expression of type
->> struct block *, rather than only identifiers?
->> 
->> But I couldn't understand the documentation enough to do this :(
->
-> You are already working on expressions.  The problem is that sometimes 
-> Coccinelle doesn't know what is the type of te->block.  To give it the 
-> most possible amount of informations, you can give the options
->
-> --recursive-includes --relax-include-path
+Luis R. Rodriguez <mcgrof@suse.com> :
+> I was just porting over an ethernet driver [0] to use request_firmware_nowait()
+> since firmware loading seems can take over a minute on one device, while
+> at it I noticed no other ethernet drivers yet use this API so figure
+> this may be a trend coming if devices are getting as complex as cxgb4.
+> The cxgb4 driver happens to even use the firmware API 3 times!
 
-Ah, thanks for the explanation, and indeed, that worked perfectly.
+There should be no problem for the firmware requests issued through
+ethtool in cxgb4.
 
-And thanks Julia and Lars for your quick responses!
+[...]
+> netdev: how worthy is this effort?
 
-Cheers,
-Rusty.
+Biased comment below :o)
+
+I'm wondering the benefit of automatic API changes when it could be argued
+that the symptoms call for driver dependant code rework.
+
+The 60 seconds delay is kind of a pavlovian signal: one can bet that the
+driver includes a request_firmware in its probe method. So does cxgb4.
+
+I still believe in the old school "request firmware from net_device_ops.open".
+I've been happy with it since f1e02ed109df5f99abf942b8ccc99960cb09dd38.
+This kind of rework may not be trivial for cxgb4. Please get code tested on
+real hardware (modular/monolithic build, with/without firmware, etc.) as I
+won't argue against your crusade for cxgb4.
+
+Asynchronous firmware loading provides a rather nice high level API but
+it's imho not the essence of network devices firmware loading problems.
+
+-- 
+Ueimor
