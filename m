@@ -1,85 +1,55 @@
-From: lennart@poettering.net (Lennart Poettering)
-Date: Mon, 23 Jun 2014 15:19:30 +0200
-Subject: [Cocci] [systemd-devel] systemd m4 library complex systemd
- example, and coccinelle conversion
-In-Reply-To: <CAB=NE6VSdCxNXWa0QsyrqF7iCBSR3vq+r1NJoZrX=-ADdmTvnw@mail.gmail.com>
-References: <CAB=NE6VSdCxNXWa0QsyrqF7iCBSR3vq+r1NJoZrX=-ADdmTvnw@mail.gmail.com>
-Message-ID: <20140623131930.GA25903@tango.0pointer.de>
+From: romieu@fr.zoreil.com (Francois Romieu)
+Date: Tue, 24 Jun 2014 23:58:28 +0200
+Subject: [Cocci] SmPL for automatic request_firmware_nowait() conversion
+In-Reply-To: <20140623232107.GB27687@wotan.suse.de>
+References: <20140621015714.GX4841@wotan.suse.de>
+ <20140621105205.GA31611@electric-eye.fr.zoreil.com>
+ <20140623232107.GB27687@wotan.suse.de>
+Message-ID: <20140624215828.GA14124@electric-eye.fr.zoreil.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 12.06.14 18:04, Luis R. Rodriguez (mcgrof at do-not-panic.com) wrote:
-
-> Hey folks,
+Luis R. Rodriguez <mcgrof@suse.com> :
+> On Sat, Jun 21, 2014 at 12:52:05PM +0200, Francois Romieu wrote:
+> > Luis R. Rodriguez <mcgrof@suse.com> :
+[...]
+> Note that in the worst case if udev is present in the worst case if the
+> firmware is not present loading can take up to timeout * num CPUs [0],
+> but work is underway to try to remove udev firmware loading support [1].
+> Regardless then the current approach seemed to beg a rework.
 > 
-> so I've been working on getting systemd support on xen for a bit now
-> and thanks to the last suggestion about the launcher here on
-> systemd-devel I think we're on the final stretch now. I'll be
-> submitting a v6 PATCH series shortly which I think should be the last
-> if not close to the last set we need. It turns out though that I ran
-> into quite a few issues though, what I consider corner cases with
-> systemd, and in order to help I've tried to put together a simple
-> package example source code which exemplifies the complexities I found
-> but more importantly provide the resolutions to those issues. At the
-> same time xen also is a good example of a complex piece of software
-> with multiple OS requirements and on the Linux font you may or may not
-> want systemd, it also happened to use autoconf, but not automake, and
-> in one iteration of patches I even worked on systemd support with the
-> dynamic link loader (dlopen() and dlsym()). Adding proper support for
-> systemd into xen turned out to be a bit of a mini project. In order to
-> try to help other though I've generalized as much as I can the
-> autotools functionality I wrote given I was unable to find a library
-> to easily add systemd. I'd like your review of this piece of code and
-> wanted to see if perhaps at least the LGPL m4 libraries might be
-> welcomed.
-> 
->   * src/m4/systemd.m4
-> 
->     - AX_ENABLE_SYSTEMD(): enables systemd by default and requires an
->       explicit --disable-systemd option flag to configure if you want to
->       disable systemd support.
-> 
->     - AX_ALLOW_SYSTEMD(): systemd will be disabled by default and requires
->       you to run configure with --enable-systemd to look for and enable systemd
-> 
->     - AX_AVAILABLE_SYSTEMD(): systemd will be disabled by default but if your
->       build system is detected to have systemd build libraries it will be
->       enabled. You can always force disable with --disable-systemd
-> 
->     - If you want to use the dynamic link loader you should use
->       AX_AVAILABLE_SYSTEMD() but must then ensure to use -rdynamic -ldl
->       when linking, if using automake autotools will deal with this for you,
->       otherwise you must ensure this is in place on your Makefile.
+> [0] https://lkml.org/lkml/2013/10/23/264
+> [1] http://comments.gmane.org/gmane.comp.sysutils.systemd.devel/19440
 
-Hmm, so, I don't think systemd should really be treated differently from
-other pkg-config-enabled modules. What precisely does this add that
-pkg-config doesn't support? And wouldn't it be possible to improve
-pkg-config upstream instead?
+Thanks for the pointers.
 
-I don't think we want to support the dlsym() stuff in systemd
-directly. I mean, if people want to do things like that, that's fine,
-but I really doubt we should encourage that from upstream.
+I can't help thinking that there's a bit of sensationalism in the
+timeout * num CPUs argument though. :o)
 
-Also note that pretty much any Linux distributions (modulo
-Gentoo/Slackware) uses systemd already or announced plans to do so, I am
-not sure it's worth really investing so much time in making systemd
-optional beyond the usual what pkg-config supports.
+[...]
+> The kernel's timeout is 60 seconds, and this is static, but lets be clear
+> that there is a difference between the timeout for reading the firmware
+> from the filesystem and actually dumping the firmware onto the device
+> by the driver and ensuring that the driver is done poking at it. The
+> kernel timeout is for the kernel reading it and tossing it back to the
+> driver.
 
-> Lastly -- I was curious if anyone has looked into writing Coccinelle
-> SmPL grammar rules to convert legacy init systems with systemd
-> support. I suspect most unix daemons are rather simple and SmPL rules
-> might be able to transform quite a bit of them. I don't expect
-> Coccinelle might be able to catch the crazy daemons with corner cases
-> as with xen, but you never know, coccinelle is always surprising me
-> with its capabilities.
+You are right.
 
-Note that distribuitions like Fedora have already pretty much converted
-all their daemons (with exceptions), so I figure this in many ways is
-too late... 
+[...]
+> I was actually in the hopes a suitable transormation can be designed
+> to put a wait_for_completion() in say ndo_init(). I was looking to
+> see if a tranformation can be generalized of course if the above
+> observations on probe() is something desirable to be addressed.
 
-Thanks,
+register_netdev is commonly called at the end of the probe method. probe()
+would thus schedule an async firmware loading, fly, then wait_for_completion()
+through register_netdev->ndo_init(). If so there won't be much gain.
 
-Lennart
+There could be more gain with a wait_for_completion() in ndo_open()
+but probe() + ndo_open() would still hit any fw read/poke/complete wall.
+
+It can be done but it will imvho require a lot of driver dependant work.
 
 -- 
-Lennart Poettering, Red Hat
+Ueimor
