@@ -1,55 +1,71 @@
-From: romieu@fr.zoreil.com (Francois Romieu)
-Date: Tue, 24 Jun 2014 23:58:28 +0200
-Subject: [Cocci] SmPL for automatic request_firmware_nowait() conversion
-In-Reply-To: <20140623232107.GB27687@wotan.suse.de>
-References: <20140621015714.GX4841@wotan.suse.de>
- <20140621105205.GA31611@electric-eye.fr.zoreil.com>
- <20140623232107.GB27687@wotan.suse.de>
-Message-ID: <20140624215828.GA14124@electric-eye.fr.zoreil.com>
+From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
+Date: Tue, 24 Jun 2014 15:39:41 -0700
+Subject: [Cocci] [PATCH 1/3] mmc: vub300: use request_firmware_direct() for
+	pseudo code
+In-Reply-To: <1403649583-12707-1-git-send-email-mcgrof@do-not-panic.com>
+References: <1403649583-12707-1-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1403649583-12707-2-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Luis R. Rodriguez <mcgrof@suse.com> :
-> On Sat, Jun 21, 2014 at 12:52:05PM +0200, Francois Romieu wrote:
-> > Luis R. Rodriguez <mcgrof@suse.com> :
-[...]
-> Note that in the worst case if udev is present in the worst case if the
-> firmware is not present loading can take up to timeout * num CPUs [0],
-> but work is underway to try to remove udev firmware loading support [1].
-> Regardless then the current approach seemed to beg a rework.
-> 
-> [0] https://lkml.org/lkml/2013/10/23/264
-> [1] http://comments.gmane.org/gmane.comp.sysutils.systemd.devel/19440
+From: "Luis R. Rodriguez" <mcgrof@suse.com>
 
-Thanks for the pointers.
+vub300 uses the request_firmware() API for downloading
+pseudo code twice and if this fails its not considered fatal.
+Avoid letting the request linger 60 seconds because of udev if
+one of the requests fails by explicitly skipping the udev helper.
 
-I can't help thinking that there's a bit of sensationalism in the
-timeout * num CPUs argument though. :o)
+This was found with the following SmPL patch.
 
-[...]
-> The kernel's timeout is 60 seconds, and this is static, but lets be clear
-> that there is a difference between the timeout for reading the firmware
-> from the filesystem and actually dumping the firmware onto the device
-> by the driver and ensuring that the driver is done poking at it. The
-> kernel timeout is for the kernel reading it and tossing it back to the
-> driver.
+@ firmware_not_critical @
+expression cf;
+expression config_file;
+expression dev;
+int ret;
+identifier l;
+statement S;
+@@
 
-You are right.
+-	ret = request_firmware(&cf, config_file, dev);
++	ret = request_firmware_direct(&cf, config_file, dev);
+	if (ret < 0) {
+		... when != goto l;
+		    when != return ret;
+		    when any
+	} else {
+		...
+		release_firmware(cf);
+		...
+	}
 
-[...]
-> I was actually in the hopes a suitable transormation can be designed
-> to put a wait_for_completion() in say ndo_init(). I was looking to
-> see if a tranformation can be generalized of course if the above
-> observations on probe() is something desirable to be addressed.
+Cc: Tony Olech <tony.olech@elandigitalsystems.com>
+Cc: linux-mmc at vger.kernel.org
+Cc: linux-usb at vger.kernel.org
+Cc: Takashi Iwai <tiwai@suse.de>
+Cc: cocci at systeme.lip6.fr
+Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
+---
+ drivers/mmc/host/vub300.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-register_netdev is commonly called at the end of the probe method. probe()
-would thus schedule an async firmware loading, fly, then wait_for_completion()
-through register_netdev->ndo_init(). If so there won't be much gain.
-
-There could be more gain with a wait_for_completion() in ndo_open()
-but probe() + ndo_open() would still hit any fw read/poke/complete wall.
-
-It can be done but it will imvho require a lot of driver dependant work.
-
+diff --git a/drivers/mmc/host/vub300.c b/drivers/mmc/host/vub300.c
+index 4262296..15eeaff 100644
+--- a/drivers/mmc/host/vub300.c
++++ b/drivers/mmc/host/vub300.c
+@@ -1378,11 +1378,12 @@ static void download_offload_pseudocode(struct vub300_mmc_host *vub300)
+ 	snprintf(vub300->vub_name + l, sizeof(vub300->vub_name) - l, ".bin");
+ 	dev_info(&vub300->udev->dev, "requesting offload firmware %s\n",
+ 		 vub300->vub_name);
+-	retval = request_firmware(&fw, vub300->vub_name, &card->dev);
++	retval = request_firmware_direct(&fw, vub300->vub_name, &card->dev);
+ 	if (retval < 0) {
+ 		strncpy(vub300->vub_name, "vub_default.bin",
+ 			sizeof(vub300->vub_name));
+-		retval = request_firmware(&fw, vub300->vub_name, &card->dev);
++		retval = request_firmware_direct(&fw, vub300->vub_name,
++						 &card->dev);
+ 		if (retval < 0) {
+ 			strncpy(vub300->vub_name,
+ 				"no SDIO offload firmware found",
 -- 
-Ueimor
+2.0.0
