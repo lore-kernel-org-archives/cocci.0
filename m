@@ -1,31 +1,23 @@
 From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Tue, 24 Jun 2014 15:39:40 -0700
-Subject: [Cocci] [PATCH 0/3] drivers: expand usage of
-	request_firmware_direct()
-Message-ID: <1403649583-12707-1-git-send-email-mcgrof@do-not-panic.com>
+Date: Tue, 24 Jun 2014 15:39:43 -0700
+Subject: [Cocci] [PATCH 3/3] p54: use request_firmware_direct() for optional
+	EEPROM override
+In-Reply-To: <1403649583-12707-1-git-send-email-mcgrof@do-not-panic.com>
+References: <1403649583-12707-1-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1403649583-12707-4-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: "Luis R. Rodriguez" <mcgrof@suse.com>
 
-Takashi added request_firmware_direct() via bba3a87e9 through v3.14-rc1
-which avoids the unnecessary delay introduced by using the udev firmware
-loader in case the first try failed when loading we know loading "firmware"
-is optional. The first use case was for microcode update but if drivers are
-using it for optional configuration updates, custom EEPROMs, and other
-junk other than firmware that should apply as well as good use cases,
-specially if the driver already had a first phase in which it loaded
-the first required firmware. While reviewing one driver I figured it'd
-be best to try to give formalizing a check with SmPL. This isn't perfect
-it had 1 false possitive drivers/fmc/fmc-fakedev.c on the entire kernel
-run but my hope is this can be extended a bit more to build more
-confidence, and then perhaps stuff it as a coccicheck.
+The p54 driver uses request_firmware() twice, once for actual
+firmware and then another time for an optional user overide on
+EEPROM, 3826.eeprom. The custom EEPROM  is optional but if not
+present we'll introduce an extra lag of 60 seconds with udev
+present. Annotate we don't want udev nonsense here to avoid
+the lag in case its not present.
 
-I suppose this will not be required once and if we remove
-CONFIG_FW_LOADER_USER_HELPER. Is that ever going away for good? I know
-there was a recent attempt to remove the udev loader support but
-it was unclear if the special alternative helper support would be
-removed upstream from the kernel.
+This was found with the following SmPL patch.
 
 @ firmware_not_critical @
 expression cf;
@@ -48,16 +40,27 @@ statement S;
 		...
 	}
 
+Cc: Takashi Iwai <tiwai@suse.de>
+Cc: Christian Lamparter <chunkeey@googlemail.com>
+Cc: linux-wireless at vger.kernel.org
+Cc: cocci at systeme.lip6.fr
+Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
+---
+ drivers/net/wireless/p54/p54spi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Luis R. Rodriguez (3):
-  mmc: vub300: use request_firmware_direct() for pseudo code
-  cxgb4: make configuration load use request_firmware_direct()
-  p54: use request_firmware_direct() for optional EEPROM override
-
- drivers/mmc/host/vub300.c                       | 5 +++--
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c | 2 +-
- drivers/net/wireless/p54/p54spi.c               | 2 +-
- 3 files changed, 5 insertions(+), 4 deletions(-)
-
+diff --git a/drivers/net/wireless/p54/p54spi.c b/drivers/net/wireless/p54/p54spi.c
+index de15171..63de5ee 100644
+--- a/drivers/net/wireless/p54/p54spi.c
++++ b/drivers/net/wireless/p54/p54spi.c
+@@ -193,7 +193,7 @@ static int p54spi_request_eeprom(struct ieee80211_hw *dev)
+ 	/* allow users to customize their eeprom.
+ 	 */
+ 
+-	ret = request_firmware(&eeprom, "3826.eeprom", &priv->spi->dev);
++	ret = request_firmware_direct(&eeprom, "3826.eeprom", &priv->spi->dev);
+ 	if (ret < 0) {
+ #ifdef CONFIG_P54_SPI_DEFAULT_EEPROM
+ 		dev_info(&priv->spi->dev, "loading default eeprom...\n");
 -- 
 2.0.0
