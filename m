@@ -1,60 +1,73 @@
-From: mcgrof@suse.com (Luis R. Rodriguez)
-Date: Wed, 25 Jun 2014 03:50:48 +0200
-Subject: [Cocci] [PATCH 2/3] cxgb4: make configuration load
-	use	request_firmware_direct()
-In-Reply-To: <D46B557B-AF4A-4E60-8D83-6181D406C64F@chelsio.com>
+From: arend@broadcom.com (Arend van Spriel)
+Date: Wed, 25 Jun 2014 09:26:23 +0200
+Subject: [Cocci] [PATCH 3/3] p54: use request_firmware_direct() for
+ optional EEPROM override
+In-Reply-To: <1403649583-12707-4-git-send-email-mcgrof@do-not-panic.com>
 References: <1403649583-12707-1-git-send-email-mcgrof@do-not-panic.com>
- <1403649583-12707-3-git-send-email-mcgrof@do-not-panic.com>
- <D46B557B-AF4A-4E60-8D83-6181D406C64F@chelsio.com>
-Message-ID: <20140625015048.GI27687@wotan.suse.de>
+ <1403649583-12707-4-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <53AA799F.7030807@broadcom.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, Jun 24, 2014 at 03:54:44PM -0700, Casey Leedom wrote:
-> [[ Hopefully this makes it through to the kernel.org lists -- I?m using the
->   Mac OS/X Mailer and it?s not clear how to force it not to use HTML format.
->   -- Casey ]]
-> 
->   So does request_firmware_direct() only fail if the requested file is not
->   present on the file system or does it fail in other cases as well?
+On 25-06-14 00:39, Luis R. Rodriguez wrote:
+> From: "Luis R. Rodriguez" <mcgrof@suse.com>
+>
+> The p54 driver uses request_firmware() twice, once for actual
+> firmware and then another time for an optional user overide on
+> EEPROM, 3826.eeprom. The custom EEPROM  is optional but if not
+> present we'll introduce an extra lag of 60 seconds with udev
+> present. Annotate we don't want udev nonsense here to avoid
+> the lag in case its not present.
 
-Same as before they are the same exact call with the only difference
-being udev is not used as an extra helper, so it saves the extra
-delay caused by udev. That's all.
+I guess the fact that EEPROM is optional does not matter much. If doing 
+a second request you could always use request_firmware_direct(), right?
 
->   If it?s the former, then the change to cxgb4 is fine.
-> 
->   But if it?s the latter, then it?s definitely not okay.  While the driver
->   _can_ continue running without the local on-disk Firmware Configuration
->   File, that file can be used to significantly change the behavior and
->   capabilities of the adapter and is user-customizable.  If a user makes
->   changes to the local on-disk Firmware Configuration File and these are
->   randomly silently ignored this will lead to highly annoying support issues.
+Regards,
+Arend
 
-This just avoids udev, the request goes directly to the filesystem. The
-failure will happen when the file is not present just as before, the
-only difference here is skipping udev, it doesn't suffer from the extra 
-60 second timeout. There's another possible failure, when
-usermodehelper_read_trylock() fails but that is just as the code was before
-so this change doesn't introduce that as a new false check. When that
-triggers yout get a nasty WARN_ON() just as before.
-
-One thing to note though is that the kernel firmware loader does not
-log any failure to the kernel ring buffer if the firmware is not on the
-filesystem, while the udev loader is a bit more chatty:
-
-[ 2463.666120] platform fake-dev.0: Direct firmware load failed with error -2
-[ 2463.666129] platform fake-dev.0: Falling back to user helper
-
-Stuffing a print into the non-udev approach upstream seems a bit excessive
-though (unless folks disagree), so if you want the driver to be a bit more
-informative I think its best to place this feedback on the driver for now.
-
-I see the driver does provide this information already though so is any
-additional prints really desirable ?
-
-        dev_info(adapter->pdev_dev, "Successfully configured using Firmware "\  
-                 "Configuration File \"%s\", version %#x, computed checksum %#x\n",
-                 config_name, finiver, cfcsum);   
-
-  Luis
+> This was found with the following SmPL patch.
+>
+> @ firmware_not_critical @
+> expression cf;
+> expression config_file;
+> expression dev;
+> int ret;
+> identifier l;
+> statement S;
+> @@
+>
+> -	ret = request_firmware(&cf, config_file, dev);
+> +	ret = request_firmware_direct(&cf, config_file, dev);
+> 	if (ret < 0) {
+> 		... when != goto l;
+> 		    when != return ret;
+> 		    when any
+> 	} else {
+> 		...
+> 		release_firmware(cf);
+> 		...
+> 	}
+>
+> Cc: Takashi Iwai <tiwai@suse.de>
+> Cc: Christian Lamparter <chunkeey@googlemail.com>
+> Cc: linux-wireless at vger.kernel.org
+> Cc: cocci at systeme.lip6.fr
+> Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
+> ---
+>   drivers/net/wireless/p54/p54spi.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/wireless/p54/p54spi.c b/drivers/net/wireless/p54/p54spi.c
+> index de15171..63de5ee 100644
+> --- a/drivers/net/wireless/p54/p54spi.c
+> +++ b/drivers/net/wireless/p54/p54spi.c
+> @@ -193,7 +193,7 @@ static int p54spi_request_eeprom(struct ieee80211_hw *dev)
+>   	/* allow users to customize their eeprom.
+>   	 */
+>
+> -	ret = request_firmware(&eeprom, "3826.eeprom", &priv->spi->dev);
+> +	ret = request_firmware_direct(&eeprom, "3826.eeprom", &priv->spi->dev);
+>   	if (ret < 0) {
+>   #ifdef CONFIG_P54_SPI_DEFAULT_EEPROM
+>   		dev_info(&priv->spi->dev, "loading default eeprom...\n");
+>
