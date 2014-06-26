@@ -1,47 +1,42 @@
-From: mcgrof@suse.com (Luis R. Rodriguez)
-Date: Wed, 25 Jun 2014 22:05:10 +0200
-Subject: [Cocci] [PATCH 2/3] cxgb4: make configuration load
-	use	request_firmware_direct()
-In-Reply-To: <53AB1BEC.4080107@chelsio.com>
+From: tiwai@suse.de (Takashi Iwai)
+Date: Thu, 26 Jun 2014 18:18:05 +0200
+Subject: [Cocci] [PATCH 0/3] drivers: expand usage of
+	request_firmware_direct()
+In-Reply-To: <1403649583-12707-1-git-send-email-mcgrof@do-not-panic.com>
 References: <1403649583-12707-1-git-send-email-mcgrof@do-not-panic.com>
- <1403649583-12707-3-git-send-email-mcgrof@do-not-panic.com>
- <D46B557B-AF4A-4E60-8D83-6181D406C64F@chelsio.com>
- <20140625015048.GI27687@wotan.suse.de> <53AB02F4.1090701@chelsio.com>
- <20140625173156.GW27687@wotan.suse.de> <53AB1BEC.4080107@chelsio.com>
-Message-ID: <20140625200510.GY27687@wotan.suse.de>
+Message-ID: <s5hmwczve4i.wl%tiwai@suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, Jun 25, 2014 at 11:58:52AM -0700, Casey Leedom wrote:
->   Okay, I'll leave the whole request_firmware{,_direct,_nowait}() thing 
-> alone.  The request_firmware_direct() will "solve" a non-problem (since all 
-> of our "firmware" files are _supposed to be_ always present.
+At Tue, 24 Jun 2014 15:39:40 -0700,
+Luis R. Rodriguez wrote:
+> 
+> From: "Luis R. Rodriguez" <mcgrof@suse.com>
+> 
+> Takashi added request_firmware_direct() via bba3a87e9 through v3.14-rc1
+> which avoids the unnecessary delay introduced by using the udev firmware
+> loader in case the first try failed when loading we know loading "firmware"
+> is optional. The first use case was for microcode update but if drivers are
+> using it for optional configuration updates, custom EEPROMs, and other
+> junk other than firmware that should apply as well as good use cases,
+> specially if the driver already had a first phase in which it loaded
+> the first required firmware. While reviewing one driver I figured it'd
+> be best to try to give formalizing a check with SmPL. This isn't perfect
+> it had 1 false possitive drivers/fmc/fmc-fakedev.c on the entire kernel
+> run but my hope is this can be extended a bit more to build more
+> confidence, and then perhaps stuff it as a coccicheck.
+> 
+> I suppose this will not be required once and if we remove
+> CONFIG_FW_LOADER_USER_HELPER. Is that ever going away for good? I know
+> there was a recent attempt to remove the udev loader support but
+> it was unclear if the special alternative helper support would be
+> removed upstream from the kernel.
 
-The code does not reflect that, it allows for files to not be present for
-the config stuff. If in practice files are always present that's a bit
-different.
+Actually a few weeks ago I sent a patch to make request_firmware()
+with usermode helper explicitly to be used by some drivers (like
+dell-rbu).  I hope Greg took it for 3.17.  Once when this patch is in,
+distros can turn off the usermode helper fallback gracefully, so no
+ugly timeout issue shouldn't happen.
 
-> (And the 60 
-> second timeout for udev to confirm that a file doesn't exist seems like 
-> udev is just basically broken.)
 
-Its one reason it being tossed.
-
->   That aside, we still need to solve the real problem that we're 
-> experiencing in that the boot-time load of cxgb4 is timing out on SLE12 
-> because a maximum load timeout has been instituted in that distribution for 
-> driver modules and if there are two 10Gb/s-BT adapters present in a system 
-> which need both base firmware and BT PHY firmware, we exceed that timeout.  
-
-As for that it'd be great if you can answer some questions I had about
-the rest of firmware load processing on the other thread, I had a bit
-of questions for you there.
-
-> The timeout really should be per device (since there ~could~ be an 
-> arbitrary number of devices in a system) and there probably should be a way 
-> for the driver to notify the kernel timeout mechanism that forward progress 
-> is being made ...
-
-I'd prefer we dive into this on the other thread.
-
-  Luis
+Takashi
