@@ -1,47 +1,23 @@
-From: gregkh@linuxfoundation.org (Greg KH)
-Date: Thu, 26 Jun 2014 15:21:07 -0400
-Subject: [Cocci] [PATCH 0/3] drivers: expand usage of
-	request_firmware_direct()
-In-Reply-To: <s5hmwczve4i.wl%tiwai@suse.de>
-References: <1403649583-12707-1-git-send-email-mcgrof@do-not-panic.com>
- <s5hmwczve4i.wl%tiwai@suse.de>
-Message-ID: <20140626192107.GB24337@kroah.com>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sat, 28 Jun 2014 11:08:35 +0200
+Subject: [Cocci] [PATCH V3] scripts/coccinelle/free: Delete NULL test
+ before freeing functions?
+In-Reply-To: <1403945247-21549-1-git-send-email-fabf@skynet.be>
+References: <1403945247-21549-1-git-send-email-fabf@skynet.be>
+Message-ID: <53AE8613.8080600@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, Jun 26, 2014 at 06:18:05PM +0200, Takashi Iwai wrote:
-> At Tue, 24 Jun 2014 15:39:40 -0700,
-> Luis R. Rodriguez wrote:
-> > 
-> > From: "Luis R. Rodriguez" <mcgrof@suse.com>
-> > 
-> > Takashi added request_firmware_direct() via bba3a87e9 through v3.14-rc1
-> > which avoids the unnecessary delay introduced by using the udev firmware
-> > loader in case the first try failed when loading we know loading "firmware"
-> > is optional. The first use case was for microcode update but if drivers are
-> > using it for optional configuration updates, custom EEPROMs, and other
-> > junk other than firmware that should apply as well as good use cases,
-> > specially if the driver already had a first phase in which it loaded
-> > the first required firmware. While reviewing one driver I figured it'd
-> > be best to try to give formalizing a check with SmPL. This isn't perfect
-> > it had 1 false possitive drivers/fmc/fmc-fakedev.c on the entire kernel
-> > run but my hope is this can be extended a bit more to build more
-> > confidence, and then perhaps stuff it as a coccicheck.
-> > 
-> > I suppose this will not be required once and if we remove
-> > CONFIG_FW_LOADER_USER_HELPER. Is that ever going away for good? I know
-> > there was a recent attempt to remove the udev loader support but
-> > it was unclear if the special alternative helper support would be
-> > removed upstream from the kernel.
-> 
-> Actually a few weeks ago I sent a patch to make request_firmware()
-> with usermode helper explicitly to be used by some drivers (like
-> dell-rbu).  I hope Greg took it for 3.17.  Once when this patch is in,
-> distros can turn off the usermode helper fallback gracefully, so no
-> ugly timeout issue shouldn't happen.
 
-I'll take that in a few days, been traveling at the moment...
+> V3: 
+>    -Update print_main message.
 
-thanks,
+Does the discussion topic need also an adjustment?
 
-greg k-h
+How do you think about my previous update suggestion "Deletion of
+unnecessary checks before specific function calls"?
+https://systeme.lip6.fr/pipermail/cocci/2014-March/000675.html
+https://lkml.org/lkml/2014/3/5/344
+
+Regards,
+Markus
