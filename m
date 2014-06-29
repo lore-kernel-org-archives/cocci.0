@@ -1,39 +1,115 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 28 Jun 2014 23:28:42 +0200 (CEST)
-Subject: [Cocci] [PATCH V3] scripts/coccinelle/free: Delete NULL test
- before freeing functions?
-In-Reply-To: <53AF2CE6.5020300@users.sourceforge.net>
-References: <1403945247-21549-1-git-send-email-fabf@skynet.be>
- <53AE8613.8080600@users.sourceforge.net>
- <20140628120052.0b8670723928a967808dd544@skynet.be>
- <53AEA927.3010100@users.sourceforge.net>
- <20140628140157.98304218ad0919b1567cfee4@skynet.be>
- <53AF2CE6.5020300@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1406282326010.2022@localhost6.localdomain6>
+From: himangi774@gmail.com (Himangi Saraogi)
+Date: Sun, 29 Jun 2014 12:46:04 +0530
+Subject: [Cocci] [PATCH] Coccinelle: Script to use ARRAY_SIZE instead of
+ division of two sizeofs
+Message-ID: <20140629071604.GA16162@himangi-Dell>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sat, 28 Jun 2014, SF Markus Elfring wrote:
+This script detects cases where ARRAY_SIZE can be used such as
+where there is a division of sizeof the array by the sizeof its first
+element or by any indexed element or the element type. It replaces the
+division of the two sizeofs by ARRAY_SIZE.
 
-> > Sorry but I'm not working on coccinelle ; just did a small script for kernel tree.
-> 
-> I would appreciate a more constructive feedback for my update suggestions around
-> the topic "Deletion of unnecessary checks before specific function calls".
-> - Did you look at the concrete patches?
-> - How do you think about the general approach?
-> 
-> Examples:
-> https://systeme.lip6.fr/pipermail/cocci/2014-March/000676.html
-> http://marc.info/?l=kernel-janitors&m=139405971927100&w=2
+Signed-off-by: Himangi Saraogi <himangi774@gmail.com>
+Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+---
+ scripts/coccinelle/misc/array_size.cocci | 87 ++++++++++++++++++++++++++++++++
+ 1 file changed, 87 insertions(+)
+ create mode 100644 scripts/coccinelle/misc/array_size.cocci
 
-Regular expressions do not allow taking advantage of the optimizations 
-provided by Coccinelle and are not easy for a reader to understand.
-
-> https://systeme.lip6.fr/pipermail/cocci/2014-March/000677.html
-> http://marc.info/?l=kernel-janitors&m=139405983727148&w=2
-
-This is not safe due to the use of when any.  You have no guarantee that 
-there is not a dereference of input in the matched region, or that the 
-value of input is still the argument value at the point of the test.
-
-julia
+diff --git a/scripts/coccinelle/misc/array_size.cocci b/scripts/coccinelle/misc/array_size.cocci
+new file mode 100644
+index 0000000..81e279c
+--- /dev/null
++++ b/scripts/coccinelle/misc/array_size.cocci
+@@ -0,0 +1,87 @@
++/// Use ARRAY_SIZE instead of dividing sizeof array with sizeof an element
++///
++//# This makes an effort to find cases where ARRAY_SIZE can be used such as
++//# where there is a division of sizeof the array by the sizeof its first
++//# element or by any indexed element or the element type. It replaces the
++//# division of the two sizeofs by ARRAY_SIZE.
++//
++// Confidence: High
++// Copyright: (C) 2014 Himangi Saraogi.  GPLv2.
++// Comments:
++// Options: --no-includes --include-headers
++
++virtual patch
++virtual context
++virtual org
++virtual report
++
++ at i@
++@@
++
++#include <linux/kernel.h>
++
++//----------------------------------------------------------
++//  For context mode
++//----------------------------------------------------------
++
++ at depends on i&&context@
++type T;
++T[] E;
++@@
++(
++* (sizeof(E)/sizeof(*E))
++|
++* (sizeof(E)/sizeof(E[...]))
++|
++* (sizeof(E)/sizeof(T))
++)
++
++//----------------------------------------------------------
++//  For patch mode
++//----------------------------------------------------------
++
++ at depends on i&&patch@
++type T;
++T[] E;
++@@
++(
++- (sizeof(E)/sizeof(*E))
+++ ARRAY_SIZE(E)
++|
++- (sizeof(E)/sizeof(E[...]))
+++ ARRAY_SIZE(E)
++|
++- (sizeof(E)/sizeof(T))
+++ ARRAY_SIZE(E)
++)
++
++//----------------------------------------------------------
++//  For org and report mode
++//----------------------------------------------------------
++
++ at r@
++type T;
++T[] E;
++position p;
++@@
++(
++ (sizeof(E)@p /sizeof(*E))
++|
++ (sizeof(E)@p /sizeof(E[...]))
++|
++ (sizeof(E)@p /sizeof(T))
++)
++
++ at script:python depends on i&&org@
++p << r.p;
++@@
++
++coccilib.org.print_todo(p[0], "WARNING should use ARRAY_SIZE")
++
++@script:python depends on i&&report@
++p << r.p;
++@@
++
++msg="WARNING: Use ARRAY_SIZE"
++coccilib.report.print_report(p[0], msg)
++
+-- 
+1.9.1
