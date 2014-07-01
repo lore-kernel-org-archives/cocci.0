@@ -1,20 +1,53 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 29 Jun 2014 13:00:37 +0200
-Subject: [Cocci] [PATCH V3] scripts/coccinelle/free: Delete NULL test
- before freeing functions?
-In-Reply-To: <20140629102714.ea430bbd1f7c19e2f18fa56f@skynet.be>
-References: <1403945247-21549-1-git-send-email-fabf@skynet.be>	<53AE8613.8080600@users.sourceforge.net>	<20140628120052.0b8670723928a967808dd544@skynet.be>	<53AEA927.3010100@users.sourceforge.net>	<20140628140157.98304218ad0919b1567cfee4@skynet.be>	<53AF2CE6.5020300@users.sourceforge.net>
- <20140629102714.ea430bbd1f7c19e2f18fa56f@skynet.be>
-Message-ID: <53AFF1D5.5070003@users.sourceforge.net>
+From: eric@regit.org (Eric Leblond)
+Date: Tue, 01 Jul 2014 16:41:02 +0200
+Subject: [Cocci] Problem with spatch 1.0rc21
+Message-ID: <1404225662.25017.20.camel@ice-age2.regit.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hello,
 
-> 	I hope you had information you wanted from Julia ?
+Suricata is using some coccinelle based tests for its QA and it seems
+there has been a change leading to a problem in a recent coccinelle
+release. Running them with coccinelle rc21 lead to an error.
 
-Yes. - I am waiting on another Coccinelle software release which will
-contain improvements for my feature requests and bug reports.
-I'm curious when I should retry proposed filter patterns.
+When I run the following spatch on a file using strcpy, I've got a match
+and an error:
 
-Regards,
-Markus
+@banned@
+identifier func =~ "^(sprintf|strcat|strcpy|strncpy|strncat|strndup|strchrdup)$";
+position p1;
+@@
+
+<+...
+func(...)@p1
+...+>
+
+@script:python@
+p1 << banned.p1;
+func << banned.func;
+@@
+
+print("Banned function %s() used at %s:%s" % (func, p1[0].file, p1[0].line))
+import sys
+sys.exit(1)
+
+
+The error is the following:
+
+spatch  --sp-file qa/coccinelle/banned-functions.cocci src/source-af-packet.c 
+init_defs_builtins: /usr/share/coccinelle/standard.h
+HANDLING: src/source-af-packet.c
+Fatal error: exception Invalid_argument("equal: abstract value")
+
+After some try it seems that the crashing part is the affection of p1
+and func. Commenting (p<< and func<<) result in a complaint about
+undefined variable which is logical.
+
+Spatch version:
+
+spatch version 1.0.0-rc21 with Python support and with PCRE support
+
+BR,
+-- 
+Eric Leblond <eric@regit.org>
