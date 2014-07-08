@@ -1,85 +1,48 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 1 Jul 2014 19:21:02 +0200 (CEST)
-Subject: [Cocci] Problem with spatch 1.0rc21
-In-Reply-To: <1404234182.25017.24.camel@ice-age2.regit.org>
-References: <1404225662.25017.20.camel@ice-age2.regit.org>
- <alpine.DEB.2.10.1407011722070.3898@hadrien>
- <1404234182.25017.24.camel@ice-age2.regit.org>
-Message-ID: <alpine.DEB.2.10.1407011919340.3898@hadrien>
+From: gregkh@linuxfoundation.org (Greg KH)
+Date: Tue, 8 Jul 2014 15:25:36 -0700
+Subject: [Cocci] [PATCH 0/3] drivers: expand usage of
+	request_firmware_direct()
+In-Reply-To: <s5hmwczve4i.wl%tiwai@suse.de>
+References: <1403649583-12707-1-git-send-email-mcgrof@do-not-panic.com>
+ <s5hmwczve4i.wl%tiwai@suse.de>
+Message-ID: <20140708222536.GA7745@kroah.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On Thu, Jun 26, 2014 at 06:18:05PM +0200, Takashi Iwai wrote:
+> At Tue, 24 Jun 2014 15:39:40 -0700,
+> Luis R. Rodriguez wrote:
+> > 
+> > From: "Luis R. Rodriguez" <mcgrof@suse.com>
+> > 
+> > Takashi added request_firmware_direct() via bba3a87e9 through v3.14-rc1
+> > which avoids the unnecessary delay introduced by using the udev firmware
+> > loader in case the first try failed when loading we know loading "firmware"
+> > is optional. The first use case was for microcode update but if drivers are
+> > using it for optional configuration updates, custom EEPROMs, and other
+> > junk other than firmware that should apply as well as good use cases,
+> > specially if the driver already had a first phase in which it loaded
+> > the first required firmware. While reviewing one driver I figured it'd
+> > be best to try to give formalizing a check with SmPL. This isn't perfect
+> > it had 1 false possitive drivers/fmc/fmc-fakedev.c on the entire kernel
+> > run but my hope is this can be extended a bit more to build more
+> > confidence, and then perhaps stuff it as a coccicheck.
+> > 
+> > I suppose this will not be required once and if we remove
+> > CONFIG_FW_LOADER_USER_HELPER. Is that ever going away for good? I know
+> > there was a recent attempt to remove the udev loader support but
+> > it was unclear if the special alternative helper support would be
+> > removed upstream from the kernel.
+> 
+> Actually a few weeks ago I sent a patch to make request_firmware()
+> with usermode helper explicitly to be used by some drivers (like
+> dell-rbu).  I hope Greg took it for 3.17.  Once when this patch is in,
+> distros can turn off the usermode helper fallback gracefully, so no
+> ugly timeout issue shouldn't happen.
 
+That patch is now merged, so this series should not be needed anymore,
+right?
 
-On Tue, 1 Jul 2014, Eric Leblond wrote:
+thanks,
 
-> Hello,
->
-> Thanks for you quick answer!
->
-> On Tue, 2014-07-01 at 17:26 +0200, Julia Lawall wrote:
-> > > Suricata is using some coccinelle based tests for its QA and it seems
-> > > there has been a change leading to a problem in a recent coccinelle
-> > > release. Running them with coccinelle rc21 lead to an error.
-> > >
-> > > When I run the following spatch on a file using strcpy, I've got a match
-> > > and an error:
-> > >
-> > > @banned@
-> > > identifier func =~ "^(sprintf|strcat|strcpy|strncpy|strncat|strndup|strchrdup)$";
-> > > position p1;
-> > > @@
-> > >
-> > > <+...
-> > > func(...)@p1
-> > > ...+>
-> >
-> > You don't need the <+... ...+> in this case.
->
-> OK, thanks. Fixing that.
->
-> >
-> > > @script:python@
-> > > p1 << banned.p1;
-> > > func << banned.func;
-> > > @@
-> > >
-> > > print("Banned function %s() used at %s:%s" % (func, p1[0].file, p1[0].line))
-> > > import sys
-> > > sys.exit(1)
-> > >
-> > >
-> > > The error is the following:
-> > >
-> > > spatch  --sp-file qa/coccinelle/banned-functions.cocci src/source-af-packet.c
-> > > init_defs_builtins: /usr/share/coccinelle/standard.h
-> > > HANDLING: src/source-af-packet.c
-> > > Fatal error: exception Invalid_argument("equal: abstract value")
-> >
-> > I believe that I have already fixed this problem, but it has not yet been
-> > released.
->
-> OK, I can test the patch if you want.
->
-> > The problem is with the regular expression.  One solution would
-> > be not to use PCRE regular expressions.  This is a configuration option.
-> >
-> >   --enable-pcre           enable global package pcre (yes,no) (default: auto)
-> >
-> > Alternatively, there is really no point to use a regular expression in
-> > your case.  Just put
-> >   \(sprintf\|strcat\|strcpy\|strncpy\|strncat\|strndup\|strchrdup\)
-> > in the code in place of func.
->
-> OK, this works with this change but how can I access to the function
-> name afterward to have it displayed in the error message ? The line does
-> not seem to be accessible in python code.
-
-Ah, OK I missed that detail.  You can make an identifier metavariable i,
-and then put:
-
-\(sprintf at i\|strcat at i\|strcpy at i\|strncpy at i\|strncat at i\|strndup at i\|strchrdup at i\)
-
-Now you can inherit and print i.
-
-julia
+greg k-h
