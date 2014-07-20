@@ -1,34 +1,88 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 18 Jul 2014 22:02:56 +0200 (CEST)
-Subject: [Cocci] typo in config script ?
-In-Reply-To: <20140718193508.GA25742@opentech.at>
-References: <20140718193508.GA25742@opentech.at>
-Message-ID: <alpine.DEB.2.02.1407182158270.2015@localhost6.localdomain6>
+From: himangi774@gmail.com (Himangi Saraogi)
+Date: Mon, 21 Jul 2014 03:06:35 +0530
+Subject: [Cocci] [PATCH] Coccinelle: Script to replace if and BUG with BUG_ON
+Message-ID: <20140720213635.GA12365@himangi-Dell>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, 18 Jul 2014, Nicholas Mc Guire wrote:
+This script detects cases where BUG() follows an if condition on an
+expression and replaces the if condition and BUG() with a BUG_ON having
+the conditional expression of the if statement as argument.
 
-> 
-> HI !
-> 
->  
->  while building rc21 ./configure ,,,,  outputs
-> 
-> ...
-> optimized spatch: no    (overridable with --disable-opt)
-> ...
-> 
->  which should probably be --enable-opt ? 
+Signed-off-by: Himangi Saraogi <himangi774@gmail.com>
+Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+---
+ scripts/coccinelle/misc/bugon.cocci | 62 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 62 insertions(+)
+ create mode 100644 scripts/coccinelle/misc/bugon.cocci
 
-I think (but I am not at all sure) that the issue is that the variable 
-that produces "no" can actually be either yes or no at this point.  The 
-message on the other hand is fixed, and it is assuming that the value is 
-yes.  Were there some messages before related to ocamlopt.  Do you have 
-ocamlopt installed on your machine?  Or do you have ocaml 3.11.2.  
-Apparently that has a bug that precludes making an optimized version.  
-There seem to be a bunch of other conditions that can cause this issue.  
-Probably there should just be no overridable message if any of these 
-problems occurs.
-
-julia
+diff --git a/scripts/coccinelle/misc/bugon.cocci b/scripts/coccinelle/misc/bugon.cocci
+new file mode 100644
+index 0000000..556456c
+--- /dev/null
++++ b/scripts/coccinelle/misc/bugon.cocci
+@@ -0,0 +1,62 @@
++/// Use BUG_ON instead of a if condition followed by BUG.
++///
++//# This makes an effort to find cases where BUG() follows an if
++//# condition on an expression and replaces the if condition and BUG()
++//# with a BUG_ON having the conditional expression of the if statement
++//# as argument.
++//
++// Confidence: High
++// Copyright: (C) 2014 Himangi Saraogi.  GPLv2.
++// Comments:
++// Options: --no-includes, --include-headers
++
++virtual patch
++virtual context
++virtual org
++virtual report
++
++//----------------------------------------------------------
++//  For context mode
++//----------------------------------------------------------
++
++ at depends on context@
++expression e;
++@@
++
++*if (e) BUG();
++
++//----------------------------------------------------------
++//  For patch mode
++//----------------------------------------------------------
++
++ at depends on patch@
++expression e;
++@@
++
++-if (e) BUG();
+++BUG_ON(e);
++
++//----------------------------------------------------------
++//  For org and report mode
++//----------------------------------------------------------
++
++ at r@
++expression e;
++position p;
++@@
++
++ if (e) BUG at p ();
++
++ at script:python depends on org@
++p << r.p;
++@@
++
++coccilib.org.print_todo(p[0], "WARNING use BUG_ON")
++
++@script:python depends on report@
++p << r.p;
++@@
++
++msg="WARNING: Use BUG_ON"
++coccilib.report.print_report(p[0], msg)
++
+-- 
+1.9.1
