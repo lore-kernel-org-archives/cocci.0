@@ -1,15 +1,16 @@
 From: der.herr@hofr.at (Nicholas Mc Guire)
-Date: Tue, 22 Jul 2014 10:19:09 +0200
-Subject: [Cocci] [PATCH] kfree followed by a TRACE_RET before ref should be
-	ok
-Message-ID: <20140722081909.GA7723@opentech.at>
+Date: Tue, 22 Jul 2014 12:12:17 +0200
+Subject: [Cocci] [PATCH] scripts: coccinelle: kfree with TRACE_RET before
+	ref is ok	(resent)
+Message-ID: <20140722101217.GA16183@opentech.at>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 
 kfree.cocci currently triggers on constructs like
+(resending with proper CC list and subject line)
 
-drivers/staging/rts5208/spi.c:
+drivers/staging/rts5208/spi.c
 596    if (retval < 0) {
 597            kfree(buf);
 598            rtsx_clear_spi_error(chip);
