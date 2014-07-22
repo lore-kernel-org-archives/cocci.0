@@ -1,72 +1,59 @@
-From: riccardo.lucchese@gmail.com (Riccardo Lucchese)
-Date: Tue, 22 Jul 2014 15:43:09 +0200
-Subject: [Cocci] [bug-cocci] "badly compiled mcode" error
-In-Reply-To: <alpine.DEB.2.10.1407221455390.2366@hadrien>
-References: <20140721184219.GA7903@rlp>
- <alpine.DEB.2.10.1407221455390.2366@hadrien>
-Message-ID: <20140722134309.GA30105@rlp>
+From: bjorn@mork.no (=?utf-8?Q?Bj=C3=B8rn_Mork?=)
+Date: Tue, 22 Jul 2014 15:51:25 +0200
+Subject: [Cocci] [PATCH] scripts: coccinelle: kfree with TRACE_RET
+	before ref is ok (resent)
+In-Reply-To: <20140722101217.GA16183@opentech.at> (Nicholas Mc Guire's message
+ of "Tue, 22 Jul 2014 12:12:17 +0200")
+References: <20140722101217.GA16183@opentech.at>
+Message-ID: <87ha298psy.fsf@nemi.mork.no>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, Jul 22, 2014 at 02:55:57PM +0200, Julia Lawall wrote:
-> A patch is below.
-> 
-> julia
+Nicholas Mc Guire <der.herr@hofr.at> writes:
 
-Thank you, I cannot reproduce the error with this applied.
+> kfree.cocci currently triggers on constructs like
+> (resending with proper CC list and subject line)
+>
+> drivers/staging/rts5208/spi.c
+> 596    if (retval < 0) {
+> 597            kfree(buf);
+> 598            rtsx_clear_spi_error(chip);
+> 599            spi_set_err_code(chip, SPI_HW_ERR);
+> 600            TRACE_RET(chip, STATUS_FAIL);
+> 601    }
+> 602
+> 603    rtsx_stor_access_xfer_buf(buf, pagelen, srb, &index, &offset,
+>                             TO_XFER_BUF);
+>
+> with:
+>
+> ./drivers/staging/rts5208/spi.c:603:28-31: ERROR: reference preceded 
+> by free on line 597
+>
+> but this should be fine - so TRACE_RET is added to the list of calls 
+> "protecting" access to freed objects see drivers/staging/rts5208/trace.h
 
-riccardo
+The TRACE_RET macro is a serious coding style violation. Fix that and
+the error will go away.  Don't change scripts to hide issues with the
+code. The code above won't just trigger an error in kfree.cocci but also
+in the head of any sane person.
+
+>From Documentation/CodingStyle:
+
+<quote>
+Things to avoid when using macros:
+
+1) macros that affect control flow:
+
+#define FOO(x)                                  \
+        do {                                    \
+                if (blah(x) < 0)                \
+                        return -EBUGGERED;      \
+        } while(0)
+
+is a _very_ bad idea.  It looks like a function call but exits the "calling"
+function; don't break the internal parsers of those who will read the code.
+</quote>
 
 
-> diff --git a/parsing_cocci/iso_compile.ml b/parsing_cocci/iso_compile.ml
-> index 5e39b9c..7921f44 100644
-> --- a/parsing_cocci/iso_compile.ml
-> +++ b/parsing_cocci/iso_compile.ml
-> @@ -52,7 +52,7 @@ let process_info l =
->  	 let safe_add p pos =
->  	   (* don't add pos var where a pos var is already present *)
->  	   if Common.inter_set previously_used pos = [] then p::pos else pos in
-> -	 let p =
-> +	 let new_previously_used =
->  	   if List.for_all (List.for_all (function e -> List.length e = 1)) a
->  	   then
->  	     let p = get_p() in
-> @@ -60,22 +60,23 @@ let process_info l =
->  	       (List.iter
->  		  (List.iter (function (_,pos) -> pos := safe_add p !pos)))
->  	       a;
-> -	     [p]
-> +	     p::previously_used
->  	   else
->  	     let all = r @ List.concat xs in
-> -	     let rec find_first_available a = function
-> +	     let rec find_first_available a previously_used = function
->  		 [] -> raise Not_found
->  	       | (str,pos)::xs ->
->  		   if str = a && Common.inter_set previously_used !pos = []
->  		   then pos
-> -		   else find_first_available a xs in
-> +		   else find_first_available a previously_used xs in
->  	     List.fold_left
->  	       (function prev ->
->  		 function (str,pos) ->
->  		   if Common.inter_set previously_used !pos = []
->  		   then
->  		     try
-> -		       let entries = List.map (find_first_available str) all in
-> +		       let entries =
-> +			 List.map (find_first_available str prev) all in
->  		       let p = get_p() in
->  		       pos := p::!pos;
->  		       List.iter (function pos -> pos := p :: !pos) entries;
-> @@ -83,8 +84,8 @@ let process_info l =
->  		     with Not_found -> prev
->  		   (* otherwise already annotated *)
->  		   else prev)
-> -	       [] f in
-> -	 loop (p at previously_used) xs
-> +	       previously_used f in
-> +	 loop new_previously_used xs
->       | _ -> failwith "bad iso" in
->     loop l
-> 
+Bj?rn
