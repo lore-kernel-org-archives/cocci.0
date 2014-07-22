@@ -1,59 +1,28 @@
-From: bjorn@mork.no (=?utf-8?Q?Bj=C3=B8rn_Mork?=)
-Date: Tue, 22 Jul 2014 15:51:25 +0200
-Subject: [Cocci] [PATCH] scripts: coccinelle: kfree with TRACE_RET
-	before ref is ok (resent)
-In-Reply-To: <20140722101217.GA16183@opentech.at> (Nicholas Mc Guire's message
- of "Tue, 22 Jul 2014 12:12:17 +0200")
-References: <20140722101217.GA16183@opentech.at>
-Message-ID: <87ha298psy.fsf@nemi.mork.no>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Tue, 22 Jul 2014 17:22:54 +0200 (CEST)
+Subject: [Cocci] [bug-cocci] Parse error
+In-Reply-To: <20140721221300.GA17667@rlp>
+References: <20140721221300.GA17667@rlp>
+Message-ID: <alpine.DEB.2.10.1407221722040.2366@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Nicholas Mc Guire <der.herr@hofr.at> writes:
+On Tue, 22 Jul 2014, Riccardo Lucchese wrote:
 
-> kfree.cocci currently triggers on constructs like
-> (resending with proper CC list and subject line)
+> Hello,
 >
-> drivers/staging/rts5208/spi.c
-> 596    if (retval < 0) {
-> 597            kfree(buf);
-> 598            rtsx_clear_spi_error(chip);
-> 599            spi_set_err_code(chip, SPI_HW_ERR);
-> 600            TRACE_RET(chip, STATUS_FAIL);
-> 601    }
-> 602
-> 603    rtsx_stor_access_xfer_buf(buf, pagelen, srb, &index, &offset,
->                             TO_XFER_BUF);
+> spatch fails to parse the following line
 >
-> with:
+> - if (!~e) S
 >
-> ./drivers/staging/rts5208/spi.c:603:28-31: ERROR: reference preceded 
-> by free on line 597
+> in the attached .cocci test case.
 >
-> but this should be fine - so TRACE_RET is added to the list of calls 
-> "protecting" access to freed objects see drivers/staging/rts5208/trace.h
+> Using
+>
+> - if (!(~e)) S
+>
+> instead, works fine.
 
-The TRACE_RET macro is a serious coding style violation. Fix that and
-the error will go away.  Don't change scripts to hide issues with the
-code. The code above won't just trigger an error in kfree.cocci but also
-in the head of any sane person.
+It should work if you put a space between ! and ~.
 
->From Documentation/CodingStyle:
-
-<quote>
-Things to avoid when using macros:
-
-1) macros that affect control flow:
-
-#define FOO(x)                                  \
-        do {                                    \
-                if (blah(x) < 0)                \
-                        return -EBUGGERED;      \
-        } while(0)
-
-is a _very_ bad idea.  It looks like a function call but exits the "calling"
-function; don't break the internal parsers of those who will read the code.
-</quote>
-
-
-Bj?rn
+julia
