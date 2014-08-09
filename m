@@ -1,34 +1,55 @@
-From: mmarek@suse.cz (Michal Marek)
-Date: Wed, 06 Aug 2014 11:34:42 +0200
-Subject: [Cocci] [PATCH] Coccinelle: Script to replace if and BUG with
-	BUG_ON
-In-Reply-To: <alpine.DEB.2.02.1408052015440.2047@localhost6.localdomain6>
-References: <20140720213635.GA12365@himangi-Dell> <53E0E9D0.9040500@suse.cz>
- <alpine.DEB.2.02.1408052015440.2047@localhost6.localdomain6>
-Message-ID: <53E1F6B2.90201@suse.cz>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sat, 9 Aug 2014 10:37:51 +0200 (CEST)
+Subject: [Cocci] [patch 119/197] scripts/coccinelle/free: Delete NULL
+ test before freeing functions
+In-Reply-To: <53E5DA60.90902@users.sourceforge.net>
+References: <53e53fd1.zO3IbUqJ421c7VXf%akpm@linux-foundation.org>
+ <53E5DA60.90902@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.02.1408091028520.2016@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 2014-08-05 20:16, Julia Lawall wrote:
-> 
-> 
-> On Tue, 5 Aug 2014, Michal Marek wrote:
-> 
->> On 2014-07-20 23:36, Himangi Saraogi wrote:
->>> This script detects cases where BUG() follows an if condition on an
->>> expression and replaces the if condition and BUG() with a BUG_ON having
->>> the conditional expression of the if statement as argument.
->>>
->>> Signed-off-by: Himangi Saraogi <himangi774@gmail.com>
->>> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
->>
->> Is this a result of some internal review, or where does Julia's Acked-by
->> come from? I'm just wondering, because I haven't seen any previous
->> version of this patch.
-> 
-> She sent it to me first.  It's OK with me.
+On Sat, 9 Aug 2014, SF Markus Elfring wrote:
 
-OK, thanks for confirming. I'm going to merge this and the previous
-patches by Himangi.
+> > + at r depends on context || report || org @
+> > +expression E;
+> > +position p;
+> > +@@
+> > +
+> > +* if (E)
+> > +*	\(kfree at p\|debugfs_remove at p\|debugfs_remove_recursive at p\|usb_free_urb\)(E);
+> 
+> How do you think about to add the construct "@p" also behind the function name
+> "usb_free_urb"?
 
-Michal
+Yes, that would be needed, thanks.  Also, it was recently suggested to add 
+of_node_put to the list of things that are checked for.
+
+> Is my previous update suggestion for such an issue worth for another look, too?
+
+I still don't think this should be done for any random function that 
+performs a null test on its argument.  The corrections involved here are 
+not as trivial as they would seem.  Often it is not the case that the null 
+test at the call site should be just deleted, instead the code should be 
+reorganized.  Making a rule that treats 5000 functions that are 
+automatically selected will just encourage people to do sloppy things.
+
+(Personally, I don't like the whole null test removal idea.  It mixes the 
+notion of something that is necessary and has failed and something that is 
+optional.  In the case of something that is necessary and has failed, the 
+null value is usually statically apparent, and the code can be reorganized 
+so that a null value doesn't go where it is not wanted.  In the case of 
+something that is simply optional, the presence of the null test gives 
+the reader of the code some information.  Removing this information in 
+rarely executed code seems unfortunate.)
+
+julia
+
+> 
+> Regards,
+> Markus
+> --
+> To unsubscribe from this list: send the line "unsubscribe kernel-janitors" in
+> the body of a message to majordomo at vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
