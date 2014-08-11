@@ -1,31 +1,62 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sat, 09 Aug 2014 11:13:58 +0200
-Subject: [Cocci] [patch 119/197] scripts/coccinelle/free: Delete NULL
- test before freeing functions?
-In-Reply-To: <alpine.DEB.2.02.1408091028520.2016@localhost6.localdomain6>
-References: <53e53fd1.zO3IbUqJ421c7VXf%akpm@linux-foundation.org>
- <53E5DA60.90902@users.sourceforge.net>
- <alpine.DEB.2.02.1408091028520.2016@localhost6.localdomain6>
-Message-ID: <53E5E656.1000606@users.sourceforge.net>
+From: Julia.Lawall@lip6.fr (Julia Lawall)
+Date: Mon, 11 Aug 2014 12:24:13 +0200
+Subject: [Cocci] [PATCH] scripts/coccinelle/free/ifnullfree.cocci: simplify
+	and extend to of_node_put
+Message-ID: <1407752653-16883-1-git-send-email-Julia.Lawall@lip6.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> I still don't think this should be done for any random function that 
-> performs a null test on its argument.  The corrections involved here are 
-> not as trivial as they would seem.
+From: Julia Lawall <Julia.Lawall@lip6.fr>
 
-I would prefer to make the list of corresponding function names more complete.
+Three changes:
 
+* Don't remove and add function calls in the patch case
+* Add of_node_put as a considered function
+* Add a missing position variable on usb_free_urb
 
-> Often it is not the case that the null test at the call site should be
-> just deleted, instead the code should be reorganized.
+The need for the last change was spotted by SF Markus Elfring.
 
-Which source code places do you know where a different approach might look better?
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
+---
+ scripts/coccinelle/free/ifnullfree.cocci |   17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
-> (Personally, I don't like the whole null test removal idea. [...]
-
-Would you like to clarify involved software concerns a bit more?
-
-Regards,
-Markus
+diff --git a/scripts/coccinelle/free/ifnullfree.cocci b/scripts/coccinelle/free/ifnullfree.cocci
+index a42d70b..31be901 100644
+--- a/scripts/coccinelle/free/ifnullfree.cocci
++++ b/scripts/coccinelle/free/ifnullfree.cocci
+@@ -18,17 +18,15 @@ expression E;
+ @@
+ - if (E)
+ (
+--	kfree(E);
+-+ kfree(E);
++	kfree(E);
+ |
+--	debugfs_remove(E);
+-+ debugfs_remove(E);
++	debugfs_remove(E);
+ |
+--	debugfs_remove_recursive(E);
+-+ debugfs_remove_recursive(E);
++	debugfs_remove_recursive(E);
+ |
+--	usb_free_urb(E);
+-+ usb_free_urb(E);
++	usb_free_urb(E);
++|
++	of_node_put(E);
+ )
+ 
+ @r depends on context || report || org @
+@@ -37,7 +35,8 @@ position p;
+ @@
+ 
+ * if (E)
+-*	\(kfree at p\|debugfs_remove at p\|debugfs_remove_recursive at p\|usb_free_urb\)(E);
++*  \(kfree at p\|debugfs_remove at p\|debugfs_remove_recursive at p\|usb_free_urb at p\|
++*    of_node_put at p\)(E);
+ 
+ @script:python depends on org@
+ p << r.p;
