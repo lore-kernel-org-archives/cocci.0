@@ -1,62 +1,47 @@
-From: Julia.Lawall@lip6.fr (Julia Lawall)
-Date: Mon, 11 Aug 2014 12:24:13 +0200
-Subject: [Cocci] [PATCH] scripts/coccinelle/free/ifnullfree.cocci: simplify
-	and extend to of_node_put
-Message-ID: <1407752653-16883-1-git-send-email-Julia.Lawall@lip6.fr>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Mon, 11 Aug 2014 15:05:21 +0200 (CEST)
+Subject: [Cocci] [PATCH] scripts/coccinelle/free/ifnullfree.cocci:
+ simplify and extend to of_node_put
+In-Reply-To: <53E8BE84.3080505@users.sourceforge.net>
+References: <1407752653-16883-1-git-send-email-Julia.Lawall@lip6.fr>
+ <53E8BE84.3080505@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.10.1408111503550.2518@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-From: Julia Lawall <Julia.Lawall@lip6.fr>
 
-Three changes:
 
-* Don't remove and add function calls in the patch case
-* Add of_node_put as a considered function
-* Add a missing position variable on usb_free_urb
+On Mon, 11 Aug 2014, SF Markus Elfring wrote:
 
-The need for the last change was spotted by SF Markus Elfring.
+> >  @r depends on context || report || org @
+> > @@ -37,7 +35,8 @@ position p;
+> >  @@
+> >
+> >  * if (E)
+> > -*	\(kfree at p\|debugfs_remove at p\|debugfs_remove_recursive at p\|usb_free_urb\)(E);
+> > +*  \(kfree at p\|debugfs_remove at p\|debugfs_remove_recursive at p\|usb_free_urb at p\|
+> > +*    of_node_put at p\)(E);
+>
+> Why do you want to limit this semantic patch pattern to such a small list of
+> function names?
 
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+Because these are the ones that kernel developers have cited as
+interesting for this kind of transformation.
 
----
- scripts/coccinelle/free/ifnullfree.cocci |   17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+> Would you like to consider also the hundreds of other functions which perform
+> input parameter validation?
 
-diff --git a/scripts/coccinelle/free/ifnullfree.cocci b/scripts/coccinelle/free/ifnullfree.cocci
-index a42d70b..31be901 100644
---- a/scripts/coccinelle/free/ifnullfree.cocci
-+++ b/scripts/coccinelle/free/ifnullfree.cocci
-@@ -18,17 +18,15 @@ expression E;
- @@
- - if (E)
- (
---	kfree(E);
--+ kfree(E);
-+	kfree(E);
- |
---	debugfs_remove(E);
--+ debugfs_remove(E);
-+	debugfs_remove(E);
- |
---	debugfs_remove_recursive(E);
--+ debugfs_remove_recursive(E);
-+	debugfs_remove_recursive(E);
- |
---	usb_free_urb(E);
--+ usb_free_urb(E);
-+	usb_free_urb(E);
-+|
-+	of_node_put(E);
- )
- 
- @r depends on context || report || org @
-@@ -37,7 +35,8 @@ position p;
- @@
- 
- * if (E)
--*	\(kfree at p\|debugfs_remove at p\|debugfs_remove_recursive at p\|usb_free_urb\)(E);
-+*  \(kfree at p\|debugfs_remove at p\|debugfs_remove_recursive at p\|usb_free_urb at p\|
-+*    of_node_put at p\)(E);
- 
- @script:python depends on org@
- p << r.p;
+Personally, no.  I think I have explained why several times already.
+
+julia
+
+> Are you interested to make the checked list more complete with further
+> (eventually automatic?) extensions?
+>
+> Regards,
+> Markus
+> --
+> To unsubscribe from this list: send the line "unsubscribe kernel-janitors" in
+> the body of a message to majordomo at vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
