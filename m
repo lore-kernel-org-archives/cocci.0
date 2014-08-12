@@ -1,29 +1,71 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Mon, 11 Aug 2014 15:00:52 +0200
-Subject: [Cocci] [PATCH] scripts/coccinelle/free/ifnullfree.cocci:
- simplify and extend to of_node_put
-In-Reply-To: <1407752653-16883-1-git-send-email-Julia.Lawall@lip6.fr>
-References: <1407752653-16883-1-git-send-email-Julia.Lawall@lip6.fr>
-Message-ID: <53E8BE84.3080505@users.sourceforge.net>
+From: mcuddie@qnx.com (Mitchell Cuddie)
+Date: Tue, 12 Aug 2014 21:00:56 +0000
+Subject: [Cocci] Metavariable Binding Order?
+Message-ID: <1407877250.10287.28.camel@QNXWS8653-PC>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->  @r depends on context || report || org @
-> @@ -37,7 +35,8 @@ position p;
->  @@
->  
->  * if (E)
-> -*	\(kfree at p\|debugfs_remove at p\|debugfs_remove_recursive at p\|usb_free_urb\)(E);
-> +*  \(kfree at p\|debugfs_remove at p\|debugfs_remove_recursive at p\|usb_free_urb at p\|
-> +*    of_node_put at p\)(E);
+Hi Julia,
 
-Why do you want to limit this semantic patch pattern to such a small list of
-function names?
+Using coccinelle to match the argument type and edit printf format
+strings. I observe the arguments to printf being matched in reverse
+order(ok,i guess) but if I insert the processed identifiers into the
+format string they go in out of order. Is there a binding order i am
+missing? 
 
-Would you like to consider also the hundreds of other functions which perform
-input parameter validation?
-Are you interested to make the checked list more complete with further
-(eventually automatic?) extensions?
 
-Regards,
-Markus
+/*Output*/
+
+Matched %c for argument of type () 3/0
+ val=%c"
+
+(26, 53)
+Matched %d for argument of type (int) 2/1
+ errno=%d
+
+(26, 49)
+Matched %d for argument of type (int) 1/2
+"rc=%d
+
+diff:
+-       printf("rc=%d errno=%d val=%c", rc, errno, val);
++       printf("rc=%d val=%c" errno=%d, rc, errno, val);
+
+/*patch*/
+
+@base@
+position pos, p;
+expression fmt, a, b;
+expression list[n] E;
+expression list[m] F;
+expression x;
+@@
+printf(fmt at pos, E, x at p, F)
+
+@type_match@
+position base.p;
+type t;
+t e;
+@@
+e at p
+
+@script:python type_dict@
+t << type_match.t;
+p << base.p;
+@@
+/*Python Code*/
+
+@script:python fix@
+fmt << base.fmt; pos << base.pos; n << base.n; m << base.m;  p <<
+base.p;
+fix_fmt;
+@@
+/*Python Code*/
+
+@fmt_replace@
+position base.pos;
+expression base.fmt;
+identifier fix.fix_fmt;
+@@
+- fmt@pos
+++ fix_fmt
