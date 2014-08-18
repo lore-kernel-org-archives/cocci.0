@@ -1,40 +1,41 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 18 Aug 2014 05:59:49 -0500 (CDT)
-Subject: [Cocci] Clarification for array indexing style
-In-Reply-To: <53F1DBA8.5010005@users.sourceforge.net>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Mon, 18 Aug 2014 13:31:45 +0200
+Subject: [Cocci] cocci: char* indexing style for linux
+In-Reply-To: <alpine.DEB.2.10.1408180439500.2548@hadrien>
 References: <1408219616.2683.101.camel@joe-AO725>
  <1408222763.2683.107.camel@joe-AO725>
  <alpine.DEB.2.10.1408170510420.2599@hadrien>
  <1408280475.17489.4.camel@joe-AO725> <53F0D3CB.4000803@users.sourceforge.net>
  <1408292542.17489.11.camel@joe-AO725>
  <alpine.DEB.2.10.1408171241450.2520@hadrien> <53F1BB55.8080008@metafoo.de>
- <alpine.DEB.2.10.1408180446550.2548@hadrien> <53F1CDF3.5010105@metafoo.de>
- <alpine.DEB.2.10.1408180530130.2548@hadrien>
- <53F1DBA8.5010005@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1408180559110.2548@hadrien>
+ <alpine.DEB.2.10.1408180439500.2548@hadrien>
+Message-ID: <53F1E421.5000408@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 
+>> I think for these kinds of problems it would be helpful to have a metavariable
+>> type that is somewhere in the middle of idexpression and expression. Something
+>> that matches an identifier or accessing a field in an identifier, or a field
+>> of a field of an identifier and so on.
+>>
+>> In the past I had cocci scripts where I ended up doing
+>>
+>> (
+>> id->fld1
+>> |
+>> id->fld1.fld2
+>> |
+>> id->fld1.fld2.fld3
+>> ...
+>> )
+>>
+>> to kind of make this work.
+> It's probably true,  But I don't know what one would call it, and I think
+> that if one had a name for it, no one would understand it...
 
-On Mon, 18 Aug 2014, SF Markus Elfring wrote:
+Do you dare to suggest another type name for a metavariable in the
+semantic patch language?
 
-> > How about then
-> >
-> > (
-> > e1 . at e2 f + x
-> > |
-> > e1 ->@e2 f + x
-> > )
-> >
-> > where e2 has pointer typw (or array type?)
-> >
-> > e2 on the . or -> will pick up the entire innermost enclosing expression.
-> >
->
-> Would such a semantic patch approach handle also longer reference chains?
-
-Yes, I am assuming that e1 has been declared to be an arbitrary
-expression.
-
-julia
+Regards,
+Markus
