@@ -1,29 +1,33 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Mon, 18 Aug 2014 12:35:47 +0200
-Subject: [Cocci] Conversion of some pointer arithmetic to array indexing
- style
-In-Reply-To: <alpine.DEB.2.10.1408180438010.2548@hadrien>
+Date: Mon, 18 Aug 2014 12:55:36 +0200
+Subject: [Cocci] Clarification for array indexing style
+In-Reply-To: <alpine.DEB.2.10.1408180530130.2548@hadrien>
 References: <1408219616.2683.101.camel@joe-AO725>
  <1408222763.2683.107.camel@joe-AO725>
  <alpine.DEB.2.10.1408170510420.2599@hadrien>
- <1408280475.17489.4.camel@joe-AO725>
- <alpine.DEB.2.10.1408172154050.2392@hadrien>
- <53F1B486.5080704@users.sourceforge.net>
- <alpine.DEB.2.10.1408180438010.2548@hadrien>
-Message-ID: <53F1D703.1080601@users.sourceforge.net>
+ <1408280475.17489.4.camel@joe-AO725> <53F0D3CB.4000803@users.sourceforge.net>
+ <1408292542.17489.11.camel@joe-AO725>
+ <alpine.DEB.2.10.1408171241450.2520@hadrien> <53F1BB55.8080008@metafoo.de>
+ <alpine.DEB.2.10.1408180446550.2548@hadrien> <53F1CDF3.5010105@metafoo.de>
+ <alpine.DEB.2.10.1408180530130.2548@hadrien>
+Message-ID: <53F1DBA8.5010005@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> How about then
+>
+> (
+> e1 . at e2 f + x
+> |
+> e1 ->@e2 f + x
+> )
+>
+> where e2 has pointer typw (or array type?)
+>
+> e2 on the . or -> will pick up the entire innermost enclosing expression.
+>
 
->> Does the issue "isomorphism" matter in the shown addition? 
-> I don'tknw if there is one for the commutativity of addition.
-
-I try to clarify this implementation detail a bit more.
-
-
-> If there is then the disjunction is not needed.
-
-I wondered if such a repetition can be avoided in the semantic patch.
+Would such a semantic patch approach handle also longer reference chains?
 
 Regards,
 Markus
