@@ -1,39 +1,37 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 17 Aug 2014 21:56:32 -0500 (CDT)
-Subject: [Cocci] cocci: char* indexing style for linux
-In-Reply-To: <1408280475.17489.4.camel@joe-AO725>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Mon, 18 Aug 2014 10:08:38 +0200
+Subject: [Cocci] Conversion of some pointer arithmetic to array indexing
+ style
+In-Reply-To: <alpine.DEB.2.10.1408172154050.2392@hadrien>
 References: <1408219616.2683.101.camel@joe-AO725>
  <1408222763.2683.107.camel@joe-AO725>
  <alpine.DEB.2.10.1408170510420.2599@hadrien>
  <1408280475.17489.4.camel@joe-AO725>
-Message-ID: <alpine.DEB.2.10.1408172154050.2392@hadrien>
+ <alpine.DEB.2.10.1408172154050.2392@hadrien>
+Message-ID: <53F1B486.5080704@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Here is a possibility.  It is susceptible to "already tagged token" errors
-when there are two dereferences in the sum.  Assuming that at most one of
-them has a pointer type, it should be easy to fix.  I can do that toorrow.
-But doing that would require type information, which would require type
-information, so it oculd makesense to do what is wanted with this more
-efficient rule first.
+> @@
+> expression e,x;
+> identifier f;
+> @@
+> 
+> + e->f[
+> - *(
+>    <+...
+> (
+> -  (e->f + x)
+> +  x
+> |
+> +  x
+> -  (x + e->f)
+> )
+>    ...+>
+> -  )
+> +  ]
 
-julia
+Does the issue "isomorphism" matter in the shown addition?
 
-@@
-expression e,x;
-identifier f;
-@@
-
-+ e->f[
-- *(
-   <+...
-(
--  (e->f + x)
-+  x
-|
-+  x
--  (x + e->f)
-)
-   ...+>
--  )
-+  ]
+Regards,
+Markus
