@@ -1,12 +1,12 @@
 From: Julia.Lawall@lip6.fr (Julia Lawall)
-Date: Sat, 23 Aug 2014 07:31:37 +0200
+Date: Sat, 23 Aug 2014 07:34:45 +0200
 Subject: [Cocci]
-	=?y?q?=5BPATCH=5D=20coccinelle=3A=20misc=3A=20semantic=20patch=20to=20delete=20overly=20complex=20return=20code=20processing?=
-Message-ID: <1408771897-28778-1-git-send-email-Julia.Lawall@lip6.fr>
+	=?y?q?=5BPATCH=20v2=5D=20coccinelle=3A=20misc=3A=20semantic=20patch=20to=20delete=20overly=20complex=20return=20code=20processing?=
+Message-ID: <1408772085-28818-1-git-send-email-Julia.Lawall@lip6.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-From: Julia Lawall <julia@diku.dk>
+From: Julia Lawall <Julia.Lawall@lip6.fr>
 
 This semantic patch simplifies cases where the effect of the processing of
 a function call's return code is just to return the result of the function
@@ -15,9 +15,11 @@ longer used.
 
 This was proposed by Uwe Kleine-K??nig.
 
-Signed-off-by: Julia Lawall <julia@diku.dk>
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
 ---
+v2: wrong email address
+
  scripts/coccinelle/misc/simple_return.cocci |  180 ++++++++++++++++++++++++++++
  1 file changed, 180 insertions(+)
 
