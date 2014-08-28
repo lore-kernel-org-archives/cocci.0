@@ -1,217 +1,65 @@
-From: xing.lei@freescale.com (Xing Lei)
-Date: Wed, 27 Aug 2014 09:39:15 +0000
-Subject: [Cocci] pop up help info when execute "make coccicheck
- MODE=report "
-In-Reply-To: <alpine.DEB.2.10.1408270858300.2620@hadrien>
-References: <e3e17c5bc09444cb9c0e5c30c306c5a3@BL2PR03MB404.namprd03.prod.outlook.com>
- <alpine.DEB.2.10.1408270847320.2620@hadrien>
- <ffba896cad15400da11aee66ffcc30ed@BL2PR03MB404.namprd03.prod.outlook.com>
- <alpine.DEB.2.10.1408270858300.2620@hadrien>
-Message-ID: <66c9421db0c44489bb374a11bb8a527c@BL2PR03MB404.namprd03.prod.outlook.com>
+From: mcgrof@suse.com (Luis R. Rodriguez)
+Date: Thu, 28 Aug 2014 05:46:13 +0200
+Subject: [Cocci] [PATCH] coccinelle: add pycocci wrapper
+	for	multithreaded support
+In-Reply-To: <alpine.DEB.2.02.1404102131390.2201@localhost6.localdomain6>
+References: <1397152097-315-1-git-send-email-mcgrof@do-not-panic.com>
+ <1397152289.4757.28.camel@jlt4.sipsolutions.net>
+ <20140410175748.GK14815@wotan.suse.de>
+ <alpine.DEB.2.02.1404102131390.2201@localhost6.localdomain6>
+Message-ID: <20140828034613.GD3347@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hello Julia,
+On Thu, Apr 10, 2014 at 09:32:34PM +0200, Julia Lawall wrote:
+> 
+> 
+> On Thu, 10 Apr 2014, Luis R. Rodriguez wrote:
+> 
+> > On Thu, Apr 10, 2014 at 07:51:29PM +0200, Johannes Berg wrote:
+> > > On Thu, 2014-04-10 at 10:48 -0700, Luis R. Rodriguez wrote:
+> > > 
+> > > > You just pass it a cocci file, a target dir, and in git environments
+> > > > you always want --in-place enabled. Experiments and profiling random
+> > > > cocci files with the Linux kernel show that using just using number of
+> > > > CPUs doesn't scale well given that lots of buckets of files don't require
+> > > > work, as such this uses 10 * number of CPUs for its number of threads.
+> > > > For work that define more general ruler 3 * number of CPUs works better,
+> > > > but for smaller cocci files 3 * number of CPUs performs best right now.
+> > > > To experiment more with what's going on with the multithreading one can enable
+> > > > htop while kicking off a cocci task on the kernel, we want to keep
+> > > > these CPUs busy as much as possible. 
+> > > 
+> > > That's not really a good benchmark, you want to actually check how
+> > > quickly it finishes ... If you have some IO issues then just keeping the
+> > > CPUs busy trying to do IO won't help at all.
+> > 
+> > I checked the profile results, the reason the jobs finish is some threads
+> > had no work or little work. Hence why I increased the number of threads,
+> > depending on the context (long or short cocci expected, in backports
+> > at least, the long being all cocci files in one, the short being --test-cocci
+> > flag to gentree.py). This wrapper uses the short assumption with 10 * num_cpus
+> > 
+> > > > Since its just a helper I toss it into the python directory but don't
+> > > > install it. Hope is that we can evolve it there instead of carrying this
+> > > > helper within backports.
+> > > 
+> > > If there's a plan to make coccinelle itself multi-threaded, what's the
+> > > point?
+> > 
+> > To be clear, Coccinelle *has* a form of multithreaded support but requires manual
+> > spawning of jobs with references to the max count and also the number thread
+> > that this new process you are spawning belongs to. There's plans to consider
+> > reworking things to handle all this internally but as I discussed with Julia
+> > the changes required would require some structural changes, and as such we
+> > need to live with this for a bit longer. I need to use Coccinelle daily now,
+> > so figured I'd punt this out there in case others might make use of it.
+> 
+> I agree with Luis.  Multithreading inside Coccinelle is currently a 
+> priority task, but not a highest priority one.
 
-I will try it. Thanks.
+Folks, anyone object to merging pycocci in the meantime? I keep using it outside
+of backports and it does what I think most kernel developers expect. This would
+be until we get proper parallelism support in place.
 
-Best Regards
-Xing
-
------Original Message-----
-From: Julia Lawall [mailto:julia.lawall at lip6.fr] 
-Sent: Wednesday, August 27, 2014 3:01 PM
-To: Lei Xing-B45279
-Cc: cocci at systeme.lip6.fr; ldup-devel at gforge.freescale.net
-Subject: RE: [Cocci] pop up help info when execute "make coccicheck MODE=report "
-
-
-
-On Wed, 27 Aug 2014, Xing Lei wrote:
-
-> Hello,
->
-> b45279 at bjsimics-OptiPlex-790:~$ spatch --version spatch version 
-> 1.0.0-rc14 with Python support and with PCRE support 
-> b45279 at bjsimics-OptiPlex-790:~$
-
-OK, could you update and try again?  You can get version rc21 from github:
-
-https://github.com/coccinelle/coccinelle.git
-
-If you are using Ubuntu, you can also get the precompiled version here:
-
-https://launchpad.net/~npalix/+archive/ubuntu/coccinelle
-
-julia
-
-
->
-> B.R.
-> Xing
->
-> -----Original Message-----
-> From: Julia Lawall [mailto:julia.lawall at lip6.fr]
-> Sent: Wednesday, August 27, 2014 2:49 PM
-> To: Lei Xing-B45279
-> Cc: cocci at systeme.lip6.fr; ldup-devel at gforge.freescale.net
-> Subject: Re: [Cocci] pop up help info when execute "make coccicheck MODE=report "
->
-> On Tue, 26 Aug 2014, Xing Lei wrote:
->
-> >
-> > Hi All,
-> >
-> > I met a issue about coccinelle, some help info pop out when I use 
-> > coccinelle analysis a folder as below.
->
-> What version of Coccinelle do you have?
->
-> julia
->
-> >
-> > What?s the reason for it? If anything is wrong with some files in folder?
-> >
-> > ?
-> >
-> > ?
-> >
-> > make coccicheck MODE=report M=drivers/net/ethernet/freescale
-> >
-> > ?
-> >
-> > Please check for false positives in the output before submitting a patch.
-> >
-> > When using "patch" mode, carefully review the patch before submitting it.
-> >
-> > ?
-> >
-> > drivers/net/ethernet/freescale/fman/Peripherals/FM/Pcd/fm_pcd.c:279:2-7:
-> > WARNING: NULL check before freeing functions like kfree, 
-> > debugfs_remove, debugfs_remove_recursive or usb_free_urb is not 
-> > needed. Maybe consider reorganizing relevant code to avoid passing NULL values.
-> >
-> > drivers/net/ethernet/freescale/fman/Peripherals/FM/Port/fm_port.c:1899:2-7:
-> > WARNING: NULL check before freeing functions like kfree, 
-> > debugfs_remove, debugfs_remove_recursive or usb_free_urb is not 
-> > needed. Maybe consider reorganizing relevant code to avoid passing NULL values.
-> >
-> > drivers/net/ethernet/freescale/fman/Peripherals/FM/Port/fm_port.c:536:2-7:
-> > WARNING: NULL check before freeing functions like kfree, 
-> > debugfs_remove, debugfs_remove_recursive or usb_free_urb is not 
-> > needed. Maybe consider reorganizing relevant code to avoid passing NULL values.
-> >
-> > drivers/net/ethernet/freescale/fman/Peripherals/FM/fm.c:2208:2-7: WARNING:
-> > NULL check before freeing functions like kfree, debugfs_remove, 
-> > debugfs_remove_recursive or usb_free_urb is not needed. Maybe 
-> > consider reorganizing relevant code to avoid passing NULL values.
-> >
-> > Usage: spatch --sp-file <SP> <infile> [-o <outfile>] [--iso-file 
-> > <iso>] [options]
-> >
-> > Options are:
-> >
-> > ? --sp-file??????????????????? <file> the semantic patch file
-> >
-> > ? -o?????????????????????????? <file> the output file
-> >
-> > ? --in-place?????????????????? do the modification on the file 
-> > directly
-> >
-> > ? --backup-suffix????????????? suffix to use when making a backup 
-> > for inplace
-> >
-> > ? --out-place????????????????? store modifications in a .cocci_res 
-> > file
-> >
-> > ? --reverse??????????????????? invert the semantic patch before 
-> > applying it
-> >
-> > ? -U?????????????????????????? set number of diff context lines
-> >
-> > ? --partial-match????????????? report partial matches of the SP on 
-> > the C file
-> >
-> > ? --iso-file?????????????????? <file>
-> > (default=/usr/share/coccinelle/standard.iso)
-> >
-> > ? --macro-file???????????????? <file>
-> >
-> > ? --macro-file-builtins??????? <file>
-> > (default=/usr/share/coccinelle/standard.h)
-> >
-> > ? --recursive-includes???????? causes all available include files, 
-> > both those included in the C file(s) and those included in header 
-> > files, to be used
-> >
-> > ? --all-includes?????????????? causes all available include files 
-> > included in the C file(s) to be used
-> >
-> > ? --no-includes??????????????? causes not even local include files 
-> > to be used
-> >
-> > ? --local-includes???????????? causes local include files to be used
-> >
-> > ? --ignore-unknown-options???? For integration in a toolchain (must 
-> > be set before the first unknown option)
-> >
-> > ? --include-headers??????????? process header files independently
-> >
-> > ? -I?????????????????????????? <dir> containing the header files
-> > (optional)
-> >
-> > ? --preprocess???????????????? run the C preprocessor before 
-> > applying the semantic match
-> >
-> > ? -c?????????????????????????? gcc/cpp compatibility mode
-> >
-> > ? --dir??????????????????????? <dir> process all files in directory 
-> > recursively
-> >
-> > ? --use-glimpse??????????????? works with -dir, use info generated 
-> > by glimpseindex
-> >
-> > ? --use-google???????????????? find relevant files using google code 
-> > search
-> >
-> > ? --use-idutils??????????????? find relevant files using id-utils
-> >
-> > ? --patch????????????????????? <dir> path name with respect to which 
-> > a patch should be created
-> >
-> > ? ??"" for a file in the current directory
-> >
-> > ? --kbuild-info??????????????? <file> improve -dir by grouping 
-> > related c files
-> >
-> > ? --pyoutput?????????????????? Sets output routine: Standard values:
-> > <coccilib.output.Gtk|coccilib.output.Console>
-> >
-> > ? --version????????? ??????????guess what
-> >
-> > ? --date?????????????????????? guess what
-> >
-> > ? --shorthelp????????????????? see short list of options
-> >
-> > ? --longhelp?????????????????? see all the available options in 
-> > different categories
-> >
-> > ? -help
-> >
-> > ??--help
-> >
-> > ?
-> >
-> > ?
-> >
-> > ?
-> >
-> > Best Regards
-> >
-> > Xing
-> >
-> > ?
-> >
-> >
-> >
->
+  Luis
