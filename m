@@ -1,28 +1,16 @@
-From: francois.berenger@inria.fr (Francois BERENGER)
-Date: Thu, 28 Aug 2014 17:12:37 +0200
-Subject: [Cocci] patch for coccinelle's Makefile
-In-Reply-To: <alpine.DEB.2.10.1408281616110.4009@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Thu, 28 Aug 2014 17:15:06 +0200
+Subject: [Cocci] patch for c's Makefile
+In-Reply-To: <53FF35F5.9040903@inria.fr>
 References: <53FF35F5.9040903@inria.fr>
- <alpine.DEB.2.10.1408281616110.4009@hadrien>
-Message-ID: <53FF46E5.4070804@inria.fr>
+Message-ID: <53FF477A.1070700@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 08/28/2014 04:16 PM, Julia Lawall wrote:
-> On Thu, 28 Aug 2014, Francois BERENGER wrote:
->
->> I think the uninstall target can be made much simpler and robust.
->
-> Could you explain?  I am not at all familiar with the code.
+> I think the uninstall target can be made much simpler and robust.
 
-Rather than removing things one by one in [...]/share/coccinelle/*
-you can remove directly [...]/share/coccinelle .
+Should the build specification be corrected instead of an "old" generated Make file?
+https://github.com/coccinelle/coccinelle/blob/282fdcd007ab47a0684a2b7add0f88181d4f32da/configure.ac#L1
 
-This is more robust since some of the things in [...]/share/coccinelle/*
-are not installed by all make targets but were nonetheless listed
-by the uninstall target (which would fail with an exit 1, which is a 
-problem when you package things for opam).
-
--- 
 Regards,
-Francois.
+Markus
