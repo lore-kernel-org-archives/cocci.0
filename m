@@ -1,16 +1,72 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 28 Aug 2014 18:29:39 +0200 (CEST)
-Subject: [Cocci] no emacs mode for smpl?
-In-Reply-To: <53FF4F37.4060902@inria.fr>
-References: <53FF4F37.4060902@inria.fr>
-Message-ID: <alpine.DEB.2.02.1408281828280.2226@localhost6.localdomain6>
+Date: Thu, 28 Aug 2014 20:15:16 +0200 (CEST)
+Subject: [Cocci] [PATCH] coccinelle: add pycocci wrapper
+ for	multithreaded support
+In-Reply-To: <20140828034613.GD3347@wotan.suse.de>
+References: <1397152097-315-1-git-send-email-mcgrof@do-not-panic.com>
+ <1397152289.4757.28.camel@jlt4.sipsolutions.net>
+ <20140410175748.GK14815@wotan.suse.de>
+ <alpine.DEB.2.02.1404102131390.2201@localhost6.localdomain6>
+ <20140828034613.GD3347@wotan.suse.de>
+Message-ID: <alpine.DEB.2.02.1408282014550.2226@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 28 Aug 2014, Francois BERENGER wrote:
 
-> That would be cool for syntax highlighting ...
 
-There is one.  editors/emacs/cocci.el in the Coccinelle distribution.
+On Thu, 28 Aug 2014, Luis R. Rodriguez wrote:
+
+> On Thu, Apr 10, 2014 at 09:32:34PM +0200, Julia Lawall wrote:
+> > 
+> > 
+> > On Thu, 10 Apr 2014, Luis R. Rodriguez wrote:
+> > 
+> > > On Thu, Apr 10, 2014 at 07:51:29PM +0200, Johannes Berg wrote:
+> > > > On Thu, 2014-04-10 at 10:48 -0700, Luis R. Rodriguez wrote:
+> > > > 
+> > > > > You just pass it a cocci file, a target dir, and in git environments
+> > > > > you always want --in-place enabled. Experiments and profiling random
+> > > > > cocci files with the Linux kernel show that using just using number of
+> > > > > CPUs doesn't scale well given that lots of buckets of files don't require
+> > > > > work, as such this uses 10 * number of CPUs for its number of threads.
+> > > > > For work that define more general ruler 3 * number of CPUs works better,
+> > > > > but for smaller cocci files 3 * number of CPUs performs best right now.
+> > > > > To experiment more with what's going on with the multithreading one can enable
+> > > > > htop while kicking off a cocci task on the kernel, we want to keep
+> > > > > these CPUs busy as much as possible. 
+> > > > 
+> > > > That's not really a good benchmark, you want to actually check how
+> > > > quickly it finishes ... If you have some IO issues then just keeping the
+> > > > CPUs busy trying to do IO won't help at all.
+> > > 
+> > > I checked the profile results, the reason the jobs finish is some threads
+> > > had no work or little work. Hence why I increased the number of threads,
+> > > depending on the context (long or short cocci expected, in backports
+> > > at least, the long being all cocci files in one, the short being --test-cocci
+> > > flag to gentree.py). This wrapper uses the short assumption with 10 * num_cpus
+> > > 
+> > > > > Since its just a helper I toss it into the python directory but don't
+> > > > > install it. Hope is that we can evolve it there instead of carrying this
+> > > > > helper within backports.
+> > > > 
+> > > > If there's a plan to make coccinelle itself multi-threaded, what's the
+> > > > point?
+> > > 
+> > > To be clear, Coccinelle *has* a form of multithreaded support but requires manual
+> > > spawning of jobs with references to the max count and also the number thread
+> > > that this new process you are spawning belongs to. There's plans to consider
+> > > reworking things to handle all this internally but as I discussed with Julia
+> > > the changes required would require some structural changes, and as such we
+> > > need to live with this for a bit longer. I need to use Coccinelle daily now,
+> > > so figured I'd punt this out there in case others might make use of it.
+> > 
+> > I agree with Luis.  Multithreading inside Coccinelle is currently a 
+> > priority task, but not a highest priority one.
+> 
+> Folks, anyone object to merging pycocci in the meantime? I keep using it outside
+> of backports and it does what I think most kernel developers expect. This would
+> be until we get proper parallelism support in place.
+
+Merge away...
 
 julia
