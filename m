@@ -1,29 +1,26 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 4 Sep 2014 14:24:28 +0200 (CEST)
-Subject: [Cocci] coccinelle-1.0.0-rc21.tgz doesn't compile on Mac OS X
- with ocaml 4.02.0
-In-Reply-To: <54085455.60007@inria.fr>
-References: <54085455.60007@inria.fr>
-Message-ID: <alpine.DEB.2.10.1409041423450.2412@hadrien>
+From: mcuddie@qnx.com (Mitchell Cuddie)
+Date: Thu, 4 Sep 2014 17:07:25 +0000
+Subject: [Cocci] Matching Function Pointer
+Message-ID: <1409850429.4797.13.camel@QNXWS8653-PC>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 4 Sep 2014, Francois Berenger wrote:
+Julia,
 
-> Several things need to be corrected.
-> I don't have a mac to test the corrections so I give up with them.
->
-> Please tell me once there is a new tarball available on line
-> which compiles on Mac OS X with ocaml 4.02.0.
->
-> I am interested in the following build process:
->
-> ./configure  --enable-release
-> make clean
-> make all.opt
-> make install
+I am putting together a patch to find instances of a switch on a pointer
+typed argument. The patch below seems to work unless the argument is a
+function pointer in which case it doesn't match. How does one match a
+function pointer.
 
-I don't have a Mac either.  If someone out there does, that would be
-helpful.
+Secondly is there a way to have it mark if x is any type other than int?
 
-julia
+@r@
+expression *x; type t; position p1;
+@@
+* switch ((t)x)
+ {
+    case ...:@p1
+        ...
+ }
+
+Mitchell
