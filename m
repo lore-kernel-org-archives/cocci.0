@@ -1,19 +1,23 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 29 Aug 2014 11:00:11 +0200
-Subject: [Cocci] patch for coccinelle's Makefile
-In-Reply-To: <53FF35F5.9040903@inria.fr>
-References: <53FF35F5.9040903@inria.fr>
-Message-ID: <5400411B.1030400@users.sourceforge.net>
+From: francois.berenger@inria.fr (Francois Berenger)
+Date: Thu, 04 Sep 2014 14:00:21 +0200
+Subject: [Cocci] coccinelle-1.0.0-rc21.tgz doesn't compile on Mac OS X with
+ ocaml 4.02.0
+Message-ID: <54085455.60007@inria.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> I think the uninstall target can be made much simpler and robust.
+Several things need to be corrected.
+I don't have a mac to test the corrections so I give up with them.
 
-How do think about to combine also the affected file deletion commands
-into fewer calls with longer parameter lists if your prefer still to
-adjust a Make file directly?
-(I imagine that improvements for other build scripts would be more
-useful, wouldn't it?)
+Please tell me once there is a new tarball available on line
+which compiles on Mac OS X with ocaml 4.02.0.
 
-Regards,
-Markus
+I am interested in the following build process:
+
+./configure  --enable-release
+make clean
+make all.opt
+make install
+
+Thanks,
+F.
