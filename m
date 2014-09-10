@@ -1,30 +1,54 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 9 Sep 2014 12:04:54 +0200 (CEST)
-Subject: [Cocci] coccinelle is available in OPAM (the source-based
- package manager for OCaml software and libraries)
-In-Reply-To: <540EBC3B.5030501@inria.fr>
-References: <540EBC3B.5030501@inria.fr>
-Message-ID: <alpine.DEB.2.10.1409091204210.2766@hadrien>
+From: rv@rasmusvillemoes.dk (Rasmus Villemoes)
+Date: Wed, 10 Sep 2014 17:49:45 +0200
+Subject: [Cocci] Problem with "already tagged token"
+Message-ID: <87fvfztqzq.fsf@rasmusvillemoes.dk>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hi,
+
+I'm trying to write a semantic patch to convert consecutive seq_puts()
+calls into a single one, with the string literals concatenated. My
+attempt below works fine when there are exactly two seq_puts() calls,
+but fails when there are more. If I use coccicheck on a directory,
+coccinelle seems to silently skip files containing three-or-more
+(e.g. kernel/trace/trace.c), but gives me the "already tagged token"
+error when I use it on the specific file.
+
+Ideally, I'd of course like coccinelle to apply the spatch iteratively
+until only a single call remains. I think I understand why I get the
+error, but I'd like to know if there's some obvious fix I've overlooked.
 
 
-On Tue, 9 Sep 2014, Francois Berenger wrote:
 
-> Hello,
->
-> The package was accepeted, cf.
->
-> https://github.com/ocaml/opam-repository/tree/master/packages/coccinelle/coccinelle.1.0.0-rc21
->
-> Drop me a mail if you want to update it in the future and don't
-> want to learn OPAM packaging (it is trivial to learn though).
->
-> I just nead an officially released tarball in order to package coccinelle.
+@concat1 depends on patch@
+expression s;
+constant c1, c2;
+position p1, p2;
+@@
+  seq_puts at p1(s, c1);
+  seq_puts at p2(s, c2);
 
-Normally, new releases are announced on the mailing list.  Is that enough
-for you, and will you take it from there?
+@script:python concat2@
+c1 << concat1.c1;
+c2 << concat1.c2;
+c3;
+@@
+
+// The indentation probably needs to be fixed manually
+coccinelle.c3 = c1 + "\n\t" + c2
+
+@concat3 depends on patch@
+identifier concat2.c3;
+expression concat1.s;
+constant concat1.c1, concat1.c2;
+position concat1.p1, concat1.p2;
+@@
+- seq_puts at p1(s, c1);
+- seq_puts@p2(s, c2);
++ seq_puts(s, c3);
+
+
 
 Thanks,
-julia
+Rasmus
