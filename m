@@ -1,45 +1,73 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 11 Sep 2014 15:51:51 +0200 (CEST)
+From: picca@synchrotron-soleil.fr (picca at synchrotron-soleil.fr)
+Date: Thu, 11 Sep 2014 16:03:25 +0200
 Subject: [Cocci] how to add a few decalrations
-In-Reply-To: <20140911134530.GA7006@synchrotron-soleil.fr>
+In-Reply-To: <alpine.DEB.2.10.1409111550170.2419@hadrien>
 References: <20140911121635.GA23610@synchrotron-soleil.fr>
  <alpine.DEB.2.10.1409111513080.2419@hadrien>
  <20140911134530.GA7006@synchrotron-soleil.fr>
-Message-ID: <alpine.DEB.2.10.1409111550170.2419@hadrien>
+ <alpine.DEB.2.10.1409111550170.2419@hadrien>
+Message-ID: <20140911140325.GA7341@synchrotron-soleil.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 11 Sep 2014, picca at synchrotron-soleil.fr wrote:
+> OK, it seems that it is trying to add the definitions even if it does not
+> have any matches for the part inside the <... ...>.  <... ...> eans 0 or
+> more.  Try changing it to <+... ...+>, which means at least one.
 
-> > @@
-> > fresh identifier n_values = "n_values";
-> > fresh identifier values = "values";
-> > expression self, unit_type, error;
-> > identifier f;
-> > @@
-> >
-> > f(...) {
-> > ++ unsigned int n_values = darray_size(hkl_geometry_axes_names_get(self));
-> > ++ double values[n_values];
-> > <...
-> > -hkl_geometry_set_values_v(self, unit_type, &error, ...)
-> > +hkl_geometry_axes_values_set(self, values, n_values, unit_type, &error)
-> > ...>
-> > }
->
-> I understand better but now I get this error.
->
-> I will try to make this spatch evolve with your help until it does the right things.
-> So be prepare to have a few email :)
->
-> picca at ORD03037:~/Projets/hkl/scripts$ ./refactoring geometry.cocci ../tests/*.c
-> init_defs_builtins: /usr/share/coccinelle/standard.h
-> HANDLING: ../tests/hkl3d-test-t.c ../tests/hkl-axis-t.c ../tests/hkl-bench-t.c ../tests/hkl-detector-t.c ../tests/hkl-geometry-t.c ../tests/hkl-interval-t.c ../tests/hkl-lattice-t.c ../tests/hkl-matrix-t.c ../tests/hkl-parameter-t.c ../tests/hkl-pseudoaxis-e4ch-t.c ../tests/hkl-pseudoaxis-e4cv-t.c ../tests/hkl-pseudoaxis-e6c-t.c ../tests/hkl-pseudoaxis-k4cv-t.c ../tests/hkl-pseudoaxis-k6c-t.c ../tests/hkl-pseudoaxis-soleil-sixs-med-t.c ../tests/hkl-pseudoaxis-t.c ../tests/hkl-pseudoaxis-zaxis-t.c ../tests/hkl-quaternion-t.c ../tests/hkl-sample-t.c ../tests/hkl-source-t.c ../tests/hkl-unit-t.c ../tests/hkl-vector-t.c ../tests/runtests.c
-> Fatal error: exception Failure("SP line 11: Not found a value in env for: self")
-> ../tests/hkl3d-test-t.c, ../tests/hkl-axis-t.c
+with this modification I have no error, but I have also no transformation.
 
-OK, it seems that it is trying to add the definitions even if it does not
-have any matches for the part inside the <... ...>.  <... ...> eans 0 or
-more.  Try changing it to <+... ...+>, which means at least one.
+Here I put an exemple of method where I want to do the transformation
 
-julia
+static void getter(void)
+{
+        int res = TRUE;
+        HklEngineList *engines;
+        HklEngine *engine;
+        const HklFactory *factory;
+        HklGeometry *geometry;
+        HklDetector *detector;
+        HklSample *sample;
+
+        factory = hkl_factory_get_by_name("E6C", NULL);
+        geometry = hkl_factory_create_new_geometry(factory);
+        sample = hkl_sample_new("test");
+
+        detector = hkl_detector_factory_new(HKL_DETECTOR_TYPE_0D);
+
+        engines = hkl_factory_create_new_engine_list(factory);
+        hkl_engine_list_init(engines, geometry, detector, sample);
+
+        engine = hkl_engine_list_engine_get_by_name(engines, "hkl", NULL);
+
+        /* geometry -> pseudo */
+        hkl_geometry_set_values_v(geometry, HKL_UNIT_USER, NULL, 0., 30., 0., 0., 0., 60.);
+        res &= DIAG(check_pseudoaxes_v(engine, 0., 0., 1.));
+
+        hkl_geometry_set_values_v(geometry, HKL_UNIT_USER, NULL, 0., 30., 0., 90., 0., 60.);
+        res &= DIAG(check_pseudoaxes_v(engine, 1., 0., 0.));
+
+        hkl_geometry_set_values_v(geometry, HKL_UNIT_USER, NULL, 0., 30., 0., -90., 0., 60.);
+        res &= DIAG(check_pseudoaxes_v(engine, -1., 0., 0.));
+
+        hkl_geometry_set_values_v(geometry, HKL_UNIT_USER, NULL, 0., 30., 0., 180., 0., 60.);
+        res &= DIAG(check_pseudoaxes_v(engine, 0., 0., -1.));
+
+        hkl_geometry_set_values_v(geometry, HKL_UNIT_USER, NULL, 0., 45., 0., 135., 0., 90.);
+        res &= DIAG(check_pseudoaxes_v(engine, 1., 0., -1.));
+
+        ok(res == TRUE, "getter");
+
+        hkl_engine_list_free(engines);
+        hkl_detector_free(detector);
+        hkl_sample_free(sample);
+        hkl_geometry_free(geometry);
+}
+
+
+to be fare, here is the signature of the method to replace
+
+HKLAPI int hkl_geometry_set_values_v(HklGeometry *self, HklUnitEnum unit_type,
+				     GError **error, ...) HKL_ARG_NONNULL(1) HKL_WARN_UNUSED_RESULT;
+
+
+Frederic
