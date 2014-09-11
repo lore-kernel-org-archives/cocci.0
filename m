@@ -1,22 +1,44 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 10 Sep 2014 18:30:27 +0200
-Subject: [Cocci] Conversion of similar function calls into one with a
-	longer parameter
-In-Reply-To: <87fvfztqzq.fsf@rasmusvillemoes.dk>
+From: rv@rasmusvillemoes.dk (Rasmus Villemoes)
+Date: Thu, 11 Sep 2014 09:16:50 +0200
+Subject: [Cocci] Problem with "already tagged token"
 References: <87fvfztqzq.fsf@rasmusvillemoes.dk>
-Message-ID: <54107CA3.40708@users.sourceforge.net>
+ <alpine.DEB.2.10.1409101808470.4747@hadrien>
+Message-ID: <87d2b2fwyl.fsf@rasmusvillemoes.dk>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> I'm trying to write a semantic patch to convert consecutive seq_puts()
-> calls into a single one, with the string literals concatenated.
-> My attempt below works fine when there are exactly two seq_puts() calls,
-> but fails when there are more.
+On Wed, Sep 10 2014, Julia Lawall <julia.lawall@lip6.fr> wrote:
 
-How do you think about to process the corresponding syntax and control flow
-graph by interfaces for the programming language "OCaml"?
-Would it be safer to reuse the available API for such an application where
-several similar function calls should be merged together?
+> Clever :)
+>
+> I haven't tried this, but I think you cudl do the following:
+>
+> @r@
+> position p;
+> @@
+>
+> seq_puts(...);
+> seq_puts(...);
+> seq_puts at p(...);
+>
+>> @concat1 depends on patch@
+>> expression s;
+>> constant c1, c2;
+>> position p1, p2;
+>
+> Now change this line to
+>
+> position p1 != r.p, p2 != r.p;
+>
+> Then you can either use Coccinelle to do the iteration, or just run the
+> semantic patch over and over on the code.
+>
 
-Regards,
-Markus
+Thanks, that seems to work. Can you tell me how I would get coccinelle
+to do the iteration? It's not really that important, since the
+whitespace has to be fixed manually anyway, and with your suggestion one
+finds all places with at least two consecutive seq_puts calls. But it
+would be nice if one would _only_ have to fix whitespace
+
+Thanks,
+Rasmus
