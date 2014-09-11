@@ -1,28 +1,38 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 11 Sep 2014 15:37:00 +0200 (CEST)
-Subject: [Cocci] How to add a few declarations?
-In-Reply-To: <20140911131614.GA23824@synchrotron-soleil.fr>
+From: picca@synchrotron-soleil.fr (picca at synchrotron-soleil.fr)
+Date: Thu, 11 Sep 2014 15:45:30 +0200
+Subject: [Cocci] how to add a few decalrations
+In-Reply-To: <alpine.DEB.2.10.1409111513080.2419@hadrien>
 References: <20140911121635.GA23610@synchrotron-soleil.fr>
- <54119DC7.7020005@users.sourceforge.net>
- <20140911131614.GA23824@synchrotron-soleil.fr>
-Message-ID: <alpine.DEB.2.10.1409111535550.2419@hadrien>
+ <alpine.DEB.2.10.1409111513080.2419@hadrien>
+Message-ID: <20140911134530.GA7006@synchrotron-soleil.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 11 Sep 2014, picca at synchrotron-soleil.fr wrote:
+> @@
+> fresh identifier n_values = "n_values";
+> fresh identifier values = "values";
+> expression self, unit_type, error;
+> identifier f;
+> @@
+> 
+> f(...) {
+> ++ unsigned int n_values = darray_size(hkl_geometry_axes_names_get(self));
+> ++ double values[n_values];
+> <...
+> -hkl_geometry_set_values_v(self, unit_type, &error, ...)
+> +hkl_geometry_axes_values_set(self, values, n_values, unit_type, &error)
+> ...>
+> }
 
-> On Thu, Sep 11, 2014 at 03:04:07PM +0200, SF Markus Elfring wrote:
-> > > So the idea is to replace a method by another one but to be able to do that, I need to add two new variables n_values and values.
-> >
-> > Have you got any expectations on the placement for the added variables?
->
-> I imagine at the begining of the scope where the ..._set_v method is located.
+I understand better but now I get this error.
 
-My solution was to put them all at the beginning of the function.
+I will try to make this spatch evolve with your help until it does the right things.
+So be prepare to have a few email :)
 
-The innermost enclosing scope would be a bit hard to specify.
+picca at ORD03037:~/Projets/hkl/scripts$ ./refactoring geometry.cocci ../tests/*.c
+init_defs_builtins: /usr/share/coccinelle/standard.h
+HANDLING: ../tests/hkl3d-test-t.c ../tests/hkl-axis-t.c ../tests/hkl-bench-t.c ../tests/hkl-detector-t.c ../tests/hkl-geometry-t.c ../tests/hkl-interval-t.c ../tests/hkl-lattice-t.c ../tests/hkl-matrix-t.c ../tests/hkl-parameter-t.c ../tests/hkl-pseudoaxis-e4ch-t.c ../tests/hkl-pseudoaxis-e4cv-t.c ../tests/hkl-pseudoaxis-e6c-t.c ../tests/hkl-pseudoaxis-k4cv-t.c ../tests/hkl-pseudoaxis-k6c-t.c ../tests/hkl-pseudoaxis-soleil-sixs-med-t.c ../tests/hkl-pseudoaxis-t.c ../tests/hkl-pseudoaxis-zaxis-t.c ../tests/hkl-quaternion-t.c ../tests/hkl-sample-t.c ../tests/hkl-source-t.c ../tests/hkl-unit-t.c ../tests/hkl-vector-t.c ../tests/runtests.c
+Fatal error: exception Failure("SP line 11: Not found a value in env for: self")
+../tests/hkl3d-test-t.c, ../tests/hkl-axis-t.c
 
-If you want to just add a new scope around the replaced call, that would
-be easiest, and would not require the fresh identifier names.
-
-julia
+Frederic
