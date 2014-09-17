@@ -1,27 +1,66 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 15 Sep 2014 14:02:42 +0200 (CEST)
-Subject: [Cocci] Semantic patches for more file formats?
-In-Reply-To: <5416D3C6.9050800@users.sourceforge.net>
-References: <5416D3C6.9050800@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1409151400300.2672@hadrien>
+Date: Wed, 17 Sep 2014 18:00:51 +0200 (CEST)
+Subject: [Cocci] [PATCH] configure: Make it clear that missing ocamldoc
+ is fatal
+In-Reply-To: <1410966424.4975.106.camel@chaos.site>
+References: <1410966424.4975.106.camel@chaos.site>
+Message-ID: <alpine.DEB.2.10.1409171800130.2582@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, 15 Sep 2014, SF Markus Elfring wrote:
+On Wed, 17 Sep 2014, Jean Delvare wrote:
 
-> Hello,
+> Hi all, hi Julia,
 >
-> I hope that more files which can also contain data formats that are
-> different from source code for the C programming language will be
-> supported by a future semantic patch language implementation.
-> https://github.com/coccinelle/coccinelle/blob/e2b56772bae0860cd8cf3aa7c4a06d5a9154128f/changes.txt#L3
+> As I was trying to build coccinelle from the sources today, configure
+> failed on me with the following error message:
 >
-> Do you know any approaches for such a software evolution?
+> configure: error: You must install the OCaml compiler
+>
+> I did not understand at first because I do have the ocaml package
+> installed, and /usr/bin/ocamlc, which I assume is the OCaml compiler,
+> is present. After debugging, I found that what's really missing is
+> ocamldoc. Indeed configure warned me about it:
+>
+> checking for ocamldoc... no
+>
+> but that did not look fatal so I did not pay attention. As ocamldoc
+> is in a separate package (on openSUSE at least), I believe the fatal
+> error message should explicitly say whether the compiler itself is
+> missing, or ocamldoc is missing.
 
-It would require rewriting almost all of the code.  Unless someone wants
-to pay for it, and someone is available who is interested in and competant
-to do the work, it will never happen from our side.  There are enough
-interesting things to do on C code so we have no personal motivation for
-investing in it.
+Thanks very much for the feedback and for the patch.  I will take care of
+it.
 
 julia
+
+> ---
+> Suggested fix below, there may be other ways.
+>
+>  configure.ac |    6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+>
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -85,10 +85,14 @@ AC_CHECK_OCAMLVERSION([OCAMLATLEAST310],
+>  AC_CHECK_OCAMLVERSION([OCAMLATLEAST311],[3.11])
+>  AC_SUBST([OCAMLCORIG],["$OCAMLC"])
+>
+> -AS_IF([test "x$OCAMLC" = xno -o "x$OCAMLDEP" = xno -o "x$OCAMLDOC" = xno -o "x$OCAMLMKLIB" = xno],
+> +AS_IF([test "x$OCAMLC" = xno -o "x$OCAMLDEP" = xno -o "x$OCAMLMKLIB" = xno],
+>  [dnl
+>    AC_MSG_ERROR([You must install the OCaml compiler])
+>  ])
+> +AS_IF([test "x$OCAMLDOC" = xno],
+> +[dnl
+> +  AC_MSG_ERROR([You must install the OCaml documentation generator (ocamldoc)])
+> +])
+>  AS_IF([test "x$OCAMLATLEAST310" = xno],[AC_MSG_NOTICE([a more recent OCaml installation may be required])])
+>
+>  dnl  ocaml tools
+>
+> --
+> Jean Delvare
+> SUSE L3 Support
+>
+>
