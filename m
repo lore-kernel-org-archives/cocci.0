@@ -1,54 +1,51 @@
-From: jdelvare@suse.de (Jean Delvare)
-Date: Wed, 17 Sep 2014 17:07:04 +0200
-Subject: [Cocci] [PATCH] configure: Make it clear that missing ocamldoc is
-	fatal
-Message-ID: <1410966424.4975.106.camel@chaos.site>
+From: chrubis@suse.cz (chrubis at suse.cz)
+Date: Tue, 23 Sep 2014 15:26:20 +0200
+Subject: [Cocci] wrong indentation
+Message-ID: <20140923132620.GA32618@rei.suse.cz>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi all, hi Julia,
+Hi!
+I've found that spatch fails to detect correct indentation when it
+replaces two functions inside of #ifdef block with one function.
 
-As I was trying to build coccinelle from the sources today, configure
-failed on me with the following error message:
+bug.c:
 
-configure: error: You must install the OCaml compiler
+int main(void)
+{
+#if ! HAVE_XYZ
+        f1();
+        f2();
+#endif
+}
 
-I did not understand at first because I do have the ocaml package
-installed, and /usr/bin/ocamlc, which I assume is the OCaml compiler,
-is present. After debugging, I found that what's really missing is
-ocamldoc. Indeed configure warned me about it:
+bug.cocci:
 
-checking for ocamldoc... no
+@@ @@
+- f1();
+- f2();
++ f3();
 
-but that did not look fatal so I did not pay attention. As ocamldoc
-is in a separate package (on openSUSE at least), I believe the fatal
-error message should explicitly say whether the compiler itself is
-missing, or ocamldoc is missing.
----
-Suggested fix below, there may be other ways.
+result:
 
- configure.ac |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+init_defs_builtins: /usr/lib64/ocaml/coccinelle/standard.h
+HANDLING: d.c
+diff = 
+--- d.c
++++ /tmp/cocci-output-32687-903dcc-d.c
+@@ -1,7 +1,6 @@
+ int main(void)
+ {
+ #if ! HAVE_XYZ
+-       f1();
+-       f2();
++f3();
+ #endif
+ }
 
---- a/configure.ac
-+++ b/configure.ac
-@@ -85,10 +85,14 @@ AC_CHECK_OCAMLVERSION([OCAMLATLEAST310],
- AC_CHECK_OCAMLVERSION([OCAMLATLEAST311],[3.11])
- AC_SUBST([OCAMLCORIG],["$OCAMLC"])
- 
--AS_IF([test "x$OCAMLC" = xno -o "x$OCAMLDEP" = xno -o "x$OCAMLDOC" = xno -o "x$OCAMLMKLIB" = xno],
-+AS_IF([test "x$OCAMLC" = xno -o "x$OCAMLDEP" = xno -o "x$OCAMLMKLIB" = xno],
- [dnl
-   AC_MSG_ERROR([You must install the OCaml compiler])
- ])
-+AS_IF([test "x$OCAMLDOC" = xno],
-+[dnl
-+  AC_MSG_ERROR([You must install the OCaml documentation generator (ocamldoc)])
-+])
- AS_IF([test "x$OCAMLATLEAST310" = xno],[AC_MSG_NOTICE([a more recent OCaml installation may be required])])
- 
- dnl  ocaml tools
+spatch --version
+spatch version 1.0.0-rc19 with Python support and with PCRE support
 
 -- 
-Jean Delvare
-SUSE L3 Support
+Cyril Hrubis
+chrubis at suse.cz
