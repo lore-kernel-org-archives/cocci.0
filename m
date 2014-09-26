@@ -1,56 +1,25 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 23 Sep 2014 15:58:44 +0200 (CEST)
-Subject: [Cocci] wrong indentation
-In-Reply-To: <20140923132620.GA32618@rei.suse.cz>
-References: <20140923132620.GA32618@rei.suse.cz>
-Message-ID: <alpine.DEB.2.10.1409231558070.2463@hadrien>
+From: mmarek@suse.cz (Michal Marek)
+Date: Fri, 26 Sep 2014 13:43:10 +0200
+Subject: [Cocci] [PATCH v2] coccinelle: misc: semantic patch to delete
+	overly	complex return code processing
+In-Reply-To: <1408772085-28818-1-git-send-email-Julia.Lawall@lip6.fr>
+References: <1408772085-28818-1-git-send-email-Julia.Lawall@lip6.fr>
+Message-ID: <20140926114309.GA31096@pobox.suse.cz>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, 23 Sep 2014, chrubis at suse.cz wrote:
+On Sat, Aug 23, 2014 at 07:34:45AM +0200, Julia Lawall wrote:
+> From: Julia Lawall <Julia.Lawall@lip6.fr>
+> 
+> This semantic patch simplifies cases where the effect of the processing of
+> a function call's return code is just to return the result of the function
+> directly.  It may also delete a local return flag variable, if this is no
+> longer used.
+> 
+> This was proposed by Uwe Kleine-K?nig.
+> 
+> Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
-> Hi!
-> I've found that spatch fails to detect correct indentation when it
-> replaces two functions inside of #ifdef block with one function.
->
-> bug.c:
->
-> int main(void)
-> {
-> #if ! HAVE_XYZ
->         f1();
->         f2();
-> #endif
-> }
->
-> bug.cocci:
->
-> @@ @@
-> - f1();
-> - f2();
-> + f3();
->
-> result:
->
-> init_defs_builtins: /usr/lib64/ocaml/coccinelle/standard.h
-> HANDLING: d.c
-> diff =
-> --- d.c
-> +++ /tmp/cocci-output-32687-903dcc-d.c
-> @@ -1,7 +1,6 @@
->  int main(void)
->  {
->  #if ! HAVE_XYZ
-> -       f1();
-> -       f2();
-> +f3();
->  #endif
->  }
->
-> spatch --version
-> spatch version 1.0.0-rc19 with Python support and with PCRE support
+Applied to kbuild.git#misc, thanks.
 
-Thanks for the report.  It could be a good idea to upgrade to rc21, but
-unfortunately the problem is still there.
-
-julia
+Michal
