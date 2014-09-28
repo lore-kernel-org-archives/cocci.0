@@ -1,30 +1,34 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 28 Sep 2014 11:54:31 +0200 (CEST)
-Subject: [Cocci] Transformations for implementations of functions
- without explicit return type
-In-Reply-To: <54279D0D.2050809@users.sourceforge.net>
-References: <54279D0D.2050809@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1409281154140.2481@hadrien>
+From: peter.senna@gmail.com (Peter Senna Tschudin)
+Date: Sun, 28 Sep 2014 15:19:44 +0200
+Subject: [Cocci] glimpse / webglimpse now free software
+In-Reply-To: <CAB=NE6UXCKsaWVbztKNhTDYsBnJtGwYbgJSzBx=XP8srmCfKLw@mail.gmail.com>
+References: <CAB=NE6UXCKsaWVbztKNhTDYsBnJtGwYbgJSzBx=XP8srmCfKLw@mail.gmail.com>
+Message-ID: <CA+MoWDq+9TAkUH7OPTpFCuUqXcfzweBToq=LpFYxC3ZWfuQw5g@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, 28 Sep 2014, SF Markus Elfring wrote:
+That's really good news! Awesome!
 
-> Hello,
+On Fri, Sep 26, 2014 at 10:47 PM, Luis R. Rodriguez
+<mcgrof@do-not-panic.com> wrote:
+> I'm happy to announce that the University of Arizona has accepted the
+> request to release both glimpse / webglimpse as free software under
+> the ISC license.
 >
-> Does the current software "Coccinelle" support to transform implementations of
-> functions where a return type was not explicitly specified for it in a source file?
-> https://en.wikipedia.org/wiki/C99#Design
-
-I think so, but perhaps not in the released version.
-
-julia
-
+> http://webglimpse.net/
 >
-> Regards,
-> Markus
+> https://github.com/gvelez17/glimpse
+> https://github.com/gvelez17/webglimpse
+>
+> Thanks to the University of Arizona and Udi Manber.
+>
+>   Luis
 > _______________________________________________
 > Cocci mailing list
 > Cocci at systeme.lip6.fr
 > https://systeme.lip6.fr/mailman/listinfo/cocci
->
+
+
+
+-- 
+Peter
