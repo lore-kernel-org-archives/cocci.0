@@ -1,28 +1,49 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 28 Sep 2014 17:53:46 +0200
-Subject: [Cocci] Conversion of coding style "K&R" to newer C standard
-	approaches?
-In-Reply-To: <alpine.DEB.2.10.1409281700330.2394@hadrien>
-References: <54279D0D.2050809@users.sourceforge.net>
- <alpine.DEB.2.10.1409281154140.2481@hadrien>
- <542810DB.6050304@users.sourceforge.net>
- <alpine.DEB.2.10.1409281603340.2394@hadrien>
- <54281B12.6030309@users.sourceforge.net>
- <alpine.DEB.2.10.1409281700330.2394@hadrien>
-Message-ID: <54282F0A.1000003@users.sourceforge.net>
+From: der.herr@hofr.at (Nicholas Mc Guire)
+Date: Sun, 28 Sep 2014 18:16:29 +0200
+Subject: [Cocci] problem with Hashtbl in badzero.cocci
+Message-ID: <20140928161629.GA23825@opentech.at>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->>
->> How do you think about the possibility to transform more such
->> implementation details from a Kernighan/Ritchie coding style to a
->> current C standard approach?
-> We don't really support K&R C.
 
-A manual software update is generally also possible. It would be nice if
-more dedicated tools can help in a corresponding automatic conversion,
-wouldn't it?
-http://astyle.sourceforge.net/
+HI !
 
-Regards,
-Markus
+ make coccicheck in 3.16++
+ is failing on Debian 7.6 with
+
+make coccicheck MODE=report -C /usr/src/linux-stable/ M=/usr/src/read_msr
+make[1]: Entering directory `/usr/src/linux-stable'
+
+Please check for false positives in the output before submitting a
+patch.
+When using "patch" mode, carefully review the patch before submitting
+it.
+
+644 647
+Fatal error: exception Failure("scriptmeta: parse error: 
+ = File "./scripts/coccinelle/null/badzero.cocci", line 22, column 0,
+charpos =
+ 644
+    around = 'let', whole content = let negtable = Hashtbl.create 101
+")
+make[1]: Leaving directory `/usr/src/linux-stable'
+
+built spatch from source:
+  $ git clone https://github.com/coccinelle/coccinelle
+  $ git tag -> git checkout -b build coccinelle-1.0.0-rc21
+  $ apt-get install python2.6-dev libpycaml-ocaml-dev \
+          libmenhir-ocaml-dev menhir ocaml-native-compilers \
+          ocamlduce camlp4-extra ocaml-findlib pkg-config \
+          texlive-fonts-extra
+  $ ./configure --with-python --with-menhir
+  $ make all
+  $ make install
+
+  $ spatch --version
+    spatch version 1.0.0-rc21 with Python support and with Str regexp support 
+
+is this a ocaml version issue ? or did I screw up something in the 
+config/build ?
+
+thx!
+hofrat
