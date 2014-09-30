@@ -1,28 +1,19 @@
-From: wsa@the-dreams.de (Wolfram Sang)
-Date: Tue, 30 Sep 2014 20:37:59 +0200
-Subject: [Cocci] Documentation generation for the release "1.0.0-rc22"
-In-Reply-To: <542AEC27.3000905@users.sourceforge.net>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Tue, 30 Sep 2014 21:03:27 +0200
+Subject: [Cocci] main changes in 1.0.0-rc22
+In-Reply-To: <alpine.DEB.2.10.1409301011200.2442@hadrien>
 References: <alpine.DEB.2.10.1409301011200.2442@hadrien>
- <542A95D4.9060709@users.sourceforge.net>
- <alpine.DEB.2.10.1409301356380.2442@hadrien>
- <542A9E41.7070904@users.sourceforge.net>
- <20140930122434.GL1325@katana>
- <542AEC27.3000905@users.sourceforge.net>
-Message-ID: <20140930183757.GS1325@katana>
+Message-ID: <542AFE7F.8040907@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> The option --include-headers-for-types has been added.  With this, you can
+> use eg --all-includes and it will parse the header files to collect type
+> information, but not try to do any subsequent matching or transformation
+> in the header files.
 
-> The tool "RPM PBone Search" was not on my "radar screen" for a while.
+Would you like to mention this parameter also in the documentation source file
+"spatch_options.tex"?
 
-It was the first hit for me when it googled "suse" and the font name :)
-
-Anyway, glad it works now...
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 819 bytes
-Desc: Digital signature
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20140930/1c303923/attachment.asc>
+Regards,
+Markus
