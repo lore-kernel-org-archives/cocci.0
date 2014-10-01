@@ -1,57 +1,20 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 1 Oct 2014 15:08:54 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 01 Oct 2014 15:21:46 +0200
 Subject: [Cocci] string parameter concatenation
-In-Reply-To: <20141001130215.GB4701@rei.suse.cz>
+In-Reply-To: <alpine.DEB.2.10.1410011504340.2489@hadrien>
 References: <20141001130215.GB4701@rei.suse.cz>
-Message-ID: <alpine.DEB.2.10.1410011504340.2489@hadrien>
+ <alpine.DEB.2.10.1410011504340.2489@hadrien>
+Message-ID: <542BFFEA.4020309@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, 1 Oct 2014, Cyril Hrubis wrote:
+> String made up of multiple concatenated strings are perhaps not so well supported.
+> I don't think that automatic concatenation would be a good idea,
+> because some users might not want it.
 
-> Hi!
-> I've found a small nit in the handling of strings that spans over
-> multiple lines:
->
-> nit.c:
-> int main(void)
-> {
->         f("This is a string that continues to the next line"
->           " just string continuation");
-> }
->
-> nit.cocci:
-> @@
-> expression list L;
-> @@
-> - f(L);
-> + g(L);
->
->
-> spatch nit.cocci nit.c
-> init_defs_builtins: /usr/local/share/coccinelle/standard.h
-> HANDLING: nit.c
-> diff =
-> --- nit.c
-> +++ /tmp/cocci-output-8374-71ffd9-nit.c
-> @@ -1,5 +1,4 @@
->  int main(void)
->  {
-> -       f("This is a string that continues to the next line"
-> -         " just string continuation");
-> +       g("This is a string that continues to the next line"" just string continuation");
->  }
->
-> While this produces perfectly correct C code it would be nicer if the
-> strings were merged into one single C string. Othewise this still breaks
-> what LKML coding style says about being able to grep user-visible
-> strings in the source code.
+Does the semantic patch language support to find source code places where values
+are constructed out of several substrings?
+How much do other string layouts matter in coding styles?
 
-I can try to see what to do about it.  String made up of multiple
-concatenated strings are perhaps not so well supported.  I don't think
-that automatic concatenation would be a good idea, because some users
-might not want it.
-
-Thanks!
-
-julia
+Regards,
+Markus
