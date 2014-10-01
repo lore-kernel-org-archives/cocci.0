@@ -1,6 +1,6 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 01 Oct 2014 16:06:45 +0200
-Subject: [Cocci] [coccicheck PATCH 2/5] Deletion of unnecessary checks
+Date: Wed, 01 Oct 2014 16:06:56 +0200
+Subject: [Cocci] [coccicheck PATCH 3/5] Deletion of unnecessary checks
  before specific function calls
 In-Reply-To: <542BFB2C.5070609@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
@@ -20,7 +20,7 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net> <542BFB2C.5070609@users.sourceforge.net>
-Message-ID: <542C0A75.3070702@users.sourceforge.net>
+Message-ID: <542C0A80.3090207@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -28,90 +28,39 @@ List-Id: cocci@systeme.lip6.fr
 >>> can submit the patch that makes the change to the relevant maintainers and 
 >>> mailing lists.
 
->From 1d2de3c3cfa43cc3c78a91200c41cef438b26a8f Mon Sep 17 00:00:00 2001
+>From f4608fceec40b2b94aa9b4abe3bbb6d98ed5eed9 Mon Sep 17 00:00:00 2001
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Wed, 5 Mar 2014 18:38:43 +0100
-Subject: [PATCH 2/5] Addition of a semantic patch file for listing of
- functions that check their single parameter
+Date: Wed, 5 Mar 2014 18:58:30 +0100
+Subject: [PATCH 3/5] Addition of a SQLite script for a text file import
 
-This semantic patch pattern tries to find functions that check their single
-parameter for usability.
+A script was added so that a text file which was previously generated can be
+imported into a SQLite data base table.
+http://sqlite.org/sqlite.html
 
-Example:
-Null pointer checks are often performed as input parameter validation.
-
-It uses Python statements to write information about the found source code
-places in a data format that is a variant of a CSV text file.
+The shown file name can be adjusted by a make file for example.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- .../list_input_parameter_validation1.cocci         | 55 ++++++++++++++++++++++
- 1 file changed, 55 insertions(+)
+ .../coccinelle/deletions/handle_function_list_template.sqlite    | 9 +++++++++
+ 1 file changed, 9 insertions(+)
  create mode 100644
-scripts/coccinelle/deletions/list_input_parameter_validation1.cocci
+scripts/coccinelle/deletions/handle_function_list_template.sqlite
 
-diff --git a/scripts/coccinelle/deletions/list_input_parameter_validation1.cocci
-b/scripts/coccinelle/deletions/list_input_parameter_validation1.cocci
+diff --git a/scripts/coccinelle/deletions/handle_function_list_template.sqlite
+b/scripts/coccinelle/deletions/handle_function_list_template.sqlite
 new file mode 100644
-index 0000000..b0a5a52
+index 0000000..bec366c
 --- /dev/null
-+++ b/scripts/coccinelle/deletions/list_input_parameter_validation1.cocci
-@@ -0,0 +1,55 @@
-+ at initialize:python@
-+@@
-+import sys
-+result = []
-+mark = ['"', '', '"']
-+delimiter = '|'
-+
-+def store_positions(fun, typ, point, places):
-+    """Add source code positions to an internal list."""
-+    for place in places:
-+        fields = []
-+        fields.append(fun)
-+
-+        mark[1] = typ
-+        fields.append(''.join(mark))
-+
-+        fields.append(point)
-+
-+        mark[1] = place.file.replace('"', '""')
-+        fields.append(''.join(mark))
-+
-+        fields.append(place.line)
-+        fields.append(str(int(place.column) + 1))
-+        result.append(delimiter.join(fields))
-+
-+ at safety_check@
-+identifier work, input;
-+type data_type;
-+position pos;
-+statement is, es;
-+@@
-+ void work at pos(data_type input)
-+ {
-+  ... when any
-+( if (input) is else es
-+| if (likely(input)) is else es
-+)
-+  ... when any
-+ }
-+
-+ at script:python collection depends on safety_check@
-+typ << safety_check.data_type;
-+fun << safety_check.work;
-+point << safety_check.input;
-+places << safety_check.pos;
-+@@
-+store_positions(fun, typ, point, places)
-+
-+@finalize:python@
-+@@
-+if result:
-+   result.insert(0, delimiter.join(("function", '"data type"', '"parameter"',
-'"source file"', "line", "column")))
-+   print("\r\n".join(result))
-+else:
-+   sys.stderr.write("No result for this analysis!\n")
++++ b/scripts/coccinelle/deletions/handle_function_list_template.sqlite
+@@ -0,0 +1,9 @@
++create table positions(function text,
++                       data_type text,
++                       parameter text,
++                       source_file text,
++                       line integer,
++                       column integer);
++.separator "|"
++.import list_input_pointer_validation1.txt positions
++.header OFF
 -- 
 1.9.0
