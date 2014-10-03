@@ -1,66 +1,23 @@
-From: lars@metafoo.de (Lars-Peter Clausen)
-Date: Thu, 02 Oct 2014 22:44:58 +0200
-Subject: [Cocci] How can i rename a specific structure field?
-In-Reply-To: <CAHsAT8KbZS0xb4DpdL9oSKWRCJJ4gm0DWaiHi_+KvsqnFGaBNQ@mail.gmail.com>
-References: <CAHsAT8KbZS0xb4DpdL9oSKWRCJJ4gm0DWaiHi_+KvsqnFGaBNQ@mail.gmail.com>
-Message-ID: <542DB94A.5030900@metafoo.de>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Fri, 03 Oct 2014 09:55:36 +0200
+Subject: [Cocci] minor issue: pretty printing for modified functions as
+ arguments
+In-Reply-To: <20141001184054.GM14081@wotan.suse.de>
+References: <20141001184054.GM14081@wotan.suse.de>
+Message-ID: <542E5678.5040804@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 10/02/2014 10:12 PM, jmiguel hernandez wrote:
-> if i have this
->
-> typedef struct type1 {
->    char8 a;
->    char8 b;
->    char8 c;
-> }
->
-> typedef struct _interface {
->    type1 field1;
-> }interface;
->
-> and want to change to
->
-> typedef struct type1 {
->    char8 d;
->    char8 b;
->    char8 c;
-> }
->
-> typedef struct _protocol {
->    type1 *field1;
-> }interface;
->
-> interface *p
->
-> -p->field->a
-> +p->field->d
->
-> I have tried just changing field1 to field2. This gives parsing errors.
->
-> @@
-> typedef interface;
-> interface *p;
-> typedef type1;
-> type1 field1;
-> @@
-> <...
-> -p->field1
-> +p->fieldnew
-> ...>
+> Subject: [PATCH] module: add extra argument for parse_params() callback
+> 
+> This adds an extra argument onto parse_params() to be used
+> as a way to make the unused callback a bit more useful and
+> generic by allowing the caller to pass on a data structure
+> of its choice.
 
-If you want to change the field from being embedded in the parent struct to 
-a pointer and rename the field at the same time the way to go is
+How do you think about to reuse a type definition for such callback functions?
+Was such an implementation detail also discussed on a mailing list or forum
+already?
 
-@@
-typedef interface;
-interface *p;
-@@
-p->field1
--.a
-+->b
-
-That replaces the ".a" with a "->b"
-
-- Lars
+Regards,
+Markus
