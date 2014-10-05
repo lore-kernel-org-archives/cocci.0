@@ -1,7 +1,7 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 5 Oct 2014 19:01:28 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sun, 05 Oct 2014 19:09:20 +0200
 Subject: [Cocci] Searching for pass-through functions
-In-Reply-To: <5431781F.8040807@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.02.1410051900090.2022@localhost6.localdomain6>
 References: <54303340.3090901@users.sourceforge.net>
  <alpine.DEB.2.02.1410042116320.2079@localhost6.localdomain6>
  <54305719.1050304@users.sourceforge.net>
@@ -13,27 +13,24 @@ References: <54303340.3090901@users.sourceforge.net>
  <54317410.6040605@users.sourceforge.net>
  <alpine.DEB.2.02.1410051842280.2022@localhost6.localdomain6>
  <5431781F.8040807@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1410051900090.2022@localhost6.localdomain6>
+ <alpine.DEB.2.02.1410051900090.2022@localhost6.localdomain6>
+Message-ID: <54317B40.3010305@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, 5 Oct 2014, SF Markus Elfring wrote:
+> At least the first one has a lot of nested loops and conditionals.
+> This is a case that Coccinelle does not handle well.
 
-> >> Can the five issues on which I stumbled during the source code analysis be fixed
-> >> anyhow (eventually without the addtion of "--no-?" command options)?
-> > 
-> > For the timeouts, no they cannot.
+I am curious if the chances will increase to improve this detail in the future.
+
+
+>> - Can the software situation be improved for the other two issues?
 > 
-> I am surprised by this answer.
-> - How many processing hours will the desired analysis need for completion with
-> these "special" three source files?
+> Probably for the lexer.  Perhaps not for the case of inconsistent paths.  
+> Again that relates to a particular kind of code structure.
 
-Who knows.  At least the first one has a lot of nested loops and 
-conditionals.  This is a case that Coccinelle does not handle well.
+I am also curious about how the software development will be continued for these
+update candidates.
 
-> - Can the software situation be improved for the other two issues?
-
-Probably for the lexer.  Perhaps not for the case of inconsistent paths.  
-Again that relates to a particular kind of code structure.
-
-julia
+Regards,
+Markus
