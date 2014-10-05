@@ -1,7 +1,7 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 5 Oct 2014 18:42:42 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sun, 05 Oct 2014 18:55:59 +0200
 Subject: [Cocci] Searching for pass-through functions
-In-Reply-To: <54317410.6040605@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.02.1410051842280.2022@localhost6.localdomain6>
 References: <54303340.3090901@users.sourceforge.net>
  <alpine.DEB.2.02.1410042116320.2079@localhost6.localdomain6>
  <54305719.1050304@users.sourceforge.net>
@@ -11,48 +11,20 @@ References: <54303340.3090901@users.sourceforge.net>
  <54313662.8000402@users.sourceforge.net>
  <alpine.DEB.2.02.1410051729480.2022@localhost6.localdomain6>
  <54317410.6040605@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1410051842280.2022@localhost6.localdomain6>
+ <alpine.DEB.2.02.1410051842280.2022@localhost6.localdomain6>
+Message-ID: <5431781F.8040807@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+>> Can the five issues on which I stumbled during the source code analysis be fixed
+>> anyhow (eventually without the addtion of "--no-?" command options)?
+> 
+> For the timeouts, no they cannot.
 
+I am surprised by this answer.
+- How many processing hours will the desired analysis need for completion with
+these "special" three source files?
+- Can the software situation be improved for the other two issues?
 
-On Sun, 5 Oct 2014, SF Markus Elfring wrote:
-
-> > I'm not sure what is the goal of your semantic patch.
-> 
-> The shown pattern should not be a patch at this time.   ;-)
-> 
-> I try to find functions by this approach that do not perform validation for a
-> specific input parameter usually because this parameter will be forwarded as the
-> return value.
-> 
-> 
-> > For example are you only interested in pointers?
-> 
-> No. - But I imagine that pointers will be specified more often in corresponding
-> function signatures than integral data types.
-> 
-> 
-> > Another thing that could be helpful is to check if there exists the 
-> > pattern you are looking for, before checking whether it is found on all 
-> > execution paths.  You can use the same rule you have, but with exists in 
-> > the header, and then have a second rule that checks all paths and depends 
-> > on the first one.
-> 
-> Would you like to show your fine-tuning suggestion in the affected SmPL script?
-> 
-> 
-> > Also, since you just want to find returns, but don't care about what 
-> > happens in between, you can use arguments like --no-loops and --no-gotos.
-> 
-> Will it matter if the relevant return statement will be executed within a loop
-> or is also marked with a jump label?
-> 
-> 
-> Can the five issues on which I stumbled during the source code analysis be fixed
-> anyhow (eventually without the addtion of "--no-?" command options)?
-
-For the timeouts, no they cannot.
-
-julia
+Regards,
+Markus
