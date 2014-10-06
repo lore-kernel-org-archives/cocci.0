@@ -1,27 +1,49 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 05 Oct 2014 20:37:47 +0200
-Subject: [Cocci] Searching for pass-through functions
-In-Reply-To: <alpine.DEB.2.02.1410051729480.2022@localhost6.localdomain6>
-References: <54303340.3090901@users.sourceforge.net>
- <alpine.DEB.2.02.1410042116320.2079@localhost6.localdomain6>
- <54305719.1050304@users.sourceforge.net>
- <alpine.DEB.2.02.1410042331240.2079@localhost6.localdomain6>
- <54312F70.3080809@users.sourceforge.net>
- <alpine.DEB.2.02.1410051347570.2229@localhost6.localdomain6>
- <54313662.8000402@users.sourceforge.net>
- <alpine.DEB.2.02.1410051729480.2022@localhost6.localdomain6>
-Message-ID: <54318FFB.1000805@users.sourceforge.net>
+From: chrubis@suse.cz (Cyril Hrubis)
+Date: Mon, 6 Oct 2014 12:25:00 +0200
+Subject: [Cocci] string parameter concatenation
+In-Reply-To: <alpine.DEB.2.02.1410021858360.2062@localhost6.localdomain6>
+References: <20141001130215.GB4701@rei.suse.cz>
+ <alpine.DEB.2.02.1410021858360.2062@localhost6.localdomain6>
+Message-ID: <20141006102500.GC8551@rei.suse.cz>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> For example are you only interested in pointers?
+Hi!
+> > I've found a small nit in the handling of strings that spans over
+> > multiple lines:
+> > 
+> > nit.c:
+> > int main(void)
+> > {
+> >         f("This is a string that continues to the next line"
+> >           " just string continuation");
+> > }
+> 
+> The patch below solves this problem as well as the one with the long 
+> string in the argument list.
 
-I get the impression from the source files for the operating system "Linux
-3.16.3" that pointers are specified for input parameters (which will be also
-forwarded as return values) at 1280 source code places while integral data types
-are used 1913 times for such a specific parameter in corresponding function
-signatures.
-Are such facts worth for further considerations?
+It's better but it produces changes like this:
 
-Regards,
-Markus
+@@ -250,9 +250,14 @@ void l_seek(int fdesc, off_t offset, int whence, off_t checkoff)
+        off_t offloc;
+ 
+        if ((offloc = lseek(fdesc, offset, whence)) != checkoff) {
+-               tst_resm(TFAIL, "(%ld = lseek(%d, %ld, %d)) != %ld) errno = %d",
+-                        offloc, fdesc, offset, whence, checkoff, errno);
+-               tst_exit();
++               tst_brkm(TFAIL, NULL,
++                        "(%ld = lseek(%d, %ld, %d)) != %ld) errno = %d",
++                        offloc,
++                        fdesc,
++                        offset,
++                        whence,
++                        checkoff,
++                        errno);
+        }
+ }
+
+Which seems to be waste of vertical space to me.
+
+-- 
+Cyril Hrubis
+chrubis at suse.cz
