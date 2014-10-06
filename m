@@ -1,21 +1,118 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Mon, 06 Oct 2014 13:02:26 +0200
-Subject: [Cocci] Configuration for alignment of function parameters?
-In-Reply-To: <alpine.DEB.2.10.1410061249210.2354@hadrien>
-References: <20141001130215.GB4701@rei.suse.cz>
- <alpine.DEB.2.02.1410021858360.2062@localhost6.localdomain6>
- <20141006102500.GC8551@rei.suse.cz>
- <alpine.DEB.2.10.1410061249210.2354@hadrien>
-Message-ID: <543276C2.1050404@users.sourceforge.net>
+From: jmiguel.hdez@gmail.com (jmiguel hernandez)
+Date: Mon, 6 Oct 2014 12:11:53 -0500
+Subject: [Cocci] Fwd:  How can i rename a specific structure field?
+In-Reply-To: <CAHsAT8Knor4wG+398-BZ15Upwv1PWz=6VOGQvEXcHSGzimkD9Q@mail.gmail.com>
+References: <CAHsAT8KbZS0xb4DpdL9oSKWRCJJ4gm0DWaiHi_+KvsqnFGaBNQ@mail.gmail.com>
+ <542DB94A.5030900@metafoo.de>
+ <CAHsAT8Knor4wG+398-BZ15Upwv1PWz=6VOGQvEXcHSGzimkD9Q@mail.gmail.com>
+Message-ID: <CAHsAT8KNyuRryt3PVSMQf8d=RJ7FRsZj6TCBVMG=4kx40OcYAQ@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> Which seems to be waste of vertical space to me.
-> 
-> I will look into it.  Some counter must not be getting reset.
+?Forgot to reply to the list :S?
 
-How do you think about to make the parameter alignment configurable?
-Do other coding styles prefer the shown source code layout?
 
-Regards,
-Markus
+Thank you,
+i was trying to Move a any field from a structure inside a data structure
+a.
+
+@@
+typedef interface;
+interface *p;
+identifier fld;
+@@
+p->field1
+-.fld
++.a.fld
+
+But it looks like it is not matching anything. The type for p must match,
+and also the name of field1.
+i am moving some elements from field1 into "struct a" which is on field1.
+So ideally, i was thinking on using a dependency like
+https://github.com/coccinelle/coccinellery/blob/master/iserr/patch1.cocci
+for the exceptions.
+
+but at this point i will be satified if i can just move everything from
+field1 into a.
+I also tried this, and defining fld as field instead of identifier.
+
+@@
+typedef interface;
+interface *p;
+identifier fld;
+@@
+-p->field1.fld
++p->field1.a.fld
+
+i am sorry i am just getting to understand the grammar. I wonder if there
+is an example slightly similar about structure transformations i could
+read. Thanks
+
+
+On Thu, Oct 2, 2014 at 3:44 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+
+> On 10/02/2014 10:12 PM, jmiguel hernandez wrote:
+>
+>> if i have this
+>>
+>> typedef struct type1 {
+>>    char8 a;
+>>    char8 b;
+>>    char8 c;
+>> }
+>>
+>> typedef struct _interface {
+>>    type1 field1;
+>> }interface;
+>>
+>> and want to change to
+>>
+>> typedef struct type1 {
+>>    char8 d;
+>>    char8 b;
+>>    char8 c;
+>> }
+>>
+>> typedef struct _protocol {
+>>    type1 *field1;
+>> }interface;
+>>
+>> interface *p
+>>
+>> -p->field->a
+>> +p->field->d
+>>
+>> I have tried just changing field1 to field2. This gives parsing errors.
+>>
+>> @@
+>> typedef interface;
+>> interface *p;
+>> typedef type1;
+>> type1 field1;
+>> @@
+>> <...
+>> -p->field1
+>> +p->fieldnew
+>> ...>
+>>
+>
+> If you want to change the field from being embedded in the parent struct
+> to a pointer and rename the field at the same time the way to go is
+>
+> @@
+> typedef interface;
+> interface *p;
+> @@
+> p->field1
+> -.a
+> +->b
+>
+> That replaces the ".a" with a "->b"
+>
+> - Lars
+>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20141006/c5e80af7/attachment.html>
