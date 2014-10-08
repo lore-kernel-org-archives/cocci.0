@@ -1,7 +1,7 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 8 Oct 2014 13:51:22 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 08 Oct 2014 14:01:34 +0200
 Subject: [Cocci] Searching for pass-through functions
-In-Reply-To: <543522B0.9020700@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.10.1410081351060.2441@hadrien>
 References: <54303340.3090901@users.sourceforge.net>
  <alpine.DEB.2.02.1410042116320.2079@localhost6.localdomain6>
  <54305719.1050304@users.sourceforge.net>
@@ -11,22 +11,16 @@ References: <54303340.3090901@users.sourceforge.net>
  <54313662.8000402@users.sourceforge.net>
  <alpine.DEB.2.02.1410051729480.2022@localhost6.localdomain6>
  <543522B0.9020700@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1410081351060.2441@hadrien>
+ <alpine.DEB.2.10.1410081351060.2441@hadrien>
+Message-ID: <5435279E.2070901@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, 8 Oct 2014, SF Markus Elfring wrote:
+> It depends on what you specifically want to do with the information.
 
-> > For example are you only interested in pointers?
->
-> I get the impression from the source files within the software repository for
-> the operating system "MINIX 3.3.0" that pointers are specified for input
-> parameters (which will be also forwarded as return values) at 177 source code
-> places while non-pointer data types are used 301 times for such a specific
-> parameter in corresponding function signatures.
-> Are such facts worth for further considerations?
+I would like to reuse the extracted data to convert a function name list to a
+corresponding SmPL constraint. It might become interesting again if a generated
+long regular expression will work for further source code analysis.
 
-I don't know.  It depends on what you specifically want to do with the
-information.
-
-julia
+Regards,
+Markus
