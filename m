@@ -1,19 +1,15 @@
 From: wsa@the-dreams.de (Wolfram Sang)
-Date: Fri, 10 Oct 2014 20:12:21 +0200
+Date: Fri, 10 Oct 2014 20:26:05 +0200
 Subject: [Cocci] [RFC] drop owner assignment from platform_drivers
-In-Reply-To: <2106140.DbuFLh1xav@wuerfel>
+In-Reply-To: <20141010083627.GL5182@n2100.arm.linux.org.uk>
 References: <20141010072439.GA1741@katana>
- <2106140.DbuFLh1xav@wuerfel>
-Message-ID: <20141010181218.GB6075@katana>
+ <20141010083627.GL5182@n2100.arm.linux.org.uk>
+Message-ID: <20141010182604.GC6075@katana>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi Arnd,
-
-thanks for taking a look!
-
-On Fri, Oct 10, 2014 at 10:30:08AM +0200, Arnd Bergmann wrote:
-> On Friday 10 October 2014 09:24:39 Wolfram Sang wrote:
+On Fri, Oct 10, 2014 at 09:36:27AM +0100, Russell King - ARM Linux wrote:
+> On Fri, Oct 10, 2014 at 09:24:39AM +0200, Wolfram Sang wrote:
 > > people found out that for platform_driver, we don't need to set the
 > > .owner field because this is done by the platform driver core. So far,
 > > so good. However, now I got patches removing the .owner field for this
@@ -23,34 +19,53 @@ On Fri, Oct 10, 2014 at 10:30:08AM +0200, Arnd Bergmann wrote:
 > > THIS_MODULE, but checks if the platform_driver struct was really used by
 > > a call actually setting the .owner field:
 > 
-> Is the intention just to save a few lines in the kernel source, or are
-> there any additional upsides to doing this?
+> Is this correct?
+> 
+> #define platform_driver_register(drv) \
+>         __platform_driver_register(drv, THIS_MODULE)
+> extern int __platform_driver_register(struct platform_driver *,
+>                                         struct module *);
+> 
+> Fine for those which use platform_driver_register(), but:
+> 
+> /* non-hotpluggable platform devices may use this so that probe() and
+>  * its support may live in __init sections, conserving runtime memory.
+>  */
+> extern int platform_driver_probe(struct platform_driver *driver,
+>                 int (*probe)(struct platform_device *));
+> 
+> platform_driver_probe() doesn't seem to know which module called it.
+> This is also true of platform_create_bundle:
+> 
+> extern struct platform_device *platform_create_bundle(
+>         struct platform_driver *driver, int (*probe)(struct platform_device *),
+>         struct resource *res, unsigned int n_res,
+>         const void *data, size_t size);
+> 
+> So, it's not as trivial as just "all platform driver's should not have a
+> .owner field" - the real answer is far more complex than that.
 
-As written above, I don't like getting patches removing this line for
-single drivers. I already got two and I am expecting more. So I'd prefer
-to do this on subsystem level. I will apply the I2C part, for sure.
+platform_create_bundle() calls platform_driver_probe().
+platform_driver_probe() calls platform_driver_register().
+platform_driver_register() modifies driver.owner.
 
-> While it looks like an obvious cleanup, it also seems to me that there
-> is zero effect in terms of functionality, code size or enabling future
-> changes.
+So, it is correct from the point of view that it doesn't make sense to
+set the .owner field if it gets overwritten anyhow.
 
-Well, the kernel image will compress better ;) And well, it is cleaner.
-Why should we set up something if it gets overwritten anyhow?
-
-> I'm all for adding your semantic patch to scripts/coccinelle so it gets
-> picked up by anyone writing new drivers or doing code cleanup on their
-> driver, but I'm unsure about the value of applying all your patches
-> for the existing drivers.
-
-I could try reducing the number of patches. Any other downsides?
+You got me wondering, though, that it could not be correct to call
+platform_driver_register() from the platform core instead of module
+init. I will check tomorrow. Still, this would be a bug independent of
+my series. Although I'd need to respin it if platform_driver_probe()
+needed a fix.
 
 Thanks,
 
    Wolfram
+
 -------------- next part --------------
 A non-text attachment was scrubbed...
 Name: signature.asc
 Type: application/pgp-signature
 Size: 819 bytes
 Desc: Digital signature
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20141010/39384089/attachment.asc>
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20141010/e24feddd/attachment.asc>
