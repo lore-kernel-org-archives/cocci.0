@@ -1,113 +1,51 @@
-From: wsa@the-dreams.de (Wolfram Sang)
-Date: Fri, 10 Oct 2014 09:24:39 +0200
-Subject: [Cocci] [RFC] drop owner assignment from platform_drivers
-Message-ID: <20141010072439.GA1741@katana>
+From: fabf@skynet.be (Fabian Frederick)
+Date: Fri, 10 Oct 2014 09:18:31 +0200
+Subject: [Cocci] [PATCH 1/1 linux-next]
+	scripts/coccinelle/misc/boolinit.cocci: fix assignment warnings
+Message-ID: <1412925511-3556-1-git-send-email-fabf@skynet.be>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi,
+Replace "Assignment of bool to 0/1" by "Assignment of 0/1 to bool"
 
-people found out that for platform_driver, we don't need to set the
-.owner field because this is done by the platform driver core. So far,
-so good. However, now I got patches removing the .owner field for this
-single i2c driver or for that one. To prevent getting thousands of
-patches fixing single drivers, I used coccinelle to remove all instances
-from the kernel. The SmPL looks like this, it doesn't blindly remove all
-THIS_MODULE, but checks if the platform_driver struct was really used by
-a call actually setting the .owner field:
+Suggested-by: Dan Mick <dan.mick@inktank.com>
+Signed-off-by: Fabian Frederick <fabf@skynet.be>
+---
+ scripts/coccinelle/misc/boolinit.cocci | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-===
-
-@match1@
-declarer name module_platform_driver;
-declarer name module_platform_driver_probe;
-identifier __driver;
-@@
-(
-	module_platform_driver(__driver);
-|
-	module_platform_driver_probe(__driver, ...);
-)
-
-@fix1 depends on match1@
-identifier match1.__driver;
-@@
-	static struct platform_driver __driver = {
-		.driver = {
--			.owner = THIS_MODULE,
-		}
-	};
-
-@match2@
-identifier __driver;
-@@
-(
-	platform_driver_register(&__driver)
-|
-	platform_driver_probe(&__driver, ...)
-|
-	platform_create_bundle(&__driver, ...)
-)
-
-@fix2 depends on match2@
-identifier match2.__driver;
-@@
-	static struct platform_driver __driver = {
-		.driver = {
--			.owner = THIS_MODULE,
-		}
-	};
-
-===
-
-I tried to group the changes. The current granularity is directory
-level. The resulting branch can be found here (it is based on linux-next
-of yesterday):
-
-git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git drop_platform_driver_owner
-
-This still results in 300 patches as this shortened pull request shows:
-
-===
-
-Wolfram Sang (299):
-      ARM: common: drop owner assignment from platform_drivers
-      ARM: mach-davinci: drop owner assignment from platform_drivers
-      ARM: mach-imx: drop owner assignment from platform_drivers
-...
-      ASoC: txx9: drop owner assignment from platform_drivers
-      ASoC: ux500: drop owner assignment from platform_drivers
-      ALSA: sparc: drop owner assignment from platform_drivers
-
- arch/arm/common/sa1111.c                                         | 1 -
- arch/arm/mach-davinci/cpuidle.c                                  | 1 -
- arch/arm/mach-davinci/pm.c                                       | 1 -
-...
- sound/sparc/amd7930.c                                            | 1 -
- sound/sparc/cs4231.c                                             | 1 -
- sound/sparc/dbri.c                                               | 1 -
- 1688 files changed, 1718 deletions(-)
-
-===
-
-I don't want to send all 300 patches to lkml. I still think, they should
-go via subsystems, though, and not via a single pull request. So, I am
-working on just sending smaller pieces of this huge series to the
-apropriate mailing lists (like arm, netdev...) as an independent series.
-Then, each subsystem can decide if the patches should be further folded.
-In my experience, this mileage varies from subsystem to subsystem.
-
-That's my plan for today. If you have comments, other suggestions or
-remarks, I'd like to hear them.
-
-Thanks,
-
-   Wolfram
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 819 bytes
-Desc: Digital signature
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20141010/b4ab6c43/attachment.asc>
+diff --git a/scripts/coccinelle/misc/boolinit.cocci b/scripts/coccinelle/misc/boolinit.cocci
+index b9abed4..63c4562 100644
+--- a/scripts/coccinelle/misc/boolinit.cocci
++++ b/scripts/coccinelle/misc/boolinit.cocci
+@@ -145,13 +145,13 @@ cocci.print_main("WARNING: Comparison of bool to 0/1",p)
+ p1 << r3.p1;
+ @@
+ 
+-cocci.print_main("WARNING: Assignment of bool to 0/1",p1)
++cocci.print_main("WARNING: Assignment of 0/1 to bool",p1)
+ 
+ @script:python depends on org@
+ p2 << r3.p2;
+ @@
+ 
+-cocci.print_main("ERROR: Assignment of bool to non-0/1 constant",p2)
++cocci.print_main("ERROR: Assignment of non-0/1 constant to bool",p2)
+ 
+ @script:python depends on report@
+ p << r1.p;
+@@ -169,10 +169,10 @@ coccilib.report.print_report(p[0],"WARNING: Comparison of bool to 0/1")
+ p1 << r3.p1;
+ @@
+ 
+-coccilib.report.print_report(p1[0],"WARNING: Assignment of bool to 0/1")
++coccilib.report.print_report(p1[0],"WARNING: Assignment of 0/1 to bool")
+ 
+ @script:python depends on report@
+ p2 << r3.p2;
+ @@
+ 
+-coccilib.report.print_report(p2[0],"ERROR: Assignment of bool to non-0/1 constant")
++coccilib.report.print_report(p2[0],"ERROR: Assignment of non-0/1 constant to bool")
+-- 
+1.9.3
