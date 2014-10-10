@@ -1,61 +1,32 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 10 Oct 2014 09:55:16 +0200 (CEST)
-Subject: [Cocci] [PATCH 1/1 linux-next]
- scripts/coccinelle/misc/boolinit.cocci: fix assignment warnings
-In-Reply-To: <1412925511-3556-1-git-send-email-fabf@skynet.be>
-References: <1412925511-3556-1-git-send-email-fabf@skynet.be>
-Message-ID: <alpine.DEB.2.10.1410100954590.2402@hadrien>
+From: arnd@arndb.de (Arnd Bergmann)
+Date: Fri, 10 Oct 2014 10:30:08 +0200
+Subject: [Cocci] [RFC] drop owner assignment from platform_drivers
+In-Reply-To: <20141010072439.GA1741@katana>
+References: <20141010072439.GA1741@katana>
+Message-ID: <2106140.DbuFLh1xav@wuerfel>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+On Friday 10 October 2014 09:24:39 Wolfram Sang wrote:
+> people found out that for platform_driver, we don't need to set the
+> .owner field because this is done by the platform driver core. So far,
+> so good. However, now I got patches removing the .owner field for this
+> single i2c driver or for that one. To prevent getting thousands of
+> patches fixing single drivers, I used coccinelle to remove all instances
+> from the kernel. The SmPL looks like this, it doesn't blindly remove all
+> THIS_MODULE, but checks if the platform_driver struct was really used by
+> a call actually setting the .owner field:
 
-Thanks!
+Is the intention just to save a few lines in the kernel source, or are
+there any additional upsides to doing this?
 
-On Fri, 10 Oct 2014, Fabian Frederick wrote:
+While it looks like an obvious cleanup, it also seems to me that there
+is zero effect in terms of functionality, code size or enabling future
+changes.
 
-> Replace "Assignment of bool to 0/1" by "Assignment of 0/1 to bool"
->
-> Suggested-by: Dan Mick <dan.mick@inktank.com>
-> Signed-off-by: Fabian Frederick <fabf@skynet.be>
-> ---
->  scripts/coccinelle/misc/boolinit.cocci | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
->
-> diff --git a/scripts/coccinelle/misc/boolinit.cocci b/scripts/coccinelle/misc/boolinit.cocci
-> index b9abed4..63c4562 100644
-> --- a/scripts/coccinelle/misc/boolinit.cocci
-> +++ b/scripts/coccinelle/misc/boolinit.cocci
-> @@ -145,13 +145,13 @@ cocci.print_main("WARNING: Comparison of bool to 0/1",p)
->  p1 << r3.p1;
->  @@
->
-> -cocci.print_main("WARNING: Assignment of bool to 0/1",p1)
-> +cocci.print_main("WARNING: Assignment of 0/1 to bool",p1)
->
->  @script:python depends on org@
->  p2 << r3.p2;
->  @@
->
-> -cocci.print_main("ERROR: Assignment of bool to non-0/1 constant",p2)
-> +cocci.print_main("ERROR: Assignment of non-0/1 constant to bool",p2)
->
->  @script:python depends on report@
->  p << r1.p;
-> @@ -169,10 +169,10 @@ coccilib.report.print_report(p[0],"WARNING: Comparison of bool to 0/1")
->  p1 << r3.p1;
->  @@
->
-> -coccilib.report.print_report(p1[0],"WARNING: Assignment of bool to 0/1")
-> +coccilib.report.print_report(p1[0],"WARNING: Assignment of 0/1 to bool")
->
->  @script:python depends on report@
->  p2 << r3.p2;
->  @@
->
-> -coccilib.report.print_report(p2[0],"ERROR: Assignment of bool to non-0/1 constant")
-> +coccilib.report.print_report(p2[0],"ERROR: Assignment of non-0/1 constant to bool")
-> --
-> 1.9.3
->
->
+I'm all for adding your semantic patch to scripts/coccinelle so it gets
+picked up by anyone writing new drivers or doing code cleanup on their
+driver, but I'm unsure about the value of applying all your patches
+for the existing drivers.
+
+	Arnd
