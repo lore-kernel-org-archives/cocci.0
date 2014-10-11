@@ -1,12 +1,12 @@
-From: linux@arm.linux.org.uk (Russell King - ARM Linux)
-Date: Sat, 11 Oct 2014 18:15:38 +0100
+From: gregkh@linuxfoundation.org (Greg KH)
+Date: Sat, 11 Oct 2014 13:55:27 -0700
 Subject: [Cocci] [RFC] drop owner assignment from platform_drivers
 In-Reply-To: <20141011165650.GA1263@katana>
 References: <20141010072439.GA1741@katana>
  <20141010083627.GL5182@n2100.arm.linux.org.uk>
  <20141010182604.GC6075@katana> <2769473.KEN6DZKnT7@wuerfel>
  <20141011165650.GA1263@katana>
-Message-ID: <20141011171538.GB27405@n2100.arm.linux.org.uk>
+Message-ID: <20141011205527.GA30877@kroah.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -32,24 +32,18 @@ On Sat, Oct 11, 2014 at 06:56:51PM +0200, Wolfram Sang wrote:
 > there are a few subsystems hiding it this way. So, it is a pattern
 > somewhow. Oh well...
 
-It really /ought/ to be consistent, because inconsistencies like that
-will be a never-ending source of subtle mistakes.
+The pattern is to not have to manually set MODULE_OWNER, and have the
+pre-processor do it for you, otherwise you will forget or get it wrong.
 
-Imagine what it would be like if the kernel was a complete mess of
-functions with return type "int" where there was no predominant
-pattern of returning negative errno numbers - where it was random
-whether int-returning functions returned zero for failure, others
-returned zero for success.  We would have to look up every single
-function to check it's return style, and it would be a bigger problem
-when reviewing code.
+That is why I accepted this patch to the platform driver interface, as
+it is in line with many other bus driver apis (pci, usb, etc.).
 
-There is a lot of value for saving time and reducing errors to have a
-consistent, simple and obvious methodology.
+I missed the one code path you pointed out, and that should be fixed,
+but that doesn't mean that the original patch should be reverted, as it
+is the way we want things to be, let's just fix up the bug and move on.
 
-(That's not to say that it should be enforced draconian style - but
-there'd better be a good reason to be different, rather than "I think
-it's better this way" or "my personal style is different".)
+And again, may I just say how much I hate the platform driver code, one
+of these days I'm going to lock myself in a room for a week and figure
+out a way to just delete that stuff...
 
--- 
-FTTC broadband for 0.8mile line: currently at 9.5Mbps down 400kbps up
-according to speedtest.net.
+greg k-h
