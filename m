@@ -1,60 +1,176 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 17 Oct 2014 07:53:02 +0200 (CEST)
-Subject: [Cocci] string parameter concatenation
-In-Reply-To: <20141006102500.GC8551@rei.suse.cz>
-References: <20141001130215.GB4701@rei.suse.cz>
- <alpine.DEB.2.02.1410021858360.2062@localhost6.localdomain6>
- <20141006102500.GC8551@rei.suse.cz>
-Message-ID: <alpine.DEB.2.10.1410170752240.2654@hadrien>
+From: wsa@the-dreams.de (Wolfram Sang)
+Date: Fri, 17 Oct 2014 22:24:00 +0200
+Subject: [Cocci] sgen problems
+Message-ID: <20141017202400.GA2576@katana>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> It's better but it produces changes like this:
->
-> @@ -250,9 +250,14 @@ void l_seek(int fdesc, off_t offset, int whence, off_t checkoff)
->         off_t offloc;
->
->         if ((offloc = lseek(fdesc, offset, whence)) != checkoff) {
-> -               tst_resm(TFAIL, "(%ld = lseek(%d, %ld, %d)) != %ld) errno = %d",
-> -                        offloc, fdesc, offset, whence, checkoff, errno);
-> -               tst_exit();
-> +               tst_brkm(TFAIL, NULL,
-> +                        "(%ld = lseek(%d, %ld, %d)) != %ld) errno = %d",
-> +                        offloc,
-> +                        fdesc,
-> +                        offset,
-> +                        whence,
-> +                        checkoff,
-> +                        errno);
->         }
->  }
->
-> Which seems to be waste of vertical space to me.
+Hi,
 
-This may be solved by the following patch:
+so I was trying to convert my spatch from the platform-owner series to a
+Kernel-cocci with sgen. However, that didn't work and produced a corrupt
+cocci file (at least the name of the matching rules has been eaten). I
+used a self-compiled sgen from the Debian rc22. I attach the cocci and
+config file for easier reproducing. Does the sgen author read the list?
+Probably it would be easy to fix the broken file, but it seems more
+sustainable to me to fix the tool :)
 
-diff --git a/parsing_c/unparse_c.ml b/parsing_c/unparse_c.ml
-index 3c54c33..77c23bb 100644
---- a/parsing_c/unparse_c.ml
-+++ b/parsing_c/unparse_c.ml
-@@ -1288,14 +1288,12 @@ let add_newlines toks tabbing_unit =
-     | _ -> (count,List.tl stack,space_cell,seen_cocci) in
-   let update_by_stack s count stack sp space_cell seen_cocci =
-     let count = simple_string_length s (count + 1 (*space*)) in
--    let newinfo =
--      match stack with
--      | [(x,tustack)] ->
--          (match check_for_newline count x tustack space_cell with
--          | Some count -> (stack,Some (x,sp), seen_cocci)
--          | None -> (stack,Some (count,sp),seen_cocci))
--      | _ -> (stack,space_cell,seen_cocci) in
--    (newinfo,count) in
-+    match stack with
-+    | [(x,tustack)] ->
-+        (match check_for_newline count x tustack space_cell with
-+        | Some count -> ((stack,Some (x,sp), seen_cocci),count)
-+        | None -> ((stack,Some (count,sp),seen_cocci),count))
-+    | _ -> ((stack,space_cell,seen_cocci),count) in
-   let rec loop ((stack,space_cell,seen_cocci) as info) count seeneq =
-     function
-     | [] -> []
+Thanks,
+
+   Wolfram
+
+-------------- next part --------------
+@match1@
+declarer name module_platform_driver;
+declarer name module_platform_driver_probe;
+identifier __driver;
+@@
+(
+	module_platform_driver(__driver);
+|
+	module_platform_driver_probe(__driver, ...);
+)
+
+@fix1 depends on match1@
+identifier match1.__driver;
+@@
+	static struct platform_driver __driver = {
+		.driver = {
+-			.owner = THIS_MODULE,
+		}
+	};
+
+@match2@
+identifier __driver;
+@@
+(
+	platform_driver_register(&__driver)
+|
+	platform_driver_probe(&__driver, ...)
+|
+	platform_create_bundle(&__driver, ...)
+)
+
+@fix2 depends on match2@
+identifier match2.__driver;
+@@
+	static struct platform_driver __driver = {
+		.driver = {
+-			.owner = THIS_MODULE,
+		}
+	};
+-------------- next part --------------
+// Generated config
+description = Remove .owner field if calls are used which set it automatically
+confidence = Moderate
+authors = Wolfram Sang. GPL v2.
+fix2 =
+  org:"No need to set .owner here"
+  report:"No need to set .owner here"
+fix1 =
+  org:"No need to set .owner here"
+  report:"No need to set .owner here"
+-------------- next part --------------
+/// Remove .owner field if calls are used which set it automatically
+///
+// Confidence: Moderate
+// Copyright: (C) 2014 Wolfram Sang. GPL v2.
+
+virtual patch
+virtual context
+virtual org
+virtual report
+
+@declarer name module_platform_driver;
+declarer name module_platform_driver_probe;
+identifier __driver;
+@@
+(
+	module_platform_driver(__driver);
+|
+	module_platform_driver_probe(__driver, ...);
+)
+
+@fix1 depends on match1 && patch && !context && !org && !report@
+identifier match1.__driver;
+@@
+	static struct platform_driver __driver = {
+		.driver = {
+-			.owner = THIS_MODULE,
+		}
+	};
+
+@identifier __driver;
+@@
+(
+	platform_driver_register(&__driver)
+|
+	platform_driver_probe(&__driver, ...)
+|
+	platform_create_bundle(&__driver, ...)
+)
+
+@fix2 depends on match2 && patch && !context && !org && !report@
+identifier match2.__driver;
+@@
+	static struct platform_driver __driver = {
+		.driver = {
+-			.owner = THIS_MODULE,
+		}
+	};
+
+// ----------------------------------------------------------------------------
+
+@fix1_context depends on match1 && !patch && (context || org || report)@
+identifier match1.__driver;
+position j0;
+@@
+
+* 	static struct platform_driver __driver at j0 = {
+		.driver = {
+			.owner = THIS_MODULE,
+		}
+	};
+
+@fix2_context depends on match2 && !patch && (context || org || report)@
+identifier match2.__driver;
+position j0;
+@@
+
+* 	static struct platform_driver __driver at j0 = {
+		.driver = {
+			.owner = THIS_MODULE,
+		}
+	};
+
+// ----------------------------------------------------------------------------
+
+@script:python fix1_org depends on org@
+j0 << fix1_context.j0;
+@@
+
+msg = "No need to set .owner here."
+coccilib.org.print_todo(j0[0], msg)
+
+@script:python fix2_org depends on org@
+j0 << fix2_context.j0;
+@@
+
+msg = "No need to set .owner here."
+coccilib.org.print_todo(j0[0], msg)
+
+// ----------------------------------------------------------------------------
+
+@script:python fix1_report depends on report@
+j0 << fix1_context.j0;
+@@
+
+msg = "No need to set .owner here."
+coccilib.report.print_report(j0[0], msg)
+
+@script:python fix2_report depends on report@
+j0 << fix2_context.j0;
+@@
+
+msg = "No need to set .owner here."
+coccilib.report.print_report(j0[0], msg)
