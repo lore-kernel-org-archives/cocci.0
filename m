@@ -1,33 +1,60 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 16 Oct 2014 21:28:15 +0200 (CEST)
-Subject: [Cocci] Coccinelle rules for module_pci_driver
-In-Reply-To: <54401BD2.9050209@free-electrons.com>
-References: <543FB678.7000206@free-electrons.com>
- <alpine.DEB.2.10.1410161554230.2585@hadrien>
- <54401BD2.9050209@free-electrons.com>
-Message-ID: <alpine.DEB.2.10.1410162127260.2633@hadrien>
+Date: Fri, 17 Oct 2014 07:53:02 +0200 (CEST)
+Subject: [Cocci] string parameter concatenation
+In-Reply-To: <20141006102500.GC8551@rei.suse.cz>
+References: <20141001130215.GB4701@rei.suse.cz>
+ <alpine.DEB.2.02.1410021858360.2062@localhost6.localdomain6>
+ <20141006102500.GC8551@rei.suse.cz>
+Message-ID: <alpine.DEB.2.10.1410170752240.2654@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-
-
-On Thu, 16 Oct 2014, Michael Opdenacker wrote:
-
-> Hi Julia,
+> It's better but it produces changes like this:
 >
-> On 10/16/2014 03:56 PM, Julia Lawall wrote:
-> > I suggest the following semantic patch.  It is in two parts.  The first
-> > part matches all of the functions/declarations to ensure that they are all
-> > present.  The second part then makes the transformation.
-> >
-> > I get a change in only one file.
+> @@ -250,9 +250,14 @@ void l_seek(int fdesc, off_t offset, int whence, off_t checkoff)
+>         off_t offloc;
 >
-> Many thanks for this new version (interesting approach that has the
-> advantage of being progressive and repeatable) and for your explanations.
+>         if ((offloc = lseek(fdesc, offset, whence)) != checkoff) {
+> -               tst_resm(TFAIL, "(%ld = lseek(%d, %ld, %d)) != %ld) errno = %d",
+> -                        offloc, fdesc, offset, whence, checkoff, errno);
+> -               tst_exit();
+> +               tst_brkm(TFAIL, NULL,
+> +                        "(%ld = lseek(%d, %ld, %d)) != %ld) errno = %d",
+> +                        offloc,
+> +                        fdesc,
+> +                        offset,
+> +                        whence,
+> +                        checkoff,
+> +                        errno);
+>         }
+>  }
 >
-> I confirm that it works for me and that I will work on making it
-> suitable for "make coccicheck" in the Linux kernel.
+> Which seems to be waste of vertical space to me.
 
-Just run coccinelle/tools/sgen/sgen on it and see what happens.
+This may be solved by the following patch:
 
-julia
+diff --git a/parsing_c/unparse_c.ml b/parsing_c/unparse_c.ml
+index 3c54c33..77c23bb 100644
+--- a/parsing_c/unparse_c.ml
++++ b/parsing_c/unparse_c.ml
+@@ -1288,14 +1288,12 @@ let add_newlines toks tabbing_unit =
+     | _ -> (count,List.tl stack,space_cell,seen_cocci) in
+   let update_by_stack s count stack sp space_cell seen_cocci =
+     let count = simple_string_length s (count + 1 (*space*)) in
+-    let newinfo =
+-      match stack with
+-      | [(x,tustack)] ->
+-          (match check_for_newline count x tustack space_cell with
+-          | Some count -> (stack,Some (x,sp), seen_cocci)
+-          | None -> (stack,Some (count,sp),seen_cocci))
+-      | _ -> (stack,space_cell,seen_cocci) in
+-    (newinfo,count) in
++    match stack with
++    | [(x,tustack)] ->
++        (match check_for_newline count x tustack space_cell with
++        | Some count -> ((stack,Some (x,sp), seen_cocci),count)
++        | None -> ((stack,Some (count,sp),seen_cocci),count))
++    | _ -> ((stack,space_cell,seen_cocci),count) in
+   let rec loop ((stack,space_cell,seen_cocci) as info) count seeneq =
+     function
+     | [] -> []
