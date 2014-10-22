@@ -1,6 +1,6 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 22 Oct 2014 20:55:32 +0200
-Subject: [Cocci] [PATCH 1/1] SCSI-QLA2XXX: Deletion of unnecessary
+Date: Wed, 22 Oct 2014 21:10:21 +0200
+Subject: [Cocci] [PATCH 1/1] SCSI-QLA2...: Deletion of unnecessary
  checks before the function call "vfree"
 In-Reply-To: <5317A59D.4@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
@@ -20,13 +20,20 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net>
-Message-ID: <5447FDA4.4020106@users.sourceforge.net>
+Message-ID: <5448011D.1000500@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 >> If you are convinced that dropping the null tests is a good idea, then you 
 >> can submit the patch that makes the change to the relevant maintainers and 
 >> mailing lists.
+
+I resent the request once more because another "Triple-X" software development
+adventure might follow ...?
+
+Regards,
+Markus
+
 
 >From ff44962f88ac2dae9324e30819629da4fb33f0ff Mon Sep 17 00:00:00 2001
 From: Markus Elfring <elfring@users.sourceforge.net>
