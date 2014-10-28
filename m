@@ -1,53 +1,36 @@
-From: arthurborsboom@gmail.com (Arthur Borsboom)
-Date: Sun, 26 Oct 2014 15:56:38 +0100
-Subject: [Cocci] [PATCH 1/1] GPU-DRM-GMA500: Deletion of unnecessary
- checks before two function calls
-In-Reply-To: <544CE4B7.6040700@users.sourceforge.net>
-References: <5307CAA2.8060406@users.sourceforge.net>
- <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
- <530A086E.8010901@users.sourceforge.net>
- <alpine.DEB.2.02.1402231635510.1985@localhost6.localdomain6>
- <530A72AA.3000601@users.sourceforge.net>
- <alpine.DEB.2.02.1402240658210.2090@localhost6.localdomain6>
- <530B5FB6.6010207@users.sourceforge.net>
- <alpine.DEB.2.10.1402241710370.2074@hadrien>
- <530C5E18.1020800@users.sourceforge.net>
- <alpine.DEB.2.10.1402251014170.2080@hadrien>
- <530CD2C4.4050903@users.sourceforge.net>
- <alpine.DEB.2.10.1402251840450.7035@hadrien>
- <530CF8FF.8080600@users.sourceforge.net>
- <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
- <530DD06F.4090703@users.sourceforge.net>
- <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
- <5317A59D.4@users.sourceforge.net>
- <5447DFD5.5020905@users.sourceforge.net>
- <20141023122616.4f66d31a@alan.etchedpixels.co.uk>
- <544CE4B7.6040700@users.sourceforge.net>
-Message-ID: <CALUcmU=ZWNfkfRE4o9ehSeyCiurpn-nmw8e-Sb5-y=ZxRaLtvw@mail.gmail.com>
+From: mchehab@osg.samsung.com (Mauro Carvalho Chehab)
+Date: Tue, 28 Oct 2014 15:18:24 -0200
+Subject: [Cocci] bugon.cocci: fix Options at the macro
+Message-ID: <20141028151824.4b41986f@recife.lan>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-I still have the hardware in use and I am willing to test.
+The comma after --no-includes makes coccinelle to not run the script:
 
-If necessary, please send me a URL to the snapshot of the kernel with the
-modified code. I can compile this (takes about 8 hours ;-) on the high
-speed atom n2600) and run a couple of random tests, such as starting the
-WM, browsing some webpages, changing resolution, and run a 2D benchmark.
+/usr/bin/spatch -D report --very-quiet --no-show-diff --cocci-file ./scripts/coccinelle/misc/bugon.cocci --no-includes, --include-headers --patch . --dir drivers/media/platform/coda/ -I ./arch/x86/include -I arch/x86/include/generated -I include -I ./arch/x86/include/uapi -I arch/x86/include/generated/uapi -I ./include/uapi -I include/generated/uapi -I ./include/linux/kconfig.h
+Usage: spatch.opt --sp-file <SP> <infile> [-o <outfile>] [--iso-file <iso>] [options]
+Options are:
+  --sp-file                    <file> the semantic patch file
+  -o                           <file> the output file
+  --in-place                   do the modification on the file directly
+  --backup-suffix              suffix to use when making a backup for inplace
+...
 
-Greetings,
-Arthur Borsboom
-On 26 Oct 2014 13:10, "SF Markus Elfring" <elfring@users.sourceforge.net>
-wrote:
+At least with Fedora 20 coccinelle package:
+	coccinelle-1.0.0-0.rc20.1.fc21.x86_64
 
-> > What platforms have you tested the code on at this point ?
->
-> None. - My "test computer" does not provide the corresponding hardware for
-> the
-> affected driver source files.
->
-> Regards,
-> Markus
->
--------------- next part --------------
-An HTML attachment was scrubbed...
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20141026/a28726a1/attachment-0001.html>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+
+diff --git a/scripts/coccinelle/misc/bugon.cocci b/scripts/coccinelle/misc/bugon.cocci
+index 556456ca761c..3b7eec24fb5a 100644
+--- a/scripts/coccinelle/misc/bugon.cocci
++++ b/scripts/coccinelle/misc/bugon.cocci
+@@ -8,7 +8,7 @@
+ // Confidence: High
+ // Copyright: (C) 2014 Himangi Saraogi.  GPLv2.
+ // Comments:
+-// Options: --no-includes, --include-headers
++// Options: --no-includes --include-headers
+ 
+ virtual patch
+ virtual context
