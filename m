@@ -1,46 +1,54 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 28 Oct 2014 19:20:10 +0100 (CET)
-Subject: [Cocci] bugon.cocci: fix Options at the macro
-In-Reply-To: <20141028151824.4b41986f@recife.lan>
-References: <20141028151824.4b41986f@recife.lan>
-Message-ID: <alpine.DEB.2.10.1410281919500.2567@hadrien>
+Date: Tue, 28 Oct 2014 19:33:17 +0100 (CET)
+Subject: [Cocci] Parsing errors in several headers
+In-Reply-To: <544FDF5C.6040009@dumbbell.fr>
+References: <544FDF5C.6040009@dumbbell.fr>
+Message-ID: <alpine.DEB.2.10.1410281930130.2567@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+On Tue, 28 Oct 2014, Jean-S?bastien P?dron wrote:
 
-Thanks!
+> Hi!
+>
+> I'm very new to Coccinelle and I don't understand why spatch(1) returns
+> parsing errors on some headers and what I can do about that.
+>
+> == First example ==
+>
+> Header to parse:
+> https://github.com/freebsd/freebsd/blob/master/sys/ofed/include/linux/bitops.h
+>
+> Full spatch command line and output:
+> http://pastebin.com/DbNhBAF7
+>
+> spatch(1) fails to parse the #define at the end of the header. This
+> #define starts a for() loop and uses functions declared ealier in the
+> same file.
+
+Do you need to match or transform some code that is related to this?  If
+not, it doesn't matter.
+
 julia
 
-On Tue, 28 Oct 2014, Mauro Carvalho Chehab wrote:
-
-> The comma after --no-includes makes coccinelle to not run the script:
+> == Second example ==
 >
-> /usr/bin/spatch -D report --very-quiet --no-show-diff --cocci-file ./scripts/coccinelle/misc/bugon.cocci --no-includes, --include-headers --patch . --dir drivers/media/platform/coda/ -I ./arch/x86/include -I arch/x86/include/generated -I include -I ./arch/x86/include/uapi -I arch/x86/include/generated/uapi -I ./include/uapi -I include/generated/uapi -I ./include/linux/kconfig.h
-> Usage: spatch.opt --sp-file <SP> <infile> [-o <outfile>] [--iso-file <iso>] [options]
-> Options are:
->   --sp-file                    <file> the semantic patch file
->   -o                           <file> the output file
->   --in-place                   do the modification on the file directly
->   --backup-suffix              suffix to use when making a backup for inplace
-> ...
+> Header to parse:
+> https://github.com/freebsd/freebsd/blob/master/sys/ofed/include/linux/spinlock.h
 >
-> At least with Fedora 20 coccinelle package:
-> 	coccinelle-1.0.0-0.rc20.1.fc21.x86_64
+> Full spatch command line and output:
+> http://pastebin.com/C0h5ZN7r
 >
-> Signed-off-by: Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+> Here, it doesn't like the last #define again. This #define calls other
+> macros defined in other headers.
 >
-> diff --git a/scripts/coccinelle/misc/bugon.cocci b/scripts/coccinelle/misc/bugon.cocci
-> index 556456ca761c..3b7eec24fb5a 100644
-> --- a/scripts/coccinelle/misc/bugon.cocci
-> +++ b/scripts/coccinelle/misc/bugon.cocci
-> @@ -8,7 +8,7 @@
->  // Confidence: High
->  // Copyright: (C) 2014 Himangi Saraogi.  GPLv2.
->  // Comments:
-> -// Options: --no-includes, --include-headers
-> +// Options: --no-includes --include-headers
+> FYI, I'm using Coccinelle 1.0.0rc19 on FreeBSD.
 >
->  virtual patch
->  virtual context
+> Can somebody help me understand what's wrong here?
+>
+> Thanks!
+>
+> --
+> Jean-S?bastien P?dron
+>
 >
