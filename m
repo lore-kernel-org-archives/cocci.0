@@ -1,36 +1,51 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 26 Oct 2014 14:54:55 +0100
-Subject: [Cocci] Remove unnecessary null pointer checks?
-In-Reply-To: <alpine.DEB.2.10.1410260614460.2563@hadrien>
-References: <5307CAA2.8060406@users.sourceforge.net>
- <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
- <53085B37.6030005@users.sourceforge.net>
- <alpine.DEB.2.02.1402221333040.2017@localhost6.localdomain6>
- <5308E617.60705@users.sourceforge.net>
- <544C8FB3.9030000@users.sourceforge.net>
- <alpine.DEB.2.10.1410260614460.2563@hadrien>
-Message-ID: <544CFD2F.7040904@users.sourceforge.net>
+From: jean-sebastien.pedron@dumbbell.fr (=?UTF-8?B?SmVhbi1Tw6liYXN0aWVuIFDDqWRyb24=?=)
+Date: Tue, 28 Oct 2014 19:24:28 +0100
+Subject: [Cocci] Parsing errors in several headers
+Message-ID: <544FDF5C.6040009@dumbbell.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-I would like to show again that the version 1.0.0-rc22 works better than
-1.0.0-rc20 for another use case.
+Hi!
 
+I'm very new to Coccinelle and I don't understand why spatch(1) returns
+parsing errors on some headers and what I can do about that.
 
-> There is an isomorphism for unlikely, but it does not work well.
+== First example ==
 
-Interesting ...
+Header to parse:
+https://github.com/freebsd/freebsd/blob/master/sys/ofed/include/linux/bitops.h
 
+Full spatch command line and output:
+http://pastebin.com/DbNhBAF7
 
-> You can disable it (look in standard.iso to find the name and then put disable
-> name between the initial @@).
+spatch(1) fails to parse the #define at the end of the header. This
+#define starts a for() loop and uses functions declared ealier in the
+same file.
 
-Does your feedback refer also to the message "(ONCE) already tagged but only
-removed, so safe" eventually?
+== Second example ==
 
+Header to parse:
+https://github.com/freebsd/freebsd/blob/master/sys/ofed/include/linux/spinlock.h
 
-I am curious how the shown profiling results will change over time because of
-software improvements.
+Full spatch command line and output:
+http://pastebin.com/C0h5ZN7r
 
-Regards,
-Markus
+Here, it doesn't like the last #define again. This #define calls other
+macros defined in other headers.
+
+FYI, I'm using Coccinelle 1.0.0rc19 on FreeBSD.
+
+Can somebody help me understand what's wrong here?
+
+Thanks!
+
+-- 
+Jean-S?bastien P?dron
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 949 bytes
+Desc: OpenPGP digital signature
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20141028/a7c088ee/attachment.asc>
