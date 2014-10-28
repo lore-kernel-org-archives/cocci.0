@@ -1,54 +1,29 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 28 Oct 2014 19:33:17 +0100 (CET)
+From: jean-sebastien.pedron@dumbbell.fr (=?UTF-8?B?SmVhbi1Tw6liYXN0aWVuIFDDqWRyb24=?=)
+Date: Tue, 28 Oct 2014 19:51:25 +0100
 Subject: [Cocci] Parsing errors in several headers
-In-Reply-To: <544FDF5C.6040009@dumbbell.fr>
+In-Reply-To: <alpine.DEB.2.10.1410281930130.2567@hadrien>
 References: <544FDF5C.6040009@dumbbell.fr>
-Message-ID: <alpine.DEB.2.10.1410281930130.2567@hadrien>
+ <alpine.DEB.2.10.1410281930130.2567@hadrien>
+Message-ID: <544FE5AD.60208@dumbbell.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, 28 Oct 2014, Jean-S?bastien P?dron wrote:
+On 28.10.2014 19:33, Julia Lawall wrote:
+> Do you need to match or transform some code that is related to this?  If
+> not, it doesn't matter.
 
-> Hi!
->
-> I'm very new to Coccinelle and I don't understand why spatch(1) returns
-> parsing errors on some headers and what I can do about that.
->
-> == First example ==
->
-> Header to parse:
-> https://github.com/freebsd/freebsd/blob/master/sys/ofed/include/linux/bitops.h
->
-> Full spatch command line and output:
-> http://pastebin.com/DbNhBAF7
->
-> spatch(1) fails to parse the #define at the end of the header. This
-> #define starts a for() loop and uses functions declared ealier in the
-> same file.
+Ok, then I must have a problem with my semantic patch, because it
+doesn't change anything :) I thought it was because of the parsing error.
 
-Do you need to match or transform some code that is related to this?  If
-not, it doesn't matter.
+Thank you for the fast reply!
 
-julia
+-- 
+Jean-S?bastien P?dron
 
-> == Second example ==
->
-> Header to parse:
-> https://github.com/freebsd/freebsd/blob/master/sys/ofed/include/linux/spinlock.h
->
-> Full spatch command line and output:
-> http://pastebin.com/C0h5ZN7r
->
-> Here, it doesn't like the last #define again. This #define calls other
-> macros defined in other headers.
->
-> FYI, I'm using Coccinelle 1.0.0rc19 on FreeBSD.
->
-> Can somebody help me understand what's wrong here?
->
-> Thanks!
->
-> --
-> Jean-S?bastien P?dron
->
->
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 949 bytes
+Desc: OpenPGP digital signature
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20141028/f0d061c8/attachment.asc>
