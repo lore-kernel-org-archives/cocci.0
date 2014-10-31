@@ -1,73 +1,130 @@
-From: jean-sebastien.pedron@dumbbell.fr (=?windows-1252?Q?Jean-S=E9bastien_P=E9dron?=)
-Date: Wed, 29 Oct 2014 13:26:14 +0100
-Subject: [Cocci] Addition of preprocessor statements with SmPL
-In-Reply-To: <5450CE8E.1040902@dumbbell.fr>
-References: <544FDF5C.6040009@dumbbell.fr>
- <alpine.DEB.2.10.1410281930130.2567@hadrien> <544FE5AD.60208@dumbbell.fr>
- <544FEA20.4030400@users.sourceforge.net> <544FED2B.2030305@dumbbell.fr>
- <5450A587.1080709@users.sourceforge.net> <5450A6EB.6050803@dumbbell.fr>
- <alpine.DEB.2.10.1410291123540.26234@hadrien> <5450C832.3030501@dumbbell.fr>
- <alpine.DEB.2.10.1410291205580.26234@hadrien> <5450CE8E.1040902@dumbbell.fr>
-Message-ID: <5450DCE6.4030403@dumbbell.fr>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Fri, 31 Oct 2014 18:40:28 +0100
+Subject: [Cocci] [PATCH 1/1] s390/net: Deletion of unnecessary checks
+ before two function calls
+In-Reply-To: <5317A59D.4@users.sourceforge.net>
+References: <5307CAA2.8060406@users.sourceforge.net>
+ <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
+ <530A086E.8010901@users.sourceforge.net>
+ <alpine.DEB.2.02.1402231635510.1985@localhost6.localdomain6>
+ <530A72AA.3000601@users.sourceforge.net>
+ <alpine.DEB.2.02.1402240658210.2090@localhost6.localdomain6>
+ <530B5FB6.6010207@users.sourceforge.net>
+ <alpine.DEB.2.10.1402241710370.2074@hadrien>
+ <530C5E18.1020800@users.sourceforge.net>
+ <alpine.DEB.2.10.1402251014170.2080@hadrien>
+ <530CD2C4.4050903@users.sourceforge.net>
+ <alpine.DEB.2.10.1402251840450.7035@hadrien>
+ <530CF8FF.8080600@users.sourceforge.net>
+ <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
+ <530DD06F.4090703@users.sourceforge.net>
+ <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
+ <5317A59D.4@users.sourceforge.net>
+Message-ID: <5453C98C.90105@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 29.10.2014 12:25, Jean-S?bastien P?dron wrote:
->> Sorry, typo here.  It should be func at p(...) { ... }
-> 
-> You're right, it's working now! Thank you :)
+The functions debug_unregister() and kfree_fsm() test whether their argument
+is NULL and then return immediately. Thus the test around the call
+is not needed.
 
-Here's the complete working semantic patch:
+This issue was detected by using the Coccinelle software.
 
----8<---
-@r@
-identifier func;
-@@
+Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+---
+ drivers/s390/net/claw.c      |  6 ++----
+ drivers/s390/net/ctcm_main.c |  6 ++----
+ drivers/s390/net/lcs.c       |  6 ++----
+ drivers/s390/net/netiucv.c   | 12 ++++--------
+ 4 files changed, 10 insertions(+), 20 deletions(-)
 
-#define func    BAR(func)
+diff --git a/drivers/s390/net/claw.c b/drivers/s390/net/claw.c
+index 213e54e..d609ca0 100644
+--- a/drivers/s390/net/claw.c
++++ b/drivers/s390/net/claw.c
+@@ -109,10 +109,8 @@ static debug_info_t *claw_dbf_trace;
+ static void
+ claw_unregister_debug_facility(void)
+ {
+-	if (claw_dbf_setup)
+-		debug_unregister(claw_dbf_setup);
+-	if (claw_dbf_trace)
+-		debug_unregister(claw_dbf_trace);
++	debug_unregister(claw_dbf_setup);
++	debug_unregister(claw_dbf_trace);
+ }
 
-@s1@
-identifier r.func;
-position p;
-@@
+ static int
+diff --git a/drivers/s390/net/ctcm_main.c b/drivers/s390/net/ctcm_main.c
+index e056dd4..34dc0f3 100644
+--- a/drivers/s390/net/ctcm_main.c
++++ b/drivers/s390/net/ctcm_main.c
+@@ -1074,8 +1074,7 @@ static void ctcm_free_netdevice(struct net_device *dev)
+ 	if (priv) {
+ 		grp = priv->mpcg;
+ 		if (grp) {
+-			if (grp->fsm)
+-				kfree_fsm(grp->fsm);
++			kfree_fsm(grp->fsm);
+ 			if (grp->xid_skb)
+ 				dev_kfree_skb(grp->xid_skb);
+ 			if (grp->rcvd_xid_skb)
+@@ -1672,8 +1671,7 @@ static int ctcm_shutdown_device(struct ccwgroup_device *cgdev)
+ 		ctcm_free_netdevice(dev);
+ 	}
 
-func at p(...) {...}
+-	if (priv->fsm)
+-		kfree_fsm(priv->fsm);
++	kfree_fsm(priv->fsm);
 
-@@
-identifier func;
-position p != s1.p;
-@@
+ 	ccw_device_set_offline(cgdev->cdev[1]);
+ 	ccw_device_set_offline(cgdev->cdev[0]);
+diff --git a/drivers/s390/net/lcs.c b/drivers/s390/net/lcs.c
+index 0a7d87c..5dfa7dd 100644
+--- a/drivers/s390/net/lcs.c
++++ b/drivers/s390/net/lcs.c
+@@ -88,10 +88,8 @@ static debug_info_t *lcs_dbf_trace;
+ static void
+ lcs_unregister_debug_facility(void)
+ {
+-	if (lcs_dbf_setup)
+-		debug_unregister(lcs_dbf_setup);
+-	if (lcs_dbf_trace)
+-		debug_unregister(lcs_dbf_trace);
++	debug_unregister(lcs_dbf_setup);
++	debug_unregister(lcs_dbf_trace);
+ }
 
-+#define        func    BAR(func)
-func at p(...) { ... }
+ static int
+diff --git a/drivers/s390/net/netiucv.c b/drivers/s390/net/netiucv.c
+index 0a87809..bdcc3fe 100644
+--- a/drivers/s390/net/netiucv.c
++++ b/drivers/s390/net/netiucv.c
+@@ -487,12 +487,9 @@ DEFINE_PER_CPU(char[256], iucv_dbf_txt_buf);
 
-@s2@
-type ret;
-identifier r.func;
-position p;
-@@
-
-ret func at p(...);
-
-@@
-type ret;
-identifier func;
-position p != s2.p;
-@@
-
-+#define        func    BAR(func)
-ret func@p(...);
----8<---
-
-Thank you very much for your help!
-
+ static void iucv_unregister_dbf_views(void)
+ {
+-	if (iucv_dbf_setup)
+-		debug_unregister(iucv_dbf_setup);
+-	if (iucv_dbf_data)
+-		debug_unregister(iucv_dbf_data);
+-	if (iucv_dbf_trace)
+-		debug_unregister(iucv_dbf_trace);
++	debug_unregister(iucv_dbf_setup);
++	debug_unregister(iucv_dbf_data);
++	debug_unregister(iucv_dbf_trace);
+ }
+ static int iucv_register_dbf_views(void)
+ {
+@@ -1975,8 +1972,7 @@ static void netiucv_free_netdevice(struct net_device *dev)
+ 	if (privptr) {
+ 		if (privptr->conn)
+ 			netiucv_remove_connection(privptr->conn);
+-		if (privptr->fsm)
+-			kfree_fsm(privptr->fsm);
++		kfree_fsm(privptr->fsm);
+ 		privptr->conn = NULL; privptr->fsm = NULL;
+ 		/* privptr gets freed by free_netdev() */
+ 	}
 -- 
-Jean-S?bastien P?dron
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 949 bytes
-Desc: OpenPGP digital signature
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20141029/05a643e5/attachment.asc>
+2.1.3
