@@ -1,7 +1,7 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 02 Nov 2014 19:27:20 +0100
-Subject: [Cocci] [PATCH 1/1] PCI: EMU10K1: Deletion of unnecessary checks
- before three function calls
+Date: Sun, 02 Nov 2014 20:42:28 +0100
+Subject: [Cocci] [PATCH 1/1] kconfig: Deletion of unnecessary checks before
+ the function call "sym_calc_value"
 In-Reply-To: <5317A59D.4@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
@@ -20,63 +20,58 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net>
-Message-ID: <54567788.9060008@users.sourceforge.net>
+Message-ID: <54568924.5010008@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-The functions kfree(), release_firmware() and snd_util_memhdr_free() test
-whether their argument is NULL and then return immediately. Thus the test
-around the call is not needed.
+The sym_calc_value() function tests whether its argument is NULL and then
+returns immediately. Thus the test around the call is not needed.
 
 This issue was detected by using the Coccinelle software.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- sound/pci/emu10k1/emu10k1_main.c | 9 +++------
- sound/pci/emu10k1/emufx.c        | 3 +--
- 2 files changed, 4 insertions(+), 8 deletions(-)
+ scripts/kconfig/confdata.c | 6 ++----
+ scripts/kconfig/symbol.c   | 3 +--
+ 2 files changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/sound/pci/emu10k1/emu10k1_main.c b/sound/pci/emu10k1/emu10k1_main.c
-index 2292697..b4458a6 100644
---- a/sound/pci/emu10k1/emu10k1_main.c
-+++ b/sound/pci/emu10k1/emu10k1_main.c
-@@ -1289,10 +1289,8 @@ static int snd_emu10k1_free(struct snd_emu10k1 *emu)
- 	}
- 	if (emu->emu1010.firmware_thread)
- 		kthread_stop(emu->emu1010.firmware_thread);
--	if (emu->firmware)
--		release_firmware(emu->firmware);
--	if (emu->dock_fw)
--		release_firmware(emu->dock_fw);
-+	release_firmware(emu->firmware);
-+	release_firmware(emu->dock_fw);
- 	if (emu->irq >= 0)
- 		free_irq(emu->irq, emu);
- 	/* remove reserved page */
-@@ -1301,8 +1299,7 @@ static int snd_emu10k1_free(struct snd_emu10k1 *emu)
- 			(struct snd_util_memblk *)emu->reserved_page);
- 		emu->reserved_page = NULL;
- 	}
--	if (emu->memhdr)
--		snd_util_memhdr_free(emu->memhdr);
-+	snd_util_memhdr_free(emu->memhdr);
- 	if (emu->silent_page.area)
- 		snd_dma_free_pages(&emu->silent_page);
- 	if (emu->ptb_pages.area)
-diff --git a/sound/pci/emu10k1/emufx.c b/sound/pci/emu10k1/emufx.c
-index 745f062..eb5c0ab 100644
---- a/sound/pci/emu10k1/emufx.c
-+++ b/sound/pci/emu10k1/emufx.c
-@@ -777,8 +777,7 @@ static void snd_emu10k1_ctl_private_free(struct snd_kcontrol
-*kctl)
- 	kctl->private_value = 0;
- 	list_del(&ctl->list);
- 	kfree(ctl);
--	if (kctl->tlv.p)
--		kfree(kctl->tlv.p);
-+	kfree(kctl->tlv.p);
+diff --git a/scripts/kconfig/confdata.c b/scripts/kconfig/confdata.c
+index f88d90f..3073cb6 100644
+--- a/scripts/kconfig/confdata.c
++++ b/scripts/kconfig/confdata.c
+@@ -262,8 +262,7 @@ int conf_read_simple(const char *name, int def)
+ 			goto load;
+ 		sym_add_change_count(1);
+ 		if (!sym_defconfig_list) {
+-			if (modules_sym)
+-				sym_calc_value(modules_sym);
++			sym_calc_value(modules_sym);
+ 			return 1;
+ 		}
+
+@@ -399,8 +398,7 @@ setsym:
+ 	free(line);
+ 	fclose(in);
+
+-	if (modules_sym)
+-		sym_calc_value(modules_sym);
++	sym_calc_value(modules_sym);
+ 	return 0;
  }
 
- static int snd_emu10k1_add_controls(struct snd_emu10k1 *emu,
+diff --git a/scripts/kconfig/symbol.c b/scripts/kconfig/symbol.c
+index 7caabdb..3f7797b 100644
+--- a/scripts/kconfig/symbol.c
++++ b/scripts/kconfig/symbol.c
+@@ -447,8 +447,7 @@ void sym_clear_all_valid(void)
+ 	for_all_symbols(i, sym)
+ 		sym->flags &= ~SYMBOL_VALID;
+ 	sym_add_change_count(1);
+-	if (modules_sym)
+-		sym_calc_value(modules_sym);
++	sym_calc_value(modules_sym);
+ }
+
+ void sym_set_changed(struct symbol *sym)
 -- 
 2.1.3
