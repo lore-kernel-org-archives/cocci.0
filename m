@@ -1,7 +1,7 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 02 Nov 2014 15:20:59 +0100
-Subject: [Cocci] [PATCH 1/1] ceph: Deletion of unnecessary checks before two
- function calls
+Date: Sun, 02 Nov 2014 19:27:20 +0100
+Subject: [Cocci] [PATCH 1/1] PCI: EMU10K1: Deletion of unnecessary checks
+ before three function calls
 In-Reply-To: <5317A59D.4@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
@@ -20,93 +20,63 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net>
-Message-ID: <54563DCB.2010103@users.sourceforge.net>
+Message-ID: <54567788.9060008@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-The functions ceph_put_snap_context() and iput() test whether their argument
-is NULL and then return immediately. Thus the test around the call
-is not needed.
+The functions kfree(), release_firmware() and snd_util_memhdr_free() test
+whether their argument is NULL and then return immediately. Thus the test
+around the call is not needed.
 
 This issue was detected by using the Coccinelle software.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- fs/ceph/caps.c       | 3 +--
- fs/ceph/mds_client.c | 6 ++----
- fs/ceph/snap.c       | 9 +++------
- 3 files changed, 6 insertions(+), 12 deletions(-)
+ sound/pci/emu10k1/emu10k1_main.c | 9 +++------
+ sound/pci/emu10k1/emufx.c        | 3 +--
+ 2 files changed, 4 insertions(+), 8 deletions(-)
 
-diff --git a/fs/ceph/caps.c b/fs/ceph/caps.c
-index 6d1cd45..7d99fc8 100644
---- a/fs/ceph/caps.c
-+++ b/fs/ceph/caps.c
-@@ -3136,8 +3136,7 @@ flush_cap_releases:
- done:
- 	mutex_unlock(&session->s_mutex);
- done_unlocked:
--	if (inode)
--		iput(inode);
-+	iput(inode);
- 	return;
-
- bad:
-diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
-index bad07c0..3b0ab05 100644
---- a/fs/ceph/mds_client.c
-+++ b/fs/ceph/mds_client.c
-@@ -523,8 +523,7 @@ void ceph_mdsc_release_request(struct kref *kref)
+diff --git a/sound/pci/emu10k1/emu10k1_main.c b/sound/pci/emu10k1/emu10k1_main.c
+index 2292697..b4458a6 100644
+--- a/sound/pci/emu10k1/emu10k1_main.c
++++ b/sound/pci/emu10k1/emu10k1_main.c
+@@ -1289,10 +1289,8 @@ static int snd_emu10k1_free(struct snd_emu10k1 *emu)
  	}
- 	if (req->r_locked_dir)
- 		ceph_put_cap_refs(ceph_inode(req->r_locked_dir), CEPH_CAP_PIN);
--	if (req->r_target_inode)
--		iput(req->r_target_inode);
-+	iput(req->r_target_inode);
- 	if (req->r_dentry)
- 		dput(req->r_dentry);
- 	if (req->r_old_dentry)
-@@ -995,8 +994,7 @@ out:
- 	session->s_cap_iterator = NULL;
- 	spin_unlock(&session->s_cap_lock);
-
--	if (last_inode)
--		iput(last_inode);
-+	iput(last_inode);
- 	if (old_cap)
- 		ceph_put_cap(session->s_mdsc, old_cap);
-
-diff --git a/fs/ceph/snap.c b/fs/ceph/snap.c
-index f01645a..c1cc993 100644
---- a/fs/ceph/snap.c
-+++ b/fs/ceph/snap.c
-@@ -365,8 +365,7 @@ static int build_snap_context(struct ceph_snap_realm *realm)
- 	     realm->ino, realm, snapc, snapc->seq,
- 	     (unsigned int) snapc->num_snaps);
-
--	if (realm->cached_context)
--		ceph_put_snap_context(realm->cached_context);
-+	ceph_put_snap_context(realm->cached_context);
- 	realm->cached_context = snapc;
- 	return 0;
-
-@@ -590,15 +589,13 @@ static void queue_realm_cap_snaps(struct ceph_snap_realm
-*realm)
- 		if (!inode)
- 			continue;
- 		spin_unlock(&realm->inodes_with_caps_lock);
--		if (lastinode)
--			iput(lastinode);
-+		iput(lastinode);
- 		lastinode = inode;
- 		ceph_queue_cap_snap(ci);
- 		spin_lock(&realm->inodes_with_caps_lock);
+ 	if (emu->emu1010.firmware_thread)
+ 		kthread_stop(emu->emu1010.firmware_thread);
+-	if (emu->firmware)
+-		release_firmware(emu->firmware);
+-	if (emu->dock_fw)
+-		release_firmware(emu->dock_fw);
++	release_firmware(emu->firmware);
++	release_firmware(emu->dock_fw);
+ 	if (emu->irq >= 0)
+ 		free_irq(emu->irq, emu);
+ 	/* remove reserved page */
+@@ -1301,8 +1299,7 @@ static int snd_emu10k1_free(struct snd_emu10k1 *emu)
+ 			(struct snd_util_memblk *)emu->reserved_page);
+ 		emu->reserved_page = NULL;
  	}
- 	spin_unlock(&realm->inodes_with_caps_lock);
--	if (lastinode)
--		iput(lastinode);
-+	iput(lastinode);
+-	if (emu->memhdr)
+-		snd_util_memhdr_free(emu->memhdr);
++	snd_util_memhdr_free(emu->memhdr);
+ 	if (emu->silent_page.area)
+ 		snd_dma_free_pages(&emu->silent_page);
+ 	if (emu->ptb_pages.area)
+diff --git a/sound/pci/emu10k1/emufx.c b/sound/pci/emu10k1/emufx.c
+index 745f062..eb5c0ab 100644
+--- a/sound/pci/emu10k1/emufx.c
++++ b/sound/pci/emu10k1/emufx.c
+@@ -777,8 +777,7 @@ static void snd_emu10k1_ctl_private_free(struct snd_kcontrol
+*kctl)
+ 	kctl->private_value = 0;
+ 	list_del(&ctl->list);
+ 	kfree(ctl);
+-	if (kctl->tlv.p)
+-		kfree(kctl->tlv.p);
++	kfree(kctl->tlv.p);
+ }
 
- 	list_for_each_entry(child, &realm->children, child_item) {
- 		dout("queue_realm_cap_snaps %p %llx queue child %p %llx\n",
+ static int snd_emu10k1_add_controls(struct snd_emu10k1 *emu,
 -- 
 2.1.3
