@@ -1,7 +1,7 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 02 Nov 2014 20:42:28 +0100
-Subject: [Cocci] [PATCH 1/1] kconfig: Deletion of unnecessary checks before
- the function call "sym_calc_value"
+Date: Sun, 02 Nov 2014 16:12:30 +0100
+Subject: [Cocci] [PATCH 1/1] PCI: Deletion of unnecessary checks before
+ three function calls
 In-Reply-To: <5317A59D.4@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
@@ -20,58 +20,80 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net>
-Message-ID: <54568924.5010008@users.sourceforge.net>
+Message-ID: <545649DE.80304@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-The sym_calc_value() function tests whether its argument is NULL and then
-returns immediately. Thus the test around the call is not needed.
+The functions pci_dev_put(), pci_pme_wakeup_bus() and put_device() test
+whether their argument is NULL and then return immediately. Thus the test
+around the call is not needed.
 
 This issue was detected by using the Coccinelle software.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- scripts/kconfig/confdata.c | 6 ++----
- scripts/kconfig/symbol.c   | 3 +--
- 2 files changed, 3 insertions(+), 6 deletions(-)
+ drivers/pci/pci-acpi.c     | 3 +--
+ drivers/pci/probe.c        | 3 +--
+ drivers/pci/search.c       | 3 +--
+ drivers/pci/xen-pcifront.c | 3 +--
+ 4 files changed, 4 insertions(+), 8 deletions(-)
 
-diff --git a/scripts/kconfig/confdata.c b/scripts/kconfig/confdata.c
-index f88d90f..3073cb6 100644
---- a/scripts/kconfig/confdata.c
-+++ b/scripts/kconfig/confdata.c
-@@ -262,8 +262,7 @@ int conf_read_simple(const char *name, int def)
- 			goto load;
- 		sym_add_change_count(1);
- 		if (!sym_defconfig_list) {
--			if (modules_sym)
--				sym_calc_value(modules_sym);
-+			sym_calc_value(modules_sym);
- 			return 1;
- 		}
+diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
+index 37263b0..a8fe5de 100644
+--- a/drivers/pci/pci-acpi.c
++++ b/drivers/pci/pci-acpi.c
+@@ -60,8 +60,7 @@ static void pci_acpi_wake_dev(struct work_struct *work)
+ 	pci_wakeup_event(pci_dev);
+ 	pm_runtime_resume(&pci_dev->dev);
 
-@@ -399,8 +398,7 @@ setsym:
- 	free(line);
- 	fclose(in);
-
--	if (modules_sym)
--		sym_calc_value(modules_sym);
-+	sym_calc_value(modules_sym);
- 	return 0;
+-	if (pci_dev->subordinate)
+-		pci_pme_wakeup_bus(pci_dev->subordinate);
++	pci_pme_wakeup_bus(pci_dev->subordinate);
  }
 
-diff --git a/scripts/kconfig/symbol.c b/scripts/kconfig/symbol.c
-index 7caabdb..3f7797b 100644
---- a/scripts/kconfig/symbol.c
-+++ b/scripts/kconfig/symbol.c
-@@ -447,8 +447,7 @@ void sym_clear_all_valid(void)
- 	for_all_symbols(i, sym)
- 		sym->flags &= ~SYMBOL_VALID;
- 	sym_add_change_count(1);
--	if (modules_sym)
--		sym_calc_value(modules_sym);
-+	sym_calc_value(modules_sym);
+ /**
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index 4170113..e93f16e 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -86,8 +86,7 @@ static void release_pcibus_dev(struct device *dev)
+ {
+ 	struct pci_bus *pci_bus = to_pci_bus(dev);
+
+-	if (pci_bus->bridge)
+-		put_device(pci_bus->bridge);
++	put_device(pci_bus->bridge);
+ 	pci_bus_remove_resources(pci_bus);
+ 	pci_release_bus_of_node(pci_bus);
+ 	kfree(pci_bus);
+diff --git a/drivers/pci/search.c b/drivers/pci/search.c
+index 827ad83..2d806bd 100644
+--- a/drivers/pci/search.c
++++ b/drivers/pci/search.c
+@@ -305,8 +305,7 @@ static struct pci_dev *pci_get_dev_by_id(const struct
+pci_device_id *id,
+ 			      match_pci_dev_by_id);
+ 	if (dev)
+ 		pdev = to_pci_dev(dev);
+-	if (from)
+-		pci_dev_put(from);
++	pci_dev_put(from);
+ 	return pdev;
  }
 
- void sym_set_changed(struct symbol *sym)
+diff --git a/drivers/pci/xen-pcifront.c b/drivers/pci/xen-pcifront.c
+index 53df39a..46664cc 100644
+--- a/drivers/pci/xen-pcifront.c
++++ b/drivers/pci/xen-pcifront.c
+@@ -596,8 +596,7 @@ static pci_ers_result_t pcifront_common_process(int cmd,
+ 	pcidev = pci_get_bus_and_slot(bus, devfn);
+ 	if (!pcidev || !pcidev->driver) {
+ 		dev_err(&pdev->xdev->dev, "device or AER driver is NULL\n");
+-		if (pcidev)
+-			pci_dev_put(pcidev);
++		pci_dev_put(pcidev);
+ 		return result;
+ 	}
+ 	pdrv = pcidev->driver;
 -- 
 2.1.3
