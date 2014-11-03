@@ -1,37 +1,35 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Mon, 03 Nov 2014 15:10:40 +0100
-Subject: [Cocci] [PATCH resent] ALSA: emu10k1: Deletion of unnecessary
- checks before three function calls
-In-Reply-To: <s5ha94839dx.wl-tiwai@suse.de>
-References: <5307CAA2.8060406@users.sourceforge.net>	<alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>	<530A086E.8010901@users.sourceforge.net>	<alpine.DEB.2.02.1402231635510.1985@localhost6.localdomain6>	<530A72AA.3000601@users.sourceforge.net>	<alpine.DEB.2.02.1402240658210.2090@localhost6.localdomain6>	<530B5FB6.6010207@users.sourceforge.net>	<alpine.DEB.2.10.1402241710370.2074@hadrien>	<530C5E18.1020800@users.sourceforge.net>	<alpine.DEB.2.10.1402251014170.2080@hadrien>	<530CD2C4.4050903@users.sourceforge.net>	<alpine.DEB.2.10.1402251840450.7035@hadrien>	<530CF8FF.8080600@users.sourceforge.net>	<alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>	<530DD06F.4090703@users.sourceforge.net>	<alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>	<5317A59D.4@users.sourceforge.net>	<54567788.9060008@users.sourceforge.net>
- <s5ha94839dx.wl-tiwai@suse.de>
-Message-ID: <54578CE0.1090201@users.sourceforge.net>
+From: dan.carpenter@oracle.com (Dan Carpenter)
+Date: Mon, 3 Nov 2014 12:50:59 +0300
+Subject: [Cocci] [PATCH 1/1] s390/net: Deletion of unnecessary checks
+ before two function calls
+In-Reply-To: <5453C98C.90105@users.sourceforge.net>
+References: <530C5E18.1020800@users.sourceforge.net>
+ <alpine.DEB.2.10.1402251014170.2080@hadrien>
+ <530CD2C4.4050903@users.sourceforge.net>
+ <alpine.DEB.2.10.1402251840450.7035@hadrien>
+ <530CF8FF.8080600@users.sourceforge.net>
+ <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
+ <530DD06F.4090703@users.sourceforge.net>
+ <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
+ <5317A59D.4@users.sourceforge.net>
+ <5453C98C.90105@users.sourceforge.net>
+Message-ID: <20141103095059.GL6879@mwanda>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Your patch can't be applied cleanly due to your MUA breaking the
-> lines.  Please fix your MUA setup, or use an attachment if it's
-> impossible, and resend the patch.
+This one is buggy.
 
-Thanks for your feedback.
+I'm sorry, but please stop sending these.
 
-Does this example show a conflict between long comments like
-"snd_emu10k1_ctl_private_free( ... *kctl)" after patch ranges and line length
-limitation for email eventually?
+For kfree(), at least we all know that kfree() accepts NULL pointer.
+But for this one:
+1) I don't know what the functions do so I have to look at the code.
+2) It's in a arch that I don't compile so cscope isn't set up meaning
+   it's hard to find the functions.
 
+You're sending a lot of patches and they are all hard to review and some
+of them are buggy and none of them really add any value.  It's a waste
+of your time and it's a waste of my time.
 
-> Also, try to align the subject line with the relevant commits.  See
-> "git log sound/pci/emu10k1"
-
-I have attached my update suggestion with a slightly different commit title as
-before. Is this variant acceptable?
-
-Regards,
-Markus
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: 0001-ALSA-emu10k1-Deletion-of-unnecessary-checks-before-t.patch
-Type: text/x-patch
-Size: 2120 bytes
-Desc: not available
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20141103/7a73952b/attachment.bin>
+regards,
+dan carpenter
