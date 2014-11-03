@@ -1,8 +1,8 @@
-From: tiwai@suse.de (Takashi Iwai)
-Date: Mon, 03 Nov 2014 15:17:08 +0100
-Subject: [Cocci] [PATCH resent] ALSA: emu10k1: Deletion of unnecessary
-	checks before three function calls
-In-Reply-To: <54578CE0.1090201@users.sourceforge.net>
+From: ilya.dryomov@inktank.com (Ilya Dryomov)
+Date: Mon, 3 Nov 2014 18:23:12 +0400
+Subject: [Cocci] ceph: Deletion of unnecessary checks before two
+	function calls
+In-Reply-To: <545782AA.5080408@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
  <530A086E.8010901@users.sourceforge.net>
@@ -20,40 +20,77 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net>
- <54567788.9060008@users.sourceforge.net>
- <s5ha94839dx.wl-tiwai@suse.de>
- <54578CE0.1090201@users.sourceforge.net>
-Message-ID: <s5hy4rs1i8r.wl-tiwai@suse.de>
+ <54563DCB.2010103@users.sourceforge.net>
+ <CALFYKtAJG5W9-BAHrqEcC-FfqdJERCqkBADo4yTUyjzb+wCHnQ@mail.gmail.com>
+ <545782AA.5080408@users.sourceforge.net>
+Message-ID: <CALFYKtAW2q-6xgCoV53iTGrt=6o+mHzX0bB+Ltg6AShx-g1qrw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-At Mon, 03 Nov 2014 15:10:40 +0100,
-SF Markus Elfring wrote:
-> 
-> > Your patch can't be applied cleanly due to your MUA breaking the
-> > lines.  Please fix your MUA setup, or use an attachment if it's
-> > impossible, and resend the patch.
-> 
+On Mon, Nov 3, 2014 at 4:27 PM, SF Markus Elfring
+<elfring@users.sourceforge.net> wrote:
+>> dput() also checks for NULL argument, but the check is wrapped into
+>> unlikely(), which is why I presume it wasn't picked up.  It would be
+>> great if you could improve your coccinelle script to handle
+>> {un,}likely() as well.
+>
+> Thanks for your suggestion.
+>
+> Should I consider any more fine-tuning for the affected script
+> "list_input_parameter_validation1.cocci" in the near future?
+> https://lkml.org/lkml/2014/3/5/362
+> http://article.gmane.org/gmane.comp.version-control.coccinelle/3514
+
+Make sure it at least catches stuff like:
+
+{
+    if (input) {
+
+    }
+}
+
+{
+    if (likely(input)) {
+
+    }
+}
+
+{
+    if (!input)
+        return;
+
+    ...
+}
+
+{
+    if (unlikely(!input))
+        return;
+
+    ...
+}
+
+And of course each match then has to be validated manually.
+
+>
+>
+>>> @@ -590,15 +589,13 @@ static void queue_realm_cap_snaps(struct ceph_snap_realm
+>>> *realm)
+>>
+>> The patch was corrupted, that should have been a single line.  I fixed
+>> it up but you may want to look into your email client settings.
+>
 > Thanks for your feedback.
-> 
-> Does this example show a conflict between long comments like
-> "snd_emu10k1_ctl_private_free( ... *kctl)" after patch ranges and line length
-> limitation for email eventually?
+>
+> Does this example show a conflict between long comments after patch ranges and
+> line length limitation for email eventually?
 
-Conflict?  It's your MUA that is broken.
+There is no line length limitation for email, at least one that would
+be relevant here.  Patches should be sent verbatim, no line wrapping,
+expandtab, etc or they won't apply.  I'd recommend git-send-email, but
+if you want to make thunderbird work for patches (which is what you
+seem to be using) have a look at the "Thunderbird (GUI)" section of
+Documentation/email-clients.txt in the kernel tree.
 
-> > Also, try to align the subject line with the relevant commits.  See
-> > "git log sound/pci/emu10k1"
-> 
-> I have attached my update suggestion with a slightly different commit title as
-> before. Is this variant acceptable?
+Thanks,
 
-So, you couldn't fix your MUA?  That's bad for you.  Many maintainers
-dislike attachments and won't accept such patches.
-
-Couldn't you simply send a patch via git-send-email?
-
-In anyway, I applied the patch now.  Thanks.
-
-
-Takashi
+                Ilya
