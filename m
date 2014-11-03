@@ -1,8 +1,8 @@
-From: ilya.dryomov@inktank.com (Ilya Dryomov)
-Date: Mon, 3 Nov 2014 14:35:28 +0400
-Subject: [Cocci] [PATCH 1/1] ceph: Deletion of unnecessary checks before
- two function calls
-In-Reply-To: <54563DCB.2010103@users.sourceforge.net>
+From: pebolle@tiscali.nl (Paul Bolle)
+Date: Mon, 03 Nov 2014 11:35:21 +0100
+Subject: [Cocci] [PATCH 1/1] kconfig: Deletion of unnecessary checks
+ before the function call "sym_calc_value"
+In-Reply-To: <54568924.5010008@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
  <530A086E.8010901@users.sourceforge.net>
@@ -19,96 +19,81 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
- <5317A59D.4@users.sourceforge.net>
- <54563DCB.2010103@users.sourceforge.net>
-Message-ID: <CALFYKtAJG5W9-BAHrqEcC-FfqdJERCqkBADo4yTUyjzb+wCHnQ@mail.gmail.com>
+ <5317A59D.4@users.sourceforge.net> <54568924.5010008@users.sourceforge.net>
+Message-ID: <1415010921.20372.35.camel@x220>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, Nov 2, 2014 at 5:20 PM, SF Markus Elfring
-<elfring@users.sourceforge.net> wrote:
-> The functions ceph_put_snap_context() and iput() test whether their argument
-> is NULL and then return immediately. Thus the test around the call
-> is not needed.
->
+Since you use "SF Markus Elfring", this patch should start with:
+
+From: Markus Elfring <elfring@users.sourceforge.net>
+
+We don't care that you used a sourceforge.net address. Or has SF another
+meaning? 
+
+On Sun, 2014-11-02 at 20:42 +0100, SF Markus Elfring wrote:
+> The sym_calc_value() function tests whether its argument is NULL and then
+> returns immediately. Thus the test around the call is not needed.
+> 
 > This issue was detected by using the Coccinelle software.
->
+
+Side note: I guess the coccinelle script you use just skips cases like
+    if (sym) {
+        sym_calc_value(sym);
+        do_foo_bar():
+    }
+
+Or did you filter those manually?
+
 > Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 > ---
->  fs/ceph/caps.c       | 3 +--
->  fs/ceph/mds_client.c | 6 ++----
->  fs/ceph/snap.c       | 9 +++------
->  3 files changed, 6 insertions(+), 12 deletions(-)
+>  scripts/kconfig/confdata.c | 6 ++----
+>  scripts/kconfig/symbol.c   | 3 +--
+>  2 files changed, 3 insertions(+), 6 deletions(-)
+> 
+> diff --git a/scripts/kconfig/confdata.c b/scripts/kconfig/confdata.c
+> index f88d90f..3073cb6 100644
+> --- a/scripts/kconfig/confdata.c
+> +++ b/scripts/kconfig/confdata.c
+> @@ -262,8 +262,7 @@ int conf_read_simple(const char *name, int def)
+>  			goto load;
+>  		sym_add_change_count(1);
+>  		if (!sym_defconfig_list) {
+> -			if (modules_sym)
+> -				sym_calc_value(modules_sym);
+> +			sym_calc_value(modules_sym);
+>  			return 1;
+>  		}
+> 
+> @@ -399,8 +398,7 @@ setsym:
+>  	free(line);
+>  	fclose(in);
+> 
+> -	if (modules_sym)
+> -		sym_calc_value(modules_sym);
+> +	sym_calc_value(modules_sym);
+>  	return 0;
+>  }
+> 
+> diff --git a/scripts/kconfig/symbol.c b/scripts/kconfig/symbol.c
+> index 7caabdb..3f7797b 100644
+> --- a/scripts/kconfig/symbol.c
+> +++ b/scripts/kconfig/symbol.c
+> @@ -447,8 +447,7 @@ void sym_clear_all_valid(void)
+>  	for_all_symbols(i, sym)
+>  		sym->flags &= ~SYMBOL_VALID;
+>  	sym_add_change_count(1);
+> -	if (modules_sym)
+> -		sym_calc_value(modules_sym);
+> +	sym_calc_value(modules_sym);
+>  }
+> 
+>  void sym_set_changed(struct symbol *sym)
 
-[CC'ed Zheng]
+Please resend with
+    Acked-by: Paul Bolle <pebolle@tiscali.nl>
 
-Applied, but see below.
+added.
 
->
-> diff --git a/fs/ceph/caps.c b/fs/ceph/caps.c
-> index 6d1cd45..7d99fc8 100644
-> --- a/fs/ceph/caps.c
-> +++ b/fs/ceph/caps.c
-> @@ -3136,8 +3136,7 @@ flush_cap_releases:
->  done:
->         mutex_unlock(&session->s_mutex);
->  done_unlocked:
-> -       if (inode)
-> -               iput(inode);
-> +       iput(inode);
->         return;
->
->  bad:
-> diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
-> index bad07c0..3b0ab05 100644
-> --- a/fs/ceph/mds_client.c
-> +++ b/fs/ceph/mds_client.c
-> @@ -523,8 +523,7 @@ void ceph_mdsc_release_request(struct kref *kref)
->         }
->         if (req->r_locked_dir)
->                 ceph_put_cap_refs(ceph_inode(req->r_locked_dir), CEPH_CAP_PIN);
-> -       if (req->r_target_inode)
-> -               iput(req->r_target_inode);
-> +       iput(req->r_target_inode);
->         if (req->r_dentry)
->                 dput(req->r_dentry);
 
-dput() also checks for NULL argument, but the check is wrapped into
-unlikely(), which is why I presume it wasn't picked up.  It would be
-great if you could improve your coccinelle script to handle
-{un,}likely() as well.
-
->         if (req->r_old_dentry)
-> @@ -995,8 +994,7 @@ out:
->         session->s_cap_iterator = NULL;
->         spin_unlock(&session->s_cap_lock);
->
-> -       if (last_inode)
-> -               iput(last_inode);
-> +       iput(last_inode);
->         if (old_cap)
->                 ceph_put_cap(session->s_mdsc, old_cap);
->
-> diff --git a/fs/ceph/snap.c b/fs/ceph/snap.c
-> index f01645a..c1cc993 100644
-> --- a/fs/ceph/snap.c
-> +++ b/fs/ceph/snap.c
-> @@ -365,8 +365,7 @@ static int build_snap_context(struct ceph_snap_realm *realm)
->              realm->ino, realm, snapc, snapc->seq,
->              (unsigned int) snapc->num_snaps);
->
-> -       if (realm->cached_context)
-> -               ceph_put_snap_context(realm->cached_context);
-> +       ceph_put_snap_context(realm->cached_context);
->         realm->cached_context = snapc;
->         return 0;
->
-> @@ -590,15 +589,13 @@ static void queue_realm_cap_snaps(struct ceph_snap_realm
-> *realm)
-
-The patch was corrupted, that should have been a single line.  I fixed
-it up but you may want to look into your email client settings.
-
-Thanks,
-
-                Ilya
+Paul Bolle
