@@ -1,8 +1,8 @@
-From: pebolle@tiscali.nl (Paul Bolle)
-Date: Mon, 03 Nov 2014 11:35:21 +0100
-Subject: [Cocci] [PATCH 1/1] kconfig: Deletion of unnecessary checks
- before the function call "sym_calc_value"
-In-Reply-To: <54568924.5010008@users.sourceforge.net>
+From: ubraun@linux.vnet.ibm.com (Ursula Braun)
+Date: Mon, 03 Nov 2014 12:04:38 +0100
+Subject: [Cocci] [PATCH 1/1] s390/net: Deletion of unnecessary checks
+ before two function calls
+In-Reply-To: <5453C98C.90105@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
  <530A086E.8010901@users.sourceforge.net>
@@ -19,81 +19,116 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
- <5317A59D.4@users.sourceforge.net> <54568924.5010008@users.sourceforge.net>
-Message-ID: <1415010921.20372.35.camel@x220>
+ <5317A59D.4@users.sourceforge.net> <5453C98C.90105@users.sourceforge.net>
+Message-ID: <1415012678.18669.6.camel@BR9GV9YG.de.ibm.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Since you use "SF Markus Elfring", this patch should start with:
+I agree with your proposed debug_unregister() changes, but not with your
+kfree_fsm() change.
 
-From: Markus Elfring <elfring@users.sourceforge.net>
+Regards, Ursula Braun
 
-We don't care that you used a sourceforge.net address. Or has SF another
-meaning? 
-
-On Sun, 2014-11-02 at 20:42 +0100, SF Markus Elfring wrote:
-> The sym_calc_value() function tests whether its argument is NULL and then
-> returns immediately. Thus the test around the call is not needed.
+On Fri, 2014-10-31 at 18:40 +0100, SF Markus Elfring wrote:
+> The functions debug_unregister() and kfree_fsm() test whether their argument
+> is NULL and then return immediately. Thus the test around the call
+> is not needed.
 > 
 > This issue was detected by using the Coccinelle software.
-
-Side note: I guess the coccinelle script you use just skips cases like
-    if (sym) {
-        sym_calc_value(sym);
-        do_foo_bar():
-    }
-
-Or did you filter those manually?
-
+> 
 > Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 > ---
->  scripts/kconfig/confdata.c | 6 ++----
->  scripts/kconfig/symbol.c   | 3 +--
->  2 files changed, 3 insertions(+), 6 deletions(-)
+>  drivers/s390/net/claw.c      |  6 ++----
+>  drivers/s390/net/ctcm_main.c |  6 ++----
+>  drivers/s390/net/lcs.c       |  6 ++----
+>  drivers/s390/net/netiucv.c   | 12 ++++--------
+>  4 files changed, 10 insertions(+), 20 deletions(-)
 > 
-> diff --git a/scripts/kconfig/confdata.c b/scripts/kconfig/confdata.c
-> index f88d90f..3073cb6 100644
-> --- a/scripts/kconfig/confdata.c
-> +++ b/scripts/kconfig/confdata.c
-> @@ -262,8 +262,7 @@ int conf_read_simple(const char *name, int def)
->  			goto load;
->  		sym_add_change_count(1);
->  		if (!sym_defconfig_list) {
-> -			if (modules_sym)
-> -				sym_calc_value(modules_sym);
-> +			sym_calc_value(modules_sym);
->  			return 1;
->  		}
-> 
-> @@ -399,8 +398,7 @@ setsym:
->  	free(line);
->  	fclose(in);
-> 
-> -	if (modules_sym)
-> -		sym_calc_value(modules_sym);
-> +	sym_calc_value(modules_sym);
->  	return 0;
+> diff --git a/drivers/s390/net/claw.c b/drivers/s390/net/claw.c
+> index 213e54e..d609ca0 100644
+> --- a/drivers/s390/net/claw.c
+> +++ b/drivers/s390/net/claw.c
+> @@ -109,10 +109,8 @@ static debug_info_t *claw_dbf_trace;
+>  static void
+>  claw_unregister_debug_facility(void)
+>  {
+> -	if (claw_dbf_setup)
+> -		debug_unregister(claw_dbf_setup);
+> -	if (claw_dbf_trace)
+> -		debug_unregister(claw_dbf_trace);
+> +	debug_unregister(claw_dbf_setup);
+> +	debug_unregister(claw_dbf_trace);
 >  }
 > 
-> diff --git a/scripts/kconfig/symbol.c b/scripts/kconfig/symbol.c
-> index 7caabdb..3f7797b 100644
-> --- a/scripts/kconfig/symbol.c
-> +++ b/scripts/kconfig/symbol.c
-> @@ -447,8 +447,7 @@ void sym_clear_all_valid(void)
->  	for_all_symbols(i, sym)
->  		sym->flags &= ~SYMBOL_VALID;
->  	sym_add_change_count(1);
-> -	if (modules_sym)
-> -		sym_calc_value(modules_sym);
-> +	sym_calc_value(modules_sym);
+>  static int
+> diff --git a/drivers/s390/net/ctcm_main.c b/drivers/s390/net/ctcm_main.c
+> index e056dd4..34dc0f3 100644
+> --- a/drivers/s390/net/ctcm_main.c
+> +++ b/drivers/s390/net/ctcm_main.c
+> @@ -1074,8 +1074,7 @@ static void ctcm_free_netdevice(struct net_device *dev)
+>  	if (priv) {
+>  		grp = priv->mpcg;
+>  		if (grp) {
+> -			if (grp->fsm)
+> -				kfree_fsm(grp->fsm);
+> +			kfree_fsm(grp->fsm);
+>  			if (grp->xid_skb)
+>  				dev_kfree_skb(grp->xid_skb);
+>  			if (grp->rcvd_xid_skb)
+> @@ -1672,8 +1671,7 @@ static int ctcm_shutdown_device(struct ccwgroup_device *cgdev)
+>  		ctcm_free_netdevice(dev);
+>  	}
+> 
+> -	if (priv->fsm)
+> -		kfree_fsm(priv->fsm);
+> +	kfree_fsm(priv->fsm);
+> 
+>  	ccw_device_set_offline(cgdev->cdev[1]);
+>  	ccw_device_set_offline(cgdev->cdev[0]);
+> diff --git a/drivers/s390/net/lcs.c b/drivers/s390/net/lcs.c
+> index 0a7d87c..5dfa7dd 100644
+> --- a/drivers/s390/net/lcs.c
+> +++ b/drivers/s390/net/lcs.c
+> @@ -88,10 +88,8 @@ static debug_info_t *lcs_dbf_trace;
+>  static void
+>  lcs_unregister_debug_facility(void)
+>  {
+> -	if (lcs_dbf_setup)
+> -		debug_unregister(lcs_dbf_setup);
+> -	if (lcs_dbf_trace)
+> -		debug_unregister(lcs_dbf_trace);
+> +	debug_unregister(lcs_dbf_setup);
+> +	debug_unregister(lcs_dbf_trace);
 >  }
 > 
->  void sym_set_changed(struct symbol *sym)
-
-Please resend with
-    Acked-by: Paul Bolle <pebolle@tiscali.nl>
-
-added.
-
-
-Paul Bolle
+>  static int
+> diff --git a/drivers/s390/net/netiucv.c b/drivers/s390/net/netiucv.c
+> index 0a87809..bdcc3fe 100644
+> --- a/drivers/s390/net/netiucv.c
+> +++ b/drivers/s390/net/netiucv.c
+> @@ -487,12 +487,9 @@ DEFINE_PER_CPU(char[256], iucv_dbf_txt_buf);
+> 
+>  static void iucv_unregister_dbf_views(void)
+>  {
+> -	if (iucv_dbf_setup)
+> -		debug_unregister(iucv_dbf_setup);
+> -	if (iucv_dbf_data)
+> -		debug_unregister(iucv_dbf_data);
+> -	if (iucv_dbf_trace)
+> -		debug_unregister(iucv_dbf_trace);
+> +	debug_unregister(iucv_dbf_setup);
+> +	debug_unregister(iucv_dbf_data);
+> +	debug_unregister(iucv_dbf_trace);
+>  }
+>  static int iucv_register_dbf_views(void)
+>  {
+> @@ -1975,8 +1972,7 @@ static void netiucv_free_netdevice(struct net_device *dev)
+>  	if (privptr) {
+>  		if (privptr->conn)
+>  			netiucv_remove_connection(privptr->conn);
+> -		if (privptr->fsm)
+> -			kfree_fsm(privptr->fsm);
+> +		kfree_fsm(privptr->fsm);
+>  		privptr->conn = NULL; privptr->fsm = NULL;
+>  		/* privptr gets freed by free_netdev() */
+>  	}
