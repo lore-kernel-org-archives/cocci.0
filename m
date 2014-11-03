@@ -1,99 +1,37 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 02 Nov 2014 16:12:30 +0100
-Subject: [Cocci] [PATCH 1/1] PCI: Deletion of unnecessary checks before
- three function calls
-In-Reply-To: <5317A59D.4@users.sourceforge.net>
-References: <5307CAA2.8060406@users.sourceforge.net>
- <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
- <530A086E.8010901@users.sourceforge.net>
- <alpine.DEB.2.02.1402231635510.1985@localhost6.localdomain6>
- <530A72AA.3000601@users.sourceforge.net>
- <alpine.DEB.2.02.1402240658210.2090@localhost6.localdomain6>
- <530B5FB6.6010207@users.sourceforge.net>
- <alpine.DEB.2.10.1402241710370.2074@hadrien>
- <530C5E18.1020800@users.sourceforge.net>
- <alpine.DEB.2.10.1402251014170.2080@hadrien>
- <530CD2C4.4050903@users.sourceforge.net>
- <alpine.DEB.2.10.1402251840450.7035@hadrien>
- <530CF8FF.8080600@users.sourceforge.net>
- <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
- <530DD06F.4090703@users.sourceforge.net>
- <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
- <5317A59D.4@users.sourceforge.net>
-Message-ID: <545649DE.80304@users.sourceforge.net>
+Date: Mon, 03 Nov 2014 14:27:06 +0100
+Subject: [Cocci] ceph: Deletion of unnecessary checks before two
+	function calls
+In-Reply-To: <CALFYKtAJG5W9-BAHrqEcC-FfqdJERCqkBADo4yTUyjzb+wCHnQ@mail.gmail.com>
+References: <5307CAA2.8060406@users.sourceforge.net>	<alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>	<530A086E.8010901@users.sourceforge.net>	<alpine.DEB.2.02.1402231635510.1985@localhost6.localdomain6>	<530A72AA.3000601@users.sourceforge.net>	<alpine.DEB.2.02.1402240658210.2090@localhost6.localdomain6>	<530B5FB6.6010207@users.sourceforge.net>	<alpine.DEB.2.10.1402241710370.2074@hadrien>	<530C5E18.1020800@users.sourceforge.net>	<alpine.DEB.2.10.1402251014170.2080@hadrien>	<530CD2C4.4050903@users.sourceforge.net>	<alpine.DEB.2.10.1402251840450.7035@hadrien>	<530CF8FF.8080600@users.sourceforge.net>	<alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>	<530DD06F.4090703@users.sourceforge.net>	<alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>	<5317A59D.4@users.sourceforge.net>	<54563DCB.2010103@users.sourceforge.net>
+ <CALFYKtAJG5W9-BAHrqEcC-FfqdJERCqkBADo4yTUyjzb+wCHnQ@mail.gmail.com>
+Message-ID: <545782AA.5080408@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-The functions pci_dev_put(), pci_pme_wakeup_bus() and put_device() test
-whether their argument is NULL and then return immediately. Thus the test
-around the call is not needed.
+> dput() also checks for NULL argument, but the check is wrapped into
+> unlikely(), which is why I presume it wasn't picked up.  It would be
+> great if you could improve your coccinelle script to handle
+> {un,}likely() as well.
 
-This issue was detected by using the Coccinelle software.
+Thanks for your suggestion.
 
-Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
----
- drivers/pci/pci-acpi.c     | 3 +--
- drivers/pci/probe.c        | 3 +--
- drivers/pci/search.c       | 3 +--
- drivers/pci/xen-pcifront.c | 3 +--
- 4 files changed, 4 insertions(+), 8 deletions(-)
+Should I consider any more fine-tuning for the affected script
+"list_input_parameter_validation1.cocci" in the near future?
+https://lkml.org/lkml/2014/3/5/362
+http://article.gmane.org/gmane.comp.version-control.coccinelle/3514
 
-diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
-index 37263b0..a8fe5de 100644
---- a/drivers/pci/pci-acpi.c
-+++ b/drivers/pci/pci-acpi.c
-@@ -60,8 +60,7 @@ static void pci_acpi_wake_dev(struct work_struct *work)
- 	pci_wakeup_event(pci_dev);
- 	pm_runtime_resume(&pci_dev->dev);
 
--	if (pci_dev->subordinate)
--		pci_pme_wakeup_bus(pci_dev->subordinate);
-+	pci_pme_wakeup_bus(pci_dev->subordinate);
- }
+>> @@ -590,15 +589,13 @@ static void queue_realm_cap_snaps(struct ceph_snap_realm
+>> *realm)
+> 
+> The patch was corrupted, that should have been a single line.  I fixed
+> it up but you may want to look into your email client settings.
 
- /**
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index 4170113..e93f16e 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -86,8 +86,7 @@ static void release_pcibus_dev(struct device *dev)
- {
- 	struct pci_bus *pci_bus = to_pci_bus(dev);
+Thanks for your feedback.
 
--	if (pci_bus->bridge)
--		put_device(pci_bus->bridge);
-+	put_device(pci_bus->bridge);
- 	pci_bus_remove_resources(pci_bus);
- 	pci_release_bus_of_node(pci_bus);
- 	kfree(pci_bus);
-diff --git a/drivers/pci/search.c b/drivers/pci/search.c
-index 827ad83..2d806bd 100644
---- a/drivers/pci/search.c
-+++ b/drivers/pci/search.c
-@@ -305,8 +305,7 @@ static struct pci_dev *pci_get_dev_by_id(const struct
-pci_device_id *id,
- 			      match_pci_dev_by_id);
- 	if (dev)
- 		pdev = to_pci_dev(dev);
--	if (from)
--		pci_dev_put(from);
-+	pci_dev_put(from);
- 	return pdev;
- }
+Does this example show a conflict between long comments after patch ranges and
+line length limitation for email eventually?
 
-diff --git a/drivers/pci/xen-pcifront.c b/drivers/pci/xen-pcifront.c
-index 53df39a..46664cc 100644
---- a/drivers/pci/xen-pcifront.c
-+++ b/drivers/pci/xen-pcifront.c
-@@ -596,8 +596,7 @@ static pci_ers_result_t pcifront_common_process(int cmd,
- 	pcidev = pci_get_bus_and_slot(bus, devfn);
- 	if (!pcidev || !pcidev->driver) {
- 		dev_err(&pdev->xdev->dev, "device or AER driver is NULL\n");
--		if (pcidev)
--			pci_dev_put(pcidev);
-+		pci_dev_put(pcidev);
- 		return result;
- 	}
- 	pdrv = pcidev->driver;
--- 
-2.1.3
+Regards,
+Markus
