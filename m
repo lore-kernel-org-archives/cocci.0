@@ -1,89 +1,45 @@
-From: dan.carpenter@oracle.com (Dan Carpenter)
-Date: Mon, 3 Nov 2014 20:16:25 +0300
+From: derek@knosof.co.uk (Derek M Jones)
+Date: Mon, 03 Nov 2014 17:05:11 +0000
 Subject: [Cocci] s390/net: Deletion of unnecessary checks before two
  function calls
-In-Reply-To: <5457B268.3020202@users.sourceforge.net>
-References: <530CF8FF.8080600@users.sourceforge.net>
+In-Reply-To: <20141103162528.GT6890@mwanda>
+References: <530CD2C4.4050903@users.sourceforge.net>
+ <alpine.DEB.2.10.1402251840450.7035@hadrien>
+ <530CF8FF.8080600@users.sourceforge.net>
  <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
- <5317A59D.4@users.sourceforge.net>
- <5453C98C.90105@users.sourceforge.net>
- <20141103095059.GL6879@mwanda>
- <5457A560.2020304@users.sourceforge.net>
+ <5317A59D.4@users.sourceforge.net> <5453C98C.90105@users.sourceforge.net>
+ <20141103095059.GL6879@mwanda> <5457A560.2020304@users.sourceforge.net>
  <20141103162528.GT6890@mwanda>
- <5457B268.3020202@users.sourceforge.net>
-Message-ID: <20141103171625.GU6890@mwanda>
+Message-ID: <5457B5C7.7020406@knosof.co.uk>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, Nov 03, 2014 at 05:50:48PM +0100, SF Markus Elfring wrote:
-> > After your patch then it will print warning messages.
-> 
-> To which messages do you refer to?
-> 
+Dan
 
-Open your eyeballs up and read the code.
+> The truth is I think that all these patches are bad and they make the
+> code harder to read.
 
-> 
-> > The truth is I think that all these patches are bad and they make the
-> > code harder to read.
-> > 
-> > Before:  The code is clear and there is no NULL dereference.
-> 
-> Where do you stumble on a null pointer access?
-> 
+I disagree, I think the code requires less effort to read without the
+if test.
 
-I'm not talking about bugs, I'm talking about code clarity.  Before is
-more clear than after.
+A developer reading the code will wonder why kfree does not handle the
+case when its argument is NULL.  This takes effort.
 
-> 
-> >  After:  You have to remember that rtw_free_netdev() accepts NULL
-> > 	 pointers but free_netdev() does not accept NULL pointers.
-> 
-> Are any improvements needed for the corresponding documentation to make it
-> better accessible besides the source code?
-> 
+Now there might be a reason while kfree (or any other function) does
+not handle NULL, in which case the test is necessary for that reason.
+Or perhaps calling kfree has other consequences and this means it is
+good to minimise the number of calls, fair enough.
 
-Documentation doesn't reduce the number of things to remember it just
-documents it.  Meanwhile if we leave the code as-is there is no need for
-documentation because the code is clear.
+> The if statements are there for *human* readers to understand and you are
+> making it harder for humans to understand the code.
 
-> 
-> > The if statements are there for *human* readers to understand and you are
-> > making it harder for humans to understand the code.
-> 
-> Is there a target conflict between source code understandability
-> and software efficiency?
+The reverse is true.
 
-If you can benchmark the code and the new code is faster then, yes, this
-patch is good and we will apply it.  If you have no benchmarks then do
-not send the patch.
+But if there are other reasons, then leave the test in.
 
-> 
-> > Even for kfree(), just removing the if statement is not really the right
-> > fix.  We do it because everyone knows kfree(), but what Julia Lawall
-> > said is the real correct way change the code and make it simpler for
-> > people to understand:
-> > 
-> > https://lkml.org/lkml/2014/10/31/452
-> 
-> You refer to another update suggestion for the software area
-> "staging: rtl8188eu".
-> Do you find adjustments for jump labels easier to accept than the simple
-> deletion of specific null pointer checks?
-
-Yes.
-
-> 
-> 
-> > I know it's fun to send automated patches but these make the code worse
-> > and they waste reviewer time.
-> 
-> I hope that small automated changes can also help to improve affected
-> source files.
-
-No.  The changes make the code less clear.
-
-regards,
-dan carpenter
+-- 
+Derek M. Jones                  tel: +44 (0) 1252 520 667
+Knowledge Software Ltd          blog:shape-of-code.coding-guidelines.com
+Software analysis               http://www.knosof.co.uk
