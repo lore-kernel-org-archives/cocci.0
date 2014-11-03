@@ -1,9 +1,17 @@
-From: dan.carpenter@oracle.com (Dan Carpenter)
-Date: Mon, 3 Nov 2014 12:50:59 +0300
-Subject: [Cocci] [PATCH 1/1] s390/net: Deletion of unnecessary checks
- before two function calls
-In-Reply-To: <5453C98C.90105@users.sourceforge.net>
-References: <530C5E18.1020800@users.sourceforge.net>
+From: tiwai@suse.de (Takashi Iwai)
+Date: Mon, 03 Nov 2014 10:45:30 +0100
+Subject: [Cocci] [PATCH 1/1] PCI: EMU10K1: Deletion of unnecessary
+	checks before three function calls
+In-Reply-To: <54567788.9060008@users.sourceforge.net>
+References: <5307CAA2.8060406@users.sourceforge.net>
+ <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
+ <530A086E.8010901@users.sourceforge.net>
+ <alpine.DEB.2.02.1402231635510.1985@localhost6.localdomain6>
+ <530A72AA.3000601@users.sourceforge.net>
+ <alpine.DEB.2.02.1402240658210.2090@localhost6.localdomain6>
+ <530B5FB6.6010207@users.sourceforge.net>
+ <alpine.DEB.2.10.1402241710370.2074@hadrien>
+ <530C5E18.1020800@users.sourceforge.net>
  <alpine.DEB.2.10.1402251014170.2080@hadrien>
  <530CD2C4.4050903@users.sourceforge.net>
  <alpine.DEB.2.10.1402251840450.7035@hadrien>
@@ -12,24 +20,83 @@ References: <530C5E18.1020800@users.sourceforge.net>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net>
- <5453C98C.90105@users.sourceforge.net>
-Message-ID: <20141103095059.GL6879@mwanda>
+ <54567788.9060008@users.sourceforge.net>
+Message-ID: <s5ha94839dx.wl-tiwai@suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-This one is buggy.
+At Sun, 02 Nov 2014 19:27:20 +0100,
+SF Markus Elfring wrote:
+> 
+> The functions kfree(), release_firmware() and snd_util_memhdr_free() test
+> whether their argument is NULL and then return immediately. Thus the test
+> around the call is not needed.
+> 
+> This issue was detected by using the Coccinelle software.
+> 
+> Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 
-I'm sorry, but please stop sending these.
+Your patch can't be applied cleanly due to your MUA breaking the
+lines.  Please fix your MUA setup, or use an attachment if it's
+impossible, and resend the patch.
 
-For kfree(), at least we all know that kfree() accepts NULL pointer.
-But for this one:
-1) I don't know what the functions do so I have to look at the code.
-2) It's in a arch that I don't compile so cscope isn't set up meaning
-   it's hard to find the functions.
+Also, try to align the subject line with the relevant commits.  See
+"git log sound/pci/emu10k1" 
 
-You're sending a lot of patches and they are all hard to review and some
-of them are buggy and none of them really add any value.  It's a waste
-of your time and it's a waste of my time.
 
-regards,
-dan carpenter
+thanks,
+
+Takashi
+
+
+> ---
+>  sound/pci/emu10k1/emu10k1_main.c | 9 +++------
+>  sound/pci/emu10k1/emufx.c        | 3 +--
+>  2 files changed, 4 insertions(+), 8 deletions(-)
+> 
+> diff --git a/sound/pci/emu10k1/emu10k1_main.c b/sound/pci/emu10k1/emu10k1_main.c
+> index 2292697..b4458a6 100644
+> --- a/sound/pci/emu10k1/emu10k1_main.c
+> +++ b/sound/pci/emu10k1/emu10k1_main.c
+> @@ -1289,10 +1289,8 @@ static int snd_emu10k1_free(struct snd_emu10k1 *emu)
+>  	}
+>  	if (emu->emu1010.firmware_thread)
+>  		kthread_stop(emu->emu1010.firmware_thread);
+> -	if (emu->firmware)
+> -		release_firmware(emu->firmware);
+> -	if (emu->dock_fw)
+> -		release_firmware(emu->dock_fw);
+> +	release_firmware(emu->firmware);
+> +	release_firmware(emu->dock_fw);
+>  	if (emu->irq >= 0)
+>  		free_irq(emu->irq, emu);
+>  	/* remove reserved page */
+> @@ -1301,8 +1299,7 @@ static int snd_emu10k1_free(struct snd_emu10k1 *emu)
+>  			(struct snd_util_memblk *)emu->reserved_page);
+>  		emu->reserved_page = NULL;
+>  	}
+> -	if (emu->memhdr)
+> -		snd_util_memhdr_free(emu->memhdr);
+> +	snd_util_memhdr_free(emu->memhdr);
+>  	if (emu->silent_page.area)
+>  		snd_dma_free_pages(&emu->silent_page);
+>  	if (emu->ptb_pages.area)
+> diff --git a/sound/pci/emu10k1/emufx.c b/sound/pci/emu10k1/emufx.c
+> index 745f062..eb5c0ab 100644
+> --- a/sound/pci/emu10k1/emufx.c
+> +++ b/sound/pci/emu10k1/emufx.c
+> @@ -777,8 +777,7 @@ static void snd_emu10k1_ctl_private_free(struct snd_kcontrol
+> *kctl)
+>  	kctl->private_value = 0;
+>  	list_del(&ctl->list);
+>  	kfree(ctl);
+> -	if (kctl->tlv.p)
+> -		kfree(kctl->tlv.p);
+> +	kfree(kctl->tlv.p);
+>  }
+> 
+>  static int snd_emu10k1_add_controls(struct snd_emu10k1 *emu,
+> -- 
+> 2.1.3
+> 
+> 
