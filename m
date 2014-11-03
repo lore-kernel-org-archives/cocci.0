@@ -1,17 +1,9 @@
-From: ilya.dryomov@inktank.com (Ilya Dryomov)
-Date: Mon, 3 Nov 2014 18:23:12 +0400
-Subject: [Cocci] ceph: Deletion of unnecessary checks before two
-	function calls
-In-Reply-To: <545782AA.5080408@users.sourceforge.net>
-References: <5307CAA2.8060406@users.sourceforge.net>
- <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
- <530A086E.8010901@users.sourceforge.net>
- <alpine.DEB.2.02.1402231635510.1985@localhost6.localdomain6>
- <530A72AA.3000601@users.sourceforge.net>
- <alpine.DEB.2.02.1402240658210.2090@localhost6.localdomain6>
- <530B5FB6.6010207@users.sourceforge.net>
- <alpine.DEB.2.10.1402241710370.2074@hadrien>
- <530C5E18.1020800@users.sourceforge.net>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Mon, 03 Nov 2014 16:55:12 +0100
+Subject: [Cocci] s390/net: Deletion of unnecessary checks before two
+ function calls
+In-Reply-To: <20141103095059.GL6879@mwanda>
+References: <530C5E18.1020800@users.sourceforge.net>
  <alpine.DEB.2.10.1402251014170.2080@hadrien>
  <530CD2C4.4050903@users.sourceforge.net>
  <alpine.DEB.2.10.1402251840450.7035@hadrien>
@@ -19,78 +11,48 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
- <5317A59D.4@users.sourceforge.net>
- <54563DCB.2010103@users.sourceforge.net>
- <CALFYKtAJG5W9-BAHrqEcC-FfqdJERCqkBADo4yTUyjzb+wCHnQ@mail.gmail.com>
- <545782AA.5080408@users.sourceforge.net>
-Message-ID: <CALFYKtAW2q-6xgCoV53iTGrt=6o+mHzX0bB+Ltg6AShx-g1qrw@mail.gmail.com>
+ <5317A59D.4@users.sourceforge.net> <5453C98C.90105@users.sourceforge.net>
+ <20141103095059.GL6879@mwanda>
+Message-ID: <5457A560.2020304@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, Nov 3, 2014 at 4:27 PM, SF Markus Elfring
-<elfring@users.sourceforge.net> wrote:
->> dput() also checks for NULL argument, but the check is wrapped into
->> unlikely(), which is why I presume it wasn't picked up.  It would be
->> great if you could improve your coccinelle script to handle
->> {un,}likely() as well.
->
-> Thanks for your suggestion.
->
-> Should I consider any more fine-tuning for the affected script
-> "list_input_parameter_validation1.cocci" in the near future?
-> https://lkml.org/lkml/2014/3/5/362
-> http://article.gmane.org/gmane.comp.version-control.coccinelle/3514
+> This one is buggy.
 
-Make sure it at least catches stuff like:
+I am still interested to clarify this opinion a bit more.
 
-{
-    if (input) {
 
-    }
-}
+> I'm sorry, but please stop sending these.
 
-{
-    if (likely(input)) {
+I am going to improve more implementation details in affected source files.
 
-    }
-}
 
-{
-    if (!input)
-        return;
+> But for this one:
+> 1) I don't know what the functions do so I have to look at the code.
 
-    ...
-}
+I hope that static source code analysis can help here.
 
-{
-    if (unlikely(!input))
-        return;
 
-    ...
-}
+> 2) It's in a arch that I don't compile so cscope isn't set up meaning
+>    it's hard to find the functions.
 
-And of course each match then has to be validated manually.
+Do you find the Coccinelle software also useful for your area?
 
->
->
->>> @@ -590,15 +589,13 @@ static void queue_realm_cap_snaps(struct ceph_snap_realm
->>> *realm)
->>
->> The patch was corrupted, that should have been a single line.  I fixed
->> it up but you may want to look into your email client settings.
->
-> Thanks for your feedback.
->
-> Does this example show a conflict between long comments after patch ranges and
-> line length limitation for email eventually?
 
-There is no line length limitation for email, at least one that would
-be relevant here.  Patches should be sent verbatim, no line wrapping,
-expandtab, etc or they won't apply.  I'd recommend git-send-email, but
-if you want to make thunderbird work for patches (which is what you
-seem to be using) have a look at the "Thunderbird (GUI)" section of
-Documentation/email-clients.txt in the kernel tree.
+> You're sending a lot of patches and they are all hard to review and some
+> of them are buggy and none of them really add any value.
 
-Thanks,
+Thanks for your feedback.
 
-                Ilya
+
+The suggested source code clean-up might result in a measurable effect
+depending on the call frequency for the changed functions.
+Can I help you in any ways to make corresponding review easier?
+
+
+> It's a waste of your time and it's a waste of my time.
+
+It can be your choice to reject my update suggestion.
+
+Regards,
+Markus
