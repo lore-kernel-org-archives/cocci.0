@@ -1,7 +1,7 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 12 Nov 2014 21:25:15 +0100
-Subject: [Cocci] [PATCH v2 1/2] staging: rtl8188eu: Deletion of unnecessary
- checks before three function calls
+Date: Wed, 12 Nov 2014 21:30:43 +0100
+Subject: [Cocci] [PATCH v2 2/2] staging: rtl8188eu: Better memory clean-up
+	in efuse_phymap_to_logical()
 In-Reply-To: <5463C10D.6020409@users.sourceforge.net>
 References: <530C5E18.1020800@users.sourceforge.net>
  <alpine.DEB.2.10.1402251014170.2080@hadrien>
@@ -15,112 +15,62 @@ References: <530C5E18.1020800@users.sourceforge.net>
  <20141029084702.GA18675@kroah.com> <5453CD0D.9010206@users.sourceforge.net>
  <alpine.DEB.2.10.1410311900201.2481@hadrien>
  <5463C10D.6020409@users.sourceforge.net>
-Message-ID: <5463C22B.7060405@users.sourceforge.net>
+Message-ID: <5463C373.5050804@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Wed, 12 Nov 2014 20:25:49 +0100
+Date: Wed, 12 Nov 2014 20:40:12 +0100
 
-The functions kfree(), rtw_free_netdev() and vfree() test whether their
-argument is NULL and then return immediately. Thus the test around the call
-is not needed.
+Memory releases were handled in an inefficient way by the implementation of
+the efuse_phymap_to_logical() function in case of an allocation failure.
+The corresponding clean-up was improved by reordering of kfree() calls
+and a few adjustments for jump labels.
 
-This issue was detected by using the Coccinelle software.
-
+Reported-by: Julia Lawall <Julia.Lawall@lip6.fr>
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- drivers/staging/rtl8188eu/core/rtw_efuse.c   | 3 +--
- drivers/staging/rtl8188eu/core/rtw_mlme.c    | 3 +--
- drivers/staging/rtl8188eu/core/rtw_sta_mgt.c | 3 +--
- drivers/staging/rtl8188eu/core/rtw_xmit.c    | 6 ++----
- drivers/staging/rtl8188eu/os_dep/usb_intf.c  | 6 +++---
- 5 files changed, 8 insertions(+), 13 deletions(-)
+ drivers/staging/rtl8188eu/core/rtw_efuse.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/staging/rtl8188eu/core/rtw_efuse.c b/drivers/staging/rtl8188eu/core/rtw_efuse.c
-index 5b997b2..697876b 100644
+index 697876b..359f169 100644
 --- a/drivers/staging/rtl8188eu/core/rtw_efuse.c
 +++ b/drivers/staging/rtl8188eu/core/rtw_efuse.c
-@@ -212,8 +212,7 @@ efuse_phymap_to_logical(u8 *phymap, u16 _offset, u16 _size_byte, u8  *pbuf)
- exit:
+@@ -112,7 +112,7 @@ efuse_phymap_to_logical(u8 *phymap, u16 _offset, u16 _size_byte, u8  *pbuf)
+ 	eFuseWord = (u16 **)rtw_malloc2d(EFUSE_MAX_SECTION_88E, EFUSE_MAX_WORD_UNIT, sizeof(u16));
+ 	if (eFuseWord == NULL) {
+ 		DBG_88E("%s: alloc eFuseWord fail!\n", __func__);
+-		goto exit;
++		goto cleanup1;
+ 	}
+ 
+ 	/*  0. Refresh efuse init map as all oxFF. */
+@@ -130,7 +130,7 @@ efuse_phymap_to_logical(u8 *phymap, u16 _offset, u16 _size_byte, u8  *pbuf)
+ 		eFuse_Addr++;
+ 	} else {
+ 		DBG_88E("EFUSE is empty efuse_Addr-%d efuse_data =%x\n", eFuse_Addr, rtemp8);
+-		goto exit;
++		goto cleanup2;
+ 	}
+ 
+ 	/*  */
+@@ -209,10 +209,14 @@ efuse_phymap_to_logical(u8 *phymap, u16 _offset, u16 _size_byte, u8  *pbuf)
+ 	/*  5. Calculate Efuse utilization. */
+ 	/*  */
+ 
+-exit:
++cleanup2:
++	kfree(eFuseWord);
++
++cleanup1:
  	kfree(efuseTbl);
  
--	if (eFuseWord)
--		kfree(eFuseWord);
-+	kfree(eFuseWord);
+-	kfree(eFuseWord);
++exit:
++	;
  }
  
  static void efuse_read_phymap_from_txpktbuf(
-diff --git a/drivers/staging/rtl8188eu/core/rtw_mlme.c b/drivers/staging/rtl8188eu/core/rtw_mlme.c
-index 149c271..df54350 100644
---- a/drivers/staging/rtl8188eu/core/rtw_mlme.c
-+++ b/drivers/staging/rtl8188eu/core/rtw_mlme.c
-@@ -122,8 +122,7 @@ void rtw_free_mlme_priv(struct mlme_priv *pmlmepriv)
- 	rtw_free_mlme_priv_ie_data(pmlmepriv);
- 
- 	if (pmlmepriv) {
--		if (pmlmepriv->free_bss_buf)
--			vfree(pmlmepriv->free_bss_buf);
-+		vfree(pmlmepriv->free_bss_buf);
- 	}
- }
- 
-diff --git a/drivers/staging/rtl8188eu/core/rtw_sta_mgt.c b/drivers/staging/rtl8188eu/core/rtw_sta_mgt.c
-index e1dc8fa..af1de9c 100644
---- a/drivers/staging/rtl8188eu/core/rtw_sta_mgt.c
-+++ b/drivers/staging/rtl8188eu/core/rtw_sta_mgt.c
-@@ -201,8 +201,7 @@ u32	_rtw_free_sta_priv(struct	sta_priv *pstapriv)
- 
- 		rtw_mfree_sta_priv_lock(pstapriv);
- 
--		if (pstapriv->pallocated_stainfo_buf)
--			vfree(pstapriv->pallocated_stainfo_buf);
-+		vfree(pstapriv->pallocated_stainfo_buf);
- 	}
- 
- 	return _SUCCESS;
-diff --git a/drivers/staging/rtl8188eu/core/rtw_xmit.c b/drivers/staging/rtl8188eu/core/rtw_xmit.c
-index 639ace0..011c9cf 100644
---- a/drivers/staging/rtl8188eu/core/rtw_xmit.c
-+++ b/drivers/staging/rtl8188eu/core/rtw_xmit.c
-@@ -246,11 +246,9 @@ void _rtw_free_xmit_priv (struct xmit_priv *pxmitpriv)
- 		pxmitbuf++;
- 	}
- 
--	if (pxmitpriv->pallocated_frame_buf)
--		vfree(pxmitpriv->pallocated_frame_buf);
-+	vfree(pxmitpriv->pallocated_frame_buf);
- 
--	if (pxmitpriv->pallocated_xmitbuf)
--		vfree(pxmitpriv->pallocated_xmitbuf);
-+	vfree(pxmitpriv->pallocated_xmitbuf);
- 
- 	/*  free xmit extension buff */
- 	pxmitbuf = (struct xmit_buf *)pxmitpriv->pxmit_extbuf;
-diff --git a/drivers/staging/rtl8188eu/os_dep/usb_intf.c b/drivers/staging/rtl8188eu/os_dep/usb_intf.c
-index 407a318..4e2c34b 100644
---- a/drivers/staging/rtl8188eu/os_dep/usb_intf.c
-+++ b/drivers/staging/rtl8188eu/os_dep/usb_intf.c
-@@ -456,8 +456,9 @@ free_adapter:
- 	if (status != _SUCCESS) {
- 		if (pnetdev)
- 			rtw_free_netdev(pnetdev);
--		else if (padapter)
-+		else
- 			vfree(padapter);
-+
- 		padapter = NULL;
- 	}
- exit:
-@@ -487,8 +488,7 @@ static void rtw_usb_if1_deinit(struct adapter *if1)
- 	DBG_88E("+r871xu_dev_remove, hw_init_completed=%d\n",
- 		if1->hw_init_completed);
- 	rtw_free_drv_sw(if1);
--	if (pnetdev)
--		rtw_free_netdev(pnetdev);
-+	rtw_free_netdev(pnetdev);
- }
- 
- static int rtw_drv_init(struct usb_interface *pusb_intf, const struct usb_device_id *pdid)
 -- 
 2.1.3
