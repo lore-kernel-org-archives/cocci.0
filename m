@@ -1,8 +1,8 @@
 From: dan.carpenter@oracle.com (Dan Carpenter)
-Date: Thu, 13 Nov 2014 00:14:38 +0300
-Subject: [Cocci] [PATCH v2 2/2] staging: rtl8188eu: Better memory
- clean-up in efuse_phymap_to_logical()
-In-Reply-To: <5463C373.5050804@users.sourceforge.net>
+Date: Thu, 13 Nov 2014 00:18:15 +0300
+Subject: [Cocci] [PATCH v2 1/2] staging: rtl8188eu: Deletion of
+ unnecessary checks before three function calls
+In-Reply-To: <5463C22B.7060405@users.sourceforge.net>
 References: <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
@@ -12,22 +12,24 @@ References: <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <5453CD0D.9010206@users.sourceforge.net>
  <alpine.DEB.2.10.1410311900201.2481@hadrien>
  <5463C10D.6020409@users.sourceforge.net>
- <5463C373.5050804@users.sourceforge.net>
-Message-ID: <20141112211438.GI6749@mwanda>
+ <5463C22B.7060405@users.sourceforge.net>
+Message-ID: <20141112211815.GJ6749@mwanda>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, Nov 12, 2014 at 09:30:43PM +0100, SF Markus Elfring wrote:
-> From: Markus Elfring <elfring@users.sourceforge.net>
+On Wed, Nov 12, 2014 at 09:25:15PM +0100, SF Markus Elfring wrote:
+> @@ -487,8 +488,7 @@ static void rtw_usb_if1_deinit(struct adapter *if1)
+>  	DBG_88E("+r871xu_dev_remove, hw_init_completed=%d\n",
+>  		if1->hw_init_completed);
+>  	rtw_free_drv_sw(if1);
+> -	if (pnetdev)
+> -		rtw_free_netdev(pnetdev);
+> +	rtw_free_netdev(pnetdev);
 
-Please fix your email client instead.
-
-> +		goto cleanup1;
-
-1) Don't use GW-BASIC label names.  Label names should reflect what the
-label does such as free_fuse_word or free_fuse_tabel.
-
-2) Don't use do-nothing labels.  Just return directly.
+I still feel that hiding the if statement inside the function call makes
+the code more subtle and it is a bad harmful thing to do.  This is
+especially true if you have trained yourself to know that free_netdev()
+can't accept NULL pointers.
 
 regards,
 dan carpenter
