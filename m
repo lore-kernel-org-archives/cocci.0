@@ -1,8 +1,8 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 12 Nov 2014 22:40:34 +0100 (CET)
-Subject: [Cocci] [PATCH v2 1/2] staging: rtl8188eu: Deletion of
- unnecessary checks before three function calls
-In-Reply-To: <5463D109.4020702@users.sourceforge.net>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 12 Nov 2014 22:50:37 +0100
+Subject: [Cocci] [PATCH v2 2/2] staging: rtl8188eu: Better memory
+ clean-up in efuse_phymap_to_logical()
+In-Reply-To: <20141112211438.GI6749@mwanda>
 References: <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
@@ -10,21 +10,20 @@ References: <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <20141029084702.GA18675@kroah.com> <5453CD0D.9010206@users.sourceforge.net>
  <alpine.DEB.2.10.1410311900201.2481@hadrien>
  <5463C10D.6020409@users.sourceforge.net>
- <5463C22B.7060405@users.sourceforge.net> <20141112211815.GJ6749@mwanda>
- <5463D109.4020702@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1411122237380.2055@localhost6.localdomain6>
+ <5463C373.5050804@users.sourceforge.net> <20141112211438.GI6749@mwanda>
+Message-ID: <5463D62D.3010206@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> > This is especially true if you have trained yourself to know that
-> > free_netdev() can't accept NULL pointers.
+>> +		goto cleanup1;
 > 
-> Do you need to adjust your concerns a bit over time when function variants
-> provide a corresponding safety check in their implementations?
+> 1) Don't use GW-BASIC label names.  Label names should reflect what the
+> label does such as free_fuse_word or free_fuse_tabel.
+> 
+> 2) Don't use do-nothing labels.  Just return directly.
 
-There would not seem to be any _need_ to do so.  An unnecessary null test 
-is always safe.  The only real problem that I can see with an unnecessary 
-null test in error handling code (intrinsically not critical performance 
-wise) is if it gives the illusion that a value can be null when it cannot.
+Does the document "CodingStyle" need any extensions for special cases?
+Are there any update candidates in the chapter "7: Centralized exiting of functions"?
 
-julia
+Regards,
+Markus
