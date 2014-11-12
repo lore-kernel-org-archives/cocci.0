@@ -1,8 +1,8 @@
-From: bhelgaas@google.com (Bjorn Helgaas)
-Date: Mon, 10 Nov 2014 21:07:17 -0700
-Subject: [Cocci] [PATCH 1/1] PCI: Deletion of unnecessary checks before
- three function calls
-In-Reply-To: <545649DE.80304@users.sourceforge.net>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 12 Nov 2014 11:51:44 +0100
+Subject: [Cocci] [PATCH with SmPL?] staging: rtl8188eu: Adjustments
+ around jump labels
+In-Reply-To: <alpine.DEB.2.10.1410311911070.2481@hadrien>
 References: <530C5E18.1020800@users.sourceforge.net>
  <alpine.DEB.2.10.1402251014170.2080@hadrien>
  <530CD2C4.4050903@users.sourceforge.net>
@@ -11,88 +11,107 @@ References: <530C5E18.1020800@users.sourceforge.net>
  <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
- <5317A59D.4@users.sourceforge.net>
- <545649DE.80304@users.sourceforge.net>
-Message-ID: <20141111040717.GD28161@google.com>
+ <5317A59D.4@users.sourceforge.net> <544954FD.8040607@users.sourceforge.net>
+ <20141029084702.GA18675@kroah.com> <5453CD0D.9010206@users.sourceforge.net>
+ <alpine.DEB.2.10.1410311900201.2481@hadrien>
+ <5453D013.9000007@users.sourceforge.net>
+ <alpine.DEB.2.10.1410311911070.2481@hadrien>
+Message-ID: <54633BC0.3030700@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, Nov 02, 2014 at 04:12:30PM +0100, SF Markus Elfring wrote:
-> The functions pci_dev_put(), pci_pme_wakeup_bus() and put_device() test
-> whether their argument is NULL and then return immediately. Thus the test
-> around the call is not needed.
+>>>> @@ -212,8 +212,7 @@ efuse_phymap_to_logical(u8 *phymap, u16 _offset, u16
+>>>> _size_byte, u8  *pbuf)
+>>>>  exit:
+>>>>  	kfree(efuseTbl);
+>>>>
+>>>> -	if (eFuseWord)
+>>>> -		kfree(eFuseWord);
+>>>> +	kfree(eFuseWord);
+>>>
+>>> I think that this code has been updated already.  It would be better to
+>>> add labels so that kfree is only executed when needed.
+>>
+>> Are there any chances to achieve the suggested fine-tuning for jump labels
+>> also with another semantic patch approach?
 > 
-> This issue was detected by using the Coccinelle software.
-> 
-> Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+> No, I don't think so.  The pattern is not regular enough.
 
-Applied to pci/misc for v3.19, thanks!
+Now I have got a different impression for corresponding improvement possibilities.
 
-> ---
->  drivers/pci/pci-acpi.c     | 3 +--
->  drivers/pci/probe.c        | 3 +--
->  drivers/pci/search.c       | 3 +--
->  drivers/pci/xen-pcifront.c | 3 +--
->  4 files changed, 4 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
-> index 37263b0..a8fe5de 100644
-> --- a/drivers/pci/pci-acpi.c
-> +++ b/drivers/pci/pci-acpi.c
-> @@ -60,8 +60,7 @@ static void pci_acpi_wake_dev(struct work_struct *work)
->  	pci_wakeup_event(pci_dev);
->  	pm_runtime_resume(&pci_dev->dev);
-> 
-> -	if (pci_dev->subordinate)
-> -		pci_pme_wakeup_bus(pci_dev->subordinate);
-> +	pci_pme_wakeup_bus(pci_dev->subordinate);
->  }
-> 
->  /**
-> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-> index 4170113..e93f16e 100644
-> --- a/drivers/pci/probe.c
-> +++ b/drivers/pci/probe.c
-> @@ -86,8 +86,7 @@ static void release_pcibus_dev(struct device *dev)
->  {
->  	struct pci_bus *pci_bus = to_pci_bus(dev);
-> 
-> -	if (pci_bus->bridge)
-> -		put_device(pci_bus->bridge);
-> +	put_device(pci_bus->bridge);
->  	pci_bus_remove_resources(pci_bus);
->  	pci_release_bus_of_node(pci_bus);
->  	kfree(pci_bus);
-> diff --git a/drivers/pci/search.c b/drivers/pci/search.c
-> index 827ad83..2d806bd 100644
-> --- a/drivers/pci/search.c
-> +++ b/drivers/pci/search.c
-> @@ -305,8 +305,7 @@ static struct pci_dev *pci_get_dev_by_id(const struct
-> pci_device_id *id,
->  			      match_pci_dev_by_id);
->  	if (dev)
->  		pdev = to_pci_dev(dev);
-> -	if (from)
-> -		pci_dev_put(from);
-> +	pci_dev_put(from);
->  	return pdev;
->  }
-> 
-> diff --git a/drivers/pci/xen-pcifront.c b/drivers/pci/xen-pcifront.c
-> index 53df39a..46664cc 100644
-> --- a/drivers/pci/xen-pcifront.c
-> +++ b/drivers/pci/xen-pcifront.c
-> @@ -596,8 +596,7 @@ static pci_ers_result_t pcifront_common_process(int cmd,
->  	pcidev = pci_get_bus_and_slot(bus, devfn);
->  	if (!pcidev || !pcidev->driver) {
->  		dev_err(&pdev->xdev->dev, "device or AER driver is NULL\n");
-> -		if (pcidev)
-> -			pci_dev_put(pcidev);
-> +		pci_dev_put(pcidev);
->  		return result;
->  	}
->  	pdrv = pcidev->driver;
-> -- 
-> 2.1.3
-> 
-> 
+
+elfring at Sonne:~/Projekte/Linux/stable-patched> spatch.opt -debug -sp-file ~/Projekte/Coccinelle/janitor/move_function_call_before_jump_label1.cocci drivers/staging/rtl8188eu/core/rtw_efuse.c
+init_defs_builtins: /usr/local/share/coccinelle/standard.h
+-----------------------------------------------------------------------
+processing semantic patch file: /home/elfring/Projekte/Coccinelle/janitor/move_function_call_before_jump_label1.cocci
+with isos from: /usr/local/share/coccinelle/standard.iso
+-----------------------------------------------------------------------
+@move_function_call_before_jump_label@
+expression x;
+identifier fu, label;
+type t;
+@@
+ t fu(...)
+ {
+  ... when any
+  x = kzalloc(...);
+  if (x == NULL) {
+     ...
+     goto label;
+  }
+  ... when any
++    kfree(x);
+  label:
+-    kfree(x);
+  ...
+ }
+
+HANDLING: drivers/staging/rtl8188eu/core/rtw_efuse.c
+-----------------------------------------------------------------------
+let's go
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+move_function_call_before_jump_label = 
+-----------------------------------------------------------------------
+dependencies for rule move_function_call_before_jump_label satisfied:
+binding in = []
+binding relevant in = []
+     (ONCE) USING optional_storage builtin isomorphism
+     transformation info returned:
+          transform state: 5
+               with rule_elem: 
+                                 <<< kfree(move_function_call_before_jump_label:x);
+                               move_function_call_before_jump_label:label:
+               with binding: [move_function_call_before_jump_label.x --> efuseTbl]
+          transform state: 204
+               with rule_elem: -kfree-(-move_function_call_before_jump_label:x-)-;
+               with binding: [move_function_call_before_jump_label.x --> efuseTbl]
+     binding out = []
+     transform one node: 204
+     transform one node: 5
+-----------------------------------------------------------------------
+Finished
+-----------------------------------------------------------------------
+diff = 
+--- drivers/staging/rtl8188eu/core/rtw_efuse.c
++++ /tmp/cocci-output-4498-349827-rtw_efuse.c
+@@ -209,8 +209,8 @@ efuse_phymap_to_logical(u8 *phymap, u16
+        /*  5. Calculate Efuse utilization. */
+        /*  */
+ 
++kfree(efuseTbl);
+ exit:
+-       kfree(efuseTbl);
+ 
+        kfree(eFuseWord);
+ }
+Check duplication for 1 files
+
+
+
+Can my update suggestion be generalised a bit more for the movement of specific jump labels
+towards the end of a function implementation like in the use case "efuse_phymap_to_logical()"?
+
+Regards,
+Markus
