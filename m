@@ -1,39 +1,32 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Thu, 13 Nov 2014 09:50:32 +0100
+Date: Thu, 13 Nov 2014 10:33:37 +0100
 Subject: [Cocci] [PATCH v2 2/2] staging: rtl8188eu: Better memory
  clean-up in efuse_phymap_to_logical()
-In-Reply-To: <20141112220540.GK5351@mwanda>
-References: <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
+In-Reply-To: <alpine.DEB.2.10.1411130942150.2389@hadrien>
+References: <530C5E18.1020800@users.sourceforge.net>
+ <alpine.DEB.2.10.1402251014170.2080@hadrien>
+ <530CD2C4.4050903@users.sourceforge.net>
+ <alpine.DEB.2.10.1402251840450.7035@hadrien>
+ <530CF8FF.8080600@users.sourceforge.net>
+ <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
+ <530DD06F.4090703@users.sourceforge.net>
+ <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net> <544954FD.8040607@users.sourceforge.net>
  <20141029084702.GA18675@kroah.com> <5453CD0D.9010206@users.sourceforge.net>
  <alpine.DEB.2.10.1410311900201.2481@hadrien>
  <5463C10D.6020409@users.sourceforge.net>
- <5463C373.5050804@users.sourceforge.net> <20141112211438.GI6749@mwanda>
- <5463D62D.3010206@users.sourceforge.net> <20141112220540.GK5351@mwanda>
-Message-ID: <546470D8.9050603@users.sourceforge.net>
+ <5463C373.5050804@users.sourceforge.net>
+ <alpine.DEB.2.10.1411130942150.2389@hadrien>
+Message-ID: <54647AF1.6@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->>>> +		goto cleanup1;
->>>
->>> 1) Don't use GW-BASIC label names.  Label names should reflect what the
->>> label does such as free_fuse_word or free_fuse_tabel.
->>>
->>> 2) Don't use do-nothing labels.  Just return directly.
->>
->> Does the document "CodingStyle" need any extensions for special cases?
-> 
-> I don't understand.
+> You are not using the most recent version of the code.  The issue has
+> already been fixed.
 
-Should the naming convention become more explicit for jump labels?
+Thanks for your reminder.
 
-
-> CodingStyle says:
-> 
-> "If there is no cleanup needed then just return directly."
-
-Do you want that I send another update suggestion with other corrections
-for jump labels in the affected function implementation?
+https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git/commit/drivers/staging/rtl8188eu/core/rtw_efuse.c?id=3cfab18ce55282a85e2c7e5db15c5daf065efdb4
 
 Regards,
 Markus
