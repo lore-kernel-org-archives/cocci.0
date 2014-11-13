@@ -1,8 +1,8 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 13 Nov 2014 09:43:58 +0100 (CET)
-Subject: [Cocci] [PATCH v2 2/2] staging: rtl8188eu: Better memory
- clean-up in efuse_phymap_to_logical()
-In-Reply-To: <5463C373.5050804@users.sourceforge.net>
+Date: Thu, 13 Nov 2014 09:47:01 +0100 (CET)
+Subject: [Cocci] [PATCH v2 1/2] staging: rtl8188eu: Deletion of
+ unnecessary checks before three function calls
+In-Reply-To: <5463C22B.7060405@users.sourceforge.net>
 References: <530C5E18.1020800@users.sourceforge.net>
  <alpine.DEB.2.10.1402251014170.2080@hadrien>
  <530CD2C4.4050903@users.sourceforge.net>
@@ -15,35 +15,51 @@ References: <530C5E18.1020800@users.sourceforge.net>
  <20141029084702.GA18675@kroah.com> <5453CD0D.9010206@users.sourceforge.net>
  <alpine.DEB.2.10.1410311900201.2481@hadrien>
  <5463C10D.6020409@users.sourceforge.net>
- <5463C373.5050804@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1411130942150.2389@hadrien>
+ <5463C22B.7060405@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.10.1411130945151.2389@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+
+
+On Wed, 12 Nov 2014, SF Markus Elfring wrote:
+
+> From: Markus Elfring <elfring@users.sourceforge.net>
+> Date: Wed, 12 Nov 2014 20:25:49 +0100
+>
+> The functions kfree(), rtw_free_netdev() and vfree() test whether their
+> argument is NULL and then return immediately. Thus the test around the call
+> is not needed.
+>
+> This issue was detected by using the Coccinelle software.
+>
+> Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+> ---
+>  drivers/staging/rtl8188eu/core/rtw_efuse.c   | 3 +--
+>  drivers/staging/rtl8188eu/core/rtw_mlme.c    | 3 +--
+>  drivers/staging/rtl8188eu/core/rtw_sta_mgt.c | 3 +--
+>  drivers/staging/rtl8188eu/core/rtw_xmit.c    | 6 ++----
+>  drivers/staging/rtl8188eu/os_dep/usb_intf.c  | 6 +++---
+>  5 files changed, 8 insertions(+), 13 deletions(-)
+>
 > diff --git a/drivers/staging/rtl8188eu/core/rtw_efuse.c b/drivers/staging/rtl8188eu/core/rtw_efuse.c
-> index 697876b..359f169 100644
+> index 5b997b2..697876b 100644
 > --- a/drivers/staging/rtl8188eu/core/rtw_efuse.c
 > +++ b/drivers/staging/rtl8188eu/core/rtw_efuse.c
-[...]
-> -exit:
-> +cleanup2:
-> +	kfree(eFuseWord);
-> +
-> +cleanup1:
+> @@ -212,8 +212,7 @@ efuse_phymap_to_logical(u8 *phymap, u16 _offset, u16 _size_byte, u8  *pbuf)
+>  exit:
 >  	kfree(efuseTbl);
 >
-> -	kfree(eFuseWord);
-> +exit:
-> +	;
+> -	if (eFuseWord)
+> -		kfree(eFuseWord);
+> +	kfree(eFuseWord);
 >  }
 
-You are not using the most recent version of the code.  The issue has
-already been fixed. Concretely, this part of the function now reads:
+As far as I can tell, the 2/2 patch in this series proposes a completely
+different fix for this code.  When you send a series, patch n+1/m is
+supposed to apply to the result of patch n/m.
 
-exit:
-        kfree(eFuseWord);
-
-eFuseWord_failed:
-	kfree(efuseTbl);
+In any case, you can let this one go, because the problem has been fixed
+already.
 
 julia
