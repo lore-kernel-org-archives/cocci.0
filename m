@@ -1,8 +1,8 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 15 Nov 2014 21:18:25 +0100 (CET)
-Subject: [Cocci] [PATCH 1/1] fs-fat: Less function calls in
- fat_fill_super() after error detection
-In-Reply-To: <5467B12C.4010602@users.sourceforge.net>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sat, 15 Nov 2014 21:44:26 +0100
+Subject: [Cocci] [PATCH 1/1] lib/mpi: Deletion of unnecessary checks before
+ the function call "mpi_free_limb_space"
+In-Reply-To: <5317A59D.4@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
  <530A086E.8010901@users.sourceforge.net>
@@ -19,92 +19,100 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
- <5317A59D.4@users.sourceforge.net> <5467B12C.4010602@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1411152117540.2225@localhost6.localdomain6>
+ <5317A59D.4@users.sourceforge.net>
+Message-ID: <5467BB2A.2030108@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sat, 15 Nov 2014, SF Markus Elfring wrote:
+From: Markus Elfring <elfring@users.sourceforge.net>
+Date: Sat, 15 Nov 2014 21:33:26 +0100
 
-> From: Markus Elfring <elfring@users.sourceforge.net>
-> Date: Sat, 15 Nov 2014 20:55:23 +0100
-> 
-> The iput() function was called in an inefficient way by the implementation
-> of the fat_fill_super() function in case of an allocation failure.
-> The corresponding source code was improved by deletion of two unnecessary
-> null pointer checks and a few adjustments for jump labels.
-> 
-> Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
-> ---
->  fs/fat/inode.c | 18 ++++++++++--------
->  1 file changed, 10 insertions(+), 8 deletions(-)
-> 
-> diff --git a/fs/fat/inode.c b/fs/fat/inode.c
-> index 756aead..138ab9a 100644
-> --- a/fs/fat/inode.c
-> +++ b/fs/fat/inode.c
-> @@ -1716,20 +1716,20 @@ int fat_fill_super(struct super_block *sb, void *data, int silent, int isvfat,
->  
->  	fsinfo_inode = new_inode(sb);
->  	if (!fsinfo_inode)
-> -		goto out_fail;
-> +		goto fsinfo_inode_failure;
->  	fsinfo_inode->i_ino = MSDOS_FSINFO_INO;
->  	sbi->fsinfo_inode = fsinfo_inode;
->  	insert_inode_hash(fsinfo_inode);
->  
->  	root_inode = new_inode(sb);
->  	if (!root_inode)
-> -		goto out_fail;
-> +		goto other_failure;
+The mpi_free_limb_space() function tests whether its argument is NULL and
+then returns immediately. Thus the test around the call is not needed.
 
-Other_failure is not such a good name.  The one above is better.
+This issue was detected by using the Coccinelle software.
 
-julia
+Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+---
+ lib/mpi/mpi-pow.c  | 15 +++++----------
+ lib/mpi/mpih-mul.c | 21 +++++++--------------
+ 2 files changed, 12 insertions(+), 24 deletions(-)
 
->  	root_inode->i_ino = MSDOS_ROOT_INO;
->  	root_inode->i_version = 1;
->  	error = fat_read_root(root_inode);
->  	if (error < 0) {
->  		iput(root_inode);
-> -		goto out_fail;
-> +		goto other_failure;
->  	}
->  	error = -ENOMEM;
->  	insert_inode_hash(root_inode);
-> @@ -1737,7 +1737,7 @@ int fat_fill_super(struct super_block *sb, void *data, int silent, int isvfat,
->  	sb->s_root = d_make_root(root_inode);
->  	if (!sb->s_root) {
->  		fat_msg(sb, KERN_ERR, "get root inode failed");
-> -		goto out_fail;
-> +		goto other_failure;
->  	}
->  
->  	if (sbi->options.discard) {
-> @@ -1756,11 +1756,13 @@ out_invalid:
->  	if (!silent)
->  		fat_msg(sb, KERN_INFO, "Can't find a valid FAT filesystem");
->  
-> +other_failure:
-> +	iput(fsinfo_inode);
-> +
-> +fsinfo_inode_failure:
-> +	iput(fat_inode);
-> +
->  out_fail:
-> -	if (fsinfo_inode)
-> -		iput(fsinfo_inode);
-> -	if (fat_inode)
-> -		iput(fat_inode);
->  	unload_nls(sbi->nls_io);
->  	unload_nls(sbi->nls_disk);
->  	if (sbi->options.iocharset != fat_default_iocharset)
-> -- 
-> 2.1.3
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe kernel-janitors" in
-> the body of a message to majordomo at vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+diff --git a/lib/mpi/mpi-pow.c b/lib/mpi/mpi-pow.c
+index 5464c87..c28882f 100644
+--- a/lib/mpi/mpi-pow.c
++++ b/lib/mpi/mpi-pow.c
+@@ -308,16 +308,11 @@ leave:
+ enomem:
+ 	if (assign_rp)
+ 		mpi_assign_limb_space(res, rp, size);
+-	if (mp_marker)
+-		mpi_free_limb_space(mp_marker);
+-	if (bp_marker)
+-		mpi_free_limb_space(bp_marker);
+-	if (ep_marker)
+-		mpi_free_limb_space(ep_marker);
+-	if (xp_marker)
+-		mpi_free_limb_space(xp_marker);
+-	if (tspace)
+-		mpi_free_limb_space(tspace);
++	mpi_free_limb_space(mp_marker);
++	mpi_free_limb_space(bp_marker);
++	mpi_free_limb_space(ep_marker);
++	mpi_free_limb_space(xp_marker);
++	mpi_free_limb_space(tspace);
+ 	return rc;
+ }
+ EXPORT_SYMBOL_GPL(mpi_powm);
+diff --git a/lib/mpi/mpih-mul.c b/lib/mpi/mpih-mul.c
+index 7c84171..ff021cc 100644
+--- a/lib/mpi/mpih-mul.c
++++ b/lib/mpi/mpih-mul.c
+@@ -339,8 +339,7 @@ mpihelp_mul_karatsuba_case(mpi_ptr_t prodp,
+ 	mpi_limb_t cy;
+ 
+ 	if (!ctx->tspace || ctx->tspace_size < vsize) {
+-		if (ctx->tspace)
+-			mpi_free_limb_space(ctx->tspace);
++		mpi_free_limb_space(ctx->tspace);
+ 		ctx->tspace = mpi_alloc_limb_space(2 * vsize);
+ 		if (!ctx->tspace)
+ 			return -ENOMEM;
+@@ -354,12 +353,10 @@ mpihelp_mul_karatsuba_case(mpi_ptr_t prodp,
+ 	usize -= vsize;
+ 	if (usize >= vsize) {
+ 		if (!ctx->tp || ctx->tp_size < vsize) {
+-			if (ctx->tp)
+-				mpi_free_limb_space(ctx->tp);
++			mpi_free_limb_space(ctx->tp);
+ 			ctx->tp = mpi_alloc_limb_space(2 * vsize);
+ 			if (!ctx->tp) {
+-				if (ctx->tspace)
+-					mpi_free_limb_space(ctx->tspace);
++				mpi_free_limb_space(ctx->tspace);
+ 				ctx->tspace = NULL;
+ 				return -ENOMEM;
+ 			}
+@@ -407,16 +404,12 @@ void mpihelp_release_karatsuba_ctx(struct karatsuba_ctx *ctx)
+ {
+ 	struct karatsuba_ctx *ctx2;
+ 
+-	if (ctx->tp)
+-		mpi_free_limb_space(ctx->tp);
+-	if (ctx->tspace)
+-		mpi_free_limb_space(ctx->tspace);
++	mpi_free_limb_space(ctx->tp);
++	mpi_free_limb_space(ctx->tspace);
+ 	for (ctx = ctx->next; ctx; ctx = ctx2) {
+ 		ctx2 = ctx->next;
+-		if (ctx->tp)
+-			mpi_free_limb_space(ctx->tp);
+-		if (ctx->tspace)
+-			mpi_free_limb_space(ctx->tspace);
++		mpi_free_limb_space(ctx->tp);
++		mpi_free_limb_space(ctx->tspace);
+ 		kfree(ctx);
+ 	}
+ }
+-- 
+2.1.3
