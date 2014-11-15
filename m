@@ -1,8 +1,8 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 15 Nov 2014 20:54:22 +0100 (CET)
-Subject: [Cocci] [PATCH 1/1] ntfs: Deletion of unnecessary checks before
- the function call "iput"
-In-Reply-To: <54679E97.5000801@users.sourceforge.net>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sat, 15 Nov 2014 21:01:48 +0100
+Subject: [Cocci] [PATCH 1/1] fs-fat: Less function calls in fat_fill_super()
+ after error detection
+In-Reply-To: <5317A59D.4@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
  <530A086E.8010901@users.sourceforge.net>
@@ -19,86 +19,78 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
- <5317A59D.4@users.sourceforge.net> <54679E97.5000801@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1411152053430.2225@localhost6.localdomain6>
+ <5317A59D.4@users.sourceforge.net>
+Message-ID: <5467B12C.4010602@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sat, 15 Nov 2014, SF Markus Elfring wrote:
+From: Markus Elfring <elfring@users.sourceforge.net>
+Date: Sat, 15 Nov 2014 20:55:23 +0100
 
-> From: Markus Elfring <elfring@users.sourceforge.net>
-> Date: Sat, 15 Nov 2014 19:35:05 +0100
-> 
-> The iput() function tests whether its argument is NULL and then
-> returns immediately. Thus the test around the call is not needed.
-> 
-> This issue was detected by using the Coccinelle software.
-> 
-> Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
-> ---
->  fs/ntfs/super.c | 21 +++++++--------------
->  1 file changed, 7 insertions(+), 14 deletions(-)
-> 
-> diff --git a/fs/ntfs/super.c b/fs/ntfs/super.c
-> index 6c3296e..8f22a47 100644
-> --- a/fs/ntfs/super.c
-> +++ b/fs/ntfs/super.c
-> @@ -2204,17 +2204,12 @@ get_ctx_vol_failed:
->  	return true;
->  #ifdef NTFS_RW
->  iput_usnjrnl_err_out:
+The iput() function was called in an inefficient way by the implementation
+of the fat_fill_super() function in case of an allocation failure.
+The corresponding source code was improved by deletion of two unnecessary
+null pointer checks and a few adjustments for jump labels.
 
-I don't have time to look at the code now, but since there is an exit 
-label here, have you checked whether you could improve the gotos in these 
-cases?
+Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+---
+ fs/fat/inode.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
-julia
-
-> -	if (vol->usnjrnl_j_ino)
-> -		iput(vol->usnjrnl_j_ino);
-> -	if (vol->usnjrnl_max_ino)
-> -		iput(vol->usnjrnl_max_ino);
-> -	if (vol->usnjrnl_ino)
-> -		iput(vol->usnjrnl_ino);
-> +	iput(vol->usnjrnl_j_ino);
-> +	iput(vol->usnjrnl_max_ino);
-> +	iput(vol->usnjrnl_ino);
->  iput_quota_err_out:
-> -	if (vol->quota_q_ino)
-> -		iput(vol->quota_q_ino);
-> -	if (vol->quota_ino)
-> -		iput(vol->quota_ino);
-> +	iput(vol->quota_q_ino);
-> +	iput(vol->quota_ino);
->  	iput(vol->extend_ino);
->  #endif /* NTFS_RW */
->  iput_sec_err_out:
-> @@ -2223,8 +2218,7 @@ iput_root_err_out:
->  	iput(vol->root_ino);
->  iput_logfile_err_out:
->  #ifdef NTFS_RW
-> -	if (vol->logfile_ino)
-> -		iput(vol->logfile_ino);
-> +	iput(vol->logfile_ino);
->  iput_vol_err_out:
->  #endif /* NTFS_RW */
->  	iput(vol->vol_ino);
-> @@ -2254,8 +2248,7 @@ iput_mftbmp_err_out:
->  	iput(vol->mftbmp_ino);
->  iput_mirr_err_out:
->  #ifdef NTFS_RW
-> -	if (vol->mftmirr_ino)
-> -		iput(vol->mftmirr_ino);
-> +	iput(vol->mftmirr_ino);
->  #endif /* NTFS_RW */
->  	return false;
->  }
-> -- 
-> 2.1.3
-> 
-> 
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
-> 
+diff --git a/fs/fat/inode.c b/fs/fat/inode.c
+index 756aead..138ab9a 100644
+--- a/fs/fat/inode.c
++++ b/fs/fat/inode.c
+@@ -1716,20 +1716,20 @@ int fat_fill_super(struct super_block *sb, void *data, int silent, int isvfat,
+ 
+ 	fsinfo_inode = new_inode(sb);
+ 	if (!fsinfo_inode)
+-		goto out_fail;
++		goto fsinfo_inode_failure;
+ 	fsinfo_inode->i_ino = MSDOS_FSINFO_INO;
+ 	sbi->fsinfo_inode = fsinfo_inode;
+ 	insert_inode_hash(fsinfo_inode);
+ 
+ 	root_inode = new_inode(sb);
+ 	if (!root_inode)
+-		goto out_fail;
++		goto other_failure;
+ 	root_inode->i_ino = MSDOS_ROOT_INO;
+ 	root_inode->i_version = 1;
+ 	error = fat_read_root(root_inode);
+ 	if (error < 0) {
+ 		iput(root_inode);
+-		goto out_fail;
++		goto other_failure;
+ 	}
+ 	error = -ENOMEM;
+ 	insert_inode_hash(root_inode);
+@@ -1737,7 +1737,7 @@ int fat_fill_super(struct super_block *sb, void *data, int silent, int isvfat,
+ 	sb->s_root = d_make_root(root_inode);
+ 	if (!sb->s_root) {
+ 		fat_msg(sb, KERN_ERR, "get root inode failed");
+-		goto out_fail;
++		goto other_failure;
+ 	}
+ 
+ 	if (sbi->options.discard) {
+@@ -1756,11 +1756,13 @@ out_invalid:
+ 	if (!silent)
+ 		fat_msg(sb, KERN_INFO, "Can't find a valid FAT filesystem");
+ 
++other_failure:
++	iput(fsinfo_inode);
++
++fsinfo_inode_failure:
++	iput(fat_inode);
++
+ out_fail:
+-	if (fsinfo_inode)
+-		iput(fsinfo_inode);
+-	if (fat_inode)
+-		iput(fat_inode);
+ 	unload_nls(sbi->nls_io);
+ 	unload_nls(sbi->nls_disk);
+ 	if (sbi->options.iocharset != fat_default_iocharset)
+-- 
+2.1.3
