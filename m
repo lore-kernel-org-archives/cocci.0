@@ -1,7 +1,7 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sat, 15 Nov 2014 19:19:36 +0100
-Subject: [Cocci] [PATCH 1/1] fs-ext4: Deletion of an unnecessary check
- before the function call "iput"
+Date: Sat, 15 Nov 2014 19:42:31 +0100
+Subject: [Cocci] [PATCH 1/1] ntfs: Deletion of unnecessary checks before the
+ function call "iput"
 In-Reply-To: <5317A59D.4@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
@@ -20,12 +20,12 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net>
-Message-ID: <54679938.3020106@users.sourceforge.net>
+Message-ID: <54679E97.5000801@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Sat, 15 Nov 2014 19:04:06 +0100
+Date: Sat, 15 Nov 2014 19:35:05 +0100
 
 The iput() function tests whether its argument is NULL and then
 returns immediately. Thus the test around the call is not needed.
@@ -34,22 +34,55 @@ This issue was detected by using the Coccinelle software.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- fs/ext4/mballoc.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ fs/ntfs/super.c | 21 +++++++--------------
+ 1 file changed, 7 insertions(+), 14 deletions(-)
 
-diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
-index 8b0f9ef..e1a2521 100644
---- a/fs/ext4/mballoc.c
-+++ b/fs/ext4/mballoc.c
-@@ -2712,8 +2712,7 @@ int ext4_mb_release(struct super_block *sb)
- 	}
- 	kfree(sbi->s_mb_offsets);
- 	kfree(sbi->s_mb_maxs);
--	if (sbi->s_buddy_cache)
--		iput(sbi->s_buddy_cache);
-+	iput(sbi->s_buddy_cache);
- 	if (sbi->s_mb_stats) {
- 		ext4_msg(sb, KERN_INFO,
- 		       "mballoc: %u blocks %u reqs (%u success)",
+diff --git a/fs/ntfs/super.c b/fs/ntfs/super.c
+index 6c3296e..8f22a47 100644
+--- a/fs/ntfs/super.c
++++ b/fs/ntfs/super.c
+@@ -2204,17 +2204,12 @@ get_ctx_vol_failed:
+ 	return true;
+ #ifdef NTFS_RW
+ iput_usnjrnl_err_out:
+-	if (vol->usnjrnl_j_ino)
+-		iput(vol->usnjrnl_j_ino);
+-	if (vol->usnjrnl_max_ino)
+-		iput(vol->usnjrnl_max_ino);
+-	if (vol->usnjrnl_ino)
+-		iput(vol->usnjrnl_ino);
++	iput(vol->usnjrnl_j_ino);
++	iput(vol->usnjrnl_max_ino);
++	iput(vol->usnjrnl_ino);
+ iput_quota_err_out:
+-	if (vol->quota_q_ino)
+-		iput(vol->quota_q_ino);
+-	if (vol->quota_ino)
+-		iput(vol->quota_ino);
++	iput(vol->quota_q_ino);
++	iput(vol->quota_ino);
+ 	iput(vol->extend_ino);
+ #endif /* NTFS_RW */
+ iput_sec_err_out:
+@@ -2223,8 +2218,7 @@ iput_root_err_out:
+ 	iput(vol->root_ino);
+ iput_logfile_err_out:
+ #ifdef NTFS_RW
+-	if (vol->logfile_ino)
+-		iput(vol->logfile_ino);
++	iput(vol->logfile_ino);
+ iput_vol_err_out:
+ #endif /* NTFS_RW */
+ 	iput(vol->vol_ino);
+@@ -2254,8 +2248,7 @@ iput_mftbmp_err_out:
+ 	iput(vol->mftbmp_ino);
+ iput_mirr_err_out:
+ #ifdef NTFS_RW
+-	if (vol->mftmirr_ino)
+-		iput(vol->mftmirr_ino);
++	iput(vol->mftmirr_ino);
+ #endif /* NTFS_RW */
+ 	return false;
+ }
 -- 
 2.1.3
