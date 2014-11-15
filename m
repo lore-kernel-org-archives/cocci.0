@@ -1,55 +1,55 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 15 Nov 2014 07:11:20 +0100 (CET)
-Subject: [Cocci] spatch for trivial pointer comparison style?
-In-Reply-To: <1415982122.5912.14.camel@perches.com>
-References: <1415908529.4223.11.camel@perches.com>
- <alpine.DEB.2.02.1411140700010.2035@localhost6.localdomain6>
- <1415945558.5912.10.camel@perches.com>
- <alpine.DEB.2.10.1411140938400.2443@hadrien>
- <1415982122.5912.14.camel@perches.com>
-Message-ID: <alpine.DEB.2.02.1411150708500.2049@localhost6.localdomain6>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sat, 15 Nov 2014 19:19:36 +0100
+Subject: [Cocci] [PATCH 1/1] fs-ext4: Deletion of an unnecessary check
+ before the function call "iput"
+In-Reply-To: <5317A59D.4@users.sourceforge.net>
+References: <5307CAA2.8060406@users.sourceforge.net>
+ <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
+ <530A086E.8010901@users.sourceforge.net>
+ <alpine.DEB.2.02.1402231635510.1985@localhost6.localdomain6>
+ <530A72AA.3000601@users.sourceforge.net>
+ <alpine.DEB.2.02.1402240658210.2090@localhost6.localdomain6>
+ <530B5FB6.6010207@users.sourceforge.net>
+ <alpine.DEB.2.10.1402241710370.2074@hadrien>
+ <530C5E18.1020800@users.sourceforge.net>
+ <alpine.DEB.2.10.1402251014170.2080@hadrien>
+ <530CD2C4.4050903@users.sourceforge.net>
+ <alpine.DEB.2.10.1402251840450.7035@hadrien>
+ <530CF8FF.8080600@users.sourceforge.net>
+ <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
+ <530DD06F.4090703@users.sourceforge.net>
+ <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
+ <5317A59D.4@users.sourceforge.net>
+Message-ID: <54679938.3020106@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, 14 Nov 2014, Joe Perches wrote:
+From: Markus Elfring <elfring@users.sourceforge.net>
+Date: Sat, 15 Nov 2014 19:04:06 +0100
 
-> On Fri, 2014-11-14 at 10:18 +0100, Julia Lawall wrote:
-> > On Thu, 13 Nov 2014, Joe Perches wrote:
-> []
-> > > Yes, I agree with some of the things Al Viro said
-> > > there, but isn't 'type t; t *p;' a subset of
-> > > "expression *e"?
-> 
-> > No.  How would you expect it to be different.
-> 
-> []
+The iput() function tests whether its argument is NULL and then
+returns immediately. Thus the test around the call is not needed.
 
-No. [] and * are treated completely differently.
+This issue was detected by using the Coccinelle software.
 
-> >   type t means that the type
-> > is known.  expression *e means that there is a * in the type.
-> 
-> I had thought "expression *" could be r-value and
-> "type t; t *p;" could be l-value.
+Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+---
+ fs/ext4/mballoc.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-No, you made that one up :)  As we considered that it would be common to 
-want to specify the type of an expression, we thought it would be tiresome 
-to have to put eg expression int x.  So you can just say int x.
-
-The downside is that people write
-
-identifer x;
-
-and then don't understand the error message, because any misspelled 
-metavariable kind is considered to be a type name.
-
-julia
-
-> But then I don't find (or maybe don't parse too well)
-> the coccinelle documentation that specifies these
-> type relationships.
-> 
-> cheers, Joe
-> 
-> 
-> 
+diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
+index 8b0f9ef..e1a2521 100644
+--- a/fs/ext4/mballoc.c
++++ b/fs/ext4/mballoc.c
+@@ -2712,8 +2712,7 @@ int ext4_mb_release(struct super_block *sb)
+ 	}
+ 	kfree(sbi->s_mb_offsets);
+ 	kfree(sbi->s_mb_maxs);
+-	if (sbi->s_buddy_cache)
+-		iput(sbi->s_buddy_cache);
++	iput(sbi->s_buddy_cache);
+ 	if (sbi->s_mb_stats) {
+ 		ext4_msg(sb, KERN_INFO,
+ 		       "mballoc: %u blocks %u reqs (%u success)",
+-- 
+2.1.3
