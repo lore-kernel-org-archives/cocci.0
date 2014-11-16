@@ -1,17 +1,9 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 16 Nov 2014 11:40:26 +0100
-Subject: [Cocci] [PATCH 1/1] kernel-audit: Deletion of an unnecessary check
- before the function call "audit_log_end"
-In-Reply-To: <5317A59D.4@users.sourceforge.net>
-References: <5307CAA2.8060406@users.sourceforge.net>
- <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
- <530A086E.8010901@users.sourceforge.net>
- <alpine.DEB.2.02.1402231635510.1985@localhost6.localdomain6>
- <530A72AA.3000601@users.sourceforge.net>
- <alpine.DEB.2.02.1402240658210.2090@localhost6.localdomain6>
- <530B5FB6.6010207@users.sourceforge.net>
- <alpine.DEB.2.10.1402241710370.2074@hadrien>
- <530C5E18.1020800@users.sourceforge.net>
+From: dan.carpenter@oracle.com (Dan Carpenter)
+Date: Sun, 16 Nov 2014 14:10:23 +0300
+Subject: [Cocci] [PATCH 1/1] kernel-audit: Deletion of an unnecessary
+ check before the function call "audit_log_end"
+In-Reply-To: <54687F1A.1010809@users.sourceforge.net>
+References: <530C5E18.1020800@users.sourceforge.net>
  <alpine.DEB.2.10.1402251014170.2080@hadrien>
  <530CD2C4.4050903@users.sourceforge.net>
  <alpine.DEB.2.10.1402251840450.7035@hadrien>
@@ -20,36 +12,16 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net>
-Message-ID: <54687F1A.1010809@users.sourceforge.net>
+ <54687F1A.1010809@users.sourceforge.net>
+Message-ID: <20141116111023.GA4905@mwanda>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Sun, 16 Nov 2014 11:27:43 +0100
+Please don't send these to trivial, because they can introduce bugs.
 
-The audit_log_end() function tests whether its argument is NULL and then
-returns immediately. Thus the test around the call is not needed.
+The make the code less clear and they are a layering violation.  If the
+other maintainers want to take them that's fine, but don't send it to
+trivial.
 
-This issue was detected by using the Coccinelle software.
-
-Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
----
- kernel/auditsc.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/kernel/auditsc.c b/kernel/auditsc.c
-index 21eae3c..1fed61c 100644
---- a/kernel/auditsc.c
-+++ b/kernel/auditsc.c
-@@ -1470,8 +1470,7 @@ static void audit_log_exit(struct audit_context *context, struct task_struct *ts
- 
- 	/* Send end of event record to help user space know we are finished */
- 	ab = audit_log_start(context, GFP_KERNEL, AUDIT_EOE);
--	if (ab)
--		audit_log_end(ab);
-+	audit_log_end(ab);
- 	if (call_panic)
- 		audit_panic("error converting sid to string");
- }
--- 
-2.1.3
+regards,
+dan carpenter
