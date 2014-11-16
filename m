@@ -1,8 +1,8 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 16 Nov 2014 16:56:58 +0100 (CET)
-Subject: [Cocci] [PATCH 1/1] kernel-trace: Deletion of an unnecessary
- check before the function call "iput"
-In-Reply-To: <5468ABBD.6000903@users.sourceforge.net>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sun, 16 Nov 2014 17:57:24 +0100
+Subject: [Cocci] [PATCH 1/1] kprobes: Deletion of an unnecessary check
+ before the function call "module_put"
+In-Reply-To: <alpine.DEB.2.10.1411161639310.2364@hadrien>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
  <530A086E.8010901@users.sourceforge.net>
@@ -19,52 +19,18 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
- <5317A59D.4@users.sourceforge.net> <5468ABBD.6000903@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1411161656340.2364@hadrien>
+ <5317A59D.4@users.sourceforge.net> <546899CF.8020808@users.sourceforge.net>
+ <alpine.DEB.2.10.1411161428190.2364@hadrien>
+ <5468B3FD.20409@users.sourceforge.net>
+ <alpine.DEB.2.10.1411161639310.2364@hadrien>
+Message-ID: <5468D774.60901@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, 16 Nov 2014, SF Markus Elfring wrote:
+> The if around the module_put is helpful to the reader to understand
+> that this possibility exists.
 
-> From: Markus Elfring <elfring@users.sourceforge.net>
-> Date: Sun, 16 Nov 2014 14:46:28 +0100
->
-> The iput() function tests whether its argument is NULL and then
-> returns immediately. Thus the test around the call is not needed.
->
-> This issue was detected by using the Coccinelle software.
->
-> Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
-> ---
->  kernel/trace/trace_uprobe.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/kernel/trace/trace_uprobe.c b/kernel/trace/trace_uprobe.c
-> index 33ff6a2..ec002c0 100644
-> --- a/kernel/trace/trace_uprobe.c
-> +++ b/kernel/trace/trace_uprobe.c
-> @@ -552,8 +552,7 @@ error:
->  	return ret;
->
->  fail_address_parse:
-> -	if (inode)
-> -		iput(inode);
-> +	iput(inode);
+I have got a different opinion. I would still prefer a small code clean-up there.
 
-There are jumps to fail_address_parse where the value of inode can only be
-NULL.
-
-julia
-
->
->  	pr_info("Failed to parse address or file.\n");
->
-> --
-> 2.1.3
->
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe kernel-janitors" in
-> the body of a message to majordomo at vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+Regards,
+Markus
