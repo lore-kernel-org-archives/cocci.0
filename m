@@ -1,7 +1,7 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 16 Nov 2014 20:18:13 +0100
-Subject: [Cocci] [PATCH v2 1/2] kernel-trace: Deletion of an unnecessary
- check before the function call "iput"
+Date: Sun, 16 Nov 2014 20:22:22 +0100
+Subject: [Cocci] [PATCH v2 2/2] kernel-trace: Less calls for iput() in
+ create_trace_uprobe() after error detection
 In-Reply-To: <5468F756.8070807@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
@@ -22,36 +22,63 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <5317A59D.4@users.sourceforge.net> <5468ABBD.6000903@users.sourceforge.net>
  <alpine.DEB.2.10.1411161656340.2364@hadrien>
  <5468F756.8070807@users.sourceforge.net>
-Message-ID: <5468F875.7080907@users.sourceforge.net>
+Message-ID: <5468F96E.4090903@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Sun, 16 Nov 2014 14:46:28 +0100
+Date: Sun, 16 Nov 2014 19:49:39 +0100
 
-The iput() function tests whether its argument is NULL and then
-returns immediately. Thus the test around the call is not needed.
+The iput() function was called in three cases by the create_trace_uprobe()
+function during error handling even if the passed variable contained still
+a null pointer. This implementation detail could be improved by the
+introduction of another jump label.
 
-This issue was detected by using the Coccinelle software.
-
+Suggested-by: Julia Lawall <julia.lawall@lip6.fr>
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- kernel/trace/trace_uprobe.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ kernel/trace/trace_uprobe.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
 diff --git a/kernel/trace/trace_uprobe.c b/kernel/trace/trace_uprobe.c
-index 33ff6a2..ec002c0 100644
+index ec002c0..a0288f2 100644
 --- a/kernel/trace/trace_uprobe.c
 +++ b/kernel/trace/trace_uprobe.c
-@@ -552,8 +552,7 @@ error:
- 	return ret;
+@@ -434,19 +434,24 @@ static int create_trace_uprobe(int argc, char **argv)
+ 	arg = strchr(argv[1], ':');
+ 	if (!arg) {
+ 		ret = -EINVAL;
+-		goto fail_address_parse;
++		goto fail_address_parse2;
+ 	}
  
+ 	*arg++ = '\0';
+ 	filename = argv[1];
+ 	ret = kern_path(filename, LOOKUP_FOLLOW, &path);
+ 	if (ret)
+-		goto fail_address_parse;
++		goto fail_address_parse2;
+ 
+ 	inode = igrab(path.dentry->d_inode);
+ 	path_put(&path);
+ 
+-	if (!inode || !S_ISREG(inode->i_mode)) {
++	if (!inode) {
++		ret = -EINVAL;
++		goto fail_address_parse2;
++	}
++
++	if (!S_ISREG(inode->i_mode)) {
+ 		ret = -EINVAL;
+ 		goto fail_address_parse;
+ 	}
+@@ -554,6 +559,7 @@ error:
  fail_address_parse:
--	if (inode)
--		iput(inode);
-+	iput(inode);
+ 	iput(inode);
  
++fail_address_parse2:
  	pr_info("Failed to parse address or file.\n");
  
+ 	return ret;
 -- 
 2.1.3
