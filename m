@@ -1,8 +1,8 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 16 Nov 2014 17:57:24 +0100
-Subject: [Cocci] [PATCH 1/1] kprobes: Deletion of an unnecessary check
- before the function call "module_put"
-In-Reply-To: <alpine.DEB.2.10.1411161639310.2364@hadrien>
+Date: Sun, 16 Nov 2014 20:13:26 +0100
+Subject: [Cocci] [PATCH v2 0/2] kernel-trace: Fixes around the jump label
+	"fail_address_parse"
+In-Reply-To: <alpine.DEB.2.10.1411161656340.2364@hadrien>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
  <530A086E.8010901@users.sourceforge.net>
@@ -19,18 +19,26 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
- <5317A59D.4@users.sourceforge.net> <546899CF.8020808@users.sourceforge.net>
- <alpine.DEB.2.10.1411161428190.2364@hadrien>
- <5468B3FD.20409@users.sourceforge.net>
- <alpine.DEB.2.10.1411161639310.2364@hadrien>
-Message-ID: <5468D774.60901@users.sourceforge.net>
+ <5317A59D.4@users.sourceforge.net> <5468ABBD.6000903@users.sourceforge.net>
+ <alpine.DEB.2.10.1411161656340.2364@hadrien>
+Message-ID: <5468F756.8070807@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> The if around the module_put is helpful to the reader to understand
-> that this possibility exists.
+From: Markus Elfring <elfring@users.sourceforge.net>
+Date: Sun, 16 Nov 2014 19:56:15 +0100
 
-I have got a different opinion. I would still prefer a small code clean-up there.
+Another update suggestion was taken into account after a patch was applied
+from static source code analysis.
 
-Regards,
-Markus
+Markus Elfring (2):
+  kernel-trace: Deletion of an unnecessary check before the function
+    call "iput"
+  kernel-trace: Less calls for iput() in create_trace_uprobe() after
+    error detection
+
+ kernel/trace/trace_uprobe.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+-- 
+2.1.3
