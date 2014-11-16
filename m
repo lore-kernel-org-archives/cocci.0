@@ -1,8 +1,8 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 16 Nov 2014 15:26:05 +0100
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sun, 16 Nov 2014 16:43:51 +0100 (CET)
 Subject: [Cocci] [PATCH 1/1] kprobes: Deletion of an unnecessary check
  before the function call "module_put"
-In-Reply-To: <alpine.DEB.2.10.1411161428190.2364@hadrien>
+In-Reply-To: <5468B3FD.20409@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
  <530A086E.8010901@users.sourceforge.net>
@@ -21,29 +21,40 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net> <546899CF.8020808@users.sourceforge.net>
  <alpine.DEB.2.10.1411161428190.2364@hadrien>
-Message-ID: <5468B3FD.20409@users.sourceforge.net>
+ <5468B3FD.20409@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.10.1411161639310.2364@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> diff --git a/kernel/kprobes.c b/kernel/kprobes.c
->> index 3995f54..f1e7d45 100644
->> --- a/kernel/kprobes.c
->> +++ b/kernel/kprobes.c
->> @@ -1527,8 +1527,7 @@ int register_kprobe(struct kprobe *p)
->>  out:
->>  	mutex_unlock(&kprobe_mutex);
->>
->> -	if (probed_mod)
->> -		module_put(probed_mod);
->> +	module_put(probed_mod);
-> 
-> There is an out label, so please check whether the labels could not be
-> better positioned to avoid calling module_put when it is not needed.
+On Sun, 16 Nov 2014, SF Markus Elfring wrote:
 
-I do not see refactoring opportunities around jump labels in this use case
-for the implementation of the register_kprobe() function so far because
-the mutex_unlock() function must be called.
-Would you like to suggest any other source code fine-tuning?
+> >> diff --git a/kernel/kprobes.c b/kernel/kprobes.c
+> >> index 3995f54..f1e7d45 100644
+> >> --- a/kernel/kprobes.c
+> >> +++ b/kernel/kprobes.c
+> >> @@ -1527,8 +1527,7 @@ int register_kprobe(struct kprobe *p)
+> >>  out:
+> >>  	mutex_unlock(&kprobe_mutex);
+> >>
+> >> -	if (probed_mod)
+> >> -		module_put(probed_mod);
+> >> +	module_put(probed_mod);
+> >
+> > There is an out label, so please check whether the labels could not be
+> > better positioned to avoid calling module_put when it is not needed.
+>
+> I do not see refactoring opportunities around jump labels in this use case
+> for the implementation of the register_kprobe() function so far because
+> the mutex_unlock() function must be called.
+> Would you like to suggest any other source code fine-tuning?
 
-Regards,
-Markus
+OK.  I don't think that removing the if is a good choice in this case.
+The code ret = check_kprobe_address_safe(p, &probed_mod); is unusual, in
+that it can fail to do anything in two ways.  One is by setting ret, on
+detecting an error, and the other is by returning 0 but still putting a
+NULL value in probed_mod when there is nothing to do.  Thus, in the
+successful execution of the rest of the function, a probed module might or
+might not exist.  The if around the module_put is helpful to the reader to
+understand that this possibility exists.
+
+julia
