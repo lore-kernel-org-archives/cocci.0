@@ -1,8 +1,8 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 16 Nov 2014 14:50:53 +0100
-Subject: [Cocci] [PATCH 1/1] kernel-trace: Deletion of an unnecessary check
- before the function call "iput"
-In-Reply-To: <5317A59D.4@users.sourceforge.net>
+Date: Sun, 16 Nov 2014 15:26:05 +0100
+Subject: [Cocci] [PATCH 1/1] kprobes: Deletion of an unnecessary check
+ before the function call "module_put"
+In-Reply-To: <alpine.DEB.2.10.1411161428190.2364@hadrien>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
  <530A086E.8010901@users.sourceforge.net>
@@ -19,37 +19,31 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
- <5317A59D.4@users.sourceforge.net>
-Message-ID: <5468ABBD.6000903@users.sourceforge.net>
+ <5317A59D.4@users.sourceforge.net> <546899CF.8020808@users.sourceforge.net>
+ <alpine.DEB.2.10.1411161428190.2364@hadrien>
+Message-ID: <5468B3FD.20409@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Sun, 16 Nov 2014 14:46:28 +0100
+>> diff --git a/kernel/kprobes.c b/kernel/kprobes.c
+>> index 3995f54..f1e7d45 100644
+>> --- a/kernel/kprobes.c
+>> +++ b/kernel/kprobes.c
+>> @@ -1527,8 +1527,7 @@ int register_kprobe(struct kprobe *p)
+>>  out:
+>>  	mutex_unlock(&kprobe_mutex);
+>>
+>> -	if (probed_mod)
+>> -		module_put(probed_mod);
+>> +	module_put(probed_mod);
+> 
+> There is an out label, so please check whether the labels could not be
+> better positioned to avoid calling module_put when it is not needed.
 
-The iput() function tests whether its argument is NULL and then
-returns immediately. Thus the test around the call is not needed.
+I do not see refactoring opportunities around jump labels in this use case
+for the implementation of the register_kprobe() function so far because
+the mutex_unlock() function must be called.
+Would you like to suggest any other source code fine-tuning?
 
-This issue was detected by using the Coccinelle software.
-
-Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
----
- kernel/trace/trace_uprobe.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/kernel/trace/trace_uprobe.c b/kernel/trace/trace_uprobe.c
-index 33ff6a2..ec002c0 100644
---- a/kernel/trace/trace_uprobe.c
-+++ b/kernel/trace/trace_uprobe.c
-@@ -552,8 +552,7 @@ error:
- 	return ret;
- 
- fail_address_parse:
--	if (inode)
--		iput(inode);
-+	iput(inode);
- 
- 	pr_info("Failed to parse address or file.\n");
- 
--- 
-2.1.3
+Regards,
+Markus
