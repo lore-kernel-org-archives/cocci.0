@@ -1,7 +1,7 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Mon, 17 Nov 2014 11:07:04 +0100
-Subject: [Cocci] [PATCH 1/1] ALSA: hda: Deletion of unnecessary checks
- before two function calls
+Date: Mon, 17 Nov 2014 11:34:22 +0100
+Subject: [Cocci] [PATCH 1/1] ALSA: ice17xx: Deletion of unnecessary checks
+ before the function call "snd_ac97_resume"
 In-Reply-To: <5317A59D.4@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
@@ -20,52 +20,51 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net>
-Message-ID: <5469C8C8.8010306@users.sourceforge.net>
+Message-ID: <5469CF2E.6040408@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Mon, 17 Nov 2014 10:44:33 +0100
+Date: Mon, 17 Nov 2014 11:28:02 +0100
 
-The functions kfree() and release_firmware() test whether their argument
-is NULL and then return immediately. Thus the test around the call
-is not needed.
+The snd_ac97_resume() function tests whether its argument is NULL and then
+returns immediately. Thus the test around the call is not needed.
 
 This issue was detected by using the Coccinelle software.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- sound/pci/hda/hda_codec.c | 3 +--
- sound/pci/hda/hda_intel.c | 3 +--
+ sound/pci/ice1712/ice1712.c | 3 +--
+ sound/pci/ice1712/ice1724.c | 3 +--
  2 files changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/sound/pci/hda/hda_codec.c b/sound/pci/hda/hda_codec.c
-index ec6a7d0..3fe8859 100644
---- a/sound/pci/hda/hda_codec.c
-+++ b/sound/pci/hda/hda_codec.c
-@@ -827,8 +827,7 @@ static void snd_hda_bus_free(struct hda_bus *bus)
- 	WARN_ON(!list_empty(&bus->codec_list));
- 	if (bus->workq)
- 		flush_workqueue(bus->workq);
--	if (bus->unsol)
--		kfree(bus->unsol);
-+	kfree(bus->unsol);
- 	if (bus->ops.private_free)
- 		bus->ops.private_free(bus);
- 	if (bus->workq)
-diff --git a/sound/pci/hda/hda_intel.c b/sound/pci/hda/hda_intel.c
-index 0a7f848..b4ec4e1 100644
---- a/sound/pci/hda/hda_intel.c
-+++ b/sound/pci/hda/hda_intel.c
-@@ -1129,8 +1129,7 @@ static int azx_free(struct azx *chip)
- 	pci_disable_device(chip->pci);
- 	kfree(chip->azx_dev);
- #ifdef CONFIG_SND_HDA_PATCH_LOADER
--	if (chip->fw)
--		release_firmware(chip->fw);
-+	release_firmware(chip->fw);
- #endif
- 	if (chip->driver_caps & AZX_DCAPS_I915_POWERWELL) {
- 		hda_display_power(false);
+diff --git a/sound/pci/ice1712/ice1712.c b/sound/pci/ice1712/ice1712.c
+index 87f7fc4..e1e18b5 100644
+--- a/sound/pci/ice1712/ice1712.c
++++ b/sound/pci/ice1712/ice1712.c
+@@ -2905,8 +2905,7 @@ static int snd_ice1712_resume(struct device *dev)
+ 	outw(ice->pm_saved_spdif_ctrl, ICEMT(ice, ROUTE_SPDOUT));
+ 	outw(ice->pm_saved_route, ICEMT(ice, ROUTE_PSDOUT03));
+ 
+-	if (ice->ac97)
+-		snd_ac97_resume(ice->ac97);
++	snd_ac97_resume(ice->ac97);
+ 
+ 	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
+ 	return 0;
+diff --git a/sound/pci/ice1712/ice1724.c b/sound/pci/ice1712/ice1724.c
+index 08cb08a..0e56835 100644
+--- a/sound/pci/ice1712/ice1724.c
++++ b/sound/pci/ice1712/ice1724.c
+@@ -2884,8 +2884,7 @@ static int snd_vt1724_resume(struct device *dev)
+ 	outb(ice->pm_saved_spdif_cfg, ICEREG1724(ice, SPDIF_CFG));
+ 	outl(ice->pm_saved_route, ICEMT1724(ice, ROUTE_PLAYBACK));
+ 
+-	if (ice->ac97)
+-		snd_ac97_resume(ice->ac97);
++	snd_ac97_resume(ice->ac97);
+ 
+ 	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
+ 	return 0;
 -- 
 2.1.3
