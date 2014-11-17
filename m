@@ -1,36 +1,71 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Mon, 17 Nov 2014 09:56:22 +0100
-Subject: [Cocci] [PATCH 1/1] kernel-audit: Deletion of an unnecessary
- check before the function call "audit_log_end"
-In-Reply-To: <20141117073408.GC4905@mwanda>
-References: <alpine.DEB.2.10.1402251840450.7035@hadrien>
+Date: Mon, 17 Nov 2014 11:07:04 +0100
+Subject: [Cocci] [PATCH 1/1] ALSA: hda: Deletion of unnecessary checks
+ before two function calls
+In-Reply-To: <5317A59D.4@users.sourceforge.net>
+References: <5307CAA2.8060406@users.sourceforge.net>
+ <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
+ <530A086E.8010901@users.sourceforge.net>
+ <alpine.DEB.2.02.1402231635510.1985@localhost6.localdomain6>
+ <530A72AA.3000601@users.sourceforge.net>
+ <alpine.DEB.2.02.1402240658210.2090@localhost6.localdomain6>
+ <530B5FB6.6010207@users.sourceforge.net>
+ <alpine.DEB.2.10.1402241710370.2074@hadrien>
+ <530C5E18.1020800@users.sourceforge.net>
+ <alpine.DEB.2.10.1402251014170.2080@hadrien>
+ <530CD2C4.4050903@users.sourceforge.net>
+ <alpine.DEB.2.10.1402251840450.7035@hadrien>
  <530CF8FF.8080600@users.sourceforge.net>
  <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
- <5317A59D.4@users.sourceforge.net> <54687F1A.1010809@users.sourceforge.net>
- <20141116111023.GA4905@mwanda> <20141116111446.GA4956@mwanda>
- <54688F15.9070703@users.sourceforge.net> <20141117073408.GC4905@mwanda>
-Message-ID: <5469B836.8030507@users.sourceforge.net>
+ <5317A59D.4@users.sourceforge.net>
+Message-ID: <5469C8C8.8010306@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> You removed the statement from "if (foo) kfree_fsm(foo);" so now it
-> prints a warning.
-> 
-> drivers/s390/net/fsm.c
+From: Markus Elfring <elfring@users.sourceforge.net>
+Date: Mon, 17 Nov 2014 10:44:33 +0100
 
-Would it be better to continue the clarification of affected implementation details
-under the discussion topic "s390/net: Deletion of unnecessary checks before two function calls"?
+The functions kfree() and release_firmware() test whether their argument
+is NULL and then return immediately. Thus the test around the call
+is not needed.
 
+This issue was detected by using the Coccinelle software.
 
->> It is an usual software development challenge to decide on the best source code places
->> where to put input parameter validation (and when it can be omitted), isn't it?
-> 
-> No, it's not.  You should just try to write the most readable software
-> you can instead of removing if statements because you can.
+Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+---
+ sound/pci/hda/hda_codec.c | 3 +--
+ sound/pci/hda/hda_intel.c | 3 +--
+ 2 files changed, 2 insertions(+), 4 deletions(-)
 
-Additional safety checks have also got an effect on source code readability, haven't they?
-
-Regards,
-Markus
+diff --git a/sound/pci/hda/hda_codec.c b/sound/pci/hda/hda_codec.c
+index ec6a7d0..3fe8859 100644
+--- a/sound/pci/hda/hda_codec.c
++++ b/sound/pci/hda/hda_codec.c
+@@ -827,8 +827,7 @@ static void snd_hda_bus_free(struct hda_bus *bus)
+ 	WARN_ON(!list_empty(&bus->codec_list));
+ 	if (bus->workq)
+ 		flush_workqueue(bus->workq);
+-	if (bus->unsol)
+-		kfree(bus->unsol);
++	kfree(bus->unsol);
+ 	if (bus->ops.private_free)
+ 		bus->ops.private_free(bus);
+ 	if (bus->workq)
+diff --git a/sound/pci/hda/hda_intel.c b/sound/pci/hda/hda_intel.c
+index 0a7f848..b4ec4e1 100644
+--- a/sound/pci/hda/hda_intel.c
++++ b/sound/pci/hda/hda_intel.c
+@@ -1129,8 +1129,7 @@ static int azx_free(struct azx *chip)
+ 	pci_disable_device(chip->pci);
+ 	kfree(chip->azx_dev);
+ #ifdef CONFIG_SND_HDA_PATCH_LOADER
+-	if (chip->fw)
+-		release_firmware(chip->fw);
++	release_firmware(chip->fw);
+ #endif
+ 	if (chip->driver_caps & AZX_DCAPS_I915_POWERWELL) {
+ 		hda_display_power(false);
+-- 
+2.1.3
