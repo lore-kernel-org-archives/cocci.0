@@ -1,7 +1,7 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Mon, 17 Nov 2014 19:19:22 +0100
-Subject: [Cocci] [PATCH 1/1] hfs/hfs+: Deletion of unnecessary checks before
- the function call "hfs_bnode_put"
+Date: Mon, 17 Nov 2014 19:42:35 +0100
+Subject: [Cocci] [PATCH 1/1] configfs: Deletion of unnecessary checks before
+ the function call "config_item_put"
 In-Reply-To: <5317A59D.4@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
@@ -20,81 +20,51 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net>
-Message-ID: <546A3C2A.9050401@users.sourceforge.net>
+Message-ID: <546A419B.7060409@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Mon, 17 Nov 2014 19:13:56 +0100
+Date: Mon, 17 Nov 2014 19:37:03 +0100
 
-The hfs_bnode_put() function tests whether its argument is NULL and then
+The config_item_put() function tests whether its argument is NULL and then
 returns immediately. Thus the test around the call is not needed.
 
 This issue was detected by using the Coccinelle software.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- fs/hfs/bfind.c     | 3 +--
- fs/hfs/brec.c      | 3 +--
- fs/hfsplus/bfind.c | 3 +--
- fs/hfsplus/brec.c  | 3 +--
- 4 files changed, 4 insertions(+), 8 deletions(-)
+ fs/configfs/file.c | 3 +--
+ fs/configfs/item.c | 3 +--
+ 2 files changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/fs/hfs/bfind.c b/fs/hfs/bfind.c
-index de69d8a..0e26523 100644
---- a/fs/hfs/bfind.c
-+++ b/fs/hfs/bfind.c
-@@ -100,8 +100,7 @@ int hfs_brec_find(struct hfs_find_data *fd)
- 	int height, res;
+diff --git a/fs/configfs/file.c b/fs/configfs/file.c
+index 1d1c41f..48f36e7 100644
+--- a/fs/configfs/file.c
++++ b/fs/configfs/file.c
+@@ -291,8 +291,7 @@ static int configfs_release(struct inode * inode, struct file * filp)
+ 	struct module * owner = attr->ca_owner;
+ 	struct configfs_buffer * buffer = filp->private_data;
  
- 	tree = fd->tree;
--	if (fd->bnode)
--		hfs_bnode_put(fd->bnode);
-+	hfs_bnode_put(fd->bnode);
- 	fd->bnode = NULL;
- 	nidx = tree->root;
- 	if (!nidx)
-diff --git a/fs/hfs/brec.c b/fs/hfs/brec.c
-index 9f4ee7f..3a52b2c 100644
---- a/fs/hfs/brec.c
-+++ b/fs/hfs/brec.c
-@@ -272,8 +272,7 @@ static struct hfs_bnode *hfs_bnode_split(struct hfs_find_data *fd)
- 		/* panic? */
- 		hfs_bnode_put(node);
- 		hfs_bnode_put(new_node);
--		if (next_node)
--			hfs_bnode_put(next_node);
-+		hfs_bnode_put(next_node);
- 		return ERR_PTR(-ENOSPC);
- 	}
+-	if (item)
+-		config_item_put(item);
++	config_item_put(item);
+ 	/* After this point, attr should not be accessed. */
+ 	module_put(owner);
  
-diff --git a/fs/hfsplus/bfind.c b/fs/hfsplus/bfind.c
-index c1422d9..7be88e3 100644
---- a/fs/hfsplus/bfind.c
-+++ b/fs/hfsplus/bfind.c
-@@ -171,8 +171,7 @@ int hfs_brec_find(struct hfs_find_data *fd, search_strategy_t do_key_compare)
- 	int height, res;
+diff --git a/fs/configfs/item.c b/fs/configfs/item.c
+index e65f9ff..891b20e 100644
+--- a/fs/configfs/item.c
++++ b/fs/configfs/item.c
+@@ -153,8 +153,7 @@ static void config_item_cleanup(struct config_item *item)
+ 		t->ct_item_ops->release(item);
+ 	if (s)
+ 		config_group_put(s);
+-	if (parent)
+-		config_item_put(parent);
++	config_item_put(parent);
+ }
  
- 	tree = fd->tree;
--	if (fd->bnode)
--		hfs_bnode_put(fd->bnode);
-+	hfs_bnode_put(fd->bnode);
- 	fd->bnode = NULL;
- 	nidx = tree->root;
- 	if (!nidx)
-diff --git a/fs/hfsplus/brec.c b/fs/hfsplus/brec.c
-index 6e560d5..59bab47 100644
---- a/fs/hfsplus/brec.c
-+++ b/fs/hfsplus/brec.c
-@@ -276,8 +276,7 @@ static struct hfs_bnode *hfs_bnode_split(struct hfs_find_data *fd)
- 		/* panic? */
- 		hfs_bnode_put(node);
- 		hfs_bnode_put(new_node);
--		if (next_node)
--			hfs_bnode_put(next_node);
-+		hfs_bnode_put(next_node);
- 		return ERR_PTR(-ENOSPC);
- 	}
- 
+ static void config_item_release(struct kref *kref)
 -- 
 2.1.3
