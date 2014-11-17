@@ -1,7 +1,7 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Mon, 17 Nov 2014 13:12:15 +0100
-Subject: [Cocci] [PATCH 1/1] ALSA: hdsp: Deletion of an unnecessary check
- before the function call "release_firmware"
+Date: Mon, 17 Nov 2014 13:41:19 +0100
+Subject: [Cocci] [PATCH 1/1] ALSA: powermac: Deletion of an unnecessary
+ check before the function call "pci_dev_put"
 In-Reply-To: <5317A59D.4@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
@@ -20,36 +20,36 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net>
-Message-ID: <5469E61F.6000002@users.sourceforge.net>
+Message-ID: <5469ECEF.7000408@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Mon, 17 Nov 2014 13:04:14 +0100
+Date: Mon, 17 Nov 2014 13:35:54 +0100
 
-The release_firmware() function tests whether its argument is NULL and then
-return immediately. Thus the test around the call is not needed.
+The pci_dev_put() function tests whether its argument is NULL and then
+returns immediately. Thus the test around the call is not needed.
 
 This issue was detected by using the Coccinelle software.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- sound/pci/rme9652/hdsp.c | 3 +--
+ sound/ppc/pmac.c | 3 +--
  1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/sound/pci/rme9652/hdsp.c b/sound/pci/rme9652/hdsp.c
-index 7646ba1..0ae568d 100644
---- a/sound/pci/rme9652/hdsp.c
-+++ b/sound/pci/rme9652/hdsp.c
-@@ -5368,8 +5368,7 @@ static int snd_hdsp_free(struct hdsp *hdsp)
+diff --git a/sound/ppc/pmac.c b/sound/ppc/pmac.c
+index 8a431bc..5a13b22 100644
+--- a/sound/ppc/pmac.c
++++ b/sound/ppc/pmac.c
+@@ -887,8 +887,7 @@ static int snd_pmac_free(struct snd_pmac *chip)
+ 		}
+ 	}
  
- 	snd_hdsp_free_buffers(hdsp);
- 
--	if (hdsp->firmware)
--		release_firmware(hdsp->firmware);
-+	release_firmware(hdsp->firmware);
- 	vfree(hdsp->fw_uploaded);
- 
- 	if (hdsp->iobase)
+-	if (chip->pdev)
+-		pci_dev_put(chip->pdev);
++	pci_dev_put(chip->pdev);
+ 	of_node_put(chip->node);
+ 	kfree(chip);
+ 	return 0;
 -- 
 2.1.3
