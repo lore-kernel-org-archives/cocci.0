@@ -1,7 +1,7 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Mon, 17 Nov 2014 13:41:19 +0100
-Subject: [Cocci] [PATCH 1/1] ALSA: powermac: Deletion of an unnecessary
- check before the function call "pci_dev_put"
+Date: Mon, 17 Nov 2014 14:42:48 +0100
+Subject: [Cocci] [PATCH 1/1] tools lib traceevent: Deletion of an
+ unnecessary check before the function call "free_arg"
 In-Reply-To: <5317A59D.4@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
@@ -20,36 +20,36 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net>
-Message-ID: <5469ECEF.7000408@users.sourceforge.net>
+Message-ID: <5469FB58.4070205@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Mon, 17 Nov 2014 13:35:54 +0100
+Date: Mon, 17 Nov 2014 14:38:14 +0100
 
-The pci_dev_put() function tests whether its argument is NULL and then
+The free_arg() function tests whether its argument is NULL and then
 returns immediately. Thus the test around the call is not needed.
 
 This issue was detected by using the Coccinelle software.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- sound/ppc/pmac.c | 3 +--
+ tools/lib/traceevent/parse-filter.c | 3 +--
  1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/sound/ppc/pmac.c b/sound/ppc/pmac.c
-index 8a431bc..5a13b22 100644
---- a/sound/ppc/pmac.c
-+++ b/sound/ppc/pmac.c
-@@ -887,8 +887,7 @@ static int snd_pmac_free(struct snd_pmac *chip)
- 		}
- 	}
+diff --git a/tools/lib/traceevent/parse-filter.c b/tools/lib/traceevent/parse-filter.c
+index b502344..78debaf 100644
+--- a/tools/lib/traceevent/parse-filter.c
++++ b/tools/lib/traceevent/parse-filter.c
+@@ -1237,8 +1237,7 @@ filter_event(struct event_filter *filter, struct event_format *event,
+ 	if (filter_type == NULL)
+ 		return PEVENT_ERRNO__MEM_ALLOC_FAILED;
  
--	if (chip->pdev)
--		pci_dev_put(chip->pdev);
-+	pci_dev_put(chip->pdev);
- 	of_node_put(chip->node);
- 	kfree(chip);
+-	if (filter_type->filter)
+-		free_arg(filter_type->filter);
++	free_arg(filter_type->filter);
+ 	filter_type->filter = arg;
+ 
  	return 0;
 -- 
 2.1.3
