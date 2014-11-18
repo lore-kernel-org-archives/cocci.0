@@ -1,7 +1,7 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 18 Nov 2014 21:08:39 +0100
-Subject: [Cocci] [PATCH 1/1] netlink: Deletion of an unnecessary check
- before the function call "__module_get"
+Date: Tue, 18 Nov 2014 21:26:59 +0100
+Subject: [Cocci] [PATCH 1/1] net: sched: Deletion of an unnecessary check
+ before the function call "kfree"
 In-Reply-To: <5317A59D.4@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
@@ -20,36 +20,36 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net>
-Message-ID: <546BA747.6000703@users.sourceforge.net>
+Message-ID: <546BAB93.4010406@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Tue, 18 Nov 2014 21:03:13 +0100
+Date: Tue, 18 Nov 2014 21:21:16 +0100
 
-The __module_get() function tests whether its argument is NULL and then
+The kfree() function tests whether its argument is NULL and then
 returns immediately. Thus the test around the call is not needed.
 
 This issue was detected by using the Coccinelle software.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- net/netlink/af_netlink.c | 3 +--
+ net/sched/cls_bpf.c | 3 +--
  1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index f1de72d..0317b91 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -142,8 +142,7 @@ int netlink_add_tap(struct netlink_tap *nt)
- 	list_add_rcu(&nt->list, &netlink_tap_all);
- 	spin_unlock(&netlink_tap_lock);
+diff --git a/net/sched/cls_bpf.c b/net/sched/cls_bpf.c
+index 0e30d58..f323944 100644
+--- a/net/sched/cls_bpf.c
++++ b/net/sched/cls_bpf.c
+@@ -212,8 +212,7 @@ static int cls_bpf_modify_existing(struct net *net, struct tcf_proto *tp,
  
--	if (nt->module)
--		__module_get(nt->module);
-+	__module_get(nt->module);
+ 	if (fp_old)
+ 		bpf_prog_destroy(fp_old);
+-	if (bpf_old)
+-		kfree(bpf_old);
++	kfree(bpf_old);
  
  	return 0;
- }
+ 
 -- 
 2.1.3
