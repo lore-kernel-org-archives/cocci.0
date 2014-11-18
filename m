@@ -1,7 +1,7 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 18 Nov 2014 20:16:05 +0100
-Subject: [Cocci] [PATCH 1/1] net: pktgen: Deletion of an unnecessary check
- before the function call "proc_remove"
+Date: Tue, 18 Nov 2014 21:08:39 +0100
+Subject: [Cocci] [PATCH 1/1] netlink: Deletion of an unnecessary check
+ before the function call "__module_get"
 In-Reply-To: <5317A59D.4@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
@@ -20,36 +20,36 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net>
-Message-ID: <546B9AF5.9050809@users.sourceforge.net>
+Message-ID: <546BA747.6000703@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Tue, 18 Nov 2014 20:10:34 +0100
+Date: Tue, 18 Nov 2014 21:03:13 +0100
 
-The proc_remove() function tests whether its argument is NULL and then
+The __module_get() function tests whether its argument is NULL and then
 returns immediately. Thus the test around the call is not needed.
 
 This issue was detected by using the Coccinelle software.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- net/core/pktgen.c | 3 +--
+ net/netlink/af_netlink.c | 3 +--
  1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/net/core/pktgen.c b/net/core/pktgen.c
-index 8b849dd..35046a8 100644
---- a/net/core/pktgen.c
-+++ b/net/core/pktgen.c
-@@ -3698,8 +3698,7 @@ static int pktgen_remove_device(struct pktgen_thread *t,
- 	/* Remove proc before if_list entry, because add_device uses
- 	 * list to determine if interface already exist, avoid race
- 	 * with proc_create_data() */
--	if (pkt_dev->entry)
--		proc_remove(pkt_dev->entry);
-+	proc_remove(pkt_dev->entry);
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index f1de72d..0317b91 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -142,8 +142,7 @@ int netlink_add_tap(struct netlink_tap *nt)
+ 	list_add_rcu(&nt->list, &netlink_tap_all);
+ 	spin_unlock(&netlink_tap_lock);
  
- 	/* And update the thread if_list */
- 	_rem_dev_from_if_list(t, pkt_dev);
+-	if (nt->module)
+-		__module_get(nt->module);
++	__module_get(nt->module);
+ 
+ 	return 0;
+ }
 -- 
 2.1.3
