@@ -1,7 +1,7 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 18 Nov 2014 12:20:42 +0100
-Subject: [Cocci] [PATCH 1/1] fs-namespace: Deletion of unnecessary checks
- before the function call "mntput"
+Date: Tue, 18 Nov 2014 14:10:43 +0100
+Subject: [Cocci] [PATCH 1/1] NFS: Deletion of unnecessary checks before the
+ function call "nfs_put_client"
 In-Reply-To: <5317A59D.4@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
@@ -20,39 +20,91 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net>
-Message-ID: <546B2B8A.4090809@users.sourceforge.net>
+Message-ID: <546B4553.5040404@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Tue, 18 Nov 2014 12:10:43 +0100
+Date: Tue, 18 Nov 2014 13:23:43 +0100
 
-The mntput() function tests whether its argument is NULL and then
+The nfs_put_client() function tests whether its argument is NULL and then
 returns immediately. Thus the test around the call is not needed.
 
 This issue was detected by using the Coccinelle software.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- fs/namespace.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ fs/nfs/filelayout/filelayoutdev.c |  3 +--
+ fs/nfs/nfs4client.c               | 15 +++++----------
+ 2 files changed, 6 insertions(+), 12 deletions(-)
 
-diff --git a/fs/namespace.c b/fs/namespace.c
-index 550dbff..3b3710e 100644
---- a/fs/namespace.c
-+++ b/fs/namespace.c
-@@ -2615,10 +2615,8 @@ struct mnt_namespace *copy_mnt_ns(unsigned long flags, struct mnt_namespace *ns,
- 	}
- 	namespace_unlock();
+diff --git a/fs/nfs/filelayout/filelayoutdev.c b/fs/nfs/filelayout/filelayoutdev.c
+index 8540516..cc5e7d6 100644
+--- a/fs/nfs/filelayout/filelayoutdev.c
++++ b/fs/nfs/filelayout/filelayoutdev.c
+@@ -204,8 +204,7 @@ destroy_ds(struct nfs4_pnfs_ds *ds)
+ 	ifdebug(FACILITY)
+ 		print_ds(ds);
  
--	if (rootmnt)
--		mntput(rootmnt);
--	if (pwdmnt)
--		mntput(pwdmnt);
-+	mntput(rootmnt);
-+	mntput(pwdmnt);
+-	if (ds->ds_clp)
+-		nfs_put_client(ds->ds_clp);
++	nfs_put_client(ds->ds_clp);
  
- 	return new_ns;
+ 	while (!list_empty(&ds->ds_addrs)) {
+ 		da = list_first_entry(&ds->ds_addrs,
+diff --git a/fs/nfs/nfs4client.c b/fs/nfs/nfs4client.c
+index ffdb28d..5f07a0e 100644
+--- a/fs/nfs/nfs4client.c
++++ b/fs/nfs/nfs4client.c
+@@ -498,8 +498,7 @@ int nfs40_walk_client_list(struct nfs_client *new,
+ 			atomic_inc(&pos->cl_count);
+ 			spin_unlock(&nn->nfs_client_lock);
+ 
+-			if (prev)
+-				nfs_put_client(prev);
++			nfs_put_client(prev);
+ 			prev = pos;
+ 
+ 			status = nfs_wait_client_init_complete(pos);
+@@ -517,8 +516,7 @@ int nfs40_walk_client_list(struct nfs_client *new,
+ 		atomic_inc(&pos->cl_count);
+ 		spin_unlock(&nn->nfs_client_lock);
+ 
+-		if (prev)
+-			nfs_put_client(prev);
++		nfs_put_client(prev);
+ 		prev = pos;
+ 
+ 		status = nfs4_proc_setclientid_confirm(pos, &clid, cred);
+@@ -549,8 +547,7 @@ int nfs40_walk_client_list(struct nfs_client *new,
+ 
+ 	/* No match found. The server lost our clientid */
+ out:
+-	if (prev)
+-		nfs_put_client(prev);
++	nfs_put_client(prev);
+ 	dprintk("NFS: <-- %s status = %d\n", __func__, status);
+ 	return status;
  }
+@@ -641,8 +638,7 @@ int nfs41_walk_client_list(struct nfs_client *new,
+ 			atomic_inc(&pos->cl_count);
+ 			spin_unlock(&nn->nfs_client_lock);
+ 
+-			if (prev)
+-				nfs_put_client(prev);
++			nfs_put_client(prev);
+ 			prev = pos;
+ 
+ 			status = nfs_wait_client_init_complete(pos);
+@@ -675,8 +671,7 @@ int nfs41_walk_client_list(struct nfs_client *new,
+ 	/* No matching nfs_client found. */
+ 	spin_unlock(&nn->nfs_client_lock);
+ 	dprintk("NFS: <-- %s status = %d\n", __func__, status);
+-	if (prev)
+-		nfs_put_client(prev);
++	nfs_put_client(prev);
+ 	return status;
+ }
+ #endif	/* CONFIG_NFS_V4_1 */
 -- 
 2.1.3
