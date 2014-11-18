@@ -1,8 +1,8 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 18 Nov 2014 19:02:46 +0100
-Subject: [Cocci] [PATCH 2/2] fs-udf: One function call less in
- udf_fill_super() after error detection
-In-Reply-To: <546B8814.2030701@users.sourceforge.net>
+Date: Tue, 18 Nov 2014 20:16:05 +0100
+Subject: [Cocci] [PATCH 1/1] net: pktgen: Deletion of an unnecessary check
+ before the function call "proc_remove"
+In-Reply-To: <5317A59D.4@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
  <530A086E.8010901@users.sourceforge.net>
@@ -19,50 +19,37 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
- <5317A59D.4@users.sourceforge.net> <546B8814.2030701@users.sourceforge.net>
-Message-ID: <546B89C6.4070308@users.sourceforge.net>
+ <5317A59D.4@users.sourceforge.net>
+Message-ID: <546B9AF5.9050809@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Tue, 18 Nov 2014 18:29:10 +0100
+Date: Tue, 18 Nov 2014 20:10:34 +0100
 
-The iput() function was called in up to three cases by the udf_fill_super()
-function during error handling even if the passed data structure element
-contained still a null pointer. This implementation detail could be improved
-by the introduction of another jump label.
+The proc_remove() function tests whether its argument is NULL and then
+returns immediately. Thus the test around the call is not needed.
+
+This issue was detected by using the Coccinelle software.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- fs/udf/super.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/core/pktgen.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/fs/udf/super.c b/fs/udf/super.c
-index f93c65d..3ccb2f1 100644
---- a/fs/udf/super.c
-+++ b/fs/udf/super.c
-@@ -2082,12 +2082,12 @@ static int udf_fill_super(struct super_block *sb, void *options, int silent)
- 	mutex_init(&sbi->s_alloc_mutex);
+diff --git a/net/core/pktgen.c b/net/core/pktgen.c
+index 8b849dd..35046a8 100644
+--- a/net/core/pktgen.c
++++ b/net/core/pktgen.c
+@@ -3698,8 +3698,7 @@ static int pktgen_remove_device(struct pktgen_thread *t,
+ 	/* Remove proc before if_list entry, because add_device uses
+ 	 * list to determine if interface already exist, avoid race
+ 	 * with proc_create_data() */
+-	if (pkt_dev->entry)
+-		proc_remove(pkt_dev->entry);
++	proc_remove(pkt_dev->entry);
  
- 	if (!udf_parse_options((char *)options, &uopt, false))
--		goto error_out;
-+		goto parse_options_failure;
- 
- 	if (uopt.flags & (1 << UDF_FLAG_UTF8) &&
- 	    uopt.flags & (1 << UDF_FLAG_NLS_MAP)) {
- 		udf_err(sb, "utf8 cannot be combined with iocharset\n");
--		goto error_out;
-+		goto parse_options_failure;
- 	}
- #ifdef CONFIG_UDF_NLS
- 	if ((uopt.flags & (1 << UDF_FLAG_NLS_MAP)) && !uopt.nls_map) {
-@@ -2238,6 +2238,7 @@ static int udf_fill_super(struct super_block *sb, void *options, int silent)
- 
- error_out:
- 	iput(sbi->s_vat_inode);
-+parse_options_failure:
- #ifdef CONFIG_UDF_NLS
- 	if (UDF_QUERY_FLAG(sb, UDF_FLAG_NLS_MAP))
- 		unload_nls(sbi->s_nls_map);
+ 	/* And update the thread if_list */
+ 	_rem_dev_from_if_list(t, pkt_dev);
 -- 
 2.1.3
