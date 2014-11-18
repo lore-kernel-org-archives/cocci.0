@@ -1,7 +1,7 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 18 Nov 2014 19:00:09 +0100
-Subject: [Cocci] [PATCH 1/2] fs-udf: Deletion of unnecessary checks before
- the function call "iput"
+Date: Tue, 18 Nov 2014 19:02:46 +0100
+Subject: [Cocci] [PATCH 2/2] fs-udf: One function call less in
+ udf_fill_super() after error detection
 In-Reply-To: <546B8814.2030701@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
@@ -20,44 +20,47 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net> <546B8814.2030701@users.sourceforge.net>
-Message-ID: <546B8929.9010409@users.sourceforge.net>
+Message-ID: <546B89C6.4070308@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Tue, 18 Nov 2014 17:17:46 +0100
+Date: Tue, 18 Nov 2014 18:29:10 +0100
 
-The iput() function tests whether its argument is NULL and then
-returns immediately. Thus the test around the call is not needed.
-
-This issue was detected by using the Coccinelle software.
+The iput() function was called in up to three cases by the udf_fill_super()
+function during error handling even if the passed data structure element
+contained still a null pointer. This implementation detail could be improved
+by the introduction of another jump label.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- fs/udf/super.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ fs/udf/super.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/fs/udf/super.c b/fs/udf/super.c
-index e229315..f93c65d 100644
+index f93c65d..3ccb2f1 100644
 --- a/fs/udf/super.c
 +++ b/fs/udf/super.c
-@@ -2237,8 +2237,7 @@ static int udf_fill_super(struct super_block *sb, void *options, int silent)
- 	return 0;
+@@ -2082,12 +2082,12 @@ static int udf_fill_super(struct super_block *sb, void *options, int silent)
+ 	mutex_init(&sbi->s_alloc_mutex);
+ 
+ 	if (!udf_parse_options((char *)options, &uopt, false))
+-		goto error_out;
++		goto parse_options_failure;
+ 
+ 	if (uopt.flags & (1 << UDF_FLAG_UTF8) &&
+ 	    uopt.flags & (1 << UDF_FLAG_NLS_MAP)) {
+ 		udf_err(sb, "utf8 cannot be combined with iocharset\n");
+-		goto error_out;
++		goto parse_options_failure;
+ 	}
+ #ifdef CONFIG_UDF_NLS
+ 	if ((uopt.flags & (1 << UDF_FLAG_NLS_MAP)) && !uopt.nls_map) {
+@@ -2238,6 +2238,7 @@ static int udf_fill_super(struct super_block *sb, void *options, int silent)
  
  error_out:
--	if (sbi->s_vat_inode)
--		iput(sbi->s_vat_inode);
-+	iput(sbi->s_vat_inode);
- #ifdef CONFIG_UDF_NLS
- 	if (UDF_QUERY_FLAG(sb, UDF_FLAG_NLS_MAP))
- 		unload_nls(sbi->s_nls_map);
-@@ -2291,8 +2290,7 @@ static void udf_put_super(struct super_block *sb)
- 
- 	sbi = UDF_SB(sb);
- 
--	if (sbi->s_vat_inode)
--		iput(sbi->s_vat_inode);
-+	iput(sbi->s_vat_inode);
+ 	iput(sbi->s_vat_inode);
++parse_options_failure:
  #ifdef CONFIG_UDF_NLS
  	if (UDF_QUERY_FLAG(sb, UDF_FLAG_NLS_MAP))
  		unload_nls(sbi->s_nls_map);
