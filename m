@@ -1,7 +1,7 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 18 Nov 2014 21:45:41 +0100
-Subject: [Cocci] [PATCH 1/1] net: xfrm: Deletion of an unnecessary check
- before the function call "ipcomp_free_tfms"
+Date: Tue, 18 Nov 2014 22:03:35 +0100
+Subject: [Cocci] [PATCH 1/1] keys: Deletion of an unnecessary check before
+ the function call "key_put"
 In-Reply-To: <5317A59D.4@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
@@ -20,36 +20,36 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net>
-Message-ID: <546BAFF5.5020603@users.sourceforge.net>
+Message-ID: <546BB427.2050101@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Tue, 18 Nov 2014 21:41:26 +0100
+Date: Tue, 18 Nov 2014 21:57:14 +0100
 
-The ipcomp_free_tfms() function tests whether its argument is NULL and then
+The key_put() function tests whether its argument is NULL and then
 returns immediately. Thus the test around the call is not needed.
 
 This issue was detected by using the Coccinelle software.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- net/xfrm/xfrm_ipcomp.c | 3 +--
+ security/keys/process_keys.c | 3 +--
  1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/net/xfrm/xfrm_ipcomp.c b/net/xfrm/xfrm_ipcomp.c
-index ccfdc71..47863cd 100644
---- a/net/xfrm/xfrm_ipcomp.c
-+++ b/net/xfrm/xfrm_ipcomp.c
-@@ -320,8 +320,7 @@ error:
+diff --git a/security/keys/process_keys.c b/security/keys/process_keys.c
+index 0cf8a13..ce00e11 100644
+--- a/security/keys/process_keys.c
++++ b/security/keys/process_keys.c
+@@ -242,8 +242,7 @@ int install_session_keyring_to_cred(struct cred *cred, struct key *keyring)
+ 	old = cred->session_keyring;
+ 	rcu_assign_pointer(cred->session_keyring, keyring);
  
- static void ipcomp_free_data(struct ipcomp_data *ipcd)
- {
--	if (ipcd->tfms)
--		ipcomp_free_tfms(ipcd->tfms);
-+	ipcomp_free_tfms(ipcd->tfms);
- 	ipcomp_free_scratches();
+-	if (old)
+-		key_put(old);
++	key_put(old);
+ 
+ 	return 0;
  }
- 
 -- 
 2.1.3
