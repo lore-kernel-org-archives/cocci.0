@@ -1,7 +1,7 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 18 Nov 2014 21:26:59 +0100
-Subject: [Cocci] [PATCH 1/1] net: sched: Deletion of an unnecessary check
- before the function call "kfree"
+Date: Tue, 18 Nov 2014 21:45:41 +0100
+Subject: [Cocci] [PATCH 1/1] net: xfrm: Deletion of an unnecessary check
+ before the function call "ipcomp_free_tfms"
 In-Reply-To: <5317A59D.4@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
@@ -20,36 +20,36 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net>
-Message-ID: <546BAB93.4010406@users.sourceforge.net>
+Message-ID: <546BAFF5.5020603@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Tue, 18 Nov 2014 21:21:16 +0100
+Date: Tue, 18 Nov 2014 21:41:26 +0100
 
-The kfree() function tests whether its argument is NULL and then
+The ipcomp_free_tfms() function tests whether its argument is NULL and then
 returns immediately. Thus the test around the call is not needed.
 
 This issue was detected by using the Coccinelle software.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- net/sched/cls_bpf.c | 3 +--
+ net/xfrm/xfrm_ipcomp.c | 3 +--
  1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/net/sched/cls_bpf.c b/net/sched/cls_bpf.c
-index 0e30d58..f323944 100644
---- a/net/sched/cls_bpf.c
-+++ b/net/sched/cls_bpf.c
-@@ -212,8 +212,7 @@ static int cls_bpf_modify_existing(struct net *net, struct tcf_proto *tp,
+diff --git a/net/xfrm/xfrm_ipcomp.c b/net/xfrm/xfrm_ipcomp.c
+index ccfdc71..47863cd 100644
+--- a/net/xfrm/xfrm_ipcomp.c
++++ b/net/xfrm/xfrm_ipcomp.c
+@@ -320,8 +320,7 @@ error:
  
- 	if (fp_old)
- 		bpf_prog_destroy(fp_old);
--	if (bpf_old)
--		kfree(bpf_old);
-+	kfree(bpf_old);
- 
- 	return 0;
+ static void ipcomp_free_data(struct ipcomp_data *ipcd)
+ {
+-	if (ipcd->tfms)
+-		ipcomp_free_tfms(ipcd->tfms);
++	ipcomp_free_tfms(ipcd->tfms);
+ 	ipcomp_free_scratches();
+ }
  
 -- 
 2.1.3
