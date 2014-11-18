@@ -1,7 +1,7 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 18 Nov 2014 14:48:09 +0100
-Subject: [Cocci] [PATCH 1/1] nilfs2: Deletion of an unnecessary check before
- the function call "iput"
+Date: Tue, 18 Nov 2014 15:51:31 +0100
+Subject: [Cocci] [PATCH 1/1] fs-proc: One function call less in
+ proc_sys_lookup() after error detection
 In-Reply-To: <5317A59D.4@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
@@ -20,36 +20,52 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net>
-Message-ID: <546B4E19.8050405@users.sourceforge.net>
+Message-ID: <546B5CF3.1070203@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Tue, 18 Nov 2014 14:41:27 +0100
+Date: Tue, 18 Nov 2014 15:42:43 +0100
 
-The iput() function tests whether its argument is NULL and then
-returns immediately. Thus the test around the call is not needed.
-
-This issue was detected by using the Coccinelle software.
+The sysctl_head_finish() function was called in an inefficient way by the
+implementation of the proc_sys_lookup() function in case of a lookup failure.
+The corresponding source code was improved by deletion of an unnecessary
+null pointer check and a few adjustments for jump labels.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- fs/nilfs2/the_nilfs.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ fs/proc/proc_sysctl.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/fs/nilfs2/the_nilfs.c b/fs/nilfs2/the_nilfs.c
-index 9da25fe..69bd801 100644
---- a/fs/nilfs2/the_nilfs.c
-+++ b/fs/nilfs2/the_nilfs.c
-@@ -808,8 +808,7 @@ void nilfs_put_root(struct nilfs_root *root)
- 		spin_lock(&nilfs->ns_cptree_lock);
- 		rb_erase(&root->rb_node, &nilfs->ns_cptree);
- 		spin_unlock(&nilfs->ns_cptree_lock);
--		if (root->ifile)
--			iput(root->ifile);
-+		iput(root->ifile);
- 
- 		kfree(root);
+diff --git a/fs/proc/proc_sysctl.c b/fs/proc/proc_sysctl.c
+index f92d5dd..6606aaf 100644
+--- a/fs/proc/proc_sysctl.c
++++ b/fs/proc/proc_sysctl.c
+@@ -457,21 +457,21 @@ static struct dentry *proc_sys_lookup(struct inode *dir, struct dentry *dentry,
+ 		ret = sysctl_follow_link(&h, &p, current->nsproxy);
+ 		err = ERR_PTR(ret);
+ 		if (ret)
+-			goto out;
++			goto inode_failure;
  	}
+ 
+ 	err = ERR_PTR(-ENOMEM);
+ 	inode = proc_sys_make_inode(dir->i_sb, h ? h : head, p);
+ 	if (!inode)
+-		goto out;
++		goto inode_failure;
+ 
+ 	err = NULL;
+ 	d_set_d_op(dentry, &proc_sys_dentry_operations);
+ 	d_add(dentry, inode);
+ 
++inode_failure:
++	sysctl_head_finish(h);
+ out:
+-	if (h)
+-		sysctl_head_finish(h);
+ 	sysctl_head_finish(head);
+ 	return err;
+ }
 -- 
 2.1.3
