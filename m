@@ -1,7 +1,7 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Mon, 17 Nov 2014 19:42:35 +0100
-Subject: [Cocci] [PATCH 1/1] configfs: Deletion of unnecessary checks before
- the function call "config_item_put"
+Date: Tue, 18 Nov 2014 09:35:46 +0100
+Subject: [Cocci] [PATCH 1/1] fs-eventpoll: Deletion of unnecessary checks
+ before the function call "__pm_stay_awake"
 In-Reply-To: <5317A59D.4@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
@@ -20,51 +20,46 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net>
-Message-ID: <546A419B.7060409@users.sourceforge.net>
+Message-ID: <546B04E2.80000@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Mon, 17 Nov 2014 19:37:03 +0100
+Date: Tue, 18 Nov 2014 09:27:16 +0100
 
-The config_item_put() function tests whether its argument is NULL and then
+The __pm_stay_awake() function tests whether its argument is NULL and then
 returns immediately. Thus the test around the call is not needed.
 
 This issue was detected by using the Coccinelle software.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- fs/configfs/file.c | 3 +--
- fs/configfs/item.c | 3 +--
- 2 files changed, 2 insertions(+), 4 deletions(-)
+ fs/eventpoll.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/fs/configfs/file.c b/fs/configfs/file.c
-index 1d1c41f..48f36e7 100644
---- a/fs/configfs/file.c
-+++ b/fs/configfs/file.c
-@@ -291,8 +291,7 @@ static int configfs_release(struct inode * inode, struct file * filp)
- 	struct module * owner = attr->ca_owner;
- 	struct configfs_buffer * buffer = filp->private_data;
+diff --git a/fs/eventpoll.c b/fs/eventpoll.c
+index 7bcfff9..eec2e85 100644
+--- a/fs/eventpoll.c
++++ b/fs/eventpoll.c
+@@ -555,8 +555,7 @@ static inline void ep_pm_stay_awake(struct epitem *epi)
+ {
+ 	struct wakeup_source *ws = ep_wakeup_source(epi);
  
--	if (item)
--		config_item_put(item);
-+	config_item_put(item);
- 	/* After this point, attr should not be accessed. */
- 	module_put(owner);
- 
-diff --git a/fs/configfs/item.c b/fs/configfs/item.c
-index e65f9ff..891b20e 100644
---- a/fs/configfs/item.c
-+++ b/fs/configfs/item.c
-@@ -153,8 +153,7 @@ static void config_item_cleanup(struct config_item *item)
- 		t->ct_item_ops->release(item);
- 	if (s)
- 		config_group_put(s);
--	if (parent)
--		config_item_put(parent);
-+	config_item_put(parent);
+-	if (ws)
+-		__pm_stay_awake(ws);
++	__pm_stay_awake(ws);
  }
  
- static void config_item_release(struct kref *kref)
+ static inline bool ep_has_wakeup_source(struct epitem *epi)
+@@ -571,8 +570,7 @@ static inline void ep_pm_stay_awake_rcu(struct epitem *epi)
+ 
+ 	rcu_read_lock();
+ 	ws = rcu_dereference(epi->ws);
+-	if (ws)
+-		__pm_stay_awake(ws);
++	__pm_stay_awake(ws);
+ 	rcu_read_unlock();
+ }
+ 
 -- 
 2.1.3
