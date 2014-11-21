@@ -1,65 +1,41 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 21 Nov 2014 07:07:26 +0100 (CET)
-Subject: [Cocci] Ignore Code in Macro Def
-In-Reply-To: <1416521057.28778.25.camel@QNXWS8653-PC>
-References: <1416521057.28778.25.camel@QNXWS8653-PC>
-Message-ID: <alpine.DEB.2.02.1411210706260.2030@localhost6.localdomain6>
+From: wsa@the-dreams.de (Wolfram Sang)
+Date: Fri, 21 Nov 2014 19:07:47 +0100
+Subject: [Cocci] bugon.cocci: fix Options at the macro
+In-Reply-To: <20141107175105.GC3656@katana>
+References: <20141028151824.4b41986f@recife.lan> <20141107175105.GC3656@katana>
+Message-ID: <20141121180747.GA3754@katana>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 20 Nov 2014, Mitchell Cuddie wrote:
+On Fri, Nov 07, 2014 at 06:51:05PM +0100, Wolfram Sang wrote:
+> On Tue, Oct 28, 2014 at 03:18:24PM -0200, Mauro Carvalho Chehab wrote:
+> > The comma after --no-includes makes coccinelle to not run the script:
+> > 
+> > /usr/bin/spatch -D report --very-quiet --no-show-diff --cocci-file ./scripts/coccinelle/misc/bugon.cocci --no-includes, --include-headers --patch . --dir drivers/media/platform/coda/ -I ./arch/x86/include -I arch/x86/include/generated -I include -I ./arch/x86/include/uapi -I arch/x86/include/generated/uapi -I ./include/uapi -I include/generated/uapi -I ./include/linux/kconfig.h
+> > Usage: spatch.opt --sp-file <SP> <infile> [-o <outfile>] [--iso-file <iso>] [options]
+> > Options are:
+> >   --sp-file                    <file> the semantic patch file
+> >   -o                           <file> the output file
+> >   --in-place                   do the modification on the file directly
+> >   --backup-suffix              suffix to use when making a backup for inplace
+> > ...
+> > 
+> > At least with Fedora 20 coccinelle package:
+> > 	coccinelle-1.0.0-0.rc20.1.fc21.x86_64
+> > 
+> > Signed-off-by: Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+> 
+> Yay, with this my patch handling scripts finally work again as they used
+> to! Please let it go into 3.18.
+> 
+> Tested-by: Wolfram Sang <wsa@the-dreams.de>
 
-> I am working on a patch that manipulates null pointer usage. However the
-> second rule matches code inside macros which causes issues. Is there a
-> way to have rule 2 skip macros or rule 1 match against them and thereby
-> deactivate rule 2?
+Ping.
 
-Could you send an example of a macro where you don't want a match?
-
-thanks,
-julia
-
-> 
-> Cheers
-> 
-> Mitchell
-> 
-> @p_null disable is_null, isnt_null1, is_zero, isnt_zero@
-> expression *E;
-> type T;
-> position p;
-> T *f;
-> @@
-> (
->     \(E\|f(...)\) == @p NULL
-> |
->     \(E\|f(...)\) != @p NULL
-> |
->     E =@p NULL
-> )
-> 
-> @np_null depends on !p_null && !ptr_zero disable is_null, isnt_null1,
-> is_zero, isnt_zero@
-> position p;
-> T g;
-> expression F;
-> @@
-> (
->     \(F\|g(...)\)  == @p
-> -   NULL
-> +   0   
-> |
->     \(F\|g(...)\)  != @p
-> -   NULL
-> +   0
-> |
->     F  = @p
-> -   NULL
-> +   0
-> )
-> 
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
-> 
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 819 bytes
+Desc: Digital signature
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20141121/6578730d/attachment.asc>
