@@ -1,33 +1,39 @@
-From: dan.carpenter@oracle.com (Dan Carpenter)
-Date: Mon, 24 Nov 2014 12:03:38 +0300
-Subject: [Cocci] kernel-audit: Deletion of an unnecessary check before
- the function call "audit_log_end"
-In-Reply-To: <5471E010.2090105@users.sourceforge.net>
-References: <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
- <5317A59D.4@users.sourceforge.net>
- <54687F1A.1010809@users.sourceforge.net>
- <20141116111023.GA4905@mwanda> <20141116111446.GA4956@mwanda>
- <54688F15.9070703@users.sourceforge.net>
- <20141117073408.GC4905@mwanda>
- <5469B836.8030507@users.sourceforge.net>
- <alpine.DEB.2.02.1411231249310.2261@localhost6.localdomain6>
- <5471E010.2090105@users.sourceforge.net>
-Message-ID: <20141124090337.GA7104@mwanda>
+From: mmarek@suse.cz (Michal Marek)
+Date: Mon, 24 Nov 2014 22:03:52 +0100
+Subject: [Cocci] bugon.cocci: fix Options at the macro
+In-Reply-To: <20141121180747.GA3754@katana>
+References: <20141028151824.4b41986f@recife.lan>
+ <20141107175105.GC3656@katana> <20141121180747.GA3754@katana>
+Message-ID: <54739D38.7070507@suse.cz>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, Nov 23, 2014 at 02:24:32PM +0100, SF Markus Elfring wrote:
-> > Program analysis tools can also potentially exploit this information,
+Dne 21.11.2014 v 19:07 Wolfram Sang napsal(a):
+> On Fri, Nov 07, 2014 at 06:51:05PM +0100, Wolfram Sang wrote:
+>> On Tue, Oct 28, 2014 at 03:18:24PM -0200, Mauro Carvalho Chehab wrote:
+>>> The comma after --no-includes makes coccinelle to not run the script:
+>>>
+>>> /usr/bin/spatch -D report --very-quiet --no-show-diff --cocci-file ./scripts/coccinelle/misc/bugon.cocci --no-includes, --include-headers --patch . --dir drivers/media/platform/coda/ -I ./arch/x86/include -I arch/x86/include/generated -I include -I ./arch/x86/include/uapi -I arch/x86/include/generated/uapi -I ./include/uapi -I include/generated/uapi -I ./include/linux/kconfig.h
+>>> Usage: spatch.opt --sp-file <SP> <infile> [-o <outfile>] [--iso-file <iso>] [options]
+>>> Options are:
+>>>   --sp-file                    <file> the semantic patch file
+>>>   -o                           <file> the output file
+>>>   --in-place                   do the modification on the file directly
+>>>   --backup-suffix              suffix to use when making a backup for inplace
+>>> ...
+>>>
+>>> At least with Fedora 20 coccinelle package:
+>>> 	coccinelle-1.0.0-0.rc20.1.fc21.x86_64
+>>>
+>>> Signed-off-by: Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+>>
+>> Yay, with this my patch handling scripts finally work again as they used
+>> to! Please let it go into 3.18.
+>>
+>> Tested-by: Wolfram Sang <wsa@the-dreams.de>
 > 
-> The published semantic patch scripts correspond to this desire.
-> 
+> Ping.
 
-Sorry for that.
+Sorry for the delay. Applied now to kbuild.git#misc.
 
-I have deleted the Smatch check for this so it no longer warns about:
-
-	if (foo)
-		kfree(foo);
-
-regards,
-dan carpenter
+Michal
