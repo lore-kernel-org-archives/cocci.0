@@ -1,8 +1,8 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sat, 29 Nov 2014 14:42:02 +0100
-Subject: [Cocci] [PATCH 1/1] HID: Wacom: Deletion of an unnecessary check
+Date: Sat, 29 Nov 2014 15:05:33 +0100
+Subject: [Cocci] [PATCH 1/1] net: cassini: Deletion of an unnecessary check
  before the function call "vfree"
-In-Reply-To: <5317A59D.4@users.sourceforge.net>
+In-Reply-To: <5479CD2A.9030009@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
  <530A086E.8010901@users.sourceforge.net>
@@ -19,8 +19,8 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
- <5317A59D.4@users.sourceforge.net>
-Message-ID: <5479CD2A.9030009@users.sourceforge.net>
+ <5317A59D.4@users.sourceforge.net> <5479CD2A.9030009@users.sourceforge.net>
+Message-ID: <5479D2AD.9060704@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
