@@ -1,8 +1,8 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sat, 29 Nov 2014 15:05:33 +0100
-Subject: [Cocci] [PATCH 1/1] net: cassini: Deletion of an unnecessary check
- before the function call "vfree"
-In-Reply-To: <5479CD2A.9030009@users.sourceforge.net>
+Date: Sat, 29 Nov 2014 15:33:34 +0100
+Subject: [Cocci] [PATCH 1/1] HID: Wacom: Deletion of unnecessary checks
+ before the function call "input_free_device"
+In-Reply-To: <5317A59D.4@users.sourceforge.net>
 References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
  <530A086E.8010901@users.sourceforge.net>
@@ -19,37 +19,40 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
  <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
- <5317A59D.4@users.sourceforge.net> <5479CD2A.9030009@users.sourceforge.net>
-Message-ID: <5479D2AD.9060704@users.sourceforge.net>
+ <5317A59D.4@users.sourceforge.net>
+Message-ID: <5479D93E.3040407@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Sat, 29 Nov 2014 14:34:59 +0100
+Date: Sat, 29 Nov 2014 15:16:01 +0100
 
-The vfree() function performs also input parameter validation.
-Thus the test around the call is not needed.
+The input_free_device() function tests whether its argument is NULL and then
+returns immediately. Thus the test around the call is not needed.
 
 This issue was detected by using the Coccinelle software.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- drivers/net/ethernet/sun/cassini.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/hid/wacom_sys.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/sun/cassini.c b/drivers/net/ethernet/sun/cassini.c
-index 37f87ff..d745808 100644
---- a/drivers/net/ethernet/sun/cassini.c
-+++ b/drivers/net/ethernet/sun/cassini.c
-@@ -5179,8 +5179,7 @@ static void cas_remove_one(struct pci_dev *pdev)
- 	cp = netdev_priv(dev);
- 	unregister_netdev(dev);
+diff --git a/drivers/hid/wacom_sys.c b/drivers/hid/wacom_sys.c
+index eb55316..21ced00 100644
+--- a/drivers/hid/wacom_sys.c
++++ b/drivers/hid/wacom_sys.c
+@@ -1099,10 +1099,8 @@ static void wacom_free_inputs(struct wacom *wacom)
+ {
+ 	struct wacom_wac *wacom_wac = &(wacom->wacom_wac);
  
--	if (cp->fw_data)
--		vfree(cp->fw_data);
-+	vfree(cp->fw_data);
- 
- 	mutex_lock(&cp->pm_mutex);
- 	cancel_work_sync(&cp->reset_task);
+-	if (wacom_wac->input)
+-		input_free_device(wacom_wac->input);
+-	if (wacom_wac->pad_input)
+-		input_free_device(wacom_wac->pad_input);
++	input_free_device(wacom_wac->input);
++	input_free_device(wacom_wac->pad_input);
+ 	wacom_wac->input = NULL;
+ 	wacom_wac->pad_input = NULL;
+ }
 -- 
 2.1.3
