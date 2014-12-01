@@ -1,30 +1,107 @@
-From: dan.carpenter@oracle.com (Dan Carpenter)
-Date: Mon, 1 Dec 2014 22:17:23 +0300
-Subject: [Cocci] [PATCH v2] fs-fat: Less function calls in
- fat_fill_super() after error detection
-In-Reply-To: <547C89A4.40002@users.sourceforge.net>
-References: <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
- <5317A59D.4@users.sourceforge.net>
- <5467B12C.4010602@users.sourceforge.net>
- <alpine.DEB.2.02.1411152117540.2225@localhost6.localdomain6>
- <54796B5E.5040707@users.sourceforge.net>
- <87sih22sn8.fsf@devron.myhome.or.jp>
- <alpine.DEB.2.10.1411291338530.2378@hadrien>
- <87lhmu2jl8.fsf@devron.myhome.or.jp> <20141201065221.GA4994@mwanda>
- <547C89A4.40002@users.sourceforge.net>
-Message-ID: <20141201191723.GG4994@mwanda>
+From: wharms@bfs.de (walter harms)
+Date: Mon, 01 Dec 2014 12:23:38 +0100
+Subject: [Cocci] Determination for the number of named function
+ parameters (with SmPL)
+In-Reply-To: <547C4D11.1050206@users.sourceforge.net>
+References: <547C4D11.1050206@users.sourceforge.net>
+Message-ID: <547C4FBA.90808@bfs.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, Dec 01, 2014 at 04:30:44PM +0100, SF Markus Elfring wrote:
-> > Meanwhile Markus's error labels are absolutely useless.  They give no
-> > indication of what going to the label does.
+
+
+Am 01.12.2014 12:12, schrieb SF Markus Elfring:
+> Hello,
 > 
-> Which names would be better acceptable for you?
+> Would you like to know how many named function parameters are used in the source files?
+> 
+> How do you think about to try the following semantic query approach out a bit more?
+> 
+> @initialize:python@
+> @@
+> import sys
+> import sqlite3 as SQLite
+> connection = SQLite.connect(":memory:")
+> c = connection.cursor()
+> c.execute("""create table numbers (number integer)""")
+> delimiter = "|"
+> 
+> def store_number(count):
+>     """Add an integer to an internal list."""
+>     c.execute("""insert into numbers (number) values (?)""",
+>               (count, )
+>              )
+> 
+> @counting_parameters@
+> identifier work;
+> parameter list[number] pl;
+> type return_type;
+> @@
+>  return_type work(pl)
+>  {
+>   ...
+>  }
+> 
+> @script:python collection@
+> count << counting_parameters.number;
+> @@
+> store_number(count)
+> 
+> @finalize:python@
+> @@
+> c.execute("""select count(*) nr from numbers""")
+> result = c.fetchone()
+> 
+> if result[0] > 0:
+>    c.execute("""create index x on numbers (number)""")
+>    c.execute("select number, count(*) nr from numbers group by number")
+>    sys.stdout.write(delimiter.join( ("number", "counter") ))
+>    sys.stdout.write("\r\n")
+>    for result in c:
+>       sys.stdout.write(delimiter.join((str(result[0]),
+>                                        str(result[1])
+>                                       )))
+>       sys.stdout.write("\r\n")
+> else:
+>    sys.stderr.write("No result for this analysis!\n")
+> 
+> connection.close()
+> 
+> 
+> 
+> elfring at Sonne:~/Projekte/Coccinelle/Probe> XX=$(date) && spatch.opt -timeout 12 -sp-file list_parameter_numbers1.cocci -dir /usr/src/linux-stable > list_parameter_numbers1.txt 2> list_parameter_numbers1-errors.txt ; YY=$(date) && echo "$XX * $YY"
+> ...
+> elfring at Sonne:~/Projekte/Coccinelle/Probe> cat list_parameter_numbers1.txt
+> number|counter
+> 0|29
+> 1|18261
+> 2|15374
+> 3|12237
+> 4|8159
+> 5|4339
+> 6|2701
+> 7|1183
+> 8|518
+> 9|260
+> 10|146
+> 11|83
+> 12|42
+> 13|21
+> 14|9
+> 15|7
+> 16|2
+> 17|4
+> 18|1
+> 21|1
+> 22|1
+> 
+> 
+> Do you find such an analysis result from the source files for Linux 3.17.4
+> interesting for further considerations?
+> 
 
-You named it after the goto location but the label name should be based
-on the label location to say what the goto does.  Something like
-"err_put_fsinfo", "err_put_fat", and "err_unload" or like that.
+ I am not sure that i understand these result.
+Does that mean there are actually functions taking 22 arguments ?
 
-regards,
-dan carpenter
+re
+ wh
