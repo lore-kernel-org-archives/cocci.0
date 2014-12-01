@@ -1,125 +1,33 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 1 Dec 2014 21:43:11 +0100 (CET)
-Subject: [Cocci] Unmatching rule
-In-Reply-To: <20141201192644.GB5324@quack.suse.cz>
-References: <20141201192133.GA5324@quack.suse.cz>
- <20141201192644.GB5324@quack.suse.cz>
-Message-ID: <alpine.DEB.2.02.1412012142480.2076@localhost6.localdomain6>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Mon, 01 Dec 2014 22:22:38 +0100
+Subject: [Cocci] [PATCH v2] fs-fat: Less function calls in
+ fat_fill_super() after error detection
+In-Reply-To: <20141201191723.GG4994@mwanda>
+References: <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
+ <5317A59D.4@users.sourceforge.net> <5467B12C.4010602@users.sourceforge.net>
+ <alpine.DEB.2.02.1411152117540.2225@localhost6.localdomain6>
+ <54796B5E.5040707@users.sourceforge.net> <87sih22sn8.fsf@devron.myhome.or.jp>
+ <alpine.DEB.2.10.1411291338530.2378@hadrien>
+ <87lhmu2jl8.fsf@devron.myhome.or.jp> <20141201065221.GA4994@mwanda>
+ <547C89A4.40002@users.sourceforge.net> <20141201191723.GG4994@mwanda>
+Message-ID: <547CDC1E.7020404@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, 1 Dec 2014, Jan Kara wrote:
+>> Which names would be better acceptable for you?
+> 
+> You named it after the goto location but the label name should be based
+> on the label location to say what the goto does.
 
-> On Mon 01-12-14 20:21:33, Jan Kara wrote:
-> >   Hello,
-> > 
-> >   I was doing some conversion using coccinelle using the attached script
-> > and I'm wondering why the rule unreg2 doesn't match anywhere in linux
-> > kernel in drivers/media/dvb-core/dvbdev.c. Can someone explain to me
-> > what am I doing wrong? Thanks!
->   Ah, I figured it out a moment after I sent this email. The prerequisite
-> rule wasn't matching and I missed that when looking at the generated diff.
+I find it easier occasionally to name a label similarly to the jump target.
+It seems that there are a few variations used for the affected identifiers.
 
-Good to have problems solved so quickly :)
 
-julia
+> Something like "err_put_fsinfo", "err_put_fat", and "err_unload" or like that.
 
-> 
-> 								Honza
-> 
-> > -- 
-> > Jan Kara <jack@suse.cz>
-> > SUSE Labs, CR
-> 
-> > @decl@
-> > identifier x;
-> > @@
-> > -static struct cdev x;
-> > 
-> > @initadd@
-> > identifier decl.x;
-> > expression fops;
-> > identifier ret;
-> > expression d;
-> > expression count;
-> > statement stmt;
-> > @@
-> > -	cdev_init(&x, fops);
-> > (
-> > -	ret = cdev_add(&x, d, count);
-> > -	if (<+...ret...+>) stmt
-> > |
-> > -	if (<+...cdev_add(&x, d, count)...+>) stmt
-> > )
-> > 
-> > @creationdyn@
-> > identifier d;
-> > identifier ret;
-> > identifier major;
-> > expression initadd.fops;
-> > expression name;
-> > expression initadd.count;
-> > expression first_minor;
-> > @@
-> > -	dev_t d;
-> > ...
-> > -	ret = alloc_chrdev_region(&d, first_minor, count, name);
-> > +	ret = __register_chrdev(0, first_minor, count, name, fops);
-> > ...
-> > -	major = MAJOR(d);
-> > +	major = ret;
-> > 
-> > @creationstat@
-> > identifier d;
-> > identifier ret;
-> > expression major;
-> > expression initadd.fops;
-> > expression name;
-> > expression initadd.count;
-> > expression first_minor;
-> > statement stmt;
-> > @@
-> > -	dev_t d = MKDEV(major, first_minor);
-> > ...
-> > (
-> > -	ret = register_chrdev_region(d, count, name);
-> > +	ret = __register_chrdev(major, first_minor, count, name, fops);
-> > |
-> > -	if (<+...ret = register_chrdev_region(d, count, name)...+>) stmt
-> > +	ret = __register_chrdev(major, first_minor, count, name, fops);
-> > +	if (ret) stmt
-> > )
-> > 
-> > @deletion@
-> > identifier decl.x;
-> > @@
-> > -	cdev_del(&x);
-> > 
-> > @unreg@
-> > identifier d;
-> > expression count;
-> > expression major, minor;
-> > expression creationstat.name;
-> > @@
-> > -	dev_t d = MKDEV(major, minor);
-> > 	...
-> > -	unregister_chrdev_region(d, count);
-> > +	__unregister_chrdev(major, minor, count, name);
-> > 
-> > @unreg2@
-> > expression d;
-> > expression count;
-> > expression creationstat.major, creationstat.first_minor;
-> > expression creationstat.name;
-> > @@
-> > -	unregister_chrdev_region(d, count);
-> > +	__unregister_chrdev(major, first_minor, count, name);
-> 
-> -- 
-> Jan Kara <jack@suse.cz>
-> SUSE Labs, CR
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
-> 
+How do you think about to provide a patch with your preferred names
+if my chances are lower to suggest the pleasing ones directly in my
+first tries?
+
+Regards,
+Markus
