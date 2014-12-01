@@ -1,39 +1,52 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sat, 29 Nov 2014 15:50:48 +0100
-Subject: [Cocci] fs-fat: Less function calls in fat_fill_super() after
-	error detection
+From: dan.carpenter@oracle.com (Dan Carpenter)
+Date: Mon, 1 Dec 2014 09:52:21 +0300
+Subject: [Cocci] [PATCH v2] fs-fat: Less function calls in
+ fat_fill_super() after error detection
 In-Reply-To: <87lhmu2jl8.fsf@devron.myhome.or.jp>
-References: <5307CAA2.8060406@users.sourceforge.net>	<alpine.DEB.2.02.1402231635510.1985@localhost6.localdomain6>	<530A72AA.3000601@users.sourceforge.net>	<alpine.DEB.2.02.1402240658210.2090@localhost6.localdomain6>	<530B5FB6.6010207@users.sourceforge.net>	<alpine.DEB.2.10.1402241710370.2074@hadrien>	<530C5E18.1020800@users.sourceforge.net>	<alpine.DEB.2.10.1402251014170.2080@hadrien>	<530CD2C4.4050903@users.sourceforge.net>	<alpine.DEB.2.10.1402251840450.7035@hadrien>	<530CF8FF.8080600@users.sourceforge.net>	<alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>	<530DD06F.4090703@users.sourceforge.net>	<alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>	<5317A59D.4@users.sourceforge.net>	<5467B12C.4010602@users.sourceforge.net>	<alpine.DEB.2.02.1411152117540.2225@localhost6.localdomain6>	<54796B5E.5040707@users.sourceforge.net>	<87sih22sn8.fsf@devron.myhome.or.jp>	<alpine.DEB.2.10.1411291338530.2378@hadrien>
+References: <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
+ <530DD06F.4090703@users.sourceforge.net>
+ <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
+ <5317A59D.4@users.sourceforge.net>
+ <5467B12C.4010602@users.sourceforge.net>
+ <alpine.DEB.2.02.1411152117540.2225@localhost6.localdomain6>
+ <54796B5E.5040707@users.sourceforge.net>
+ <87sih22sn8.fsf@devron.myhome.or.jp>
+ <alpine.DEB.2.10.1411291338530.2378@hadrien>
  <87lhmu2jl8.fsf@devron.myhome.or.jp>
-Message-ID: <5479DD48.6030508@users.sourceforge.net>
+Message-ID: <20141201065221.GA4994@mwanda>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> More labels are more chances of bug (and we don't care micro optimize
-> on this error path), isn't it?
+On Sat, Nov 29, 2014 at 10:59:47PM +0900, OGAWA Hirofumi wrote:
+> Julia Lawall <julia.lawall@lip6.fr> writes:
+> 
+> >> iput() checks NULL of inode. What is wrong just remove NULL check,
+> >> instead of adding new jump labels?
+> >
+> > Personally, I prefer that code that can be statically determined not to
+> > need to be executed not to be executed.  It can make the code easier to
+> > understand, because each function is only called when doing so is useful,
+> > and it can be helpful to static analysis.
+> 
+> Hm, first of all, we want to prevent the bugs. More labels are more
+> chances of bug (and we don't care micro optimize on this error path),
+> isn't it?  Increasing the chance of bugs and bothers developers for
+> analyzer sounds like strange.
 
-I would prefer that a few jump targets can be redirected so that unnecessary
-function calls (and corresponding checks) can be avoided.
+Oh wow!  Absolutely not.  "One Err Bugs" are one of the most common
+kinds of bugs we have in the kernel.  This is where you have just one
+error label and the bugs look like this:
 
+err:
+	kfree(foo->bar);
+	kfree(foo);
 
-> Increasing the chance of bugs and bothers developers for analyzer sounds
-> like strange.
+but foo is NULL.  Mixing the error paths together it always creates
+confusion.  I fix so many of these bugs...  We get a few new ones every
+week.
 
-There are different opinions around source code clarity.
+Meanwhile Markus's error labels are absolutely useless.  They give no
+indication of what going to the label does.
 
-
-> (And we are initializing those for avoiding to be bothered by choosing
-> correct label.
-
-Pointer initialisation is convenient and safe in some use cases, isn't it?
-
-
-> If we really care micro optimize, initialization of those should not
-> be required and should not be touched on other paths, and gcc can warn
-> its usage.)
-
-I imagine that a software optimiser can eventually perform better job
-if unneeded statements could be omitted, couldn't it?
-
-Regards,
-Markus
+regards,
+dan carpenter
