@@ -1,98 +1,31 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Mon, 01 Dec 2014 12:12:17 +0100
-Subject: [Cocci] Determination for the number of named function parameters
-	(with SmPL)
-Message-ID: <547C4D11.1050206@users.sourceforge.net>
+Date: Mon, 01 Dec 2014 16:30:44 +0100
+Subject: [Cocci] [PATCH v2] fs-fat: Less function calls in
+ fat_fill_super() after error detection
+In-Reply-To: <20141201065221.GA4994@mwanda>
+References: <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
+ <530DD06F.4090703@users.sourceforge.net>
+ <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
+ <5317A59D.4@users.sourceforge.net> <5467B12C.4010602@users.sourceforge.net>
+ <alpine.DEB.2.02.1411152117540.2225@localhost6.localdomain6>
+ <54796B5E.5040707@users.sourceforge.net> <87sih22sn8.fsf@devron.myhome.or.jp>
+ <alpine.DEB.2.10.1411291338530.2378@hadrien>
+ <87lhmu2jl8.fsf@devron.myhome.or.jp> <20141201065221.GA4994@mwanda>
+Message-ID: <547C89A4.40002@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hello,
+> Mixing the error paths together it always creates confusion.
+> I fix so many of these bugs...  We get a few new ones every week.
 
-Would you like to know how many named function parameters are used in the source files?
-
-How do you think about to try the following semantic query approach out a bit more?
-
-@initialize:python@
-@@
-import sys
-import sqlite3 as SQLite
-connection = SQLite.connect(":memory:")
-c = connection.cursor()
-c.execute("""create table numbers (number integer)""")
-delimiter = "|"
-
-def store_number(count):
-    """Add an integer to an internal list."""
-    c.execute("""insert into numbers (number) values (?)""",
-              (count, )
-             )
-
-@counting_parameters@
-identifier work;
-parameter list[number] pl;
-type return_type;
-@@
- return_type work(pl)
- {
-  ...
- }
-
-@script:python collection@
-count << counting_parameters.number;
-@@
-store_number(count)
-
-@finalize:python@
-@@
-c.execute("""select count(*) nr from numbers""")
-result = c.fetchone()
-
-if result[0] > 0:
-   c.execute("""create index x on numbers (number)""")
-   c.execute("select number, count(*) nr from numbers group by number")
-   sys.stdout.write(delimiter.join( ("number", "counter") ))
-   sys.stdout.write("\r\n")
-   for result in c:
-      sys.stdout.write(delimiter.join((str(result[0]),
-                                       str(result[1])
-                                      )))
-      sys.stdout.write("\r\n")
-else:
-   sys.stderr.write("No result for this analysis!\n")
-
-connection.close()
+Would you like to get help here from any other automatic semantic
+patch approaches?
 
 
+> Meanwhile Markus's error labels are absolutely useless.  They give no
+> indication of what going to the label does.
 
-elfring at Sonne:~/Projekte/Coccinelle/Probe> XX=$(date) && spatch.opt -timeout 12 -sp-file list_parameter_numbers1.cocci -dir /usr/src/linux-stable > list_parameter_numbers1.txt 2> list_parameter_numbers1-errors.txt ; YY=$(date) && echo "$XX * $YY"
-...
-elfring at Sonne:~/Projekte/Coccinelle/Probe> cat list_parameter_numbers1.txt
-number|counter
-0|29
-1|18261
-2|15374
-3|12237
-4|8159
-5|4339
-6|2701
-7|1183
-8|518
-9|260
-10|146
-11|83
-12|42
-13|21
-14|9
-15|7
-16|2
-17|4
-18|1
-21|1
-22|1
-
-
-Do you find such an analysis result from the source files for Linux 3.17.4
-interesting for further considerations?
+Which names would be better acceptable for you?
 
 Regards,
 Markus
