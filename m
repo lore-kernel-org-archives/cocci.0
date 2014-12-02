@@ -1,42 +1,81 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 2 Dec 2014 08:37:32 +0100 (CET)
-Subject: [Cocci] [PATCH v2] fs-fat: Less function calls in
- fat_fill_super() after error detection
-In-Reply-To: <20141202073440.GH4994@mwanda>
-References: <5467B12C.4010602@users.sourceforge.net>
- <alpine.DEB.2.02.1411152117540.2225@localhost6.localdomain6>
- <54796B5E.5040707@users.sourceforge.net> <87sih22sn8.fsf@devron.myhome.or.jp>
- <alpine.DEB.2.10.1411291338530.2378@hadrien>
- <87lhmu2jl8.fsf@devron.myhome.or.jp>
- <20141201065221.GA4994@mwanda> <547C89A4.40002@users.sourceforge.net>
- <20141201191723.GG4994@mwanda> <547CDC1E.7020404@users.sourceforge.net>
- <20141202073440.GH4994@mwanda>
-Message-ID: <alpine.DEB.2.02.1412020836040.1984@localhost6.localdomain6>
+From: dan.carpenter@oracle.com (Dan Carpenter)
+Date: Tue, 2 Dec 2014 11:59:50 +0300
+Subject: [Cocci] [patch] CodingStyle: add some more error handling guidelines
+In-Reply-To: <alpine.DEB.2.02.1412020836040.1984@localhost6.localdomain6>
+Message-ID: <20141202085950.GA13434@mwanda>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+I added a paragraph on choosing label names, and updated the example
+code to use a better label name.  I also cleaned up the example code to
+more modern style by moving the allocation out of the initializer and
+changing the NULL check.
 
+Perhaps the most common type of error handling bug in the kernel is "one
+err bugs".  CodingStyle already says that we should "avoid nesting" by
+using error labels and one err style error handling tends to have
+multiple indent levels, so this was already bad style.  But I've added a
+new paragraph explaining how to avoid one err bugs by using multiple
+error labels which is, hopefully, more clear.
 
-On Tue, 2 Dec 2014, Dan Carpenter wrote:
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-> On Mon, Dec 01, 2014 at 10:22:38PM +0100, SF Markus Elfring wrote:
-> > >> Which names would be better acceptable for you?
-> > > 
-> > > You named it after the goto location but the label name should be based
-> > > on the label location to say what the goto does.
-> > 
-> > I find it easier occasionally to name a label similarly to the jump target.
-> 
-> That is a useless thing to do.
-> 
-> > It seems that there are a few variations used for the affected identifiers.
-> 
-> There is a lot of crap code in the kernel, yes.
-
-Does the label naming strategy appear in the conding style documentation 
-anywhere?  There are so many variants that just from looking at the code, 
-it is hard to guess what is the best strategy.  For example, out1, out2, 
-etc are pretty uninformative, but they are concise and easy to spell 
-correctly.
-
-julia
+diff --git a/Documentation/CodingStyle b/Documentation/CodingStyle
+index 9f28b14..9c8a234 100644
+--- a/Documentation/CodingStyle
++++ b/Documentation/CodingStyle
+@@ -392,7 +392,12 @@ The goto statement comes in handy when a function exits from multiple
+ locations and some common work such as cleanup has to be done.  If there is no
+ cleanup needed then just return directly.
+ 
+-The rationale is:
++Choose label names which say what the goto does or why the goto exists.  An
++example of a good name could be "out_buffer:" if the goto frees "buffer".  Avoid
++using GW-BASIC names like "err1:" and "err2:".  Also don't name them after the
++goto location like "err_kmalloc_failed:"
++
++The rationale for using gotos is:
+ 
+ - unconditional statements are easier to understand and follow
+ - nesting is reduced
+@@ -403,9 +408,10 @@ The rationale is:
+ int fun(int a)
+ {
+ 	int result = 0;
+-	char *buffer = kmalloc(SIZE);
++	char *buffer;
+ 
+-	if (buffer == NULL)
++	buffer = kmalloc(SIZE);
++	if (!buffer)
+ 		return -ENOMEM;
+ 
+ 	if (condition1) {
+@@ -413,14 +419,25 @@ int fun(int a)
+ 			...
+ 		}
+ 		result = 1;
+-		goto out;
++		goto out_buffer;
+ 	}
+ 	...
+-out:
++out_buffer:
+ 	kfree(buffer);
+ 	return result;
+ }
+ 
++A common type of bug to be aware of it "one err bugs" which look like this:
++
++err:
++	kfree(foo->bar);
++	kfree(foo);
++	return ret;
++
++The bug in this code is that on some exit paths "foo" is NULL.  Normally the
++fix for this is to split it up into two error labels "err_bar:" and "err_foo:".
++
++
+ 		Chapter 8: Commenting
+ 
+ Comments are good, but there is also a danger of over-commenting.  NEVER
