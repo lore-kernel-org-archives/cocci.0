@@ -1,10 +1,9 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 3 Dec 2014 10:19:46 +0100 (CET)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 03 Dec 2014 11:02:41 +0100
 Subject: [Cocci] Determination of the number for named function
- parameters
-In-Reply-To: <547ED432.8060204@users.sourceforge.net>
+	parameters
+In-Reply-To: <alpine.DEB.2.10.1412031018310.2373@hadrien>
 References: <5307CAA2.8060406@users.sourceforge.net>
- <alpine.DEB.2.10.1402251014170.2080@hadrien>
  <530CD2C4.4050903@users.sourceforge.net>
  <alpine.DEB.2.10.1402251840450.7035@hadrien>
  <530CF8FF.8080600@users.sourceforge.net>
@@ -24,28 +23,24 @@ References: <5307CAA2.8060406@users.sourceforge.net>
  <547EC539.5060300@users.sourceforge.net>
  <alpine.DEB.2.10.1412030948030.2373@hadrien>
  <547ED432.8060204@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1412031018310.2373@hadrien>
+ <alpine.DEB.2.10.1412031018310.2373@hadrien>
+Message-ID: <547EDFC1.3020904@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> In an ocaml script, if you declare a metavariable as:
+> 
+> (a,b) << r.e;
+> 
+> then b is the abstract syntax tree of e.  You can eg process it using the
+> visitors available visitor_c.ml.
 
+I am looking for more descriptions around the following information from the manual.
 
-On Wed, 3 Dec 2014, SF Markus Elfring wrote:
+"...
+The file parsing_c/ast_c.ml in the Coccinelle implementation gives some information
+about the structure of the abstract syntax tree.
+..."
 
-> >> Does the OCaml scripting interface provide more information (besides the
-> >> SmPL API) which can be useful in advanced source code analysis?
-> >
-> > No.
->
-> How is the status about an abstract syntax tree interface which was mentioned
-> in a wiki article a while ago?
-
-No idea what you are referring to.  In an ocaml script, if you declare a
-metavariable as:
-
-(a,b) << r.e;
-
-then b is the abstract syntax tree of e.  You can eg process it using the
-visitors available visitor_c.ml.
-
-julia
+Regards,
+Markus
