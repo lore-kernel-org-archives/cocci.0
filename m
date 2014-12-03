@@ -1,49 +1,46 @@
-From: chrubis@suse.cz (Cyril Hrubis)
-Date: Wed, 3 Dec 2014 09:33:52 +0100
-Subject: [Cocci] string parameter concatenation
-In-Reply-To: <alpine.DEB.2.10.1410170752240.2654@hadrien>
-References: <20141001130215.GB4701@rei.suse.cz>
- <alpine.DEB.2.02.1410021858360.2062@localhost6.localdomain6>
- <20141006102500.GC8551@rei.suse.cz>
- <alpine.DEB.2.10.1410170752240.2654@hadrien>
-Message-ID: <20141203083352.GA9214@rei.suse.de>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Wed, 3 Dec 2014 09:48:28 +0100 (CET)
+Subject: [Cocci] Determination of the number for named function
+ parameters
+In-Reply-To: <547EC539.5060300@users.sourceforge.net>
+References: <5307CAA2.8060406@users.sourceforge.net>
+ <alpine.DEB.2.10.1402241710370.2074@hadrien>
+ <530C5E18.1020800@users.sourceforge.net>
+ <alpine.DEB.2.10.1402251014170.2080@hadrien>
+ <530CD2C4.4050903@users.sourceforge.net>
+ <alpine.DEB.2.10.1402251840450.7035@hadrien>
+ <530CF8FF.8080600@users.sourceforge.net>
+ <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
+ <530DD06F.4090703@users.sourceforge.net>
+ <531B0D52.5070008@users.sourceforge.net>
+ <alpine.DEB.2.10.1403081514140.2156@hadrien>
+ <531B32F4.9080004@users.sourceforge.net>
+ <531B771D.3020900@users.sourceforge.net>
+ <alpine.DEB.2.02.1403082240410.2126@localhost6.localdomain6>
+ <531C1FAD.6030009@users.sourceforge.net>
+ <alpine.DEB.2.02.1403090906180.2030@localhost6.localdomain6>
+ <531C63B8.6090403@users.sourceforge.net>
+ <alpine.DEB.2.10.1403091404230.2101@hadrien>
+ <531C6E71.8020807@users.sourceforge.net>
+ <alpine.DEB.2.10.1403091439160.2101@hadrien>
+ <547EC539.5060300@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.10.1412030948030.2373@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi!
-> diff --git a/parsing_c/unparse_c.ml b/parsing_c/unparse_c.ml
-> index 3c54c33..77c23bb 100644
-> --- a/parsing_c/unparse_c.ml
-> +++ b/parsing_c/unparse_c.ml
-> @@ -1288,14 +1288,12 @@ let add_newlines toks tabbing_unit =
->      | _ -> (count,List.tl stack,space_cell,seen_cocci) in
->    let update_by_stack s count stack sp space_cell seen_cocci =
->      let count = simple_string_length s (count + 1 (*space*)) in
-> -    let newinfo =
-> -      match stack with
-> -      | [(x,tustack)] ->
-> -          (match check_for_newline count x tustack space_cell with
-> -          | Some count -> (stack,Some (x,sp), seen_cocci)
-> -          | None -> (stack,Some (count,sp),seen_cocci))
-> -      | _ -> (stack,space_cell,seen_cocci) in
-> -    (newinfo,count) in
-> +    match stack with
-> +    | [(x,tustack)] ->
-> +        (match check_for_newline count x tustack space_cell with
-> +        | Some count -> ((stack,Some (x,sp), seen_cocci),count)
-> +        | None -> ((stack,Some (count,sp),seen_cocci),count))
-> +    | _ -> ((stack,space_cell,seen_cocci),count) in
->    let rec loop ((stack,space_cell,seen_cocci) as info) count seeneq =
->      function
->      | [] -> []
+On Wed, 3 Dec 2014, SF Markus Elfring wrote:
 
-Sorry, I've lost context on this one. Over what patches should I apply
-this patch? I've tried both 1.0.0-rc22 and 1.0.0-rc22 + patches you send
-previously and neither of them worked :(.
+> > It is clear that there is some problem with ... matching a parameter-typed
+> > metavariable.  This could be considered reasonable, because ... is not a
+> > (single) parameter.
+>
+> How is the software support evolving for variadic macros and functions?
 
-It would have been easier if coccinelle had official git repository you
-could have pushed the patch there and easily point me to it...
+For functions, someone is working on it.
 
--- 
-Cyril Hrubis
-chrubis at suse.cz
+> Does the OCaml scripting interface provide more information (besides the
+> SmPL API) which can be useful in advanced source code analysis?
+
+No.
+
+julia
