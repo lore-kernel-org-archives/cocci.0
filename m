@@ -1,46 +1,126 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 03 Dec 2014 11:02:41 +0100
-Subject: [Cocci] Determination of the number for named function
-	parameters
-In-Reply-To: <alpine.DEB.2.10.1412031018310.2373@hadrien>
-References: <5307CAA2.8060406@users.sourceforge.net>
- <530CD2C4.4050903@users.sourceforge.net>
- <alpine.DEB.2.10.1402251840450.7035@hadrien>
- <530CF8FF.8080600@users.sourceforge.net>
- <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
- <530DD06F.4090703@users.sourceforge.net>
- <531B0D52.5070008@users.sourceforge.net>
- <alpine.DEB.2.10.1403081514140.2156@hadrien>
- <531B32F4.9080004@users.sourceforge.net>
- <531B771D.3020900@users.sourceforge.net>
- <alpine.DEB.2.02.1403082240410.2126@localhost6.localdomain6>
- <531C1FAD.6030009@users.sourceforge.net>
- <alpine.DEB.2.02.1403090906180.2030@localhost6.localdomain6>
- <531C63B8.6090403@users.sourceforge.net>
- <alpine.DEB.2.10.1403091404230.2101@hadrien>
- <531C6E71.8020807@users.sourceforge.net>
- <alpine.DEB.2.10.1403091439160.2101@hadrien>
- <547EC539.5060300@users.sourceforge.net>
- <alpine.DEB.2.10.1412030948030.2373@hadrien>
- <547ED432.8060204@users.sourceforge.net>
- <alpine.DEB.2.10.1412031018310.2373@hadrien>
-Message-ID: <547EDFC1.3020904@users.sourceforge.net>
+Date: Wed, 03 Dec 2014 11:30:43 +0100
+Subject: [Cocci] Determination for the number of named function
+ parameters (with SmPL)
+In-Reply-To: <8DDAD79C-96D4-43BA-BC3F-F9EE237D2C60@gmail.com>
+References: <547C4D11.1050206@users.sourceforge.net>
+ <8DDAD79C-96D4-43BA-BC3F-F9EE237D2C60@gmail.com>
+Message-ID: <547EE653.5000901@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> In an ocaml script, if you declare a metavariable as:
+>> elfring at Sonne:~/Projekte/Coccinelle/Probe> cat list_parameter_numbers1.txt
+>> number|counter
+>> 0|29
 > 
-> (a,b) << r.e;
-> 
-> then b is the abstract syntax tree of e.  You can eg process it using the
-> visitors available visitor_c.ml.
+> I think the results are dubious. Only 29 functions with no parameters?
+> That can't be right.
 
-I am looking for more descriptions around the following information from the manual.
+How do you think about to experiment a bit more with the following
+semantic query approach?
 
-"...
-The file parsing_c/ast_c.ml in the Coccinelle implementation gives some information
-about the structure of the abstract syntax tree.
-..."
+@initialize:python@
+@@
+import sys
+import sqlite3 as SQLite
+connection = SQLite.connect(":memory:")
+c = connection.cursor()
+c.execute("""
+create table numbers
+(parameter_number integer,
+ function text,
+ source_file text,
+ line integer,
+ column integer,
+ constraint c
+ primary key (function, source_file, line, column)
+)
+without rowid""")
+
+def store_number(count, fun, places):
+    """Add an integer to an internal list."""
+    for place in places:
+        c.execute("""insert into numbers
+(parameter_number,
+ function,
+ source_file,
+ line,
+ column
+)
+values (?, ?, ?, ?, ?)""",
+                  (count,
+                   fun,
+                   place.file,
+                   place.line,
+                   int(place.column) + 1
+                  )
+                 )
+
+@counting_parameters@
+identifier work;
+parameter list[number] pl;
+position pos;
+type return_type;
+@@
+ return_type work at pos(pl)
+ {
+  ...
+ }
+
+@script:python collection@
+count << counting_parameters.number;
+fun << counting_parameters.work;
+places << counting_parameters.pos;
+@@
+store_number(count, fun, places)
+
+@finalize:python@
+@@
+c.execute("""select count(*) nr from numbers""")
+result = c.fetchone()
+
+if result[0] > 0:
+   c.execute("""create index x on numbers (parameter_number)""")
+   c.execute("""select *
+from numbers
+where parameter_number > 12
+order by parameter_number desc, function, source_file""")
+   delimiter = "|"
+   mark1 = ['"', '', '"']
+   mark2 = ['"', '', '"']
+   sys.stdout.write(delimiter.join(('"parameter number"',
+                                    "function",
+                                    '"source file"',
+                                    "line",
+                                    "column"
+                                   )))
+   sys.stdout.write("\r\n")
+   for entry in c:
+      mark1[1] = entry[1]
+      mark2[1] = entry[2].replace('"', '""')
+      sys.stdout.write(delimiter.join((str(entry[0]),
+                                       ''.join(mark1),
+                                       ''.join(mark2),
+                                       str(entry[3]),
+                                       str(entry[4])
+                                      )))
+      sys.stdout.write("\r\n")
+else:
+   sys.stderr.write("No result for this analysis!\n")
+
+connection.close()
+
+
+elfring at Sonne:~/Projekte/Linux/next-patched> XX=$(date) && spatch.opt -timeout 12 -sp-file ~/Projekte/Coccinelle/Probe/list_parameter_numbers1b.cocci -dir . > list_parameter_numbers1b.txt 2> list_parameter_numbers1b-errors.txt ; YY=$(date) && echo "$XX * $YY"
+Mi 3. Dez 08:46:17 CET 2014 * Mi 3. Dez 09:13:14 CET 2014
+elfring at Sonne:~/Projekte/Linux/next-patched> cat list_parameter_numbers1b.txt
+"parameter number"|function|"source file"|line|column
+22|"send_cap_msg"|"./fs/ceph/caps.c"|968|12
+21|"dispc_ovl_setup_common"|"./drivers/video/fbdev/omap2/dss/dispc.c"|2414|12
+...
+13|"src_sync_cmd"|"./drivers/scsi/aacraid/src.c"|172|12
+13|"submit_extent_page"|"./fs/btrfs/extent_io.c"|2761|12
+
 
 Regards,
 Markus
