@@ -1,49 +1,35 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 3 Dec 2014 11:36:57 +0100 (CET)
-Subject: [Cocci] Determination of the number for named function
- parameters
-In-Reply-To: <547EDFC1.3020904@users.sourceforge.net>
-References: <5307CAA2.8060406@users.sourceforge.net>
- <alpine.DEB.2.10.1402251840450.7035@hadrien>
- <530CF8FF.8080600@users.sourceforge.net>
- <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
- <530DD06F.4090703@users.sourceforge.net>
- <531B0D52.5070008@users.sourceforge.net>
- <alpine.DEB.2.10.1403081514140.2156@hadrien>
- <531B32F4.9080004@users.sourceforge.net>
- <531B771D.3020900@users.sourceforge.net>
- <alpine.DEB.2.02.1403082240410.2126@localhost6.localdomain6>
- <531C1FAD.6030009@users.sourceforge.net>
- <alpine.DEB.2.02.1403090906180.2030@localhost6.localdomain6>
- <531C63B8.6090403@users.sourceforge.net>
- <alpine.DEB.2.10.1403091404230.2101@hadrien>
- <531C6E71.8020807@users.sourceforge.net>
- <alpine.DEB.2.10.1403091439160.2101@hadrien>
- <547EC539.5060300@users.sourceforge.net>
- <alpine.DEB.2.10.1412030948030.2373@hadrien>
- <547ED432.8060204@users.sourceforge.net>
- <alpine.DEB.2.10.1412031018310.2373@hadrien>
- <547EDFC1.3020904@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1412031136380.2373@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 03 Dec 2014 13:31:19 +0100
+Subject: [Cocci] [patch] CodingStyle: add some more error handling
+	guidelines
+In-Reply-To: <20141202085950.GA13434@mwanda>
+References: <20141202085950.GA13434@mwanda>
+Message-ID: <547F0297.6030202@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, 3 Dec 2014, SF Markus Elfring wrote:
+> diff --git a/Documentation/CodingStyle b/Documentation/CodingStyle
+> index 9f28b14..9c8a234 100644
+> --- a/Documentation/CodingStyle
+> +++ b/Documentation/CodingStyle
+> @@ -392,7 +392,12 @@ The goto statement comes in handy when a function exits from multiple
+>  locations and some common work such as cleanup has to be done.  If there is no
+>  cleanup needed then just return directly.
+>  
+> -The rationale is:
+> +Choose label names which say what the goto does or why the goto exists.  An
+> +[...]  Avoid
+> +using GW-BASIC names like "err1:" and "err2:".  Also don't name them after the
+> +goto location like "err_kmalloc_failed:"
 
-> > In an ocaml script, if you declare a metavariable as:
-> >
-> > (a,b) << r.e;
-> >
-> > then b is the abstract syntax tree of e.  You can eg process it using the
-> > visitors available visitor_c.ml.
->
-> I am looking for more descriptions around the following information from the manual.
->
-> "...
-> The file parsing_c/ast_c.ml in the Coccinelle implementation gives some information
-> about the structure of the abstract syntax tree.
-> ..."
+I find this documentation approach not safe and clear enough so far.
 
-That's all the information there is.
+* How should the reference to an other programming language help in the understanding
+  of the recommended naming convention for jump labels?
 
-julia
+* To which source code place should the word "location" refer to?
+  - jump source
+  - jump target
+
+Regards,
+Markus
