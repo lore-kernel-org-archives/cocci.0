@@ -1,83 +1,25 @@
-From: francois.berenger@inria.fr (Francois Berenger)
-Date: Thu, 04 Dec 2014 15:31:59 +0100
-Subject: [Cocci] What is the spatch file for this change and the
- corresponding spatch command line invocation
-In-Reply-To: <alpine.DEB.2.10.1412041354440.2118@hadrien>
-References: <547F4892.6080405@inria.fr> <20141203173449.GX25677@wotan.suse.de>
- <5480584A.30107@inria.fr> <alpine.DEB.2.10.1412041354440.2118@hadrien>
-Message-ID: <5480705F.6000608@inria.fr>
+From: jespera@diku.dk (Jesper Andersen)
+Date: Thu, 04 Dec 2014 15:26:07 +0000
+Subject: [Cocci] it would be nice if spdiff also ships with coccinelle
+ in future releases
+References: <547F3A64.2060002@inria.fr>
+ <CA+RMdsmMp2wp5Mx-f2kknw-THeC_pRUbj-e8Qv5HQtBhAog9bA@mail.gmail.com>
+ <alpine.DEB.2.10.1412041438370.2118@hadrien>
+Message-ID: <CA+RMdsnpgTRNLfv8Hef6R9Y7ZB320yPAOY4MchH_JymnV_AzZQ@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 12/04/2014 01:56 PM, Julia Lawall wrote:
->
->
-> On Thu, 4 Dec 2014, Francois Berenger wrote:
->
->> On 12/03/2014 06:34 PM, Luis R. Rodriguez wrote:
->>> On Wed, Dec 03, 2014 at 06:29:54PM +0100, Francois Berenger wrote:
->>>> Hello,
->>>>
->>>> I give up trying to write the spatch myself:
->>>>
->>>> Before file:
->>>> ---
->>>> int i;
->>>>
->>>> for ( ; ; ++i ) {
->>>>     if (1) {
->>>>       continue;
->>>>     }
->>>> }
->>>> ---
->>>>
->>>> After file:
->>>> ---
->>>> int i;
->>>>
->>>> for ( ; ; ) {
->>>>     if (1) {
->>>>       ++i;
->>>>       continue;
->>>>     }
->>>>     ++i;
->>>> }
->>>> ---
->>>>
->>>> All my trials don't work, not any change in the file appears
->>>> if I try --in-place and -o fails because
->>>> "-o can not be applied because there are no modified files"
->>>
->>> Can you take the hands on tutorial before expecting folks to
->>> write rules for you?
->>>
->>> https://www.youtube.com/watch?v=buZrNd6XkEw
->>
->> If I really need to invest two hours before being able to use coccinelle
->> productively, that would be a serious entry barrier.
->>
->> And probably not just for me: for any potential new user of
->> coccinelle.
->
-> I think that you may have started with an unfortunate case.  I'm not sure
-> what is the strategy for matching the empty space in a for header.  It's
-> not an expression, so what is it.
+On Thu Dec 04 2014 at 14.39.20 Julia Lawall <julia.lawall@lip6.fr> wrote:
 
-It is an optional expression: either there is an expression, either 
-there is none.
-I could not find such thing in the SmPL grammar manual (v1.0.0-rc21).
+>
+> I think I would rather have someone who is able to work on spdiff before
+> merging it with Coccinelle.
+>
+>
+I absolutely understand! I can only spend my relatively scarce spare time
+on spdiff at the moment.
 
->  It may be possible only to match it
-> exactly.
->
-> On the other hand, it is helpful if you provide a semantic patch that
-> you have tried, rather than just the before and after code.  From one
-> example of before and after code, it is not always possible to guess the
-> full generality of the rule that you are trying to implement.
->
-> julia
->
-
--- 
-Regards,
-Francois.
+Jesper
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20141204/10b8c398/attachment.html>
