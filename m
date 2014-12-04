@@ -1,37 +1,86 @@
 From: francois.berenger@inria.fr (Francois Berenger)
-Date: Thu, 04 Dec 2014 11:43:59 +0100
-Subject: [Cocci] it would be nice if spdiff also ships with coccinelle
- in future releases
-In-Reply-To: <CA+RMdsmMp2wp5Mx-f2kknw-THeC_pRUbj-e8Qv5HQtBhAog9bA@mail.gmail.com>
-References: <547F3A64.2060002@inria.fr>
- <CA+RMdsmMp2wp5Mx-f2kknw-THeC_pRUbj-e8Qv5HQtBhAog9bA@mail.gmail.com>
-Message-ID: <54803AEF.9050207@inria.fr>
+Date: Thu, 04 Dec 2014 12:00:55 +0100
+Subject: [Cocci] What is the spatch file for this change and the
+ corresponding spatch command line invocation
+In-Reply-To: <54803A20.2080207@inria.fr>
+References: <547F4892.6080405@inria.fr>
+ <alpine.DEB.2.10.1412031912430.2373@hadrien> <548034AB.2070400@inria.fr>
+ <alpine.DEB.2.10.1412041128401.2118@hadrien> <54803A20.2080207@inria.fr>
+Message-ID: <54803EE7.70203@inria.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 12/04/2014 11:41 AM, Jesper Andersen wrote:
-> Hi,
+On 12/04/2014 11:40 AM, Francois Berenger wrote:
+> On 12/04/2014 11:29 AM, Julia Lawall wrote:
+>> On Thu, 4 Dec 2014, Francois Berenger wrote:
+>>
+>>> Hello,
+>>>
+>>> What is the spatch command line you used and which version of
+>>> coccinelle are
+>>> you using?
+>>>
+>>> I tried this:
+>>>
+>>> # apply.spatch is your exact proposal
+>>> spatch --sp-file apply.spatch test_before.c -o /dev/stdout
+>>
+>> spatch apply.spatch test_before.c
+>>
+>> See what happens if you add -debug to the argument list.
 >
-> On Wed Dec 03 2014 at 17.29.24 Francois Berenger
-> <francois.berenger at inria.fr <mailto:francois.berenger@inria.fr>> wrote:
+> # spatch -debug -sp apply.spatch test_before.c
+> init_defs_builtins: /home/berenger/.opam/4.01.0/share/coccinelle/standard.h
+> -----------------------------------------------------------------------
+> processing semantic patch file: /tmp/sp-15933-b4165a.cocci
+> with isos from: /home/berenger/.opam/4.01.0/share/coccinelle/standard.iso
+> -----------------------------------------------------------------------
+> @@
+> @@
+> * apply.spatch
 >
->     Also, we could have a single package in OPAM for both cocci and spdiff,
->     instead of the current situation with two packages (that I had to
->     create).
+> warning: line 3: should apply be a metavariable?
+
+In my whole apply.spatch file, there is nothing named apply ...
+I am puzzled.
+
+> (ONCE) Expected tokens spatch apply
+> Skipping:test_before.c
+> Check duplication for 0 files
+> @@
+> @@
+> * apply.spatch
 >
+>> julia
+>>
+>>>
+>>> Then I see on stdout the exact same file than what's in test_before.c
+>>>
+>>> On 12/03/2014 07:13 PM, Julia Lawall wrote:
+>>>> @@
+>>>> expression i;
+>>>> @@
+>>>>
+>>>> for ( ; ;
+>>>> - ++i
+>>>>       ) {
+>>>>     if (1) {
+>>>> +   ++i;
+>>>>       continue;
+>>>>     }
+>>>> }
+>>>>
+>>>> julia
+>>>
+>>> --
+>>> Regards,
+>>> Francois.
+>>> _______________________________________________
+>>> Cocci mailing list
+>>> Cocci at systeme.lip6.fr
+>>> https://systeme.lip6.fr/mailman/listinfo/cocci
+>>>
 >
-> It would be cool if spdiff could use the system-wide installed version
-> of coccinelle. What would you think, is that possible? (I have not
-> looked at how one could handle this using OPAM)
-
-OPAM does not install things system-wide (in a default setup).
-
-OPAM only touches things under your ~/.opam directory.
-
-> I'm not sure Julia would want to include spdiff in coccinelle, but I can
-> go ahead and ask her.
-
-Yes, this one is maybe a bigger/more fundamental problem.
 
 -- 
 Regards,
