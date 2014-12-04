@@ -1,29 +1,54 @@
-From: jespera@diku.dk (Jesper Andersen)
-Date: Thu, 04 Dec 2014 10:41:41 +0000
-Subject: [Cocci] it would be nice if spdiff also ships with coccinelle
-	in future releases
-References: <547F3A64.2060002@inria.fr>
-Message-ID: <CA+RMdsmMp2wp5Mx-f2kknw-THeC_pRUbj-e8Qv5HQtBhAog9bA@mail.gmail.com>
+From: francois.berenger@inria.fr (Francois Berenger)
+Date: Thu, 04 Dec 2014 13:49:14 +0100
+Subject: [Cocci] What is the spatch file for this change and the
+ corresponding spatch command line invocation
+In-Reply-To: <20141203173449.GX25677@wotan.suse.de>
+References: <547F4892.6080405@inria.fr> <20141203173449.GX25677@wotan.suse.de>
+Message-ID: <5480584A.30107@inria.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi,
-
-On Wed Dec 03 2014 at 17.29.24 Francois Berenger <francois.berenger@inria.fr>
-wrote:
-
-> Also, we could have a single package in OPAM for both cocci and spdiff,
-> instead of the current situation with two packages (that I had to create).
+On 12/03/2014 06:34 PM, Luis R. Rodriguez wrote:
+> On Wed, Dec 03, 2014 at 06:29:54PM +0100, Francois Berenger wrote:
+>> Hello,
+>>
+>> I give up trying to write the spatch myself:
+>>
+>> Before file:
+>> ---
+>> int i;
+>>
+>> for ( ; ; ++i ) {
+>>    if (1) {
+>>      continue;
+>>    }
+>> }
+>> ---
+>>
+>> After file:
+>> ---
+>> int i;
+>>
+>> for ( ; ; ) {
+>>    if (1) {
+>>      ++i;
+>>      continue;
+>>    }
+>>    ++i;
+>> }
+>> ---
+>>
+>> All my trials don't work, not any change in the file appears
+>> if I try --in-place and -o fails because
+>> "-o can not be applied because there are no modified files"
 >
+> Can you take the hands on tutorial before expecting folks to
+> write rules for you?
 >
-It would be cool if spdiff could use the system-wide installed version of
-coccinelle. What would you think, is that possible? (I have not looked at
-how one could handle this using OPAM)
+> https://www.youtube.com/watch?v=buZrNd6XkEw
 
-I'm not sure Julia would want to include spdiff in coccinelle, but I can go
-ahead and ask her.
+If I really need to invest two hours before being able to use coccinelle 
+productively, that would be a serious entry barrier.
 
-Jesper
--------------- next part --------------
-An HTML attachment was scrubbed...
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20141204/eb17ec29/attachment.html>
+And probably not just for me: for any potential new user of
+coccinelle.
