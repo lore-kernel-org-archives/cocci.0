@@ -1,68 +1,25 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 5 Dec 2014 08:32:33 +0100 (CET)
-Subject: [Cocci] Finding embedded function names?
-In-Reply-To: <1417764516.2721.37.camel@perches.com>
-References: <1417741951.2721.30.camel@perches.com>
- <alpine.DEB.2.02.1412050742500.2059@localhost6.localdomain6>
- <1417764516.2721.37.camel@perches.com>
-Message-ID: <alpine.DEB.2.02.1412050831060.2059@localhost6.localdomain6>
+From: pavel@ucw.cz (Pavel Machek)
+Date: Fri, 5 Dec 2014 11:32:48 +0100
+Subject: [Cocci] printf vs. printk (was Re: Side-effect free printk?)
+In-Reply-To: <1417629003.2902.14.camel@perches.com>
+References: <1417629003.2902.14.camel@perches.com>
+Message-ID: <20141205103248.GA6945@amd>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 4 Dec 2014, Joe Perches wrote:
+Hi!
 
-> On Fri, 2014-12-05 at 08:18 +0100, Julia Lawall wrote:
-> > On Thu, 4 Dec 2014, Joe Perches wrote:
-> > > Is it possible for coccinelle to look at the name
-> > > of a function that might be embedded in a format?
-> > > ie for:
-> > > void testme(void)
-> > > {
-> > > 	printf("testme: some message\n");
-> > > }
-> > > Can it find the "testme" embedded in a format string?
-> > 
-> > Yes, by using python/ocaml:
-> > 
-> > @r@
-> > char [] c;
-> > position p;
-> > identifier f;
-> > @@
-> > 
-> > f(...,c at p,...)
-> > 
-> > @script:ocaml@
-> > c << r.c;
-> > p << r.p;
-> > @@
-> > 
-> > let ce = (List.hd p).current_element in
-> > if List.length(Str.split_delim (Str.regexp ce) c) > 1
-> > then Printf.printf "%s:%d: %s\n"
-> >        (List.hd p).file (List.hd p).line c
-> 
-> Good to know, thanks.
-> 
-> > Here are some results:
-> > 
-> > drivers/net/wireless/zd1211rw/zd_usb.c:1573: "%s usb_exit()\n"
-> []
-> > The idea would be to replace these by %s and __func__?  That would also be 
-> > possible.
-> 
-> Yes and no.
-> 
-> A lot of these are function tracing style messages and
-> those should just be deleted.
+BTW... All the time I'm programming in kernel, I use printf(), and
+when hacking userspace, I use printk().
 
-Would it be possible to characterize what a function tracing style message 
-would be?  Something like 
-"<===_rtl8723be_phy_convert_txpower_dbm_to_relative_value()\n"
-that looks like it may represent a function exit?
+Nasty.
 
-Anything that doesn't contain %?
+Given that printf() and printk() have exactly the same behaviour,
+could we allow printf() in kernel? Now... printk()s are usually
+removed before merging the driver, so code will not see much change,
+but it will certainly result in less 4-letter words while developing.
 
-Anything that is not under an if?
-
-julia
+									Pavel
+-- 
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
