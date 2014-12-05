@@ -1,25 +1,41 @@
-From: pavel@ucw.cz (Pavel Machek)
-Date: Fri, 5 Dec 2014 11:32:48 +0100
-Subject: [Cocci] printf vs. printk (was Re: Side-effect free printk?)
-In-Reply-To: <1417629003.2902.14.camel@perches.com>
-References: <1417629003.2902.14.camel@perches.com>
-Message-ID: <20141205103248.GA6945@amd>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Fri, 05 Dec 2014 15:20:50 +0100
+Subject: [Cocci] Finding function implementations that call only a
+ single function.
+In-Reply-To: <alpine.DEB.2.02.1412032334330.2303@localhost6.localdomain6>
+References: <5478F848.1080808@users.sourceforge.net>
+ <alpine.DEB.2.02.1412032218310.2303@localhost6.localdomain6>
+ <547F8C2B.5090601@users.sourceforge.net>
+ <alpine.DEB.2.02.1412032334330.2303@localhost6.localdomain6>
+Message-ID: <5481BF42.9040503@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi!
+>> How should function calls with a non-void return type be found currently?
+> 
+> Perhaps you can say
+> 
+> type t != void;
 
-BTW... All the time I'm programming in kernel, I use printf(), and
-when hacking userspace, I use printk().
+I have tried your suggestion out.
 
-Nasty.
 
-Given that printf() and printk() have exactly the same behaviour,
-could we allow printf() in kernel? Now... printk()s are usually
-removed before merging the driver, so code will not see much change,
-but it will certainly result in less 4-letter words while developing.
+elfring at Sonne:~/Projekte/Coccinelle/Probe> spatch.opt -sp-file list_functions_with_single_function_call3.cocci /usr/src/linux-stable/drivers/gpu/drm/ast/ast_ttm.c
+init_defs_builtins: /usr/local/share/coccinelle/standard.h
+1847 1849
+Fatal error: exception Failure("meta: parse error: 
+ = File "list_functions_with_single_function_call3.cocci", line 82, column 17,  charpos = 1847
+    around = '!=', whole content =      return_type != void;
+")
 
-									Pavel
--- 
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
+
+But I do not like the shown error message again.
+
+
+> If not, then match the void functions, save their position, and then match 
+> the functions that are not in the same position.
+
+I would appreciate if I do not need to fiddle more with SmPL position variables.
+
+Regards,
+Markus
