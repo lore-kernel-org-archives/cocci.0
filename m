@@ -1,8 +1,8 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 7 Dec 2014 12:45:20 +0100 (CET)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sun, 07 Dec 2014 13:00:15 +0100
 Subject: [Cocci] Finding function implementations that call only a
  single function.
-In-Reply-To: <54842E04.9060800@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.02.1412071244240.2044@localhost6.localdomain6>
 References: <5478F848.1080808@users.sourceforge.net>
  <54820FEF.4080901@users.sourceforge.net>
  <54834F76.1090104@users.sourceforge.net>
@@ -22,26 +22,27 @@ References: <5478F848.1080808@users.sourceforge.net>
  <54842A73.4000203@users.sourceforge.net>
  <alpine.DEB.2.02.1412071125130.2044@localhost6.localdomain6>
  <54842E04.9060800@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1412071244240.2044@localhost6.localdomain6>
+ <alpine.DEB.2.02.1412071244240.2044@localhost6.localdo! main6>
+Message-ID: <5484414F.4040900@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, 7 Dec 2014, SF Markus Elfring wrote:
+> If the return type has no impact on the match, it can be omitted.
 
-> >> One part of each SmPL disjunction will always not match in this approach
-> >> if an analysed function implementation has got the return type "void".
-> >> Would the specification of a metavariable "return_type" be also
-> >> unnecessary and inappropriate in this use case?
-> > 
-> > Currently, return_type does absolutely nothing.  You can just drop it.
+Is another metavariable needed to filter on functions with a non-void
+return type?
+
+
+>> When should a filter pattern on function implementations be adapted to
+>> the property that there will be a return value affected (or not)?
 > 
-> Should I really omit to distinguish the function return type?
+> I don't understand the question.
 
-If the return type has no impact on the match, it can be omitted.
+It seems that I need to describe my small SmPL example with more
+drastic words. Would it introduce programming errrors in such an
+application of the semantic patch language?
 
-> When should a filter pattern on function implementations be adapted to
-> the property that there will be a return value affected (or not)?
+Does it contain logical mistakes?
 
-I don't understand the question.
-
-julia
+Regards,
+Markus
