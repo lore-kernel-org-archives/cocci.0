@@ -1,439 +1,184 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 05 Dec 2014 21:05:03 +0100
+Date: Sun, 07 Dec 2014 10:15:30 +0100
 Subject: [Cocci] Finding function implementations that call only a
  single function.
-In-Reply-To: <alpine.DEB.2.10.1412051633240.2360@hadrien>
+In-Reply-To: <alpine.DEB.2.02.1412070749130.2044@localhost6.localdomain6>
 References: <5478F848.1080808@users.sourceforge.net>
  <alpine.DEB.2.02.1412032218310.2303@localhost6.localdomain6>
  <547F8C2B.5090601@users.sourceforge.net>
  <alpine.DEB.2.02.1412032334330.2303@localhost6.localdomain6>
  <5481BF42.9040503@users.sourceforge.net>
  <alpine.DEB.2.10.1412051633240.2360@hadrien>
-Message-ID: <54820FEF.4080901@users.sourceforge.net>
+ <54820FEF.4080901@users.sourceforge.net>
+ <54834F76.1090104@users.sourceforge.net>
+ <alpine.DEB.2.10.1412061955440.2042@hadrien>
+ <548358DE.6020409@users.sourceforge.net>
+ <alpine.DEB.2.02.1412062139570.2256@localhost6.localdomain6>
+ <548371FB.9060402@users.sourceforge.net>
+ <alpine.DEB.2.02.1412062219530.2256@localhost6.localdomain6>
+ <54837413.8000902@users.sourceforge.net>
+ <alpine.DEB.2.02.1412062232470.2256@localhost6.localdomain6>
+ <5483806D.3070805@users.sourceforge.net>
+ <alpine.DEB.2.02.1412062342540.2256@localhost6.localdomain6>
+ <5483902E.8060109@users.sourceforge.net>
+ <alpine.DEB.2.02.1412070749130.2044@localhost6.localdomain6>
+Message-ID: <54841AB2.6070609@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> OK, you hve two choices:
+>> I hope that a log format selection does not block a constructive dialogue
+>> for the clarification of interesting SmPL rules.
 > 
-> 1. Use the position variables
+> Sorry but it does.
 
-I might consider their use more for other data processing tasks.
-
-
-> 2. Extend Coccinelle to handle constraints on types
-
-Would you like to acknowledge that this implementation area
-is still an open issue?
-https://github.com/coccinelle/coccinelle/issues/32
-
-How do you think about do document corresponding limitations?
+If you insist on a log file format in this way, you can also get it.
+How should your preferred log format look exactly?
 
 
-> Or I guess a third choice which is to use some other tool.
+> I won't look at it further until there is only one SmPL file, it contains 
+> a small numnber of rules,
 
-I can also fiddle with SmPL rules which try to circumvent current
-software limitations as a fourth choice, can't we?
+I am going try again to inform you about software development progress in smaller steps.
 
-I guess that it should work at least to filter on function
-implementations which call only a single function.
-The missing support for constraints on metavariables with
-the data type "type" might not really matter in this specific
-use case.
 
-Example:
+> there is a small C file,
 
-@non_void_single_function_call@
-identifier caller, input, result, work;
-type data_type, input_type, return_type;
+I attached one that contains the function implementations that should be found
+with another semantic patch approach.
+
+
+> and there is a high level description of what you expect.
+
+I expect the following list of properties for four functions after the selection
+of a single source file for a data extraction.
+
+They fit to the filter criterium that only a single function is called within
+their implementations.
+
+
+>>>> static|function|"data type"|"parameter"|"source file"|line|column
+>>>> 1|ast_ttm_mem_global_init|"struct drm_global_reference"|ref|"/usr/src/linux-stable/drivers/gpu/drm/ast/ast_ttm.c"|39|1
+>>>> 1|ast_ttm_mem_global_release|"struct drm_global_reference"|ref|"/usr/src/linux-stable/drivers/gpu/drm/ast/ast_ttm.c"|45|1
+>>>> 1|ast_ttm_tt_populate|"struct ttm_tt *"|ttm|"/usr/src/linux-stable/drivers/gpu/drm/ast/ast_ttm.c"|228|12
+>>>> 1|ast_ttm_tt_unpopulate|"struct ttm_tt *"|ttm|"/usr/src/linux-stable/drivers/gpu/drm/ast/ast_ttm.c"|233|13
+> 
+> How much of this output is actually relevant to your problem?
+
+This the expected result in principle.
+
+
+> For example, you ask me to work on a specific file.
+
+Yes. - I find it appropriate for further tests.
+
+
+> So why does the output have to contain the file name.
+
+The file name should be copied from the source code position metavariables
+to the desired list display.
+
+
+> Why does the output need to contain the parameter name, etc.
+
+The involved data type should be directly seen from the function signature.
+
+
+> All that it needs is the function name and the line number,
+
+The text column is also needed to make a found source code position unique.
+
+
+> because there might be more than one function with the same name.
+
+Yes. - Functions are also occasionally redefined because of conditional compilation.
+
+
+> The rest is noise and unreadable
+> - there are no space, there are lots of quotes, there sre more than 80 columns, etc.
+
+Would you like to introduce another coding style convention?
+
+
+> I can only help you with something that is matched but should not be,
+> or something that is not matched but should be.
+
+I hope that we can keep our dialogue constructive on such issue improvements.
+
+
+It seems that we can eventually clarify a part of my observations (without additional
+logging) already from a SmPL pattern like the following.
+
+@single_function_call@
+identifier caller, input, work;
+type input_type, return_type;
 @@
-*return_type caller(..., input_type input, ...)
+*return_type caller(input_type input)
  {
 (
-  return work(input);
+  work(input);
 |
-  data_type result = work(input);
-  return result;
+  return work(input);
 )
  }
 
-elfring at Sonne:~/Projekte/Coccinelle/Probe> spatch.opt -sp-file find_non-void_function2.cocci /usr/src/linux-stable/drivers/gpu/drm/ast/ast_ttm.c
-init_defs_builtins: /usr/local/share/coccinelle/standard.h
-HANDLING: /usr/src/linux-stable/drivers/gpu/drm/ast/ast_ttm.c
-diff =
---- /usr/src/linux-stable/drivers/gpu/drm/ast/ast_ttm.c
-+++ /tmp/cocci-output-20396-ddaa9b-ast_ttm.c
-@@ -225,7 +225,6 @@ static struct ttm_tt *ast_ttm_tt_create(
-        return tt;
+@single_function_call_with_pointer@
+identifier caller, element, input, work;
+type input_type, return_type;
+@@
+*return_type caller(input_type * input)
+ {
+(
+  work(input->element);
+|
+  return work(input->element);
+)
  }
 
+
+elfring at Sonne:~/Projekte/Coccinelle/Probe> spatch.opt -sp-file find_single_function_call1.cocci ast_ttm-excerpt1.c
+init_defs_builtins: /usr/local/share/coccinelle/standard.h
+HANDLING: ast_ttm-excerpt1.c
+diff = 
+--- ast_ttm-excerpt1.c
++++ /tmp/cocci-output-19572-537bbf-ast_ttm-excerpt1.c
+@@ -25,24 +25,18 @@
+ /*
+  * Authors: Dave Airlie <airlied@redhat.com>
+  */
+-static int
+-ast_ttm_mem_global_init(struct drm_global_reference *ref)
+ {
+        return ttm_mem_global_init(ref->object);
+ }
+ 
+-static void
+-ast_ttm_mem_global_release(struct drm_global_reference *ref)
+ {
+        ttm_mem_global_release(ref->object);
+ }
+ 
 -static int ast_ttm_tt_populate(struct ttm_tt *ttm)
  {
         return ttm_pool_populate(ttm);
  }
+ 
+-static void ast_ttm_tt_unpopulate(struct ttm_tt *ttm)
+ {
+        ttm_pool_unpopulate(ttm);
+ }
 
 
-A wrapper function was found here which has got also the property "static".
-I am trying to improve my source code analysis scripts especially for
-this function type.
 
-
-How do you think about the following differences in the results?
-
-elfring at Sonne:~/Projekte/Coccinelle/Probe> spatch.opt -sp-file list_functions_with_single_function_call3.cocci /usr/src/linux-stable/drivers/gpu/drm/ast/ast_ttm.c
-init_defs_builtins: /usr/local/share/coccinelle/standard.h
-warning: void_find_static: inherited metavariable caller not used in the -, +, or context code
-warning: non_void_find_static: inherited metavariable caller not used in the -, +, or context code
-HANDLING: /usr/src/linux-stable/drivers/gpu/drm/ast/ast_ttm.c
-static|function|"data type"|"parameter"|"source file"|line|column
-0|ast_ttm_tt_unpopulate|"struct ttm_tt *"|ttm|"/usr/src/linux-stable/drivers/gpu/drm/ast/ast_ttm.c"|233|13
-elfring at Sonne:~/Projekte/Coccinelle/Probe> spatch.opt -sp-file list_functions_with_single_function_call4.cocci /usr/src/linux-stable/drivers/gpu/drm/ast/ast_ttm.c
-init_defs_builtins: /usr/local/share/coccinelle/standard.h
-warning: find_static: inherited metavariable caller not used in the -, +, or context code
-HANDLING: /usr/src/linux-stable/drivers/gpu/drm/ast/ast_ttm.c
-static|function|"data type"|"parameter"|"source file"|line|column
-0|ast_ttm_tt_populate|"struct ttm_tt *"|ttm|"/usr/src/linux-stable/drivers/gpu/drm/ast/ast_ttm.c"|228|12
-0|ast_ttm_tt_unpopulate|"struct ttm_tt *"|ttm|"/usr/src/linux-stable/drivers/gpu/drm/ast/ast_ttm.c"|233|13
-
-
-* Both approaches should find more functions here, shouldn't they?
-  (See attachments ...)
-
-* It seems that my python function "store_static" is not called so far.
-  Is that strange?
+One of my concerns here is the influence of the function return type
+on the SmPL evaluation speed so that more fine-tuning will be appropriate
+for the filter patterns.
 
 Regards,
 Markus
 -------------- next part --------------
-@initialize:python@
-@@
-import sys
-import sqlite3 as SQLite
-connection = SQLite.connect(":memory:")
-c = connection.cursor()
-c.execute("""
-create table positions
-(static integer default 0,
- function text,
- data_type text,
- parameter text,
- source_file text,
- line integer,
- column integer,
- constraint c
- primary key (function, source_file, line, column)
-)
-without rowid""")
-build_index=True
-
-def store_positions(fun, typ, point, places):
-    """Add source code positions to an internal list."""
-    for place in places:
-        c.execute("""insert into positions
-(function,
- data_type,
- parameter,
- source_file,
- line,
- column
-)
-values (?, ?, ?, ?, ?, ?)""",
-                  (fun,
-                  typ,
-                  point,
-                  place.file,
-                  place.line,
-                  int(place.column) + 1
-                  )
-                 )
-
-def store_static(fun, places):
-    """Record that a function is static."""
-    for place in places:
-        fields = []
-        fields.append("fun:")
-        fields.append(fun)
-        fields.append("file:")
-        fields.append(place.file)
-        fields.append("line:")
-        fields.append(place.line)
-        fields.append("column:")
-        fields.append(int(place.column) + 1)
-        sys.stderr.write("\n".join())
-        sys.stderr.write("\n")
-        c.execute("""update positions
-set static=1
-where function = ?
-      and source_file = ?
-      and line = ?
-      and column = ?""",
-                  (fun, place.file, place.line, int(place.column) + 1)
-                 )
-
-@void_single_function_call@
-identifier caller, input, work;
-type input_type;
-position pos;
-@@
- void caller at pos(input_type input)
- {
-(
-  work(input);
-|
-  work(input);
-  return;
-)
- }
-
-@script:python void_collection depends on void_single_function_call@
-typ << void_single_function_call.input_type;
-fun << void_single_function_call.caller;
-point << void_single_function_call.input;
-places << void_single_function_call.pos;
-@@
-store_positions(fun, typ, point, places)
-
-@non_void_single_function_call@
-identifier caller, input, result, work;
-type data_type, input_type, return_type;
-position pos;
-@@
- return_type caller at pos(input_type input)
- {
-(
-  return work(input);
-|
-  data_type result = work(input);
-  return result;
-)
- }
-
-@script:python non_void_collection depends on non_void_single_function_call@
-typ << non_void_single_function_call.data_type;
-fun << non_void_single_function_call.caller;
-point << non_void_single_function_call.input;
-places << non_void_single_function_call.pos;
-@@
-store_positions(fun, typ, point, places)
-
-@void_find_static depends on void_single_function_call@
-identifier void_single_function_call.caller;
-position void_single_function_call.pos;
-@@
- static void callerk at pos(...)
- {
-  ...
- }
-
-@non_void_find_static depends on non_void_single_function_call@
-identifier non_void_single_function_call.caller;
-type non_void_single_function_call.return_type;
-position non_void_single_function_call.pos;
-@@
- static return_type callerk@pos(...)
- {
-  ...
- }
-
-@script:python index_creation@
-@@
-if build_index:
-   c.execute("""
-create unique index x
-on positions(function, source_file, line, column)""")
-   build_index=False
-
-@script:python void_addition depends on void_find_static@
-fun << void_single_function_call.caller;
-places << void_single_function_call.pos;
-@@
-store_static(fun, places)
-
-@script:python non_void_addition depends on non_void_find_static@
-fun << non_void_single_function_call.caller;
-places << non_void_single_function_call.pos;
-@@
-store_static(fun, places)
-
-@finalize:python@
-@@
-c.execute("select count(*) nr from positions")
-entry = c.fetchone()
-
-if entry[0] > 0:
-   c.execute("""
-select *
-from positions
-order by source_file, function, line, column""")
-   mark1 = ['"', '', '"']
-   mark2 = ['"', '', '"']
-   delimiter = '|'
-   sys.stdout.write(delimiter.join(("static",
-                                    "function",
-                                    '"data type"',
-                                    '"parameter"',
-                                    '"source file"',
-                                    "line",
-                                    "column"
-                                   )))
-   sys.stdout.write("\r\n")
-   for entry in c:
-      mark1[1] = entry[2]
-      mark2[1] = entry[4].replace('"', '""')
-      sys.stdout.write(delimiter.join((str(entry[0]),
-                                       entry[1],
-                                       ''.join(mark1),
-                                       entry[3],
-                                       ''.join(mark2),
-                                       str(entry[5]),
-                                       str(entry[6])
-                                      )))
-      sys.stdout.write("\r\n")
-else:
-   sys.stderr.write("No result for this analysis!\n")
-
-connection.close()
--------------- next part --------------
-@initialize:python@
-@@
-import sys
-import sqlite3 as SQLite
-connection = SQLite.connect(":memory:")
-c = connection.cursor()
-c.execute("""
-create table positions
-(static integer default 0,
- function text,
- data_type text,
- parameter text,
- source_file text,
- line integer,
- column integer,
- constraint c
- primary key (function, source_file, line, column)
-)
-without rowid""")
-build_index=True
-
-def store_positions(fun, typ, point, places):
-    """Add source code positions to an internal list."""
-    for place in places:
-        c.execute("""insert into positions
-(function,
- data_type,
- parameter,
- source_file,
- line,
- column
-)
-values (?, ?, ?, ?, ?, ?)""",
-                  (fun,
-                  typ,
-                  point,
-                  place.file,
-                  place.line,
-                  int(place.column) + 1
-                  )
-                 )
-
-def store_static(fun, places):
-    """Record that a function is static."""
-    for place in places:
-        c.execute("""update positions
-set static=1
-where function = ?
-      and source_file = ?
-      and line = ?
-      and column = ?""",
-                  (fun, place.file, place.line, int(place.column) + 1)
-                 )
-
-@single_function_call@
-identifier caller, input, result, work;
-type data_type, input_type, return_type;
-position pos;
-@@
- return_type caller at pos(input_type input)
- {
-(
-  work(input);
-|
-  return work(input);
-|
-  data_type result = work(input);
-  return result;
-|
-  work(input);
-  return;
-)
- }
-
-@script:python collection depends on single_function_call@
-typ << single_function_call.input_type;
-fun << single_function_call.caller;
-point << single_function_call.input;
-places << single_function_call.pos;
-@@
-store_positions(fun, typ, point, places)
-
-@find_static depends on single_function_call@
-identifier single_function_call.caller;
-type single_function_call.return_type;
-position single_function_call.pos;
-@@
- static return_type callerk@pos(...)
- {
-  ...
- }
-
-@script:python index_creation@
-@@
-if build_index:
-   c.execute("""
-create unique index x
-on positions(function, source_file, line, column)""")
-   build_index=False
-
-@script:python addition depends on find_static@
-fun << single_function_call.caller;
-places << single_function_call.pos;
-@@
-store_static(fun, places)
-
-@finalize:python@
-@@
-c.execute("select count(*) nr from positions")
-entry = c.fetchone()
-
-if entry[0] > 0:
-   c.execute("""
-select *
-from positions
-order by source_file, function, line, column""")
-   mark1 = ['"', '', '"']
-   mark2 = ['"', '', '"']
-   delimiter = '|'
-   sys.stdout.write(delimiter.join(("static",
-                                    "function",
-                                    '"data type"',
-                                    '"parameter"',
-                                    '"source file"',
-                                    "line",
-                                    "column"
-                                   )))
-   sys.stdout.write("\r\n")
-   for entry in c:
-      mark1[1] = entry[2]
-      mark2[1] = entry[4].replace('"', '""')
-      sys.stdout.write(delimiter.join((str(entry[0]),
-                                       entry[1],
-                                       ''.join(mark1),
-                                       entry[3],
-                                       ''.join(mark2),
-                                       str(entry[5]),
-                                       str(entry[6])
-                                      )))
-      sys.stdout.write("\r\n")
-else:
-   sys.stderr.write("No result for this analysis!\n")
-
-connection.close()
+A non-text attachment was scrubbed...
+Name: ast_ttm-excerpt1.c
+Type: text/x-csrc
+Size: 1631 bytes
+Desc: not available
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20141207/6a30a4e1/attachment.bin>
