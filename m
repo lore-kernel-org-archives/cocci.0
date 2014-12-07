@@ -1,11 +1,9 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 07 Dec 2014 11:37:56 +0100
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sun, 7 Dec 2014 12:45:20 +0100 (CET)
 Subject: [Cocci] Finding function implementations that call only a
  single function.
-In-Reply-To: <alpine.DEB.2.02.1412071125130.2044@localhost6.localdomain6>
+In-Reply-To: <54842E04.9060800@users.sourceforge.net>
 References: <5478F848.1080808@users.sourceforge.net>
- <5481BF42.9040503@users.sourceforge.net>
- <alpine.DEB.2.10.1412051633240.2360@hadrien>
  <54820FEF.4080901@users.sourceforge.net>
  <54834F76.1090104@users.sourceforge.net>
  <alpine.DEB.2.10.1412061955440.2042@hadrien>
@@ -23,21 +21,27 @@ References: <5478F848.1080808@users.sourceforge.net>
  <alpine.DEB.2.02.1412071027040.2044@localhost6.localdomain6>
  <54842A73.4000203@users.sourceforge.net>
  <alpine.DEB.2.02.1412071125130.2044@localhost6.localdomain6>
-Message-ID: <54842E04.9060800@users.sourceforge.net>
+ <54842E04.9060800@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.02.1412071244240.2044@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> One part of each SmPL disjunction will always not match in this approach
->> if an analysed function implementation has got the return type "void".
->> Would the specification of a metavariable "return_type" be also
->> unnecessary and inappropriate in this use case?
+On Sun, 7 Dec 2014, SF Markus Elfring wrote:
+
+> >> One part of each SmPL disjunction will always not match in this approach
+> >> if an analysed function implementation has got the return type "void".
+> >> Would the specification of a metavariable "return_type" be also
+> >> unnecessary and inappropriate in this use case?
+> > 
+> > Currently, return_type does absolutely nothing.  You can just drop it.
 > 
-> Currently, return_type does absolutely nothing.  You can just drop it.
+> Should I really omit to distinguish the function return type?
 
-Should I really omit to distinguish the function return type?
+If the return type has no impact on the match, it can be omitted.
 
-When should a filter pattern on function implementations be adapted to
-the property that there will be a return value affected (or not)?
+> When should a filter pattern on function implementations be adapted to
+> the property that there will be a return value affected (or not)?
 
-Regards,
-Markus
+I don't understand the question.
+
+julia
