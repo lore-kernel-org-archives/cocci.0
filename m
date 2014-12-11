@@ -1,25 +1,60 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 10 Dec 2014 22:43:02 +0100
-Subject: [Cocci] [PATCH] scripts: coccinelle: add uses of
-	memzero_explicit
-In-Reply-To: <1418242123-8610-1-git-send-email-Julia.Lawall@lip6.fr>
-References: <1418242123-8610-1-git-send-email-Julia.Lawall@lip6.fr>
-Message-ID: <5488BE66.8040804@users.sourceforge.net>
+From: ian@transcriptic.com (Ian Ohara)
+Date: Wed, 10 Dec 2014 16:19:38 -0800
+Subject: [Cocci] Initialization thrown away
+Message-ID: <CAGxBnffpDpnrVNnyE1Fqc=sm-2A8E8Q6NvHe+K_B9PDyOX90Lg@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Memzero_explicit is a version of memset that is resistent to compiler
-> optimizations when the set region is about to go out of scope.
+Hi,
 
-Thanks for another interesting update suggestion.
+Is it expected behaviour that:
 
+@@
+identifier i;
+@@
+-int i;
++long i;
 
-> This was suggested by Daniel Borkmann
+Applied to a file containing:
 
-How do you think about to amend such a commit message here?
+int a=20;
 
-Would it eventually be better to use a tag like "Suggested-by" there
-(instead of finishing this sentence with a full stop)?
+Results in:
 
-Regards,
-Markus
+diff =
+--- initializer_ignored.c
++++ /tmp/cocci-output-19589-137add-initializer_ignored.c
+@@ -1 +1 @@
+-int a=20;
++long a;
+
+I was expecting the =20; to be preserved, or at least that it just doesn't
+match unless I specify a separate case where I explicitly declare a
+constant metavariable and check for the case where the variable is
+initialized with a constant.
+
+I've attached two files containing the source and .cocci file to duplicate
+this.  Also:
+
+$ spatch --version
+spatch version 1.0.0-rc22 with Python support and with PCRE support
+
+Thanks and let me know if there's more I can do to help,
+-Ian
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20141210/f32b3576/attachment.html>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: initializer_ignore.cocci
+Type: application/octet-stream
+Size: 39 bytes
+Desc: not available
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20141210/f32b3576/attachment.obj>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: initializer_ignored.c
+Type: text/x-csrc
+Size: 10 bytes
+Desc: not available
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20141210/f32b3576/attachment.bin>
