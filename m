@@ -1,30 +1,50 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Thu, 11 Dec 2014 15:57:05 +0100
-Subject: [Cocci] 1.0.0-rc23 release
-In-Reply-To: <alpine.DEB.2.10.1412111413400.2600@hadrien>
-References: <alpine.DEB.2.10.1412111413400.2600@hadrien>
-Message-ID: <5489B0C1.7020908@users.sourceforge.net>
+From: ian@transcriptic.com (Ian Ohara)
+Date: Fri, 12 Dec 2014 13:28:27 -0800
+Subject: [Cocci] Initialization thrown away
+In-Reply-To: <alpine.DEB.2.10.1412110958450.2772@hadrien>
+References: <CAGxBnffpDpnrVNnyE1Fqc=sm-2A8E8Q6NvHe+K_B9PDyOX90Lg@mail.gmail.com>
+ <alpine.DEB.2.10.1412110955440.2772@hadrien>
+ <alpine.DEB.2.10.1412110958450.2772@hadrien>
+Message-ID: <CAGxBnfepOdERR7JKb=n1Xs0_+CVrV+PGim4DMGrzo2xmXj88yA@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Some changes:
+Hi Julia,
+
+Thanks for the response and suggestions.  For now I'm just explicitly
+checking for the initialization case before checking for the no
+initialization case.  This does as I'd expect.
+
+-Ian
+
+On Thu, Dec 11, 2014 at 12:59 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
 >
-> - Ability to add, but not match or remove, attributes.
 >
-> - Some parsing and pretty printing improvements.
-
-Dear Julia,
-
-Thanks for your software update.
-
-1. How do you think about to correct a dangling link on your download page?
-   https://software.opensuse.org/package/coccinelle/
-  
-https://build.opensuse.org/package/show?project=openSUSE%3A13.2&package=coccinelle
-
-2. Would you like to mention the parameter "parse-handler" (addition in
-the previous release) also in the documentation source file
-"spatch_options.tex"?
-
-Regards,
-Markus
+>
+> On Thu, 11 Dec 2014, Julia Lawall wrote:
+>
+> > Actually, the problem is the following isomorphism:
+> >
+> > Declaration
+> > @ const_decl_init @
+> > type T;
+> > identifier Z;
+>
+> Alternatively, you can change the above declaration to
+>
+> context identifier Z;
+>
+> julia
+>
+> > constant C;
+> > @@
+> > T Z; => T Z = C;
+> >
+> > In between the initial @@, you can put disable const_del_init.
+> >
+> > julia
+> >
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20141212/2e2e9612/attachment.html>
