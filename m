@@ -1,28 +1,35 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 20 Dec 2014 21:05:06 +0100 (CET)
-Subject: [Cocci] In depth docs & question about include
-In-Reply-To: <5495C821.5080002@knosof.co.uk>
-References: <63642497-E7BD-4E63-B934-523CFE111637@gmail.com>
- <alpine.DEB.2.10.1412201703180.2650@hadrien>
- <F64EC8CC-4C30-4D3D-A88D-D6F07D77AF8B@gmail.com>
- <alpine.DEB.2.02.1412201945380.2098@localhost6.localdomain6>
- <5495C821.5080002@knosof.co.uk>
-Message-ID: <alpine.DEB.2.02.1412202104270.2098@localhost6.localdomain6>
+From: eliseomarmol@gmail.com (=?utf-8?Q?Eliseo_Mart=C3=ADnez?=)
+Date: Sat, 20 Dec 2014 21:21:17 +0100
+Subject: [Cocci] Change function invocations argument
+Message-ID: <F51E5D4A-BD27-4192-95B7-2164D25A4380@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sat, 20 Dec 2014, Derek M Jones wrote:
+Hi, 
 
-> Julia,
-> 
-> > > Ok. Pity. What?s the preferred way for newcomers to ask questions, then?
-> > > This email list? IRC?
-> > 
-> > Email is preferred, because then others can benefit from your question.
-> 
-> Don't you star in some tutorial videos from a coccinelle workshop?
+For a given function, I want to change all invocations in this way:
+Turn the second argument of the form ?(long_u)(expression)? into ?(uintmax_t)expression?.
+I?ve done a patch for that but is failing with a not very much informative message error.
+Here is it:
 
-Yes.  Concretely, on papers and slides (http://coccinelle.lip6.fr/papers.php), 
-there is a tutorial with an associated youtube video.
+```
+eliseo at ubuntu:~/projects/os/neovim/neovim$ cat sample.cocci 
+@@ expression e1, e2, e3; @@
 
-julia
+  put_bytes(
+    e1,
+-   (long_u)(e2),
++   (uintmax_t)e2,
+    e3)
+
+eliseo at ubuntu:~/projects/os/neovim/neovim$ spatch --parse-cocci sample.cocci 
+init_defs_builtins: /usr/share/coccinelle/standard.h
+84 86
+Fatal error: exception Failure("plus: parse error: 
+ = File "sample.cocci", line 6, column 15,  charpos = 84
+    around = 'e2', whole content = +   (uintmax_t)e2,
+?)
+```
+
+What I?m doing wrong here??
+Thanks.
