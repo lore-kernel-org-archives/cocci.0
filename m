@@ -1,56 +1,114 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 21 Dec 2014 11:55:56 +0100 (CET)
-Subject: [Cocci] how to debug missing match?
-In-Reply-To: <20141221105116.GC1081@katana>
-References: <20141221095337.GA1081@katana> <20141221102055.GB1081@katana>
- <alpine.DEB.2.02.1412211138100.2068@localhost6.localdomain6>
- <20141221105116.GC1081@katana>
-Message-ID: <alpine.DEB.2.02.1412211154590.2068@localhost6.localdomain6>
+From: eliseomarmol@gmail.com (=?utf-8?Q?Eliseo_Mart=C3=ADnez?=)
+Date: Sun, 21 Dec 2014 11:43:43 +0100
+Subject: [Cocci] Change function invocations argument
+In-Reply-To: <alpine.DEB.2.02.1412202147460.2098@localhost6.localdomain6>
+References: <F51E5D4A-BD27-4192-95B7-2164D25A4380@gmail.com>
+ <alpine.DEB.2.02.1412202131540.2098@localhost6.localdomain6>
+ <254A1CAA-2FA6-4546-91BD-5E0C449C7F94@gmail.com>
+ <alpine.DEB.2.02.1412202147460.2098@localhost6.localdomain6>
+Message-ID: <D2F6C23B-F5FF-41DE-86B3-8C7210DA61BD@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Ok. Finally I have it working. There?s still a gotcha, though.
+The first version of my spatch contained these rules:
 
+```
+@@ typedef long_u, uintmax_t; expression e1, e2, e3; @@
 
-On Sun, 21 Dec 2014, Wolfram Sang wrote:
+-   put_bytes(e1, (long_u)(e2), e3)
++   put_bytes(e1, (uintmax_t)e2, e3)
 
-> On Sun, Dec 21, 2014 at 11:39:14AM +0100, Julia Lawall wrote:
-> > On Sun, 21 Dec 2014, Wolfram Sang wrote:
-> > 
-> > > 
-> > > > does not result in anything although three drivers should match IMO with
-> > > > the same pattern as the pmu driver above. Both use
-> > > > platform_driver_register() and both have the .owner field set.
-> > > > 
-> > > > drivers/macintosh/windfarm_pm112.c
-> > > > drivers/macintosh/windfarm_pm72.c
-> > > > drivers/macintosh/windfarm_rm31.c
-> > > > 
-> > > > How can I debug why the match does not occur?
-> > > 
-> > > So, I found "--verbose-parsing" to be helpful which gives me:
-> > > 
-> > > parse error 
-> > >  = File "drivers/macintosh/windfarm_pm112.c", line 685, column 4, charpos = 17702
-> > >     around = 'nr_cores', whole content = 		++nr_cores;
-> > > 
-> > > which basically means that it can't handle for_each_node_by_type()?
-> > > 
-> > > bad: 	for_each_node_by_type(cpu, "cpu")
-> > > BAD:!!!!! 		++nr_cores;
-> > > 
-> > > But neither "--include include/linux/of.h" nor "--recursive-includes"
-> > > does help the case for me?
-> > 
-> > It is not surprising that adding more includes doesn't help.  But I would 
-> > have thought that for_each_node_by_type, as it begins with for, would be 
-> > something that it would pick up on.  I will take a look.
+@@ expression e1, e2, e3; @@
+
+-   put_bytes(e1, (long_u)e2, e3)
++   put_bytes(e1, (uintmax_t)e2, e3)
+
+@@ expression e1, e2, e3; @@
+
+-   put_bytes(e1, e2, (int)(e3))
++   put_bytes(e1, e2, (unsigned int)e3)
+
+@@ expression e1, e2, e3; @@
+
+-   put_bytes(e1, e2, (int)e3)
++   put_bytes(e1, e2, (unsigned int)e3)
+
+```
+
+Those work ok.
+Then, I tried a second version, trying to compact those rules into a single, more expressive one:
+
+```
+@@ typedef long_u, uintmax_t; expression e1, e2, e3; @@
+
+    put_bytes(
+        e1,
+(
+-       (long_u)(e2)
+|
+-       (long_u)e2
+)
++       (uintmax_t)e2
+        ,
+(
+-       (int)(e3)
+|
+-       (int)e3
+)
++       (unsigned int)e3
+    )
+
+```
+
+That parses ok but just does nothing. So, it seems it doesn?t match anything, but I don?t understand why.
+Could you please explain?
+
+> On 20 Dec 2014, at 21:51, Julia Lawall <julia.lawall@lip6.fr> wrote:
 > 
-> How does coccinelle work with such constructs? I'd think that replacing
-> that #define with the actual for()-construct is much more reliable than
-> an assumption like "it starts with 'for' so it is probably...' :)
-
-When you replace things with other things, then you can't transform them.  
-So it tries to guess.  It is possible that the guess only happens when the 
-body of the loop has {}...
-
-julia
+> 
+> 
+> On Sat, 20 Dec 2014, Eliseo Mart?nez wrote:
+> 
+>> Great. That worked. Just one more thing, please.
+>> Some of the replacements done by the rule before leave literals of the form ?(uintmax_t)34?.
+>> I would like to use an unsigned constant in those cases. This is, something like ?34u?. 
+>> So I add the following rule:
+>> 
+>> ```
+>> @@ expression e1, e3; constant c2; @@
+>> 30 
+>> 31 - put_bytes(e1, (uintmax_t)c2, e3)
+>> 32 + put_bytes(e1, c2, e3)
+>> ```
+>> 
+>> That does the work, except adding the ?u?. How could I do that?
+>> Is it possible adding something literally in the output?
+>> Is it possible to somehow say in line 32 ?render c2 but with u suffix??
+> 
+> It is possible, but somewhat awkward.  Here is a simpler example that you 
+> can adapt to your case:
+> 
+> @r@
+> typedef uintmax_t;
+> constant c;
+> @@
+> 
+> (uintmax_t)c
+> 
+> @script:python s@
+> c << r.c;
+> cu;
+> @@
+> 
+> coccinelle.cu = "%su" % (c)
+> 
+> @@
+> constant r.c;
+> identifier s.cu;
+> @@
+> 
+> - (uintmax_t)c
+> + cu
+> 
+> julia
