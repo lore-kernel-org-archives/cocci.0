@@ -1,65 +1,57 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 21 Dec 2014 15:13:02 +0100 (CET)
-Subject: [Cocci] Change function invocations argument
-In-Reply-To: <FD60F271-AC55-439C-A6D0-56186C3CD9F1@gmail.com>
-References: <F51E5D4A-BD27-4192-95B7-2164D25A4380@gmail.com>
- <alpine.DEB.2.02.1412202131540.2098@localhost6.localdomain6>
- <254A1CAA-2FA6-4546-91BD-5E0C449C7F94@gmail.com>
- <alpine.DEB.2.02.1412202147460.2098@localhost6.localdomain6>
- <D2F6C23B-F5FF-41DE-86B3-8C7210DA61BD@gmail.com>
- <alpine.DEB.2.02.1412211157000.2068@localhost6.localdomain6>
- <2BD158D5-96AC-4BEC-81B9-F07A54C7BEEB@gmail.com>
- <5496B54D.8050501@users.sourceforge.net>
- <alpine.DEB.2.02.1412211302450.2068@localhost6.localdomain6>
- <6C06025D-6720-4BBD-9D44-75802D8A5B53@gmail.com>
- <5496C1D3.9000007@users.sourceforge.net>
- <39F30C32-5E8F-4FE9-B6C5-4C0BEA1955C4@gmail.com>
- <5496C331.70807@users.sourceforge.net>
- <FD60F271-AC55-439C-A6D0-56186C3CD9F1@gmail.com>
-Message-ID: <alpine.DEB.2.02.1412211507130.2050@localhost6.localdomain6>
+From: jim@purplerock.ca (Jim Barlow)
+Date: Sun, 21 Dec 2014 17:21:19 -0800
+Subject: [Cocci] Coccinelle and token concatenation (##) preprocessor macros
+Message-ID: <CAGOGP4TFHStn_rou7KHPDVJ8yPZYPa9mounYAmbbENKVTqqQ7A@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hello,
+
+I'm trying to get coccinelle working with libressl (an openssl fork). It
+seems to have trouble with the following (admitted atrocious) macro which
+directs the compiler to declare a struct with an arbitrary name.
+
+Here's an example:
 
 
-On Sun, 21 Dec 2014, Eliseo Mart?nez wrote:
+typedef struct stack_st {
+int num;
+char **data;
+int sorted;
 
-> I?m afraid I still don?t get you.
-> What I?m asking is:
-> 
-> Given that coccinelle understands c structure, and knows about common isomorphisms, is there an easy way so that I can instruct it to analyze every expression in my source code, and remove parentheses at every place they?re not needed? By not needed, I mean that the c expression meaning (taking into account operator precedence and the like) is the same with and without parentheses.
-> 
-> I?m working with a 200000 LOC codebase. So, if there?s no dependable way to do this (without false positives and the like), then I?d have to manually review every change. Feasibility of that depends on how many instances are found, which I cannot now in advance. If they are too many and I have to review them manually, then this is probably not worth the trouble.
+int num_alloc;
+int (*comp)(const void *, const void *);
+} _STACK;
 
-Given the size of the code, I think it would be reasonable to consider 
-safe cases as they arise.  For example,
+#define STACK_OF(type) struct stack_st_##type
 
-@@
-identifier x;
-@@
+#define DECLARE_STACK_OF(type) \
+STACK_OF(type) \
+    { \
+    _STACK stack; \
+    };
 
--(
-x
--)
+DECLARE_STACK_OF(anything)
 
-No idea if that is useful.
 
-The previous suggestion with x as an expression removes too much.
+Normally the typedef and #defines would appear in a global header,
+DECLARE_STACK_OF in a local header, and STACK_OF in C source files,
+including function definitions. I placed all in one file for testing.
 
-I thought that the following might work, ie add parentheses:
+I am testing spatch running as:
 
-@@
-@@
+spatch --parse-c cocci-test.c
 
-- x
-+ 3 + 4
+Any suggestions to get this working, or are ## macros not supported at this
+time?
 
-But testing it on:
+I'm using coccinelle 1.0.0-rc21 on OS X (Homebrew). I have tried manually
+building -rc23 but was unable to build, but that's a separate question.
 
-int main () {
-  return (x * (5 + 7));
-}
+Thanks.
 
-shows that it does not.
-
-julia
+-- 
+*Jim Barlow, **P.Eng.*
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20141221/c680d1cb/attachment.html>
