@@ -1,7 +1,7 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 23 Dec 2014 19:08:16 +0100 (CET)
+From: der.herr@hofr.at (Nicholas Mc Guire)
+Date: Tue, 23 Dec 2014 20:28:52 +0100
 Subject: [Cocci] RFC - simple scanners and matching macros
-In-Reply-To: <20141223173331.GA17709@opentech.at>
+In-Reply-To: <alpine.DEB.2.10.1412231902240.2480@hadrien>
 References: <20141223152045.GA6138@opentech.at>
  <alpine.DEB.2.10.1412231647160.2480@hadrien>
  <20141223162956.GA17482@opentech.at>
@@ -9,31 +9,95 @@ References: <20141223152045.GA6138@opentech.at>
  <20141223170255.GA29990@opentech.at>
  <alpine.DEB.2.10.1412231810140.2480@hadrien>
  <20141223173331.GA17709@opentech.at>
-Message-ID: <alpine.DEB.2.10.1412231902240.2480@hadrien>
+ <alpine.DEB.2.10.1412231902240.2480@hadrien>
+Message-ID: <20141223192852.GA19928@opentech.at>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Fatal error: exception Failure("meta: parse error:
->  = File "false_declare_completion.cocci", line 27, column 14,  charpos = 511
->     around = 'DECLARE_COMPLETION', whole content = declarer name DECLARE_COMPLETION;
-> ")
-> ...
+On Tue, 23 Dec 2014, Julia Lawall wrote:
 
-OK, it's not super intuitive, but the problem is that it wants declarer
-names, like typedefs, to be declared once and only once.  And in deciding
-about this, it doesn't take into account the dependencies on virtual
-rules.  So if you use -D patch, then it complains about a declaration in a
-case that says depends on !patch.  And if you remove the declarer name
-declaration in the latter rule, when you use eg -D report, it takes into
-account the declaration in the previous, but disabled, -D patch rule.
+> > Fatal error: exception Failure("meta: parse error:
+> >  = File "false_declare_completion.cocci", line 27, column 14,  charpos = 511
+> >     around = 'DECLARE_COMPLETION', whole content = declarer name DECLARE_COMPLETION;
+> > ")
+> > ...
+> 
+> OK, it's not super intuitive, but the problem is that it wants declarer
+> names, like typedefs, to be declared once and only once.  And in deciding
+> about this, it doesn't take into account the dependencies on virtual
+> rules.  So if you use -D patch, then it complains about a declaration in a
+> case that says depends on !patch.  And if you remove the declarer name
+> declaration in the latter rule, when you use eg -D report, it takes into
+> account the declaration in the previous, but disabled, -D patch rule.
+> 
+> So if you drop the second declarer name declaration, everything will be
+> fine.
+> 
+> The fact that declaring a typedef, declarer name, or iterator name once
+> was good enough was supposed to make things easier, but it seems to just
+> make things confusing.  Maybe I should get rid of this feature, or at
+> least not complain about redeclarations that are consistent with the
+> previous one.
+>
+it did not complain - but something seems to be going wrong now it
+consumes 100% CPU on all avaialble cores for about 8 minutes and
+finds no match
 
-So if you drop the second declarer name declaration, everything will be
-fine.
+hofrat at debian:/tmp/linux-next$ time make coccicheck COCCI=false_declare_completion.cocci MODE=report
 
-The fact that declaring a typedef, declarer name, or iterator name once
-was good enough was supposed to make things easier, but it seems to just
-make things confusing.  Maybe I should get rid of this feature, or at
-least not complain about redeclarations that are consistent with the
-previous one.
+Please check for false positives in the output before submitting a patch.
+When using "patch" mode, carefully review the patch before submitting it.
 
-julia
+
+real    8m9.438s
+user    33m6.005s
+sys     0m10.277s
+
+about the same in MODE=patch, the other cocci file over the same tree ran
+
+real    0m48.492s
+user    2m26.627s
+sys     0m1.933s
+
+an example file where I had expected it to trigger is
+drivers/scsi/aha152x.c - but it did not.
+
+cut down testcse would be:
+
+test.c:
+static int aha152x_device_reset(Scsi_Cmnd * SCpnt)
+{
+        struct Scsi_Host *shpnt = SCpnt->device->host;
+        DECLARE_COMPLETION(done);
+        int ret, issued, disconnected;
+        unsigned char old_cmd_len = SCpnt->cmd_len;
+        unsigned long flags;
+        unsigned long timeleft;
+        /* snippet from drivers/scsi/aha152x.c */
+}
+
+test.cocci:
+@e@
+expression cmp;
+identifier f;
+declarer name DECLARE_COMPLETION;
+position p;
+@@
+
+f(...) {
+  <...
+- DECLARE_COMPLETION@p(cmp);
++ DECLARE_COMPLETION_ONSTACK(cmp);
+  ...>
+}
+
+which should trigger if I did not do something foolish again
+but it did not:
+
+hofrat at debian:/tmp/linux-next$ spatch --sp-file test.cocci test.c
+init_defs_builtins: /usr/local/share/coccinelle/standard.h
+HANDLING: test.c
+
+thx!
+hofrat
+ 
