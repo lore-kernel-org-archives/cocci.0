@@ -1,75 +1,47 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 24 Dec 2014 10:56:23 +0100 (CET)
-Subject: [Cocci] RFC - simple scanners and matching macros
-In-Reply-To: <20141224095052.GA18250@opentech.at>
-References: <20141223170255.GA29990@opentech.at>
- <alpine.DEB.2.10.1412231810140.2480@hadrien>
- <20141223173331.GA17709@opentech.at>
- <alpine.DEB.2.10.1412231902240.2480@hadrien>
- <20141223192852.GA19928@opentech.at>
- <alpine.DEB.2.02.1412232152190.2035@localhost6.localdomain6>
- <20141224085752.GA16334@opentech.at>
- <alpine.DEB.2.10.1412241022390.2414@hadrien>
- <20141224093917.GA9383@opentech.at>
- <alpine.DEB.2.10.1412241042280.2414@hadrien>
- <20141224095052.GA18250@opentech.at>
-Message-ID: <alpine.DEB.2.10.1412241054500.2414@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Mon, 29 Dec 2014 14:08:45 +0100
+Subject: [Cocci] Support for SmPL ellipsis in logical expressions?
+Message-ID: <54A1525D.3040009@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, 24 Dec 2014, Nicholas Mc Guire wrote:
+Dear Julia,
 
-> On Wed, 24 Dec 2014, Julia Lawall wrote:
->
-> >
-> >
-> > On Wed, 24 Dec 2014, Nicholas Mc Guire wrote:
-> >
-> > > On Wed, 24 Dec 2014, Julia Lawall wrote:
-> > >
-> > > > > will update to rc23 and retest - can this be a config/python version issue ?
-> > > > > python version is 2.7.3 (Debian 7.6)
-> > > >
-> > > > I have Python 2.7.5+
-> > > >
-> > > > > > For the performance problem, could you send the current semantic patch
-> > > > > > again, so I could be sure to be testing the right thing?
-> > > > > >
-> > > > > files where this situation exists in linux-next (3.18.0) and which should
-> > > > > trigger are:
-> > > > >
-> > > > >  drivers/macintosh/ams/ams-pmu.c        line 52
-> > > > >  drivers/misc/sgi-gru/grukservices.c    line 1044
-> > > > >  drivers/scsi/aha152x.c                 line 1055
-> > > > >  drivers/usb/gadget/udc/fsl_qe_udc.c    line 2630
-> > > > >  drivers/usb/gadget/udc/fsl_udc_core.c  line 2529
-> > > >
-> > > > I tried these files in their linux-next versions with the -D report option
-> > > > and got an answer more or less immediately (2 seconds).  An example command
-> > > > line is:
-> > > >
-> > > > spatch --sp-file dc.cocci -D report /var/linuxes/linux-next/drivers/scsi/aha152x.c
-> > > >
-> > > > Does this work for you?
-> > > >
-> > >
-> > > for the single file it returns more or less imediately but it does not
-> > > report any findings
-> >
-> > I get a result:
-> >
-> > /var/linuxes/linux-next/drivers/scsi/aha152x.c:1058:1-19: WARNING:
-> > possible incorrect use of DECLARE_COMPLETION
-> >
->
-> with 1.0.0-rc23 I get the expected results ! both report and patch mode
-> 1.0.0-rc21 no output.
->
-> is it worth rebuilding -rc21 to confirm that its in -rc21 and not
-> some local screwup or is this not relevant ?
+I have tried the following semantic filter approach out.
 
-rc21 had some severe parsing problems, on strings made from multiple
-components, like "one" XXX "two".  It could be that the relevant
-functions were simply not being parsed.
+@safety_check_with_pointer@
+identifier input, member, process, work;
+statement is, es;
+type input_type, return_type;
+@@
+ return_type work(input_type * input)
+ {
+  ... when any
+(
+* if (!input)
+     return ... ;
+|
+* if (unlikely(ZERO_OR_NULL_PTR(input)))
+     return ... ;
+|
+* if (!input || ... process(& input->member) ... )
+     return ... ;
+|
+* if (input && ... process(& input->member) ... )
+     is
+  else
+     es
+)
+  ... when any
+ }
 
-julia
+elfring at Sonne:~/Projekte/Coccinelle/janitor> spatch.opt -sp-file show_input_parameter_validation7.cocci ~/Projekte/Linux/next-patched/fs/kernfs/dir.c
+init_defs_builtins: /usr/local/share/coccinelle/standard.h
+293 300
+Fatal error: exception Failure("minus: parse error: \n = File \"show_input_parameter_validation7.cocci\", line 16, column 20,  charpos = 293\n    around = 'process', whole content = * if (!input || ... process(& input->member) ... )\n")
+
+
+Does the Coccinelle software not like my placement of the SmPL ellipsis within a condition specification?
+
+Regards,
+Markus
