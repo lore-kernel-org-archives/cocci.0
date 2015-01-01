@@ -1,47 +1,52 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 1 Jan 2015 17:02:47 +0100 (CET)
+Date: Thu, 1 Jan 2015 18:33:29 +0100 (CET)
 Subject: [Cocci] adding function declarations
 In-Reply-To: <54A55D15.5020306@warlich.name>
 References: <54A55D15.5020306@warlich.name>
-Message-ID: <alpine.DEB.2.02.1501011700110.2060@localhost6.localdomain6>
+Message-ID: <alpine.DEB.2.02.1501011829330.2060@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 1 Jan 2015, Christof Warlich wrote:
+Unfortunately, your seemingly simple request raises some issues :)
 
-> Hi,
-> 
-> being absolutely new to Coccinelle, I see that fascinating things can be done
-> with it, but I kind of fail to adopt things towards my own needs:
-> 
-> I'd like to adapt the header files of a huge C project (gcc) so that they may
-> alternatively be included by C++ (g++) code. But many of the header files do
-> contain numerous inline function definitions of the form
-> 
-> static inline __attribute__((always_inline)) <someReturnType>
-> <someFunctionName>(<someParameters) {
->     <someCode>
-> }
-> 
-> While gcc happily accepts this type of code, g++ complains that specifying
-> attributes is not allowed during function definition, but only during
-> function declaration. Thus, the fix is straight forward: All these
-> occurrences must be replaced by something like
-> 
-> static inline __attribute__((always_inline)) <someReturnType>
-> <someFunctionName>(<someParameters);
-> <someReturnType> <someFunctionName>(<someParameters) {
->     <someCode>
-> }
-> 
-> Can anyone give me some guidance on how I can express this as a semantic
-> patch?
+First, you should apply the patch below to Coccinelle version 1.0.0-rc23 
+(the latest version).
 
-Unfortunately, there is no way to match against attributes.  But it should 
-be possible to add them.  Is the attribute in question always 
-__attribute__((always_inline))?  Could it occur that some static inline 
-functions don't have this attribute?  In that case would it be OK to add 
-the atribute anyway?  Is it necessary to check for an existing function 
-declaration, or can one assume that it never exists?
+Second here is a semantic patch that goes in the right direction, but is 
+not perfect:
+
+@@
+type T;
+identifier f;
+parameter list ps;
+@@
+
++static __attribute__((always_inline)) T f(ps);
+-static inline T
++static inline T
+f(ps) { ... }
+
+For some reason, the semantic patch parser is not allowing me to put 
+inline in the prototype.  I will look into it and send another patch.
+
+Also for the following file:
+
+static inline __attribute__((always_inline)) int foo(int x) {
+  return x;
+}
+
+the output is missing a space before the attribute:
+
+diff = 
+--- tests/statinl.c
++++ /tmp/cocci-output-32260-27b877-statinl.c
+@@ -1,3 +1,4 @@
+-static inline __attribute__((always_inline)) int foo(int x) {
++static__attribute__((always_inline)) int foo(int x);
++static inline int foo(int x) {
+   return x;
+ }
+
+I will look into this as well.
 
 julia
