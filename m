@@ -1,52 +1,85 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 1 Jan 2015 18:33:29 +0100 (CET)
+From: christof@warlich.name (Christof Warlich)
+Date: Thu, 01 Jan 2015 20:06:53 +0100
 Subject: [Cocci] adding function declarations
-In-Reply-To: <54A55D15.5020306@warlich.name>
+In-Reply-To: <alpine.DEB.2.02.1501011700110.2060@localhost6.localdomain6>
 References: <54A55D15.5020306@warlich.name>
-Message-ID: <alpine.DEB.2.02.1501011829330.2060@localhost6.localdomain6>
+ <alpine.DEB.2.02.1501011700110.2060@localhost6.localdomain6>
+Message-ID: <54A59ACD.4050501@warlich.name>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Unfortunately, your seemingly simple request raises some issues :)
+Wow - that's been a really fast response :-)
 
-First, you should apply the patch below to Coccinelle version 1.0.0-rc23 
-(the latest version).
+Well, the "huge C project" I talked about is the linux kernel, or more 
+precisely, its header files:
+Having a few days off, I was curious to see how much effort it may take 
+to allow writing modules in C++.
 
-Second here is a semantic patch that goes in the right direction, but is 
-not perfect:
+With respect to the static inline functions, it looks like there are no 
+already existing function declaration that needs to be checked for, and 
+the functions
+are actually simply defined along the lines
 
-@@
-type T;
-identifier f;
-parameter list ps;
-@@
+static inline <someReturnType> <someFunctionName>(<someParameters) { 
+<someCode> }
 
-+static __attribute__((always_inline)) T f(ps);
--static inline T
-+static inline T
-f(ps) { ... }
+but "inline" is a macro which is defined as
 
-For some reason, the semantic patch parser is not allowing me to put 
-inline in the prototype.  I will look into it and send another patch.
+#define inline inline __attribute__((always_inline)) notrace
 
-Also for the following file:
+or
 
-static inline __attribute__((always_inline)) int foo(int x) {
-  return x;
-}
+#define inline inline notrace
 
-the output is missing a space before the attribute:
+depending on the kernel configuration, with notrace defined as
 
-diff = 
---- tests/statinl.c
-+++ /tmp/cocci-output-32260-27b877-statinl.c
-@@ -1,3 +1,4 @@
--static inline __attribute__((always_inline)) int foo(int x) {
-+static__attribute__((always_inline)) int foo(int x);
-+static inline int foo(int x) {
-   return x;
- }
+#define notrace __attribute__((no_instrument_function))
 
-I will look into this as well.
+Thus, it should be possible to let Coccinelle see only the inline 
+keyword, without the additional hassle that may be introduced by attributes.
 
-julia
+I have some appointment right now, but I'll definitely come back 
+tomorrow morning. Thanks a lot for looking into this so far!
+
+Cheers,
+
+Chris
+
+Am 01.01.2015 um 17:02 schrieb Julia Lawall:
+> On Thu, 1 Jan 2015, Christof Warlich wrote:
+>
+>> Hi,
+>>
+>> being absolutely new to Coccinelle, I see that fascinating things can be done
+>> with it, but I kind of fail to adopt things towards my own needs:
+>>
+>> I'd like to adapt the header files of a huge C project (gcc) so that they may
+>> alternatively be included by C++ (g++) code. But many of the header files do
+>> contain numerous inline function definitions of the form
+>>
+>> static inline __attribute__((always_inline)) <someReturnType>
+>> <someFunctionName>(<someParameters) {
+>>      <someCode>
+>> }
+>>
+>> While gcc happily accepts this type of code, g++ complains that specifying
+>> attributes is not allowed during function definition, but only during
+>> function declaration. Thus, the fix is straight forward: All these
+>> occurrences must be replaced by something like
+>>
+>> static inline __attribute__((always_inline)) <someReturnType>
+>> <someFunctionName>(<someParameters);
+>> <someReturnType> <someFunctionName>(<someParameters) {
+>>      <someCode>
+>> }
+>>
+>> Can anyone give me some guidance on how I can express this as a semantic
+>> patch?
+> Unfortunately, there is no way to match against attributes.  But it should
+> be possible to add them.  Is the attribute in question always
+> __attribute__((always_inline))?  Could it occur that some static inline
+> functions don't have this attribute?  In that case would it be OK to add
+> the atribute anyway?  Is it necessary to check for an existing function
+> declaration, or can one assume that it never exists?
+>
+> julia
