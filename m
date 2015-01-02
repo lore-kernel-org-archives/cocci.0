@@ -1,34 +1,75 @@
 From: der.herr@hofr.at (Nicholas Mc Guire)
-Date: Fri,  2 Jan 2015 04:59:09 -0500
-Subject: [Cocci] [PATCH 0/3 RFC] Coccinelle: completion API checking
-Message-ID: <1420192752-4889-1-git-send-email-der.herr@hofr.at>
+Date: Fri,  2 Jan 2015 04:59:11 -0500
+Subject: [Cocci] [PATCH 2/3 RFC] Coccinelle: check for incorrect
+	DECLARE_COMPLETION use
+In-Reply-To: <1420192752-4889-1-git-send-email-der.herr@hofr.at>
+References: <1420192752-4889-1-git-send-email-der.herr@hofr.at>
+Message-ID: <1420192752-4889-3-git-send-email-der.herr@hofr.at>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Reviewed-by: Andreas Platschek <platschek@ict.tuwien.ac.at>
+Signed-off-by: Nicholas Mc Guire <der.herr@hofr.at>
+---
+ .../coccinelle/api/false_declare_completion.cocci  |   50 ++++++++++++++++++++
+ 1 file changed, 50 insertions(+)
+ create mode 100644 scripts/coccinelle/api/false_declare_completion.cocci
 
-This little set of semantic patches is for partially checking the
-completion API. It seems to be working correctly and has not yet
-produced any false-positive.
-
-The cases being detected are:
-
-1/3 - duplicate init_completions.
-2/3 - incorrect static initialization of completion on stack.
-3/3 - re-initialization of completion with init_completion() rather
-      than reinit_completion().
-
-semantic patch                  findings   files  confirmed
-duplicate_init_completion.cocci    2         2        2
-false_declare_completion.cocci     6         5        3 
-false_init_compltion.cocci         9         6        5 
-
-Note: false_declare_completion.cocci runs extremely slow on my system
-      roughly a factor 10 slower than the other two - not clear why.
-
-All findings have been submitted based on these scripts. Some have 
-not yet been confirmed.
-
-Note sure if it makes sense putting this type of API misuse cleanup
-into mainline given the relatively small number of findings.
-
-patch is against linux-next 3.19.0-rc1 (-next-20141226)
+diff --git a/scripts/coccinelle/api/false_declare_completion.cocci b/scripts/coccinelle/api/false_declare_completion.cocci
+new file mode 100644
+index 0000000..a0e3d6c
+--- /dev/null
++++ b/scripts/coccinelle/api/false_declare_completion.cocci
+@@ -0,0 +1,50 @@
++/* check for incorrect DECLARE_COMPLETION use within a function
++ *
++ * Options:  --no-includes --include-headers
++ */
++virtual context
++virtual patch
++virtual org
++virtual report
++
++/* flag incorrect initializer*/
++ at e depends on patch && !(context || org || report)@
++expression cmp;
++identifier f;
++declarer name DECLARE_COMPLETION;
++position p;
++@@
++
++f(...) {
++  <...
++- DECLARE_COMPLETION@p(cmp);
+++ DECLARE_COMPLETION_ONSTACK(cmp);
++  ...>
++}
++
++ at ep depends on !patch && (context || org || report)@
++expression cmp;
++identifier f;
++position p;
++@@
++
++f(...) {
++  <...
++* DECLARE_COMPLETION@p(cmp);
++  ...>
++}
++
++ at script:python depends on org@
++p << ep.p;
++@@
++
++msg="WARNING: possible incorrect use of DECLARE_COMPLETION"
++coccilib.org.print_todo(p[0], msg)
++
++@script:python depends on report@
++p << ep.p;
++@@
++
++msg="WARNING: possible incorrect use of DECLARE_COMPLETION"
++coccilib.report.print_report(p[0], msg)
++
+-- 
+1.7.10.4
