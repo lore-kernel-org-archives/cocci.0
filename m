@@ -1,5 +1,5 @@
-From: mstefani@redhat.com (Michael Stefaniuc)
-Date: Wed, 07 Jan 2015 16:41:41 +0100
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 07 Jan 2015 16:47:55 +0100
 Subject: [Cocci] Source code analysis for header files
 In-Reply-To: <alpine.DEB.2.10.1501071630480.3328@hadrien>
 References: <54A3F836.7060903@users.sourceforge.net>
@@ -11,33 +11,26 @@ References: <54A3F836.7060903@users.sourceforge.net>
  <alpine.DEB.2.10.1501071549410.3328@hadrien>
  <54AD4FC5.3000001@users.sourceforge.net>
  <alpine.DEB.2.10.1501071630480.3328@hadrien>
-Message-ID: <54AD53B5.1030000@redhat.com>
+Message-ID: <54AD552B.7040906@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 01/07/2015 04:31 PM, Julia Lawall wrote:
-> 
-> 
-> On Wed, 7 Jan 2015, SF Markus Elfring wrote:
-> 
->>>> Would you like to extend use cases for your source code 
->>>> analysis and transformation software in this design
->>>> direction?
->>> 
->>> There is an option --include-headers to take into account .h
->>> files.  I guess there could be anoption --exclude-c-files if
->>> there is enough interest to warrant the addition of yet another
->>> option.
->> 
->> An "exclude option" does not sound promising for my feature 
->> request around including more possibilities, does it?
-> 
-> I don't see the problem - C files are included by default, so one
-> might perhaps want the option to exclude them.
-> 
-> But what else is there?
-`find -name \*.h` has the same length to type and is easier to remember.
-That's what I use in the very few situations that I needed that feature.
+> I don't see the problem - C files are included by default, so one might
+> perhaps want the option to exclude them.
 
-bye
-	michael
+Some source files can be analysed to some degree without inclusion of
+further header files. I like this functionality when it works as expected.
+
+I would like to extend checks on "header files" after an analysis
+was finished on the primary source files.
+Does it become more interesting to filter between the categories "header"
+and "source" data?
+
+
+> But what else is there?
+
+Header files can also contain function implementations which lead to
+further considerations around software designs.
+
+Regards,
+Markus
