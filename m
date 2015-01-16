@@ -1,28 +1,32 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 07 Jan 2015 17:12:40 +0100
-Subject: [Cocci] Source code analysis for header files
-In-Reply-To: <alpine.DEB.2.10.1501071700190.3328@hadrien>
-References: <54A3F836.7060903@users.sourceforge.net>
- <alpine.DEB.2.10.1412311439380.2559@hadrien>
- <54A40032.4070904@users.sourceforge.net>
- <alpine.DEB.2.10.1412311457130.2559@hadrien>
- <54A403EB.8080709@users.sourceforge.net>
- <54AD430E.2000507@users.sourceforge.net>
- <alpine.DEB.2.10.1501071549410.3328@hadrien>
- <54AD4FC5.3000001@users.sourceforge.net>
- <alpine.DEB.2.10.1501071630480.3328@hadrien>
- <54AD552B.7040906@users.sourceforge.net>
- <alpine.DEB.2.10.1501071700190.3328@hadrien>
-Message-ID: <54AD5AF8.3020508@users.sourceforge.net>
+From: eliseomarmol@gmail.com (=?utf-8?Q?Eliseo_Mart=C3=ADnez?=)
+Date: Fri, 16 Jan 2015 13:42:31 +0100
+Subject: [Cocci] Find all variables/parameters of a given type.
+Message-ID: <528DE554-4455-43F3-86D0-A4A1BE677755@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> I don't see the need to control the order in which the processing is performed.
+Hi, 
 
-I guess that I do also not want an order change.
+I?m trying to write a semantic patch to be able to find all `long` variables/function parameters in my code.
+I?ve tried a lot of variations, the last of them being:
 
-I suggest to select an alternative file extension filter for the source file
-search which is provided by your software.
+```
+@@ identifier i; @@
 
-Regards,
-Markus
+* long i;
+
+@@ identifier i, f; @@
+
+(
+* f(long i) { ... }
+|
+* f(long i, ...) { ... }
+|
+* f(..., long i, ...) { ... }
+|
+* f(..., long i) { ... }
+)
+```
+
+But I get parse errors no matter what I try.
+Where?s my error? 
