@@ -1,50 +1,45 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 16 Jan 2015 19:10:03 +0100 (CET)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Fri, 16 Jan 2015 19:36:34 +0100
 Subject: [Cocci] Find all variables/parameters of a given type.
-In-Reply-To: <54B950A6.1040707@users.sourceforge.net>
+In-Reply-To: <528DE554-4455-43F3-86D0-A4A1BE677755@gmail.com>
 References: <528DE554-4455-43F3-86D0-A4A1BE677755@gmail.com>
- <54B950A6.1040707@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1501161908570.2549@hadrien>
+Message-ID: <54B95A32.9090600@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> I?m trying to write a semantic patch to be able to find
+> all `long` variables/function parameters in my code.
+
+Can the desired semantic filter approach be also written
+without a SmPL disjunction?
+
+Would you like to try the following variant out?
+
+@find_integer_variable@
+identifier var;
+@@
+*long var
+ ... ;
+)
+
+@find_integer_within_function_declaration@
+identifier func, var;
+@@
+ func(...,
+*     long var,
+      ...);
+)
+
+@find_integer_from_function_definition@
+identifier func, var;
+@@
+ func(...,
+*     long var,
+      ...)
+ { ... }
 
 
-On Fri, 16 Jan 2015, SF Markus Elfring wrote:
+Are you looking for more special cases in your source code?
 
-> > But I get parse errors no matter what I try.
->
-> I guess that I can not really help with parsing difficulties
-> in your case.
->
->
-> > Where?s my error?
->
-> I find that your SmPL disjunction can also be written in
-> a slightly different way.
-> Would you like to try out the following semantic filter approach?
->
-> @find_big_integers@
-> identifier func, var;
-> @@
-> (
-> *long var
->  ... ;
-> |
->  func(...,
-> *     long var,
->       ...);
-> |
->  func(...,
-> *     long var,
->       ...)
->  { ... }
-> )
-
-This does not work either, for the same reason previously mentioned.  You
-cannot put a function definition in a disjunction.
-
-Including function prototypes seems redundant, but may be useful if the
-function definition has a parsing problem, but the prototype does not.
-
-julia
+Regards,
+Markus
