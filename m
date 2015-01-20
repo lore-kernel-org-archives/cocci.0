@@ -1,7 +1,7 @@
 From: Sebastien.Hinderer@inria.fr (=?utf-8?Q?S=C3=A9bastien?= Hinderer)
-Date: Tue, 20 Jan 2015 12:00:23 +0100
+Date: Tue, 20 Jan 2015 14:22:53 +0100
 Subject: [Cocci] Possible to install on OSX?
-In-Reply-To: <20150120083300.GA8575@pl-59055.rocqadm.inria.fr>
+In-Reply-To: <5B67F95E-64BD-4C91-88FA-B632B69CBF94@gmail.com>
 References: <0F92B6B9-47F3-4A44-8D5A-ED04BC698EF0@gmail.com>
  <alpine.DEB.2.10.1501172308080.2777@hadrien>
  <A2929B64-B34C-4910-8486-16F7E2D2573C@gmail.com>
@@ -10,27 +10,22 @@ References: <0F92B6B9-47F3-4A44-8D5A-ED04BC698EF0@gmail.com>
  <20150119155110.GA24065@pl-59055.rocqadm.inria.fr>
  <DA6D9998-6B28-4982-BC25-04787C96111B@gmail.com>
  <20150120083300.GA8575@pl-59055.rocqadm.inria.fr>
-Message-ID: <20150120110023.GA25368@pl-59055.rocqadm.inria.fr>
+ <20150120110023.GA25368@pl-59055.rocqadm.inria.fr>
+ <5B67F95E-64BD-4C91-88FA-B632B69CBF94@gmail.com>
+Message-ID: <20150120132253.GA27243@pl-59055.rocqadm.inria.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Dear Eliseo,
+Hi,
 
-Attached to this e-mail is a patch that should fix the problem we had
-with sed.
+> I?ve removed gnused, and applied this last patch on top of the previous one you sent yesterday.
+> Still the error about wrong assumptions in bytes interface.
 
-Would you mind trying it to make sure it works, please?
+Can you please do
 
-To test it, you'll have to make sure it is Mac's sed which is invoked by
-make, rather than GNU sed, which may mean removing GNU sed completely to
-be sure.
+rm commons/.depend
 
-Many thanks!
+and run make again?
+
+Thanks,
 S?bastien.
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: sed-script-fixup.patch
-Type: text/x-diff
-Size: 711 bytes
-Desc: not available
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20150120/31ee857c/attachment-0001.bin>
