@@ -1,48 +1,50 @@
-From: eliseomarmol@gmail.com (=?utf-8?Q?Eliseo_Mart=C3=ADnez?=)
-Date: Wed, 21 Jan 2015 15:05:07 +0100
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 21 Jan 2015 17:15:21 +0100
 Subject: [Cocci] Matching functions with attributes
-Message-ID: <D59A6A6F-9D60-44DE-9B6C-8B615B776EA8@gmail.com>
+In-Reply-To: <D59A6A6F-9D60-44DE-9B6C-8B615B776EA8@gmail.com>
+References: <D59A6A6F-9D60-44DE-9B6C-8B615B776EA8@gmail.com>
+Message-ID: <54BFD099.8030002@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi, 
+> Then, would there be any way to match functions having the
+> literal ?FUNC_ATTR_NONNULL_RET? in their declaration/definition?
 
->From what I?ve read, I understand attributes are not supported by coccinelle.
-But I?m still wondering it there would be a way to perform a task I?d like to do: Checking whether functions marked as returning non-null are used in any place so that return value is checked for nullness/nonnullness.
-So, this breaks into 2 subproblems:
+A preprocessor symbol like "NULL" or "ZERO_OR_NULL_PTR" can be found
+at least.   ;-)
 
-1) Matching desired functions.
+Would you like to try it out how many source code places can be found
+with your macro name?
 
-I know I can?t directly match functions having certain attributes.
-But we don?t use attributes directly. We use some macros for that.
-So, all functions I?d like to pick include the macro FUNC_ATTR_NONNULL_RET in their declaration/definition.
-Then, would there be any way to match functions having the literal ?FUNC_ATTR_NONNULL_RET? in their declaration/definition?
 
-2) Applying some rules for the same set of functions.
+> @@ identifier func =~ "^(transstr|list_alloc|listitem_alloc| [...] |concat_str)$"; [...] @@
+> 
+>   var = func(...);
+>   ... when != var = E
+> (
+> * if (var == NULL) S;
+> |
+> * if (var != NULL) S;
+> )
 
-Up until now, I?ve done this by manually obtaining the list of desired functions, and then running this spatch:
+Does this kind of SmPL disjunction make sense?
 
-```
-@@ identifier func =~ "^(transstr|list_alloc|listitem_alloc|dict_alloc|dictitem_alloc|dictitem_copy|vim_strsave_fnameescape|ga_concat_strings|enc_canonize|reverse_text|get_tv_string|get_tv_string_buf|viminfo_readstring|ga_concat_strings_sep|xmalloc|xcalloc|xrealloc|xmallocz|xmemdupz|xstrchrnul|xmemscan|xstpcpy|xstpncpy|xstrdup|xstrndup|xmemdup|msg_show_console_dialog|home_replace_save|get_register|invocation_path_tail|concat_fnames|save_absolute_path|getroom|vim_strsave|vim_strnsave|vim_strsave_escaped|vim_strsave_escaped_ext|vim_strsave_shellescape|vim_strsave_up|vim_strnsave_up|strup_save|concat_str)$"; statement S; @@
 
-(
-* if (func(...) == NULL) S;
-|
-* if (func(...) != NULL) S;
-)
+> ```
+> 
+> As you see, I have to replicate the list.
 
-@@ identifier func =~ "^(transstr|list_alloc|listitem_alloc|dict_alloc|dictitem_alloc|dictitem_copy|vim_strsave_fnameescape|ga_concat_strings|enc_canonize|reverse_text|get_tv_string|get_tv_string_buf|viminfo_readstring|ga_concat_strings_sep|xmalloc|xcalloc|xrealloc|xmallocz|xmemdupz|xstrchrnul|xmemscan|xstpcpy|xstpncpy|xstrdup|xstrndup|xmemdup|msg_show_console_dialog|home_replace_save|get_register|invocation_path_tail|concat_fnames|save_absolute_path|getroom|vim_strsave|vim_strnsave|vim_strsave_escaped|vim_strsave_escaped_ext|vim_strsave_shellescape|vim_strsave_up|vim_strnsave_up|strup_save|concat_str)$"; identifier var; statement S; expression E; @@
+I would also appreciate if such repetition could be avoided for
+SmPL constraints.
 
-  var = func(...);
-  ... when != var = E
-(
-* if (var == NULL) S;
-|
-* if (var != NULL) S;
-)
-```
 
-As you see, I have to replicate the list. Is there any better way to achieve the same effect?
+> Is there any better way to achieve the same effect?
 
-Thanks in advance.
-Eliseo.
+How do you think about to construct the desired regular expression
+by other programming scripts automatically?
+
+Would you like to store involved function names into specific
+data structures (like databases)?
+
+Regards,
+Markus
