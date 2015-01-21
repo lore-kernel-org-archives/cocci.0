@@ -1,43 +1,48 @@
-From: Sebastien.Hinderer@inria.fr (=?utf-8?Q?S=C3=A9bastien?= Hinderer)
-Date: Wed, 21 Jan 2015 12:39:44 +0100
-Subject: [Cocci] Possible to install on OSX?
-In-Reply-To: <11AEB35C-0894-462E-8264-FD62F2336103@gmail.com>
-References: <20150120110023.GA25368@pl-59055.rocqadm.inria.fr>
- <5B67F95E-64BD-4C91-88FA-B632B69CBF94@gmail.com>
- <20150120132253.GA27243@pl-59055.rocqadm.inria.fr>
- <85CD4387-710E-4369-BBA4-028126F58B02@gmail.com>
- <20150120134112.GA27573@pl-59055.rocqadm.inria.fr>
- <8435030F-881E-451C-A931-1E2E6EB08AD4@gmail.com>
- <20150120144214.GA28186@pl-59055.rocqadm.inria.fr>
- <9ADF75C3-1736-4D66-AF22-107FE12F73CD@gmail.com>
- <20150121095749.GB4529@pl-59055.rocqadm.inria.fr>
- <11AEB35C-0894-462E-8264-FD62F2336103@gmail.com>
-Message-ID: <20150121113944.GA10477@pl-59055.rocqadm.inria.fr>
+From: eliseomarmol@gmail.com (=?utf-8?Q?Eliseo_Mart=C3=ADnez?=)
+Date: Wed, 21 Jan 2015 15:05:07 +0100
+Subject: [Cocci] Matching functions with attributes
+Message-ID: <D59A6A6F-9D60-44DE-9B6C-8B615B776EA8@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi,
+Hi, 
 
-> I still have to be able to compile with python support. But coccinelle
-> itself is working great.
+>From what I?ve read, I understand attributes are not supported by coccinelle.
+But I?m still wondering it there would be a way to perform a task I?d like to do: Checking whether functions marked as returning non-null are used in any place so that return value is checked for nullness/nonnullness.
+So, this breaks into 2 subproblems:
 
-Good.
+1) Matching desired functions.
 
-> I?ll try to follow your previous indications on that to solve it
-> myself.
+I know I can?t directly match functions having certain attributes.
+But we don?t use attributes directly. We use some macros for that.
+So, all functions I?d like to pick include the macro FUNC_ATTR_NONNULL_RET in their declaration/definition.
+Then, would there be any way to match functions having the literal ?FUNC_ATTR_NONNULL_RET? in their declaration/definition?
 
-Sure. A quick google suggests that
-port search python
-may help, perhapswith a | grep dev
+2) Applying some rules for the same set of functions.
 
-> I will get back to you after some time If I am not able to do it. ;-)
+Up until now, I?ve done this by manually obtaining the list of desired functions, and then running this spatch:
 
-Okay, thanks. Actually I'd be interested in feed bakc if youmanage
-tomake things work, too! :)
+```
+@@ identifier func =~ "^(transstr|list_alloc|listitem_alloc|dict_alloc|dictitem_alloc|dictitem_copy|vim_strsave_fnameescape|ga_concat_strings|enc_canonize|reverse_text|get_tv_string|get_tv_string_buf|viminfo_readstring|ga_concat_strings_sep|xmalloc|xcalloc|xrealloc|xmallocz|xmemdupz|xstrchrnul|xmemscan|xstpcpy|xstpncpy|xstrdup|xstrndup|xmemdup|msg_show_console_dialog|home_replace_save|get_register|invocation_path_tail|concat_fnames|save_absolute_path|getroom|vim_strsave|vim_strnsave|vim_strsave_escaped|vim_strsave_escaped_ext|vim_strsave_shellescape|vim_strsave_up|vim_strnsave_up|strup_save|concat_str)$"; statement S; @@
 
-> Thanks very much for your patience, kindness and supportiveness.
+(
+* if (func(...) == NULL) S;
+|
+* if (func(...) != NULL) S;
+)
 
-My pleasure!
+@@ identifier func =~ "^(transstr|list_alloc|listitem_alloc|dict_alloc|dictitem_alloc|dictitem_copy|vim_strsave_fnameescape|ga_concat_strings|enc_canonize|reverse_text|get_tv_string|get_tv_string_buf|viminfo_readstring|ga_concat_strings_sep|xmalloc|xcalloc|xrealloc|xmallocz|xmemdupz|xstrchrnul|xmemscan|xstpcpy|xstpncpy|xstrdup|xstrndup|xmemdup|msg_show_console_dialog|home_replace_save|get_register|invocation_path_tail|concat_fnames|save_absolute_path|getroom|vim_strsave|vim_strnsave|vim_strsave_escaped|vim_strsave_escaped_ext|vim_strsave_shellescape|vim_strsave_up|vim_strnsave_up|strup_save|concat_str)$"; identifier var; statement S; expression E; @@
 
-Best wishes,
-S?bastien.
+  var = func(...);
+  ... when != var = E
+(
+* if (var == NULL) S;
+|
+* if (var != NULL) S;
+)
+```
+
+As you see, I have to replicate the list. Is there any better way to achieve the same effect?
+
+Thanks in advance.
+Eliseo.
