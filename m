@@ -1,79 +1,30 @@
 From: eliseomarmol@gmail.com (=?windows-1252?Q?Eliseo_Mart=EDnez?=)
-Date: Thu, 22 Jan 2015 10:23:06 +0100
+Date: Thu, 22 Jan 2015 10:36:07 +0100
 Subject: [Cocci] Matching functions with attributes
-In-Reply-To: <54C0BBF9.3040804@users.sourceforge.net>
+In-Reply-To: <606B3094-FA8F-4BC7-BDE2-FC0974EAE640@gmail.com>
 References: <D59A6A6F-9D60-44DE-9B6C-8B615B776EA8@gmail.com>
  <54BFD099.8030002@users.sourceforge.net>
  <F6392E9E-0D22-4398-8173-DD84FFEBAB98@gmail.com>
  <alpine.DEB.2.10.1501212342170.2599@hadrien>
  <02347CD6-6A31-41A9-B4EE-58163C49368C@gmail.com>
  <54C0BBF9.3040804@users.sourceforge.net>
-Message-ID: <606B3094-FA8F-4BC7-BDE2-FC0974EAE640@gmail.com>
+ <606B3094-FA8F-4BC7-BDE2-FC0974EAE640@gmail.com>
+Message-ID: <D95203B4-68FF-49C9-B886-738F3AC9E725@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Can you give an example of some code in which you find a match?
 
-Here they are some examples of code matched by
+> How do you manage the knowledge for your function name list?
 
-```
-@@ identifier func =~ "^(vim_strsave|list_alloc)$"; identifier var; statement S; expression E; @@
+I don?t manage it. 
+When I first wanted to do this task of detecting unnecessary null checks, I thought I could match such functions through SmPL.
+As it seemed to be impossible, then I extracted that list manually (grepping for FUNC_ATTR_NONNULL_RET).
+Now, to automate that task for future retries of this task, I?m thinking about a vim-based solution (grepping into quicklist window, and execcuting a macro on each result to accumulate names in a variable).
 
- var = func(...);
- ... when != var = E
-(
-* if (var == NULL)
-   S
-|
-* if (var != NULL)
-   S
-)
-```
+> How much does the SmPL star functionality matter here for you?
 
-but missed if we put S in the same line as ?if?.
+Not sure I understand your question. Star functionality is crucial for me there, as I?m using this spatch to find spots in the code that I want to manually review.
 
-```
-      p = home_replace_save(NULL, files[i]);
-*     if (p != NULL) {
-        free(files[i]);
-        files[i] = p;
-      }
-```
+> Do you need to get the source code analysis results also in other data formats?
 
-```
-    p = vim_strsave(p);
-    rettv->vval.v_string = p;
-*   if (p != NULL)
-      shorten_dir(p);
-```
-
-```
-  if (temp_result != NULL && nextcmd == NULL) {
-    retval = xmalloc(STRLEN(temp_result) + (expr_start - in_start)
-                     + (in_end - expr_end) + 1);
-    STRCPY(retval, in_start);
-    STRCAT(retval, temp_result);
-    STRCAT(retval, expr_end + 1);
-  }
-  free(temp_result);
-
-  *in_end = c1;                 /* put char back for error messages */
-  *expr_start = '{';
-  *expr_end = '}';
-
-* if (retval != NULL) {
-    temp_result = find_name_end(retval, &expr_start, &expr_end, 0);
-    if (expr_start != NULL) {
-      /* Further expansion! */
-      temp_result = make_expanded_name(retval, expr_start,
-          expr_end, temp_result);
-      free(retval);
-      retval = temp_result;
-    }
-  }
-
-```
-
-This last case is a false positive, as retval can be null if we don?t enter the ?if? where it?s assigned. But it conforms to the specified spatch, so I add it as an example of more complex code matched by it.
-So, when S is in a separated line, everything seems to work perfectly. I have 63 matches for that in my code.
-If I put S in the same line as ?if?, then it finds 0 matches.
+No, at least by now. As I said, I?m using this patch just to get pointers to places in code I?d like to review.
