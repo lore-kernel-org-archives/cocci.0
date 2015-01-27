@@ -1,34 +1,93 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 25 Jan 2015 18:55:32 +0100
-Subject: [Cocci] Source code analysis for header files
-In-Reply-To: <54AD5AF8.3020508@users.sourceforge.net>
-References: <54A3F836.7060903@users.sourceforge.net>
- <alpine.DEB.2.10.1412311439380.2559@hadrien>
- <54A40032.4070904@users.sourceforge.net>
- <alpine.DEB.2.10.1412311457130.2559@hadrien>
- <54A403EB.8080709@users.sourceforge.net>
- <54AD430E.2000507@users.sourceforge.net>
- <alpine.DEB.2.10.1501071549410.3328@hadrien>
- <54AD4FC5.3000001@users.sourceforge.net>
- <alpine.DEB.2.10.1501071630480.3328@hadrien>
- <54AD552B.7040906@users.sourceforge.net>
- <alpine.DEB.2.10.1501071700190.3328@hadrien>
- <54AD5AF8.3020508@users.sourceforge.net>
-Message-ID: <54C52E14.50707@users.sourceforge.net>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Tue, 27 Jan 2015 20:01:51 +0100 (CET)
+Subject: [Cocci] Matching functions with attributes
+In-Reply-To: <D59A6A6F-9D60-44DE-9B6C-8B615B776EA8@gmail.com>
+References: <D59A6A6F-9D60-44DE-9B6C-8B615B776EA8@gmail.com>
+Message-ID: <alpine.DEB.2.10.1501271956550.2479@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> I suggest to select an alternative file extension filter for the source file
-> search which is provided by your software.
+Sorry, I missed this message.
 
-I have used another simple file extension filter in my evolving source code
-analysis approach. Some data were imported from header files of the software
-"Linux next-20150123" into a database.
+On Wed, 21 Jan 2015, Eliseo Mart?nez wrote:
 
-I guess that I can reuse them only in consistent ways if corresponding
-name space issues will be resolved.
-How should be determined with the Coccinelle technology if the collected
-information is really included by a specific source file?
+> Hi,
+>
+> From what I?ve read, I understand attributes are not supported by coccinelle.
+> But I?m still wondering it there would be a way to perform a task I?d like to do: Checking whether functions marked as returning non-null are used in any place so that return value is checked for nullness/nonnullness.
+> So, this breaks into 2 subproblems:
+>
+> 1) Matching desired functions.
+>
+> I know I can?t directly match functions having certain attributes.
+> But we don?t use attributes directly. We use some macros for that.
+> So, all functions I?d like to pick include the macro FUNC_ATTR_NONNULL_RET in their declaration/definition.
+> Then, would there be any way to match functions having the literal ?FUNC_ATTR_NONNULL_RET? in their declaration/definition?
 
-Regards,
-Markus
+Normally, a function header has the form
+
+type name(T1 x1, ...)
+
+If there are any terms outside of that pattern, parsing of the function
+will simply fail.  The way around this would be to add to standard.h the
+following declaration:
+
+#define FUNC_ATTR_NONNULL_RET
+
+Then the occurrence of FUNC_ATTR_NONNULL_RET will be ignored.  Neither
+gives the inforation you want.
+
+> 2) Applying some rules for the same set of functions.
+>
+> Up until now, I?ve done this by manually obtaining the list of desired functions, and then running this spatch:
+>
+> ```
+> @@ identifier func =~ "^(transstr|list_alloc|listitem_alloc|dict_alloc|dictitem_alloc|dictitem_copy|vim_strsave_fnameescape|ga_concat_strings|enc_canonize|reverse_text|get_tv_string|get_tv_string_buf|viminfo_readstring|ga_concat_strings_sep|xmalloc|xcalloc|xrealloc|xmallocz|xmemdupz|xstrchrnul|xmemscan|xstpcpy|xstpncpy|xstrdup|xstrndup|xmemdup|msg_show_console_dialog|home_replace_save|get_register|invocation_path_tail|concat_fnames|save_absolute_path|getroom|vim_strsave|vim_strnsave|vim_strsave_escaped|vim_strsave_escaped_ext|vim_strsave_shellescape|vim_strsave_up|vim_strnsave_up|strup_save|concat_str)$"; statement S; @@
+>
+> (
+> * if (func(...) == NULL) S;
+> |
+> * if (func(...) != NULL) S;
+> )
+>
+> @@ identifier func =~ "^(transstr|list_alloc|listitem_alloc|dict_alloc|dictitem_alloc|dictitem_copy|vim_strsave_fnameescape|ga_concat_strings|enc_canonize|reverse_text|get_tv_string|get_tv_string_buf|viminfo_readstring|ga_concat_strings_sep|xmalloc|xcalloc|xrealloc|xmallocz|xmemdupz|xstrchrnul|xmemscan|xstpcpy|xstpncpy|xstrdup|xstrndup|xmemdup|msg_show_console_dialog|home_replace_save|get_register|invocation_path_tail|concat_fnames|save_absolute_path|getroom|vim_strsave|vim_strnsave|vim_strsave_escaped|vim_strsave_escaped_ext|vim_strsave_shellescape|vim_strsave_up|vim_strnsave_up|strup_save|concat_str)$"; identifier var; statement S; expression E; @@
+>
+>   var = func(...);
+>   ... when != var = E
+> (
+> * if (var == NULL) S;
+> |
+> * if (var != NULL) S;
+> )
+> ```
+>
+> As you see, I have to replicate the list. Is there any better way to achieve the same effect?
+
+I would not do this using a regular expression, but rather by matching and
+then discarding the matches you don't like.  In ocaml this would be:
+
+@initialize:ocaml@
+@@
+
+let fns = "list of functions"
+
+@r@
+identifier func;
+statement S;
+position p;
+@@
+
+if (func at p() == NULL) S
+
+@script:ocaml@
+func << r.func;
+p << r.p;
+@@
+
+if List.mem func fns
+then do something
+
+You can probably figure out how to do something similar in python. In this
+way the list appears only once.
+
+julia
