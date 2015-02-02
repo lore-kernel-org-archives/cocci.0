@@ -1,93 +1,87 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 27 Jan 2015 20:01:51 +0100 (CET)
-Subject: [Cocci] Matching functions with attributes
-In-Reply-To: <D59A6A6F-9D60-44DE-9B6C-8B615B776EA8@gmail.com>
-References: <D59A6A6F-9D60-44DE-9B6C-8B615B776EA8@gmail.com>
-Message-ID: <alpine.DEB.2.10.1501271956550.2479@hadrien>
+From: sboyd@codeaurora.org (Stephen Boyd)
+Date: Mon, 02 Feb 2015 12:45:50 -0800
+Subject: [Cocci] [PATCH v13 3/6] clk: Make clk API return per-user
+ struct clk instances
+In-Reply-To: <20150201212432.22722.70917@quantum>
+References: <1422011024-32283-1-git-send-email-tomeu.vizoso@collabora.com>
+ <1422011024-32283-4-git-send-email-tomeu.vizoso@collabora.com>
+ <20150201212432.22722.70917@quantum>
+Message-ID: <54CFE1FE.7040404@codeaurora.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Sorry, I missed this message.
-
-On Wed, 21 Jan 2015, Eliseo Mart?nez wrote:
-
-> Hi,
+On 02/01/15 13:24, Mike Turquette wrote:
+> Quoting Tomeu Vizoso (2015-01-23 03:03:30)
+>> Moves clock state to struct clk_core, but takes care to change as little API as
+>> possible.
+>>
+>> struct clk_hw still has a pointer to a struct clk, which is the
+>> implementation's per-user clk instance, for backwards compatibility.
+>>
+>> The struct clk that clk_get_parent() returns isn't owned by the caller, but by
+>> the clock implementation, so the former shouldn't call clk_put() on it.
+>>
+>> Because some boards in mach-omap2 still register clocks statically, their clock
+>> registration had to be updated to take into account that the clock information
+>> is stored in struct clk_core now.
+> Tero, Paul & Tony,
 >
-> From what I?ve read, I understand attributes are not supported by coccinelle.
-> But I?m still wondering it there would be a way to perform a task I?d like to do: Checking whether functions marked as returning non-null are used in any place so that return value is checked for nullness/nonnullness.
-> So, this breaks into 2 subproblems:
+> Tomeu's patch unveils a problem with omap3_noncore_dpll_enable and
+> struct dpll_data, namely this snippet from
+> arch/arm/mach-omap2/dpll3xxx.c:
 >
-> 1) Matching desired functions.
+>         parent = __clk_get_parent(hw->clk);
 >
-> I know I can?t directly match functions having certain attributes.
-> But we don?t use attributes directly. We use some macros for that.
-> So, all functions I?d like to pick include the macro FUNC_ATTR_NONNULL_RET in their declaration/definition.
-> Then, would there be any way to match functions having the literal ?FUNC_ATTR_NONNULL_RET? in their declaration/definition?
-
-Normally, a function header has the form
-
-type name(T1 x1, ...)
-
-If there are any terms outside of that pattern, parsing of the function
-will simply fail.  The way around this would be to add to standard.h the
-following declaration:
-
-#define FUNC_ATTR_NONNULL_RET
-
-Then the occurrence of FUNC_ATTR_NONNULL_RET will be ignored.  Neither
-gives the inforation you want.
-
-> 2) Applying some rules for the same set of functions.
+>         if (__clk_get_rate(hw->clk) == __clk_get_rate(dd->clk_bypass)) {
+>                 WARN(parent != dd->clk_bypass,
+>                                 "here0, parent name is %s, bypass name is %s\n",
+>                                 __clk_get_name(parent), __clk_get_name(dd->clk_bypass));
+>                 r = _omap3_noncore_dpll_bypass(clk);
+>         } else {
+>                 WARN(parent != dd->clk_ref,
+>                                 "here1, parent name is %s, ref name is %s\n",
+>                                 __clk_get_name(parent), __clk_get_name(dd->clk_ref));
+>                 r = _omap3_noncore_dpll_lock(clk);
+>         }
 >
-> Up until now, I?ve done this by manually obtaining the list of desired functions, and then running this spatch:
+> struct dpll_data has members clk_ref and clk_bypass which are struct clk
+> pointers. This was always a bit of a violation of the clk.h contract
+> since drivers are not supposed to deref struct clk pointers. 
+
+Julia,
+
+Is there a way we can write a coccinelle script to check for this? The
+goal being to find all drivers that are comparing struct clk pointers or
+attempting to dereference them. There are probably other frameworks that
+could use the same type of check (regulator, gpiod, reset, pwm, etc.).
+Probably anything that has a get/put API.
+
+-Stephen
+
+> Now that we
+> generate unique pointers for each call to clk_get (clk_ref & clk_bypass
+> are populated by of_clk_get in ti_clk_register_dpll) then the pointer
+> comparisons above will never be equal (even if they resolve down to the
+> same struct clk_core). I added the verbose traces to the WARNs above to
+> illustrate the point: the names are always the same but the pointers
+> differ.
 >
-> ```
-> @@ identifier func =~ "^(transstr|list_alloc|listitem_alloc|dict_alloc|dictitem_alloc|dictitem_copy|vim_strsave_fnameescape|ga_concat_strings|enc_canonize|reverse_text|get_tv_string|get_tv_string_buf|viminfo_readstring|ga_concat_strings_sep|xmalloc|xcalloc|xrealloc|xmallocz|xmemdupz|xstrchrnul|xmemscan|xstpcpy|xstpncpy|xstrdup|xstrndup|xmemdup|msg_show_console_dialog|home_replace_save|get_register|invocation_path_tail|concat_fnames|save_absolute_path|getroom|vim_strsave|vim_strnsave|vim_strsave_escaped|vim_strsave_escaped_ext|vim_strsave_shellescape|vim_strsave_up|vim_strnsave_up|strup_save|concat_str)$"; statement S; @@
+> AFAICT this doesn't break anything, but booting on OMAP3+ results in
+> noisy WARNs.
 >
-> (
-> * if (func(...) == NULL) S;
-> |
-> * if (func(...) != NULL) S;
-> )
+> I think the correct fix is to replace clk_bypass and clk_ref pointers
+> with a simple integer parent_index. In fact we already have this index.
+> See how the pointers are populated in ti_clk_register_dpll:
 >
-> @@ identifier func =~ "^(transstr|list_alloc|listitem_alloc|dict_alloc|dictitem_alloc|dictitem_copy|vim_strsave_fnameescape|ga_concat_strings|enc_canonize|reverse_text|get_tv_string|get_tv_string_buf|viminfo_readstring|ga_concat_strings_sep|xmalloc|xcalloc|xrealloc|xmallocz|xmemdupz|xstrchrnul|xmemscan|xstpcpy|xstpncpy|xstrdup|xstrndup|xmemdup|msg_show_console_dialog|home_replace_save|get_register|invocation_path_tail|concat_fnames|save_absolute_path|getroom|vim_strsave|vim_strnsave|vim_strsave_escaped|vim_strsave_escaped_ext|vim_strsave_shellescape|vim_strsave_up|vim_strnsave_up|strup_save|concat_str)$"; identifier var; statement S; expression E; @@
 >
->   var = func(...);
->   ... when != var = E
-> (
-> * if (var == NULL) S;
-> |
-> * if (var != NULL) S;
-> )
-> ```
+>         dd->clk_ref = of_clk_get(node, 0);
+>         dd->clk_bypass = of_clk_get(node, 1);
 >
-> As you see, I have to replicate the list. Is there any better way to achieve the same effect?
-
-I would not do this using a regular expression, but rather by matching and
-then discarding the matches you don't like.  In ocaml this would be:
-
-@initialize:ocaml@
-@@
-
-let fns = "list of functions"
-
-@r@
-identifier func;
-statement S;
-position p;
-@@
-
-if (func at p() == NULL) S
-
-@script:ocaml@
-func << r.func;
-p << r.p;
-@@
-
-if List.mem func fns
-then do something
-
-You can probably figure out how to do something similar in python. In this
-way the list appears only once.
-
-julia
+> Tony, the same problem affects the FAPLL code which copy/pastes some of
+> the DPLL code.
+>
+> Thoughts?
+>
+-- 
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
