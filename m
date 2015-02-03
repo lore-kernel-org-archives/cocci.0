@@ -1,18 +1,11 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 3 Feb 2015 17:55:58 +0100 (CET)
+Date: Tue, 3 Feb 2015 19:59:09 +0100 (CET)
 Subject: [Cocci] Some spatch questions
 In-Reply-To: <87a90vhr95.fsf@rasmusvillemoes.dk>
 References: <87a90vhr95.fsf@rasmusvillemoes.dk>
-Message-ID: <alpine.DEB.2.10.1502031754290.4323@hadrien>
+Message-ID: <alpine.DEB.2.10.1502031953400.4323@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
-
-Rasmus: What version of Coccinelle are you using?
-
-Nicolas: What options does make coccicheck use?
-
-thanks,
-julia
 
 On Tue, 3 Feb 2015, Rasmus Villemoes wrote:
 
@@ -46,7 +39,32 @@ On Tue, 3 Feb 2015, Rasmus Villemoes wrote:
 > top goes through the roof. If anything, I would expect the total time to
 > go down if each instance handles more files (since the semantic patch
 > would need to be parsed fewer times).
->
+
+OK, I'm not sure to understand everything the script does, but could it be
+that you are passing all of the file names individually on the command
+line?   That is, are you trying to do something like
+
+spatch foo.cocci one.c two.c three.c four.c
+
+If that is the case, then the memory usage is normal.  Putting multiple
+files on the command line means that you want them all to be handled at
+once.  For example, there may be some function in one.c whose properties
+should influence the transformation of four.c.  So it holds the parsed
+versions of all of the files in memory at once.
+
+Fortunately, we have finally implemented parallelism inside Coccinelle.
+If you take version 1.0.0-rc24 from the web page, which I haven't had time
+to properly announce, you can use the argument -j NNN with spatch on a
+complete directory and it will work on the different files in parallel
+(with NNN instances).  The name of the semantic patch without an extension
+will be used as a temporary directory to hold the intermediate results.
+In the end, the complete output will be printed on standard output, and
+the complete errors will be printed on standard error.  There will be no
+mixing of results.
+
+julia
+
+
 > For example, running
 >
 >   pcoc ~/projects/linux-cocci/wtf/ifelse.cocci --mode=context fs/ --popt '-L 100'
