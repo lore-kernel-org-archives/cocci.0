@@ -1,31 +1,34 @@
 From: chrubis@suse.cz (Cyril Hrubis)
-Date: Wed, 4 Feb 2015 14:33:41 +0100
+Date: Wed, 4 Feb 2015 14:35:54 +0100
 Subject: [Cocci] Source code adjustments together with comments?
-In-Reply-To: <54D21D51.3080903@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.10.1502041426170.2394@hadrien>
 References: <20150204083900.GA2093@rei.scz.novell.com>
  <alpine.DEB.2.10.1502041337360.2394@hadrien>
  <20150204125956.GA12030@rei.scz.novell.com>
  <54D21D51.3080903@users.sourceforge.net>
-Message-ID: <20150204133340.GA25483@rei.scz.novell.com>
+ <alpine.DEB.2.10.1502041426170.2394@hadrien>
+Message-ID: <20150204133554.GB25483@rei.scz.novell.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 Hi!
-> > In this case removing the comment for the removed variable makes more
-> > sense to me.
+> > Would you like to be more explicit in the semantic patch language
+> > around source code adjustments which should also affect
+> > corresponding comments?
 > 
-> Would you like to be more explicit in the semantic patch language
-> around source code adjustments which should also affect
-> corresponding comments?
+> It seems complicated, and people don't always follow the same comventions.
+> 
+> Probably it is thinking that the code looks like this:
+> 
+> /*some comment on b */
+> int b;
 
-I would rather see it work right (tm). The thing is that I do not use
-the tool that often. It comes very handy in large scale fixes and
-cleanups but the more complicated the patch language is the the higher
-is the bar for actual usage.
+That explains it.
 
-I wouldn't mind having more options but I doubt I would need these. And
-the tool should, in my opinion, do what is the most reasonable action by
-default.
+> I could change it so that this strategy is only followed if /*some comment
+> on b */ starts at the beginning of the line.
+
+That sounds good. What would be the strategy for the other case then?
 
 -- 
 Cyril Hrubis
