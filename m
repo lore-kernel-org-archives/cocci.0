@@ -1,30 +1,43 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 4 Feb 2015 13:31:25 +0100 (CET)
-Subject: [Cocci] Software evolution after Coccinelle 1.0.0-rc24?
-In-Reply-To: <54D1E253.4050708@users.sourceforge.net>
-References: <alpine.DEB.2.02.1502032259220.2026@localhost6.localdomain6>
- <54D1D876.2070305@users.sourceforge.net>
- <alpine.DEB.2.10.1502040934340.2394@hadrien>
- <54D1E253.4050708@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1502041330490.2394@hadrien>
+Date: Wed, 4 Feb 2015 13:38:14 +0100 (CET)
+Subject: [Cocci] broken comments handling
+In-Reply-To: <20150204083900.GA2093@rei.scz.novell.com>
+References: <20150204083900.GA2093@rei.scz.novell.com>
+Message-ID: <alpine.DEB.2.10.1502041337360.2394@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, 4 Feb 2015, SF Markus Elfring wrote:
+On Wed, 4 Feb 2015, Cyril Hrubis wrote:
 
-> > Initialize is often used to create variables that are intended to be used
-> > in multiple script occurrences and finalize may accumulate their results.
+> Hi!
+> I've found potentialy harmful bug while using spatch, see below.
 >
-> I like this functionality.
+> bug.c:
+> int a; /* This is comment for a */
+> int b; /* This is comment for b */
 >
+> bug.cocci:
+> @@ @@
+> -int b;
 >
-> > So the safe thing is to simply disallow initialize and finalize.
+> spatch-23 bug.cocci bug.c
+> init_defs_builtins: /usr/local/share/coccinelle/standard.h
+> warning: line 2: should b be a metavariable?
+> HANDLING: bug.c
+> diff =
+> --- bug.c
+> +++ /tmp/cocci-output-2227-08362d-bug.c
+> @@ -1,2 +1 @@
+> -int a; /* This is comment for a */
+> -int b; /* This is comment for b */
+> +int a; /* This is comment for b */
 >
-> I guess that another safe design option is to achieve process parallelism
-> by passing command-line parameters like "index" and "max" as before the
-> current software release.
+> The comment for a is removed and replaced with the comment for b, which may
+> lead to serious confusion.
 
-That's fine, but you get static parallelism.  That is, you often end up
-with only a few cores that are doing something.
+Thanks.
+
+I would have expected that both comments would stay.  I will look into it.
+Thanks for the report.
 
 julia
