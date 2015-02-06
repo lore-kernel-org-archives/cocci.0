@@ -1,74 +1,63 @@
-From: lambert.quentin@gmail.com (Quentin Lambert)
-Date: Fri, 6 Feb 2015 10:34:50 +0100
-Subject: [Cocci] [PATCH 1/1] coccinelle: misc: Semantic patch to find
- attempts at comparing struct clk pointers
-Message-ID: <20150206093450.GA1617@sloth>
+From: sboyd@codeaurora.org (Stephen Boyd)
+Date: Fri, 06 Feb 2015 09:15:51 -0800
+Subject: [Cocci] [PATCH v13 3/6] clk: Make clk API return per-user
+ struct clk instances
+In-Reply-To: <alpine.DEB.2.10.1502061009320.2538@hadrien>
+References: <1422011024-32283-1-git-send-email-tomeu.vizoso@collabora.com>
+ <1422011024-32283-4-git-send-email-tomeu.vizoso@collabora.com>
+ <20150201212432.22722.70917@quantum> <54CFE1FE.7040404@codeaurora.org>
+ <alpine.DEB.2.02.1502022230110.2045@localhost6.localdomain6>
+ <54CFFBCF.90706@codeaurora.org> <20150202225036.421.43421@quantum>
+ <54D0F179.1040906@gmail.com> <54D2AA9B.7010800@codeaurora.org>
+ <54D3900A.9060200@gmail.com> <54D423C3.9030105@codeaurora.org>
+ <54D482EE.6050004@gmail.com> <alpine.DEB.2.10.1502061009320.2538@hadrien>
+Message-ID: <54D4F6C7.2020007@codeaurora.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-This semantic patches find instances where struct clk pointers are compared.
+On 02/06/15 01:12, Julia Lawall wrote:
+>
+> On Fri, 6 Feb 2015, Quentin Lambert wrote:
+>
+>> On 06/02/2015 03:15, Stephen Boyd wrote:
+>>> Thanks for the coccinelle patch. Thinking more about it, I don't think
+>>> we care if the pointer is dereferenced because that would require a
+>>> definition of struct clk and that is most likely not the case outside of
+>>> the clock framework. Did you scan the entire kernel?
+>> No I haven't.
+>>> I'm running it now
+>>> but it seems to be taking a while.
+>>>
+>> Yes, that's why, as a first step, I chose to limit the scan to the arm
+>> directory.
+> Are you sure to be using all of the options provided:
+>
+> // Options: --recursive-includes --relax-include-path
+> // Options: --include-headers-for-types
+>
+> And are you using 1.0.0-rc23 or 1.0.0-rc24?  Those should save parsed
+> header files so that they don't have to be parsed over and over.
+>
+> If you are using rc24, then you can use the -j option for parallelism.
+> But then you should also use an option like --chunksize 10 (I don't know
+> what number would be good), because the default is chunksize 1, and in
+> that case the saved parsed header files are not reused, because the fies
+> are all processed individually.  In general, it is only the files within a
+> chunk that will share parsed header files.
 
-This was proposed by Stephen Boyd.
+Thanks for the info.
 
-Signed-off-by: Quentin Lambert <lambert.quentin@gmail.com>
----
+$ spatch --version
+spatch version 1.0.0-rc22 with Python support and with PCRE support
 
- This patch was discussed in this thread:
- https://lkml.org/lkml/2015/2/2/629
+so I guess I need to update. I tried throwing it into
+scripts/coccinelle/misc and then did
 
- scripts/coccinelle/misc/structclk.cocci | 44 +++++++++++++++++++++++++++++++++
- 1 file changed, 44 insertions(+)
- create mode 100644 scripts/coccinelle/misc/structclk.cocci
+make O=../obj/ coccicheck
+COCCI=../kernel/scripts/coccinelle/misc/structclk.cocci
 
-diff --git a/scripts/coccinelle/misc/structclk.cocci b/scripts/coccinelle/misc/structclk.cocci
-new file mode 100644
-index 0000000..0307d34
---- /dev/null
-+++ b/scripts/coccinelle/misc/structclk.cocci
-@@ -0,0 +1,44 @@
-+/// Find any attempt to compare struct clk pointers.
-+///
-+// Confidence: High
-+// Copyright: (C) 2015 Quentin Lambert, INRIA/LiP6. GPLv2
-+// URL: http://coccinelle.lip6.fr/
-+// Options: --recursive-includes --relax-include-path
-+// Options: --include-headers-for-types
-+
-+virtual context
-+virtual org
-+virtual report
-+
-+
-+// ----------------------------------------------------------------------------
-+
-+ at comparison depends on context || org || report@
-+struct clk *x1, x2;
-+position j0;
-+@@
-+
-+(
-+*  x1 at j0 == x2
-+|
-+*  x1 at j0 != x2
-+)
-+
-+// ----------------------------------------------------------------------------
-+
-+ at script:python comparison_org depends on org@
-+j0 << comparison.j0;
-+@@
-+
-+msg = "WARNING trying to compare struct clk pointers."
-+coccilib.org.print_todo(j0[0], msg)
-+
-+// ----------------------------------------------------------------------------
-+
-+@script:python comparison_report depends on report@
-+j0 << comparison.j0;
-+@@
-+
-+msg = "WARNING trying to compare struct clk pointers."
-+coccilib.report.print_report(j0[0], msg)
-+
+at the toplevel but it didn't find anything.
+
 -- 
-1.9.1
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
