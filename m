@@ -1,37 +1,42 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 8 Feb 2015 22:52:37 +0100 (CET)
+From: Sebastien.Hinderer@inria.fr (=?utf-8?Q?S=C3=A9bastien?= Hinderer)
+Date: Mon, 9 Feb 2015 09:21:15 +0100
 Subject: [Cocci] Build errors with coccinelle 1.0.0-rc24 on OpenBSD and
  Linux
 In-Reply-To: <20150208214908.GM24492@acyclic.org>
 References: <20150208214908.GM24492@acyclic.org>
-Message-ID: <alpine.DEB.2.02.1502082251400.2000@localhost6.localdomain6>
+Message-ID: <20150209082115.GD1632@pl-59055.rocqadm.inria.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, 8 Feb 2015, Doug Hogan wrote:
+Dear Douglas,
 
-> Hi,
-> 
+Thanks a lot for the report.
+
+Doug Hogan (2015/02/08 13:49 -0800):
 > There are two build errors with this release.  I think both are due to
 > assuming you have parmap installed rather than using the bundled
-> version.  I get the same errors on OpenBSD and Linux.  I have built
+> version.
+
+As far as I know, the way it is supposed to work is rather the
+opposite: the build system is supposed to unconditionnally use the
+bundled version. It is also supposed to ignore an installed version,
+which can of course be considered as not very optimal, but that's how
+the situation is supposed to be currently.
+
+> I get the same errors on OpenBSD and Linux.  I have built
 > and used coccinelle in the past on both systems so I think this is a
 > new problem with this release.
 
-This indeed a new problem becuse Parmap wasn't used before.
-
-Thanks for the report.  I will have it taken care of, and I will forward 
-the Parmap problem to the Parmap developer.
-
-julia
+Indeed, as Julia mentionned, Parmap was not used befre so that's indeed
+a new problem.
 
 > For OpenBSD, I'm running OpenBSD -current with OCaml 4.02.1 (ports).
 > For Linux, I'm running Debian testing with OCaml 4.01.0.
-> 
-> On both OSes, I just installed ocaml and ocaml-findlib (plus whatever
-> dependencies they dragged in).
-> 
-> 
+
+I'm also using Debian testing, just re-downloaded the archive of
+1.0-rc24 rom Coccinlle's web site, unpacked, ran ./configure and make,
+but onmy system it worked,so I'm unable o reproduce the problem so far.
+
 > Here's the build failure.  This was on OpenBSD, but I get the same build
 > failure on Linux.  This was without any changes other than running
 > ./configure:
@@ -64,8 +69,16 @@ julia
 >  	{ //fprintf(stderr,"Succeeded pinning to cpu %d\n",w); 
 >  	  finished=1;
 >  	}
-> 
-> 
+
+I indeed don't have this mc/thread_policy.h and it indeed seems it is
+not present in any Debian package. So at the moment I don't understand
+why things work here and not for you.
+
+It may also depend on how HAVE_DECL_SCHED_SETAFFINITY is handled, since
+that block ends with an if statemen. So presumably, that block is
+included on you system and not on mine and may be why you get the error
+and I don't.
+
 > Even with this fix, it fails to build on both OSes.  It's the same
 > failure with both OpenBSD and Linux (Unbound module Parmap).
 > 
@@ -84,8 +97,8 @@ julia
 > I can build coccinelle.  I presume that's because it doesn't use this
 > bundled version and the system version is picked up in a different
 > manner than the bundled version.
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
-> 
+
+It may be more subtle, e.g. it uses some files of the installed version
+and some files of the bundled version.
+
+S?bastien.
