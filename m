@@ -1,50 +1,63 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 9 Feb 2015 09:51:13 +0100 (CET)
+From: doug@acyclic.org (Doug Hogan)
+Date: Mon, 9 Feb 2015 04:58:59 -0800
 Subject: [Cocci] Build errors with coccinelle 1.0.0-rc24 on OpenBSD and
  Linux
 In-Reply-To: <20150209082115.GD1632@pl-59055.rocqadm.inria.fr>
 References: <20150208214908.GM24492@acyclic.org>
  <20150209082115.GD1632@pl-59055.rocqadm.inria.fr>
-Message-ID: <alpine.DEB.2.10.1502090949070.6846@hadrien>
+Message-ID: <20150209125859.GP24492@acyclic.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-
-
-On Mon, 9 Feb 2015, S?bastien Hinderer wrote:
-
-> Dear Douglas,
->
-> Thanks a lot for the report.
->
-> Doug Hogan (2015/02/08 13:49 -0800):
-> > There are two build errors with this release.  I think both are due to
-> > assuming you have parmap installed rather than using the bundled
-> > version.
->
-> As far as I know, the way it is supposed to work is rather the
-> opposite: the build system is supposed to unconditionnally use the
-> bundled version. It is also supposed to ignore an installed version,
-> which can of course be considered as not very optimal, but that's how
-> the situation is supposed to be currently.
-
-Not at all.  The build system is supposed to use the installed version if
-one is available.
-
-> > For OpenBSD, I'm running OpenBSD -current with OCaml 4.02.1 (ports).
-> > For Linux, I'm running Debian testing with OCaml 4.01.0.
->
+On Mon, Feb 09, 2015 at 09:21:15AM +0100, S??bastien Hinderer wrote:
 > I'm also using Debian testing, just re-downloaded the archive of
 > 1.0-rc24 rom Coccinlle's web site, unpacked, ran ./configure and make,
 > but onmy system it worked,so I'm unable o reproduce the problem so far.
 
-Perhaps you have Parmap installed?
+You're correct.  setcore_stubs.c is probably only a problem on OSes other
+than Linux and OS X.
 
-> > Parmap has a bug that prevents it from building on any OS that doesn't
-> > have <mach/threads_policy.h> which includes OpenBSD and Linux.  Here's
-> > the syntax fix:
+On Linux, I'm able reproduce the error with a fresh download, but it
+requires trying a build without ocamlfind.  Ocamlfind is not one of the
+suggestions, recommendations or dependencies for the 'ocaml' package in
+Debian.  I didn't install it until coccinelle complained during the
+build.  I have tried all sorts of scenarios, but this is the one that
+fails in Linux for me:
 
-Doug, this version has now been fixed on the Parmap side,  Thanks again
-for the report.
+* Only install OCaml in Debian
+   - You can install libparmap or libparmap-dev (doesn't help or hurt)
+   - Do not install ocaml-findlib.  If you have it installed, remove it.
+* Extract the coccinelle tarball and run ./configure
+* Run 'make'
+* Build fails in Parmap when it tries to run ocamlfind
+* Install ocaml-findlib to resolve the missing 'ocamlfind' error
+* Run 'make clean && ./configure && make' to restart the build
+  (or so I thought)
+* Build fails at the end with Error: Unbound module Parmap
 
-julia
+If I run 'make clean && make' instead, I also see the
+"Error: Unbound module Parmap".
+
+If I run 'make distclean && ./configure && make', it will fail early
+because it can't find a file.
+
+If I re-extract the coccinelle tarball in a new directory and run
+"./configure && make" there, it will build fine.  I presume that's
+because I had ocamlfind from the start.
+
+Is there any way to restart a build when configure doesn't pick up
+ocamlfind?  Do you have to blow away the directory and re-extract it?
+Based on what I found, my guess is that I tried reconfiguring it and
+didn't try re-extracting the tarball enough times.  I associated
+the libparmap package being installed with success but it was really
+having ocamlfind + fresh build directory that worked.
+
+Should the configure script fail when it doesn't find ocamlfind?  Or
+is there something else going on here?  It doesn't appear that using
+the fake-stub.sh script is sufficient.
+
+
+I think the problem with OpenBSD is something different.  Our port
+of OCaml includes ocamlfind so that can't be the issue.  It may be
+something simple still.  I'll try reaching out to one of the OCaml port
+maintainers in OpenBSD.
