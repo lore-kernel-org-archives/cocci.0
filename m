@@ -1,64 +1,83 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 15 Feb 2015 06:54:14 +0100 (CET)
+Date: Sun, 15 Feb 2015 10:38:00 +0100 (CET)
 Subject: [Cocci] remove typedefs from struct
 In-Reply-To: <db4839c19266450b88ea802a7c5ab597@BL2FFO11FD013.protection.gbl>
 References: <2bb2afa2a75f464b900af8506ddc84dd@BN1BFFO11FD029.protection.gbl>
  <alpine.DEB.2.10.1502141955040.6185@hadrien>
  <db4839c19266450b88ea802a7c5ab597@BL2FFO11FD013.protection.gbl>
-Message-ID: <alpine.DEB.2.02.1502150652350.2033@localhost6.localdomain6>
+Message-ID: <alpine.DEB.2.02.1502151036100.2033@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> When I run with --parse-c, all I get is this:
->   init_defs_builtins: /usr/share/coccinelle/standard.h
->   
->   PARSING: testcase.c
->   -----------------------------------------------------------------------
->   maybe 10 most problematic tokens
->   -----------------------------------------------------------------------
->   -----------------------------------------------------------------------
->   NB total files = 1; perfect = 1; pbs = 0; timeout = 0; =========> 100%
->   nb good = 10,  nb passed = 0 =========> 0.000000% passed
->   nb good = 10,  nb bad = 0 =========> 100.000000% good
+On Sat, 14 Feb 2015, S?ren Brinkmann wrote:
 
-OK, so there is no problem in this direction.
+> Hi Julia,
+> 
+> On Sat, 2015-02-14 at 07:56PM +0100, Julia Lawall wrote:
+> > On Sat, 14 Feb 2015, S?ren Brinkmann wrote:
+> > 
+> > > Hi,
+> > >
+> > > I'm just getting my feet wet with coccinelle, so I'm probably missing
+> > > something really obvious in my problem.
+> > >
+> > > I have a codebase that uses plenty of
+> > >   typedef struct foo {
+> > >   	...
+> > >   } bar;
+> > >
+> > > I want to remove all these typedefs and simply use struct foo instead. I
+> > > came up with this patch:
+> > >
+> > >   /// Convert typdefed structs to structs
+> > >
+> > >   @ rule1 @
+> > >   identifier i;
+> > >   type t;
+> > >   @@
+> > >   -typedef struct i {
+> > >   +struct i {
+> > >   	...
+> > >   - }t;
+> > >   + };
+> > >
+> > >   @@
+> > >   identifier rule1.i;
+> > >   type rule1.t;
+> > >   @@
+> > >   -t
+> > >   +struct i
+> > >   // end of patch
+> > >
+> > > This seems to work for most occurrences, but there are a couple of
+> > > variables defined like this:
+> > >
+> > >   static const t *const baz[MAX] = {
+> > >   	...
+> > >   };
+> > >
+> > > And also function declarations like:
+> > >   u32 fn(const t* const baz);
+> > >
+> > > In such cases, t isn't replaces as I would expect, but those lines
+> > > aren't changed at all.
+> > >
+> > > Other variables and non-const function parameters seem to be replaced as
+> > > expected.
+> > > Does anybody have an idea what I'm missing?
 
-> It doesn't show any code (not sure whether that is correct or not), but 
-> no 'BAD' either. Running that file through gcc -c -Wall works fine as 
-> well. So, it should be legal c (just a warning regarding an unused 
-> variable).
+OK, the issue is that const is considered to be part of the type, so when 
+you have a metavariable that contains type foo, it doesn't match an 
+occurrence of const foo.  I'm not sure if it is correct to consider const 
+to be part of the type, but I'm also not eager to change it.  Could you 
+live with the solution of just making one more rule:
 
-gcc -c is not a very useful test because gcc expands macros and Coccinelle 
-does not.  So Coccinelle might not be able to parse something that gcc 
-can.
-
-> I attached the testcase.c and my cocci patch. This is the diff I get:
-
-Thanks, I will take a look.
+@@
+identifier rule1.i;
+type rule1.t;
+@@
+ const
+-t
++struct i
 
 julia
-
->   init_defs_builtins: /usr/share/coccinelle/standard.h
->   HANDLING: testcase.c
->   diff =
->   --- testcase.c
->   +++ /tmp/cocci-output-17008-c37c42-testcase.c
->   @@ -1,11 +1,11 @@
->   -typedef struct a_struct {
->   +struct a_struct {
->           int a_member;
->   -} a_struct;
->   +};
->   
->    static const a_struct *const a_struct_array[3] = {
->    };
->   
->    unsigned int function(const a_struct* const a_struct_arg);
->   
->   -static a_struct a_struct_instance;
->   +static struct a_struct a_struct_instance;
->    static const a_struct a_const_struct_instance;
-> 
-> 	Thanks,
-> 	Soren
-> 
