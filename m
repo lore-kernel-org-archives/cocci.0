@@ -1,45 +1,65 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 15 Feb 2015 22:56:19 +0100 (CET)
+From: soren.brinkmann@xilinx.com (=?utf-8?B?U8O2cmVu?= Brinkmann)
+Date: Sun, 15 Feb 2015 20:31:26 -0800
 Subject: [Cocci] remove typedefs from struct
-In-Reply-To: <d20b2eea04ee429e9daa382827d052f8@BY2FFO11FD001.protection.gbl>
-References: <2bb2afa2a75f464b900af8506ddc84dd@BN1BFFO11FD029.protection.gbl>
- <alpine.DEB.2.10.1502141955040.6185@hadrien>
- <db4839c19266450b88ea802a7c5ab597@BL2FFO11FD013.protection.gbl>
- <alpine.DEB.2.02.1502151036100.2033@localhost6.localdomain6>
- <4f675e42e0b446d8829a42c5cc9a8dfd@BL2FFO11FD036.protection.gbl>
- <alpine.DEB.2.02.1502152207560.2278@localhost6.localdomain6>
- <88f4915b894e471aa3e551a6287e5d17@BY2FFO11FD031.protection.gbl>
- <alpine.DEB.2.02.1502152238270.2278@localhost6.localdomain6>
- <d20b2eea04ee429e9daa382827d052f8@BY2FFO11FD001.protection.gbl>
-Message-ID: <alpine.DEB.2.02.1502152254560.2278@localhost6.localdomain6>
+In-Reply-To: <alpine.DEB.2.02.1502151828021.2278@localhost6.localdomain6>
+References: <54E0D3D1.9070608@users.sourceforge.net>
+ <alpine.DEB.2.02.1502151828021.2278@localhost6.localdomain6>
+Message-ID: <a1d292690ef1492c8c3f14978b59843f@BN1AFFO11FD020.protection.gbl>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, 15 Feb 2015, S?ren Brinkmann wrote:
-
-> On Sun, 2015-02-15 at 10:41PM +0100, Julia Lawall wrote:
-> > > If you look at my example, I tested by creating types.h (in the same
-> > > directory), that did include the single line 'typedef unsigned int u32;'
-> > > only. I then ran
-> > >   spatch --all-includes -I . --sp-file test.cocci testcase2.c
-> > > But that doesn't seem to make any difference. If I move the typedef into
-> > > the c file, it works though.
+On Sun, 2015-02-15 at 06:32PM +0100, Julia Lawall wrote:
+> On Sun, 15 Feb 2015, SF Markus Elfring wrote:
+> 
+> > >   /// Convert typdefed structs to structs
+> > >   
+> > >   @ rule1 @
+> > >   identifier i;
+> > >   type t;
+> > >   @@
+> > >   -typedef struct i {
+> > >   +struct i {
+> > >   	...
+> > >   - }t;
+> > >   + };
 > > 
-> > OK, maybe types in header files are indeed treated differently.
+> > How do you think about a bit more fine-tuning for your SmPL approach?
+> > 
+> >  ...
+> >  }
+> > -t
+> >  ;
+> > 
+> > Is it sufficient to express the desired deletion at this place?
 > 
-> I even tried --preprocess without seeing different behavior. No clue
-> what's going on there.
-
-No idea...  I can try to check.
-
-> > A patch that adds a few more parsing hacks is below.  It may apply to 
-> > your version or you may need to upgrade.
+> It is possible, but perhaps not necessary.  It would depend on whether 
+> there are any comments or attributes between the } and the ; that need to 
+> be preserved.  Currently they will be removed.
 > 
-> Applied and rebuilt. That seems to do the trick. My testcase passes and
-> even on the real code base everything seems to get replaced correctly
-> now.
+> Another issue is that the typedef name might be (closer to) the one that 
+> ou want to preserve.  And i is not even necessary, I believe.  You could 
+> have another rule for the case where it is not present.
 
-Sounds good.  I'm not sure that complicated const constructions are tested 
-as well as they should be...
+Sorry for bugging you again, but I tried to create a rule for cases that
+don't name the struct. E.g.
+  typedef struct {
+  	int bar;
+  } foo;
 
-julia
+My problem seems to be, that a struct identifier is an identifier, while
+the newly created type is a type. Hence, my naive approach:
+@@
+type t;
+@@
+-typedef struct {
++struct t {
+	...
+}
+- t
+;
+
+does not work. And thus far, I couldn't find a way to get around this. I
+suspect there is some subtle trick to make it do what I want but I'm
+just not seeing it.
+
+	Soren
