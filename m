@@ -1,185 +1,138 @@
-From: soren.brinkmann@xilinx.com (=?utf-8?B?U8O2cmVu?= Brinkmann)
-Date: Tue, 17 Feb 2015 16:50:55 -0800
-Subject: [Cocci] remove typedefs from struct
-In-Reply-To: <alpine.DEB.2.02.1502172131100.2306@localhost6.localdomain6>
-References: <4f675e42e0b446d8829a42c5cc9a8dfd@BL2FFO11FD036.protection.gbl>
- <alpine.DEB.2.02.1502152207560.2278@localhost6.localdomain6>
- <88f4915b894e471aa3e551a6287e5d17@BY2FFO11FD031.protection.gbl>
- <alpine.DEB.2.02.1502152238270.2278@localhost6.localdomain6>
- <d20b2eea04ee429e9daa382827d052f8@BY2FFO11FD001.protection.gbl>
- <alpine.DEB.2.02.1502152254560.2278@localhost6.localdomain6>
- <fa1325f6cb734f9cb7b8dfc39054bdf8@BN1BFFO11FD021.protection.gbl>
- <alpine.DEB.2.02.1502170754400.2079@localhost6.localdomain6>
- <cce01af047524475b08dcc21781ce23f@BL2FFO11FD010.protection.gbl>
- <alpine.DEB.2.02.1502172131100.2306@localhost6.localdomain6>
-Message-ID: <dfc5063b5e46486fb5daa3c906464e80@BY2FFO11FD042.protection.gbl>
+From: sboyd@codeaurora.org (Stephen Boyd)
+Date: Tue, 17 Feb 2015 14:01:04 -0800
+Subject: [Cocci] [PATCH v13 3/6] clk: Make clk API return per-user
+ struct clk instances
+In-Reply-To: <54D423C3.9030105@codeaurora.org>
+References: <1422011024-32283-1-git-send-email-tomeu.vizoso@collabora.com>
+ <1422011024-32283-4-git-send-email-tomeu.vizoso@collabora.com>
+ <20150201212432.22722.70917@quantum> <54CFE1FE.7040404@codeaurora.org>
+ <alpine.DEB.2.02.1502022230110.2045@localhost6.localdomain6>
+ <54CFFBCF.90706@codeaurora.org> <20150202225036.421.43421@quantum>
+ <54D0F179.1040906@gmail.com> <54D2AA9B.7010800@codeaurora.org>
+ <54D3900A.9060200@gmail.com> <54D423C3.9030105@codeaurora.org>
+Message-ID: <54E3BA20.3080205@codeaurora.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, 2015-02-17 at 09:31PM +0100, Julia Lawall wrote:
-> On Tue, 17 Feb 2015, S?ren Brinkmann wrote:
-> 
-> > On Tue, 2015-02-17 at 07:56AM +0100, Julia Lawall wrote:
-> > > Another patch is below.  With this the code parses, and the transformation 
-> > > can be made.  However, it considers this to be a duplicate const 
-> > > annotation, so I'm not sure that the const is being associated in the 
-> > > right way by the parser.
-> > 
-> > I applied the patch. I do see the mentioned warning now:
-> >   Warning: PARSING: duplicate 'const'; value = [1]
-> > 
-> > The replacement still doesn't happen though. I'm not sure whether I
-> > need another rule to catch these declarations. But I think I will
-> > just make people fix their code. I think having 'const' appear twice
-> > is not right, despite it being parseable.
-> 
-> Could you send a complete example?  It worked in the example I tried.
+On 02/05/15 18:15, Stephen Boyd wrote:
+> On 02/05/15 07:45, Quentin Lambert wrote:
+>> On 05/02/2015 00:26, Stephen Boyd wrote:
+>>>> If you want me to I can enlarge the search to other directories.
+>>> Yes please do. And if you could share the coccinelle patch that would be
+>>> great. Thanks.
+>>>
+>> structclk.cocci is the coccinelle patch
+>> structclk-arm.patch is the result I got when applying it to the
+>> arch/arm directory
+>>
+>> Is there anything else I can do to help?
+>>
+>>
+> Thanks for the coccinelle patch. Thinking more about it, I don't think
+> we care if the pointer is dereferenced because that would require a
+> definition of struct clk and that is most likely not the case outside of
+> the clock framework. Did you scan the entire kernel? I'm running it now
+> but it seems to be taking a while.
+>
 
-Sure. Please fine a test c file and my cocci patch (which grew a bit)
-attached. This is the diff I get:
-  init_defs_builtins: /usr/local/share/coccinelle/standard.h
-  HANDLING: testcase4.c
-  diff = 
-  --- testcase4.c
-  +++ /tmp/cocci-output-7912-c5f1e0-testcase4.c
-  @@ -1,21 +1,21 @@
-   
-  -typedef struct foo {
-  +struct foo {
-   	int member;
-  -} foo_t;
-  +};
-   
-  -static foo_t foo;
-  -static const foo_t stco_foo;
-  +static struct foo foo;
-  +static const struct foo stco_foo;
-   const foo_t const co_foo_co;
-   static const foo_t const stco_foo_co;
-   static const foo_t const stco_foo_coarr[] = {
-   };
-   
-  -typedef struct {
-  +struct bar {
-   	int member;
-  -} bar_t;
-  +};
-   
-  -static bar_t bar;
-  -static const bar_t stco_bar;
-  +static struct bar bar;
-  +static const struct bar stco_bar;
-   const bar_t const co_bar_co;
-   static const bar_t const stco_bar_co;
-   static const bar_t const stco_bar_coarr[] = {
+I ran the script on all files that include <linux/clk.h>. I've also
+trimmed out mips and unicore32 because they're not using the common
+clock framework.
 
-	Thanks,
-	S?ren
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: testcase4.c
-Type: text/x-csrc
-Size: 412 bytes
-Desc: not available
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20150217/17db5dc0/attachment.bin>
--------------- next part --------------
-/* Convert typdefed structs to structs */
+diff = 
+--- arch/arm/mach-imx/mach-imx6q.c
++++ /tmp/cocci-output-11792-b62223-mach-imx6q.c
+@@ -211,7 +211,6 @@ static void __init imx6q_1588_init(void)
+ 	 * set bit IOMUXC_GPR1[21].  Or the PTP clock must be from pad
+ 	 * (external OSC), and we need to clear the bit.
+ 	 */
+-	clksel = ptp_clk == enet_ref ? IMX6Q_GPR1_ENET_CLK_SEL_ANATOP :
+ 				       IMX6Q_GPR1_ENET_CLK_SEL_PAD;
+ 	gpr = syscon_regmap_lookup_by_compatible("fsl,imx6q-iomuxc-gpr");
+ 	if (!IS_ERR(gpr))
+diff = 
+--- drivers/gpu/drm/armada/armada_510.c
++++ /tmp/cocci-output-12321-a5f298-armada_510.c
+@@ -53,7 +53,6 @@ static int armada510_crtc_compute_clock(
+ 	if (IS_ERR(clk))
+ 		return PTR_ERR(clk);
+ 
+-	if (dcrtc->clk != clk) {
+ 		ret = clk_prepare_enable(clk);
+ 		if (ret)
+ 			return ret;
+drivers/gpu/drm/armada/armada_510.c:56:5-15: WARNING trying to compare or dereference struct clk pointers.
+diff = 
+--- drivers/pwm/pwm-atmel-hlcdc.c
++++ /tmp/cocci-output-12679-3c5195-pwm-atmel-hlcdc.c
+@@ -91,7 +91,6 @@ static int atmel_hlcdc_pwm_config(struct
+ 
+ 	pwmcfg = ATMEL_HLCDC_PWMPS(pres);
+ 
+-	if (new_clk != chip->cur_clk) {
+ 		u32 gencfg = 0;
+ 		int ret;
+ 
+drivers/pwm/pwm-atmel-hlcdc.c:94:5-12: WARNING trying to compare or dereference struct clk pointers.
+diff = 
+--- drivers/tty/serial/samsung.c
++++ /tmp/cocci-output-12827-715e72-samsung.c
+@@ -750,7 +750,6 @@ static void s3c24xx_serial_set_termios(s
+ 
+ 	/* check to see if we need  to change clock source */
+ 
+-	if (ourport->baudclk != clk) {
+ 		s3c24xx_serial_setsource(port, clk_sel);
+ 
+ 		if (!IS_ERR(ourport->baudclk)) {
+drivers/tty/serial/samsung.c:753:5-21: WARNING trying to compare or dereference struct clk pointers.
+diff = 
+--- sound/soc/fsl/fsl_esai.c
++++ /tmp/cocci-output-13020-d518c3-fsl_esai.c
+@@ -269,7 +269,6 @@ static int fsl_esai_set_dai_sysclk(struc
+ 	}
+ 
+ 	/* Only EXTAL source can be output directly without using PSR and PM */
+-	if (ratio == 1 && clksrc == esai_priv->extalclk) {
+ 		/* Bypass all the dividers if not being needed */
+ 		ecr |= tx ? ESAI_ECR_ETO : ESAI_ECR_ERO;
+ 		goto out;
+sound/soc/fsl/fsl_esai.c:272:19-25: WARNING trying to compare or dereference struct clk pointers.
+diff = 
+--- sound/soc/fsl/fsl_spdif.c
++++ /tmp/cocci-output-13024-7acb1d-fsl_spdif.c
+@@ -1054,7 +1054,6 @@ static u32 fsl_spdif_txclk_caldiv(struct
+ 				enum spdif_txrate index, bool round)
+ {
+ 	const u32 rate[] = { 32000, 44100, 48000, 96000, 192000 };
+-	bool is_sysclk = clk == spdif_priv->sysclk;
+ 	u64 rate_ideal, rate_actual, sub;
+ 	u32 sysclk_dfmin, sysclk_dfmax;
+ 	u32 txclk_df, sysclk_df, arate;
+@@ -1148,7 +1147,6 @@ static int fsl_spdif_probe_txclk(struct
+ 			spdif_priv->txclk_src[index], rate[index]);
+ 	dev_dbg(&pdev->dev, "use txclk df %d for %dHz sample rate\n",
+ 			spdif_priv->txclk_df[index], rate[index]);
+-	if (spdif_priv->txclk[index] == spdif_priv->sysclk)
+ 		dev_dbg(&pdev->dev, "use sysclk df %d for %dHz sample rate\n",
+ 				spdif_priv->sysclk_df[index], rate[index]);
+ 	dev_dbg(&pdev->dev, "the best rate for %dHz sample rate is %dHz\n",
+sound/soc/fsl/fsl_spdif.c:1151:5-29: WARNING trying to compare or dereference struct clk pointers.
+sound/soc/fsl/fsl_spdif.c:1057:18-21: WARNING trying to compare or dereference struct clk pointers.
+diff = 
+--- sound/soc/kirkwood/kirkwood-i2s.c
++++ /tmp/cocci-output-13041-3200a6-kirkwood-i2s.c
+@@ -579,7 +579,6 @@ static int kirkwood_i2s_dev_probe(struct
+ 		if (PTR_ERR(priv->extclk) == -EPROBE_DEFER)
+ 			return -EPROBE_DEFER;
+ 	} else {
+-		if (priv->extclk == priv->clk) {
+ 			devm_clk_put(&pdev->dev, priv->extclk);
+ 			priv->extclk = ERR_PTR(-EINVAL);
+ 		} else {
+sound/soc/kirkwood/kirkwood-i2s.c:582:6-18: WARNING trying to compare or dereference struct clk pointers.
 
-/* Convert typdef to struct declaration */
-@ rule1 @
-identifier i;
-type t;
-@@
--typedef struct i {
-+struct i {
-	...
-}
-- t
-;
 
-/* Replace type with struct */
-@ rule2 @
-identifier rule1.i;
-type rule1.t;
-@@
--t
-+struct i
-
-/* Catch occurences of 'const' instances/pointers */
-@ rule3 @
-identifier rule1.i;
-type rule1.t;
-@@
-const
--t
-+struct i
-
-/* Replace typdef forward declarations with struct declaration */
-@ rule4 @
-identifier i;
-type t;
-@@
--typedef struct i t;
-+struct i;
-
-/* Replace type with struct (forward declarations */
-@ rule5 @
-identifier rule4.i;
-type rule4.t;
-@@
--t
-+struct i
-
-/* Replace type with struct (forward declarations */
-@ rule6 @
-identifier rule4.i;
-type rule4.t;
-@@
-const
--t
-+struct i
-
-/* Convert unnamed structs */
-@ rule7 @
-type t;
-@@
-typedef struct {
-	...
-}
-t
-;
-
-/* Make typename usable as identifier */
-@ script:python rule8 @
-t << rule7.t;
-i;
-@@
-coccinelle.i = t.rstrip('_t')
-
-@ rule9 @
-type rule7.t;
-identifier rule8.i;
-@@
--typedef struct {
-+struct i {
-	...
-}
-- t
-;
-
-/* Replace type with struct */
-@ rule10 @
-type rule7.t;
-identifier rule8.i;
-@@
--t
-+struct i
-
-/* Catch occurences of 'const' instances/pointers */
-@ rule11 @
-type rule7.t;
-identifier rule8.i;
-@@
-const
--t
-+struct i
+-- 
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
