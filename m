@@ -1,5 +1,5 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 19 Feb 2015 17:54:32 +0100 (CET)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Thu, 19 Feb 2015 19:30:09 +0100
 Subject: [Cocci] Finding several type qualifiers with SmPL?
 In-Reply-To: <34d433ed87a248168742bdfe249d4951@BN1BFFO11FD053.protection.gbl>
 References: <alpine.DEB.2.02.1502152238270.2278@localhost6.localdomain6>
@@ -13,19 +13,27 @@ References: <alpine.DEB.2.02.1502152238270.2278@localhost6.localdomain6>
  <alpine.DEB.2.02.1502182242470.2248@localhost6.localdomain6>
  <54E5A820.1030001@users.sourceforge.net>
  <34d433ed87a248168742bdfe249d4951@BN1BFFO11FD053.protection.gbl>
-Message-ID: <alpine.DEB.2.10.1502191752360.3284@hadrien>
+Message-ID: <54E62BB1.6000705@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> My personal view, if gcc can parse&compile it, spatch should correctly parse
-> it. There seem to be some discrepancies currently.
+>> Another source code example:
+>> static const struct data const* my_pointer;
+> 
+> That would still be just a duplicate, wouldn't it.
 
-Parsing is hard.  Currently, our view is if it is in the Linux kernel
-source code, we would like to try to parse it maybe.  There will be some
-work on the parser in the next few months, however.
+Would it make sense that the semantic patch language can also handle
+such misplaced stars or type qualifiers?
 
-Actually, the current issue is not a parsing problem but a matching
-problem.  I guess it could become a parsing problem by just considering
-the second const to be a comment.
 
-julia
+> To actually make sense it would have to be:
+>   static const struct data * const my_pointer;
+
+This kind of source code will be more useful together with an
+initialisation expression, won't it?
+
+
+Can you imagine more nice transformations here?
+
+Regards,
+Markus
