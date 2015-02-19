@@ -1,7 +1,7 @@
-From: soren.brinkmann@xilinx.com (=?utf-8?B?U8O2cmVu?= Brinkmann)
-Date: Thu, 19 Feb 2015 08:47:20 -0800
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Thu, 19 Feb 2015 17:54:32 +0100 (CET)
 Subject: [Cocci] Finding several type qualifiers with SmPL?
-In-Reply-To: <54E5A820.1030001@users.sourceforge.net>
+In-Reply-To: <34d433ed87a248168742bdfe249d4951@BN1BFFO11FD053.protection.gbl>
 References: <alpine.DEB.2.02.1502152238270.2278@localhost6.localdomain6>
  <d20b2eea04ee429e9daa382827d052f8@BY2FFO11FD001.protection.gbl>
  <alpine.DEB.2.02.1502152254560.2278@localhost6.localdomain6>
@@ -12,34 +12,20 @@ References: <alpine.DEB.2.02.1502152238270.2278@localhost6.localdomain6>
  <dfc5063b5e46486fb5daa3c906464e80@BY2FFO11FD042.protection.gbl>
  <alpine.DEB.2.02.1502182242470.2248@localhost6.localdomain6>
  <54E5A820.1030001@users.sourceforge.net>
-Message-ID: <34d433ed87a248168742bdfe249d4951@BN1BFFO11FD053.protection.gbl>
+ <34d433ed87a248168742bdfe249d4951@BN1BFFO11FD053.protection.gbl>
+Message-ID: <alpine.DEB.2.10.1502191752360.3284@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 2015-02-19 at 10:08AM +0100, SF Markus Elfring wrote:
-> > So there is no way to match one of these double const things.
-> 
-> Is the situation different for the semantic patch language
-> if multiple qualifiers would be syntactically required?
-> 
-> Another source code example:
-> static const struct data const* my_pointer;
+> My personal view, if gcc can parse&compile it, spatch should correctly parse
+> it. There seem to be some discrepancies currently.
 
-That would still be just a duplicate, wouldn't it. To actually make
-sense it would have to be:
-  static const struct data * const my_pointer;
+Parsing is hard.  Currently, our view is if it is in the Linux kernel
+source code, we would like to try to parse it maybe.  There will be some
+work on the parser in the next few months, however.
 
-That works I think (at least with spatch patched with the first patch
-Julia sent in the thread that started this).
+Actually, the current issue is not a parsing problem but a matching
+problem.  I guess it could become a parsing problem by just considering
+the second const to be a comment.
 
-> 
-> 
-> > Telling the developer to remove the second const is probably
-> > the reasonable solution.
-> 
-> Would you like to support additional type qualifiers there?
-
-My personal view, if gcc can parse&compile it, spatch should correctly parse
-it. There seem to be some discrepancies currently.
-
-	S?ren
+julia
