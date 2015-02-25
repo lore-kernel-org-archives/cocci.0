@@ -1,28 +1,43 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Thu, 19 Feb 2015 19:55:20 +0100
-Subject: [Cocci] Finding several type qualifiers with SmPL?
-In-Reply-To: <alpine.DEB.2.10.1502191752360.3284@hadrien>
-References: <alpine.DEB.2.02.1502152238270.2278@localhost6.localdomain6>
- <d20b2eea04ee429e9daa382827d052f8@BY2FFO11FD001.protection.gbl>
- <alpine.DEB.2.02.1502152254560.2278@localhost6.localdomain6>
- <fa1325f6cb734f9cb7b8dfc39054bdf8@BN1BFFO11FD021.protection.gbl>
- <alpine.DEB.2.02.1502170754400.2079@localhost6.localdomain6>
- <cce01af047524475b08dcc21781ce23f@BL2FFO11FD010.protection.gbl>
- <alpine.DEB.2.02.1502172131100.2306@localhost6.localdomain6>
- <dfc5063b5e46486fb5daa3c906464e80@BY2FFO11FD042.protection.gbl>
- <alpine.DEB.2.02.1502182242470.2248@localhost6.localdomain6>
- <54E5A820.1030001@users.sourceforge.net>
- <34d433ed87a248168742bdfe249d4951@BN1BFFO11FD053.protection.gbl>
- <alpine.DEB.2.10.1502191752360.3284@hadrien>
-Message-ID: <54E63198.3090009@users.sourceforge.net>
+From: sieler@allegro.com (Stan Sieler)
+Date: Tue, 24 Feb 2015 17:27:46 -0800
+Subject: [Cocci] EXN question
+Message-ID: <F3E7ABF7-5E64-4AEF-B9CF-AE8CA0CE458B@allegro.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> I guess it could become a parsing problem by just considering
-> the second const to be a comment.
+Hi,
 
-Would you like to reconsider consequences from a C99 rule like "6.7.3/4"?
-http://stackoverflow.com/questions/5781222/duplicate-const-qualifier-allowed-in-c-but-not-in-c
+I'm new to coccinelle.  I've just run spatch over about 300,000 lines of compiling C programs.
+and was curious what the following meant:
 
-Regards,
-Markus
+   ...
+   HANDLING: ./misc/pasnet.c
+   EXN:Failure("lexing: empty token")
+   ...
+
+I did a binary search exercise :) ... and got the error down to one line:
+
+   foo ('');
+
+where foo was not declared (and had not been used earlier).
+
+So, why was this code in there?  (I.e., how could it compile in C?)
+
+Because it was within "#if 0 / #endif"!
+
+It was Pascal code that was still to be translated to C.  
+Thus, it was "commented out" (not actually a comment, of course, but similar effect).
+
+We were quite surprised that spatch / coccinelle isn't ignoring stuff
+(I won't say "code", because it's often non-code English text)
+within "#if 0 / #endif" blocks, and feel this is a design flaw.
+
+(BTW, I'm not referring to a macro that happens to evaluate to 0 ...
+it's the five characters "#", "i", "f", " ", "0")
+
+So far, I've only tested for the "!E & C" case, and it caught none (until I injected one as a test ... it properly caught that).
+
+thanks,
+
+Stan Sieler
+sieler at allegro.com
