@@ -1,32 +1,24 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 25 Feb 2015 07:27:54 +0100 (CET)
-Subject: [Cocci] coccinelle / spatch and notes
-In-Reply-To: <C48A0218-EB1C-4360-99C1-132FC0682F56@allegro.com>
-References: <C48A0218-EB1C-4360-99C1-132FC0682F56@allegro.com>
-Message-ID: <alpine.DEB.2.02.1502250727170.2063@localhost6.localdomain6>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 25 Feb 2015 09:05:09 +0100
+Subject: [Cocci] Challenges around preprocessor statements?
+In-Reply-To: <F3E7ABF7-5E64-4AEF-B9CF-AE8CA0CE458B@allegro.com>
+References: <F3E7ABF7-5E64-4AEF-B9CF-AE8CA0CE458B@allegro.com>
+Message-ID: <54ED8235.9010001@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> We were quite surprised that spatch / coccinelle isn't ignoring stuff
+> (I won't say "code", because it's often non-code English text)
+> within "#if 0 / #endif" blocks, and feel this is a design flaw.
 
+The Coccinelle software works on a different abstraction level.
 
-On Tue, 24 Feb 2015, Stan Sieler wrote:
+There is another feature request for text skipping in the waiting queue.
+https://github.com/coccinelle/coccinelle/issues/20
 
-> Hi,
-> 
-> I'd like to request a "-q" or "-nonotes" option to disable notes like:
-> 
->    Note: processing took    10.5s: ./rose/utility.c
+Are there any more use cases to consider?
+Would you eventually like to adjust source code between preprocessor
+statements?
 
-Maybe you already will not see this with --very-quiet?
-
-julia
-
-> 
-> thanks.
-> 
-> Stan
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
-> 
+Regards,
+Markus
