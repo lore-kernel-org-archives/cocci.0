@@ -1,117 +1,61 @@
-From: d.granat@samsung.com (Daniel Granat)
-Date: Fri, 27 Feb 2015 14:21:53 +0100
-Subject: [Cocci] [PATCH] Add coccinelle script that makes sure that tables
- are NULL terminated
-Message-ID: <1425043313-15844-1-git-send-email-d.granat@samsung.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Mon, 2 Mar 2015 17:54:11 -0600 (CST)
+Subject: [Cocci] EXN question
+In-Reply-To: <F3E7ABF7-5E64-4AEF-B9CF-AE8CA0CE458B@allegro.com>
+References: <F3E7ABF7-5E64-4AEF-B9CF-AE8CA0CE458B@allegro.com>
+Message-ID: <alpine.DEB.2.10.1503021753060.2763@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Signed-off-by: Daniel Granat <d.granat@samsung.com>
----
- scripts/coccinelle/misc/device_id_tables.cocci | 95 ++++++++++++++++++++++++++
- 1 file changed, 95 insertions(+)
- create mode 100644 scripts/coccinelle/misc/device_id_tables.cocci
+On Tue, 24 Feb 2015, Stan Sieler wrote:
 
-diff --git a/scripts/coccinelle/misc/device_id_tables.cocci b/scripts/coccinelle/misc/device_id_tables.cocci
-new file mode 100644
-index 0000000..5968984
---- /dev/null
-+++ b/scripts/coccinelle/misc/device_id_tables.cocci
-@@ -0,0 +1,95 @@
-+/// Make sure '*_device_id$' tables are NULL terminated
-+//
-+// Keywords: device_id
-+// Confidence: Medium
-+// Options: --include-headers
-+
-+virtual org
-+virtual report
-+virtual patch
-+
-+ at initialize:python@
-+@@
-+import re
-+
-+postfix = '_device_id$'
-+prefix_list = ['platform', 'of', 'i2c']
-+
-+ at r1 depends on patch || org || report@
-+position p1;
-+identifier var, arr;
-+identifier struct_name;
-+expression E;
-+@@
-+
-+(
-+struct struct_name arr[] = {
-+	...,
-+	{
-+	.var = E,
-+	}
-+	@p1
-+};
-+|
-+struct struct_name arr[] = {
-+	...,
-+	{ ..., var, ... },
-+	@p1
-+};
-+)
-+
-+ at script:python depends on report@
-+struct_name << r1.struct_name;
-+p1 << r1.p1;
-+arr << r1.arr;
-+pattern;
-+@@
-+
-+for i in prefix_list:
-+	pattern = str(i)+postfix
-+        if re.match(pattern, struct_name) != None:
-+		print "\nCOCCI: \"%s\" matchs required pattern \"%s\"" % (struct_name, pattern)
-+		msg = "\"%s\" is not NULL terminated at line %s" % (arr, p1[0].line)
-+        	coccilib.report.print_report(p1[0],msg)
-+		break
-+
-+ at script:python match depends on patch@
-+struct_name << r1.struct_name;
-+matched_name;
-+pattern;
-+@@
-+
-+coccinelle.matched_name = ''
-+
-+for i in prefix_list:
-+	pattern = str(i)+postfix
-+	if re.match(pattern, struct_name) != None:
-+		coccinelle.matched_name = struct_name
-+		break
-+
-+ at r2 depends on patch@
-+position r1.p1;
-+identifier var, arr;
-+identifier match.matched_name;
-+expression E;
-+@@
-+
-+(
-+struct matched_name arr[] = { 
-+        ...,
-+        {
-+        .var = E,
-+-       }
-+	@p1
-++	},
-++	{},
-+};
-+|
-+struct matched_name arr[] = { 
-+        ...,
-+        { ..., var, ... },
-+	@p1
-++	{},
-+};
-+)
-+
--- 
-1.9.1
+> Hi,
+>
+> I'm new to coccinelle.  I've just run spatch over about 300,000 lines of compiling C programs.
+> and was curious what the following meant:
+>
+>    ...
+>    HANDLING: ./misc/pasnet.c
+>    EXN:Failure("lexing: empty token")
+>    ...
+>
+> I did a binary search exercise :) ... and got the error down to one line:
+>
+>    foo ('');
+
+Hello,
+
+If you still have it, could you send me a program that produces the
+problem?  Because the C lexer explicitly does parse '' and I tried a
+couple of examples and everything was fine.
+
+julia
+
+> where foo was not declared (and had not been used earlier).
+>
+> So, why was this code in there?  (I.e., how could it compile in C?)
+>
+> Because it was within "#if 0 / #endif"!
+>
+> It was Pascal code that was still to be translated to C.
+> Thus, it was "commented out" (not actually a comment, of course, but similar effect).
+>
+> We were quite surprised that spatch / coccinelle isn't ignoring stuff
+> (I won't say "code", because it's often non-code English text)
+> within "#if 0 / #endif" blocks, and feel this is a design flaw.
+>
+> (BTW, I'm not referring to a macro that happens to evaluate to 0 ...
+> it's the five characters "#", "i", "f", " ", "0")
+>
+> So far, I've only tested for the "!E & C" case, and it caught none (until I injected one as a test ... it properly caught that).
+>
+> thanks,
+>
+> Stan Sieler
+> sieler at allegro.com
+>
+> _______________________________________________
+> Cocci mailing list
+> Cocci at systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
+>
