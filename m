@@ -1,31 +1,85 @@
-From: mstefani@redhat.com (Michael Stefaniuc)
-Date: Tue, 03 Mar 2015 09:36:49 +0100
-Subject: [Cocci] "WEIRD: weird #pragma" and not recovering
-Message-ID: <54F572A1.8050501@redhat.com>
+From: valentinrothberg@gmail.com (Valentin Rothberg)
+Date: Tue,  3 Mar 2015 15:34:19 +0100
+Subject: [Cocci] [PATCH 2/2] irqf_oneshot.cocci: add check of
+	devm_request_threaded_irq()
+Message-ID: <1425393259-32170-1-git-send-email-valentinrothberg@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hello,
+Since commit 1c6c69525b40eb76de8adf039409722015927dc3 ("genirq: Reject
+bogus threaded irq requests") threaded IRQs without a primary handler
+need to be requested with IRQF_ONESHOT, otherwise the request will fail.
 
-spatch --parse-c on
-https://source.winehq.org/git/wine.git/blob_plain/HEAD:/include/windows.h
-gives:
+Until now, this coccinelle script only checked request_threaded_irq().
+However, the counterpart devm function (see kernel/irq/devres.c) is also
+affected by the missing flag which can be detected with this patch.
 
-WEIRD: weird #pragma
-WEIRD: weird #pragma
-ERROR-RECOV: end of file while in recovery mode
-parsing pass2: try again
-ERROR-RECOV: end of file while in recovery mode
-parse error
- = File "include/windows.h", line 24, column 2
-4,  charpos = 1006
-    around = ':', whole content = # pragma warning(disable:4116)
+Signed-off-by: Valentin Rothberg <valentinrothberg@gmail.com>
+Signed-off-by: Peter Senna Tschudin <peter.senna@gmail.com>
+---
+ scripts/coccinelle/misc/irqf_oneshot.cocci | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-spatch never recovers from that error.
-
-A description of that MSVC #pragma can be found at
-https://msdn.microsoft.com/en-us/library/2c8f766e.aspx
-
-thanks
-bye
-	michael
+diff --git a/scripts/coccinelle/misc/irqf_oneshot.cocci b/scripts/coccinelle/misc/irqf_oneshot.cocci
+index 6cfde94..a24a754 100644
+--- a/scripts/coccinelle/misc/irqf_oneshot.cocci
++++ b/scripts/coccinelle/misc/irqf_oneshot.cocci
+@@ -12,11 +12,13 @@ virtual org
+ virtual report
+ 
+ @r1@
++expression dev;
+ expression irq;
+ expression thread_fn;
+ expression flags;
+ position p;
+ @@
++(
+ request_threaded_irq at p(irq, NULL, thread_fn,
+ (
+ flags | IRQF_ONESHOT
+@@ -24,13 +26,24 @@ flags | IRQF_ONESHOT
+ IRQF_ONESHOT
+ )
+ , ...)
++|
++devm_request_threaded_irq at p(dev, irq, NULL, thread_fn,
++(
++flags | IRQF_ONESHOT
++|
++IRQF_ONESHOT
++)
++, ...)
++)
+ 
+ @depends on patch@
++expression dev;
+ expression irq;
+ expression thread_fn;
+ expression flags;
+ position p != r1.p;
+ @@
++(
+ request_threaded_irq at p(irq, NULL, thread_fn,
+ (
+ -0
+@@ -40,6 +53,17 @@ request_threaded_irq at p(irq, NULL, thread_fn,
+ +flags | IRQF_ONESHOT
+ )
+ , ...)
++|
++devm_request_threaded_irq at p(dev, irq, NULL, thread_fn,
++(
++-0
+++IRQF_ONESHOT
++|
++-flags
+++flags | IRQF_ONESHOT
++)
++, ...)
++)
+ 
+ @depends on context@
+ position p != r1.p;
+-- 
+1.9.1
