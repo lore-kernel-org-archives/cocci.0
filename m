@@ -1,42 +1,29 @@
 From: haohaiziround@hotmail.com (ZhouYuan)
-Date: Sun, 15 Mar 2015 21:18:50 +0800
-Subject: [Cocci] Questions about the functions provided for Python by
- Coccinelle in stuart thesis
-Message-ID: <BAY181-W53BDBF4BD06EA826963C29B8050@phx.gbl>
+Date: Sun, 15 Mar 2015 21:39:59 +0800
+Subject: [Cocci] Errors of the examples in the source code
+Message-ID: <BAY181-W10D748E51733C0491E2E48B8050@phx.gbl>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi, 
-I am an undergraduate student and learning Coccinelle at present. I have been stuck by the problems I met when I tried to do the experiments of the article Hunting bugs with coccinelle (Henrik Stuart, http://coccinelle.lip6.fr/papers/stuart_thesis.pdf). The functions provided for Python showed in Chapter 3.4 on page 43 such as get_subexpressions(expr_repr), set_expr_cfg() and gcp(expr_repr, pos_repr) are not found in the source code of coccinelle (version 1.0.0-rc10) and the call to those functions would lead to errors. 
-So I am confused about how to use those functions. It would be a great hornor for me if someone would give any suggestions.  It is really improtant to my project. 
-		
-	
-	
-		
-			
-				
-					 
+Hi,
+Here I have met some problems when running some demos in the directory demos of the source code of coccinelle (version 1.0.0-rc10). 
+For example, if I run "spatch --sp-file pycocci.cocci pycocci.c" in Linux, I would get an error as following:  
+  File "<string>", line 3, in <module>  File "/usr/share/coccinelle/python/coccilib/output.py, line 22, in combine    nmv.location = nloc[0]AttributeError: 'str' object has no attribute 'location'Failure in rule starting on line 9Fatal error: exception Pycocci.Pycocciexception
+I also attach a picture show the error. 
+              
 
-
-				
-			
-		
-		
-	
-	
-		
-			
-				
-					Thank you sincerely and looking forward to your reply.
-
-
-
-Best regards,
-Yuan ZHOU
-
-				
-			
-		 		 	   		  
+I also have found some other problems when running some existed examples under the directory demos and tests of the source file. 
+It would be a great hornor for me if someone could give any suggestions to the errors ocurred in the demos. 
+Thank you so much and looking forward to your reply.
+Best regards,Yuan ZHOU
+ 		 	   		  
 -------------- next part --------------
 An HTML attachment was scrubbed...
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20150315/778bb469/attachment-0001.html>
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20150315/025d91c6/attachment-0001.html>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: a.jpg
+Type: image/jpeg
+Size: 82500 bytes
+Desc: not available
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20150315/025d91c6/attachment-0001.jpg>
