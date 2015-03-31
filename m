@@ -1,40 +1,44 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 31 Mar 2015 15:15:25 +0200
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Tue, 31 Mar 2015 15:47:21 +0200 (CEST)
 Subject: [Cocci] Patching nested if's?
 In-Reply-To: <CABE47THmL74Gy62cmGE+=V5bF6gqUP4qUPkKLxijcSbbrW4smQ@mail.gmail.com>
 References: <CABE47THmL74Gy62cmGE+=V5bF6gqUP4qUPkKLxijcSbbrW4smQ@mail.gmail.com>
-Message-ID: <551A9DED.3050604@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.10.1503311544490.2749@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> I've been able so far to replace the if (t <MAXR) but this
-> also replaces lines with it (expresion < constant) elsewhere.
+> I came up with the following invalid attempt
+> @@
+> expression t;
+> constant M;
+> @@
+> ?if (...)
 
-Would you like to consider any additional SmPL constraints?
+I think that the only problem is that you are missing an open brace here,
+after the first if line.
 
+> ??? if (...)
+> ??? {
+> ?????? if (
+> -??? ?? t < M
+> +????????? myfunc()
+> ????????? )
+> ????????? {
+> ??? ? ...
+> ??? ? } else {
+> ??? ? ...
+> ??? ? }
 
-> Which is why I'd like to constrain the pacth to this 3 nested
-> ifs pattern.
+Markus suggested to put else S here.  Doing that would allow the else to
+disappear, if sometimes in your code there is no else in this case.  If
+any of your ifs may or may not have an else, you can put eg else S1, else
+S2, else S3.  An isomorphism will allow them all to disppear.
 
-Do you really want to deal only with a specific nesting level?
+julia
 
-
->        if (
-> -       t < M
-> +          myfunc()
-
-How do you think about to add also " == 0" here?
-
-
->           )
->           {
->       ...
->       } else {
->       ...
->       }
-
-Would you like to replace these ellipsis by metavariables
-of the type "statement"?
-
-Regards,
-Markus
+> ??? }
+> ? }
+>
+> Thanks for any hint.
+>
+>
