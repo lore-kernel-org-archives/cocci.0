@@ -1,66 +1,40 @@
-From: francois.armand.fa@gmail.com (=?UTF-8?Q?Fran=C3=A7ois_Armand?=)
-Date: Tue, 31 Mar 2015 14:56:29 +0200
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Tue, 31 Mar 2015 15:15:25 +0200
 Subject: [Cocci] Patching nested if's?
-Message-ID: <CABE47THmL74Gy62cmGE+=V5bF6gqUP4qUPkKLxijcSbbrW4smQ@mail.gmail.com>
+In-Reply-To: <CABE47THmL74Gy62cmGE+=V5bF6gqUP4qUPkKLxijcSbbrW4smQ@mail.gmail.com>
+References: <CABE47THmL74Gy62cmGE+=V5bF6gqUP4qUPkKLxijcSbbrW4smQ@mail.gmail.com>
+Message-ID: <551A9DED.3050604@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi,
+> I've been able so far to replace the if (t <MAXR) but this
+> also replaces lines with it (expresion < constant) elsewhere.
 
-I'd like to patch the third if of a code block that looks like:
-
-if (MY_SUCCESS != ret) {
-      if (MY_EPERM != ret &&  MY_ENOENT != ret) {
-          if (t < MAXR) {
-              foo();
-              goto retry;
-          } else {
-              bar();
-          }
-      }
-}
-
-I'd like to get:
+Would you like to consider any additional SmPL constraints?
 
 
-if (MY_SUCCESS != ret) {
-      if (MY_EPERM != ret &&  MY_ENOENT != ret) {
-          if (myfunc() == 0) {
-              goto retry;
-          } else {
-              bar();
-          }
-      }
-}
+> Which is why I'd like to constrain the pacth to this 3 nested
+> ifs pattern.
 
-I've been able so far to replace the if (t <MAXR) but this
-also replaces lines with it (expresion < constant) elsewhere.
-Which is why I'd like to constrain the pacth to this 3 nested
-ifs pattern.
+Do you really want to deal only with a specific nesting level?
 
-Removing calls to foo() is easy, since I want to remove them all.
 
-I came up with the following invalid attempt
-@@
-expression t;
-constant M;
-@@
- if (...)
-    if (...)
-    {
-       if (
--       t < M
-+          myfunc()
-          )
-          {
-      ...
-      } else {
-      ...
-      }
-    }
-  }
+>        if (
+> -       t < M
+> +          myfunc()
 
-Thanks for any hint.
--------------- next part --------------
-An HTML attachment was scrubbed...
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20150331/092cd2c1/attachment.html>
+How do you think about to add also " == 0" here?
+
+
+>           )
+>           {
+>       ...
+>       } else {
+>       ...
+>       }
+
+Would you like to replace these ellipsis by metavariables
+of the type "statement"?
+
+Regards,
+Markus
