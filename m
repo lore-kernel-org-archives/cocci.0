@@ -1,127 +1,136 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 31 Mar 2015 18:11:45 +0200 (CEST)
+From: francois.armand.fa@gmail.com (=?UTF-8?Q?Fran=C3=A7ois_Armand?=)
+Date: Tue, 31 Mar 2015 18:12:35 +0200
 Subject: [Cocci] Patching nested if's?
-In-Reply-To: <CABE47TEqToaLdirtJgcsrgswLa3qt1Lwdaz1FQNA3fb13YLeCw@mail.gmail.com>
+In-Reply-To: <alpine.DEB.2.10.1503311808320.2749@hadrien>
 References: <CABE47THmL74Gy62cmGE+=V5bF6gqUP4qUPkKLxijcSbbrW4smQ@mail.gmail.com>
  <alpine.DEB.2.10.1503311544490.2749@hadrien>
  <CABE47TEmsBv+f7PiqPEJ4ft+kdyaz0+FhGbAVRpuvNEmcF1AHg@mail.gmail.com>
  <alpine.DEB.2.10.1503311748380.2749@hadrien>
  <CABE47TEqToaLdirtJgcsrgswLa3qt1Lwdaz1FQNA3fb13YLeCw@mail.gmail.com>
-Message-ID: <alpine.DEB.2.10.1503311808320.2749@hadrien>
+ <alpine.DEB.2.10.1503311808320.2749@hadrien>
+Message-ID: <CABE47TEMhZGHi42GOCOs3dW7uJPoWd1tLqvdgf2Jg1r99-DDdQ@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Thanks. I'll update my version.
 
-
-On Tue, 31 Mar 2015, Fran?ois Armand wrote:
-
-> I'm on Ubuntu 14.04
-> spatch version 1.0.0-rc19 with Python support and with PCRE support
-
-The current release is 1.0.0-rc24.  For Ubuntu, rc22 is available as a
-PPA: https://launchpad.net/~npalix/+archive/ubuntu/coccinelle.  Or you can
-just get the github version: https://github.com/coccinelle/coccinelle
-
-julia
+2015-03-31 18:11 GMT+02:00 Julia Lawall <julia.lawall@lip6.fr>:
 
 >
 >
+> On Tue, 31 Mar 2015, Fran?ois Armand wrote:
 >
-> 2015-03-31 17:49 GMT+02:00 Julia Lawall <julia.lawall@lip6.fr>:
+> > I'm on Ubuntu 14.04
+> > spatch version 1.0.0-rc19 with Python support and with PCRE support
 >
->
->       On Tue, 31 Mar 2015, Fran?ois Armand wrote:
->
->       > Better send my real stuff, than making misleading typos :-)
->       >
->       > My code:
->       > #define MAX_RETRIES 3
->       >
->       > tmy_status
->       > my_getattr_timeout(tmy_ctx *ctx,
->       > ??? ??? ?? u64 ino)
->       > {
->       > ? tmy_status ret;
->       > ? int tries = 0;
->       > ? int delay = 1;
->       >
->       > ?retry:
->       > ? ret = my_getattr(ctx, ino);
->       > ? if (MY_SUCCESS != ret)
->       > ??? {
->       > ????? if (MY_ENOENT != ret &&
->       > ????????? MY_EPERM != ret)
->       > ??????? {
->       > ????????? if (tries < MAX_RETRIES)
->       > ??????????? {
->       > ????????????? HANDLE_TIMEOUT(tries, delay, "ino %llu", ino);
->       > ????????????? goto retry;
->       > ??????????? }
->       > ????????? else
->       > ??????????? {
->       > ????????????? MY_TRACE(MY_ERROR, 0u, "getattr: ino %llu"": I/O
->       error", ino);
->       > ????????????? return MY_FAILURE;
->       > ??????????? }
->       > ??????? }
->       > ??? }
->       > ? return ret;
->       > }
->       >
->       > A working patch
->       > @@
->       > expression t;
->       > constant M;
->       > @@
->       > ?????? if (
->       > -??? ?? t < M
->       > +????????? foo(&ctx->retry_ctx)
->       > ????????? )
->       > ????????? {
->       > ??? ? ...
->       > ??? ? } else {
->       > ??? ? ...
->       > ??? ? }
->       >
->       > A patch I can't make to work. That last one exists w/o
->       producing anything
->       >
->       > @@
->       > expression t;
->       > constant M;
->       > @@
->       > ?if (...)
->       > ?{?
->       > ??? if (...)
->       > ??? {
->       > ?????? if (
->       > -??? ?? t < M
->       > +????????? foo(&ctx->retry_ctx)
->       > ????????? )
->       > ????????? {
->       > ??? ? ...
->       > ??? ? } else {
->       > ??? ? ...
->       > ??? ? }
->       > ??? }
->       > ? }
->
-> It seems to work fine for me:
->
-> @@ -15,7 +15,7 @@ my_getattr_timeout(tmy_ctx *ctx,
-> ? ? ? ? ? ? ?if (MY_ENOENT != ret &&
-> ? ? ? ? ? ? ? ? ? ? ? ? ? MY_EPERM != ret)
-> ? ? ? ? ? ? ? ? {
-> -? ? ? ? ? ? ? ? ?if (tries < MAX_RETRIES)
-> +? ? ? ? ? ? ? ? ?if (foo(&ctx->retry_ctx))
-> ? ? ? ? ? ? ? ? ? ? ? {
-> ? ? ? ? ? ? ? ? ? ? ? ? HANDLE_TIMEOUT(tries, delay, "ino %llu", ino);
-> ? ? ? ? ? ? ? ? ? ? ? goto retry;
->
-> What version of Coccinelle do you have?
+> The current release is 1.0.0-rc24.  For Ubuntu, rc22 is available as a
+> PPA: https://launchpad.net/~npalix/+archive/ubuntu/coccinelle.  Or you can
+> just get the github version: https://github.com/coccinelle/coccinelle
 >
 > julia
 >
+> >
+> >
+> >
+> > 2015-03-31 17:49 GMT+02:00 Julia Lawall <julia.lawall@lip6.fr>:
+> >
+> >
+> >       On Tue, 31 Mar 2015, Fran?ois Armand wrote:
+> >
+> >       > Better send my real stuff, than making misleading typos :-)
+> >       >
+> >       > My code:
+> >       > #define MAX_RETRIES 3
+> >       >
+> >       > tmy_status
+> >       > my_getattr_timeout(tmy_ctx *ctx,
+> >       >            u64 ino)
+> >       > {
+> >       >   tmy_status ret;
+> >       >   int tries = 0;
+> >       >   int delay = 1;
+> >       >
+> >       >  retry:
+> >       >   ret = my_getattr(ctx, ino);
+> >       >   if (MY_SUCCESS != ret)
+> >       >     {
+> >       >       if (MY_ENOENT != ret &&
+> >       >           MY_EPERM != ret)
+> >       >         {
+> >       >           if (tries < MAX_RETRIES)
+> >       >             {
+> >       >               HANDLE_TIMEOUT(tries, delay, "ino %llu", ino);
+> >       >               goto retry;
+> >       >             }
+> >       >           else
+> >       >             {
+> >       >               MY_TRACE(MY_ERROR, 0u, "getattr: ino %llu"": I/O
+> >       error", ino);
+> >       >               return MY_FAILURE;
+> >       >             }
+> >       >         }
+> >       >     }
+> >       >   return ret;
+> >       > }
+> >       >
+> >       > A working patch
+> >       > @@
+> >       > expression t;
+> >       > constant M;
+> >       > @@
+> >       >        if (
+> >       > -       t < M
+> >       > +          foo(&ctx->retry_ctx)
+> >       >           )
+> >       >           {
+> >       >       ...
+> >       >       } else {
+> >       >       ...
+> >       >       }
+> >       >
+> >       > A patch I can't make to work. That last one exists w/o
+> >       producing anything
+> >       >
+> >       > @@
+> >       > expression t;
+> >       > constant M;
+> >       > @@
+> >       >  if (...)
+> >       >  {
+> >       >     if (...)
+> >       >     {
+> >       >        if (
+> >       > -       t < M
+> >       > +          foo(&ctx->retry_ctx)
+> >       >           )
+> >       >           {
+> >       >       ...
+> >       >       } else {
+> >       >       ...
+> >       >       }
+> >       >     }
+> >       >   }
+> >
+> > It seems to work fine for me:
+> >
+> > @@ -15,7 +15,7 @@ my_getattr_timeout(tmy_ctx *ctx,
+> >              if (MY_ENOENT != ret &&
+> >                           MY_EPERM != ret)
+> >                 {
+> > -                 if (tries < MAX_RETRIES)
+> > +                 if (foo(&ctx->retry_ctx))
+> >                       {
+> >                         HANDLE_TIMEOUT(tries, delay, "ino %llu", ino);
+> >                       goto retry;
+> >
+> > What version of Coccinelle do you have?
+> >
+> > julia
+> >
+> >
+> >
+> >
 >
->
->
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20150331/3e51602c/attachment.html>
