@@ -1,133 +1,66 @@
-From: d.granat@samsung.com (Daniel Granat)
-Date: Fri, 27 Mar 2015 11:32:16 +0100
-Subject: [Cocci] [PATCH] Add coccinelle script that makes sure that
- tables are NULL terminated
-In-Reply-To: <1425043313-15844-1-git-send-email-d.granat@samsung.com>
-References: <1425043313-15844-1-git-send-email-d.granat@samsung.com>
-Message-ID: <551531B0.4090108@samsung.com>
+From: francois.armand.fa@gmail.com (=?UTF-8?Q?Fran=C3=A7ois_Armand?=)
+Date: Tue, 31 Mar 2015 14:56:29 +0200
+Subject: [Cocci] Patching nested if's?
+Message-ID: <CABE47THmL74Gy62cmGE+=V5bF6gqUP4qUPkKLxijcSbbrW4smQ@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 Hi,
 
-Could you please review my patch I sent last month? It checks if tables 
-in kernel are NULL terminated. Script matches only names specified in 
-source code by postfix='*_device_id$' and by list of prefixes which is 
-now prefix_list = ['platform', 'of', 'i2c']. I think it could by useful 
-in kernel sources.
+I'd like to patch the third if of a code block that looks like:
 
-On 02/27/2015 02:21 PM, Daniel Granat wrote:
-> <pre wrap>
- > Signed-off-by: Daniel Granat &lt;d.granat at samsung.com&gt;
- > ---
- > scripts/coccinelle/misc/device_id_tables.cocci | 95 
-++++++++++++++++++++++++++
- > 1 file changed, 95 insertions(+)
- > create mode 100644 scripts/coccinelle/misc/device_id_tables.cocci
- >
- > diff --git a/scripts/coccinelle/misc/device_id_tables.cocci 
-b/scripts/coccinelle/misc/device_id_tables.cocci
- > new file mode 100644
- > index 0000000..5968984
- > --- /dev/null
- > +++ b/scripts/coccinelle/misc/device_id_tables.cocci
- > @@ -0,0 +1,95 @@
- > +/// Make sure '*_device_id$' tables are NULL terminated
- > +//
- > +// Keywords: device_id
- > +// Confidence: Medium
- > +// Options: --include-headers
- > +
- > +virtual org
- > +virtual report
- > +virtual patch
- > +
- > + at initialize:python@
- > +@@
- > +import re
- > +
- > +postfix = '_device_id$'
- > +prefix_list = ['platform', 'of', 'i2c']
- > +
- > + at r1 depends on patch || org || report@
- > +position p1;
- > +identifier var, arr;
- > +identifier struct_name;
- > +expression E;
- > +@@
- > +
- > +(
- > +struct struct_name arr[] = {
- > + ...,
- > + {
- > + .var = E,
- > + }
- > + @p1
- > +};
- > +|
- > +struct struct_name arr[] = {
- > + ...,
- > + { ..., var, ... },
- > + @p1
- > +};
- > +)
- > +
- > + at script:python depends on report@
- > +struct_name &lt;&lt; r1.struct_name;
- > +p1 &lt;&lt; r1.p1;
- > +arr &lt;&lt; r1.arr;
- > +pattern;
- > +@@
- > +
- > +for i in prefix_list:
- > + pattern = str(i)+postfix
- > + if re.match(pattern, struct_name) != None:
- > + print "\nCOCCI: \"%s\" matchs required pattern \"%s\"" % 
-(struct_name, pattern)
- > + msg = "\"%s\" is not NULL terminated at line %s" % (arr, p1[0].line)
- > + coccilib.report.print_report(p1[0],msg)
- > + break
- > +
- > + at script:python match depends on patch@
- > +struct_name &lt;&lt; r1.struct_name;
- > +matched_name;
- > +pattern;
- > +@@
- > +
- > +coccinelle.matched_name = ''
- > +
- > +for i in prefix_list:
- > + pattern = str(i)+postfix
- > + if re.match(pattern, struct_name) != None:
- > + coccinelle.matched_name = struct_name
- > + break
- > +
- > + at r2 depends on patch@
- > +position r1.p1;
- > +identifier var, arr;
- > +identifier match.matched_name;
- > +expression E;
- > +@@
- > +
- > +(
- > +struct matched_name arr[] = {
- > + ...,
- > + {
- > + .var = E,
- > +- }
- > + @p1
- > ++ },
- > ++ {},
- > +};
- > +|
- > +struct matched_name arr[] = {
- > + ...,
- > + { ..., var, ... },
- > + @p1
- > ++ {},
- > +};
- > +)
- > +
- > </pre></body>
- > </html>
- > </html>
+if (MY_SUCCESS != ret) {
+      if (MY_EPERM != ret &&  MY_ENOENT != ret) {
+          if (t < MAXR) {
+              foo();
+              goto retry;
+          } else {
+              bar();
+          }
+      }
+}
+
+I'd like to get:
+
+
+if (MY_SUCCESS != ret) {
+      if (MY_EPERM != ret &&  MY_ENOENT != ret) {
+          if (myfunc() == 0) {
+              goto retry;
+          } else {
+              bar();
+          }
+      }
+}
+
+I've been able so far to replace the if (t <MAXR) but this
+also replaces lines with it (expresion < constant) elsewhere.
+Which is why I'd like to constrain the pacth to this 3 nested
+ifs pattern.
+
+Removing calls to foo() is easy, since I want to remove them all.
+
+I came up with the following invalid attempt
+@@
+expression t;
+constant M;
+@@
+ if (...)
+    if (...)
+    {
+       if (
+-       t < M
++          myfunc()
+          )
+          {
+      ...
+      } else {
+      ...
+      }
+    }
+  }
+
+Thanks for any hint.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20150331/092cd2c1/attachment.html>
