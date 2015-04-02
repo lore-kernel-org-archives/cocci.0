@@ -1,35 +1,55 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 2 Apr 2015 20:27:55 +0200 (CEST)
+From: rminnich@gmail.com (ron minnich)
+Date: Thu, 02 Apr 2015 21:10:15 +0000
 Subject: [Cocci] Add code to functions that use a certain variable
-In-Reply-To: <CAP6exYJacksEinpk_djJ5VYT85o0yBeqOQbZPWURadTrQKTzhA@mail.gmail.com>
+In-Reply-To: <alpine.DEB.2.02.1504022027020.2053@localhost6.localdomain6>
 References: <CAP6exYJacksEinpk_djJ5VYT85o0yBeqOQbZPWURadTrQKTzhA@mail.gmail.com>
-Message-ID: <alpine.DEB.2.02.1504022027020.2053@localhost6.localdomain6>
+ <alpine.DEB.2.02.1504022027020.2053@localhost6.localdomain6>
+Message-ID: <CAP6exY+fr3Kt5z1eREebmSVH2mYXDQQozfmgTW9g8uC5Pj_nYg@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 2 Apr 2015, ron minnich wrote:
+Here are two that work and one that fails, hopefully it will make more
+sense.
+poperror is a macro that uses m, so I know we need it there.
 
-> I have this typedef in Plan 9typedef struct Mach Mach;
-> 
-> a global?
-> Mach *m;
-> 
-> and functions:
-> a(...){
-> ...
-> m->whatever = x;
-> ...
-> }
-> 
-> I want to add some code after the {
-> +Mach *m=machp();
-> 
-> I.e. for any function that uses the "global" (it's not really that, it's a
-> bit more complex) I want to add a local variable that is initialized.
-> 
-> My efforts so far have failed badly.
+@@
+function f;
+@@
+f(...){
++Mach *m = machp();
+...
+poperror();
+}
 
-Could you send an example of a badly failing effort?
+Or I can add it to everything :-)
+@@
+function f;
+@@
+f(...){
++Mach *m = machp();
+...
+}
 
-thans,
-julia
+Here is one I can not get to work:
+@@
+typedef Mach;
+Mach *m;
+function f;
+identifier x;
+statement s;
+@@
+f(...){
++ Mach *m = machp();
+...
+x = m
+...
+}
+
+The x = m could also be m->x, or if (m) s, and so on
+
+thanks again
+
+ron
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20150402/31a16442/attachment.html>
