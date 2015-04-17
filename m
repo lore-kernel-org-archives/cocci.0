@@ -1,11 +1,15 @@
-From: verify@sohu.com (verify at sohu.com)
-Date: Wed, 15 Apr 2015 18:08:41 +0800
+From: Sebastien.Hinderer@inria.fr (=?utf-8?Q?S=C3=A9bastien?= Hinderer)
+Date: Fri, 17 Apr 2015 11:29:58 +0200
 Subject: [Cocci] coccinelle for osx
-Message-ID: <1429092521.75affce5a10c4ab39f7ce03d02e4c151.verify@sohu.com>
+In-Reply-To: <1429092521.75affce5a10c4ab39f7ce03d02e4c151.verify@sohu.com>
+References: <1429092521.75affce5a10c4ab39f7ce03d02e4c151.verify@sohu.com>
+Message-ID: <20150417092958.GB4513@pl-59055.rocqadm.inria.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi,&nbsp;I am installing coccinelle on a macbook pro with Yosemite. But failed at the stage of installing ocaml-findlib. I have tried to install coccinelle by OPAM directly, but it reported failed when installing conf-pkg-config 1.0.&nbsp;Are there any experiences on running coccinelle on OSX? Thanks.Best,Wang Ji&nbsp;
--------------- next part --------------
-An HTML attachment was scrubbed...
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20150415/d3d5ecf6/attachment.html>
+Hi,
+
+Could you please let us know the error message you get when trying to
+install findlib?
+Thanks,
+S?bastien.
