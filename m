@@ -1,17 +1,19 @@
 From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Mon, 20 Apr 2015 16:30:34 -0700
-Subject: [Cocci] [PATCH v1 3/6] kernel/params.c: generalize bool_enable_only
+Date: Mon, 20 Apr 2015 16:30:35 -0700
+Subject: [Cocci] [PATCH v1 4/6] moduleparam.h: add module_param_config_*()
+	helpers
 In-Reply-To: <1429572637-30234-1-git-send-email-mcgrof@do-not-panic.com>
 References: <1429572637-30234-1-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <1429572637-30234-4-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1429572637-30234-5-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: "Luis R. Rodriguez" <mcgrof@suse.com>
 
-This takes out the bool_enable_only implementation from
-the module loading code and generalizes it so that others
-can make use of it.
+This adds a couple of bool module_param_config_*() helpers
+which are designed to let us easily associate a booloean
+module parameter with an associated kernel configuration
+option, and to help us remove #ifdef'ery eyesores.
 
 Cc: Rusty Russell <rusty@rustcorp.com.au>
 Cc: Jani Nikula <jani.nikula@intel.com>
@@ -26,110 +28,56 @@ Cc: linux-kernel at vger.kernel.org
 Cc: cocci at systeme.lip6.fr
 Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
 ---
- include/linux/moduleparam.h |  6 ++++++
- kernel/module.c             | 31 -------------------------------
- kernel/params.c             | 30 ++++++++++++++++++++++++++++++
- 3 files changed, 36 insertions(+), 31 deletions(-)
+ include/linux/moduleparam.h | 37 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
 
 diff --git a/include/linux/moduleparam.h b/include/linux/moduleparam.h
-index 5d0f4d9..7e00799 100644
+index 7e00799..fdf7b87 100644
 --- a/include/linux/moduleparam.h
 +++ b/include/linux/moduleparam.h
-@@ -427,6 +427,12 @@ extern int param_set_bool(const char *val, const struct kernel_param *kp);
- extern int param_get_bool(char *buffer, const struct kernel_param *kp);
- #define param_check_bool(name, p) __param_check(name, p, bool)
+@@ -155,6 +155,43 @@ struct kparam_array
+ 	__MODULE_PARM_TYPE(name, #type)
  
-+extern const struct kernel_param_ops param_ops_bool_enable_only;
-+extern int param_set_bool_enable_only(const char *val,
-+				      const struct kernel_param *kp);
-+/* getter is the same as for the regular bool */
-+#define param_check_bool_enable_only param_check_bool
+ /**
++ * module_param_config_on_off - bool parameter with run time override
++ * @name: a valid C identifier which is the parameter name.
++ * @value: the actual lvalue to alter.
++ * @perm: visibility in sysfs.
++ * @config: kernel parameter which will enable this option if this
++ * 	kernel configuration option has been enabled.
++ *
++ * This lets you define a bool module paramter which by default will be
++ * set to true if the config option has been set on your kernel's
++ * configuration, otherwise it is set to false.
++ */
++#define module_param_config_on_off(name, var, perm, config) 		\
++	static bool var = IS_ENABLED(config);				\
++	module_param_named(name, var, bool, perm);
 +
- extern const struct kernel_param_ops param_ops_invbool;
- extern int param_set_invbool(const char *val, const struct kernel_param *kp);
- extern int param_get_invbool(char *buffer, const struct kernel_param *kp);
-diff --git a/kernel/module.c b/kernel/module.c
-index de12c4a..43a1ef3 100644
---- a/kernel/module.c
-+++ b/kernel/module.c
-@@ -111,37 +111,6 @@ static bool sig_enforce = true;
- #else
- static bool sig_enforce = false;
- 
--static int param_set_bool_enable_only(const char *val,
--				      const struct kernel_param *kp)
--{
--	int err = 0;
--	bool new_value;
--	bool orig_value = *(bool *)kp->arg;
--	struct kernel_param dummy_kp = *kp;
--
--	dummy_kp.arg = &new_value;
--
--	err = param_set_bool(val, &dummy_kp);
--	if (err)
--		return err;
--
--	/* Don't let them unset it once it's set! */
--	if (!new_value && orig_value)
--		return -EROFS;
--
--	if (new_value)
--		err = param_set_bool(val, kp);
--
--	return err;
--}
--
--static const struct kernel_param_ops param_ops_bool_enable_only = {
--	.flags = KERNEL_PARAM_OPS_FL_NOARG,
--	.set = param_set_bool_enable_only,
--	.get = param_get_bool,
--};
--#define param_check_bool_enable_only param_check_bool
--
- module_param(sig_enforce, bool_enable_only, 0644);
- #endif /* !CONFIG_MODULE_SIG_FORCE */
- #endif /* CONFIG_MODULE_SIG */
-diff --git a/kernel/params.c b/kernel/params.c
-index b7635c0..324624e 100644
---- a/kernel/params.c
-+++ b/kernel/params.c
-@@ -335,6 +335,36 @@ const struct kernel_param_ops param_ops_bool = {
- };
- EXPORT_SYMBOL(param_ops_bool);
- 
-+int param_set_bool_enable_only(const char *val, const struct kernel_param *kp)
-+{
-+	int err = 0;
-+	bool new_value;
-+	bool orig_value = *(bool *)kp->arg;
-+	struct kernel_param dummy_kp = *kp;
++/**
++ * module_param_config_on - bool parameter with run time enablement override
++ * @name: a valid C identifier which is the parameter name.
++ * @value: the actual lvalue to alter.
++ * @perm: visibility in sysfs.
++ * @config: kernel parameter which will enable this option if this
++ * 	kernel configuration option has been enabled.
++ *
++ * This lets you define a bool module paramter which by default will be
++ * set to true if the config option has been set on your kernel's
++ * configuration, otherwise it is set to false. This particular helper
++ * will ensure that if the kernel configuration has been set you will not
++ * be able to disable this kernel parameter. You can only use this to let
++ * the an option that was disabled on your kernel configuration be enabled
++ * at run time.
++ */
++#define module_param_config_on(name, var, perm, config) 		\
++	static bool var = IS_ENABLED(config);				\
++	module_param_named(name, var, bool_enable_only, perm);
 +
-+	dummy_kp.arg = &new_value;
 +
-+	err = param_set_bool(val, &dummy_kp);
-+	if (err)
-+		return err;
-+
-+	/* Don't let them unset it once it's set! */
-+	if (!new_value && orig_value)
-+		return -EROFS;
-+
-+	if (new_value)
-+		err = param_set_bool(val, kp);
-+
-+	return err;
-+}
-+EXPORT_SYMBOL_GPL(param_set_bool_enable_only);
-+
-+const struct kernel_param_ops param_ops_bool_enable_only = {
-+	.flags = KERNEL_PARAM_OPS_FL_NOARG,
-+	.set = param_set_bool_enable_only,
-+	.get = param_get_bool,
-+};
-+
- /* This one must be bool. */
- int param_set_invbool(const char *val, const struct kernel_param *kp)
- {
++/**
+  * module_param_cb - general callback for a module/cmdline parameter
+  * @name: a valid C identifier which is the parameter name.
+  * @ops: the set & get operations for this parameter.
 -- 
 2.3.2.209.gd67f9d5.dirty
