@@ -1,33 +1,32 @@
-From: michal.kazior@tieto.com (Michal Kazior)
-Date: Mon, 20 Apr 2015 11:14:38 +0200
-Subject: [Cocci] Is list_entry/rcu2.cocci example from coccinellery broken?
-Message-ID: <CA+BoTQkZfT2_9-b48GSY19H7fRWpsq0R1Kd5yKR0Kqs2w7=6hQ@mail.gmail.com>
+From: Sebastien.Hinderer@inria.fr (=?utf-8?Q?S=C3=A9bastien?= Hinderer)
+Date: Mon, 20 Apr 2015 11:15:40 +0200
+Subject: [Cocci] version 1.0.0
+In-Reply-To: <5534B7F6.7070208@users.sourceforge.net>
+References: <alpine.DEB.2.02.1504191727560.2028@localhost6.localdomain6>
+ <5534B7F6.7070208@users.sourceforge.net>
+Message-ID: <20150420091540.GA7998@pema>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hello,
+Dear Markus,
 
-I'm trying to learn spatch. While playing around I've hit a problem of
-not being able to figure out how to rename hash_for_each_safe() in
-Linux kernel. I've looked around and found an adequate example which
-seemed to do what I'm interested in as well. However upon trying to
-test it it fails:
+SF Markus Elfring (2015/04/20 10:25 +0200):
+> > Comments and bug reports are welcome.
+> 
+> Thanks for your update on development progress.
+> 
+> Does this software version contain also any improvements for the
+> documentation
+> which were occasionally missed in previous releases?
 
- ; cd /usr/src/linux
- ; wget https://raw.githubusercontent.com/coccinelle/coccinellery/c53a020006e37c40f006c3ab2f016b76b0de4d01/list_entry/rcu2.cocci
- ; spatch --version
-spatch version 1.0.0-rc24 with Python support and with PCRE support
- ; spatch --sp-file rcu2.cocci --dir .
-init_defs_builtins: /usr/local/share/coccinelle/standard.h
-1179 1196
-Fatal error: exception Failure("minus: parse error:
- = File "rcu2.cocci", line 80, column 2,  charpos = 1179
-    around = 'list_for_each_rcu', whole content = - list_for_each_rcu(_X(I),E1)
-")
+I'm not sure there has been a lot done on documentation so far, but
+Julia will certainly correct this point if I'm wrong.
 
-Is this known? Is this a bug in spatch or is the example out of date?
-If it's the latter can anyone give me a hint how such a rename should
-be done now?
+However, improving the user documentation is part of what I am supposdd to
+do on Coccinelle dugring this year. That's why, I'd be interested
+in any feedback. In particular, if you could let me know which are
+the areas which, according to you, are not so well documented, that
+woudl be helpful.
 
-
-Micha?
+Best wishes,
+S?bastien.
