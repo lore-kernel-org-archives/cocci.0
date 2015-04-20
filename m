@@ -1,32 +1,36 @@
-From: Sebastien.Hinderer@inria.fr (=?utf-8?Q?S=C3=A9bastien?= Hinderer)
-Date: Mon, 20 Apr 2015 11:15:40 +0200
-Subject: [Cocci] version 1.0.0
-In-Reply-To: <5534B7F6.7070208@users.sourceforge.net>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Mon, 20 Apr 2015 15:21:25 +0200
+Subject: [Cocci] documentation improvements
+In-Reply-To: <20150420091540.GA7998@pema>
 References: <alpine.DEB.2.02.1504191727560.2028@localhost6.localdomain6>
- <5534B7F6.7070208@users.sourceforge.net>
-Message-ID: <20150420091540.GA7998@pema>
+ <5534B7F6.7070208@users.sourceforge.net> <20150420091540.GA7998@pema>
+Message-ID: <5534FD55.70401@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Dear Markus,
+> However, improving the user documentation is part of
+> what I am supposdd to do on Coccinelle dugring this year.
 
-SF Markus Elfring (2015/04/20 10:25 +0200):
-> > Comments and bug reports are welcome.
-> 
-> Thanks for your update on development progress.
-> 
-> Does this software version contain also any improvements for the
-> documentation
-> which were occasionally missed in previous releases?
+That is an interesting development.
 
-I'm not sure there has been a lot done on documentation so far, but
-Julia will certainly correct this point if I'm wrong.
 
-However, improving the user documentation is part of what I am supposdd to
-do on Coccinelle dugring this year. That's why, I'd be interested
-in any feedback. In particular, if you could let me know which are
-the areas which, according to you, are not so well documented, that
-woudl be helpful.
+> In particular, if you could let me know which are
+> the areas which, according to you, are not so well documented,
+> that woudl be helpful.
 
-Best wishes,
-S?bastien.
+I see that there are improvement possibilities like the following.
+* A bit of spell checking
+
+* How are the chances to pass program parameter descriptions
+  to a dedicated Latex macro so that more consistent
+  formatting of the option collection can be achieved?
+
+* Better outline around functionality from the semantic
+  patch language
+
+* Would additional links be useful?
+
+* Can a tool like "OCamlDoc" also help?
+
+Regards,
+Markus
