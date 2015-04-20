@@ -1,23 +1,19 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 20 Apr 2015 10:19:35 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Mon, 20 Apr 2015 10:25:26 +0200
 Subject: [Cocci] version 1.0.0
-In-Reply-To: <20150420081008.GA1242@katana>
+In-Reply-To: <alpine.DEB.2.02.1504191727560.2028@localhost6.localdomain6>
 References: <alpine.DEB.2.02.1504191727560.2028@localhost6.localdomain6>
- <20150420081008.GA1242@katana>
-Message-ID: <alpine.DEB.2.10.1504201019180.2147@hadrien>
+Message-ID: <5534B7F6.7070208@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> Comments and bug reports are welcome.
 
+Thanks for your update on development progress.
 
-On Mon, 20 Apr 2015, Wolfram Sang wrote:
+Does this software version contain also any improvements for the
+documentation
+which were occasionally missed in previous releases?
 
-> On Sun, Apr 19, 2015 at 05:37:21PM +0200, Julia Lawall wrote:
-> > Coccinelle version 1.0.0 is released.
->
-> Congratulations, Julia! And thank you *very much* for all your hard
-> work!
-
-Thanks.  I hope it will actually work :)
-
-julia
+Regards,
+Markus
