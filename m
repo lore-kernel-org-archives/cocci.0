@@ -1,37 +1,26 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 19 Apr 2015 19:14:01 +0200 (CEST)
+From: wsa@the-dreams.de (Wolfram Sang)
+Date: Mon, 20 Apr 2015 10:10:08 +0200
 Subject: [Cocci] version 1.0.0
-In-Reply-To: <5533DF5B.9080405@knosof.co.uk>
+In-Reply-To: <alpine.DEB.2.02.1504191727560.2028@localhost6.localdomain6>
 References: <alpine.DEB.2.02.1504191727560.2028@localhost6.localdomain6>
- <5533DF5B.9080405@knosof.co.uk>
-Message-ID: <alpine.DEB.2.02.1504191913110.2028@localhost6.localdomain6>
+Message-ID: <20150420081008.GA1242@katana>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, 19 Apr 2015, Derek M Jones wrote:
+On Sun, Apr 19, 2015 at 05:37:21PM +0200, Julia Lawall wrote:
+> Coccinelle version 1.0.0 is released.
 
-> Julia,
-> 
-> > Coccinelle version 1.0.0 is released.
-> 
-> Congratulations!
-> 
-> It must be over 10 years since I first started using Coccinelle.
-> Should I pencil in 2025 for the release of version 2 ;-)
+Congratulations, Julia! And thank you *very much* for all your hard
+work!
 
-Good point.  Perhaps...
+All the best,
 
-Actually, I think Coccinelle was first released in 2007 or so, so not 
-quite 10 years.
+   Wolfram
 
-julia
-
-> 
-> -- 
-> Derek M. Jones           Software analysis
-> tel: +44 (0)1252 520667  blog:shape-of-code.coding-guidelines.com
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
-> 
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 819 bytes
+Desc: Digital signature
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20150420/8a37216c/attachment.asc>
