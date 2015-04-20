@@ -1,31 +1,80 @@
-From: derek@knosof.co.uk (Derek M Jones)
-Date: Mon, 20 Apr 2015 14:43:28 +0100
-Subject: [Cocci] version 1.0.0
-In-Reply-To: <20150420091540.GA7998@pema>
-References: <alpine.DEB.2.02.1504191727560.2028@localhost6.localdomain6>
- <5534B7F6.7070208@users.sourceforge.net> <20150420091540.GA7998@pema>
-Message-ID: <55350280.8040109@knosof.co.uk>
+From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
+Date: Mon, 20 Apr 2015 16:30:31 -0700
+Subject: [Cocci] [PATCH v1 0/6] module params: few simplifications
+Message-ID: <1429572637-30234-1-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-S?bastien,
+From: "Luis R. Rodriguez" <mcgrof@suse.com>
 
-> However, improving the user documentation is part of what I am supposdd to
-> do on Coccinelle dugring this year. That's why, I'd be interested
-> in any feedback. In particular, if you could let me know which are
-> the areas which, according to you, are not so well documented, that
-> woudl be helpful.
+Here are a few simplifications on the sig_force module parameter code.
+I'm digging through this as long term I'd like enable standard use of
+the crypto code for module loading for firmware loading and later
+any file requested (non firmware) to replace udev deamons such as
+CRDA which should no longer be needed.
 
-More and more people are hosting their documentation on github,
-written using markdown.
-https://help.github.com/articles/github-flavored-markdown/
+Short term this means seeing what code we could re-use and the option
+to only force enable/passively enable signing is one of the options
+I'd like to see we keep for firmware signing. The same grammar as used
+for module signing can be used, but instead of copy+pasting code I
+decided to take generalize the feature option of sig_force, make it
+generic, learn from its implmentation of using const, making that
+generic and lastly to simplify this even further to one line code
+as I had done for the early_param_on_off() stuff recently. Since I'm
+also adding an on_off() case for module parameters I had to find a
+example simple use case for that, picked workqueue for that.
 
-Some examples:
-https://github.com/showcases/writing
+We might later be able to use SmPL grammar to replace a lot of old code
+with these helpers (including early_param_on_off) but will let others look
+into that as I'd like to complete other tasks.
 
-This approach also makes it easier for you to allow others to
-contribute.
+All this goes test compiled on x86_64 on:
+
+  * allnoconfig
+  * allmodconfig
+  * allyesconfig
+
+This series was based on top of linux-next next-20150420.
+
+Luis R. Rodriguez (6):
+  kernel/params: constify struct kernel_param_ops uses
+  kernel/module.c: use generic module param operaters for sig_enforce
+  kernel/params.c: generalize bool_enable_only
+  moduleparam.h: add module_param_config_*() helpers
+  kernel/workqueue.c: use module_param_config_on_off() for
+    power_efficient
+  kernel/module.c: use module_param_config_on() for sig_enforce
+
+ arch/s390/kernel/perf_cpum_sf.c         |  2 +-
+ arch/x86/kvm/mmu_audit.c                |  2 +-
+ arch/x86/platform/uv/uv_nmi.c           |  2 +-
+ drivers/block/null_blk.c                |  4 +-
+ drivers/char/ipmi/ipmi_watchdog.c       |  6 +--
+ drivers/dma/dmatest.c                   |  4 +-
+ drivers/ide/ide.c                       |  2 +-
+ drivers/infiniband/ulp/srp/ib_srp.c     |  4 +-
+ drivers/input/misc/ati_remote2.c        |  4 +-
+ drivers/input/mouse/psmouse-base.c      |  2 +-
+ drivers/misc/lis3lv02d/lis3lv02d.c      |  2 +-
+ drivers/mtd/ubi/block.c                 |  2 +-
+ drivers/net/wireless/ath/wil6210/main.c |  4 +-
+ drivers/power/test_power.c              | 16 ++++----
+ drivers/thermal/intel_powerclamp.c      |  4 +-
+ drivers/tty/hvc/hvc_iucv.c              |  2 +-
+ drivers/tty/sysrq.c                     |  2 +-
+ drivers/video/fbdev/uvesafb.c           |  2 +-
+ drivers/virtio/virtio_mmio.c            |  2 +-
+ fs/nfs/super.c                          |  2 +-
+ include/linux/moduleparam.h             | 73 ++++++++++++++++++++++++++-------
+ kernel/module.c                         | 37 +----------------
+ kernel/params.c                         | 44 ++++++++++++++++----
+ kernel/workqueue.c                      |  8 +---
+ net/sunrpc/auth.c                       |  2 +-
+ net/sunrpc/xprtsock.c                   |  6 +--
+ security/apparmor/lsm.c                 |  6 +--
+ security/integrity/ima/ima_crypto.c     |  2 +-
+ sound/pci/hda/hda_intel.c               |  2 +-
+ 29 files changed, 141 insertions(+), 109 deletions(-)
 
 -- 
-Derek M. Jones           Software analysis
-tel: +44 (0)1252 520667  blog:shape-of-code.coding-guidelines.com
+2.3.2.209.gd67f9d5.dirty
