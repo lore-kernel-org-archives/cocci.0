@@ -1,10 +1,10 @@
 From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Tue, 21 Apr 2015 13:16:33 -0700
-Subject: [Cocci] [PATCH v3 12/17] video: fbdev: pm2fb: use
+Date: Tue, 21 Apr 2015 13:16:34 -0700
+Subject: [Cocci] [PATCH v3 13/17] video: fbdev: pm3fb: use
 	arch_phys_wc_add() and ioremap_wc()
 In-Reply-To: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
 References: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <1429647398-16983-13-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1429647398-16983-14-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -83,13 +83,15 @@ expression base, size;
 +info->screen_base = ioremap_wc(base, size);
 
 Generated-by: Coccinelle SmPL
-Cc: Rob Clark <robdclark@gmail.com>
 Cc: Jingoo Han <jg1.han@samsung.com>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: Rob Clark <robdclark@gmail.com>
+Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 Cc: Suresh Siddha <sbsiddha@gmail.com>
 Cc: Ingo Molnar <mingo@elte.hu>
 Cc: Thomas Gleixner <tglx@linutronix.de>
 Cc: Juergen Gross <jgross@suse.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
 Cc: Andy Lutomirski <luto@amacapital.net>
 Cc: Dave Airlie <airlied@redhat.com>
 Cc: Antonino Daplas <adaplas@gmail.com>
@@ -99,95 +101,95 @@ Cc: linux-fbdev at vger.kernel.org
 Cc: linux-kernel at vger.kernel.org
 Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
 ---
- drivers/video/fbdev/pm2fb.c | 31 +++++--------------------------
- 1 file changed, 5 insertions(+), 26 deletions(-)
+ drivers/video/fbdev/pm3fb.c | 30 ++++++------------------------
+ 1 file changed, 6 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/video/fbdev/pm2fb.c b/drivers/video/fbdev/pm2fb.c
-index 3b85b64..aa8d288 100644
---- a/drivers/video/fbdev/pm2fb.c
-+++ b/drivers/video/fbdev/pm2fb.c
-@@ -38,10 +38,6 @@
+diff --git a/drivers/video/fbdev/pm3fb.c b/drivers/video/fbdev/pm3fb.c
+index 77b99ed..6ff5077 100644
+--- a/drivers/video/fbdev/pm3fb.c
++++ b/drivers/video/fbdev/pm3fb.c
+@@ -32,9 +32,6 @@
  #include <linux/fb.h>
  #include <linux/init.h>
  #include <linux/pci.h>
 -#ifdef CONFIG_MTRR
 -#include <asm/mtrr.h>
 -#endif
--
- #include <video/permedia2.h>
- #include <video/cvisionppc.h>
  
-@@ -81,10 +77,7 @@ static char *mode_option;
- static bool lowhsync;
- static bool lowvsync;
+ #include <video/pm3fb.h>
+ 
+@@ -58,11 +55,7 @@
+ static int hwcursor = 1;
+ static char *mode_option;
  static bool noaccel;
+-
 -/* mtrr option */
 -#ifdef CONFIG_MTRR
  static bool nomtrr;
 -#endif
  
  /*
-  * The hardware state of the graphics card that isn't part of the
-@@ -100,7 +93,7 @@ struct pm2fb_par
- 	u32		mem_control;	/* MemControl reg at probe */
- 	u32		boot_address;	/* BootAddress reg at probe */
+  * This structure defines the hardware state of the graphics card. Normally
+@@ -76,7 +69,7 @@ struct pm3_par {
+ 	u32		video;		/* video flags before blanking */
+ 	u32		base;		/* screen base in 128 bits unit */
  	u32		palette[16];
 -	int		mtrr_handle;
 +	int		wc_cookie;
  };
  
  /*
-@@ -1637,21 +1630,16 @@ static int pm2fb_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+@@ -1374,8 +1367,8 @@ static int pm3fb_probe(struct pci_dev *dev, const struct pci_device_id *ent)
+ 		printk(KERN_WARNING "pm3fb: Can't reserve smem.\n");
  		goto err_exit_mmio;
  	}
- 	info->screen_base =
--		ioremap_nocache(pm2fb_fix.smem_start, pm2fb_fix.smem_len);
-+		ioremap_wc(pm2fb_fix.smem_start, pm2fb_fix.smem_len);
+-	info->screen_base =
+-		ioremap_nocache(pm3fb_fix.smem_start, pm3fb_fix.smem_len);
++	info->screen_base = ioremap_wc(pm3fb_fix.smem_start,
++				       pm3fb_fix.smem_len);
  	if (!info->screen_base) {
- 		printk(KERN_WARNING "pm2fb: Can't ioremap smem area.\n");
- 		release_mem_region(pm2fb_fix.smem_start, pm2fb_fix.smem_len);
- 		goto err_exit_mmio;
+ 		printk(KERN_WARNING "pm3fb: Can't ioremap smem area.\n");
+ 		release_mem_region(pm3fb_fix.smem_start, pm3fb_fix.smem_len);
+@@ -1383,12 +1376,9 @@ static int pm3fb_probe(struct pci_dev *dev, const struct pci_device_id *ent)
  	}
+ 	info->screen_size = pm3fb_fix.smem_len;
  
 -#ifdef CONFIG_MTRR
--	default_par->mtrr_handle = -1;
  	if (!nomtrr)
--		default_par->mtrr_handle =
--			mtrr_add(pm2fb_fix.smem_start,
--				 pm2fb_fix.smem_len,
--				 MTRR_TYPE_WRCOMB, 1);
+-		par->mtrr_handle = mtrr_add(pm3fb_fix.smem_start,
+-						pm3fb_fix.smem_len,
+-						MTRR_TYPE_WRCOMB, 1);
 -#endif
-+		default_par->wc_cookie = arch_phys_wc_add(pm2fb_fix.smem_start,
-+							  pm2fb_fix.smem_len);
++		par->wc_cookie = arch_phys_wc_add(pm3fb_fix.smem_start,
++						  pm3fb_fix.smem_len);
+ 	info->fbops = &pm3fb_ops;
  
- 	info->fbops		= &pm2fb_ops;
- 	info->fix		= pm2fb_fix;
-@@ -1733,12 +1721,7 @@ static void pm2fb_remove(struct pci_dev *pdev)
- 	struct pm2fb_par *par = info->par;
+ 	par->video = PM3_READ_REG(par, PM3VideoControl);
+@@ -1478,11 +1468,7 @@ static void pm3fb_remove(struct pci_dev *dev)
+ 		unregister_framebuffer(info);
+ 		fb_dealloc_cmap(&info->cmap);
  
- 	unregister_framebuffer(info);
--
 -#ifdef CONFIG_MTRR
--	if (par->mtrr_handle >= 0)
--		mtrr_del(par->mtrr_handle, info->fix.smem_start,
--			 info->fix.smem_len);
+-		if (par->mtrr_handle >= 0)
+-			mtrr_del(par->mtrr_handle, info->fix.smem_start,
+-				 info->fix.smem_len);
 -#endif /* CONFIG_MTRR */
-+	arch_phys_wc_del(par->wc_cookie);
- 	iounmap(info->screen_base);
- 	release_mem_region(fix->smem_start, fix->smem_len);
- 	iounmap(par->v_regs);
-@@ -1791,10 +1774,8 @@ static int __init pm2fb_setup(char *options)
- 			lowvsync = 1;
++		arch_phys_wc_del(par->wc_cookie);
+ 		iounmap(info->screen_base);
+ 		release_mem_region(fix->smem_start, fix->smem_len);
+ 		iounmap(par->v_regs);
+@@ -1533,10 +1519,8 @@ static int __init pm3fb_setup(char *options)
+ 			noaccel = 1;
  		else if (!strncmp(this_opt, "hwcursor=", 9))
  			hwcursor = simple_strtoul(this_opt + 9, NULL, 0);
 -#ifdef CONFIG_MTRR
  		else if (!strncmp(this_opt, "nomtrr", 6))
  			nomtrr = 1;
 -#endif
- 		else if (!strncmp(this_opt, "noaccel", 7))
- 			noaccel = 1;
  		else
-@@ -1847,10 +1828,8 @@ MODULE_PARM_DESC(noaccel, "Disable acceleration");
+ 			mode_option = this_opt;
+ 	}
+@@ -1577,10 +1561,8 @@ MODULE_PARM_DESC(noaccel, "Disable acceleration");
  module_param(hwcursor, int, 0644);
  MODULE_PARM_DESC(hwcursor, "Enable hardware cursor "
  			"(1=enable, 0=disable, default=1)");
@@ -196,7 +198,7 @@ index 3b85b64..aa8d288 100644
  MODULE_PARM_DESC(nomtrr, "Disable MTRR support (0 or 1=disabled) (default=0)");
 -#endif
  
- MODULE_AUTHOR("Jim Hague <jim.hague@acm.org>");
- MODULE_DESCRIPTION("Permedia2 framebuffer device driver");
+ MODULE_DESCRIPTION("Permedia3 framebuffer device driver");
+ MODULE_LICENSE("GPL");
 -- 
 2.3.2.209.gd67f9d5.dirty
