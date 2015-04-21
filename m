@@ -1,15 +1,16 @@
 From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Tue, 21 Apr 2015 13:16:31 -0700
-Subject: [Cocci] [PATCH v3 10/17] video: fbdev: aty: use arch_phys_wc_add()
+Date: Tue, 21 Apr 2015 13:16:32 -0700
+Subject: [Cocci] [PATCH v3 11/17] video: fbdev: i810: use arch_phys_wc_add()
 	and ioremap_wc()
 In-Reply-To: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
 References: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <1429647398-16983-11-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1429647398-16983-12-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: "Luis R. Rodriguez" <mcgrof@suse.com>
 
+The same area used for MTRR is used for the ioremap() area.
 Convert the driver from using the x86 specific MTRR code to
 the architecture agnostic arch_phys_wc_add(). arch_phys_wc_add()
 will avoid MTRR if write-combining is available, in order to
@@ -82,7 +83,6 @@ expression base, size;
 +info->screen_base = ioremap_wc(base, size);
 
 Generated-by: Coccinelle SmPL
-Cc: Paul Mackerras <paulus@samba.org>
 Cc: Suresh Siddha <sbsiddha@gmail.com>
 Cc: Ingo Molnar <mingo@elte.hu>
 Cc: Thomas Gleixner <tglx@linutronix.de>
@@ -95,110 +95,122 @@ Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
 Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
 Cc: linux-fbdev at vger.kernel.org
 Cc: linux-kernel at vger.kernel.org
+Cc: Juergen Gross <jgross@suse.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Andy Lutomirski <luto@amacapital.net>
+Cc: Dave Airlie <airlied@redhat.com>
+Cc: Antonino Daplas <adaplas@gmail.com>
+Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
+Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
+Cc: linux-fbdev at vger.kernel.org
+Cc: linux-kernel at vger.kernel.org
 Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
 ---
- drivers/video/fbdev/aty/aty128fb.c | 36 ++++++------------------------------
- 1 file changed, 6 insertions(+), 30 deletions(-)
+ drivers/video/fbdev/i810/i810.h      |  3 +--
+ drivers/video/fbdev/i810/i810_main.c | 11 +++++++----
+ drivers/video/fbdev/i810/i810_main.h | 26 --------------------------
+ 3 files changed, 8 insertions(+), 32 deletions(-)
 
-diff --git a/drivers/video/fbdev/aty/aty128fb.c b/drivers/video/fbdev/aty/aty128fb.c
-index 0156954..c42ce2f 100644
---- a/drivers/video/fbdev/aty/aty128fb.c
-+++ b/drivers/video/fbdev/aty/aty128fb.c
-@@ -80,10 +80,6 @@
- #include <asm/btext.h>
- #endif /* CONFIG_BOOTX_TEXT */
+diff --git a/drivers/video/fbdev/i810/i810.h b/drivers/video/fbdev/i810/i810.h
+index 1414b73..7b1c002 100644
+--- a/drivers/video/fbdev/i810/i810.h
++++ b/drivers/video/fbdev/i810/i810.h
+@@ -199,7 +199,6 @@
+ #define HAS_FONTCACHE               8 
  
--#ifdef CONFIG_MTRR
--#include <asm/mtrr.h>
--#endif
--
- #include <video/aty128.h>
- 
- /* Debug flag */
-@@ -399,10 +395,7 @@ static int default_cmode = CMODE_8;
- 
- static int default_crt_on = 0;
- static int default_lcd_on = 1;
--
--#ifdef CONFIG_MTRR
- static bool mtrr = true;
--#endif
- 
- #ifdef CONFIG_FB_ATY128_BACKLIGHT
- #ifdef CONFIG_PMAC_BACKLIGHT
-@@ -456,9 +449,7 @@ struct aty128fb_par {
- 	u32 vram_size;                      /* onboard video ram   */
- 	int chip_gen;
- 	const struct aty128_meminfo *mem;   /* onboard mem info    */
--#ifdef CONFIG_MTRR
--	struct { int vram; int vram_valid; } mtrr;
--#endif
+ /* driver flags */
+-#define HAS_MTRR                    1
+ #define HAS_ACCELERATION            2
+ #define ALWAYS_SYNC                 4
+ #define LOCKUP                      8
+@@ -281,7 +280,7 @@ struct i810fb_par {
+ 	u32 ovract;
+ 	u32 cur_state;
+ 	u32 ddc_num;
+-	int mtrr_reg;
 +	int wc_cookie;
- 	int blitter_may_be_busy;
- 	int fifo_slots;                 /* free slots in FIFO (64 max) */
+ 	u16 bltcntl;
+ 	u8 interlace;
+ };
+diff --git a/drivers/video/fbdev/i810/i810_main.c b/drivers/video/fbdev/i810/i810_main.c
+index bb674e4..025b882 100644
+--- a/drivers/video/fbdev/i810/i810_main.c
++++ b/drivers/video/fbdev/i810/i810_main.c
+@@ -41,6 +41,7 @@
+ #include <linux/resource.h>
+ #include <linux/unistd.h>
+ #include <linux/console.h>
++#include <linux/io.h>
  
-@@ -1725,12 +1716,10 @@ static int aty128fb_setup(char *options)
- #endif
- 			continue;
- 		}
--#ifdef CONFIG_MTRR
- 		if(!strncmp(this_opt, "nomtrr", 6)) {
- 			mtrr = 0;
- 			continue;
- 		}
--#endif
- #ifdef CONFIG_PPC_PMAC
- 		/* vmode and cmode deprecated */
- 		if (!strncmp(this_opt, "vmode:", 6)) {
-@@ -2133,7 +2122,7 @@ static int aty128_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	par->vram_size = aty_ld_le32(CNFG_MEMSIZE) & 0x03FFFFFF;
+ #include <asm/io.h>
+ #include <asm/div64.h>
+@@ -1816,7 +1817,9 @@ static void i810_init_device(struct i810fb_par *par)
+ 	u8 reg;
+ 	u8 __iomem *mmio = par->mmio_start_virtual;
  
- 	/* Virtualize the framebuffer */
--	info->screen_base = ioremap(fb_addr, par->vram_size);
-+	info->screen_base = ioremap_wc(fb_addr, par->vram_size);
- 	if (!info->screen_base)
- 		goto err_unmap_out;
- 
-@@ -2170,15 +2159,9 @@ static int aty128_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	if (!aty128_init(pdev, ent))
- 		goto err_out;
- 
--#ifdef CONFIG_MTRR
--	if (mtrr) {
--		par->mtrr.vram = mtrr_add(info->fix.smem_start,
--				par->vram_size, MTRR_TYPE_WRCOMB, 1);
--		par->mtrr.vram_valid = 1;
--		/* let there be speed */
--		printk(KERN_INFO "aty128fb: Rage128 MTRR set to ON\n");
--	}
--#endif /* CONFIG_MTRR */
+-	if (mtrr) set_mtrr(par);
 +	if (mtrr)
-+		par->wc_cookie = arch_phys_wc_add(info->fix.smem_start,
-+						  par->vram_size);
- 	return 0;
++		par->wc_cookie= arch_phys_wc_add((u32) par->aperture.physical,
++						 par->aperture.size);
  
- err_out:
-@@ -2212,11 +2195,7 @@ static void aty128_remove(struct pci_dev *pdev)
- 	aty128_bl_exit(info->bl_dev);
- #endif
+ 	i810_init_cursor(par);
  
--#ifdef CONFIG_MTRR
--	if (par->mtrr.vram_valid)
--		mtrr_del(par->mtrr.vram, info->fix.smem_start,
--			 par->vram_size);
--#endif /* CONFIG_MTRR */
+@@ -1865,8 +1868,8 @@ static int i810_allocate_pci_resource(struct i810fb_par *par,
+ 	}
+ 	par->res_flags |= FRAMEBUFFER_REQ;
+ 
+-	par->aperture.virtual = ioremap_nocache(par->aperture.physical, 
+-					par->aperture.size);
++	par->aperture.virtual = ioremap_wc(par->aperture.physical,
++					   par->aperture.size);
+ 	if (!par->aperture.virtual) {
+ 		printk("i810fb_init: cannot remap framebuffer region\n");
+ 		return -ENODEV;
+@@ -2096,7 +2099,7 @@ static void i810fb_release_resource(struct fb_info *info,
+ 				    struct i810fb_par *par)
+ {
+ 	struct gtt_data *gtt = &par->i810_gtt;
+-	unset_mtrr(par);
 +	arch_phys_wc_del(par->wc_cookie);
- 	iounmap(par->regbase);
- 	iounmap(info->screen_base);
  
-@@ -2625,8 +2604,5 @@ MODULE_DESCRIPTION("FBDev driver for ATI Rage128 / Pro cards");
- MODULE_LICENSE("GPL");
- module_param(mode_option, charp, 0);
- MODULE_PARM_DESC(mode_option, "Specify resolution as \"<xres>x<yres>[-<bpp>][@<refresh>]\" ");
+ 	i810_delete_i2c_busses(par);
+ 
+diff --git a/drivers/video/fbdev/i810/i810_main.h b/drivers/video/fbdev/i810/i810_main.h
+index a25afaa..7bfaaad 100644
+--- a/drivers/video/fbdev/i810/i810_main.h
++++ b/drivers/video/fbdev/i810/i810_main.h
+@@ -60,32 +60,6 @@ static inline void flush_cache(void)
+ #define flush_cache() do { } while(0)
+ #endif 
+ 
 -#ifdef CONFIG_MTRR
- module_param_named(nomtrr, mtrr, invbool, 0);
- MODULE_PARM_DESC(nomtrr, "bool: Disable MTRR support (0 or 1=disabled) (default=0)");
--#endif
 -
+-#include <asm/mtrr.h>
+-
+-static inline void set_mtrr(struct i810fb_par *par)
+-{
+-	par->mtrr_reg = mtrr_add((u32) par->aperture.physical, 
+-		 par->aperture.size, MTRR_TYPE_WRCOMB, 1);
+-	if (par->mtrr_reg < 0) {
+-		printk(KERN_ERR "set_mtrr: unable to set MTRR\n");
+-		return;
+-	}
+-	par->dev_flags |= HAS_MTRR;
+-}
+-static inline void unset_mtrr(struct i810fb_par *par)
+-{
+-  	if (par->dev_flags & HAS_MTRR) 
+-  		mtrr_del(par->mtrr_reg, (u32) par->aperture.physical, 
+-			 par->aperture.size); 
+-}
+-#else
+-#define set_mtrr(x) printk("set_mtrr: MTRR is disabled in the kernel\n")
+-
+-#define unset_mtrr(x) do { } while (0)
+-#endif /* CONFIG_MTRR */
+-
+ #ifdef CONFIG_FB_I810_GTF
+ #define IS_DVT (0)
+ #else
 -- 
 2.3.2.209.gd67f9d5.dirty
