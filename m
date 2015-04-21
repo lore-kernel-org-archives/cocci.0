@@ -1,10 +1,10 @@
 From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Tue, 21 Apr 2015 13:20:32 -0700
-Subject: [Cocci] [PATCH v3 2/4] video: fbdev: i740fb: use arch_phys_wc_add()
+Date: Tue, 21 Apr 2015 13:20:33 -0700
+Subject: [Cocci] [PATCH v3 3/4] video: fbdev: kyrofb: use arch_phys_wc_add()
 	and pci_ioremap_wc_bar()
 In-Reply-To: <1429647634-17169-1-git-send-email-mcgrof@do-not-panic.com>
 References: <1429647634-17169-1-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <1429647634-17169-3-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1429647634-17169-4-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -83,10 +83,8 @@ expression base, size;
 
 Generated-by: Coccinelle SmPL
 Cc: Jingoo Han <jg1.han@samsung.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>
 Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Rob Clark <robdclark@gmail.com>
-Cc: Benoit Taine <benoit.taine@lip6.fr>
+Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 Cc: Suresh Siddha <sbsiddha@gmail.com>
 Cc: Ingo Molnar <mingo@elte.hu>
 Cc: Thomas Gleixner <tglx@linutronix.de>
@@ -101,98 +99,110 @@ Cc: linux-fbdev at vger.kernel.org
 Cc: linux-kernel at vger.kernel.org
 Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
 ---
- drivers/video/fbdev/i740fb.c | 35 ++++++-----------------------------
- 1 file changed, 6 insertions(+), 29 deletions(-)
+ drivers/video/fbdev/kyro/fbdev.c | 33 +++++++++++----------------------
+ include/video/kyro.h             |  4 +---
+ 2 files changed, 12 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/video/fbdev/i740fb.c b/drivers/video/fbdev/i740fb.c
-index a2b4204..452e116 100644
---- a/drivers/video/fbdev/i740fb.c
-+++ b/drivers/video/fbdev/i740fb.c
-@@ -27,24 +27,15 @@
- #include <linux/console.h>
- #include <video/vga.h>
- 
+diff --git a/drivers/video/fbdev/kyro/fbdev.c b/drivers/video/fbdev/kyro/fbdev.c
+index 65041e1..5bb0153 100644
+--- a/drivers/video/fbdev/kyro/fbdev.c
++++ b/drivers/video/fbdev/kyro/fbdev.c
+@@ -22,9 +22,6 @@
+ #include <linux/pci.h>
+ #include <asm/io.h>
+ #include <linux/uaccess.h>
 -#ifdef CONFIG_MTRR
 -#include <asm/mtrr.h>
 -#endif
--
- #include "i740_reg.h"
  
- static char *mode_option;
--
+ #include <video/kyro.h>
+ 
+@@ -84,9 +81,7 @@ static device_info_t deviceInfo;
+ static char *mode_option = NULL;
+ static int nopan = 0;
+ static int nowrap = 1;
 -#ifdef CONFIG_MTRR
- static int mtrr = 1;
+ static int nomtrr = 0;
 -#endif
  
- struct i740fb_par {
- 	unsigned char __iomem *regs;
- 	bool has_sgram;
+ /* PCI driver prototypes */
+ static int kyrofb_probe(struct pci_dev *pdev, const struct pci_device_id *ent);
+@@ -570,10 +565,8 @@ static int __init kyrofb_setup(char *options)
+ 			nopan = 1;
+ 		} else if (strcmp(this_opt, "nowrap") == 0) {
+ 			nowrap = 1;
 -#ifdef CONFIG_MTRR
--	int mtrr_reg;
+ 		} else if (strcmp(this_opt, "nomtrr") == 0) {
+ 			nomtrr = 1;
 -#endif
-+	int wc_cookie;
- 	bool ddc_registered;
- 	struct i2c_adapter ddc_adapter;
- 	struct i2c_algo_bit_data ddc_algo;
-@@ -1040,7 +1031,7 @@ static int i740fb_probe(struct pci_dev *dev, const struct pci_device_id *ent)
- 		goto err_request_regions;
- 	}
+ 		} else {
+ 			mode_option = this_opt;
+ 		}
+@@ -691,17 +684,16 @@ static int kyrofb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
  
--	info->screen_base = pci_ioremap_bar(dev, 0);
-+	info->screen_base = pci_ioremap_wc_bar(dev, 0);
- 	if (!info->screen_base) {
- 		dev_err(info->device, "error remapping base\n");
- 		ret = -ENOMEM;
-@@ -1144,13 +1135,9 @@ static int i740fb_probe(struct pci_dev *dev, const struct pci_device_id *ent)
+ 	currentpar->regbase = deviceInfo.pSTGReg =
+ 		ioremap_nocache(kyro_fix.mmio_start, kyro_fix.mmio_len);
++	if (!currentpar->regbase)
++		goto out_free_fb;
  
- 	fb_info(info, "%s frame buffer device\n", info->fix.id);
- 	pci_set_drvdata(dev, info);
+-	info->screen_base = ioremap_nocache(kyro_fix.smem_start,
+-					    kyro_fix.smem_len);
++	info->screen_base = pci_ioremap_wc_bar(pdev, 0);
++	if (!info->screen_base)
++		goto out_unmap_regs;
+ 
 -#ifdef CONFIG_MTRR
--	if (mtrr) {
--		par->mtrr_reg = -1;
--		par->mtrr_reg = mtrr_add(info->fix.smem_start,
--				info->fix.smem_len, MTRR_TYPE_WRCOMB, 1);
--	}
+ 	if (!nomtrr)
+-		currentpar->mtrr_handle =
+-			mtrr_add(kyro_fix.smem_start,
+-				 kyro_fix.smem_len,
+-				 MTRR_TYPE_WRCOMB, 1);
 -#endif
-+	if (mtrr)
-+		par->wc_cookie = arch_phys_wc_add(info->fix.smem_start,
-+						  info->fix.smem_len);
++		currentpar->wc_cookie = arch_phys_wc_add(kyro_fix.smem_start,
++							 kyro_fix.smem_len);
+ 
+ 	kyro_fix.ypanstep	= nopan ? 0 : 1;
+ 	kyro_fix.ywrapstep	= nowrap ? 0 : 1;
+@@ -745,8 +737,10 @@ static int kyrofb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
  	return 0;
  
- err_reg_framebuffer:
-@@ -1177,13 +1164,7 @@ static void i740fb_remove(struct pci_dev *dev)
+ out_unmap:
+-	iounmap(currentpar->regbase);
+ 	iounmap(info->screen_base);
++out_unmap_regs:
++	iounmap(currentpar->regbase);
++out_free_fb:
+ 	framebuffer_release(info);
  
- 	if (info) {
- 		struct i740fb_par *par = info->par;
--
--#ifdef CONFIG_MTRR
--		if (par->mtrr_reg >= 0) {
--			mtrr_del(par->mtrr_reg, 0, 0);
--			par->mtrr_reg = -1;
--		}
--#endif
-+		arch_phys_wc_del(par->wc_cookie);
- 		unregister_framebuffer(info);
- 		fb_dealloc_cmap(&info->cmap);
- 		if (par->ddc_registered)
-@@ -1287,10 +1268,8 @@ static int  __init i740fb_setup(char *options)
- 	while ((opt = strsep(&options, ",")) != NULL) {
- 		if (!*opt)
- 			continue;
--#ifdef CONFIG_MTRR
- 		else if (!strncmp(opt, "mtrr:", 5))
- 			mtrr = simple_strtoul(opt + 5, NULL, 0);
--#endif
- 		else
- 			mode_option = opt;
- 	}
-@@ -1327,7 +1306,5 @@ MODULE_DESCRIPTION("fbdev driver for Intel740");
- module_param(mode_option, charp, 0444);
- MODULE_PARM_DESC(mode_option, "Default video mode ('640x480-8 at 60', etc)");
+ 	return -EINVAL;
+@@ -770,12 +764,7 @@ static void kyrofb_remove(struct pci_dev *pdev)
+ 	iounmap(info->screen_base);
+ 	iounmap(par->regbase);
  
 -#ifdef CONFIG_MTRR
- module_param(mtrr, int, 0444);
- MODULE_PARM_DESC(mtrr, "Enable write-combining with MTRR (1=enable, 0=disable, default=1)");
+-	if (par->mtrr_handle)
+-		mtrr_del(par->mtrr_handle,
+-			 info->fix.smem_start,
+-			 info->fix.smem_len);
 -#endif
++	arch_phys_wc_del(par->wc_cookie);
+ 
+ 	unregister_framebuffer(info);
+ 	framebuffer_release(info);
+diff --git a/include/video/kyro.h b/include/video/kyro.h
+index c563968..b958c2e 100644
+--- a/include/video/kyro.h
++++ b/include/video/kyro.h
+@@ -35,9 +35,7 @@ struct kyrofb_info {
+ 	/* Useful to hold depth here for Linux */
+ 	u8 PIXDEPTH;
+ 
+-#ifdef CONFIG_MTRR
+-	int mtrr_handle;
+-#endif
++	int wc_cookie;
+ };
+ 
+ extern int kyro_dev_init(void);
 -- 
 2.3.2.209.gd67f9d5.dirty
