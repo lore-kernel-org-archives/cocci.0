@@ -1,34 +1,24 @@
 From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Tue, 21 Apr 2015 13:16:38 -0700
-Subject: [Cocci] [PATCH v3 17/17] video: fbdev: geode gxfb: use ioremap_wc()
-	for framebuffer
-In-Reply-To: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
-References: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <1429647398-16983-18-git-send-email-mcgrof@do-not-panic.com>
+Date: Tue, 21 Apr 2015 13:20:31 -0700
+Subject: [Cocci] [PATCH v3 1/4] pci: add pci_ioremap_wc_bar()
+In-Reply-To: <1429647634-17169-1-git-send-email-mcgrof@do-not-panic.com>
+References: <1429647634-17169-1-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1429647634-17169-2-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: "Luis R. Rodriguez" <mcgrof@suse.com>
 
-The driver doesn't use mtrr_add() or arch_phys_wc_add() but
-since we know the framebuffer is isolated already on an
-ioremap() we can take advantage of write combining for
-performance where possible.
+This lets drivers take advantage of PAT when available. This
+should help with the transition of converting video drivers over
+to ioremap_wc() to help with the goal of eventually using
+_PAGE_CACHE_UC over _PAGE_CACHE_UC_MINUS on x86 on
+ioremap_nocache() (de33c442e titled "x86 PAT: fix performance
+drop for glx, use UC minus for ioremap(), ioremap_nocache() and
+pci_mmap_page_range()")
 
-In this case there are a few motivations for this:
-
-a) Take advantage of PAT when available
-
-b) Help with the goal of eventually using _PAGE_CACHE_UC over
-   _PAGE_CACHE_UC_MINUS on x86 on ioremap_nocache() (see commit
-   de33c442e titled "x86 PAT: fix performance drop for glx,
-   use UC minus for ioremap(), ioremap_nocache() and
-   pci_mmap_page_range()")
-
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Jingoo Han <jg1.han@samsung.com>
+Cc: Toshi Kani <toshi.kani@hp.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>
 Cc: Suresh Siddha <sbsiddha@gmail.com>
 Cc: Ingo Molnar <mingo@elte.hu>
 Cc: Thomas Gleixner <tglx@linutronix.de>
@@ -39,27 +29,55 @@ Cc: Dave Airlie <airlied@redhat.com>
 Cc: Antonino Daplas <adaplas@gmail.com>
 Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
 Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
-Cc: linux-geode at lists.infradead.org
+Cc: Ville Syrj?l? <syrjala@sci.fi>
+Cc: Mel Gorman <mgorman@suse.de>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: Borislav Petkov <bp@suse.de>
+Cc: Davidlohr Bueso <dbueso@suse.de>
 Cc: linux-fbdev at vger.kernel.org
 Cc: linux-kernel at vger.kernel.org
 Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
 ---
- drivers/video/fbdev/geode/gxfb_core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/pci/pci.c   | 14 ++++++++++++++
+ include/linux/pci.h |  1 +
+ 2 files changed, 15 insertions(+)
 
-diff --git a/drivers/video/fbdev/geode/gxfb_core.c b/drivers/video/fbdev/geode/gxfb_core.c
-index 124d7c7..ec9fc9a 100644
---- a/drivers/video/fbdev/geode/gxfb_core.c
-+++ b/drivers/video/fbdev/geode/gxfb_core.c
-@@ -263,7 +263,8 @@ static int gxfb_map_video_memory(struct fb_info *info, struct pci_dev *dev)
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index 687af72..fd14f10 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -138,6 +138,20 @@ void __iomem *pci_ioremap_bar(struct pci_dev *pdev, int bar)
+ 	return ioremap_nocache(res->start, resource_size(res));
+ }
+ EXPORT_SYMBOL_GPL(pci_ioremap_bar);
++
++void __iomem *pci_ioremap_wc_bar(struct pci_dev *pdev, int bar)
++{
++	/*
++	 * Make sure the BAR is actually a memory resource, not an IO resource
++	 */
++	if (!(pci_resource_flags(pdev, bar) & IORESOURCE_MEM)) {
++		WARN_ON(1);
++		return NULL;
++	}
++	return ioremap_wc(pci_resource_start(pdev, bar),
++			  pci_resource_len(pdev, bar));
++}
++EXPORT_SYMBOL_GPL(pci_ioremap_wc_bar);
+ #endif
  
- 	info->fix.smem_start = pci_resource_start(dev, 0);
- 	info->fix.smem_len = vram ? vram : gx_frame_buffer_size();
--	info->screen_base = ioremap(info->fix.smem_start, info->fix.smem_len);
-+	info->screen_base = ioremap_wc(info->fix.smem_start,
-+				       info->fix.smem_len);
- 	if (!info->screen_base)
- 		return -ENOMEM;
+ #define PCI_FIND_CAP_TTL	48
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index bc50bb0..490ca41 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -1667,6 +1667,7 @@ static inline void pci_mmcfg_late_init(void) { }
+ int pci_ext_cfg_avail(void);
  
+ void __iomem *pci_ioremap_bar(struct pci_dev *pdev, int bar);
++void __iomem *pci_ioremap_wc_bar(struct pci_dev *pdev, int bar);
+ 
+ #ifdef CONFIG_PCI_IOV
+ int pci_iov_virtfn_bus(struct pci_dev *dev, int id);
 -- 
 2.3.2.209.gd67f9d5.dirty
