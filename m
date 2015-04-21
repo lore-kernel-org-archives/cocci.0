@@ -1,16 +1,16 @@
 From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Tue, 21 Apr 2015 13:16:32 -0700
-Subject: [Cocci] [PATCH v3 11/17] video: fbdev: i810: use arch_phys_wc_add()
-	and ioremap_wc()
+Date: Tue, 21 Apr 2015 13:16:33 -0700
+Subject: [Cocci] [PATCH v3 12/17] video: fbdev: pm2fb: use
+	arch_phys_wc_add() and ioremap_wc()
 In-Reply-To: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
 References: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <1429647398-16983-12-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1429647398-16983-13-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: "Luis R. Rodriguez" <mcgrof@suse.com>
 
-The same area used for MTRR is used for the ioremap() area.
+This driver uses the same area for MTRR as for the ioremap().
 Convert the driver from using the x86 specific MTRR code to
 the architecture agnostic arch_phys_wc_add(). arch_phys_wc_add()
 will avoid MTRR if write-combining is available, in order to
@@ -83,20 +83,13 @@ expression base, size;
 +info->screen_base = ioremap_wc(base, size);
 
 Generated-by: Coccinelle SmPL
+Cc: Rob Clark <robdclark@gmail.com>
+Cc: Jingoo Han <jg1.han@samsung.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
 Cc: Suresh Siddha <sbsiddha@gmail.com>
 Cc: Ingo Molnar <mingo@elte.hu>
 Cc: Thomas Gleixner <tglx@linutronix.de>
 Cc: Juergen Gross <jgross@suse.com>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Andy Lutomirski <luto@amacapital.net>
-Cc: Dave Airlie <airlied@redhat.com>
-Cc: Antonino Daplas <adaplas@gmail.com>
-Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
-Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
-Cc: linux-fbdev at vger.kernel.org
-Cc: linux-kernel at vger.kernel.org
-Cc: Juergen Gross <jgross@suse.com>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
 Cc: Andy Lutomirski <luto@amacapital.net>
 Cc: Dave Airlie <airlied@redhat.com>
 Cc: Antonino Daplas <adaplas@gmail.com>
@@ -106,111 +99,104 @@ Cc: linux-fbdev at vger.kernel.org
 Cc: linux-kernel at vger.kernel.org
 Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
 ---
- drivers/video/fbdev/i810/i810.h      |  3 +--
- drivers/video/fbdev/i810/i810_main.c | 11 +++++++----
- drivers/video/fbdev/i810/i810_main.h | 26 --------------------------
- 3 files changed, 8 insertions(+), 32 deletions(-)
+ drivers/video/fbdev/pm2fb.c | 31 +++++--------------------------
+ 1 file changed, 5 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/video/fbdev/i810/i810.h b/drivers/video/fbdev/i810/i810.h
-index 1414b73..7b1c002 100644
---- a/drivers/video/fbdev/i810/i810.h
-+++ b/drivers/video/fbdev/i810/i810.h
-@@ -199,7 +199,6 @@
- #define HAS_FONTCACHE               8 
+diff --git a/drivers/video/fbdev/pm2fb.c b/drivers/video/fbdev/pm2fb.c
+index 3b85b64..aa8d288 100644
+--- a/drivers/video/fbdev/pm2fb.c
++++ b/drivers/video/fbdev/pm2fb.c
+@@ -38,10 +38,6 @@
+ #include <linux/fb.h>
+ #include <linux/init.h>
+ #include <linux/pci.h>
+-#ifdef CONFIG_MTRR
+-#include <asm/mtrr.h>
+-#endif
+-
+ #include <video/permedia2.h>
+ #include <video/cvisionppc.h>
  
- /* driver flags */
--#define HAS_MTRR                    1
- #define HAS_ACCELERATION            2
- #define ALWAYS_SYNC                 4
- #define LOCKUP                      8
-@@ -281,7 +280,7 @@ struct i810fb_par {
- 	u32 ovract;
- 	u32 cur_state;
- 	u32 ddc_num;
--	int mtrr_reg;
-+	int wc_cookie;
- 	u16 bltcntl;
- 	u8 interlace;
+@@ -81,10 +77,7 @@ static char *mode_option;
+ static bool lowhsync;
+ static bool lowvsync;
+ static bool noaccel;
+-/* mtrr option */
+-#ifdef CONFIG_MTRR
+ static bool nomtrr;
+-#endif
+ 
+ /*
+  * The hardware state of the graphics card that isn't part of the
+@@ -100,7 +93,7 @@ struct pm2fb_par
+ 	u32		mem_control;	/* MemControl reg at probe */
+ 	u32		boot_address;	/* BootAddress reg at probe */
+ 	u32		palette[16];
+-	int		mtrr_handle;
++	int		wc_cookie;
  };
-diff --git a/drivers/video/fbdev/i810/i810_main.c b/drivers/video/fbdev/i810/i810_main.c
-index bb674e4..025b882 100644
---- a/drivers/video/fbdev/i810/i810_main.c
-+++ b/drivers/video/fbdev/i810/i810_main.c
-@@ -41,6 +41,7 @@
- #include <linux/resource.h>
- #include <linux/unistd.h>
- #include <linux/console.h>
-+#include <linux/io.h>
  
- #include <asm/io.h>
- #include <asm/div64.h>
-@@ -1816,7 +1817,9 @@ static void i810_init_device(struct i810fb_par *par)
- 	u8 reg;
- 	u8 __iomem *mmio = par->mmio_start_virtual;
- 
--	if (mtrr) set_mtrr(par);
-+	if (mtrr)
-+		par->wc_cookie= arch_phys_wc_add((u32) par->aperture.physical,
-+						 par->aperture.size);
- 
- 	i810_init_cursor(par);
- 
-@@ -1865,8 +1868,8 @@ static int i810_allocate_pci_resource(struct i810fb_par *par,
+ /*
+@@ -1637,21 +1630,16 @@ static int pm2fb_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 		goto err_exit_mmio;
  	}
- 	par->res_flags |= FRAMEBUFFER_REQ;
- 
--	par->aperture.virtual = ioremap_nocache(par->aperture.physical, 
--					par->aperture.size);
-+	par->aperture.virtual = ioremap_wc(par->aperture.physical,
-+					   par->aperture.size);
- 	if (!par->aperture.virtual) {
- 		printk("i810fb_init: cannot remap framebuffer region\n");
- 		return -ENODEV;
-@@ -2096,7 +2099,7 @@ static void i810fb_release_resource(struct fb_info *info,
- 				    struct i810fb_par *par)
- {
- 	struct gtt_data *gtt = &par->i810_gtt;
--	unset_mtrr(par);
-+	arch_phys_wc_del(par->wc_cookie);
- 
- 	i810_delete_i2c_busses(par);
- 
-diff --git a/drivers/video/fbdev/i810/i810_main.h b/drivers/video/fbdev/i810/i810_main.h
-index a25afaa..7bfaaad 100644
---- a/drivers/video/fbdev/i810/i810_main.h
-+++ b/drivers/video/fbdev/i810/i810_main.h
-@@ -60,32 +60,6 @@ static inline void flush_cache(void)
- #define flush_cache() do { } while(0)
- #endif 
+ 	info->screen_base =
+-		ioremap_nocache(pm2fb_fix.smem_start, pm2fb_fix.smem_len);
++		ioremap_wc(pm2fb_fix.smem_start, pm2fb_fix.smem_len);
+ 	if (!info->screen_base) {
+ 		printk(KERN_WARNING "pm2fb: Can't ioremap smem area.\n");
+ 		release_mem_region(pm2fb_fix.smem_start, pm2fb_fix.smem_len);
+ 		goto err_exit_mmio;
+ 	}
  
 -#ifdef CONFIG_MTRR
+-	default_par->mtrr_handle = -1;
+ 	if (!nomtrr)
+-		default_par->mtrr_handle =
+-			mtrr_add(pm2fb_fix.smem_start,
+-				 pm2fb_fix.smem_len,
+-				 MTRR_TYPE_WRCOMB, 1);
+-#endif
++		default_par->wc_cookie = arch_phys_wc_add(pm2fb_fix.smem_start,
++							  pm2fb_fix.smem_len);
+ 
+ 	info->fbops		= &pm2fb_ops;
+ 	info->fix		= pm2fb_fix;
+@@ -1733,12 +1721,7 @@ static void pm2fb_remove(struct pci_dev *pdev)
+ 	struct pm2fb_par *par = info->par;
+ 
+ 	unregister_framebuffer(info);
 -
--#include <asm/mtrr.h>
--
--static inline void set_mtrr(struct i810fb_par *par)
--{
--	par->mtrr_reg = mtrr_add((u32) par->aperture.physical, 
--		 par->aperture.size, MTRR_TYPE_WRCOMB, 1);
--	if (par->mtrr_reg < 0) {
--		printk(KERN_ERR "set_mtrr: unable to set MTRR\n");
--		return;
--	}
--	par->dev_flags |= HAS_MTRR;
--}
--static inline void unset_mtrr(struct i810fb_par *par)
--{
--  	if (par->dev_flags & HAS_MTRR) 
--  		mtrr_del(par->mtrr_reg, (u32) par->aperture.physical, 
--			 par->aperture.size); 
--}
--#else
--#define set_mtrr(x) printk("set_mtrr: MTRR is disabled in the kernel\n")
--
--#define unset_mtrr(x) do { } while (0)
+-#ifdef CONFIG_MTRR
+-	if (par->mtrr_handle >= 0)
+-		mtrr_del(par->mtrr_handle, info->fix.smem_start,
+-			 info->fix.smem_len);
 -#endif /* CONFIG_MTRR */
--
- #ifdef CONFIG_FB_I810_GTF
- #define IS_DVT (0)
- #else
++	arch_phys_wc_del(par->wc_cookie);
+ 	iounmap(info->screen_base);
+ 	release_mem_region(fix->smem_start, fix->smem_len);
+ 	iounmap(par->v_regs);
+@@ -1791,10 +1774,8 @@ static int __init pm2fb_setup(char *options)
+ 			lowvsync = 1;
+ 		else if (!strncmp(this_opt, "hwcursor=", 9))
+ 			hwcursor = simple_strtoul(this_opt + 9, NULL, 0);
+-#ifdef CONFIG_MTRR
+ 		else if (!strncmp(this_opt, "nomtrr", 6))
+ 			nomtrr = 1;
+-#endif
+ 		else if (!strncmp(this_opt, "noaccel", 7))
+ 			noaccel = 1;
+ 		else
+@@ -1847,10 +1828,8 @@ MODULE_PARM_DESC(noaccel, "Disable acceleration");
+ module_param(hwcursor, int, 0644);
+ MODULE_PARM_DESC(hwcursor, "Enable hardware cursor "
+ 			"(1=enable, 0=disable, default=1)");
+-#ifdef CONFIG_MTRR
+ module_param(nomtrr, bool, 0);
+ MODULE_PARM_DESC(nomtrr, "Disable MTRR support (0 or 1=disabled) (default=0)");
+-#endif
+ 
+ MODULE_AUTHOR("Jim Hague <jim.hague@acm.org>");
+ MODULE_DESCRIPTION("Permedia2 framebuffer device driver");
 -- 
 2.3.2.209.gd67f9d5.dirty
