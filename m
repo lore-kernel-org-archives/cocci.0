@@ -1,34 +1,31 @@
-From: tj@kernel.org (Tejun Heo)
-Date: Tue, 21 Apr 2015 16:58:57 -0400
-Subject: [Cocci] [PATCH v1 4/6] moduleparam.h: add
-	module_param_config_*() helpers
-In-Reply-To: <20150421165516.GL5622@wotan.suse.de>
-References: <1429572637-30234-1-git-send-email-mcgrof@do-not-panic.com>
- <1429572637-30234-5-git-send-email-mcgrof@do-not-panic.com>
- <20150421152136.GC9455@htj.duckdns.org>
- <20150421165516.GL5622@wotan.suse.de>
-Message-ID: <20150421205857.GG9455@htj.duckdns.org>
+From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
+Date: Tue, 21 Apr 2015 14:09:59 -0700
+Subject: [Cocci] [PATCH v3 2/3] IB/qib: use arch_phys_wc_add()
+In-Reply-To: <32E1700B9017364D9B60AED9960492BC256FB8E2@fmsmsx120.amr.corp.intel.com>
+References: <1429648676-17755-1-git-send-email-mcgrof@do-not-panic.com>
+ <1429648676-17755-3-git-send-email-mcgrof@do-not-panic.com>
+ <20150421205716.GA474@obsidianresearch.com>
+ <32E1700B9017364D9B60AED9960492BC256FB8E2@fmsmsx120.amr.corp.intel.com>
+Message-ID: <CAB=NE6U+xWZGmEo-k3XURnuqQP1HE3k7663w6XWD_i=GtqDR3w@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hello, Luis.
+On Tue, Apr 21, 2015 at 1:59 PM, Marciniszyn, Mike
+<mike.marciniszyn@intel.com> wrote:
+>> > This driver already makes use of ioremap_wc() on PIO buffers, so
+>> > convert it to use arch_phys_wc_add().
+>>
+>> This is probably OK, but I think you should also remove the qib_wc_pat module
+>> parameter.
+>>
+>> Jason
+>
+> Revise based on Jason's request and I will do some testing.
 
-On Tue, Apr 21, 2015 at 06:55:16PM +0200, Luis R. Rodriguez wrote:
-> A use then would be for instance:
-> 
-> module_param_config_on_off(power_efficient, wq_power_efficient, 0444,
-> 			   IS_ENABLED(CONFIG_WQ_POWER_EFFICIENT_DEFAULT));
-> 
-> this as an alternative would enable use of other static / global variables but
-> I'm not sure if these are good use cases to promote, given that all this is to
-> help with initial set up, so I believe the restrictions are for the better.
+I did thiink about this -- but removal of module parameters can often
+times break users of the module parameter, I figured its best to leave
+it to you guys to decide what to do with that, so this leaves it as a
+no-op. Can this series be applied and then you can decide what to do
+to not affect your users on top of this?
 
-I was thinking more of cases where CONFIG should be inverted or
-and/or'd.  In general I don't think we conventionally embed
-IS_ENABLED() in this sort of macros.  It just jumps at me as a weird
-restriction.  What do others think?
-
-Thanks.
-
--- 
-tejun
+ Luis
