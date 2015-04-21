@@ -1,10 +1,10 @@
 From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Tue, 21 Apr 2015 13:16:34 -0700
-Subject: [Cocci] [PATCH v3 13/17] video: fbdev: pm3fb: use
+Date: Tue, 21 Apr 2015 13:16:35 -0700
+Subject: [Cocci] [PATCH v3 14/17] video: fbdev: rivafb: use
 	arch_phys_wc_add() and ioremap_wc()
 In-Reply-To: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
 References: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <1429647398-16983-14-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1429647398-16983-15-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -83,10 +83,7 @@ expression base, size;
 +info->screen_base = ioremap_wc(base, size);
 
 Generated-by: Coccinelle SmPL
-Cc: Jingoo Han <jg1.han@samsung.com>
-Cc: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: Rob Clark <robdclark@gmail.com>
-Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Antonino Daplas <adaplas@gmail.com>
 Cc: Suresh Siddha <sbsiddha@gmail.com>
 Cc: Ingo Molnar <mingo@elte.hu>
 Cc: Thomas Gleixner <tglx@linutronix.de>
@@ -101,104 +98,120 @@ Cc: linux-fbdev at vger.kernel.org
 Cc: linux-kernel at vger.kernel.org
 Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
 ---
- drivers/video/fbdev/pm3fb.c | 30 ++++++------------------------
- 1 file changed, 6 insertions(+), 24 deletions(-)
+ drivers/video/fbdev/riva/fbdev.c  | 39 +++++++--------------------------------
+ drivers/video/fbdev/riva/rivafb.h |  4 +---
+ 2 files changed, 8 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/video/fbdev/pm3fb.c b/drivers/video/fbdev/pm3fb.c
-index 77b99ed..6ff5077 100644
---- a/drivers/video/fbdev/pm3fb.c
-+++ b/drivers/video/fbdev/pm3fb.c
-@@ -32,9 +32,6 @@
- #include <linux/fb.h>
- #include <linux/init.h>
+diff --git a/drivers/video/fbdev/riva/fbdev.c b/drivers/video/fbdev/riva/fbdev.c
+index 294a809..f1ad274 100644
+--- a/drivers/video/fbdev/riva/fbdev.c
++++ b/drivers/video/fbdev/riva/fbdev.c
+@@ -41,9 +41,6 @@
  #include <linux/pci.h>
+ #include <linux/backlight.h>
+ #include <linux/bitrev.h>
 -#ifdef CONFIG_MTRR
 -#include <asm/mtrr.h>
 -#endif
- 
- #include <video/pm3fb.h>
- 
-@@ -58,11 +55,7 @@
- static int hwcursor = 1;
- static char *mode_option;
- static bool noaccel;
--
--/* mtrr option */
+ #ifdef CONFIG_PMAC_BACKLIGHT
+ #include <asm/machdep.h>
+ #include <asm/backlight.h>
+@@ -204,9 +201,7 @@ MODULE_DEVICE_TABLE(pci, rivafb_pci_tbl);
+ static int flatpanel = -1; /* Autodetect later */
+ static int forceCRTC = -1;
+ static bool noaccel  = 0;
 -#ifdef CONFIG_MTRR
- static bool nomtrr;
+ static bool nomtrr = 0;
 -#endif
+ #ifdef CONFIG_PMAC_BACKLIGHT
+ static int backlight = 1;
+ #else
+@@ -2010,28 +2005,18 @@ static int rivafb_probe(struct pci_dev *pd, const struct pci_device_id *ent)
  
- /*
-  * This structure defines the hardware state of the graphics card. Normally
-@@ -76,7 +69,7 @@ struct pm3_par {
- 	u32		video;		/* video flags before blanking */
- 	u32		base;		/* screen base in 128 bits unit */
- 	u32		palette[16];
--	int		mtrr_handle;
-+	int		wc_cookie;
- };
- 
- /*
-@@ -1374,8 +1367,8 @@ static int pm3fb_probe(struct pci_dev *dev, const struct pci_device_id *ent)
- 		printk(KERN_WARNING "pm3fb: Can't reserve smem.\n");
- 		goto err_exit_mmio;
- 	}
--	info->screen_base =
--		ioremap_nocache(pm3fb_fix.smem_start, pm3fb_fix.smem_len);
-+	info->screen_base = ioremap_wc(pm3fb_fix.smem_start,
-+				       pm3fb_fix.smem_len);
+ 	rivafb_fix.smem_len = riva_get_memlen(default_par) * 1024;
+ 	default_par->dclk_max = riva_get_maxdclk(default_par) * 1000;
+-	info->screen_base = ioremap(rivafb_fix.smem_start,
+-				    rivafb_fix.smem_len);
++	info->screen_base = ioremap_wc(rivafb_fix.smem_start,
++				       rivafb_fix.smem_len);
  	if (!info->screen_base) {
- 		printk(KERN_WARNING "pm3fb: Can't ioremap smem area.\n");
- 		release_mem_region(pm3fb_fix.smem_start, pm3fb_fix.smem_len);
-@@ -1383,12 +1376,9 @@ static int pm3fb_probe(struct pci_dev *dev, const struct pci_device_id *ent)
+ 		printk(KERN_ERR PFX "cannot ioremap FB base\n");
+ 		ret = -EIO;
+ 		goto err_iounmap_pramin;
  	}
- 	info->screen_size = pm3fb_fix.smem_len;
  
 -#ifdef CONFIG_MTRR
- 	if (!nomtrr)
--		par->mtrr_handle = mtrr_add(pm3fb_fix.smem_start,
--						pm3fb_fix.smem_len,
--						MTRR_TYPE_WRCOMB, 1);
--#endif
-+		par->wc_cookie = arch_phys_wc_add(pm3fb_fix.smem_start,
-+						  pm3fb_fix.smem_len);
- 	info->fbops = &pm3fb_ops;
- 
- 	par->video = PM3_READ_REG(par, PM3VideoControl);
-@@ -1478,11 +1468,7 @@ static void pm3fb_remove(struct pci_dev *dev)
- 		unregister_framebuffer(info);
- 		fb_dealloc_cmap(&info->cmap);
- 
--#ifdef CONFIG_MTRR
--		if (par->mtrr_handle >= 0)
--			mtrr_del(par->mtrr_handle, info->fix.smem_start,
--				 info->fix.smem_len);
+-	if (!nomtrr) {
+-		default_par->mtrr.vram = mtrr_add(rivafb_fix.smem_start,
+-					   	  rivafb_fix.smem_len,
+-					    	  MTRR_TYPE_WRCOMB, 1);
+-		if (default_par->mtrr.vram < 0) {
+-			printk(KERN_ERR PFX "unable to setup MTRR\n");
+-		} else {
+-			default_par->mtrr.vram_valid = 1;
+-			/* let there be speed */
+-			printk(KERN_INFO PFX "RIVA MTRR set to ON\n");
+-		}
+-	}
 -#endif /* CONFIG_MTRR */
-+		arch_phys_wc_del(par->wc_cookie);
- 		iounmap(info->screen_base);
- 		release_mem_region(fix->smem_start, fix->smem_len);
- 		iounmap(par->v_regs);
-@@ -1533,10 +1519,8 @@ static int __init pm3fb_setup(char *options)
- 			noaccel = 1;
- 		else if (!strncmp(this_opt, "hwcursor=", 9))
- 			hwcursor = simple_strtoul(this_opt + 9, NULL, 0);
++	if (!nomtrr)
++		default_par->wc_cookie =
++			arch_phys_wc_add(rivafb_fix.smem_start,
++					 rivafb_fix.smem_len);
+ 
+ 	info->fbops = &riva_fb_ops;
+ 	info->fix = rivafb_fix;
+@@ -2105,13 +2090,7 @@ static void rivafb_remove(struct pci_dev *pd)
+ 	unregister_framebuffer(info);
+ 
+ 	riva_bl_exit(info);
+-
 -#ifdef CONFIG_MTRR
- 		else if (!strncmp(this_opt, "nomtrr", 6))
+-	if (par->mtrr.vram_valid)
+-		mtrr_del(par->mtrr.vram, info->fix.smem_start,
+-			 info->fix.smem_len);
+-#endif /* CONFIG_MTRR */
+-
++	arch_phys_wc_del(par->wc_cookie);
+ 	iounmap(par->ctrl_base);
+ 	iounmap(info->screen_base);
+ 	if (par->riva.Architecture == NV_ARCH_03)
+@@ -2150,10 +2129,8 @@ static int rivafb_setup(char *options)
+ 			flatpanel = 1;
+ 		} else if (!strncmp(this_opt, "backlight:", 10)) {
+ 			backlight = simple_strtoul(this_opt+10, NULL, 0);
+-#ifdef CONFIG_MTRR
+ 		} else if (!strncmp(this_opt, "nomtrr", 6)) {
  			nomtrr = 1;
 -#endif
- 		else
- 			mode_option = this_opt;
- 	}
-@@ -1577,10 +1561,8 @@ MODULE_PARM_DESC(noaccel, "Disable acceleration");
- module_param(hwcursor, int, 0644);
- MODULE_PARM_DESC(hwcursor, "Enable hardware cursor "
- 			"(1=enable, 0=disable, default=1)");
+ 		} else if (!strncmp(this_opt, "strictmode", 10)) {
+ 			strictmode = 1;
+ 		} else if (!strncmp(this_opt, "noaccel", 7)) {
+@@ -2209,10 +2186,8 @@ module_param(flatpanel, int, 0);
+ MODULE_PARM_DESC(flatpanel, "Enables experimental flat panel support for some chipsets. (0 or 1=enabled) (default=0)");
+ module_param(forceCRTC, int, 0);
+ MODULE_PARM_DESC(forceCRTC, "Forces usage of a particular CRTC in case autodetection fails. (0 or 1) (default=autodetect)");
 -#ifdef CONFIG_MTRR
  module_param(nomtrr, bool, 0);
- MODULE_PARM_DESC(nomtrr, "Disable MTRR support (0 or 1=disabled) (default=0)");
+ MODULE_PARM_DESC(nomtrr, "Disables MTRR support (0 or 1=disabled) (default=0)");
 -#endif
+ module_param(strictmode, bool, 0);
+ MODULE_PARM_DESC(strictmode, "Only use video modes from EDID");
  
- MODULE_DESCRIPTION("Permedia3 framebuffer device driver");
- MODULE_LICENSE("GPL");
+diff --git a/drivers/video/fbdev/riva/rivafb.h b/drivers/video/fbdev/riva/rivafb.h
+index d9f107b..61fd37c 100644
+--- a/drivers/video/fbdev/riva/rivafb.h
++++ b/drivers/video/fbdev/riva/rivafb.h
+@@ -61,9 +61,7 @@ struct riva_par {
+ 	int FlatPanel;
+ 	struct pci_dev *pdev;
+ 	int cursor_reset;
+-#ifdef CONFIG_MTRR
+-	struct { int vram; int vram_valid; } mtrr;
+-#endif
++	int wc_cookie;
+ 	struct riva_i2c_chan chan[3];
+ };
+ 
 -- 
 2.3.2.209.gd67f9d5.dirty
