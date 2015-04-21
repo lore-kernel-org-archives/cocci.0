@@ -1,22 +1,127 @@
-From: mike.marciniszyn@intel.com (Marciniszyn, Mike)
-Date: Tue, 21 Apr 2015 20:59:41 +0000
-Subject: [Cocci] [PATCH v3 2/3] IB/qib: use arch_phys_wc_add()
-In-Reply-To: <20150421205716.GA474@obsidianresearch.com>
-References: <1429648676-17755-1-git-send-email-mcgrof@do-not-panic.com>
- <1429648676-17755-3-git-send-email-mcgrof@do-not-panic.com>
- <20150421205716.GA474@obsidianresearch.com>
-Message-ID: <32E1700B9017364D9B60AED9960492BC256FB8E2@fmsmsx120.amr.corp.intel.com>
+From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
+Date: Tue, 21 Apr 2015 13:40:48 -0700
+Subject: [Cocci] [PATCH v3 1/3] video: fbdev: vesafb: only support
+	MTRR_TYPE_WRCOMB
+In-Reply-To: <1429648850-17902-1-git-send-email-mcgrof@do-not-panic.com>
+References: <1429648850-17902-1-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1429648850-17902-2-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> > This driver already makes use of ioremap_wc() on PIO buffers, so
-> > convert it to use arch_phys_wc_add().
-> 
-> This is probably OK, but I think you should also remove the qib_wc_pat module
-> parameter.
-> 
-> Jason
+From: "Luis R. Rodriguez" <mcgrof@suse.com>
 
-Revise based on Jason's request and I will do some testing.
+No other video driver uses MTRR types except for MTRR_TYPE_WRCOMB,
+the other MTRR types were implemented and supported here but with
+no real good reason. The ioremap() APIs are architecture agnostic and
+at least on x86 PAT is a new design that extends MTRRs and
+can replace it in a much cleaner way, where so long as the
+proper ioremap_wc() or variant API is used the right thing will
+be done behind the scenes. This is the only driver left using the
+other MTRR types -- and since there is no good reason for it now
+rip them out.
 
-Mike
+Cc: Toshi Kani <toshi.kani@hp.com>
+Cc: Suresh Siddha <sbsiddha@gmail.com>
+Cc: Ingo Molnar <mingo@elte.hu>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Juergen Gross <jgross@suse.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Andy Lutomirski <luto@amacapital.net>
+Cc: Dave Airlie <airlied@redhat.com>
+Cc: Antonino Daplas <adaplas@gmail.com>
+Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
+Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
+Cc: Rob Clark <robdclark@gmail.com>
+Cc: Jingoo Han <jg1.han@samsung.com>
+Cc: Wolfram Sang <wsa@the-dreams.de>
+Cc: linux-fbdev at vger.kernel.org
+Cc: linux-kernel at vger.kernel.org
+Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
+---
+ drivers/video/fbdev/vesafb.c | 62 ++++++++++++--------------------------------
+ 1 file changed, 16 insertions(+), 46 deletions(-)
+
+diff --git a/drivers/video/fbdev/vesafb.c b/drivers/video/fbdev/vesafb.c
+index d79a0ac..191156b 100644
+--- a/drivers/video/fbdev/vesafb.c
++++ b/drivers/video/fbdev/vesafb.c
+@@ -404,60 +404,30 @@ static int vesafb_probe(struct platform_device *dev)
+ 	 * region already (FIXME) */
+ 	request_region(0x3c0, 32, "vesafb");
+ 
++	if (mtrr == 3) {
+ #ifdef CONFIG_MTRR
+-	if (mtrr) {
+ 		unsigned int temp_size = size_total;
+-		unsigned int type = 0;
++		int rc;
+ 
+-		switch (mtrr) {
+-		case 1:
+-			type = MTRR_TYPE_UNCACHABLE;
+-			break;
+-		case 2:
+-			type = MTRR_TYPE_WRBACK;
+-			break;
+-		case 3:
+-			type = MTRR_TYPE_WRCOMB;
+-			break;
+-		case 4:
+-			type = MTRR_TYPE_WRTHROUGH;
+-			break;
+-		default:
+-			type = 0;
+-			break;
+-		}
+-
+-		if (type) {
+-			int rc;
+-
+-			/* Find the largest power-of-two */
+-			temp_size = roundup_pow_of_two(temp_size);
++		/* Find the largest power-of-two */
++		temp_size = roundup_pow_of_two(temp_size);
+ 
+-			/* Try and find a power of two to add */
+-			do {
+-				rc = mtrr_add(vesafb_fix.smem_start, temp_size,
+-					      type, 1);
+-				temp_size >>= 1;
+-			} while (temp_size >= PAGE_SIZE && rc == -EINVAL);
+-		}
+-	}
++		/* Try and find a power of two to add */
++		do {
++			rc = mtrr_add(vesafb_fix.smem_start, temp_size,
++				      MTRR_TYPE_WRCOMB, 1);
++			temp_size >>= 1;
++		} while (temp_size >= PAGE_SIZE && rc == -EINVAL);
+ #endif
+-	
+-	switch (mtrr) {
+-	case 1: /* uncachable */
+-		info->screen_base = ioremap_nocache(vesafb_fix.smem_start, vesafb_fix.smem_len);
+-		break;
+-	case 2: /* write-back */
+-		info->screen_base = ioremap_cache(vesafb_fix.smem_start, vesafb_fix.smem_len);
+-		break;
+-	case 3: /* write-combining */
+ 		info->screen_base = ioremap_wc(vesafb_fix.smem_start, vesafb_fix.smem_len);
+-		break;
+-	case 4: /* write-through */
+-	default:
++	} else {
++#ifdef CONFIG_MTRR
++		if (mtrr && mtrr != 3)
++			WARN_ONCE(1, "Only MTRR_TYPE_WRCOMB (3) make sense\n");
++#endif
+ 		info->screen_base = ioremap(vesafb_fix.smem_start, vesafb_fix.smem_len);
+-		break;
+ 	}
++
+ 	if (!info->screen_base) {
+ 		printk(KERN_ERR
+ 		       "vesafb: abort, cannot ioremap video memory 0x%x @ 0x%lx\n",
+-- 
+2.3.2.209.gd67f9d5.dirty
