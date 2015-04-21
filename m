@@ -1,10 +1,10 @@
 From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Tue, 21 Apr 2015 13:16:37 -0700
-Subject: [Cocci] [PATCH v3 16/17] video: fbdev: atmel_lcdfb: use
-	ioremap_wc() for framebuffer
+Date: Tue, 21 Apr 2015 13:16:38 -0700
+Subject: [Cocci] [PATCH v3 17/17] video: fbdev: geode gxfb: use ioremap_wc()
+	for framebuffer
 In-Reply-To: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
 References: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <1429647398-16983-17-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1429647398-16983-18-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -25,7 +25,10 @@ b) Help with the goal of eventually using _PAGE_CACHE_UC over
    use UC minus for ioremap(), ioremap_nocache() and
    pci_mmap_page_range()")
 
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Jingoo Han <jg1.han@samsung.com>
 Cc: Suresh Siddha <sbsiddha@gmail.com>
 Cc: Ingo Molnar <mingo@elte.hu>
 Cc: Thomas Gleixner <tglx@linutronix.de>
@@ -36,26 +39,27 @@ Cc: Dave Airlie <airlied@redhat.com>
 Cc: Antonino Daplas <adaplas@gmail.com>
 Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
 Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
+Cc: linux-geode at lists.infradead.org
 Cc: linux-fbdev at vger.kernel.org
 Cc: linux-kernel at vger.kernel.org
 Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
 ---
- drivers/video/fbdev/atmel_lcdfb.c | 3 ++-
+ drivers/video/fbdev/geode/gxfb_core.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/atmel_lcdfb.c b/drivers/video/fbdev/atmel_lcdfb.c
-index 94a8d04..abadc49 100644
---- a/drivers/video/fbdev/atmel_lcdfb.c
-+++ b/drivers/video/fbdev/atmel_lcdfb.c
-@@ -1266,7 +1266,8 @@ static int __init atmel_lcdfb_probe(struct platform_device *pdev)
- 			goto stop_clk;
- 		}
+diff --git a/drivers/video/fbdev/geode/gxfb_core.c b/drivers/video/fbdev/geode/gxfb_core.c
+index 124d7c7..ec9fc9a 100644
+--- a/drivers/video/fbdev/geode/gxfb_core.c
++++ b/drivers/video/fbdev/geode/gxfb_core.c
+@@ -263,7 +263,8 @@ static int gxfb_map_video_memory(struct fb_info *info, struct pci_dev *dev)
  
--		info->screen_base = ioremap(info->fix.smem_start, info->fix.smem_len);
-+		info->screen_base = ioremap_wc(info->fix.smem_start,
-+					       info->fix.smem_len);
- 		if (!info->screen_base) {
- 			ret = -ENOMEM;
- 			goto release_intmem;
+ 	info->fix.smem_start = pci_resource_start(dev, 0);
+ 	info->fix.smem_len = vram ? vram : gx_frame_buffer_size();
+-	info->screen_base = ioremap(info->fix.smem_start, info->fix.smem_len);
++	info->screen_base = ioremap_wc(info->fix.smem_start,
++				       info->fix.smem_len);
+ 	if (!info->screen_base)
+ 		return -ENOMEM;
+ 
 -- 
 2.3.2.209.gd67f9d5.dirty
