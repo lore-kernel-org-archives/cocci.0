@@ -1,14 +1,21 @@
 From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Tue, 21 Apr 2015 13:16:24 -0700
-Subject: [Cocci] [PATCH v3 03/17] video: fbdev: gbefb: use
-	arch_phys_wc_add() and devm_ioremap_wc()
+Date: Tue, 21 Apr 2015 13:16:25 -0700
+Subject: [Cocci] [PATCH v3 04/17] video: fbdev: intelfb: use
+	arch_phys_wc_add() and ioremap_wc()
 In-Reply-To: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
 References: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <1429647398-16983-4-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1429647398-16983-5-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: "Luis R. Rodriguez" <mcgrof@suse.com>
+
+Although this driver gives the framebuffer layer a different
+size for the framebuffer it uses the entire aperture PCI BAR
+size for the MTRR. Since the framebuffer is included in that
+range and MTRR was used on the entire PCI BAR WC will have
+been preferred on that range as well. This propagates the
+WC preference on the same entire PCI BAR.
 
 Convert the driver from using the x86 specific MTRR code to
 the architecture agnostic arch_phys_wc_add(). arch_phys_wc_add()
@@ -82,96 +89,116 @@ expression base, size;
 +info->screen_base = ioremap_wc(base, size);
 
 Generated-by: Coccinelle SmPL
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Juergen Gross <jgross@suse.com>
-Cc: Jingoo Han <jg1.han@samsung.com>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Masanari Iida <standby24x7@gmail.com>
+Cc: Maik Broemme <mbroemme@plusserver.de>
+Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
+Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
 Cc: Suresh Siddha <sbsiddha@gmail.com>
 Cc: Ingo Molnar <mingo@elte.hu>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Juergen Gross <jgross@suse.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
 Cc: Andy Lutomirski <luto@amacapital.net>
 Cc: Dave Airlie <airlied@redhat.com>
 Cc: Antonino Daplas <adaplas@gmail.com>
-Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
-Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
 Cc: linux-fbdev at vger.kernel.org
 Cc: linux-kernel at vger.kernel.org
 Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
 ---
- drivers/video/fbdev/gbefb.c | 26 +++++++-------------------
- 1 file changed, 7 insertions(+), 19 deletions(-)
+ drivers/video/fbdev/intelfb/intelfb.h    |  4 +---
+ drivers/video/fbdev/intelfb/intelfbdrv.c | 38 ++++----------------------------
+ 2 files changed, 5 insertions(+), 37 deletions(-)
 
-diff --git a/drivers/video/fbdev/gbefb.c b/drivers/video/fbdev/gbefb.c
-index f48ea7e..ef81215 100644
---- a/drivers/video/fbdev/gbefb.c
-+++ b/drivers/video/fbdev/gbefb.c
-@@ -22,9 +22,6 @@
- #include <linux/module.h>
- #include <linux/io.h>
+diff --git a/drivers/video/fbdev/intelfb/intelfb.h b/drivers/video/fbdev/intelfb/intelfb.h
+index 6b51175..37f8339 100644
+--- a/drivers/video/fbdev/intelfb/intelfb.h
++++ b/drivers/video/fbdev/intelfb/intelfb.h
+@@ -285,9 +285,7 @@ struct intelfb_info {
+ 	/* use a gart reserved fb mem */
+ 	u8 fbmem_gart;
  
--#ifdef CONFIG_X86
+-	/* mtrr support */
+-	int mtrr_reg;
+-	u32 has_mtrr;
++	int wc_cookie;
+ 
+ 	/* heap data */
+ 	struct intelfb_heap_data aperture;
+diff --git a/drivers/video/fbdev/intelfb/intelfbdrv.c b/drivers/video/fbdev/intelfb/intelfbdrv.c
+index b847d53..bbec737 100644
+--- a/drivers/video/fbdev/intelfb/intelfbdrv.c
++++ b/drivers/video/fbdev/intelfb/intelfbdrv.c
+@@ -124,10 +124,6 @@
+ 
+ #include <asm/io.h>
+ 
+-#ifdef CONFIG_MTRR
 -#include <asm/mtrr.h>
 -#endif
- #ifdef CONFIG_MIPS
- #include <asm/addrspace.h>
- #endif
-@@ -1176,8 +1173,8 @@ static int gbefb_probe(struct platform_device *p_dev)
+-
+ #include "intelfb.h"
+ #include "intelfbhw.h"
+ #include "../edid.h"
+@@ -411,33 +407,6 @@ module_init(intelfb_init);
+ module_exit(intelfb_exit);
  
- 	if (gbe_mem_phys) {
- 		/* memory was allocated at boot time */
--		gbe_mem = devm_ioremap_nocache(&p_dev->dev, gbe_mem_phys,
--					       gbe_mem_size);
-+		gbe_mem = devm_ioremap_wc(&p_dev->dev, gbe_mem_phys,
-+					  gbe_mem_size);
- 		if (!gbe_mem) {
- 			printk(KERN_ERR "gbefb: couldn't map framebuffer\n");
- 			ret = -ENOMEM;
-@@ -1188,8 +1185,8 @@ static int gbefb_probe(struct platform_device *p_dev)
- 	} else {
- 		/* try to allocate memory with the classical allocator
- 		 * this has high chance to fail on low memory machines */
--		gbe_mem = dma_alloc_coherent(NULL, gbe_mem_size, &gbe_dma_addr,
--					     GFP_KERNEL);
-+		gbe_mem = dma_alloc_writecombine(NULL, gbe_mem_size,
-+						 &gbe_dma_addr, GFP_KERNEL);
- 		if (!gbe_mem) {
- 			printk(KERN_ERR "gbefb: couldn't allocate framebuffer memory\n");
- 			ret = -ENOMEM;
-@@ -1199,10 +1196,7 @@ static int gbefb_probe(struct platform_device *p_dev)
- 		gbe_mem_phys = (unsigned long) gbe_dma_addr;
- 	}
- 
--#ifdef CONFIG_X86
--	info->wc_cookie = mtrr_add(gbe_mem_phys, gbe_mem_size,
--				   MTRR_TYPE_WRCOMB, 1);
--#endif
-+	info->wc_cookie = arch_phys_wc_add(gbe_mem_phys, gbe_mem_size);
- 
- 	/* map framebuffer memory into tiles table */
- 	for (i = 0; i < (gbe_mem_size >> TILE_SHIFT); i++)
-@@ -1242,10 +1236,7 @@ static int gbefb_probe(struct platform_device *p_dev)
- 	return 0;
- 
- out_gbe_unmap:
+ /***************************************************************
+- *                     mtrr support functions                  *
+- ***************************************************************/
+-
 -#ifdef CONFIG_MTRR
--	if (info->wc_cookie >= 0)
--		mtrr_del(info->wc_cookie, 0, 0);
--#endif
-+	arch_phys_wc_del(info->wc_cookie);
- 	if (gbe_dma_addr)
- 		dma_free_coherent(NULL, gbe_mem_size, gbe_mem, gbe_mem_phys);
- out_tiles_free:
-@@ -1265,10 +1256,7 @@ static int gbefb_remove(struct platform_device* p_dev)
+-static inline void set_mtrr(struct intelfb_info *dinfo)
+-{
+-	dinfo->mtrr_reg = mtrr_add(dinfo->aperture.physical,
+-				   dinfo->aperture.size, MTRR_TYPE_WRCOMB, 1);
+-	if (dinfo->mtrr_reg < 0) {
+-		ERR_MSG("unable to set MTRR\n");
+-		return;
+-	}
+-	dinfo->has_mtrr = 1;
+-}
+-static inline void unset_mtrr(struct intelfb_info *dinfo)
+-{
+-	if (dinfo->has_mtrr)
+-		mtrr_del(dinfo->mtrr_reg, dinfo->aperture.physical,
+-			 dinfo->aperture.size);
+-}
+-#else
+-#define set_mtrr(x) WRN_MSG("MTRR is disabled in the kernel\n")
+-
+-#define unset_mtrr(x) do { } while (0)
+-#endif /* CONFIG_MTRR */
+-
+-/***************************************************************
+  *                        driver init / cleanup                *
+  ***************************************************************/
  
- 	unregister_framebuffer(info);
- 	gbe_turn_off();
--#ifdef CONFIG_MTRR
--	if (info->wc_cookie >= 0)
--		mtrr_del(info->wc_cookie, 0, 0);
--#endif
-+	arch_phys_wc_del(info->wc_cookie);
- 	if (gbe_dma_addr)
- 		dma_free_coherent(NULL, gbe_mem_size, gbe_mem, gbe_mem_phys);
- 	dma_free_coherent(NULL, GBE_TLB_SIZE * sizeof(uint16_t),
+@@ -456,7 +425,7 @@ static void cleanup(struct intelfb_info *dinfo)
+ 	if (dinfo->registered)
+ 		unregister_framebuffer(dinfo->info);
+ 
+-	unset_mtrr(dinfo);
++	arch_phys_wc_del(dinfo->wc_cookie);
+ 
+ 	if (dinfo->fbmem_gart && dinfo->gtt_fb_mem) {
+ 		agp_unbind_memory(dinfo->gtt_fb_mem);
+@@ -675,7 +644,7 @@ static int intelfb_pci_register(struct pci_dev *pdev,
+ 	/* Allocate memories (which aren't stolen) */
+ 	/* Map the fb and MMIO regions */
+ 	/* ioremap only up to the end of used aperture */
+-	dinfo->aperture.virtual = (u8 __iomem *)ioremap_nocache
++	dinfo->aperture.virtual = (u8 __iomem *)ioremap_wc
+ 		(dinfo->aperture.physical, ((offset + dinfo->fb.offset) << 12)
+ 		 + dinfo->fb.size);
+ 	if (!dinfo->aperture.virtual) {
+@@ -772,7 +741,8 @@ static int intelfb_pci_register(struct pci_dev *pdev,
+ 	agp_backend_release(bridge);
+ 
+ 	if (mtrr)
+-		set_mtrr(dinfo);
++		dinfo->wc_cookie = arch_phys_wc_add(dinfo->aperture.physical,
++						    dinfo->aperture.size);
+ 
+ 	DBG_MSG("fb: 0x%x(+ 0x%x)/0x%x (0x%p)\n",
+ 		dinfo->fb.physical, dinfo->fb.offset, dinfo->fb.size,
 -- 
 2.3.2.209.gd67f9d5.dirty
