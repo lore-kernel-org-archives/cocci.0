@@ -1,10 +1,10 @@
 From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Tue, 21 Apr 2015 13:16:35 -0700
-Subject: [Cocci] [PATCH v3 14/17] video: fbdev: rivafb: use
+Date: Tue, 21 Apr 2015 13:16:36 -0700
+Subject: [Cocci] [PATCH v3 15/17] video: fbdev: tdfxfb: use
 	arch_phys_wc_add() and ioremap_wc()
 In-Reply-To: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
 References: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <1429647398-16983-15-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1429647398-16983-16-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -83,7 +83,8 @@ expression base, size;
 +info->screen_base = ioremap_wc(base, size);
 
 Generated-by: Coccinelle SmPL
-Cc: Antonino Daplas <adaplas@gmail.com>
+Cc: Rob Clark <robdclark@gmail.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
 Cc: Suresh Siddha <sbsiddha@gmail.com>
 Cc: Ingo Molnar <mingo@elte.hu>
 Cc: Thomas Gleixner <tglx@linutronix.de>
@@ -98,120 +99,128 @@ Cc: linux-fbdev at vger.kernel.org
 Cc: linux-kernel at vger.kernel.org
 Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
 ---
- drivers/video/fbdev/riva/fbdev.c  | 39 +++++++--------------------------------
- drivers/video/fbdev/riva/rivafb.h |  4 +---
- 2 files changed, 8 insertions(+), 35 deletions(-)
+ drivers/video/fbdev/tdfxfb.c | 41 ++++++-----------------------------------
+ include/video/tdfx.h         |  2 +-
+ 2 files changed, 7 insertions(+), 36 deletions(-)
 
-diff --git a/drivers/video/fbdev/riva/fbdev.c b/drivers/video/fbdev/riva/fbdev.c
-index 294a809..f1ad274 100644
---- a/drivers/video/fbdev/riva/fbdev.c
-+++ b/drivers/video/fbdev/riva/fbdev.c
-@@ -41,9 +41,6 @@
- #include <linux/pci.h>
- #include <linux/backlight.h>
- #include <linux/bitrev.h>
+diff --git a/drivers/video/fbdev/tdfxfb.c b/drivers/video/fbdev/tdfxfb.c
+index f761fe3..621fa44 100644
+--- a/drivers/video/fbdev/tdfxfb.c
++++ b/drivers/video/fbdev/tdfxfb.c
+@@ -78,24 +78,6 @@
+ 
+ #define DPRINTK(a, b...) pr_debug("fb: %s: " a, __func__ , ## b)
+ 
 -#ifdef CONFIG_MTRR
 -#include <asm/mtrr.h>
+-#else
+-/* duplicate asm/mtrr.h defines to work on archs without mtrr */
+-#define MTRR_TYPE_WRCOMB     1
+-
+-static inline int mtrr_add(unsigned long base, unsigned long size,
+-				unsigned int type, char increment)
+-{
+-    return -ENODEV;
+-}
+-static inline int mtrr_del(int reg, unsigned long base,
+-				unsigned long size)
+-{
+-    return -ENODEV;
+-}
 -#endif
- #ifdef CONFIG_PMAC_BACKLIGHT
- #include <asm/machdep.h>
- #include <asm/backlight.h>
-@@ -204,9 +201,7 @@ MODULE_DEVICE_TABLE(pci, rivafb_pci_tbl);
- static int flatpanel = -1; /* Autodetect later */
- static int forceCRTC = -1;
- static bool noaccel  = 0;
--#ifdef CONFIG_MTRR
- static bool nomtrr = 0;
--#endif
- #ifdef CONFIG_PMAC_BACKLIGHT
- static int backlight = 1;
- #else
-@@ -2010,28 +2005,18 @@ static int rivafb_probe(struct pci_dev *pd, const struct pci_device_id *ent)
+-
+ #define BANSHEE_MAX_PIXCLOCK 270000
+ #define VOODOO3_MAX_PIXCLOCK 300000
+ #define VOODOO5_MAX_PIXCLOCK 350000
+@@ -167,7 +149,6 @@ static int nopan;
+ static int nowrap = 1;      /* not implemented (yet) */
+ static int hwcursor = 1;
+ static char *mode_option;
+-/* mtrr option */
+ static bool nomtrr;
  
- 	rivafb_fix.smem_len = riva_get_memlen(default_par) * 1024;
- 	default_par->dclk_max = riva_get_maxdclk(default_par) * 1000;
--	info->screen_base = ioremap(rivafb_fix.smem_start,
--				    rivafb_fix.smem_len);
-+	info->screen_base = ioremap_wc(rivafb_fix.smem_start,
-+				       rivafb_fix.smem_len);
- 	if (!info->screen_base) {
- 		printk(KERN_ERR PFX "cannot ioremap FB base\n");
- 		ret = -EIO;
- 		goto err_iounmap_pramin;
+ /* -------------------------------------------------------------------------
+@@ -1454,8 +1435,8 @@ static int tdfxfb_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 		goto out_err_regbase;
  	}
  
--#ifdef CONFIG_MTRR
--	if (!nomtrr) {
--		default_par->mtrr.vram = mtrr_add(rivafb_fix.smem_start,
--					   	  rivafb_fix.smem_len,
--					    	  MTRR_TYPE_WRCOMB, 1);
--		if (default_par->mtrr.vram < 0) {
--			printk(KERN_ERR PFX "unable to setup MTRR\n");
--		} else {
--			default_par->mtrr.vram_valid = 1;
--			/* let there be speed */
--			printk(KERN_INFO PFX "RIVA MTRR set to ON\n");
--		}
--	}
--#endif /* CONFIG_MTRR */
-+	if (!nomtrr)
-+		default_par->wc_cookie =
-+			arch_phys_wc_add(rivafb_fix.smem_start,
-+					 rivafb_fix.smem_len);
+-	info->screen_base = ioremap_nocache(info->fix.smem_start,
+-					    info->fix.smem_len);
++	info->screen_base = ioremap_wc(info->fix.smem_start,
++				       info->fix.smem_len);
+ 	if (!info->screen_base) {
+ 		printk(KERN_ERR "fb: Can't remap %s framebuffer.\n",
+ 				info->fix.id);
+@@ -1473,11 +1454,9 @@ static int tdfxfb_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	printk(KERN_INFO "fb: %s memory = %dK\n", info->fix.id,
+ 			info->fix.smem_len >> 10);
  
- 	info->fbops = &riva_fb_ops;
- 	info->fix = rivafb_fix;
-@@ -2105,13 +2090,7 @@ static void rivafb_remove(struct pci_dev *pd)
- 	unregister_framebuffer(info);
+-	default_par->mtrr_handle = -1;
+ 	if (!nomtrr)
+-		default_par->mtrr_handle =
+-			mtrr_add(info->fix.smem_start, info->fix.smem_len,
+-				 MTRR_TYPE_WRCOMB, 1);
++		default_par->wc_cookie= arch_phys_wc_add(info->fix.smem_start,
++							 info->fix.smem_len);
  
- 	riva_bl_exit(info);
--
--#ifdef CONFIG_MTRR
--	if (par->mtrr.vram_valid)
--		mtrr_del(par->mtrr.vram, info->fix.smem_start,
+ 	info->fix.ypanstep	= nopan ? 0 : 1;
+ 	info->fix.ywrapstep	= nowrap ? 0 : 1;
+@@ -1566,9 +1545,7 @@ out_err_iobase:
+ #ifdef CONFIG_FB_3DFX_I2C
+ 	tdfxfb_delete_i2c_busses(default_par);
+ #endif
+-	if (default_par->mtrr_handle >= 0)
+-		mtrr_del(default_par->mtrr_handle, info->fix.smem_start,
 -			 info->fix.smem_len);
--#endif /* CONFIG_MTRR */
--
-+	arch_phys_wc_del(par->wc_cookie);
- 	iounmap(par->ctrl_base);
- 	iounmap(info->screen_base);
- 	if (par->riva.Architecture == NV_ARCH_03)
-@@ -2150,10 +2129,8 @@ static int rivafb_setup(char *options)
- 			flatpanel = 1;
- 		} else if (!strncmp(this_opt, "backlight:", 10)) {
- 			backlight = simple_strtoul(this_opt+10, NULL, 0);
++	arch_phys_wc_del(default_par->wc_cookie);
+ 	release_region(pci_resource_start(pdev, 2),
+ 		       pci_resource_len(pdev, 2));
+ out_err_screenbase:
+@@ -1604,10 +1581,8 @@ static void __init tdfxfb_setup(char *options)
+ 			nowrap = 1;
+ 		} else if (!strncmp(this_opt, "hwcursor=", 9)) {
+ 			hwcursor = simple_strtoul(this_opt + 9, NULL, 0);
 -#ifdef CONFIG_MTRR
  		} else if (!strncmp(this_opt, "nomtrr", 6)) {
  			nomtrr = 1;
 -#endif
- 		} else if (!strncmp(this_opt, "strictmode", 10)) {
- 			strictmode = 1;
- 		} else if (!strncmp(this_opt, "noaccel", 7)) {
-@@ -2209,10 +2186,8 @@ module_param(flatpanel, int, 0);
- MODULE_PARM_DESC(flatpanel, "Enables experimental flat panel support for some chipsets. (0 or 1=enabled) (default=0)");
- module_param(forceCRTC, int, 0);
- MODULE_PARM_DESC(forceCRTC, "Forces usage of a particular CRTC in case autodetection fails. (0 or 1) (default=autodetect)");
+ 		} else {
+ 			mode_option = this_opt;
+ 		}
+@@ -1633,9 +1608,7 @@ static void tdfxfb_remove(struct pci_dev *pdev)
+ #ifdef CONFIG_FB_3DFX_I2C
+ 	tdfxfb_delete_i2c_busses(par);
+ #endif
+-	if (par->mtrr_handle >= 0)
+-		mtrr_del(par->mtrr_handle, info->fix.smem_start,
+-			 info->fix.smem_len);
++	arch_phys_wc_del(par->wc_cookie);
+ 	iounmap(par->regbase_virt);
+ 	iounmap(info->screen_base);
+ 
+@@ -1677,10 +1650,8 @@ MODULE_PARM_DESC(hwcursor, "Enable hardware cursor "
+ 			"(1=enable, 0=disable, default=1)");
+ module_param(mode_option, charp, 0);
+ MODULE_PARM_DESC(mode_option, "Initial video mode e.g. '648x480-8 at 60'");
 -#ifdef CONFIG_MTRR
  module_param(nomtrr, bool, 0);
- MODULE_PARM_DESC(nomtrr, "Disables MTRR support (0 or 1=disabled) (default=0)");
+ MODULE_PARM_DESC(nomtrr, "Disable MTRR support (default: enabled)");
 -#endif
- module_param(strictmode, bool, 0);
- MODULE_PARM_DESC(strictmode, "Only use video modes from EDID");
  
-diff --git a/drivers/video/fbdev/riva/rivafb.h b/drivers/video/fbdev/riva/rivafb.h
-index d9f107b..61fd37c 100644
---- a/drivers/video/fbdev/riva/rivafb.h
-+++ b/drivers/video/fbdev/riva/rivafb.h
-@@ -61,9 +61,7 @@ struct riva_par {
- 	int FlatPanel;
- 	struct pci_dev *pdev;
- 	int cursor_reset;
--#ifdef CONFIG_MTRR
--	struct { int vram; int vram_valid; } mtrr;
--#endif
+ module_init(tdfxfb_init);
+ module_exit(tdfxfb_exit);
+diff --git a/include/video/tdfx.h b/include/video/tdfx.h
+index befbaf0..69674b9 100644
+--- a/include/video/tdfx.h
++++ b/include/video/tdfx.h
+@@ -196,7 +196,7 @@ struct tdfx_par {
+ 	u32 palette[16];
+ 	void __iomem *regbase_virt;
+ 	unsigned long iobase;
+-	int mtrr_handle;
 +	int wc_cookie;
- 	struct riva_i2c_chan chan[3];
- };
- 
+ #ifdef CONFIG_FB_3DFX_I2C
+ 	struct tdfxfb_i2c_chan chan[2];
+ #endif
 -- 
 2.3.2.209.gd67f9d5.dirty
