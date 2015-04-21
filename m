@@ -1,16 +1,15 @@
 From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Tue, 21 Apr 2015 13:16:26 -0700
-Subject: [Cocci] [PATCH v3 05/17] video: fbdev: matrox: use
+Date: Tue, 21 Apr 2015 13:16:27 -0700
+Subject: [Cocci] [PATCH v3 06/17] video: fbdev: neofb: use
 	arch_phys_wc_add() and ioremap_wc()
 In-Reply-To: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
 References: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <1429647398-16983-6-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1429647398-16983-7-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: "Luis R. Rodriguez" <mcgrof@suse.com>
 
-This driver uses the same ioremap()'d area for the MTRR.
 Convert the driver from using the x86 specific MTRR code to
 the architecture agnostic arch_phys_wc_add(). arch_phys_wc_add()
 will avoid MTRR if write-combining is available, in order to
@@ -83,18 +82,15 @@ expression base, size;
 +info->screen_base = ioremap_wc(base, size);
 
 Generated-by: Coccinelle SmPL
-
 Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
 Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
-Cc: Rob Clark <robdclark@gmail.com>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Julia Lawall <Julia.Lawall@lip6.fr>
-Cc: Mikulas Patocka <mpatocka@redhat.com>
+Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Jingoo Han <jg1.han@samsung.com>
 Cc: Suresh Siddha <sbsiddha@gmail.com>
 Cc: Ingo Molnar <mingo@elte.hu>
 Cc: Thomas Gleixner <tglx@linutronix.de>
 Cc: Juergen Gross <jgross@suse.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
 Cc: Andy Lutomirski <luto@amacapital.net>
 Cc: Dave Airlie <airlied@redhat.com>
 Cc: Antonino Daplas <adaplas@gmail.com>
@@ -102,162 +98,92 @@ Cc: linux-fbdev at vger.kernel.org
 Cc: linux-kernel at vger.kernel.org
 Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
 ---
- drivers/video/fbdev/matrox/matroxfb_base.c | 36 +++++++++++-------------------
- drivers/video/fbdev/matrox/matroxfb_base.h | 27 +---------------------
- 2 files changed, 14 insertions(+), 49 deletions(-)
+ drivers/video/fbdev/neofb.c | 26 +++++++-------------------
+ include/video/neomagic.h    |  5 +----
+ 2 files changed, 8 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/video/fbdev/matrox/matroxfb_base.c b/drivers/video/fbdev/matrox/matroxfb_base.c
-index 62539ca..2f70365 100644
---- a/drivers/video/fbdev/matrox/matroxfb_base.c
-+++ b/drivers/video/fbdev/matrox/matroxfb_base.c
-@@ -370,12 +370,9 @@ static void matroxfb_remove(struct matrox_fb_info *minfo, int dummy)
- 	matroxfb_unregister_device(minfo);
- 	unregister_framebuffer(&minfo->fbcon);
- 	matroxfb_g450_shutdown(minfo);
--#ifdef CONFIG_MTRR
--	if (minfo->mtrr.vram_valid)
--		mtrr_del(minfo->mtrr.vram, minfo->video.base, minfo->video.len);
--#endif
--	mga_iounmap(minfo->mmio.vbase);
--	mga_iounmap(minfo->video.vbase);
-+	arch_phys_wc_del(minfo->wc_cookie);
-+	iounmap(minfo->mmio.vbase.vaddr);
-+	iounmap(minfo->video.vbase.vaddr);
- 	release_mem_region(minfo->video.base, minfo->video.len_maximum);
- 	release_mem_region(minfo->mmio.base, 16384);
- 	kfree(minfo);
-@@ -1256,9 +1253,7 @@ static int nobios;			/* "matroxfb:nobios" */
- static int noinit = 1;			/* "matroxfb:init" */
- static int inverse;			/* "matroxfb:inverse" */
- static int sgram;			/* "matroxfb:sgram" */
--#ifdef CONFIG_MTRR
- static int mtrr = 1;			/* "matroxfb:nomtrr" */
--#endif
- static int grayscale;			/* "matroxfb:grayscale" */
- static int dev = -1;			/* "matroxfb:dev:xxxxx" */
- static unsigned int vesa = ~0;		/* "matroxfb:vesa:xxxxx" */
-@@ -1717,14 +1712,17 @@ static int initMatrox2(struct matrox_fb_info *minfo, struct board *b)
- 	if (mem && (mem < memsize))
- 		memsize = mem;
- 	err = -ENOMEM;
--	if (mga_ioremap(ctrlptr_phys, 16384, MGA_IOREMAP_MMIO, &minfo->mmio.vbase)) {
-+
-+	minfo->mmio.vbase.vaddr = ioremap_nocache(ctrlptr_phys, 16384);
-+	if (!minfo->mmio.vbase.vaddr) {
- 		printk(KERN_ERR "matroxfb: cannot ioremap(%lX, 16384), matroxfb disabled\n", ctrlptr_phys);
- 		goto failVideoMR;
- 	}
- 	minfo->mmio.base = ctrlptr_phys;
- 	minfo->mmio.len = 16384;
- 	minfo->video.base = video_base_phys;
--	if (mga_ioremap(video_base_phys, memsize, MGA_IOREMAP_FB, &minfo->video.vbase)) {
-+	minfo->video.vbase.vaddr = ioremap_wc(video_base_phys, memsize);
-+	if (!minfo->video.vbase.vaddr) {
- 		printk(KERN_ERR "matroxfb: cannot ioremap(%lX, %d), matroxfb disabled\n",
- 			video_base_phys, memsize);
- 		goto failCtrlIO;
-@@ -1772,13 +1770,9 @@ static int initMatrox2(struct matrox_fb_info *minfo, struct board *b)
- 	minfo->video.len_usable = minfo->video.len;
- 	if (minfo->video.len_usable > b->base->maxdisplayable)
- 		minfo->video.len_usable = b->base->maxdisplayable;
--#ifdef CONFIG_MTRR
--	if (mtrr) {
--		minfo->mtrr.vram = mtrr_add(video_base_phys, minfo->video.len, MTRR_TYPE_WRCOMB, 1);
--		minfo->mtrr.vram_valid = 1;
--		printk(KERN_INFO "matroxfb: MTRR's turned on\n");
--	}
--#endif	/* CONFIG_MTRR */
-+	if (mtrr)
-+		minfo->wc_cookie = arch_phys_wc_add(video_base_phys,
-+						    minfo->video.len);
- 
- 	if (!minfo->devflags.novga)
- 		request_region(0x3C0, 32, "matrox");
-@@ -1947,9 +1941,9 @@ static int initMatrox2(struct matrox_fb_info *minfo, struct board *b)
- 	return 0;
- failVideoIO:;
- 	matroxfb_g450_shutdown(minfo);
--	mga_iounmap(minfo->video.vbase);
-+	iounmap(minfo->video.vbase.vaddr);
- failCtrlIO:;
--	mga_iounmap(minfo->mmio.vbase);
-+	iounmap(minfo->mmio.vbase.vaddr);
- failVideoMR:;
- 	release_mem_region(video_base_phys, minfo->video.len_maximum);
- failCtrlMR:;
-@@ -2443,10 +2437,8 @@ static int __init matroxfb_setup(char *options) {
- 				nobios = !value;
- 			else if (!strcmp(this_opt, "init"))
- 				noinit = !value;
--#ifdef CONFIG_MTRR
- 			else if (!strcmp(this_opt, "mtrr"))
- 				mtrr = value;
--#endif
- 			else if (!strcmp(this_opt, "inv24"))
- 				inv24 = value;
- 			else if (!strcmp(this_opt, "cross4MB"))
-@@ -2515,10 +2507,8 @@ module_param(noinit, int, 0);
- MODULE_PARM_DESC(noinit, "Disables W/SG/SD-RAM and bus interface initialization (0 or 1=do not initialize) (default=0)");
- module_param(memtype, int, 0);
- MODULE_PARM_DESC(memtype, "Memory type for G200/G400 (see Documentation/fb/matroxfb.txt for explanation) (default=3 for G200, 0 for G400)");
--#ifdef CONFIG_MTRR
- module_param(mtrr, int, 0);
- MODULE_PARM_DESC(mtrr, "This speeds up video memory accesses (0=disabled or 1) (default=1)");
--#endif
- module_param(sgram, int, 0);
- MODULE_PARM_DESC(sgram, "Indicates that G100/G200/G400 has SGRAM memory (0=SDRAM, 1=SGRAM) (default=0)");
- module_param(inv24, int, 0);
-diff --git a/drivers/video/fbdev/matrox/matroxfb_base.h b/drivers/video/fbdev/matrox/matroxfb_base.h
-index 89a8a89a..09b02cd 100644
---- a/drivers/video/fbdev/matrox/matroxfb_base.h
-+++ b/drivers/video/fbdev/matrox/matroxfb_base.h
-@@ -44,9 +44,6 @@
- 
+diff --git a/drivers/video/fbdev/neofb.c b/drivers/video/fbdev/neofb.c
+index 44f99a6..db023a9 100644
+--- a/drivers/video/fbdev/neofb.c
++++ b/drivers/video/fbdev/neofb.c
+@@ -71,11 +71,6 @@
  #include <asm/io.h>
- #include <asm/unaligned.h>
+ #include <asm/irq.h>
+ #include <asm/pgtable.h>
+-
 -#ifdef CONFIG_MTRR
 -#include <asm/mtrr.h>
 -#endif
+-
+ #include <video/vga.h>
+ #include <video/neomagic.h>
  
- #if defined(CONFIG_PPC_PMAC)
- #include <asm/prom.h>
-@@ -187,23 +184,6 @@ static inline void __iomem* vaddr_va(vaddr_t va) {
- 	return va.vaddr;
- }
+@@ -1710,6 +1705,7 @@ static int neo_map_video(struct fb_info *info, struct pci_dev *dev,
+ 			 int video_len)
+ {
+ 	//unsigned long addr;
++	struct neofb_par *par = info->par;
  
--#define MGA_IOREMAP_NORMAL	0
--#define MGA_IOREMAP_NOCACHE	1
--
--#define MGA_IOREMAP_FB		MGA_IOREMAP_NOCACHE
--#define MGA_IOREMAP_MMIO	MGA_IOREMAP_NOCACHE
--static inline int mga_ioremap(unsigned long phys, unsigned long size, int flags, vaddr_t* virt) {
--	if (flags & MGA_IOREMAP_NOCACHE)
--		virt->vaddr = ioremap_nocache(phys, size);
--	else
--		virt->vaddr = ioremap(phys, size);
--	return (virt->vaddr == NULL); /* 0, !0... 0, error_code in future */
--}
--
--static inline void mga_iounmap(vaddr_t va) {
--	iounmap(va.vaddr);
--}
--
- struct my_timming {
- 	unsigned int pixclock;
- 	int mnp;
-@@ -449,12 +429,7 @@ struct matrox_fb_info {
- 		int		plnwt;
- 		int		srcorg;
- 			      } capable;
+ 	DBG("neo_map_video");
+ 
+@@ -1723,7 +1719,7 @@ static int neo_map_video(struct fb_info *info, struct pci_dev *dev,
+ 	}
+ 
+ 	info->screen_base =
+-	    ioremap(info->fix.smem_start, info->fix.smem_len);
++	    ioremap_wc(info->fix.smem_start, info->fix.smem_len);
+ 	if (!info->screen_base) {
+ 		printk("neofb: unable to map screen memory\n");
+ 		release_mem_region(info->fix.smem_start,
+@@ -1733,11 +1729,8 @@ static int neo_map_video(struct fb_info *info, struct pci_dev *dev,
+ 		printk(KERN_INFO "neofb: mapped framebuffer at %p\n",
+ 		       info->screen_base);
+ 
 -#ifdef CONFIG_MTRR
--	struct {
--		int		vram;
--		int		vram_valid;
--			      } mtrr;
+-	((struct neofb_par *)(info->par))->mtrr =
+-		mtrr_add(info->fix.smem_start, pci_resource_len(dev, 0),
+-				MTRR_TYPE_WRCOMB, 1);
 -#endif
-+	int			wc_cookie;
- 	struct {
- 		int		precise_width;
- 		int		mga_24bpp_fix;
++	par->wc_cookie = arch_phys_wc_add(info->fix.smem_start,
++					  pci_resource_len(dev, 0));
+ 
+ 	/* Clear framebuffer, it's all white in memory after boot */
+ 	memset_io(info->screen_base, 0, info->fix.smem_len);
+@@ -1754,16 +1747,11 @@ static int neo_map_video(struct fb_info *info, struct pci_dev *dev,
+ 
+ static void neo_unmap_video(struct fb_info *info)
+ {
+-	DBG("neo_unmap_video");
++	struct neofb_par *par = info->par;
+ 
+-#ifdef CONFIG_MTRR
+-	{
+-		struct neofb_par *par = info->par;
++	DBG("neo_unmap_video");
+ 
+-		mtrr_del(par->mtrr, info->fix.smem_start,
+-			 info->fix.smem_len);
+-	}
+-#endif
++	arch_phys_wc_del(par->wc_cookie);
+ 	iounmap(info->screen_base);
+ 	info->screen_base = NULL;
+ 
+diff --git a/include/video/neomagic.h b/include/video/neomagic.h
+index bc5013e..91e225a 100644
+--- a/include/video/neomagic.h
++++ b/include/video/neomagic.h
+@@ -159,10 +159,7 @@ struct neofb_par {
+ 	unsigned char VCLK3NumeratorHigh;
+ 	unsigned char VCLK3Denominator;
+ 	unsigned char VerticalExt;
+-
+-#ifdef CONFIG_MTRR
+-	int mtrr;
+-#endif
++	int wc_cookie;
+ 	u8 __iomem *mmio_vbase;
+ 	u8 cursorOff;
+ 	u8 *cursorPad;		/* Must die !! */
 -- 
 2.3.2.209.gd67f9d5.dirty
