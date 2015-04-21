@@ -1,10 +1,10 @@
 From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Tue, 21 Apr 2015 13:16:29 -0700
-Subject: [Cocci] [PATCH v3 08/17] video: fbdev: savagefb: use
+Date: Tue, 21 Apr 2015 13:16:30 -0700
+Subject: [Cocci] [PATCH v3 09/17] video: fbdev: sisfb: use
 	arch_phys_wc_add() and ioremap_wc()
 In-Reply-To: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
 References: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <1429647398-16983-9-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1429647398-16983-10-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -83,10 +83,9 @@ expression base, size;
 +info->screen_base = ioremap_wc(base, size);
 
 Generated-by: Coccinelle SmPL
-Cc: Antonino Daplas <adaplas@gmail.com>
+Cc: Thomas Winischhofer <thomas@winischhofer.net>
 Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
 Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
-Cc: linux-fbdev at vger.kernel.org
 Cc: Suresh Siddha <sbsiddha@gmail.com>
 Cc: Ingo Molnar <mingo@elte.hu>
 Cc: Thomas Gleixner <tglx@linutronix.de>
@@ -94,77 +93,105 @@ Cc: Juergen Gross <jgross@suse.com>
 Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
 Cc: Andy Lutomirski <luto@amacapital.net>
 Cc: Dave Airlie <airlied@redhat.com>
+Cc: Antonino Daplas <adaplas@gmail.com>
 Cc: linux-fbdev at vger.kernel.org
 Cc: linux-kernel at vger.kernel.org
 Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
 ---
- drivers/video/fbdev/savage/savagefb.h        |  4 +---
- drivers/video/fbdev/savage/savagefb_driver.c | 17 +++--------------
- 2 files changed, 4 insertions(+), 17 deletions(-)
+ drivers/video/fbdev/sis/sis.h      |  2 +-
+ drivers/video/fbdev/sis/sis_main.c | 27 ++++++---------------------
+ 2 files changed, 7 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/video/fbdev/savage/savagefb.h b/drivers/video/fbdev/savage/savagefb.h
-index 8ff4ab1..aba04af 100644
---- a/drivers/video/fbdev/savage/savagefb.h
-+++ b/drivers/video/fbdev/savage/savagefb.h
-@@ -213,9 +213,7 @@ struct savagefb_par {
- 		void   __iomem *vbase;
- 		u32    pbase;
- 		u32    len;
--#ifdef CONFIG_MTRR
--		int    mtrr;
--#endif
-+		int    wc_cookie;
- 	} video;
+diff --git a/drivers/video/fbdev/sis/sis.h b/drivers/video/fbdev/sis/sis.h
+index 1987f1b7..ea1d1c9 100644
+--- a/drivers/video/fbdev/sis/sis.h
++++ b/drivers/video/fbdev/sis/sis.h
+@@ -458,7 +458,7 @@ struct sis_video_info {
  
- 	struct {
-diff --git a/drivers/video/fbdev/savage/savagefb_driver.c b/drivers/video/fbdev/savage/savagefb_driver.c
-index 4dbf45f..6c77ab0 100644
---- a/drivers/video/fbdev/savage/savagefb_driver.c
-+++ b/drivers/video/fbdev/savage/savagefb_driver.c
-@@ -57,10 +57,6 @@
- #include <asm/irq.h>
- #include <asm/pgtable.h>
+ 	unsigned char	*bios_abase;
  
+-	int		mtrr;
++	int		wc_cookie;
+ 
+ 	u32		sisfb_mem;
+ 
+diff --git a/drivers/video/fbdev/sis/sis_main.c b/drivers/video/fbdev/sis/sis_main.c
+index fcf610e..e923038 100644
+--- a/drivers/video/fbdev/sis/sis_main.c
++++ b/drivers/video/fbdev/sis/sis_main.c
+@@ -53,9 +53,6 @@
+ #include <linux/types.h>
+ #include <linux/uaccess.h>
+ #include <asm/io.h>
 -#ifdef CONFIG_MTRR
 -#include <asm/mtrr.h>
 -#endif
+ 
+ #include "sis.h"
+ #include "sis_main.h"
+@@ -4130,13 +4127,13 @@ static void sisfb_post_map_vram(struct sis_video_info *ivideo,
+ 	if (*mapsize < (min << 20))
+ 		return;
+ 
+-	ivideo->video_vbase = ioremap(ivideo->video_base, (*mapsize));
++	ivideo->video_vbase = ioremap_wc(ivideo->video_base, (*mapsize));
+ 
+ 	if(!ivideo->video_vbase) {
+ 		printk(KERN_ERR
+ 			"sisfb: Unable to map maximum video RAM for size detection\n");
+ 		(*mapsize) >>= 1;
+-		while((!(ivideo->video_vbase = ioremap(ivideo->video_base, (*mapsize))))) {
++		while((!(ivideo->video_vbase = ioremap_wc(ivideo->video_base, (*mapsize))))) {
+ 			(*mapsize) >>= 1;
+ 			if((*mapsize) < (min << 20))
+ 				break;
+@@ -6186,7 +6183,7 @@ static int sisfb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		goto error_2;
+ 	}
+ 
+-	ivideo->video_vbase = ioremap(ivideo->video_base, ivideo->video_size);
++	ivideo->video_vbase = ioremap_wc(ivideo->video_base, ivideo->video_size);
+ 	ivideo->SiS_Pr.VideoMemoryAddress = ivideo->video_vbase;
+ 	if(!ivideo->video_vbase) {
+ 		printk(KERN_ERR "sisfb: Fatal error: Unable to map framebuffer memory\n");
+@@ -6254,8 +6251,6 @@ error_3:	vfree(ivideo->bios_abase);
+ 	ivideo->SiS_Pr.VideoMemoryAddress += ivideo->video_offset;
+ 	ivideo->SiS_Pr.VideoMemorySize = ivideo->sisfb_mem;
+ 
+-	ivideo->mtrr = -1;
 -
- #include "savagefb.h"
+ 	ivideo->vbflags = 0;
+ 	ivideo->lcddefmodeidx = DEFAULT_LCDMODE;
+ 	ivideo->tvdefmodeidx  = DEFAULT_TVMODE;
+@@ -6443,14 +6438,8 @@ error_3:	vfree(ivideo->bios_abase);
  
+ 		printk(KERN_DEBUG "sisfb: Initial vbflags 0x%x\n", (int)ivideo->vbflags);
  
-@@ -1775,7 +1771,7 @@ static int savage_map_video(struct fb_info *info, int video_len)
- 
- 	par->video.pbase = pci_resource_start(par->pcidev, resource);
- 	par->video.len   = video_len;
--	par->video.vbase = ioremap(par->video.pbase, par->video.len);
-+	par->video.vbase = ioremap_wc(par->video.pbase, par->video.len);
- 
- 	if (!par->video.vbase) {
- 		printk("savagefb: unable to map screen memory\n");
-@@ -1787,11 +1783,7 @@ static int savage_map_video(struct fb_info *info, int video_len)
- 	info->fix.smem_start = par->video.pbase;
- 	info->fix.smem_len   = par->video.len - par->cob_size;
- 	info->screen_base    = par->video.vbase;
--
 -#ifdef CONFIG_MTRR
--	par->video.mtrr = mtrr_add(par->video.pbase, video_len,
--				   MTRR_TYPE_WRCOMB, 1);
--#endif
-+	par->video.wc_cookie = arch_phys_wc_add(par->video.pbase, video_len);
- 
- 	/* Clear framebuffer, it's all white in memory after boot */
- 	memset_io(par->video.vbase, 0, par->video.len);
-@@ -1806,10 +1798,7 @@ static void savage_unmap_video(struct fb_info *info)
- 	DBG("savage_unmap_video");
- 
- 	if (par->video.vbase) {
--#ifdef CONFIG_MTRR
--		mtrr_del(par->video.mtrr, par->video.pbase, par->video.len);
+-		ivideo->mtrr = mtrr_add(ivideo->video_base, ivideo->video_size,
+-					MTRR_TYPE_WRCOMB, 1);
+-		if(ivideo->mtrr < 0) {
+-			printk(KERN_DEBUG "sisfb: Failed to add MTRRs\n");
+-		}
 -#endif
 -
-+		arch_phys_wc_del(par->video.wc_cookie);
- 		iounmap(par->video.vbase);
- 		par->video.vbase = NULL;
- 		info->screen_base = NULL;
++		ivideo->wc_cookie = arch_phys_wc_add(ivideo->video_base,
++						     ivideo->video_size);
+ 		if(register_framebuffer(sis_fb_info) < 0) {
+ 			printk(KERN_ERR "sisfb: Fatal error: Failed to register framebuffer\n");
+ 			ret = -EINVAL;
+@@ -6507,11 +6496,7 @@ static void sisfb_remove(struct pci_dev *pdev)
+ 
+ 	pci_dev_put(ivideo->nbridge);
+ 
+-#ifdef CONFIG_MTRR
+-	/* Release MTRR region */
+-	if(ivideo->mtrr >= 0)
+-		mtrr_del(ivideo->mtrr, ivideo->video_base, ivideo->video_size);
+-#endif
++	arch_phys_wc_del(ivideo->wc_cookie);
+ 
+ 	/* If device was disabled when starting, disable
+ 	 * it when quitting.
 -- 
 2.3.2.209.gd67f9d5.dirty
