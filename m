@@ -1,40 +1,37 @@
 From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Tue, 21 Apr 2015 13:26:06 -0700
-Subject: [Cocci] [PATCH v3 2/6] x86: document WC MTRR effects on PAT /
-	non-PAT pages
+Date: Tue, 21 Apr 2015 13:26:07 -0700
+Subject: [Cocci] [PATCH v3 3/6] video: fbdev: atyfb: move framebuffer length
+	fudging to helper
 In-Reply-To: <1429647970-17479-1-git-send-email-mcgrof@do-not-panic.com>
 References: <1429647970-17479-1-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <1429647970-17479-3-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1429647970-17479-4-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: "Luis R. Rodriguez" <mcgrof@suse.com>
 
-As part of the effort to phase out MTRR use document
-write-combining MTRR effects on pages with different
-non-PAT page attributes flags and different PAT entry
-values. Extend arch_phys_wc_add() documentation to
-clarify power of two sizes / boundary requirements as
-we phase out mtrr_add() use.
+The size of the framebuffer to be used needs to
+be fudged to account for the different type of
+devices that are out there. This captures what
+is required to do well, we'll resuse this later.
 
-Lastly hint towards ioremap_uc() for corner cases on
-device drivers working with devices with mixed regions
-where MTRR size requirements would otherwise not
-enable write-combining effective memory types.
+This has no functional changes.
 
 Cc: Toshi Kani <toshi.kani@hp.com>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Andy Lutomirski <luto@amacapital.net>
 Cc: Suresh Siddha <sbsiddha@gmail.com>
 Cc: Ingo Molnar <mingo@elte.hu>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
 Cc: Thomas Gleixner <tglx@linutronix.de>
 Cc: Juergen Gross <jgross@suse.com>
 Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Andy Lutomirski <luto@amacapital.net>
 Cc: Dave Airlie <airlied@redhat.com>
 Cc: Antonino Daplas <adaplas@gmail.com>
 Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
 Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
+Cc: Rob Clark <robdclark@gmail.com>
+Cc: Mathias Krause <minipli@googlemail.com>
+Cc: Andrzej Hajda <a.hajda@samsung.com>
 Cc: Ville Syrj?l? <syrjala@sci.fi>
 Cc: Mel Gorman <mgorman@suse.de>
 Cc: Vlastimil Babka <vbabka@suse.cz>
@@ -44,109 +41,49 @@ Cc: linux-fbdev at vger.kernel.org
 Cc: linux-kernel at vger.kernel.org
 Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
 ---
- Documentation/x86/mtrr.txt      | 18 +++++++++++++++---
- Documentation/x86/pat.txt       | 40 +++++++++++++++++++++++++++++++++++++++-
- arch/x86/kernel/cpu/mtrr/main.c |  3 +++
- 3 files changed, 57 insertions(+), 4 deletions(-)
+ drivers/video/fbdev/aty/atyfb_base.c | 23 +++++++++++++++--------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
 
-diff --git a/Documentation/x86/mtrr.txt b/Documentation/x86/mtrr.txt
-index cc071dc..a111a6c 100644
---- a/Documentation/x86/mtrr.txt
-+++ b/Documentation/x86/mtrr.txt
-@@ -1,7 +1,19 @@
- MTRR (Memory Type Range Register) control
--3 Jun 1999
--Richard Gooch
--<rgooch@atnf.csiro.au>
-+
-+Richard Gooch <rgooch@atnf.csiro.au> - 3 Jun 1999
-+Luis R. Rodriguez <mcgrof@do-not-panic.com> - April 9, 2015
-+
-+===============================================================================
-+Phasing MTRR use
-+
-+MTRR use is replaced on modern x86 hardware with PAT. Over time the only type
-+of effective MTRR that is expected to be supported will be for write-combining.
-+As MTRR use is phased out device drivers should use arch_phys_wc_add() to make
-+MTRR effective on non-PAT systems while a no-op on PAT enabled systems.
-+
-+For details refer to Documentation/x86/pat.txt.
-+
-+===============================================================================
+diff --git a/drivers/video/fbdev/aty/atyfb_base.c b/drivers/video/fbdev/aty/atyfb_base.c
+index 8789e48..16936bb 100644
+--- a/drivers/video/fbdev/aty/atyfb_base.c
++++ b/drivers/video/fbdev/aty/atyfb_base.c
+@@ -427,6 +427,20 @@ static struct {
+ #endif /* CONFIG_FB_ATY_CT */
+ };
  
-   On Intel P6 family processors (Pentium Pro, Pentium II and later)
-   the Memory Type Range Registers (MTRRs) may be used to control
-diff --git a/Documentation/x86/pat.txt b/Documentation/x86/pat.txt
-index cf08c9f..2c27d20 100644
---- a/Documentation/x86/pat.txt
-+++ b/Documentation/x86/pat.txt
-@@ -34,6 +34,8 @@ ioremap                |    --    |    UC-     |       UC-        |
-                        |          |            |                  |
- ioremap_cache          |    --    |    WB      |       WB         |
-                        |          |            |                  |
-+ioremap_uc             |    --    |    UC      |       UC         |
-+                       |          |            |                  |
- ioremap_nocache        |    --    |    UC-     |       UC-        |
-                        |          |            |                  |
- ioremap_wc             |    --    |    --      |       WC         |
-@@ -102,7 +104,43 @@ wants to export a RAM region, it has to do set_memory_uc() or set_memory_wc()
- as step 0 above and also track the usage of those pages and use set_memory_wb()
- before the page is freed to free pool.
++/*
++ * Last page of 8 MB (4 MB on ISA) aperture is MMIO,
++ * unless the auxiliary register aperture is used.
++ */
++static void aty_fudge_framebuffer_len(struct fb_info *info)
++{
++	struct atyfb_par *par = (struct atyfb_par *) info->par;
++
++	if (!par->aux_start &&
++	    (info->fix.smem_len == 0x800000 ||
++	     (par->bus_type == ISA && info->fix.smem_len == 0x400000)))
++		info->fix.smem_len -= GUI_RESERVE;
++}
++
+ static int correct_chipset(struct atyfb_par *par)
+ {
+ 	u8 rev;
+@@ -2603,14 +2617,7 @@ static int aty_init(struct fb_info *info)
+ 	if (par->pll_ops->resume_pll)
+ 		par->pll_ops->resume_pll(info, &par->pll);
  
--
-+MTRR effects on PAT / non-PAT systems
-+-------------------------------------
-+
-+The following table provides the effects of using write-combining MTRRs when
-+using ioremap*() calls on x86 for both non-PAT and PAT systems. Ideally
-+mtrr_add() usage will be phased in favor of arch_phys_wc_add() which will
-+be a no-op on PAT enabled systems. The region over which a arch_phys_wc_add()
-+is made should already have be ioremap'd with write-combining page attributes
-+or PAT entries, this can be done by using ioremap_wc() / or respective helpers.
-+Devices which combine areas of IO memory desired to remain uncachable with
-+areas where write-combining is desirable and are restricted by the size
-+requirements of MTRRs should consider splitting up their IO memory space
-+cleanly with ioremap_uc() and ioremap_wc() followed by an arch_phys_wc_add()
-+encompassing both regions. Such use is nevertheless heavily discouraged as
-+the effective memory type is considered implementation defined. This strategy
-+should only be used as last resort on devices with size-contrained regions
-+where otherwise MTRR write-combining would not be effective.
-+
-+Note that you cannot use set_memory_wc() to override / whitelist IO remapped
-+memory space mapped with ioremap*() calls, set_memory_wc() can only be used
-+on RAM.
-+
-+----------------------------------------------------------------------
-+MTRR Non-PAT   PAT    Linux ioremap value        Effective memory type
-+----------------------------------------------------------------------
-+                                                  Non-PAT |  PAT
-+     PAT
-+     |PCD
-+     ||PWT
-+     |||
-+WC   000      WB      _PAGE_CACHE_MODE_WB            WC   |   WC
-+WC   001      WC      _PAGE_CACHE_MODE_WC            WC*  |   WC
-+WC   010      UC-     _PAGE_CACHE_MODE_UC_MINUS      WC*  |   UC
-+WC   011      UC      _PAGE_CACHE_MODE_UC            UC   |   UC
-+----------------------------------------------------------------------
-+
-+(*) denotes implementation defined and is discouraged
+-	/*
+-	 * Last page of 8 MB (4 MB on ISA) aperture is MMIO,
+-	 * unless the auxiliary register aperture is used.
+-	 */
+-	if (!par->aux_start &&
+-	    (info->fix.smem_len == 0x800000 ||
+-	     (par->bus_type == ISA && info->fix.smem_len == 0x400000)))
+-		info->fix.smem_len -= GUI_RESERVE;
++	aty_fudge_framebuffer_len(info);
  
- Notes:
- 
-diff --git a/arch/x86/kernel/cpu/mtrr/main.c b/arch/x86/kernel/cpu/mtrr/main.c
-index ea5f363..12abdbe 100644
---- a/arch/x86/kernel/cpu/mtrr/main.c
-+++ b/arch/x86/kernel/cpu/mtrr/main.c
-@@ -538,6 +538,9 @@ EXPORT_SYMBOL(mtrr_del);
-  * attempts to add a WC MTRR covering size bytes starting at base and
-  * logs an error if this fails.
-  *
-+ * The caller should expect to need to provide a power of two size on an
-+ * equivalent power of two boundary.
-+ *
-  * Drivers must store the return value to pass to mtrr_del_wc_if_needed,
-  * but drivers should not try to interpret that return value.
-  */
+ 	/*
+ 	 * Disable register access through the linear aperture
 -- 
 2.3.2.209.gd67f9d5.dirty
