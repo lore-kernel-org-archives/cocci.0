@@ -1,64 +1,28 @@
 From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Tue, 21 Apr 2015 13:16:21 -0700
-Subject: [Cocci] [PATCH v3 00/17] framebuffer: simple conversions to
-	arch_phys_wc_add()
-Message-ID: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
+Date: Tue, 21 Apr 2015 13:20:30 -0700
+Subject: [Cocci] [PATCH v3 0/4] pci: add and use pci_ioremap_wc_bar()
+Message-ID: <1429647634-17169-1-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: "Luis R. Rodriguez" <mcgrof@suse.com>
 
-This series addresses simple changes to framebuffer drivers to use
-arch_phys_wc_add() and ioremap_wc() as well as fixing gbefb to add
-missing mtrr_del() calls. These changes are pretty straight forward.
+This series adds pci_ioremap_wc_bar() and makes use of it
+on a few framebuffer device drivers.
 
-Luis R. Rodriguez (17):
-  video: fbdev: radeonfb: use arch_phys_wc_add() and ioremap_wc()
-  video: fbdev: gbefb: add missing mtrr_del() calls
-  video: fbdev: gbefb: use arch_phys_wc_add() and devm_ioremap_wc()
-  video: fbdev: intelfb: use arch_phys_wc_add() and ioremap_wc()
-  video: fbdev: matrox: use arch_phys_wc_add() and ioremap_wc()
-  video: fbdev: neofb: use arch_phys_wc_add() and ioremap_wc()
-  video: fbdev: nvidia: use arch_phys_wc_add() and ioremap_wc()
-  video: fbdev: savagefb: use arch_phys_wc_add() and ioremap_wc()
-  video: fbdev: sisfb: use arch_phys_wc_add() and ioremap_wc()
-  video: fbdev: aty: use arch_phys_wc_add() and ioremap_wc()
-  video: fbdev: i810: use arch_phys_wc_add() and ioremap_wc()
-  video: fbdev: pm2fb: use arch_phys_wc_add() and ioremap_wc()
-  video: fbdev: pm3fb: use arch_phys_wc_add() and ioremap_wc()
-  video: fbdev: rivafb: use arch_phys_wc_add() and ioremap_wc()
-  video: fbdev: tdfxfb: use arch_phys_wc_add() and ioremap_wc()
-  video: fbdev: atmel_lcdfb: use ioremap_wc() for framebuffer
-  video: fbdev: geode gxfb: use ioremap_wc() for framebuffer
+Luis R. Rodriguez (4):
+  pci: add pci_ioremap_wc_bar()
+  video: fbdev: i740fb: use arch_phys_wc_add() and pci_ioremap_wc_bar()
+  video: fbdev: kyrofb: use arch_phys_wc_add() and pci_ioremap_wc_bar()
+  video: fbdev: gxt4500: use pci_ioremap_wc_bar() for framebuffer
 
- drivers/video/fbdev/atmel_lcdfb.c            |  3 +-
- drivers/video/fbdev/aty/aty128fb.c           | 36 ++++--------------------
- drivers/video/fbdev/aty/radeon_base.c        | 29 ++++----------------
- drivers/video/fbdev/aty/radeonfb.h           |  2 +-
- drivers/video/fbdev/gbefb.c                  | 18 ++++++------
- drivers/video/fbdev/geode/gxfb_core.c        |  3 +-
- drivers/video/fbdev/i810/i810.h              |  3 +-
- drivers/video/fbdev/i810/i810_main.c         | 11 +++++---
- drivers/video/fbdev/i810/i810_main.h         | 26 ------------------
- drivers/video/fbdev/intelfb/intelfb.h        |  4 +--
- drivers/video/fbdev/intelfb/intelfbdrv.c     | 38 +++-----------------------
- drivers/video/fbdev/matrox/matroxfb_base.c   | 36 +++++++++---------------
- drivers/video/fbdev/matrox/matroxfb_base.h   | 27 +-----------------
- drivers/video/fbdev/neofb.c                  | 26 +++++-------------
- drivers/video/fbdev/nvidia/nv_type.h         |  7 +----
- drivers/video/fbdev/nvidia/nvidia.c          | 37 ++++---------------------
- drivers/video/fbdev/pm2fb.c                  | 31 ++++-----------------
- drivers/video/fbdev/pm3fb.c                  | 30 ++++----------------
- drivers/video/fbdev/riva/fbdev.c             | 39 +++++---------------------
- drivers/video/fbdev/riva/rivafb.h            |  4 +--
- drivers/video/fbdev/savage/savagefb.h        |  4 +--
- drivers/video/fbdev/savage/savagefb_driver.c | 17 ++----------
- drivers/video/fbdev/sis/sis.h                |  2 +-
- drivers/video/fbdev/sis/sis_main.c           | 27 ++++--------------
- drivers/video/fbdev/tdfxfb.c                 | 41 ++++------------------------
- include/video/neomagic.h                     |  5 +---
- include/video/tdfx.h                         |  2 +-
- 27 files changed, 104 insertions(+), 404 deletions(-)
+ drivers/pci/pci.c                | 14 ++++++++++++++
+ drivers/video/fbdev/gxt4500.c    |  2 +-
+ drivers/video/fbdev/i740fb.c     | 35 ++++++-----------------------------
+ drivers/video/fbdev/kyro/fbdev.c | 33 +++++++++++----------------------
+ include/linux/pci.h              |  1 +
+ include/video/kyro.h             |  4 +---
+ 6 files changed, 34 insertions(+), 55 deletions(-)
 
 -- 
 2.3.2.209.gd67f9d5.dirty
