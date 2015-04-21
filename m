@@ -1,8 +1,8 @@
 From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Tue, 21 Apr 2015 13:12:03 -0700
+Date: Tue, 21 Apr 2015 13:13:50 -0700
 Subject: [Cocci] [PATCH v3] staging: sm750fb: use arch_phys_wc_add() and
 	ioremap_wc()
-Message-ID: <1429647123-16777-1-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1429647230-16870-1-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
