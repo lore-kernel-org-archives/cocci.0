@@ -1,14 +1,15 @@
 From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Tue, 21 Apr 2015 13:13:50 -0700
-Subject: [Cocci] [PATCH v3] staging: sm750fb: use arch_phys_wc_add() and
-	ioremap_wc()
-Message-ID: <1429647230-16870-1-git-send-email-mcgrof@do-not-panic.com>
+Date: Tue, 21 Apr 2015 13:16:22 -0700
+Subject: [Cocci] [PATCH v3 01/17] video: fbdev: radeonfb: use
+	arch_phys_wc_add() and ioremap_wc()
+In-Reply-To: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
+References: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1429647398-16983-2-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: "Luis R. Rodriguez" <mcgrof@suse.com>
 
-The same area used for ioremap() is used for the MTRR area.
 Convert the driver from using the x86 specific MTRR code to
 the architecture agnostic arch_phys_wc_add(). arch_phys_wc_add()
 will avoid MTRR if write-combining is available, in order to
@@ -81,9 +82,9 @@ expression base, size;
 +info->screen_base = ioremap_wc(base, size);
 
 Generated-by: Coccinelle SmPL
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Cc: Teddy Wang <teddy.wang@siliconmotion.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
+Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
 Cc: Suresh Siddha <sbsiddha@gmail.com>
 Cc: Ingo Molnar <mingo@elte.hu>
 Cc: Thomas Gleixner <tglx@linutronix.de>
@@ -92,136 +93,113 @@ Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
 Cc: Andy Lutomirski <luto@amacapital.net>
 Cc: Dave Airlie <airlied@redhat.com>
 Cc: Antonino Daplas <adaplas@gmail.com>
-Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
-Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
-Cc: devel at driverdev.osuosl.org
 Cc: linux-fbdev at vger.kernel.org
 Cc: linux-kernel at vger.kernel.org
 Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
 ---
- drivers/staging/sm750fb/sm750.c    | 36 ++++--------------------------------
- drivers/staging/sm750fb/sm750.h    |  3 ---
- drivers/staging/sm750fb/sm750_hw.c |  3 +--
- 3 files changed, 5 insertions(+), 37 deletions(-)
+ drivers/video/fbdev/aty/radeon_base.c | 29 ++++++-----------------------
+ drivers/video/fbdev/aty/radeonfb.h    |  2 +-
+ 2 files changed, 7 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/staging/sm750fb/sm750.c b/drivers/staging/sm750fb/sm750.c
-index 3c7ea95..cf57e3e 100644
---- a/drivers/staging/sm750fb/sm750.c
-+++ b/drivers/staging/sm750fb/sm750.c
-@@ -16,9 +16,6 @@
- #include<linux/vmalloc.h>
- #include<linux/pagemap.h>
- #include <linux/console.h>
+diff --git a/drivers/video/fbdev/aty/radeon_base.c b/drivers/video/fbdev/aty/radeon_base.c
+index 01237c8..2bdb070 100644
+--- a/drivers/video/fbdev/aty/radeon_base.c
++++ b/drivers/video/fbdev/aty/radeon_base.c
+@@ -85,10 +85,6 @@
+ 
+ #endif /* CONFIG_PPC */
+ 
 -#ifdef CONFIG_MTRR
 -#include <asm/mtrr.h>
 -#endif
- #include <asm/fb.h>
- #include "sm750.h"
- #include "sm750_hw.h"
-@@ -47,9 +44,7 @@ typedef int (*PROC_SPEC_INITHW)(struct lynx_share*, struct pci_dev*);
- /* common var for all device */
- static int g_hwcursor = 1;
- static int g_noaccel;
--#ifdef CONFIG_MTRR
- static int g_nomtrr;
--#endif
- static const char *g_fbmode[] = {NULL, NULL};
- static const char *g_def_fbmode = "800x600-16 at 60";
- static char *g_settings = NULL;
-@@ -1126,11 +1121,8 @@ static int lynxfb_pci_probe(struct pci_dev *pdev,
- 
- 	pr_info("share->revid = %02x\n", share->revid);
- 	share->pdev = pdev;
--#ifdef CONFIG_MTRR
- 	share->mtrr_off = g_nomtrr;
- 	share->mtrr.vram = 0;
--	share->mtrr.vram_added = 0;
--#endif
- 	share->accel_off = g_noaccel;
- 	share->dual = g_dualview;
- 	spin_lock_init(&share->slock);
-@@ -1158,22 +1150,9 @@ static int lynxfb_pci_probe(struct pci_dev *pdev,
- 		goto err_map;
- 	}
- 
--#ifdef CONFIG_MTRR
--	if (!share->mtrr_off) {
--		pr_info("enable mtrr\n");
--		share->mtrr.vram = mtrr_add(share->vidmem_start,
--					    share->vidmem_size,
--					    MTRR_TYPE_WRCOMB, 1);
 -
--		if (share->mtrr.vram < 0) {
--			/* don't block driver with the failure of MTRR */
--			pr_err("Unable to setup MTRR.\n");
--		} else {
--			share->mtrr.vram_added = 1;
--			pr_info("MTRR added succesfully\n");
--		}
--	}
+ #include <video/radeon.h>
+ #include <linux/radeonfb.h>
+ 
+@@ -271,9 +267,7 @@ static bool mirror = 0;
+ static int panel_yres = 0;
+ static bool force_dfp = 0;
+ static bool force_measure_pll = 0;
+-#ifdef CONFIG_MTRR
+ static bool nomtrr = 0;
 -#endif
-+	if (!share->mtrr_off)
-+		share->mtrr.vram = arch_phys_wc_add(share->vidmem_start,
-+						    share->vidmem_size);
+ static bool force_sleep;
+ static bool ignore_devlist;
+ #ifdef CONFIG_PMAC_BACKLIGHT
+@@ -2260,8 +2254,8 @@ static int radeonfb_pci_register(struct pci_dev *pdev,
+ 	rinfo->mapped_vram = min_t(unsigned long, MAX_MAPPED_VRAM, rinfo->video_ram);
  
- 	memset_io(share->pvMem, 0, share->vidmem_size);
+ 	do {
+-		rinfo->fb_base = ioremap (rinfo->fb_base_phys,
+-					  rinfo->mapped_vram);
++		rinfo->fb_base = ioremap_wc(rinfo->fb_base_phys,
++					    rinfo->mapped_vram);
+ 	} while (rinfo->fb_base == NULL &&
+ 		 ((rinfo->mapped_vram /= 2) >= MIN_MAPPED_VRAM));
  
-@@ -1274,12 +1253,7 @@ static void __exit lynxfb_pci_remove(struct pci_dev *pdev)
- 		/* release frame buffer */
- 		framebuffer_release(info);
+@@ -2359,11 +2353,9 @@ static int radeonfb_pci_register(struct pci_dev *pdev,
+ 		goto err_unmap_fb;
  	}
--#ifdef CONFIG_MTRR
--	if (share->mtrr.vram_added)
--		mtrr_del(share->mtrr.vram,
--			 share->vidmem_start,
--			 share->vidmem_size);
--#endif
-+	arch_phys_wc_del(share->mtrr.vram);
  
- 	iounmap(share->pvReg);
- 	iounmap(share->pvMem);
-@@ -1321,10 +1295,8 @@ static int __init lynxfb_setup(char *options)
- 		/* options that mean for any lynx chips are configured here */
- 		if (!strncmp(opt, "noaccel", strlen("noaccel")))
- 			g_noaccel = 1;
 -#ifdef CONFIG_MTRR
- 		else if (!strncmp(opt, "nomtrr", strlen("nomtrr")))
- 			g_nomtrr = 1;
+-	rinfo->mtrr_hdl = nomtrr ? -1 : mtrr_add(rinfo->fb_base_phys,
+-						 rinfo->video_ram,
+-						 MTRR_TYPE_WRCOMB, 1);
 -#endif
- 		else if (!strncmp(opt, "dual", strlen("dual")))
- 			g_dualview = 1;
- 		else {
-diff --git a/drivers/staging/sm750fb/sm750.h b/drivers/staging/sm750fb/sm750.h
-index 0847d2b..5528912 100644
---- a/drivers/staging/sm750fb/sm750.h
-+++ b/drivers/staging/sm750fb/sm750.h
-@@ -51,13 +51,10 @@ struct lynx_share{
- 	struct lynx_accel accel;
- 	int accel_off;
- 	int dual;
++	if (!nomtrr)
++		rinfo->wc_cookie = arch_phys_wc_add(rinfo->fb_base_phys,
++						    rinfo->video_ram);
+ 
+ 	if (backlight)
+ 		radeonfb_bl_init(rinfo);
+@@ -2428,12 +2420,7 @@ static void radeonfb_pci_unregister(struct pci_dev *pdev)
+  #endif
+ 
+ 	del_timer_sync(&rinfo->lvds_timer);
+-
 -#ifdef CONFIG_MTRR
- 		int mtrr_off;
- 		struct{
- 			int vram;
--			int vram_added;
- 		}mtrr;
+-	if (rinfo->mtrr_hdl >= 0)
+-		mtrr_del(rinfo->mtrr_hdl, 0, 0);
 -#endif
- 	/* all smi graphic adaptor got below attributes */
- 	unsigned long vidmem_start;
- 	unsigned long vidreg_start;
-diff --git a/drivers/staging/sm750fb/sm750_hw.c b/drivers/staging/sm750fb/sm750_hw.c
-index 9f0d06d..4b77eb1 100644
---- a/drivers/staging/sm750fb/sm750_hw.c
-+++ b/drivers/staging/sm750fb/sm750_hw.c
-@@ -85,8 +85,7 @@ int hw_sm750_map(struct lynx_share* share, struct pci_dev* pdev)
- 	}
- #endif
+-
++	arch_phys_wc_del(rinfo->wc_cookie);
+         unregister_framebuffer(info);
  
--	share->pvMem = ioremap(share->vidmem_start,
--							share->vidmem_size);
-+	share->pvMem = ioremap_wc(share->vidmem_start, share->vidmem_size);
+         radeonfb_bl_exit(rinfo);
+@@ -2489,10 +2476,8 @@ static int __init radeonfb_setup (char *options)
+ 			panel_yres = simple_strtoul((this_opt+11), NULL, 0);
+ 		} else if (!strncmp(this_opt, "backlight:", 10)) {
+ 			backlight = simple_strtoul(this_opt+10, NULL, 0);
+-#ifdef CONFIG_MTRR
+ 		} else if (!strncmp(this_opt, "nomtrr", 6)) {
+ 			nomtrr = 1;
+-#endif
+ 		} else if (!strncmp(this_opt, "nomodeset", 9)) {
+ 			nomodeset = 1;
+ 		} else if (!strncmp(this_opt, "force_measure_pll", 17)) {
+@@ -2552,10 +2537,8 @@ module_param(monitor_layout, charp, 0);
+ MODULE_PARM_DESC(monitor_layout, "Specify monitor mapping (like XFree86)");
+ module_param(force_measure_pll, bool, 0);
+ MODULE_PARM_DESC(force_measure_pll, "Force measurement of PLL (debug)");
+-#ifdef CONFIG_MTRR
+ module_param(nomtrr, bool, 0);
+ MODULE_PARM_DESC(nomtrr, "bool: disable use of MTRR registers");
+-#endif
+ module_param(panel_yres, int, 0);
+ MODULE_PARM_DESC(panel_yres, "int: set panel yres");
+ module_param(mode_option, charp, 0);
+diff --git a/drivers/video/fbdev/aty/radeonfb.h b/drivers/video/fbdev/aty/radeonfb.h
+index 039def4..5bc1944 100644
+--- a/drivers/video/fbdev/aty/radeonfb.h
++++ b/drivers/video/fbdev/aty/radeonfb.h
+@@ -340,7 +340,7 @@ struct radeonfb_info {
  
- 	if(!share->pvMem){
- 		pr_err("Map video memory failed\n");
+ 	struct pll_info		pll;
+ 
+-	int			mtrr_hdl;
++	int			wc_cookie;
+ 
+ 	u32			save_regs[100];
+ 	int			asleep;
 -- 
 2.3.2.209.gd67f9d5.dirty
