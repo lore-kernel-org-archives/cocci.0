@@ -1,127 +1,121 @@
 From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Tue, 21 Apr 2015 13:40:48 -0700
-Subject: [Cocci] [PATCH v3 1/3] video: fbdev: vesafb: only support
-	MTRR_TYPE_WRCOMB
+Date: Tue, 21 Apr 2015 13:40:49 -0700
+Subject: [Cocci] [PATCH v3 2/3] video: fbdev: vesafb: add missing mtrr_del()
+	for added MTRR
 In-Reply-To: <1429648850-17902-1-git-send-email-mcgrof@do-not-panic.com>
 References: <1429648850-17902-1-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <1429648850-17902-2-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1429648850-17902-3-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: "Luis R. Rodriguez" <mcgrof@suse.com>
 
-No other video driver uses MTRR types except for MTRR_TYPE_WRCOMB,
-the other MTRR types were implemented and supported here but with
-no real good reason. The ioremap() APIs are architecture agnostic and
-at least on x86 PAT is a new design that extends MTRRs and
-can replace it in a much cleaner way, where so long as the
-proper ioremap_wc() or variant API is used the right thing will
-be done behind the scenes. This is the only driver left using the
-other MTRR types -- and since there is no good reason for it now
-rip them out.
+The MTRR added was never being deleted.
 
 Cc: Toshi Kani <toshi.kani@hp.com>
 Cc: Suresh Siddha <sbsiddha@gmail.com>
 Cc: Ingo Molnar <mingo@elte.hu>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
 Cc: Thomas Gleixner <tglx@linutronix.de>
 Cc: Juergen Gross <jgross@suse.com>
 Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
 Cc: Andy Lutomirski <luto@amacapital.net>
 Cc: Dave Airlie <airlied@redhat.com>
 Cc: Antonino Daplas <adaplas@gmail.com>
-Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
-Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
 Cc: Rob Clark <robdclark@gmail.com>
 Cc: Jingoo Han <jg1.han@samsung.com>
 Cc: Wolfram Sang <wsa@the-dreams.de>
+Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
+Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
 Cc: linux-fbdev at vger.kernel.org
 Cc: linux-kernel at vger.kernel.org
 Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
 ---
- drivers/video/fbdev/vesafb.c | 62 ++++++++++++--------------------------------
- 1 file changed, 16 insertions(+), 46 deletions(-)
+ drivers/video/fbdev/vesafb.c | 30 ++++++++++++++++++++++++------
+ 1 file changed, 24 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/video/fbdev/vesafb.c b/drivers/video/fbdev/vesafb.c
-index d79a0ac..191156b 100644
+index 191156b..a2261d0 100644
 --- a/drivers/video/fbdev/vesafb.c
 +++ b/drivers/video/fbdev/vesafb.c
-@@ -404,60 +404,30 @@ static int vesafb_probe(struct platform_device *dev)
- 	 * region already (FIXME) */
- 	request_region(0x3c0, 32, "vesafb");
+@@ -29,6 +29,10 @@
  
-+	if (mtrr == 3) {
- #ifdef CONFIG_MTRR
--	if (mtrr) {
- 		unsigned int temp_size = size_total;
--		unsigned int type = 0;
-+		int rc;
+ /* --------------------------------------------------------------------- */
  
--		switch (mtrr) {
--		case 1:
--			type = MTRR_TYPE_UNCACHABLE;
--			break;
--		case 2:
--			type = MTRR_TYPE_WRBACK;
--			break;
--		case 3:
--			type = MTRR_TYPE_WRCOMB;
--			break;
--		case 4:
--			type = MTRR_TYPE_WRTHROUGH;
--			break;
--		default:
--			type = 0;
--			break;
--		}
--
--		if (type) {
--			int rc;
--
--			/* Find the largest power-of-two */
--			temp_size = roundup_pow_of_two(temp_size);
-+		/* Find the largest power-of-two */
-+		temp_size = roundup_pow_of_two(temp_size);
- 
--			/* Try and find a power of two to add */
--			do {
--				rc = mtrr_add(vesafb_fix.smem_start, temp_size,
--					      type, 1);
--				temp_size >>= 1;
--			} while (temp_size >= PAGE_SIZE && rc == -EINVAL);
--		}
--	}
-+		/* Try and find a power of two to add */
-+		do {
-+			rc = mtrr_add(vesafb_fix.smem_start, temp_size,
-+				      MTRR_TYPE_WRCOMB, 1);
-+			temp_size >>= 1;
-+		} while (temp_size >= PAGE_SIZE && rc == -EINVAL);
- #endif
--	
--	switch (mtrr) {
--	case 1: /* uncachable */
--		info->screen_base = ioremap_nocache(vesafb_fix.smem_start, vesafb_fix.smem_len);
--		break;
--	case 2: /* write-back */
--		info->screen_base = ioremap_cache(vesafb_fix.smem_start, vesafb_fix.smem_len);
--		break;
--	case 3: /* write-combining */
- 		info->screen_base = ioremap_wc(vesafb_fix.smem_start, vesafb_fix.smem_len);
--		break;
--	case 4: /* write-through */
--	default:
-+	} else {
-+#ifdef CONFIG_MTRR
-+		if (mtrr && mtrr != 3)
-+			WARN_ONCE(1, "Only MTRR_TYPE_WRCOMB (3) make sense\n");
-+#endif
- 		info->screen_base = ioremap(vesafb_fix.smem_start, vesafb_fix.smem_len);
--		break;
- 	}
++struct vesafb_par {
++	int wc_cookie;
++};
 +
- 	if (!info->screen_base) {
- 		printk(KERN_ERR
- 		       "vesafb: abort, cannot ioremap video memory 0x%x @ 0x%lx\n",
+ static struct fb_var_screeninfo vesafb_defined = {
+ 	.activate	= FB_ACTIVATE_NOW,
+ 	.height		= -1,
+@@ -175,7 +179,16 @@ static int vesafb_setcolreg(unsigned regno, unsigned red, unsigned green,
+ 
+ static void vesafb_destroy(struct fb_info *info)
+ {
++#ifdef CONFIG_MTRR
++	struct vesafb_par *par = info->par;
++#endif
++
+ 	fb_dealloc_cmap(&info->cmap);
++
++#ifdef CONFIG_MTRR
++	if (par->wc_cookie >= 0)
++		mtrr_del(par->wc_cookie, 0, 0);
++#endif
+ 	if (info->screen_base)
+ 		iounmap(info->screen_base);
+ 	release_mem_region(info->apertures->ranges[0].base, info->apertures->ranges[0].size);
+@@ -228,6 +241,7 @@ static int vesafb_setup(char *options)
+ static int vesafb_probe(struct platform_device *dev)
+ {
+ 	struct fb_info *info;
++	struct vesafb_par *par;
+ 	int i, err;
+ 	unsigned int size_vmode;
+ 	unsigned int size_remap;
+@@ -297,8 +311,8 @@ static int vesafb_probe(struct platform_device *dev)
+ 		return -ENOMEM;
+ 	}
+ 	platform_set_drvdata(dev, info);
+-	info->pseudo_palette = info->par;
+-	info->par = NULL;
++	info->pseudo_palette = NULL;
++	par = info->par;
+ 
+ 	/* set vesafb aperture size for generic probing */
+ 	info->apertures = alloc_apertures(1);
+@@ -407,17 +421,17 @@ static int vesafb_probe(struct platform_device *dev)
+ 	if (mtrr == 3) {
+ #ifdef CONFIG_MTRR
+ 		unsigned int temp_size = size_total;
+-		int rc;
+ 
+ 		/* Find the largest power-of-two */
+ 		temp_size = roundup_pow_of_two(temp_size);
+ 
+ 		/* Try and find a power of two to add */
+ 		do {
+-			rc = mtrr_add(vesafb_fix.smem_start, temp_size,
+-				      MTRR_TYPE_WRCOMB, 1);
++			par->wc_cookie = mtrr_add(vesafb_fix.smem_start,
++						  temp_size,
++						  MTRR_TYPE_WRCOMB, 1);
+ 			temp_size >>= 1;
+-		} while (temp_size >= PAGE_SIZE && rc == -EINVAL);
++		} while (temp_size >= PAGE_SIZE && par->wc_cookie == -EINVAL);
+ #endif
+ 		info->screen_base = ioremap_wc(vesafb_fix.smem_start, vesafb_fix.smem_len);
+ 	} else {
+@@ -462,6 +476,10 @@ static int vesafb_probe(struct platform_device *dev)
+ 	fb_info(info, "%s frame buffer device\n", info->fix.id);
+ 	return 0;
+ err:
++#ifdef CONFIG_MTRR
++	if (par->wc_cookie >= 0)
++		mtrr_del(par->wc_cookie, 0, 0);
++#endif
+ 	if (info->screen_base)
+ 		iounmap(info->screen_base);
+ 	framebuffer_release(info);
 -- 
 2.3.2.209.gd67f9d5.dirty
