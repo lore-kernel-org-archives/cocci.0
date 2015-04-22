@@ -1,41 +1,74 @@
-From: jgunthorpe@obsidianresearch.com (Jason Gunthorpe)
-Date: Tue, 21 Apr 2015 16:17:18 -0600
-Subject: [Cocci] [PATCH v4 2/2] IB/qib: use arch_phys_wc_add()
-In-Reply-To: <1429653035-19424-3-git-send-email-mcgrof@do-not-panic.com>
-References: <1429653035-19424-1-git-send-email-mcgrof@do-not-panic.com>
- <1429653035-19424-3-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <20150421221718.GA10836@obsidianresearch.com>
+From: nicolas.ferre@atmel.com (Nicolas Ferre)
+Date: Wed, 22 Apr 2015 09:34:02 +0200
+Subject: [Cocci] [PATCH v3 16/17] video: fbdev: atmel_lcdfb: use
+ ioremap_wc() for framebuffer
+In-Reply-To: <1429647398-16983-17-git-send-email-mcgrof@do-not-panic.com>
+References: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
+ <1429647398-16983-17-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <55374EEA.1050909@atmel.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, Apr 21, 2015 at 02:50:35PM -0700, Luis R. Rodriguez wrote:
-> -	if (qib_wc_pat) {
-> -		resource_size_t vl15off;
-> -		/*
-> -		 * We do not set WC on the VL15 buffers to avoid
-> -		 * a rare problem with unaligned writes from
-> -		 * interrupt-flushed store buffers, so we need
-> -		 * to map those separately here.  We can't solve
-> -		 * this for the rarely used mtrr case.
-> -		 */
-> -		ret = init_chip_wc_pat(dd, 0);
-> -		if (ret)
-> -			goto bail;
-> +	/*
-> +	 * We do not set WC on the VL15 buffers to avoid
-> +	 * a rare problem with unaligned writes from
-> +	 * interrupt-flushed store buffers, so we need
-> +	 * to map those separately here.  We can't solve
-> +	 * this for the rarely used mtrr case.
-> +	 */
+Le 21/04/2015 22:16, Luis R. Rodriguez a ?crit :
+> From: "Luis R. Rodriguez" <mcgrof@suse.com>
+> 
+> The driver doesn't use mtrr_add() or arch_phys_wc_add() but
+> since we know the framebuffer is isolated already on an
+> ioremap() we can take advantage of write combining for
+> performance where possible.
+> 
+> In this case there are a few motivations for this:
+> 
+> a) Take advantage of PAT when available
+> 
+> b) Help with the goal of eventually using _PAGE_CACHE_UC over
+>    _PAGE_CACHE_UC_MINUS on x86 on ioremap_nocache() (see commit
+>    de33c442e titled "x86 PAT: fix performance drop for glx,
+>    use UC minus for ioremap(), ioremap_nocache() and
+>    pci_mmap_page_range()")
+> 
+> Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
 
-This is a small change in behavior, but it doesn't seem important..
+Seems okay:
+Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
 
-Mike, what do you think about adding:
+Thanks for having taking care of atmel_lcdfb driver.
+Bye,
 
- if (dd->wc_cookie)
-    dev_err(.., "Using this device without CPU PAT support is known to be broken");
 
-or similar..
+> Cc: Suresh Siddha <sbsiddha@gmail.com>
+> Cc: Ingo Molnar <mingo@elte.hu>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Juergen Gross <jgross@suse.com>
+> Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+> Cc: Andy Lutomirski <luto@amacapital.net>
+> Cc: Dave Airlie <airlied@redhat.com>
+> Cc: Antonino Daplas <adaplas@gmail.com>
+> Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
+> Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
+> Cc: linux-fbdev at vger.kernel.org
+> Cc: linux-kernel at vger.kernel.org
+> Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
+> ---
+>  drivers/video/fbdev/atmel_lcdfb.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/video/fbdev/atmel_lcdfb.c b/drivers/video/fbdev/atmel_lcdfb.c
+> index 94a8d04..abadc49 100644
+> --- a/drivers/video/fbdev/atmel_lcdfb.c
+> +++ b/drivers/video/fbdev/atmel_lcdfb.c
+> @@ -1266,7 +1266,8 @@ static int __init atmel_lcdfb_probe(struct platform_device *pdev)
+>  			goto stop_clk;
+>  		}
+>  
+> -		info->screen_base = ioremap(info->fix.smem_start, info->fix.smem_len);
+> +		info->screen_base = ioremap_wc(info->fix.smem_start,
+> +					       info->fix.smem_len);
+>  		if (!info->screen_base) {
+>  			ret = -ENOMEM;
+>  			goto release_intmem;
+> 
 
-Jason
+
+-- 
+Nicolas Ferre
