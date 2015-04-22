@@ -1,48 +1,35 @@
-From: rusty@rustcorp.com.au (Rusty Russell)
-Date: Wed, 22 Apr 2015 16:45:04 +0930
-Subject: [Cocci] [PATCH v1 4/6] moduleparam.h: add
-	module_param_config_*() helpers
-In-Reply-To: <1429572637-30234-5-git-send-email-mcgrof@do-not-panic.com>
-References: <1429572637-30234-1-git-send-email-mcgrof@do-not-panic.com>
- <1429572637-30234-5-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <87mw20ocqv.fsf@rustcorp.com.au>
+From: k.kozlowski.k@gmail.com (Krzysztof Kozlowski)
+Date: Wed, 22 Apr 2015 20:08:20 +0900
+Subject: [Cocci] [PATCH] Add coccinelle script that makes sure that
+ tables are NULL terminated
+In-Reply-To: <1425043313-15844-1-git-send-email-d.granat@samsung.com>
+References: <1425043313-15844-1-git-send-email-d.granat@samsung.com>
+Message-ID: <55378124.2060908@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-"Luis R. Rodriguez" <mcgrof@do-not-panic.com> writes:
-> From: "Luis R. Rodriguez" <mcgrof@suse.com>
->
-> This adds a couple of bool module_param_config_*() helpers
-> which are designed to let us easily associate a booloean
-> module parameter with an associated kernel configuration
-> option, and to help us remove #ifdef'ery eyesores.
+W dniu 27.02.2015 o 22:21, Daniel Granat pisze:
+> Signed-off-by: Daniel Granat <d.granat@samsung.com>
+> ---
+>   scripts/coccinelle/misc/device_id_tables.cocci | 95 ++++++++++++++++++++++++++
+>   1 file changed, 95 insertions(+)
+>   create mode 100644 scripts/coccinelle/misc/device_id_tables.cocci
 
-But they don't.  And I had to read the descriptions twice to understand
-what you're doing.
+I like the idea and I think it is useful.
+Tested-by: Krzysztof Kozlowski <k.kozlowski.k@gmail.com>
 
-eg you use it like this:
+However applying the patch gave some warnings:
 
- -#ifdef CONFIG_WQ_POWER_EFFICIENT_DEFAULT
- -static bool wq_power_efficient = true;
- -#else
- -static bool wq_power_efficient;
- -#endif
- -
- -module_param_named(power_efficient, wq_power_efficient, bool, 0444);
- +module_param_config_on_off(power_efficient, wq_power_efficient, 0444,
- CONFIG_WQ_POWER_EFFICIENT_DEFAULT);
+Applying: Add coccinelle script that makes sure that tables are NULL terminated
+/home/dev/linux/linux/.git/rebase-apply/patch:64: space before tab in indent.
+        	coccilib.report.print_report(p1[0],msg)
+/home/dev/linux/linux/.git/rebase-apply/patch:89: trailing whitespace.
+struct matched_name arr[] = { 
+/home/dev/linux/linux/.git/rebase-apply/patch:99: trailing whitespace.
+struct matched_name arr[] = { 
+/home/dev/linux/linux/.git/rebase-apply/patch:106: new blank line at EOF.
++
+warning: 4 lines add whitespace errors.
 
-It would be much clearer to do this:
-
- -#ifdef CONFIG_WQ_POWER_EFFICIENT_DEFAULT
- -static bool wq_power_efficient = true;
- -#else
- -static bool wq_power_efficient;
- -#endif
- +static bool wq_power_efficient = IS_ENABLED(CONFIG_WQ_POWER_EFFICIENT_DEFAULT);
-
-I know exactly what that does without having to notice the difference
-between module_param_config_on_off() and module_param_config_on().
-
-Cheers,
-Rusty.
+Best regards,
+Krzysztof
