@@ -1,40 +1,28 @@
-From: mcgrof@suse.com (Luis R. Rodriguez)
-Date: Wed, 29 Apr 2015 12:18:06 -0700
-Subject: [Cocci] [PATCH v3 00/17] framebuffer: simple conversions to
-	arch_phys_wc_add()
-In-Reply-To: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
-References: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <CAB=NE6WhVUa-seXOWeY+ELY5v=Rt_6DBfr==GKjP7AH3CTWJAQ@mail.gmail.com>
+From: eliseomarmol@gmail.com (=?utf-8?Q?Eliseo_Mart=C3=ADnez?=)
+Date: Wed, 29 Apr 2015 21:18:56 +0200
+Subject: [Cocci] Packages for release 1.0.0
+In-Reply-To: <alpine.DEB.2.02.1504292115570.2042@localhost6.localdomain6>
+References: <44BEB158-144E-4ADA-9B1E-9AC634906DE0@gmail.com>
+ <alpine.DEB.2.02.1504292115570.2042@localhost6.localdomain6>
+Message-ID: <D7F9210C-7BD7-4FCC-BB9F-62336417FE5B@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, Apr 21, 2015 at 1:16 PM, Luis R. Rodriguez
-<mcgrof@do-not-panic.com> wrote:
-> From: "Luis R. Rodriguez" <mcgrof@suse.com>
->
-> This series addresses simple changes to framebuffer drivers to use
-> arch_phys_wc_add() and ioremap_wc() as well as fixing gbefb to add
-> missing mtrr_del() calls. These changes are pretty straight forward.
->
-> Luis R. Rodriguez (17):
->   video: fbdev: radeonfb: use arch_phys_wc_add() and ioremap_wc()
->   video: fbdev: gbefb: add missing mtrr_del() calls
->   video: fbdev: gbefb: use arch_phys_wc_add() and devm_ioremap_wc()
->   video: fbdev: intelfb: use arch_phys_wc_add() and ioremap_wc()
->   video: fbdev: matrox: use arch_phys_wc_add() and ioremap_wc()
->   video: fbdev: neofb: use arch_phys_wc_add() and ioremap_wc()
->   video: fbdev: nvidia: use arch_phys_wc_add() and ioremap_wc()
->   video: fbdev: savagefb: use arch_phys_wc_add() and ioremap_wc()
->   video: fbdev: sisfb: use arch_phys_wc_add() and ioremap_wc()
->   video: fbdev: aty: use arch_phys_wc_add() and ioremap_wc()
->   video: fbdev: i810: use arch_phys_wc_add() and ioremap_wc()
->   video: fbdev: pm2fb: use arch_phys_wc_add() and ioremap_wc()
->   video: fbdev: pm3fb: use arch_phys_wc_add() and ioremap_wc()
->   video: fbdev: rivafb: use arch_phys_wc_add() and ioremap_wc()
->   video: fbdev: tdfxfb: use arch_phys_wc_add() and ioremap_wc()
->   video: fbdev: atmel_lcdfb: use ioremap_wc() for framebuffer
->   video: fbdev: geode gxfb: use ioremap_wc() for framebuffer
+Ok, thanks.
+I?ll keep an eye on that.
 
-Hey folks, these are all pretty straight forward, can anyone take them?
-
- Luis
+> On 29 Apr 2015, at 21:16, Julia Lawall <julia.lawall@lip6.fr> wrote:
+> 
+> On Wed, 29 Apr 2015, Eliseo Mart?nez wrote:
+> 
+>> Hi, 
+>> 
+>> I?ve seen release 1.0.0 has been published recently. Congrats!
+>> Unfortunately, it seems distribution packages (at least those for Ubuntu) are still stuck on 1.0.0-rc23 (Oct 2014).
+>> Are there plans to update these?
+> 
+> I could ping them, but I have already found a bug.  I'll see if I can fix 
+> it by Monday.
+> 
+> thanks,
+> julia
