@@ -1,16 +1,15 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Thu, 23 Apr 2015 20:56:14 +0200
-Subject: [Cocci] version 1.0.0
-In-Reply-To: <alpine.DEB.2.02.1504191727560.2028@localhost6.localdomain6>
-References: <alpine.DEB.2.02.1504191727560.2028@localhost6.localdomain6>
-Message-ID: <5539404E.2050202@users.sourceforge.net>
+From: eliseomarmol@gmail.com (=?utf-8?Q?Eliseo_Mart=C3=ADnez?=)
+Date: Wed, 29 Apr 2015 21:13:17 +0200
+Subject: [Cocci] Packages for release 1.0.0
+Message-ID: <44BEB158-144E-4ADA-9B1E-9AC634906DE0@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Comments and bug reports are welcome.
+Hi, 
 
-How do you think about to reconsider the current status of script files
-like "autogen" and "Makefile.release"?
+I?ve seen release 1.0.0 has been published recently. Congrats!
+Unfortunately, it seems distribution packages (at least those for Ubuntu) are still stuck on 1.0.0-rc23 (Oct 2014).
+Are there plans to update these?
 
-Regards,
-Markus
+Thanks, 
+Eliseo Mart?nez.
