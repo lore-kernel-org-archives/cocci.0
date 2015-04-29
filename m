@@ -1,22 +1,27 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 29 Apr 2015 21:16:45 +0200 (CEST)
-Subject: [Cocci] Packages for release 1.0.0
-In-Reply-To: <44BEB158-144E-4ADA-9B1E-9AC634906DE0@gmail.com>
-References: <44BEB158-144E-4ADA-9B1E-9AC634906DE0@gmail.com>
-Message-ID: <alpine.DEB.2.02.1504292115570.2042@localhost6.localdomain6>
+From: mcgrof@suse.com (Luis R. Rodriguez)
+Date: Wed, 29 Apr 2015 14:08:47 -0700
+Subject: [Cocci] [PATCH v3 0/4] pci: add and use pci_ioremap_wc_bar()
+In-Reply-To: <1429647634-17169-1-git-send-email-mcgrof@do-not-panic.com>
+References: <1429647634-17169-1-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <CAB=NE6VYvd-Au58QRJprCquuvJkY9NYe1x8FmbW7qAhVrVE=QQ@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, 29 Apr 2015, Eliseo Mart?nez wrote:
+On Tue, Apr 21, 2015 at 1:20 PM, Luis R. Rodriguez
+<mcgrof@do-not-panic.com> wrote:
+> From: "Luis R. Rodriguez" <mcgrof@suse.com>
+>
+> This series adds pci_ioremap_wc_bar() and makes use of it
+> on a few framebuffer device drivers.
+>
+> Luis R. Rodriguez (4):
+>   pci: add pci_ioremap_wc_bar()
+>   video: fbdev: i740fb: use arch_phys_wc_add() and pci_ioremap_wc_bar()
+>   video: fbdev: kyrofb: use arch_phys_wc_add() and pci_ioremap_wc_bar()
+>   video: fbdev: gxt4500: use pci_ioremap_wc_bar() for framebuffer
 
-> Hi, 
-> 
-> I?ve seen release 1.0.0 has been published recently. Congrats!
-> Unfortunately, it seems distribution packages (at least those for Ubuntu) are still stuck on 1.0.0-rc23 (Oct 2014).
-> Are there plans to update these?
+Bjorn,
 
-I could ping them, but I have already found a bug.  I'll see if I can fix 
-it by Monday.
+any feedback on this series?
 
-thanks,
-julia
+ Luis
