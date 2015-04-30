@@ -1,28 +1,29 @@
-From: mcgrof@suse.com (Luis R. Rodriguez)
-Date: Wed, 29 Apr 2015 14:11:03 -0700
-Subject: [Cocci] [PATCH v3 0/4] pci: add and use pci_iomap_wc()
-In-Reply-To: <1429647702-17315-1-git-send-email-mcgrof@do-not-panic.com>
-References: <1429647702-17315-1-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <CAB=NE6WYA8GVV1S9ZUhSRAJcpABd4OcCO_a0xWgw2oyKGJ4evQ@mail.gmail.com>
+From: mstefani@redhat.com (Michael Stefaniuc)
+Date: Thu, 30 Apr 2015 15:48:34 +0200
+Subject: [Cocci] Packages for release 1.0.0
+In-Reply-To: <alpine.DEB.2.02.1504292115570.2042@localhost6.localdomain6>
+References: <44BEB158-144E-4ADA-9B1E-9AC634906DE0@gmail.com>
+ <alpine.DEB.2.02.1504292115570.2042@localhost6.localdomain6>
+Message-ID: <554232B2.10107@redhat.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, Apr 21, 2015 at 1:21 PM, Luis R. Rodriguez
-<mcgrof@do-not-panic.com> wrote:
-> From: "Luis R. Rodriguez" <mcgrof@suse.com>
->
-> This series adds pci_iomap_wc() variants and makes use of them
-> to framebuffer device drivers.
->
-> Luis R. Rodriguez (4):
->   pci: add pci_iomap_wc() variants
->   video: fbdev: arkfb: use arch_phys_wc_add() and pci_iomap_wc()
->   video: fbdev: s3fb: use arch_phys_wc_add() and pci_iomap_wc()
->   video: fbdev: vt8623fb: use arch_phys_wc_add() and pci_iomap_wc()
+Hello Julia,
 
-Bjorn,
+On 04/29/2015 09:16 PM, Julia Lawall wrote:
+> On Wed, 29 Apr 2015, Eliseo Mart?nez wrote:
+> 
+>> Hi, 
+>>
+>> I?ve seen release 1.0.0 has been published recently. Congrats!
+>> Unfortunately, it seems distribution packages (at least those for Ubuntu) are still stuck on 1.0.0-rc23 (Oct 2014).
+>> Are there plans to update these?
+> 
+> I could ping them, but I have already found a bug.  I'll see if I can fix 
+> it by Monday.
+I found a whitespace placement "regression" too. But I didn't get the
+time yet to create a simple test case for that. Are you interested in
+that too? I can do it only tonight as I have it on my home desktop only.
 
-I'll repost this series with a the addition of one extra patch that
-adds a respective devres helper pcim_iomap_wc().
-
- Luis
+bye
+	michael
