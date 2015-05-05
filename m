@@ -1,55 +1,42 @@
-From: mcgrof@suse.com (Luis R. Rodriguez)
-Date: Tue, 5 May 2015 02:22:28 +0200
-Subject: [Cocci] [PATCH v3 00/17] framebuffer: simple conversions to
- arch_phys_wc_add()
-In-Reply-To: <55474AFE.5040605@ti.com>
-References: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
- <CAB=NE6WhVUa-seXOWeY+ELY5v=Rt_6DBfr==GKjP7AH3CTWJAQ@mail.gmail.com>
- <55474AFE.5040605@ti.com>
-Message-ID: <20150505002228.GF5622@wotan.suse.de>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Tue, 05 May 2015 14:32:59 +0200
+Subject: [Cocci] [PATCH RFC] Coccinelle: Check for return not matching
+ function signature
+In-Reply-To: <1430820761-28122-1-git-send-email-hofrat@osadl.org>
+References: <1430820761-28122-1-git-send-email-hofrat@osadl.org>
+Message-ID: <5548B87B.4060103@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, May 04, 2015 at 01:33:34PM +0300, Tomi Valkeinen wrote:
-> On 29/04/15 22:18, Luis R. Rodriguez wrote:
-> > On Tue, Apr 21, 2015 at 1:16 PM, Luis R. Rodriguez
-> > <mcgrof@do-not-panic.com> wrote:
-> >> From: "Luis R. Rodriguez" <mcgrof@suse.com>
-> >>
-> >> This series addresses simple changes to framebuffer drivers to use
-> >> arch_phys_wc_add() and ioremap_wc() as well as fixing gbefb to add
-> >> missing mtrr_del() calls. These changes are pretty straight forward.
-> >>
-> >> Luis R. Rodriguez (17):
-> >>   video: fbdev: radeonfb: use arch_phys_wc_add() and ioremap_wc()
-> >>   video: fbdev: gbefb: add missing mtrr_del() calls
-> >>   video: fbdev: gbefb: use arch_phys_wc_add() and devm_ioremap_wc()
-> >>   video: fbdev: intelfb: use arch_phys_wc_add() and ioremap_wc()
-> >>   video: fbdev: matrox: use arch_phys_wc_add() and ioremap_wc()
-> >>   video: fbdev: neofb: use arch_phys_wc_add() and ioremap_wc()
-> >>   video: fbdev: nvidia: use arch_phys_wc_add() and ioremap_wc()
-> >>   video: fbdev: savagefb: use arch_phys_wc_add() and ioremap_wc()
-> >>   video: fbdev: sisfb: use arch_phys_wc_add() and ioremap_wc()
-> >>   video: fbdev: aty: use arch_phys_wc_add() and ioremap_wc()
-> >>   video: fbdev: i810: use arch_phys_wc_add() and ioremap_wc()
-> >>   video: fbdev: pm2fb: use arch_phys_wc_add() and ioremap_wc()
-> >>   video: fbdev: pm3fb: use arch_phys_wc_add() and ioremap_wc()
-> >>   video: fbdev: rivafb: use arch_phys_wc_add() and ioremap_wc()
-> >>   video: fbdev: tdfxfb: use arch_phys_wc_add() and ioremap_wc()
-> >>   video: fbdev: atmel_lcdfb: use ioremap_wc() for framebuffer
-> >>   video: fbdev: geode gxfb: use ioremap_wc() for framebuffer
-> > 
-> > Hey folks, these are all pretty straight forward, can anyone take them?
-> 
-> I can take these to fbdev tree.
+> Check if the signature of a function and the return value type match.
 
-That'd be great!
+Is this a task that is usually performed by a compiler?
 
-> Unfortunately I'm not familiar with x86
-> nor mtrr, so I can't really say much about the patches themselves.
 
-Boris or Andy, I think you guy are more active from the x86 side,
-a secondary Reviewed-by on this series other my own SOB would be
-appreciated.
+> In many cases this mismatch will have no side-effects
+> but in some cases it may lead to hard to locate problems
 
- Luis
+It is another software development challenge to find concrete
+open issues there.
+
+
+> - and for readability and code understanding it is also helpful
+> when types match.
+
+How would you like to check for compatible data types here?
+
+
+> The output is a bit lengthy - not sure if that is too much
+> but it seemed useful to me to see the non-matching types explicitly
+> in the warning message.
+
+How do you think about to import the result list into a database table?
+
+
+> +if T1 != T2:
+> +   print "%s:%s,%s WARNING: return of wrong type (%s != %s)" % (p[0].file,fn,p[0].line,T1,T2)
+
+Is such a check a bit too simple?
+
+Regards,
+Markus
