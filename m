@@ -1,84 +1,19 @@
-From: der.herr@hofr.at (Nicholas Mc Guire)
-Date: Tue, 5 May 2015 18:00:35 +0200
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Tue, 05 May 2015 18:25:34 +0200
 Subject: [Cocci] [PATCH RFC] Coccinelle: Check for return not matching
-	function	signature
+ function signature
 In-Reply-To: <alpine.DEB.2.10.1505051633550.2640@hadrien>
 References: <1430820761-28122-1-git-send-email-hofrat@osadl.org>
  <alpine.DEB.2.10.1505051633550.2640@hadrien>
-Message-ID: <20150505160035.GB9724@opentech.at>
+Message-ID: <5548EEFE.8070106@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, 05 May 2015, Julia Lawall wrote:
-
-> > + at match@
-> > +identifier f,ret;
-> > +position p;
-> > +type T1,T2;
-> > +@@
-> > +
-> > +T1 f(...) {
-> > + T2 ret;
-> > +<+...
-> > +* return at p ret
-> > +;
-> > +...+>
-> > +}
-> 
-> Given the number of results, it may seem surprising, but I think that you
-> are actually missing a lot of results.  Becaue you require that ret be the
-> first variable that is declared in the function.  Also, you require that
-> ret be an identifier.  If you want to keep the restriction about being an
-> identifier, you could put:
-> 
-> @match exists@
-> type T1,T2;
-> idexpression T2 ret;
-> identifier f;
-> @@
-> 
-> T1 f(...) {
-> <+...
-> return at p ret;
-> ...+>
-> }
->
-
-this is depressing - I now like by wrong solution even more ...
-unfortunately you are right - I missed most - its now at 25146
- 
-> If you don't care about the identifier constraint, then you can just put
-> T2 ret.  Note also the addition of exists.  There is a problem if only one
-> path has this property.  Another thing you can do is the following:
-> 
-> @match exists@
-> type T1,T2;
-  idexpression T1 ok;
-> idexpression T2 ret;
-> identifier f;
-  position p;
-> @@
-> 
-> T1 f(...) {
-> <+...
-> (
-> return ok;
-> |
-> return at p ret;
-> )
-> ...+>
-> }
-> 
 > Then Coccinelle will find the cases where the types are wrong, rather than
 > requiring a test in python.
-> 
-> (I haven't tested any of this)
 
-also works - I had naively expected this to be faster - but it does not
-seem to be.
+Do you need a minus character in the first text column of the SmPL scripts then
+to mark corresponding update candidates (instead of the mentioned warning printing)?
 
-will check results did not expect 10% of the kernel functions
-to have missmatching return types in atleast one of their paths.
-
-thx!
-hofrat
+Regards,
+Markus
