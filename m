@@ -1,40 +1,31 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 06 May 2015 09:15:56 +0200
-Subject: [Cocci] [PATCH RFC] Coccinelle: Check for return not matching
- function signature
-In-Reply-To: <1430820761-28122-1-git-send-email-hofrat@osadl.org>
-References: <1430820761-28122-1-git-send-email-hofrat@osadl.org>
-Message-ID: <5549BFAC.2010609@users.sourceforge.net>
+Date: Wed, 06 May 2015 15:45:23 +0200
+Subject: [Cocci] [patch 119/197] scripts/coccinelle/free: Delete NULL
+ test before freeing functions
+In-Reply-To: <alpine.DEB.2.02.1408091028520.2016@localhost6.localdomain6>
+References: <53e53fd1.zO3IbUqJ421c7VXf%akpm@linux-foundation.org>
+ <53E5DA60.90902@users.sourceforge.net>
+ <alpine.DEB.2.02.1408091028520.2016@localhost6.localdomain6>
+Message-ID: <554A1AF3.9010802@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> +virtual context
-> +virtual org
-> +virtual report
+>>> + at r depends on context || report || org @
+>>> +expression E;
+>>> +position p;
+>>> +@@
+>>> +
+>>> +* if (E)
+>>> +*	\(kfree at p\|debugfs_remove at p\|debugfs_remove_recursive at p\|usb_free_urb\)(E);
+>>
+>> How do you think about to add the construct "@p" also behind the function name
+>> "usb_free_urb"?
+> 
+> Yes, that would be needed, thanks.  Also, it was recently suggested to add 
+> of_node_put to the list of things that are checked for.
 
-Where do you want to reuse these variables in your SmPL scripts?
-
-
-> + at match@
-> +identifier f,ret;
-> +position p;
-> +type T1,T2;
-> +@@
-> +
-> +T1 f(...) {
-> + T2 ret;
-
-Will it be more helpful to mark only such variable declarations
-where the specified data type should be reconsidered
-by a minus character or an asterisk (instead of the following
-return statement)?
-
-> +<+...
-> +* return at p ret
-> +;
-> +...+>
-> +}
-
+Would you like to achieve further improvements for this approach?
+https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable.git/tree/scripts/coccinelle/free/ifnullfree.cocci?id=refs/tags/v4.0.1#n34
 
 Regards,
 Markus
