@@ -1,23 +1,40 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 5 May 2015 23:46:41 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 06 May 2015 09:15:56 +0200
 Subject: [Cocci] [PATCH RFC] Coccinelle: Check for return not matching
  function signature
-In-Reply-To: <5548EEFE.8070106@users.sourceforge.net>
+In-Reply-To: <1430820761-28122-1-git-send-email-hofrat@osadl.org>
 References: <1430820761-28122-1-git-send-email-hofrat@osadl.org>
- <alpine.DEB.2.10.1505051633550.2640@hadrien>
- <5548EEFE.8070106@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1505052346220.2915@hadrien>
+Message-ID: <5549BFAC.2010609@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, 5 May 2015, SF Markus Elfring wrote:
+> +virtual context
+> +virtual org
+> +virtual report
 
-> > Then Coccinelle will find the cases where the types are wrong, rather than
-> > requiring a test in python.
->
-> Do you need a minus character in the first text column of the SmPL scripts then
-> to mark corresponding update candidates (instead of the mentioned warning printing)?
+Where do you want to reuse these variables in your SmPL scripts?
 
-He has a *, as he should.
 
-julia
+> + at match@
+> +identifier f,ret;
+> +position p;
+> +type T1,T2;
+> +@@
+> +
+> +T1 f(...) {
+> + T2 ret;
+
+Will it be more helpful to mark only such variable declarations
+where the specified data type should be reconsidered
+by a minus character or an asterisk (instead of the following
+return statement)?
+
+> +<+...
+> +* return at p ret
+> +;
+> +...+>
+> +}
+
+
+Regards,
+Markus
