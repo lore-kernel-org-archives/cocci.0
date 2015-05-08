@@ -1,23 +1,55 @@
-From: haohaiziround@hotmail.com (ZhouYuan)
-Date: Thu, 7 May 2015 10:32:46 +0800
-Subject: [Cocci] Question about the use of "...when !=" in SmPL
-Message-ID: <BAY181-W739E92CD2131317A21ED42B8DF0@phx.gbl>
+From: festevam@gmail.com (Fabio Estevam)
+Date: Fri, 8 May 2015 20:12:28 -0300
+Subject: [Cocci] Installing Coccinelle 1.0.0 on Ubuntu 14.04
+Message-ID: <CAOMZO5DOr4Nz4gKkvkVKak3puk_Savmt3YmuDdnctufmixoYgg@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 Hi,
-I have met many problems when I try to use the clause of "when".
-For example, I want to check whether there is an default statement in switch, I wrote the Semantic Patch as following: 
-@rule at function F;position p;expression E, E1;statement S, S1;@@F at p (...){switch (E) {...when != default: S}}
-@script: python at p<<rule.p;@@print p[0].file, p[0].line
-and I got the result after running it:
-Fatal error: exception Failure("minus: parse error:  = File "ex7.cocci", line 9, column 0,  charpos = 93    around = '...', whole content = ...when != default: S")
-Also, another example can be witnessed here. I wrote another patch to check whether there is an "else" after  "if" statement:
-@rule534 at function F;position p;statement S1, S2;@@F at p (...){if (...) S1...when != else S2}
-But i also got the same "minus: parse error"@the line of when.
-I would be so appreciated if someone could give me some suggestions about what is wrong in my Patch and how to use when correctly.
-Thank you so much!
-Best regards,Yuan  		 	   		  
--------------- next part --------------
-An HTML attachment was scrubbed...
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20150507/d047f761/attachment.html>
+
+I am trying to install Coccinelle 1.0.0 (retrieved from the git) on a
+Ubuntu 14.04 PC and I am getting the following error:
+
+make[4]: Entering directory `/home/fabio/coccinelle'
+make[5]: Entering directory `/home/fabio/coccinelle/bundles/parmap'
+cd parmap-1.0-rc5-patched && \
+      make && \
+      cd ..
+make[6]: Entering directory
+`/home/fabio/coccinelle/bundles/parmap/parmap-1.0-rc5-patched'
+/usr/bin/ocamlbuild -j 10 -use-ocamlfind  parmap.cma  parmap.cmxa
+parmap.cmxs parmap.a
+Finished, 1 target (0 cached) in 00:00:00.
+Finished, 23 targets (0 cached) in 00:00:00.
+make[6]: Leaving directory
+`/home/fabio/coccinelle/bundles/parmap/parmap-1.0-rc5-patched'
+mv parmap-1.0-rc5-patched/_build/* .
+make[5]: Leaving directory `/home/fabio/coccinelle/bundles/parmap'
+make[4]: Leaving directory `/home/fabio/coccinelle'
+make[4]: Entering directory `/home/fabio/coccinelle'
+make[5]: Entering directory `/home/fabio/coccinelle/commons'
+make[5]: Nothing to be done for `all'.
+make[5]: Leaving directory `/home/fabio/coccinelle/commons'
+make[4]: Leaving directory `/home/fabio/coccinelle'
+make[4]: Entering directory `/home/fabio/coccinelle'
+make[5]: Entering directory `/home/fabio/coccinelle/globals'
+/usr/bin/ocamlc.opt -g  -I ../commons -I /usr/lib/ocaml/pcre -c regexp_pcre.ml
+File "./regexp_pcre.ml", line 22, characters 32-43:
+Error: Unbound module Pcre
+make[5]: *** [regexp_pcre.cmo] Error 2
+make[5]: Leaving directory `/home/fabio/coccinelle/globals'
+make[4]: *** [globals.all] Error 2
+make[4]: Leaving directory `/home/fabio/coccinelle'
+make[3]: *** [subdirs.all] Error 1
+make[3]: Leaving directory `/home/fabio/coccinelle'
+make[2]: *** [byte] Error 2
+make[2]: Leaving directory `/home/fabio/coccinelle'
+make[1]: *** [all-dev] Error 2
+make[1]: Leaving directory `/home/fabio/coccinelle'
+make: *** [all] Error 2
+
+Any ideas on how to solve this?
+
+Thanks,
+
+Fabio Estevam
