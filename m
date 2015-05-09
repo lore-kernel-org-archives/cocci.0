@@ -1,74 +1,41 @@
-From: der.herr@hofr.at (Nicholas Mc Guire)
-Date: Sat, 9 May 2015 09:47:40 +0200
-Subject: [Cocci] Question about the use of "...when !=" in SmPL
-In-Reply-To: <BAY181-W739E92CD2131317A21ED42B8DF0@phx.gbl>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sat, 09 May 2015 10:10:34 +0200
+Subject: [Cocci] Source code analysis around "switch"
+In-Reply-To: <20150509074740.GB9628@opentech.at>
 References: <BAY181-W739E92CD2131317A21ED42B8DF0@phx.gbl>
-Message-ID: <20150509074740.GB9628@opentech.at>
+ <20150509074740.GB9628@opentech.at>
+Message-ID: <554DC0FA.4010904@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 07 May 2015, ZhouYuan wrote:
-
->    Hi,
->    I have met many problems when I try to use the clause of "when".
->    For example, I want to check whether there is an default statement in
->    switch, I wrote the Semantic Patch as following:
+> @hascase@
+> position p;
+> @@
+> switch at p (...)
+> {
+>  case...:...
+> }
 > 
->      @rule@
->      function F;
->      position p;
->      expression E, E1;
->      statement S, S1;
->      @@
->      F at p (...){
->      switch (E) {
->      ...when != default: S
->      }
->      }
->      @script: python@
->      p<<rule.p;
->      @@
->      print p[0].file, p[0].line
+> @hasdefault@
+> @@
+> switch (...)
+> {
+>  default:...
+> }
 > 
->    and I got the result after running it:
+> @script: python depends on hascase && !hasdefault@
+> p<<hascase.p;
+> @@
+> print "%s %s" % (p[0].file, p[0].line)
 > 
->      Fatal error: exception Failure("minus: parse error:
->       = File "ex7.cocci", line 9, column 0,  charpos = 93
->          around = '...', whole content = ...when != default: S
->      ")
-> 
->    Also, another example can be witnessed here. I wrote another patch to
->    check whether there is an "else" after  "if" statement:
->
-probably there is a simpler way - the "solution" I used was
-2 rules - one that scans for case statements in the switch 
-and one that scans for default statements in a switch body
-and then condition the python on hascase && !hasdefault
+> there likely is a simpler solution than this though.
 
-virtual report                                                                  
-virtual org
+I find such a SmPL approach incomplete.
+Is the shown condition expression fragile and questionable?
 
-@hascase@
-position p;
-@@
-switch at p (...)
-{
- case...:...
-}
+Do you need to work more with position variables there
+so that only really appropriate source code places
+will be combined and then checked?
 
-@hasdefault@
-@@
-switch (...)
-{
- default:...
-}
-
-@script: python depends on hascase && !hasdefault@
-p<<hascase.p;
-@@
-print "%s %s" % (p[0].file, p[0].line)
-
-there likely is a simpler solution than this though.
-
-thx!
-hofrat
+Regards,
+Markus
