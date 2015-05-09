@@ -1,15 +1,22 @@
 From: festevam@gmail.com (Fabio Estevam)
-Date: Sat,  9 May 2015 17:09:29 -0300
-Subject: [Cocci] [PATCH v2 3/4] coccinelle: ifaddr: Fix the sentence
+Date: Sat,  9 May 2015 17:09:30 -0300
+Subject: [Cocci] [PATCH v2 4/4] coccinelle: simple_open: Use imperative mood
 In-Reply-To: <1431202170-18055-1-git-send-email-festevam@gmail.com>
 References: <1431202170-18055-1-git-send-email-festevam@gmail.com>
-Message-ID: <1431202170-18055-3-git-send-email-festevam@gmail.com>
+Message-ID: <1431202170-18055-4-git-send-email-festevam@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: Fabio Estevam <fabio.estevam@freescale.com>
 
-Make the sentence sensible.
+According to Documentation/SubmittingPatches:
+
+"Describe your changes in imperative mood, e.g. "make xyzzy do frotz"
+instead of "[This patch] makes xyzzy do frotz" or "[I] changed xyzzy
+to do frotz", as if you are giving orders to the codebase to change
+its behaviour."
+
+So do as recommended.
 
 Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
 Acked-by: Julia Lawall <julia.lawall@lip6.fr>
@@ -17,19 +24,20 @@ Acked-by: Julia Lawall <julia.lawall@lip6.fr>
 Changes since v1:
 - None
 
- scripts/coccinelle/misc/ifaddr.cocci | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ scripts/coccinelle/api/simple_open.cocci | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/scripts/coccinelle/misc/ifaddr.cocci b/scripts/coccinelle/misc/ifaddr.cocci
-index 8aebd18..c2663c6 100644
---- a/scripts/coccinelle/misc/ifaddr.cocci
-+++ b/scripts/coccinelle/misc/ifaddr.cocci
-@@ -1,5 +1,4 @@
--/// the address of a variable or field is non-zero is likely always to bo
--/// non-zero
-+/// The address of a variable or field is likely always to be non-zero.
+diff --git a/scripts/coccinelle/api/simple_open.cocci b/scripts/coccinelle/api/simple_open.cocci
+index b67e174..bd1a2a4 100644
+--- a/scripts/coccinelle/api/simple_open.cocci
++++ b/scripts/coccinelle/api/simple_open.cocci
+@@ -1,5 +1,5 @@
+-/// This removes an open coded simple_open() function
+-/// and replaces file operations references to the function
++/// Remove an open coded simple_open() function
++/// and replace file operations references to the function
+ /// with simple_open() instead.
  ///
  // Confidence: High
- // Copyright: (C) 2012 Julia Lawall, INRIA/LIP6.  GPLv2.
 -- 
 1.9.1
