@@ -1,14 +1,12 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 9 May 2015 21:56:10 +0200 (CEST)
-Subject: [Cocci] [PATCH 4/4] coccinelle: simple_open: Use imperative mood
-In-Reply-To: <1431200930-16961-4-git-send-email-festevam@gmail.com>
+Date: Sat, 9 May 2015 21:56:38 +0200 (CEST)
+Subject: [Cocci] [PATCH 2/4] coccinelle: returnvar: Use imperative mood
+In-Reply-To: <1431200930-16961-2-git-send-email-festevam@gmail.com>
 References: <1431200930-16961-1-git-send-email-festevam@gmail.com>
- <1431200930-16961-4-git-send-email-festevam@gmail.com>
-Message-ID: <alpine.DEB.2.02.1505092155560.2059@localhost6.localdomain6>
+ <1431200930-16961-2-git-send-email-festevam@gmail.com>
+Message-ID: <alpine.DEB.2.02.1505092156280.2059@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
-
-
 
 On Sat, 9 May 2015, Fabio Estevam wrote:
 
@@ -28,21 +26,20 @@ On Sat, 9 May 2015, Fabio Estevam wrote:
 Acked-by: Julia Lawall <julia.lawall@lip6.fr>
 
 > ---
->  scripts/coccinelle/api/simple_open.cocci | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  scripts/coccinelle/misc/returnvar.cocci | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/scripts/coccinelle/api/simple_open.cocci b/scripts/coccinelle/api/simple_open.cocci
-> index b67e174..bd1a2a4 100644
-> --- a/scripts/coccinelle/api/simple_open.cocci
-> +++ b/scripts/coccinelle/api/simple_open.cocci
+> diff --git a/scripts/coccinelle/misc/returnvar.cocci b/scripts/coccinelle/misc/returnvar.cocci
+> index 605955a..d8286ef 100644
+> --- a/scripts/coccinelle/misc/returnvar.cocci
+> +++ b/scripts/coccinelle/misc/returnvar.cocci
 > @@ -1,5 +1,5 @@
-> -/// This removes an open coded simple_open() function
-> -/// and replaces file operations references to the function
-> +/// Remove an open coded simple_open() function
-> +/// and replace file operations references to the function
->  /// with simple_open() instead.
 >  ///
->  // Confidence: High
+> -/// Removes unneeded variable used to store return value.
+> +/// Remove unneeded variable used to store return value.
+>  ///
+>  // Confidence: Moderate
+>  // Copyright: (C) 2012 Peter Senna Tschudin, INRIA/LIP6.  GPLv2.
 > -- 
 > 1.9.1
 > 
