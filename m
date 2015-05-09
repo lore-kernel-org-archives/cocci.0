@@ -1,55 +1,82 @@
-From: der.herr@hofr.at (Nicholas Mc Guire)
-Date: Sat, 9 May 2015 10:28:04 +0200
-Subject: [Cocci] Source code analysis around "switch"
-In-Reply-To: <554DC0FA.4010904@users.sourceforge.net>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sat, 9 May 2015 10:36:28 +0200 (CEST)
+Subject: [Cocci] Question about the use of "...when !=" in SmPL
+In-Reply-To: <20150509074740.GB9628@opentech.at>
 References: <BAY181-W739E92CD2131317A21ED42B8DF0@phx.gbl>
- <20150509074740.GB9628@opentech.at> <554DC0FA.4010904@users.sourceforge.net>
-Message-ID: <20150509082804.GA13329@opentech.at>
+ <20150509074740.GB9628@opentech.at>
+Message-ID: <alpine.DEB.2.02.1505091035380.2042@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sat, 09 May 2015, SF Markus Elfring wrote:
 
-> > @hascase@
-> > position p;
-> > @@
-> > switch at p (...)
-> > {
-> >  case...:...
-> > }
-> > 
-> > @hasdefault@
-> > @@
-> > switch (...)
-> > {
-> >  default:...
-> > }
-> > 
-> > @script: python depends on hascase && !hasdefault@
-> > p<<hascase.p;
-> > @@
-> > print "%s %s" % (p[0].file, p[0].line)
-> > 
-> > there likely is a simpler solution than this though.
+
+On Sat, 9 May 2015, Nicholas Mc Guire wrote:
+
+> On Thu, 07 May 2015, ZhouYuan wrote:
 > 
-> I find such a SmPL approach incomplete.
-
-What is the incompleteness - or what case do you think is unhandled ?
-
-> Is the shown condition expression fragile and questionable?
+> >    Hi,
+> >    I have met many problems when I try to use the clause of "when".
+> >    For example, I want to check whether there is an default statement in
+> >    switch, I wrote the Semantic Patch as following:
+> > 
+> >      @rule@
+> >      function F;
+> >      position p;
+> >      expression E, E1;
+> >      statement S, S1;
+> >      @@
+> >      F at p (...){
+> >      switch (E) {
+> >      ...when != default: S
+> >      }
+> >      }
+> >      @script: python@
+> >      p<<rule.p;
+> >      @@
+> >      print p[0].file, p[0].line
+> > 
+> >    and I got the result after running it:
+> > 
+> >      Fatal error: exception Failure("minus: parse error:
+> >       = File "ex7.cocci", line 9, column 0,  charpos = 93
+> >          around = '...', whole content = ...when != default: S
+> >      ")
+> > 
+> >    Also, another example can be witnessed here. I wrote another patch to
+> >    check whether there is an "else" after  "if" statement:
+> >
+> probably there is a simpler way - the "solution" I used was
+> 2 rules - one that scans for case statements in the switch 
+> and one that scans for default statements in a switch body
+> and then condition the python on hascase && !hasdefault
 > 
-> Do you need to work more with position variables there
-> so that only really appropriate source code places
-> will be combined and then checked?
->
-why ? hascase has a position variable in it and only if
-that rule applied is the python script executed - and if there
-was a default then hasdefault matched and so the python script
-will not be executed when hasdefault matched => only switch
-statements with no default are reported. Atleast it sems to work
-for me - but as noted there well may be a better solution and
-maybe its even incomplete - but I do not see that its a missing
-positional variable here.
+> virtual report                                                                  
+> virtual org
+> 
+> @hascase@
+> position p;
+> @@
+> switch at p (...)
+> {
+>  case...:...
+> }
+> 
+> @hasdefault@
+> @@
+> switch (...)
+> {
+>  default:...
+> }
+> 
+> @script: python depends on hascase && !hasdefault@
+> p<<hascase.p;
+> @@
+> print "%s %s" % (p[0].file, p[0].line)
+> 
+> there likely is a simpler solution than this though.
 
-thx!
-hofrat 
+No given the limitations on switch, I think that this is the only 
+solution.  When I tried something like this, it gave me all switched, 
+though.  Not sure why.
+
+julia
