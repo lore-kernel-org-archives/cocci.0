@@ -1,42 +1,43 @@
-From: festevam@gmail.com (Fabio Estevam)
-Date: Sat,  9 May 2015 17:09:28 -0300
-Subject: [Cocci] [PATCH v2 2/4] coccinelle: returnvar: Use imperative mood
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sat, 9 May 2015 22:15:48 +0200 (CEST)
+Subject: [Cocci] [PATCH v2 1/4] coccinelle: pm_runtime: Insert blank line
 In-Reply-To: <1431202170-18055-1-git-send-email-festevam@gmail.com>
 References: <1431202170-18055-1-git-send-email-festevam@gmail.com>
-Message-ID: <1431202170-18055-2-git-send-email-festevam@gmail.com>
+Message-ID: <alpine.DEB.2.02.1505092215300.2059@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-From: Fabio Estevam <fabio.estevam@freescale.com>
+On Sat, 9 May 2015, Fabio Estevam wrote:
 
-According to Documentation/SubmittingPatches:
+> From: Fabio Estevam <fabio.estevam@freescale.com>
+> 
+> Insert a blank line in order to improve the readability of the
+> generated patch and also make it consistent with the other
+> .cocci files.
+> 
+> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
 
-"Describe your changes in imperative mood, e.g. "make xyzzy do frotz"
-instead of "[This patch] makes xyzzy do frotz" or "[I] changed xyzzy
-to do frotz", as if you are giving orders to the codebase to change
-its behaviour."
-
-So do as recommended.
-
-Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
 Acked-by: Julia Lawall <julia.lawall@lip6.fr>
----
-Changes since v1:
-- None
 
- scripts/coccinelle/misc/returnvar.cocci | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/scripts/coccinelle/misc/returnvar.cocci b/scripts/coccinelle/misc/returnvar.cocci
-index 605955a..d8286ef 100644
---- a/scripts/coccinelle/misc/returnvar.cocci
-+++ b/scripts/coccinelle/misc/returnvar.cocci
-@@ -1,5 +1,5 @@
- ///
--/// Removes unneeded variable used to store return value.
-+/// Remove unneeded variable used to store return value.
- ///
- // Confidence: Moderate
- // Copyright: (C) 2012 Peter Senna Tschudin, INRIA/LIP6.  GPLv2.
--- 
-1.9.1
+> ---
+> Changes since v1:
+> - Replace // with /// as suggested by Julia
+> 
+>  scripts/coccinelle/api/pm_runtime.cocci | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/scripts/coccinelle/api/pm_runtime.cocci b/scripts/coccinelle/api/pm_runtime.cocci
+> index f01789e..b7042d0 100644
+> --- a/scripts/coccinelle/api/pm_runtime.cocci
+> +++ b/scripts/coccinelle/api/pm_runtime.cocci
+> @@ -1,5 +1,5 @@
+>  /// Make sure pm_runtime_* calls does not use unnecessary IS_ERR_VALUE
+> -//
+> +///
+>  // Keywords: pm_runtime
+>  // Confidence: Medium
+>  // Copyright (C) 2013 Texas Instruments Incorporated - GPLv2.
+> -- 
+> 1.9.1
+> 
+> 
