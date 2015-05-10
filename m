@@ -1,43 +1,19 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 9 May 2015 22:15:48 +0200 (CEST)
-Subject: [Cocci] [PATCH v2 1/4] coccinelle: pm_runtime: Insert blank line
-In-Reply-To: <1431202170-18055-1-git-send-email-festevam@gmail.com>
-References: <1431202170-18055-1-git-send-email-festevam@gmail.com>
-Message-ID: <alpine.DEB.2.02.1505092215300.2059@localhost6.localdomain6>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sun, 10 May 2015 09:29:54 +0200
+Subject: [Cocci] Data provided by position variables
+In-Reply-To: <alpine.DEB.2.02.1505091845390.2077@localhost6.localdomain6>
+References: <BAY181-W739E92CD2131317A21ED42B8DF0@phx.gbl>
+ <20150509140941.GA13643@opentech.at>
+ <alpine.DEB.2.02.1505091845390.2077@localhost6.localdomain6>
+Message-ID: <554F08F2.5070504@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sat, 9 May 2015, Fabio Estevam wrote:
+> A position variable has a field current_element,
+> which is the name ofthe containing function.
 
-> From: Fabio Estevam <fabio.estevam@freescale.com>
-> 
-> Insert a blank line in order to improve the readability of the
-> generated patch and also make it consistent with the other
-> .cocci files.
-> 
-> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+Would you like to extend descriptions in the SmPL manuals
+for the corresponding data structures?
 
-Acked-by: Julia Lawall <julia.lawall@lip6.fr>
-
-> ---
-> Changes since v1:
-> - Replace // with /// as suggested by Julia
-> 
->  scripts/coccinelle/api/pm_runtime.cocci | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/scripts/coccinelle/api/pm_runtime.cocci b/scripts/coccinelle/api/pm_runtime.cocci
-> index f01789e..b7042d0 100644
-> --- a/scripts/coccinelle/api/pm_runtime.cocci
-> +++ b/scripts/coccinelle/api/pm_runtime.cocci
-> @@ -1,5 +1,5 @@
->  /// Make sure pm_runtime_* calls does not use unnecessary IS_ERR_VALUE
-> -//
-> +///
->  // Keywords: pm_runtime
->  // Confidence: Medium
->  // Copyright (C) 2013 Texas Instruments Incorporated - GPLv2.
-> -- 
-> 1.9.1
-> 
-> 
+Regards,
+Markus
