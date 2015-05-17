@@ -1,18 +1,90 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 17 May 2015 17:05:13 +0200
-Subject: [Cocci]
-	=?windows-1252?q?Support_for_=22do_=7B_=85_=7D_while=22?=
-	=?windows-1252?q?=3F?=
-In-Reply-To: <alpine.DEB.2.02.1505171511410.2077@localhost6.localdomain6>
-References: <20150517061803.GA32427@opentech.at> <20150517120807.GA13779@pema>
- <alpine.DEB.2.02.1505171511410.2077@localhost6.localdomain6>
-Message-ID: <5558AE29.6060407@users.sourceforge.net>
+From: dmitry.kalinkin@gmail.com (Dmitry Kalinkin)
+Date: Sun, 17 May 2015 03:06:27 +0300
+Subject: [Cocci] [PATCH] coccinelle: api: add vma_pages.cocci
+Message-ID: <1431821187-21648-1-git-send-email-dmitry.kalinkin@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> do while is not supported.
+This semantic patch replaces explicit computations of vma page count
+with explicit function call.
 
-How will the support for this programming language construct evolve?
+Signed-off-by: Dmitry Kalinkin <dmitry.kalinkin@gmail.com>
+---
+ scripts/coccinelle/api/vma_pages.cocci | 66 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 66 insertions(+)
+ create mode 100644 scripts/coccinelle/api/vma_pages.cocci
 
-Regards,
-Markus
+diff --git a/scripts/coccinelle/api/vma_pages.cocci b/scripts/coccinelle/api/vma_pages.cocci
+new file mode 100644
+index 0000000..2b7a748
+--- /dev/null
++++ b/scripts/coccinelle/api/vma_pages.cocci
+@@ -0,0 +1,66 @@
++/// Use vma_pages function on vma object instead of explicit computation.
++//  Confidence: High
++//  Keywords: vma_pages vma
++
++//  Based on resource_size.cocci
++
++virtual context
++virtual patch
++virtual org
++virtual report
++
++//----------------------------------------------------------
++//  For context mode
++//----------------------------------------------------------
++
++ at r_context depends on context && !patch && !org@
++struct vm_area_struct *vma;
++@@
++
++* (vma->vm_end - vma->vm_start) >> PAGE_SHIFT
++
++//----------------------------------------------------------
++//  For patch mode
++//----------------------------------------------------------
++
++ at r_patch1 depends on !context && patch && !org@
++struct vm_area_struct *vma;
++@@
++
++- ((vma->vm_end - vma->vm_start) >> PAGE_SHIFT)
+++ vma_pages(vma)
++
++ at r_patch2 depends on !context && patch && !org@
++struct vm_area_struct *vma;
++@@
++
++- (vma->vm_end - vma->vm_start) >> PAGE_SHIFT
+++ vma_pages(vma)
++
++//----------------------------------------------------------
++//  For org mode
++//----------------------------------------------------------
++
++ at r_org depends on !context && !patch && (org || report)@
++struct vm_area_struct *vma;
++position p;
++@@
++
++  (vma->vm_end at p - vma->vm_start) >> PAGE_SHIFT
++
++ at script:python depends on report@
++p << r_org.p;
++x << r_org.vma;
++@@
++
++msg="ERROR: Missing vma_pages with %s" % (x)
++coccilib.report.print_report(p[0], msg)
++
++@script:python depends on org@
++p << r_org.p;
++x << r_org.vma;
++@@
++
++msg="ERROR with %s" % (x)
++msg_safe=msg.replace("[","@(").replace("]",")")
++coccilib.org.print_todo(p[0], msg_safe)
+-- 
+1.8.3.1
