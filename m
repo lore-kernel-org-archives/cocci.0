@@ -1,95 +1,104 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 17 May 2015 22:25:43 +0200 (CEST)
-Subject: [Cocci] [PATCHv2] coccinelle: api: add vma_pages.cocci
-In-Reply-To: <1431879810-20920-1-git-send-email-dmitry.kalinkin@gmail.com>
-References: <alpine.DEB.2.02.1505171526430.2077@localhost6.localdomain6>
- <1431879810-20920-1-git-send-email-dmitry.kalinkin@gmail.com>
-Message-ID: <alpine.DEB.2.02.1505172225270.2077@localhost6.localdomain6>
+Date: Tue, 19 May 2015 10:57:40 +0200 (CEST)
+Subject: [Cocci] [PATCH v2] Add coccinelle script that makes sure that
+ tables are NULL terminated
+In-Reply-To: <1431948540-8202-1-git-send-email-d.granat@samsung.com>
+References: <1425043313-15844-1-git-send-email-d.granat@samsung.com>
+ <1431948540-8202-1-git-send-email-d.granat@samsung.com>
+Message-ID: <alpine.DEB.2.10.1505191055550.2506@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+There is already a rule misc/of_table.cocci for the of_device_id case.  I
+think it would be better to extend that.
 
-Thanks!
+Also, rather than making an identifier name, it would be more efficient to
+put struct \(of_device_id \| i2c_device_id \| platform_device_id\) arr[] =
+...  The Coccinelle will only work on files that contain those
+identifiers.
 
-On Sun, 17 May 2015, Dmitry Kalinkin wrote:
+julia
 
-> This semantic patch replaces explicit computations of vma page count
-> with explicit function call.
-> 
-> Signed-off-by: Dmitry Kalinkin <dmitry.kalinkin@gmail.com>
+On Mon, 18 May 2015, Daniel Granat wrote:
+
+> Signed-off-by: Daniel Granat <d.granat@samsung.com>
 > ---
->  scripts/coccinelle/api/vma_pages.cocci | 60 ++++++++++++++++++++++++++++++++++
->  1 file changed, 60 insertions(+)
->  create mode 100644 scripts/coccinelle/api/vma_pages.cocci
-> 
-> diff --git a/scripts/coccinelle/api/vma_pages.cocci b/scripts/coccinelle/api/vma_pages.cocci
+>  scripts/coccinelle/misc/of_platform.cocci | 65 +++++++++++++++++++++++++++++++
+>  1 file changed, 65 insertions(+)
+>  create mode 100644 scripts/coccinelle/misc/of_platform.cocci
+>
+> diff --git a/scripts/coccinelle/misc/of_platform.cocci b/scripts/coccinelle/misc/of_platform.cocci
 > new file mode 100644
-> index 0000000..3e52e11
+> index 0000000..02c6195
 > --- /dev/null
-> +++ b/scripts/coccinelle/api/vma_pages.cocci
-> @@ -0,0 +1,60 @@
-> +///
-> +/// Use vma_pages function on vma object instead of explicit computation.
-> +///
-> +//  Confidence: High
-> +//  Keywords: vma_pages vma
-> +//  Comment: Based on resource_size.cocci
+> +++ b/scripts/coccinelle/misc/of_platform.cocci
+> @@ -0,0 +1,65 @@
+> +/// Make sure that tables are NULL terminated
+> +//
+> +// Keywords: _device_id
+> +// Confidence: Medium
+> +// Options: --include-headers
 > +
-> +virtual context
-> +virtual patch
-> +virtual org
 > +virtual report
+> +virtual patch
 > +
-> +//----------------------------------------------------------
-> +//  For context mode
-> +//----------------------------------------------------------
-> +
-> + at r_context depends on context && !patch && !org && !report@
-> +struct vm_area_struct *vma;
+> + at r depends on report@
+> +position p1;
+> +identifier var, arr;
+> +identifier name = {of_device_id, i2c_device_id, platform_device_id};
+> +expression E;
 > +@@
 > +
-> +* (vma->vm_end - vma->vm_start) >> PAGE_SHIFT
-> +
-> +//----------------------------------------------------------
-> +//  For patch mode
-> +//----------------------------------------------------------
-> +
-> + at r_patch depends on !context && patch && !org && !report@
-> +struct vm_area_struct *vma;
-> +@@
-> +
-> +- ((vma->vm_end - vma->vm_start) >> PAGE_SHIFT)
-> ++ vma_pages(vma)
-> +
-> +//----------------------------------------------------------
-> +//  For org mode
-> +//----------------------------------------------------------
-> +
-> + at r_org depends on !context && !patch && (org || report)@
-> +struct vm_area_struct *vma;
-> +position p;
-> +@@
-> +
-> +  (vma->vm_end at p - vma->vm_start) >> PAGE_SHIFT
+> +(
+> +struct name arr[] = {
+> +	...,
+> +	{
+> +	.var = E,
+> +	}
+> +	@p1
+> +};
+> +|
+> +struct name arr[] = {
+> +	...,
+> +	{ ..., var, ... },
+> +	@p1
+> +};
+> +)
 > +
 > + at script:python depends on report@
-> +p << r_org.p;
-> +x << r_org.vma;
+> +p1 << r.p1;
+> +arr << r.arr;
 > +@@
 > +
-> +msg="WARNING: Consider using vma_pages helper on %s" % (x)
-> +coccilib.report.print_report(p[0], msg)
+> +msg = "%s is not NULL terminated at line %s" % (arr, p1[0].line)
+> +coccilib.report.print_report(p1[0],msg)
 > +
-> + at script:python depends on org@
-> +p << r_org.p;
-> +x << r_org.vma;
+> + at p depends on patch@
+> +position p1;
+> +identifier var, arr;
+> +identifier name = {of_device_id, i2c_device_id, platform_device_id};
+> +expression E;
 > +@@
 > +
-> +msg="WARNING: Consider using vma_pages helper on %s" % (x)
-> +msg_safe=msg.replace("[","@(").replace("]",")")
-> +coccilib.org.print_todo(p[0], msg_safe)
-> -- 
-> 1.8.3.1
-> 
-> 
+> +(
+> +struct name arr[] = {
+> +	...,
+> +	{
+> +	.var = E,
+> +-	}
+> +	@p1
+> ++	},
+> ++	{},
+> +};
+> +|
+> +struct name arr[] = {
+> +	...,
+> +	{ ..., var, ... },
+> +	@p1
+> ++	{},
+> +};
+> +)
+> --
+> 1.9.1
+>
+>
