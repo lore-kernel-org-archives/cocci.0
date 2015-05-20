@@ -1,60 +1,38 @@
-From: vladimir_zapolskiy@mentor.com (Vladimir Zapolskiy)
-Date: Wed, 20 May 2015 23:35:16 +0300
-Subject: [Cocci] Matching from upper level struct
-Message-ID: <555CF004.5010400@mentor.com>
+From: mcgrof@suse.com (Luis R. Rodriguez)
+Date: Wed, 20 May 2015 13:54:22 -0700
+Subject: [Cocci] [PATCH v3 0/4] pci: add and use pci_ioremap_wc_bar()
+In-Reply-To: <20150519175310.GH23057@wotan.suse.de>
+References: <1429647634-17169-1-git-send-email-mcgrof@do-not-panic.com>
+ <CAB=NE6VYvd-Au58QRJprCquuvJkY9NYe1x8FmbW7qAhVrVE=QQ@mail.gmail.com>
+ <20150519175310.GH23057@wotan.suse.de>
+Message-ID: <CAB=NE6UsMMoPhkKof+VN7ZUCd81VxrwP9nqHDUj5Lr3DJLm3bA@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hello Julia,
+On Tue, May 19, 2015 at 10:53 AM, Luis R. Rodriguez <mcgrof@suse.com> wrote:
+> On Wed, Apr 29, 2015 at 02:08:47PM -0700, Luis R. Rodriguez wrote:
+>> On Tue, Apr 21, 2015 at 1:20 PM, Luis R. Rodriguez
+>> <mcgrof@do-not-panic.com> wrote:
+>> > From: "Luis R. Rodriguez" <mcgrof@suse.com>
+>> >
+>> > This series adds pci_ioremap_wc_bar() and makes use of it
+>> > on a few framebuffer device drivers.
+>> >
+>> > Luis R. Rodriguez (4):
+>> >   pci: add pci_ioremap_wc_bar()
+>> >   video: fbdev: i740fb: use arch_phys_wc_add() and pci_ioremap_wc_bar()
+>> >   video: fbdev: kyrofb: use arch_phys_wc_add() and pci_ioremap_wc_bar()
+>> >   video: fbdev: gxt4500: use pci_ioremap_wc_bar() for framebuffer
+>>
+>> Bjorn,
+>>
+>> any feedback on this series?
+>
+> Hey Bjorn, any feedback on this series ?
 
-please excuse me for a newbie question, I'm trying to find a way how to
-match an assignment done from embracing struct or union.
+I meant this series. Also Tomi, do I get your Acks for these as well?
+Since they depend on pci parts do you mind if we route them through
+the PCI tree? I'll poke you soon about another similar type of patch
+which has dependencies on another development tree.
 
-If you consider this C code sample:
-
-----8<----
-static void a(void) {};
-
-struct x {
-	void (*u)(void);
-};
-
-struct y {
-	struct x v;
-};
-
-struct x k = {
-	.u = a,
-};
-
-struct y l = {
-	.v = {
-		.u = a,
-	},
-};
-----8<----
-
-where "struct x" type is known and "struct y" may be arbitrary/unknown,
-and I would like to match both assignments.
-
-My na?ve rule finds only k.u assignment:
-
-----8<----
-@@
-struct x X;
-identifier value;
-@@
-
-* X.u = value;
-----8<----
-
-I believe it should not be a problem for me to get access to ".u", if I
-get ".v" identifier firstly, but here I encounter a problem, probably
-because "{ .u = a, }" above is not considered as a valid expression to
-be matched in a rule like ".f = E,".
-
-Any help is appreciated, thank you in advance.
-
---
-With best wishes,
-Vladimir
+ Luis
