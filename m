@@ -1,32 +1,45 @@
-From: festevam@gmail.com (Fabio Estevam)
-Date: Wed, 20 May 2015 08:02:35 -0300
-Subject: [Cocci] [PATCH 2/2 RESEND]
-	scripts/coccinelle/misc/irqf_oneshot.cocci: Fix grammar
-In-Reply-To: <1432119755-4266-1-git-send-email-festevam@gmail.com>
-References: <1432119755-4266-1-git-send-email-festevam@gmail.com>
-Message-ID: <1432119755-4266-2-git-send-email-festevam@gmail.com>
+From: mcgrof@suse.com (Luis R. Rodriguez)
+Date: Wed, 20 May 2015 20:58:33 +0200
+Subject: [Cocci] [PATCH v3 00/17] framebuffer: simple conversions to
+ arch_phys_wc_add()
+In-Reply-To: <555C4ADE.6030400@ti.com>
+References: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
+ <CAB=NE6WhVUa-seXOWeY+ELY5v=Rt_6DBfr==GKjP7AH3CTWJAQ@mail.gmail.com>
+ <55474AFE.5040605@ti.com>
+ <CALCETrVdAG1NFA_dYHhOyCbwKR3msHZaaVs0MZMkW33_Sw=Kqg@mail.gmail.com>
+ <20150514142645.GU23057@wotan.suse.de> <555C4ADE.6030400@ti.com>
+Message-ID: <20150520185833.GX23057@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-From: Fabio Estevam <fabio.estevam@freescale.com>
+On Wed, May 20, 2015 at 11:50:38AM +0300, Tomi Valkeinen wrote:
+> 
+> 
+> On 14/05/15 17:26, Luis R. Rodriguez wrote:
+> 
+> > Tomi,
+> > 
+> > Any chance you can consider this series again? I realize you say you are
+> > not familiar with MTRR but given its prevalence use on framebuffer device
+> > drivers and since you are a framebuffer subsystem maintainer I think its
+> > perhaps fair to ask one of you become familiar with this stuff, or ask
+> > questions if there are any. If its of any help this patch which adds
+> > ioremap_uc() already got merged and the logic to phase MTRR is described
+> > there too:
+> > 
+> > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git/commit/?id=e4b6be33c28923d8cde53023e0888b1c5d1a9027
+> > 
+> > That patch won't even be needed on this series, this series happens to be
+> > straight forward: if you just ioremap_nocache() once and use mtrr_add()
+> > then conver over to ioremap_wc() and use arch_phys_wc_add(). If it already
+> > used ioremap_wc() just convert over from mtrr_add() to arch_phys_wc_add()
+> > 
+> > Not sure if you will get an Acked-by by x86 folks on this series as they
+> > are busy, but I'm adding bp and hpa just in case.
+> 
+> These are now queued for 4.2. Sorry it took so long. I've been away and
+> my bandwidth for the fbdev maintainership has been rather limited lately.
 
-Correct form is 'always requested'.
+Great thanks for the heads up!
 
-Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
-Acked-by: Julia Lawall <julia.lawall@lip6.fr>
----
- scripts/coccinelle/misc/irqf_oneshot.cocci | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/scripts/coccinelle/misc/irqf_oneshot.cocci b/scripts/coccinelle/misc/irqf_oneshot.cocci
-index a24a754..b17ac8b 100644
---- a/scripts/coccinelle/misc/irqf_oneshot.cocci
-+++ b/scripts/coccinelle/misc/irqf_oneshot.cocci
-@@ -1,4 +1,4 @@
--/// Make sure threaded IRQs without a primary handler are always request with
-+/// Make sure threaded IRQs without a primary handler are always requested with
- /// IRQF_ONESHOT
- ///
- //
--- 
-1.9.1
+  Luis
