@@ -1,45 +1,132 @@
 From: mcgrof@suse.com (Luis R. Rodriguez)
-Date: Wed, 20 May 2015 20:58:33 +0200
-Subject: [Cocci] [PATCH v3 00/17] framebuffer: simple conversions to
- arch_phys_wc_add()
-In-Reply-To: <555C4ADE.6030400@ti.com>
-References: <1429647398-16983-1-git-send-email-mcgrof@do-not-panic.com>
- <CAB=NE6WhVUa-seXOWeY+ELY5v=Rt_6DBfr==GKjP7AH3CTWJAQ@mail.gmail.com>
- <55474AFE.5040605@ti.com>
- <CALCETrVdAG1NFA_dYHhOyCbwKR3msHZaaVs0MZMkW33_Sw=Kqg@mail.gmail.com>
- <20150514142645.GU23057@wotan.suse.de> <555C4ADE.6030400@ti.com>
-Message-ID: <20150520185833.GX23057@wotan.suse.de>
+Date: Wed, 20 May 2015 21:46:32 +0200
+Subject: [Cocci] [PATCH v3 2/3] video: fbdev: vesafb: add missing
+ mtrr_del() for added MTRR
+In-Reply-To: <555C594E.1010607@ti.com>
+References: <1429648850-17902-1-git-send-email-mcgrof@do-not-panic.com>
+ <1429648850-17902-3-git-send-email-mcgrof@do-not-panic.com>
+ <555C594E.1010607@ti.com>
+Message-ID: <20150520194632.GY23057@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, May 20, 2015 at 11:50:38AM +0300, Tomi Valkeinen wrote:
+On Wed, May 20, 2015 at 12:52:14PM +0300, Tomi Valkeinen wrote:
+> Hi Luis,
 > 
+> On 21/04/15 23:40, Luis R. Rodriguez wrote:
+> > From: "Luis R. Rodriguez" <mcgrof@suse.com>
+> > 
+> > The MTRR added was never being deleted.
+> > 
+> > Cc: Toshi Kani <toshi.kani@hp.com>
+> > Cc: Suresh Siddha <sbsiddha@gmail.com>
+> > Cc: Ingo Molnar <mingo@elte.hu>
+> > Cc: Thomas Gleixner <tglx@linutronix.de>
+> > Cc: Juergen Gross <jgross@suse.com>
+> > Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+> > Cc: Andy Lutomirski <luto@amacapital.net>
+> > Cc: Dave Airlie <airlied@redhat.com>
+> > Cc: Antonino Daplas <adaplas@gmail.com>
+> > Cc: Rob Clark <robdclark@gmail.com>
+> > Cc: Jingoo Han <jg1.han@samsung.com>
+> > Cc: Wolfram Sang <wsa@the-dreams.de>
+> > Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
+> > Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
+> > Cc: linux-fbdev at vger.kernel.org
+> > Cc: linux-kernel at vger.kernel.org
+> > Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
+> > ---
+> >  drivers/video/fbdev/vesafb.c | 30 ++++++++++++++++++++++++------
+> >  1 file changed, 24 insertions(+), 6 deletions(-)
+> > 
+> > diff --git a/drivers/video/fbdev/vesafb.c b/drivers/video/fbdev/vesafb.c
+> > index 191156b..a2261d0 100644
+> > --- a/drivers/video/fbdev/vesafb.c
+> > +++ b/drivers/video/fbdev/vesafb.c
+> > @@ -29,6 +29,10 @@
+> >  
+> >  /* --------------------------------------------------------------------- */
+> >  
+> > +struct vesafb_par {
+> > +	int wc_cookie;
+> > +};
+> > +
+> >  static struct fb_var_screeninfo vesafb_defined = {
+> >  	.activate	= FB_ACTIVATE_NOW,
+> >  	.height		= -1,
+> > @@ -175,7 +179,16 @@ static int vesafb_setcolreg(unsigned regno, unsigned red, unsigned green,
+> >  
+> >  static void vesafb_destroy(struct fb_info *info)
+> >  {
+> > +#ifdef CONFIG_MTRR
+> > +	struct vesafb_par *par = info->par;
+> > +#endif
+> > +
+> >  	fb_dealloc_cmap(&info->cmap);
+> > +
+> > +#ifdef CONFIG_MTRR
+> > +	if (par->wc_cookie >= 0)
+> > +		mtrr_del(par->wc_cookie, 0, 0);
+> > +#endif
+> >  	if (info->screen_base)
+> >  		iounmap(info->screen_base);
+> >  	release_mem_region(info->apertures->ranges[0].base, info->apertures->ranges[0].size);
+> > @@ -228,6 +241,7 @@ static int vesafb_setup(char *options)
+> >  static int vesafb_probe(struct platform_device *dev)
+> >  {
+> >  	struct fb_info *info;
+> > +	struct vesafb_par *par;
+> >  	int i, err;
+> >  	unsigned int size_vmode;
+> >  	unsigned int size_remap;
+> > @@ -297,8 +311,8 @@ static int vesafb_probe(struct platform_device *dev)
+> >  		return -ENOMEM;
+> >  	}
+> >  	platform_set_drvdata(dev, info);
+> > -	info->pseudo_palette = info->par;
+> > -	info->par = NULL;
+> > +	info->pseudo_palette = NULL;
+> > +	par = info->par;
+> >  
+> >  	/* set vesafb aperture size for generic probing */
+> >  	info->apertures = alloc_apertures(1);
+> > @@ -407,17 +421,17 @@ static int vesafb_probe(struct platform_device *dev)
+> >  	if (mtrr == 3) {
+> >  #ifdef CONFIG_MTRR
+> >  		unsigned int temp_size = size_total;
+> > -		int rc;
+> >  
+> >  		/* Find the largest power-of-two */
+> >  		temp_size = roundup_pow_of_two(temp_size);
+> >  
+> >  		/* Try and find a power of two to add */
+> >  		do {
+> > -			rc = mtrr_add(vesafb_fix.smem_start, temp_size,
+> > -				      MTRR_TYPE_WRCOMB, 1);
+> > +			par->wc_cookie = mtrr_add(vesafb_fix.smem_start,
+> > +						  temp_size,
+> > +						  MTRR_TYPE_WRCOMB, 1);
+> >  			temp_size >>= 1;
+> > -		} while (temp_size >= PAGE_SIZE && rc == -EINVAL);
+> > +		} while (temp_size >= PAGE_SIZE && par->wc_cookie == -EINVAL);
+> >  #endif
+> >  		info->screen_base = ioremap_wc(vesafb_fix.smem_start, vesafb_fix.smem_len);
+> >  	} else {
+> > @@ -462,6 +476,10 @@ static int vesafb_probe(struct platform_device *dev)
+> >  	fb_info(info, "%s frame buffer device\n", info->fix.id);
+> >  	return 0;
+> >  err:
+> > +#ifdef CONFIG_MTRR
+> > +	if (par->wc_cookie >= 0)
+> > +		mtrr_del(par->wc_cookie, 0, 0);
+> > +#endif
+> >  	if (info->screen_base)
+> >  		iounmap(info->screen_base);
+> >  	framebuffer_release(info);
 > 
-> On 14/05/15 17:26, Luis R. Rodriguez wrote:
-> 
-> > Tomi,
-> > 
-> > Any chance you can consider this series again? I realize you say you are
-> > not familiar with MTRR but given its prevalence use on framebuffer device
-> > drivers and since you are a framebuffer subsystem maintainer I think its
-> > perhaps fair to ask one of you become familiar with this stuff, or ask
-> > questions if there are any. If its of any help this patch which adds
-> > ioremap_uc() already got merged and the logic to phase MTRR is described
-> > there too:
-> > 
-> > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git/commit/?id=e4b6be33c28923d8cde53023e0888b1c5d1a9027
-> > 
-> > That patch won't even be needed on this series, this series happens to be
-> > straight forward: if you just ioremap_nocache() once and use mtrr_add()
-> > then conver over to ioremap_wc() and use arch_phys_wc_add(). If it already
-> > used ioremap_wc() just convert over from mtrr_add() to arch_phys_wc_add()
-> > 
-> > Not sure if you will get an Acked-by by x86 folks on this series as they
-> > are busy, but I'm adding bp and hpa just in case.
-> 
-> These are now queued for 4.2. Sorry it took so long. I've been away and
-> my bandwidth for the fbdev maintainership has been rather limited lately.
+> Hmm, this looks a bit odd... You're removing the pseudo_palette, and
+> using its memory for mtrr cookie?
 
-Great thanks for the heads up!
+You are totally right, sorry, will spin a v3.
 
   Luis
