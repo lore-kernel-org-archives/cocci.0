@@ -1,25 +1,22 @@
 From: mmarek@suse.cz (Michal Marek)
-Date: Thu, 21 May 2015 14:19:02 +0800
-Subject: [Cocci] [PATCH 2/2 RESEND]
- scripts/coccinelle/misc/irqf_oneshot.cocci: Fix grammar
-In-Reply-To: <1432119755-4266-2-git-send-email-festevam@gmail.com>
-References: <1432119755-4266-1-git-send-email-festevam@gmail.com>
- <1432119755-4266-2-git-send-email-festevam@gmail.com>
-Message-ID: <555D78D6.5030008@suse.cz>
+Date: Thu, 21 May 2015 14:28:10 +0800
+Subject: [Cocci] [PATCHv2] coccinelle: api: add vma_pages.cocci
+In-Reply-To: <alpine.DEB.2.02.1505172225270.2077@localhost6.localdomain6>
+References: <alpine.DEB.2.02.1505171526430.2077@localhost6.localdomain6>
+ <1431879810-20920-1-git-send-email-dmitry.kalinkin@gmail.com>
+ <alpine.DEB.2.02.1505172225270.2077@localhost6.localdomain6>
+Message-ID: <555D7AFA.9070102@suse.cz>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Dne 20.5.2015 v 19:02 Fabio Estevam napsal(a):
-> From: Fabio Estevam <fabio.estevam@freescale.com>
-> 
-> Correct form is 'always requested'.
-> 
-> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+Dne 18.5.2015 v 04:25 Julia Lawall napsal(a):
+> On Sun, 17 May 2015, Dmitry Kalinkin wrote:
+>> This semantic patch replaces explicit computations of vma page count
+>> with explicit function call.
+>>
+>> Signed-off-by: Dmitry Kalinkin <dmitry.kalinkin@gmail.com>
 > Acked-by: Julia Lawall <julia.lawall@lip6.fr>
-> ---
->  scripts/coccinelle/misc/irqf_oneshot.cocci | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Applied these two, thanks.
+Thanks, applied to kbuild.git#misc.
 
 Michal
