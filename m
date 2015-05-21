@@ -1,22 +1,30 @@
-From: mmarek@suse.cz (Michal Marek)
-Date: Thu, 21 May 2015 14:28:10 +0800
-Subject: [Cocci] [PATCHv2] coccinelle: api: add vma_pages.cocci
-In-Reply-To: <alpine.DEB.2.02.1505172225270.2077@localhost6.localdomain6>
-References: <alpine.DEB.2.02.1505171526430.2077@localhost6.localdomain6>
- <1431879810-20920-1-git-send-email-dmitry.kalinkin@gmail.com>
- <alpine.DEB.2.02.1505172225270.2077@localhost6.localdomain6>
-Message-ID: <555D7AFA.9070102@suse.cz>
+From: zied.habtoul@gmail.com (Zied Habtoul)
+Date: Thu, 21 May 2015 12:19:27 +0200
+Subject: [Cocci] array addressing range checking by coccinelle
+Message-ID: <CABBGRWtAHM7naeENzeVQu_n0QC9EhCpUEvv_0MyZ+VH8zfxgxg@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Dne 18.5.2015 v 04:25 Julia Lawall napsal(a):
-> On Sun, 17 May 2015, Dmitry Kalinkin wrote:
->> This semantic patch replaces explicit computations of vma page count
->> with explicit function call.
->>
->> Signed-off-by: Dmitry Kalinkin <dmitry.kalinkin@gmail.com>
-> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+hello,
+i want to implement a script to check this rule
+Before any array access, the addressing range must be checked.
 
-Thanks, applied to kbuild.git#misc.
+example
+in this code
 
-Michal
+void main ()
+{
+
+int T[10];
+ T[20] = 5 ;
+
+}
+
+
+the script must detect an error on ( T[20] = 5 ;)  because there is an
+overflow of the array size.
+
+any suggestions please to implement this script ?
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20150521/f481d227/attachment.html>
