@@ -1,11 +1,10 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 25 May 2015 14:17:32 +0200 (CEST)
-Subject: [Cocci] [PATCH 2/2] coccinelle: pci_free_consistent.cocci:
- Adjust commit log of generated patch
-In-Reply-To: <1432554373-6444-2-git-send-email-fabio.estevam@freescale.com>
+Date: Mon, 25 May 2015 14:18:21 +0200 (CEST)
+Subject: [Cocci] [PATCH 1/2] coccinelle: clk_put.cocci: Adjust commit
+ log of generated patch
+In-Reply-To: <1432554373-6444-1-git-send-email-fabio.estevam@freescale.com>
 References: <1432554373-6444-1-git-send-email-fabio.estevam@freescale.com>
- <1432554373-6444-2-git-send-email-fabio.estevam@freescale.com>
-Message-ID: <alpine.DEB.2.10.1505251417110.2491@hadrien>
+Message-ID: <alpine.DEB.2.10.1505251418040.2491@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -13,29 +12,27 @@ On Mon, 25 May 2015, Fabio Estevam wrote:
 
 > The commit log should better describe the action that the patch will do.
 >
-> In this case we are 'adding' the pci_free_consistent.
+> In this case we are 'adding' the missing clk_put.
 
-Not sure to follow the reasoning.  The semantic patch doesn't add
-anything.
+Here too, the semantic patch doesn't add anything.
 
 julia
 
->
 > Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
 > ---
->  scripts/coccinelle/free/pci_free_consistent.cocci | 2 +-
+>  scripts/coccinelle/free/clk_put.cocci | 2 +-
 >  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> diff --git a/scripts/coccinelle/free/pci_free_consistent.cocci b/scripts/coccinelle/free/pci_free_consistent.cocci
-> index 43600cc..82b3e44 100644
-> --- a/scripts/coccinelle/free/pci_free_consistent.cocci
-> +++ b/scripts/coccinelle/free/pci_free_consistent.cocci
+> diff --git a/scripts/coccinelle/free/clk_put.cocci b/scripts/coccinelle/free/clk_put.cocci
+> index 46747ad..492b3b0 100644
+> --- a/scripts/coccinelle/free/clk_put.cocci
+> +++ b/scripts/coccinelle/free/clk_put.cocci
 > @@ -1,4 +1,4 @@
-> -/// Find missing pci_free_consistent for every pci_alloc_consistent.
-> +/// Add missing pci_free_consistent for every pci_alloc_consistent.
+> -/// Find missing clk_puts.
+> +/// Add missing clk_put.
 >  ///
->  // Confidence: Moderate
->  // Copyright: (C) 2013 Petr Strnad.  GPLv2.
+>  //# This only signals a missing clk_put when there is a clk_put later
+>  //# in the same function.
 > --
 > 1.9.1
 >
