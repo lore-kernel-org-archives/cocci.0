@@ -1,99 +1,46 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 26 May 2015 21:01:12 +0200 (CEST)
-Subject: [Cocci] iteration.cocci
-In-Reply-To: <CABBGRWui_CzjQBsCSrUbsUuYhjqtW1uOJ1MzK-ygG58NojhBNw@mail.gmail.com>
-References: <CABBGRWtGqhJG4ZUfquga8SY4ASOcAuQP-Oug-gobhS9LMspx9A@mail.gmail.com>
- <alpine.DEB.2.10.1505261912370.2971@hadrien>
- <CABBGRWui_CzjQBsCSrUbsUuYhjqtW1uOJ1MzK-ygG58NojhBNw@mail.gmail.com>
-Message-ID: <alpine.DEB.2.02.1505262100430.2027@localhost6.localdomain6>
+From: mcgrof@suse.com (Luis R. Rodriguez)
+Date: Tue, 26 May 2015 21:49:13 +0200
+Subject: [Cocci] [PATCH v3 0/4] pci: add and use pci_ioremap_wc_bar()
+In-Reply-To: <556428E7.3050606@ti.com>
+References: <1429647634-17169-1-git-send-email-mcgrof@do-not-panic.com>
+ <556428E7.3050606@ti.com>
+Message-ID: <20150526194913.GQ23057@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, 26 May 2015, Zied Habtoul wrote:
+On Tue, May 26, 2015 at 11:03:51AM +0300, Tomi Valkeinen wrote:
+> Hi Louis,
+> 
+> On 21/04/15 23:20, Luis R. Rodriguez wrote:
+> > From: "Luis R. Rodriguez" <mcgrof@suse.com>
+> > 
+> > This series adds pci_ioremap_wc_bar() and makes use of it
+> > on a few framebuffer device drivers.
+> > 
+> > Luis R. Rodriguez (4):
+> >   pci: add pci_ioremap_wc_bar()
+> >   video: fbdev: i740fb: use arch_phys_wc_add() and pci_ioremap_wc_bar()
+> >   video: fbdev: kyrofb: use arch_phys_wc_add() and pci_ioremap_wc_bar()
+> >   video: fbdev: gxt4500: use pci_ioremap_wc_bar() for framebuffer
+> > 
+> >  drivers/pci/pci.c                | 14 ++++++++++++++
+> >  drivers/video/fbdev/gxt4500.c    |  2 +-
+> >  drivers/video/fbdev/i740fb.c     | 35 ++++++-----------------------------
+> >  drivers/video/fbdev/kyro/fbdev.c | 33 +++++++++++----------------------
+> >  include/linux/pci.h              |  1 +
+> >  include/video/kyro.h             |  4 +---
+> >  6 files changed, 34 insertions(+), 55 deletions(-)
+> 
+> About this and other related series: rather than having multiple
+> different patch series containing fbdev changes, going via separate
+> trees, I would very much prefer to get all the requisite pci/mtrr
+> related patches merged in the next merge window, and only then change
+> the fbdev drivers in one series, merged via fbdev tree.
 
-> virtual after_start
-> > @initialize:ocaml@
-> > @@
-> > let tbl = Hashtbl.create(100)
-> > let add_if_not_present from f file =
-> > try let _ = Hashtbl.find tbl (f,file) in ()
-> > with Not_found ->
-> > Hashtbl.add tbl (f,file) file;
-> > let it = new iteration()?
-> 
-> 
-> how the f file is created ?
-> i have a file that contains a list of functions , i want to apply a script
-> to my code when it ?detects a function not present in my file.
+Tomi, OK, I'll ask Bjorn to drop the framebuffer driver specific changes on the
+pci_iomap_wc() series then and wait until he takes only the bus specific
+changes for this and the pci_iomap_wc() series. Likewise I  will wait for
+the x86 require changes (ioremap_uc() and pat_enabled()) stuff to be exported
+before sending you the changes required for the framebuffer tree.
 
-f and file are arguments to the function add_if_present.  You have to look 
-at the call site to see how they are determined.
-
-julia
-
-> 2015-05-26 19:17 GMT+02:00 Julia Lawall <julia.lawall@lip6.fr>:
->       On Tue, 26 May 2015, Zied Habtoul wrote:
-> 
->       > hello,
->       > ?Can you tell me please what is the function of this part in
->       the
->       > file?coccinelle/demos/iteration.cocci
->       >
->       > virtual after_start
->       > @initialize:ocaml@
->       > @@
->       > let tbl = Hashtbl.create(100)
->       > let add_if_not_present from f file =
->       > try let _ = Hashtbl.find tbl (f,file) in ()
->       > with Not_found ->
->       > Hashtbl.add tbl (f,file) file;
->       > let it = new iteration() in
-> 
->       Obtain a data structure representing another runthat you would
->       like to do
->       on the code base.
-> 
->       > (match file with
->       > Some fl -> it#set_files [fl]
->       > | None -> ());
-> 
->       Choose the set of files to which the new run should apply.? If
->       nothing is
->       specified, then the same set of files a used in the current run
->       is used.
-> 
->       > it#add_virtual_rule After_start;
-> 
->       Consider that the virtual rule after_start is satisfied.?
->       Virtual rules
->       are like a big if on your semantic patch.? In the header of a
->       semantic
->       patch you can say that it eg depends on after_start or depends
->       on
->       !after_start to cause the rule to be applied if and only if
->       someother rule
->       has or has not matched.? You can also do this for the names of
->       actual
->       rules.? Virtual rules can also be activated on the command
->       line.? So you
->       could say spatch --sp-file foo.cocci foo.c -D after_start.
-> 
->       > it#add_virtual_identifier Err_ptr_function f;
-> 
->       This is an identifier typed metavariable that is given a value.?
->       In the
->       code it can be referred to as identifier
->       virtual.err_ptr_function.
-> 
->       > it#register()
-> 
->       After setting up all the command line variables for the next
->       iteration,
->       this calls puts it in a queue to be executed at some time in the
->       future.
-> 
->       julia
-> 
-> 
-> 
-> 
+ Luis
