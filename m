@@ -1,31 +1,141 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 27 May 2015 11:44:43 +0200 (CEST)
-Subject: [Cocci] Source code analysis around function name lists
-In-Reply-To: <5565913A.6000009@users.sourceforge.net>
-References: <CABBGRWtGqhJG4ZUfquga8SY4ASOcAuQP-Oug-gobhS9LMspx9A@mail.gmail.com>
- <alpine.DEB.2.10.1505261912370.2971@hadrien>
- <CABBGRWui_CzjQBsCSrUbsUuYhjqtW1uOJ1MzK-ygG58NojhBNw@mail.gmail.com>
- <5565913A.6000009@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1505271143580.2500@hadrien>
+Date: Thu, 28 May 2015 07:50:24 +0200 (CEST)
+Subject: [Cocci] [PATCH RFC] coccinelle: flag constants being passed for
+ jiffies
+In-Reply-To: <1432754908-8297-1-git-send-email-hofrat@osadl.org>
+References: <1432754908-8297-1-git-send-email-hofrat@osadl.org>
+Message-ID: <alpine.DEB.2.02.1505280744580.2027@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, 27 May 2015, SF Markus Elfring wrote:
 
-> > i have a file that contains a list of functions ,
->
-> Such an use case was discussed a few times here.
->
->
-> > i want to apply a script to my code when it  detects a function not
-> > present in my file.
->
-> How do you think about to convert the list from your input file to an
-> other data structure like the following?
-> * SmPL disjunction
-> * Alternation in a regular expression for a SmPL constraint
 
-A SmPL disjunction will give Coccinelle more information that will allow
-it to ignore files that cannot possibly match.
+On Wed, 27 May 2015, Nicholas Mc Guire wrote:
+
+> schedule_timeout_* takes a jiffies value as timeout - passing in a constant
+> makes the timeout HZ dependent which is wrong. Checking for contstants only
+> yields many false positives so they are filtered for digits only. A numeric
+> value of 1 is though commonly in use for "shortest possible delay" so those
+> cases are treated as false positives as well and not reported.
+> 
+> Signed-off-by: Nicholas Mc Guire <hofrat@osadl.org>
+> ---
+> 
+> The cases reported all look like they are actual API inconsistencies but
+> not reporting does not mean there is no bug with respect to jiffies. This
+> still can miss some values e.g. like in:
+>  drivers/staging/rts5208/rtsx_chip.h:66 #define POLLING_INTERVAL 30
+>  drivers/staging/rts5208/rtsx.c:540 schedule_timeout(POLLING_INTERVAL);
+> 
+> For schedule_timeout_*() it reports 23 cases - all of which look like 
+> they are correct findings. 
+> 
+> Further the list of functions taking jiffies as arguments is much longer
+> but they can be added once the basic script is sound - which it probably
+> is not at this point.
+> 
+>  scripts/coccinelle/api/timeout_HZ_dependent.cocci |   62 +++++++++++++++++++++
+>  1 file changed, 62 insertions(+)
+>  create mode 100644 scripts/coccinelle/api/timeout_HZ_dependent.cocci
+> 
+> diff --git a/scripts/coccinelle/api/timeout_HZ_dependent.cocci b/scripts/coccinelle/api/timeout_HZ_dependent.cocci
+> new file mode 100644
+> index 0000000..6e98da1
+> --- /dev/null
+> +++ b/scripts/coccinelle/api/timeout_HZ_dependent.cocci
+> @@ -0,0 +1,62 @@
+> +/* check for hardcoded timeout values which are thus HZ dependent
+> + * only report findings if the value is digits and != 1 as hardcoded
+> + * 1 seems to be in use for short delays.
+> + *
+> + * No patch mode for this as converting the value from C to
+> + * msecs_to_jiffies(C) could be changing the effective timeout by
+> + * more than a factor of 10 so this always needs manual inspection
+> + *
+> + * Options:  --no-includes --include-headers
+> + */
+> +virtual context
+> +virtual patch
+> +virtual org
+> +virtual report
+> +
+> + at ep depends on !patch && (org || report)@
+> +identifier f;
+> +constant C;
+> +position p1,p2;
+> +@@
+> +
+> +f at p1(...) {
+
+Do you need the function for anything?  This would be more efficient with 
+just the calls.
+
+
+> + <+...
+> +(
+> +* schedule_timeout at p2(C)
+
+If you put in the argument list \(i\|1\|C at p2\) then you can get rid of the 
+python code (i would be an identifier metavariable).
+
+What kind of false positives do you get for the macro case?  Would it be 
+sufficient to do:
+
+@r@
+expression e != 1;
+identifier i,
+@@
+
+#define i e
+
+@@
+identifier r.i,
+@@
+
+*schedule_timeout(i)
+
+(and all the other cases?)
 
 julia
+
+> +|
+> +* schedule_timeout_interruptible at p2(C)
+> +|
+> +* schedule_timeout_killable at p2(C)
+> +|
+> +* schedule_timeout_uninterruptible at p2(C)
+> +)
+> + ...+>
+> +}
+> +
+> + at script:python depends on org@
+> +p1 << ep.p1;
+> +p2 << ep.p2;
+> +timeout << ep.C;
+> +@@
+> +
+> +# schedule_timeout(1) for a "short" delay is not HZ dependent
+> +# as it always would be converted to 1 by msecs_to_jiffies as well
+> +# so count this as false positive
+> +if str.isdigit(timeout):
+> +   if (int(timeout) != 1):
+> +      msg="WARNING: timeout is HZ dependent"
+> +      coccilib.org.print_todo(p2[0], msg)
+> +
+> + at script:python depends on report@
+> +p1 << ep.p1;
+> +p2 << ep.p2;
+> +timeout << ep.C;
+> +@@
+> +
+> +# schedule_timeout(1) for a "short" delay is not HZ dependent
+> +# as it always would be converted to 1 by msecs_to_jiffies as well
+> +# so count this as false positive
+> +if str.isdigit(timeout):
+> +   if (int(timeout) != 1):
+> +      msg="WARNING: timeout (%s) seems HZ dependent" % (timeout)
+> +      coccilib.report.print_report(p2[0], msg)
+> -- 
+> 1.7.10.4
+> 
+> 
