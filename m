@@ -1,286 +1,767 @@
 From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Fri,  5 Jun 2015 17:10:00 -0700
-Subject: [Cocci] [PATCH 3/4] gentree.py: add SmPL patch equivalence proof
-	support
+Date: Fri,  5 Jun 2015 17:10:01 -0700
+Subject: [Cocci] [PATCH 4/4] patches: provide 0054-struct-proto_ops-sig SmPL
+	patch replacement
 In-Reply-To: <1433549401-17006-1-git-send-email-mcgrof@do-not-panic.com>
 References: <1433549401-17006-1-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <1433549401-17006-4-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1433549401-17006-5-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-If you have an SmPL patch that you think is ready to replace
-a series of unified diff patches you can pass as an argument
-to gentree.py '--prove-cocci' with the cocci file as the
-an extra argument and gentree.py will try to prove equivalence
-between the unified diff series and your Coccinelle SmPL patch.
+This replaces the 436 line of unified diff with 152
+lines of grammar Coccinelle SmPL patch. SmPL patch
+equivalence proof tests reveals only cosmetic changes
+between using Coccinelle SmPL and unified diff as shown
+below. The difference shown are the results of two
+trees, one in which we applied the SmPL patch, and another
+in which the old unified patch series were used. This
+gives us an idea of what Coccinelle did differently.
 
-You can use this as a guide when trying to replace an existing
-unified diff series carried within backports with a respective
-Coccinelle SmPL patch. You can use this to get a warm fuzzy or
-to provide backports maintainers with a warm fuzzy of comfort
-that your SmPL patch is sufficient.
+1   3.0.101             [  OK  ]
+2   3.1.10              [  OK  ]
+3   3.2.68              [  OK  ]
+4   3.3.8               [  OK  ]
+5   3.4.107             [  OK  ]
+6   3.5.7               [  OK  ]
+7   3.6.11              [  OK  ]
+8   3.7.10              [  OK  ]
+9   3.8.13              [  OK  ]
+10  3.9.11              [  OK  ]
+11  3.10.75             [  OK  ]
+12  3.11.10             [  OK  ]
+13  3.12.40             [  OK  ]
+14  3.13.11             [  OK  ]
+15  3.14.39             [  OK  ]
+16  3.15.10             [  OK  ]
+17  3.16.7              [  OK  ]
+18  3.17.8              [  OK  ]
+19  3.18.12             [  OK  ]
+20  3.19.5              [  OK  ]
+21  4.0.0               [  OK  ]
+22  4.1-rc1             [  OK  ]
 
-In practice you might end up discovering as differences:
-
-  a) minor space cosmetic differences between what the Coccinelle
-     engine does and what we as humans typically would do
-     Coccinelle has already received substantial modificaitons to
-     address some of these minor spacing changes, but some might
-     still exist.
-
-  b) new code which previously was not modified, these are
-     transformations which Coccinelle is providied to use,
-     and hence further automating our backporting effort.
-     If provide a backport of a collateral evolution in
-     SmPL form it means we only have to write it once.
-
-  c) bugs within Coccinelle
-
-a) and b) the most common differences observed, whereas we
-have yet to find c). If you find a) or c) please report the
-differences on the Coccinelle development mailing list.
-
-The algorithm used for SmPL patch equivalence proof is as follows,
-using the command below:
-
-mcgrof at cerro ~/backports (git::master)$ ./gentree.py --clean --prove-cocci \
-	patches/collateral-evolutions/network/09-threaded-irq.cocci \
-	/home/mcgrof/linux-next/ \
-	/home/mcgrof/build/backports-20131206
-
-When this is run gentree.py will first copy code we wish to backport
-from linux-next into two separate directories:
-
-  1) /home/mcgrof/build/backports-20131206
-     We then only apply the Coccinelle SmPL patch 09-threaded-irq.cocci
-
-  2) /home/mcgrof/build/backports-20131206.orig
-     We then only apply the unified diff patches found within the directory:
-     patches/collateral-evolutions/network/09-threaded-irq/
-
-At this point we now have two treees with two different backporting
-strategies. Internally when --prove-cocci is used gentree.py creates
-within backports-20131206 a git to keep track of differences, this
-includes application of the 09-threaded-irq.cocci patch. We take
-advantage of the fact git is used then and replace all the files
-within backports-20131206.orig into backports-20131206 and just
-ask git for the differences.
-
-In this particular case the diff stat shown reveals huge amount of
-differences, in this case upon inspecting the changes it reveals
-that using Coccinelle has enabled the generalized backport to
-propagate into a lot of other device drivers, and hence doing
-more automatic backport work for us. This is precicely why we
-want to generalize backports in Coccinelle SmPL form when possible.
-
-A diff stat with no output would mean that there is a perfect
-equivalence.
-
-The output of the command:
+mcgrof at ergon ~/backports (git::master)$ time \
+	./gentree.py --clean --prove-cocci \
+	patches/collateral-evolutions/network/0054-struct-proto_ops-sig.cocci \
+	/home/mcgrof/linux-next/ /home/mcgrof/build/backports-20150525
 
 Copy original source files ...
-Apply patches ...
-Proving Coccinelle SmPL patch: 09-threaded-irq.cocci
-Aggregating patch for Coccinelle SmPL 09-threaded-irq proof: drivers_net_wireless_b43_b43.patch
-Aggregating patch for Coccinelle SmPL 09-threaded-irq proof: drivers_net_wireless_iwlwifi_pcie_internal.patch
-Aggregating patch for Coccinelle SmPL 09-threaded-irq proof: drivers_net_wireless_ti_wlcore_main.patch
-Aggregating patch for Coccinelle SmPL 09-threaded-irq proof: drivers_net_wireless_b43_main.patch
-Aggregating patch for Coccinelle SmPL 09-threaded-irq proof: drivers_net_wireless_ti_wlcore_main_extra.patch
-Aggregating patch for Coccinelle SmPL 09-threaded-irq proof: drivers_net_wireless_iwlwifi_pcie_trans.patch
-Aggregating patch for Coccinelle SmPL 09-threaded-irq proof: drivers_net_wireless_ti_wlcore_wlcore.patch
+Applying patches from patches to
+/home/mcgrof/build/backports-20150525 ...
+Proving Coccinelle SmPL patch: 0054-struct-proto_ops-sig.cocci
+Aggregating patch for Coccinelle SmPL 0054-struct-proto_ops-sig proof: ieee802154.patch
+Aggregating patch for Coccinelle SmPL 0054-struct-proto_ops-sig proof: nfc.patch
+Aggregating patch for Coccinelle SmPL 0054-struct-proto_ops-sig proof: bluetooth.patch
 
 Review the difference between what the tree looks like
 by applying your SmPL patch, then reverting that and
 only applying your the patches in the patch series.
 
-Change directory to /home/mcgrof/build/backports-20131206 and run 'git diff'
+Change directory to /home/mcgrof/build/backports-20150525 and run 'git diff'
 diff stat of the changes:
 
- drivers/media/platform/via-camera.c           | 28 +-----------
- drivers/media/radio/radio-wl1273.c            | 28 +-----------
- drivers/media/radio/si470x/radio-si470x-i2c.c | 24 +----------
- drivers/media/radio/si470x/radio-si470x.h     |  3 --
- drivers/net/ieee802154/mrf24j40.c             | 20 ---------
- drivers/net/wireless/ath/wil6210/interrupt.c  | 62 +++------------------------
- drivers/net/wireless/ath/wil6210/wil6210.h    |  3 --
- drivers/net/wireless/b43/main.c               | 21 ++++-----
- drivers/net/wireless/cw1200/cw1200_sdio.c     | 21 ---------
- drivers/net/wireless/cw1200/cw1200_spi.c      | 27 +-----------
- drivers/net/wireless/iwlwifi/pcie/internal.h  |  3 ++
- drivers/net/wireless/iwlwifi/pcie/trans.c     | 34 ++++++---------
- drivers/net/wireless/ti/wlcore/main.c         | 26 +++++------
- drivers/nfc/microread/i2c.c                   | 27 +-----------
- drivers/nfc/pn544/i2c.c                       | 27 +-----------
- drivers/regulator/da9063-regulator.c          | 26 -----------
- drivers/regulator/lp8755.c                    | 23 +---------
- 17 files changed, 52 insertions(+), 351 deletions(-)
+net/bluetooth/hci_sock.c | 11 +++++------
+1 file changed, 5 insertions(+), 6 deletions(-)
+
+Done!
+
+real    0m21.965s
+user    0m45.947s
+sys     0m4.072s
+
+Now when I change directory to /home/mcgrof/build/backports-20150525 and
+run 'git diff' I get:
+
+	diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
+	index 9326bc8..9ca0166 100644
+	--- a/net/bluetooth/hci_sock.c
+	+++ b/net/bluetooth/hci_sock.c
+	@@ -956,7 +956,8 @@ static int hci_sock_recvmsg(struct socket *sock,
+	struct msghdr *msg, size_t len,
+	 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0)
+	 static int backport_hci_sock_recvmsg(struct kiocb *iocb, struct socket
+	*sock,
+					     struct msghdr *msg, size_t len,
+	-                                    int flags){
+	+                                    int flags)
+	+{
+		return hci_sock_recvmsg(sock, msg, len, flags);
+	 }
+	 #endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) */
+	@@ -1198,7 +1199,8 @@ drop:
+	 }
+	 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0)
+	 static int backport_hci_sock_sendmsg(struct kiocb *iocb, struct socket
+	*sock,
+	-                                    struct msghdr *msg, size_t len){
+	+                                    struct msghdr *msg, size_t len)
+	+{
+		return hci_sock_sendmsg(sock, msg, len);
+	 }
+	 #endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) */
+	@@ -1360,12 +1362,9 @@ static const struct proto_ops hci_sock_ops = {
+		.getname        = hci_sock_getname,
+	 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+		.sendmsg        = hci_sock_sendmsg,
+	-#else
+	-       .sendmsg = backport_hci_sock_sendmsg,
+	-#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
+	-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+		.recvmsg        = hci_sock_recvmsg,
+	 #else
+	+       .sendmsg = backport_hci_sock_sendmsg,
+		.recvmsg = backport_hci_sock_recvmsg,
+	 #endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
+		.ioctl          = hci_sock_ioctl,
 
 Signed-off-by: Luis R. Rodriguez <mcgrof@do-not-panic.com>
 ---
- gentree.py | 71 +++++++++++++++++++++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 63 insertions(+), 8 deletions(-)
+ .../network/0054-struct-proto_ops-sig.cocci        | 177 +++++++++++++++++++
+ .../0054-struct-proto_ops-sig/bluetooth.patch      | 187 ---------------------
+ .../0054-struct-proto_ops-sig/ieee802154.patch     | 134 ---------------
+ .../network/0054-struct-proto_ops-sig/nfc.patch    | 115 -------------
+ 4 files changed, 177 insertions(+), 436 deletions(-)
+ create mode 100644 patches/collateral-evolutions/network/0054-struct-proto_ops-sig.cocci
+ delete mode 100644 patches/collateral-evolutions/network/0054-struct-proto_ops-sig/bluetooth.patch
+ delete mode 100644 patches/collateral-evolutions/network/0054-struct-proto_ops-sig/ieee802154.patch
+ delete mode 100644 patches/collateral-evolutions/network/0054-struct-proto_ops-sig/nfc.patch
 
-diff --git a/gentree.py b/gentree.py
-index 636ea60..9e9293b 100755
---- a/gentree.py
-+++ b/gentree.py
-@@ -485,14 +485,30 @@ def apply_patches(args, desc, source_dir, patch_src, target_dir, logwrite=lambda
-     a specific SmPL patch.
-     """
-     logwrite('Applying patches from %s to %s ...' % (patch_src, target_dir))
--    test_cocci = args.test_cocci or args.profile_cocci
-+    test_cocci = args.test_cocci or args.profile_cocci or args.prove_cocci
-+    # We don't skip all patches for SmPL proof, we need to use its old series
-+    skip_patches = args.profile_cocci or args.test_cocci
-     test_cocci_found = False
-+    prove_cocci_tmp_dir = ''
-+    if args.prove_cocci:
-+        test_cocci = test_cocci.split('/')[-1]
-+        prove_cocci_tmp_dir = target_dir + '.orig'
-+        shutil.rmtree(prove_cocci_tmp_dir, ignore_errors=True)
-+        copytree(target_dir, prove_cocci_tmp_dir)
-     patches = []
-     sempatches = []
-     for root, dirs, files in os.walk(os.path.join(source_dir, patch_src)):
-         for f in files:
--            if not test_cocci and f.endswith('.patch'):
--                patches.append(os.path.join(root, f))
-+            if not skip_patches and f.endswith('.patch'):
-+                if args.prove_cocci:
-+                    # As an example if you use --prove-cocci patches/collateral-evolutions/network/09-threaded-irq.cocci
-+                    # the patches under 09-threaded-irq will be used for the proof.
-+                    proof_to_test_dir = test_cocci.split('/')[-1].split('.cocci')[0]
-+                    if proof_to_test_dir in os.path.join(root, f):
-+                        logwrite("Aggregating patch for Coccinelle SmPL %s proof: %s" % (proof_to_test_dir, f))
-+                        patches.append(os.path.join(root, f))
-+                else:
-+                    patches.append(os.path.join(root, f))
-             if f.endswith('.cocci'):
-                 if test_cocci:
-                     if f not in test_cocci:
-@@ -502,6 +518,8 @@ def apply_patches(args, desc, source_dir, patch_src, target_dir, logwrite=lambda
-                         logwrite("Testing Coccinelle SmPL patch: %s" % test_cocci)
-                     elif args.profile_cocci:
-                         logwrite("Profiling Coccinelle SmPL patch: %s" % test_cocci)
-+                    elif args.prove_cocci:
-+                        logwrite("Proving Coccinelle SmPL patch: %s" % test_cocci)
-                 sempatches.append(os.path.join(root, f))
-     patches.sort()
-     prefix_len = len(os.path.join(source_dir, patch_src)) + 1
-@@ -533,10 +551,13 @@ def apply_patches(args, desc, source_dir, patch_src, target_dir, logwrite=lambda
-                 fullfn = os.path.join(target_dir, patched_file)
-                 shutil.copyfile(fullfn, fullfn + '.orig_file')
- 
-+        patch_target_dir = target_dir
-+        if args.prove_cocci:
-+            patch_target_dir = prove_cocci_tmp_dir
-         process = subprocess.Popen(['patch', '-p1'], stdout=subprocess.PIPE,
-                                    stderr=subprocess.STDOUT, stdin=subprocess.PIPE,
-                                    close_fds=True, universal_newlines=True,
--                                   cwd=target_dir)
-+                                   cwd=patch_target_dir)
-         output = process.communicate(input=open(pfile, 'r').read())[0]
-         output = output.split('\n')
-         if output[-1] == '':
-@@ -578,7 +599,13 @@ def apply_patches(args, desc, source_dir, patch_src, target_dir, logwrite=lambda
-             for f in files:
-                 if f[-5:] == '.orig' or f[-4:] == '.rej':
-                     os.unlink(os.path.join(root, f))
--        git_debug_snapshot(args, "apply %s patch %s" % (desc, print_name))
-+        if patch_target_dir != target_dir:
-+            for root, dirs, files in os.walk(patch_target_dir):
-+                for f in files:
-+                    if f[-5:] == '.orig' or f[-4:] == '.rej':
-+                        os.unlink(os.path.join(root, f))
-+        if not args.prove_cocci:
-+            git_debug_snapshot(args, "apply %s patch %s" % (desc, print_name))
- 
-     sempatches.sort()
-     prefix_len = len(os.path.join(source_dir, patch_src)) + 1
-@@ -615,8 +642,27 @@ def apply_patches(args, desc, source_dir, patch_src, target_dir, logwrite=lambda
-             for f in files:
-                 if f.endswith('.cocci_backup'):
-                     os.unlink(os.path.join(root, f))
-+        if patch_target_dir != target_dir:
-+            for root, dirs, files in os.walk(patch_target_dir):
-+                for f in files:
-+                    if f.endswith('.cocci_backup'):
-+                        os.unlink(os.path.join(root, f))
-         git_debug_snapshot(args, "apply %s SmPL patch %s" % (desc, print_name))
- 
-+    if args.prove_cocci:
-+        copytree(prove_cocci_tmp_dir, target_dir, ignore=shutil.ignore_patterns('.git'))
-+        shutil.rmtree(prove_cocci_tmp_dir, ignore_errors=True)
-+        diff_stat = git.diff(tree=target_dir, extra_args=['--stat'])
-+        if len(diff_stat) == 0:
-+            logwrite('\nSmPL patch fully replaces patch series')
-+        else:
-+            logwrite('\nReview the difference between what the tree looks like ')
-+            logwrite('by applying your SmPL patch, then reverting that and ')
-+            logwrite('only applying your the patches in the patch series.')
-+            logwrite('')
-+            logwrite('Change directory to %s and run \'git diff\'' % target_dir)
-+            logwrite('diff stat of the changes:\n')
-+        logwrite(diff_stat)
-     if test_cocci and test_cocci_found:
-         logwrite('Done!')
-         sys.exit(0)
-@@ -675,6 +721,11 @@ def _main():
-                         help='Only use the cocci file passed and pass --profile  to Coccinelle, ' +
-                              'also creates a git repo on the target directory for easy inspection ' +
-                              'of changes done by Coccinelle.')
-+    parser.add_argument('--prove-cocci', metavar='<sp_file>', type=str, default=None,
-+                        help='Only use the cocci file passed for Coccinelle and prove that it provides ' +
-+                             'sufficient replacement for the patches under similar path name. Running ' +
-+                             'git diff on the target directory suffices to show you what extra things' +
-+                             'your SmPL patch did or what it didn\'t cover.')
-     args = parser.parse_args()
- 
-     # When building a package we use CPTCFG as we can rely on the
-@@ -721,6 +772,7 @@ def _main():
-                    kup_test=args.kup_test,
-                    test_cocci=args.test_cocci,
-                    profile_cocci=args.profile_cocci,
-+                   prove_cocci=args.prove_cocci,
-                    logwrite=logwrite)
- 
- def process(kerneldir, copy_list_file, git_revision=None,
-@@ -730,6 +782,7 @@ def process(kerneldir, copy_list_file, git_revision=None,
-             kup_test=False,
-             test_cocci=None,
-             profile_cocci=None,
-+            prove_cocci=None,
-             logwrite=lambda x:None,
-             git_tracked_version=False):
-     class Args(object):
-@@ -738,7 +791,8 @@ def process(kerneldir, copy_list_file, git_revision=None,
-                      gitdebug, verbose, extra_driver, kup,
-                      kup_test,
-                      test_cocci,
--                     profile_cocci):
-+                     profile_cocci,
-+                     prove_cocci):
-             self.kerneldir = kerneldir
-             self.copy_list = copy_list_file
-             self.git_revision = git_revision
-@@ -753,7 +807,8 @@ def process(kerneldir, copy_list_file, git_revision=None,
-             self.kup_test = kup_test
-             self.test_cocci = test_cocci
-             self.profile_cocci = profile_cocci
--            if self.test_cocci or self.profile_cocci:
-+            self.prove_cocci = prove_cocci
-+            if self.test_cocci or self.profile_cocci or self.prove_cocci:
-                 self.gitdebug = True
-     def git_paranoia(tree=None, logwrite=lambda x:None):
-         data = git.paranoia(tree)
-@@ -767,7 +822,7 @@ def process(kerneldir, copy_list_file, git_revision=None,
-     args = Args(kerneldir, copy_list_file,
-                 git_revision, bpid, clean, refresh, base_name,
-                 gitdebug, verbose, extra_driver, kup, kup_test,
--                test_cocci, profile_cocci)
-+                test_cocci, profile_cocci, prove_cocci)
-     rel_prep = None
- 
-     if bpid.integrate:
+diff --git a/patches/collateral-evolutions/network/0054-struct-proto_ops-sig.cocci b/patches/collateral-evolutions/network/0054-struct-proto_ops-sig.cocci
+new file mode 100644
+index 0000000..0c0845a
+--- /dev/null
++++ b/patches/collateral-evolutions/network/0054-struct-proto_ops-sig.cocci
+@@ -0,0 +1,177 @@
++/*
++This provides the backport for the collateral evolution introduced
++via commit 1b784140474e4fc94281a49e96c67d29df0efbde, titled
++"net: Remove iocb argument from sendmsg and recvmsg".
++
++The net/tipc/ subsystem (Transparent Inter Process Communication (TIPC))
++relied historically on using an argument passed on the struct proto_ops
++and struct proto sendmsg and recvmsg callbacks to determine if it needed
++to perform a lock within its own code. Commit 1b784140474e4 removed replaced
++the locking functionality to require the argument and instead moved all
++the necessary heuristics into net/tipc. Other subsystems just passed NULL.
++After the net/tipc code was cleaned up from the locking (see commmit
++39a0295f901423e260a034ac7c3211ecaa9c2745 titled "tipc: Don't use iocb
++argument in socket layer") we no longer needed the extra argument on the
++struct proto_ops and struct proto callbacks.
++
++To backport non-tipc subsystems we then just need to modify the upstream
++code which declares these callbacks and add the extra argument again, but
++the same routine can be used from upstream code. The grammar we use below
++declares routines which can be pegged to struct proto_ops and struct proto
++callbacks that simply call the same upstream code, the extra argument is
++ignored. The argument can be ignored as it was only used within the
++net/tipc subsystem for locking purposes.
++*/
++
++@ proto_ops @
++identifier s, send_func, recv_func;
++@@
++
++ struct proto_ops s = {
++ 	.sendmsg = send_func,
++ 	.recvmsg = recv_func,
++};
++
++@ mod_send depends on proto_ops @
++identifier proto_ops.send_func;
++fresh identifier backport_send = "backport_" ## send_func;
++@@
++
++send_func(...)
++{
++	...
++}
++
+++#if LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0)
+++static int backport_send(struct kiocb *iocb, struct socket *sock, struct msghdr *msg, size_t len)
+++{
+++	return send_func(sock, msg, len);
+++}
+++#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) */
++
++@ mod_recv depends on proto_ops @
++identifier proto_ops.recv_func;
++fresh identifier backport_recv = "backport_" ## recv_func;
++@@
++
++recv_func(...)
++{
++	...
++}
++
+++#if LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0)
+++static int backport_recv(struct kiocb *iocb, struct socket *sock,
+++			  struct msghdr *msg, size_t len, int flags)
+++{
+++	return recv_func(sock, msg, len, flags);
+++}
+++#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) */
++
++@ mod_proto_ops_tx depends on proto_ops && mod_send @
++identifier s, proto_ops.send_func, mod_send.backport_send;
++@@
++
++ struct proto_ops s = {
+++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
++ 	.sendmsg = send_func,
+++#else
+++	.sendmsg = backport_send,
+++#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
++};
++
++@ mod_proto_ops_rx depends on proto_ops && mod_recv @
++identifier s, proto_ops.recv_func, mod_recv.backport_recv;
++@@
++
++ struct proto_ops s = {
+++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
++ 	.recvmsg = recv_func,
+++#else
+++	.recvmsg = backport_recv,
+++#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
++};
++
++@ mod_sock_send_callers depends on proto_ops@
++identifier proto_ops.send_func;
++identifier sock, msg, len, sk;
++@@
++
++send_func(struct socket *sock, struct msghdr *msg, size_t len)
++{
++	...
+++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
++	return sk->sk_prot->sendmsg(sk, msg, len);
+++#else
+++	return sk->sk_prot->sendmsg(NULL, sk, msg, len);
+++#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
++}
++
++@ proto @
++identifier s, send_func, recv_func;
++@@
++
++ struct proto s = {
++ 	.sendmsg = send_func,
++ 	.recvmsg = recv_func,
++};
++
++@ proto_mod_send depends on proto @
++identifier proto.send_func;
++fresh identifier backport_send = "backport_" ## send_func;
++@@
++
++send_func(...)
++{
++	...
++}
++
+++#if LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0)
+++static int backport_send(struct kiocb *iocb, struct socket *sock,
+++			  struct msghdr *msg, size_t len)
+++{
+++	return send_func(sock, msg, len);
+++}
+++#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) */
++
++@ proto_mod_recv depends on proto @
++identifier proto.recv_func;
++fresh identifier backport_recv = "backport_" ## recv_func;
++@@
++
++recv_func(...)
++{
++	...
++}
++
+++#if LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0)
+++static int backport_recv(struct kiocb *iocb, struct socket *sock,
+++			  struct msghdr *msg, size_t len,
+++			  int noblock, int flags, int *addr_len)
+++{
+++	return recv_func(sock, msg, len, noblock, flags, addr_len);
+++}
+++#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) */
++
++@ mod_proto_tx depends on proto && proto_mod_send @
++identifier s, proto.send_func, proto_mod_send.backport_send;
++@@
++
++ struct proto s = {
+++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
++ 	.sendmsg = send_func,
+++#else
+++	.sendmsg = backport_send,
+++#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
++};
++
++@ mod_proto_rx depends on proto && proto_mod_recv @
++identifier s, proto.recv_func, proto_mod_recv.backport_recv;
++@@
++
++ struct proto s = {
+++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
++ 	.recvmsg = recv_func,
+++#else
+++	.recvmsg = backport_recv,
+++#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
++};
+diff --git a/patches/collateral-evolutions/network/0054-struct-proto_ops-sig/bluetooth.patch b/patches/collateral-evolutions/network/0054-struct-proto_ops-sig/bluetooth.patch
+deleted file mode 100644
+index 2cf5a9e..0000000
+--- a/patches/collateral-evolutions/network/0054-struct-proto_ops-sig/bluetooth.patch
++++ /dev/null
+@@ -1,187 +0,0 @@
+---- a/net/bluetooth/hci_sock.c
+-+++ b/net/bluetooth/hci_sock.c
+-@@ -953,6 +953,14 @@ static int hci_sock_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+- 
+- 	return err ? : copied;
+- }
+-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0)
+-+static int backport_hci_sock_recvmsg(struct kiocb *iocb, struct socket *sock,
+-+				     struct msghdr *msg, size_t len,
+-+				     int flags)
+-+{
+-+	return hci_sock_recvmsg(sock, msg, len, flags);
+-+}
+-+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) */
+- 
+- static int hci_mgmt_cmd(struct hci_mgmt_chan *chan, struct sock *sk,
+- 			struct msghdr *msg, size_t msglen)
+-@@ -1189,6 +1196,13 @@ drop:
+- 	kfree_skb(skb);
+- 	goto done;
+- }
+-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0)
+-+static int backport_hci_sock_sendmsg(struct kiocb *iocb, struct socket *sock,
+-+				     struct msghdr *msg, size_t len)
+-+{
+-+	return hci_sock_sendmsg(sock, msg, len);
+-+}
+-+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) */
+- 
+- static int hci_sock_setsockopt(struct socket *sock, int level, int optname,
+- 			       char __user *optval, unsigned int len)
+-@@ -1345,8 +1358,13 @@ static const struct proto_ops hci_sock_ops = {
+- 	.release	= hci_sock_release,
+- 	.bind		= hci_sock_bind,
+- 	.getname	= hci_sock_getname,
+-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+- 	.sendmsg	= hci_sock_sendmsg,
+- 	.recvmsg	= hci_sock_recvmsg,
+-+#else
+-+	.sendmsg = backport_hci_sock_sendmsg,
+-+	.recvmsg = backport_hci_sock_recvmsg,
+-+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
+- 	.ioctl		= hci_sock_ioctl,
+- 	.poll		= datagram_poll,
+- 	.listen		= sock_no_listen,
+---- a/net/bluetooth/l2cap_sock.c
+-+++ b/net/bluetooth/l2cap_sock.c
+-@@ -975,6 +975,13 @@ static int l2cap_sock_sendmsg(struct socket *sock, struct msghdr *msg,
+- 
+- 	return err;
+- }
+-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0)
+-+static int backport_l2cap_sock_sendmsg(struct kiocb *iocb,
+-+				       struct socket *sock,
+-+				       struct msghdr *msg, size_t len){
+-+	return l2cap_sock_sendmsg(sock, msg, len);
+-+}
+-+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) */
+- 
+- static int l2cap_sock_recvmsg(struct socket *sock, struct msghdr *msg,
+- 			      size_t len, int flags)
+-@@ -1036,6 +1043,14 @@ done:
+- 	release_sock(sk);
+- 	return err;
+- }
+-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0)
+-+static int backport_l2cap_sock_recvmsg(struct kiocb *iocb,
+-+				       struct socket *sock,
+-+				       struct msghdr *msg, size_t len,
+-+				       int flags){
+-+	return l2cap_sock_recvmsg(sock, msg, len, flags);
+-+}
+-+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) */
+- 
+- /* Kill socket (only if zapped and orphan)
+-  * Must be called on unlocked socket.
+-@@ -1618,8 +1633,16 @@ static const struct proto_ops l2cap_sock_ops = {
+- 	.listen		= l2cap_sock_listen,
+- 	.accept		= l2cap_sock_accept,
+- 	.getname	= l2cap_sock_getname,
+-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+- 	.sendmsg	= l2cap_sock_sendmsg,
+-+#else
+-+	.sendmsg = backport_l2cap_sock_sendmsg,
+-+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
+-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+- 	.recvmsg	= l2cap_sock_recvmsg,
+-+#else
+-+	.recvmsg = backport_l2cap_sock_recvmsg,
+-+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
+- 	.poll		= bt_sock_poll,
+- 	.ioctl		= bt_sock_ioctl,
+- 	.mmap		= sock_no_mmap,
+---- a/net/bluetooth/rfcomm/sock.c
+-+++ b/net/bluetooth/rfcomm/sock.c
+-@@ -622,6 +622,13 @@ done:
+- 
+- 	return sent;
+- }
+-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0)
+-+static int backport_rfcomm_sock_sendmsg(struct kiocb *iocb,
+-+					struct socket *sock,
+-+					struct msghdr *msg, size_t len){
+-+	return rfcomm_sock_sendmsg(sock, msg, len);
+-+}
+-+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) */
+- 
+- static int rfcomm_sock_recvmsg(struct socket *sock, struct msghdr *msg,
+- 			       size_t size, int flags)
+-@@ -647,6 +654,14 @@ static int rfcomm_sock_recvmsg(struct socket *sock, struct msghdr *msg,
+- 
+- 	return len;
+- }
+-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0)
+-+static int backport_rfcomm_sock_recvmsg(struct kiocb *iocb,
+-+					struct socket *sock,
+-+					struct msghdr *msg, size_t len,
+-+					int flags){
+-+	return rfcomm_sock_recvmsg(sock, msg, len, flags);
+-+}
+-+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) */
+- 
+- static int rfcomm_sock_setsockopt_old(struct socket *sock, int optname, char __user *optval, unsigned int optlen)
+- {
+-@@ -1044,8 +1059,16 @@ static const struct proto_ops rfcomm_sock_ops = {
+- 	.listen		= rfcomm_sock_listen,
+- 	.accept		= rfcomm_sock_accept,
+- 	.getname	= rfcomm_sock_getname,
+-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+- 	.sendmsg	= rfcomm_sock_sendmsg,
+-+#else
+-+	.sendmsg = backport_rfcomm_sock_sendmsg,
+-+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
+-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+- 	.recvmsg	= rfcomm_sock_recvmsg,
+-+#else
+-+	.recvmsg = backport_rfcomm_sock_recvmsg,
+-+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
+- 	.shutdown	= rfcomm_sock_shutdown,
+- 	.setsockopt	= rfcomm_sock_setsockopt,
+- 	.getsockopt	= rfcomm_sock_getsockopt,
+---- a/net/bluetooth/sco.c
+-+++ b/net/bluetooth/sco.c
+-@@ -713,6 +713,12 @@ static int sco_sock_sendmsg(struct socket *sock, struct msghdr *msg,
+- 	release_sock(sk);
+- 	return err;
+- }
+-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0)
+-+static int backport_sco_sock_sendmsg(struct kiocb *iocb, struct socket *sock,
+-+				     struct msghdr *msg, size_t len){
+-+	return sco_sock_sendmsg(sock, msg, len);
+-+}
+-+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) */
+- 
+- static void sco_conn_defer_accept(struct hci_conn *conn, u16 setting)
+- {
+-@@ -779,6 +785,13 @@ static int sco_sock_recvmsg(struct socket *sock, struct msghdr *msg,
+- 
+- 	return bt_sock_recvmsg(sock, msg, len, flags);
+- }
+-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0)
+-+static int backport_sco_sock_recvmsg(struct kiocb *iocb, struct socket *sock,
+-+				     struct msghdr *msg, size_t len,
+-+				     int flags){
+-+	return sco_sock_recvmsg(sock, msg, len, flags);
+-+}
+-+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) */
+- 
+- static int sco_sock_setsockopt(struct socket *sock, int level, int optname, char __user *optval, unsigned int optlen)
+- {
+-@@ -1178,8 +1191,16 @@ static const struct proto_ops sco_sock_ops = {
+- 	.listen		= sco_sock_listen,
+- 	.accept		= sco_sock_accept,
+- 	.getname	= sco_sock_getname,
+-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+- 	.sendmsg	= sco_sock_sendmsg,
+-+#else
+-+	.sendmsg = backport_sco_sock_sendmsg,
+-+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
+-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+- 	.recvmsg	= sco_sock_recvmsg,
+-+#else
+-+	.recvmsg = backport_sco_sock_recvmsg,
+-+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
+- 	.poll		= bt_sock_poll,
+- 	.ioctl		= bt_sock_ioctl,
+- 	.mmap		= sock_no_mmap,
+diff --git a/patches/collateral-evolutions/network/0054-struct-proto_ops-sig/ieee802154.patch b/patches/collateral-evolutions/network/0054-struct-proto_ops-sig/ieee802154.patch
+deleted file mode 100644
+index 0497dbe..0000000
+--- a/patches/collateral-evolutions/network/0054-struct-proto_ops-sig/ieee802154.patch
++++ /dev/null
+@@ -1,134 +0,0 @@
+---- a/net/ieee802154/socket.c
+-+++ b/net/ieee802154/socket.c
+-@@ -101,8 +101,19 @@ static int ieee802154_sock_sendmsg(struct socket *sock, struct msghdr *msg,
+- {
+- 	struct sock *sk = sock->sk;
+- 
+-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+- 	return sk->sk_prot->sendmsg(sk, msg, len);
+-+#else
+-+	return sk->sk_prot->sendmsg(NULL, sk, msg, len);
+-+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
+- }
+-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0)
+-+static int backport_ieee802154_sock_sendmsg(struct kiocb *iocb,
+-+					    struct socket *sock,
+-+					    struct msghdr *msg, size_t len){
+-+	return ieee802154_sock_sendmsg(sock, msg, len);
+-+}
+-+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) */
+- 
+- static int ieee802154_sock_bind(struct socket *sock, struct sockaddr *uaddr,
+- 				int addr_len)
+-@@ -323,6 +334,12 @@ out_dev:
+- out:
+- 	return err;
+- }
+-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0)
+-+static int backport_raw_sendmsg(struct kiocb *iocb, struct socket *sock,
+-+				struct msghdr *msg, size_t len){
+-+	return raw_sendmsg(sock, msg, len);
+-+}
+-+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) */
+- 
+- static int raw_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+- 		       int noblock, int flags, int *addr_len)
+-@@ -356,6 +373,13 @@ out:
+- 		return err;
+- 	return copied;
+- }
+-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0)
+-+static int backport_raw_recvmsg(struct kiocb *iocb, struct socket *sock,
+-+				struct msghdr *msg, size_t len, int noblock,
+-+				int flags, int *addr_len){
+-+	return raw_recvmsg(sock, msg, len, noblock, flags, addr_len);
+-+}
+-+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) */
+- 
+- static int raw_rcv_skb(struct sock *sk, struct sk_buff *skb)
+- {
+-@@ -409,8 +433,16 @@ static struct proto ieee802154_raw_prot = {
+- 	.obj_size	= sizeof(struct sock),
+- 	.close		= raw_close,
+- 	.bind		= raw_bind,
+-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+- 	.sendmsg	= raw_sendmsg,
+-+#else
+-+	.sendmsg = backport_raw_sendmsg,
+-+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
+-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+- 	.recvmsg	= raw_recvmsg,
+-+#else
+-+	.recvmsg = backport_raw_recvmsg,
+-+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
+- 	.hash		= raw_hash,
+- 	.unhash		= raw_unhash,
+- 	.connect	= raw_connect,
+-@@ -434,7 +466,11 @@ static const struct proto_ops ieee802154_raw_ops = {
+- 	.shutdown	   = sock_no_shutdown,
+- 	.setsockopt	   = sock_common_setsockopt,
+- 	.getsockopt	   = sock_common_getsockopt,
+-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+- 	.sendmsg	   = ieee802154_sock_sendmsg,
+-+#else
+-+	.sendmsg = backport_ieee802154_sock_sendmsg,
+-+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
+- 	.recvmsg	   = sock_common_recvmsg,
+- 	.mmap		   = sock_no_mmap,
+- 	.sendpage	   = sock_no_sendpage,
+-@@ -710,6 +746,12 @@ out_dev:
+- out:
+- 	return err;
+- }
+-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0)
+-+static int backport_dgram_sendmsg(struct kiocb *iocb, struct socket *sock,
+-+				  struct msghdr *msg, size_t len){
+-+	return dgram_sendmsg(sock, msg, len);
+-+}
+-+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) */
+- 
+- static int dgram_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+- 			 int noblock, int flags, int *addr_len)
+-@@ -751,6 +793,13 @@ out:
+- 		return err;
+- 	return copied;
+- }
+-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0)
+-+static int backport_dgram_recvmsg(struct kiocb *iocb, struct socket *sock,
+-+				  struct msghdr *msg, size_t len, int noblock,
+-+				  int flags, int *addr_len){
+-+	return dgram_recvmsg(sock, msg, len, noblock, flags, addr_len);
+-+}
+-+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) */
+- 
+- static int dgram_rcv_skb(struct sock *sk, struct sk_buff *skb)
+- {
+-@@ -947,8 +996,16 @@ static struct proto ieee802154_dgram_prot = {
+- 	.init		= dgram_init,
+- 	.close		= dgram_close,
+- 	.bind		= dgram_bind,
+-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+- 	.sendmsg	= dgram_sendmsg,
+-+#else
+-+	.sendmsg = backport_dgram_sendmsg,
+-+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
+-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+- 	.recvmsg	= dgram_recvmsg,
+-+#else
+-+	.recvmsg = backport_dgram_recvmsg,
+-+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
+- 	.hash		= dgram_hash,
+- 	.unhash		= dgram_unhash,
+- 	.connect	= dgram_connect,
+-@@ -973,7 +1030,11 @@ static const struct proto_ops ieee802154_dgram_ops = {
+- 	.shutdown	   = sock_no_shutdown,
+- 	.setsockopt	   = sock_common_setsockopt,
+- 	.getsockopt	   = sock_common_getsockopt,
+-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+- 	.sendmsg	   = ieee802154_sock_sendmsg,
+-+#else
+-+	.sendmsg = backport_ieee802154_sock_sendmsg,
+-+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
+- 	.recvmsg	   = sock_common_recvmsg,
+- 	.mmap		   = sock_no_mmap,
+- 	.sendpage	   = sock_no_sendpage,
+diff --git a/patches/collateral-evolutions/network/0054-struct-proto_ops-sig/nfc.patch b/patches/collateral-evolutions/network/0054-struct-proto_ops-sig/nfc.patch
+deleted file mode 100644
+index e29c4d8..0000000
+--- a/patches/collateral-evolutions/network/0054-struct-proto_ops-sig/nfc.patch
++++ /dev/null
+@@ -1,115 +0,0 @@
+---- a/net/nfc/llcp_sock.c
+-+++ b/net/nfc/llcp_sock.c
+-@@ -792,6 +792,12 @@ static int llcp_sock_sendmsg(struct socket *sock, struct msghdr *msg,
+- 
+- 	return nfc_llcp_send_i_frame(llcp_sock, msg, len);
+- }
+-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0)
+-+static int backport_llcp_sock_sendmsg(struct kiocb *iocb, struct socket *sock,
+-+				      struct msghdr *msg, size_t len){
+-+	return llcp_sock_sendmsg(sock, msg, len);
+-+}
+-+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) */
+- 
+- static int llcp_sock_recvmsg(struct socket *sock, struct msghdr *msg,
+- 			     size_t len, int flags)
+-@@ -882,6 +888,13 @@ done:
+- 
+- 	return copied;
+- }
+-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0)
+-+static int backport_llcp_sock_recvmsg(struct kiocb *iocb, struct socket *sock,
+-+				      struct msghdr *msg, size_t len,
+-+				      int flags){
+-+	return llcp_sock_recvmsg(sock, msg, len, flags);
+-+}
+-+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) */
+- 
+- static const struct proto_ops llcp_sock_ops = {
+- 	.family         = PF_NFC,
+-@@ -898,8 +911,16 @@ static const struct proto_ops llcp_sock_ops = {
+- 	.shutdown       = sock_no_shutdown,
+- 	.setsockopt     = nfc_llcp_setsockopt,
+- 	.getsockopt     = nfc_llcp_getsockopt,
+-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+- 	.sendmsg        = llcp_sock_sendmsg,
+-+#else
+-+	.sendmsg = backport_llcp_sock_sendmsg,
+-+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
+-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+- 	.recvmsg        = llcp_sock_recvmsg,
+-+#else
+-+	.recvmsg = backport_llcp_sock_recvmsg,
+-+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
+- 	.mmap           = sock_no_mmap,
+- };
+- 
+-@@ -919,7 +940,11 @@ static const struct proto_ops llcp_rawsock_ops = {
+- 	.setsockopt     = sock_no_setsockopt,
+- 	.getsockopt     = sock_no_getsockopt,
+- 	.sendmsg        = sock_no_sendmsg,
+-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+- 	.recvmsg        = llcp_sock_recvmsg,
+-+#else
+-+	.recvmsg = backport_llcp_sock_recvmsg,
+-+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
+- 	.mmap           = sock_no_mmap,
+- };
+- 
+---- a/net/nfc/rawsock.c
+-+++ b/net/nfc/rawsock.c
+-@@ -246,6 +246,12 @@ static int rawsock_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+- 
+- 	return len;
+- }
+-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0)
+-+static int backport_rawsock_sendmsg(struct kiocb *iocb, struct socket *sock,
+-+				    struct msghdr *msg, size_t len){
+-+	return rawsock_sendmsg(sock, msg, len);
+-+}
+-+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) */
+- 
+- static int rawsock_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+- 			   int flags)
+-@@ -274,6 +280,12 @@ static int rawsock_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+- 
+- 	return rc ? : copied;
+- }
+-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0)
+-+static int backport_rawsock_recvmsg(struct kiocb *iocb, struct socket *sock,
+-+				    struct msghdr *msg, size_t len, int flags){
+-+	return rawsock_recvmsg(sock, msg, len, flags);
+-+}
+-+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) */
+- 
+- static const struct proto_ops rawsock_ops = {
+- 	.family         = PF_NFC,
+-@@ -290,8 +302,16 @@ static const struct proto_ops rawsock_ops = {
+- 	.shutdown       = sock_no_shutdown,
+- 	.setsockopt     = sock_no_setsockopt,
+- 	.getsockopt     = sock_no_getsockopt,
+-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+- 	.sendmsg        = rawsock_sendmsg,
+-+#else
+-+	.sendmsg = backport_rawsock_sendmsg,
+-+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
+-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+- 	.recvmsg        = rawsock_recvmsg,
+-+#else
+-+	.recvmsg = backport_rawsock_recvmsg,
+-+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
+- 	.mmap           = sock_no_mmap,
+- };
+- 
+-@@ -311,7 +331,11 @@ static const struct proto_ops rawsock_raw_ops = {
+- 	.setsockopt     = sock_no_setsockopt,
+- 	.getsockopt     = sock_no_getsockopt,
+- 	.sendmsg        = sock_no_sendmsg,
+-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+- 	.recvmsg        = rawsock_recvmsg,
+-+#else
+-+	.recvmsg = backport_rawsock_recvmsg,
+-+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0) */
+- 	.mmap           = sock_no_mmap,
+- };
+- 
 -- 
 2.3.2.209.gd67f9d5.dirty
