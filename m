@@ -1,63 +1,85 @@
 From: mcgrof@suse.com (Luis R. Rodriguez)
-Date: Mon, 8 Jun 2015 23:29:27 +0200
-Subject: [Cocci] RFD: SmPL patch equivalence support strategy
-Message-ID: <20150608212927.GU23057@wotan.suse.de>
+Date: Mon, 8 Jun 2015 23:44:58 +0200
+Subject: [Cocci] Using or for structural #ifdefs
+In-Reply-To: <alpine.DEB.2.02.1506082306420.2041@localhost6.localdomain6>
+References: <20150608203717.GS23057@wotan.suse.de>
+ <alpine.DEB.2.02.1506082306420.2041@localhost6.localdomain6>
+Message-ID: <20150608214458.GV23057@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-I recently respinned my old 2013 series on adding support for
-SmPL patch equivalence support on the Linux backports project.
-What this functionality did was to enable folks using regular
-patches to replace them with a Coccinelle SmPL patch and then
-get see a diff between both strategies. There are obviously
-several ways to do this, the algorithm embraced in the tool
-functionality extension I wrote can be summarized as follows
-though:
+On Mon, Jun 08, 2015 at 11:13:47PM +0200, Julia Lawall wrote:
+> On Mon, 8 Jun 2015, Luis R. Rodriguez wrote:
+> 
+> > 
+> > An examle or SmPL patch (from upstream Coccinelle tests/orexp.cocci):
+> > 
+> > @@                                                                              
+> > expression E, F;                                                                
+> > @@                                                                              
+> >                                                                                 
+> > (                                                                               
+> > -  foo(E)                                                                       
+> > + 4                                                                             
+> > |                                                                               
+> > -  bar(F)                                                                       
+> > + 4                                                                             
+> > )  
+> > 
+> > This works nicely for code within functions, for backporting we at times
+> > need to use or clauses for code outside of functions. We can avoid the
+> > or statements when backporting but if we could use them it would provide
+> > the ability to produce unified diffs which are much more readible and
+> > would resemble more what humans would try to write. I'll explain with
+> > an example.
+> 
+> I don't think that or is the problem.  If you have:
+> 
+> + foo();
+> (
+> - x();
+> + y();
+> |
+> - m();
+> + n();
+> )
+> + foo2();
+> 
+> the disjunction will still only match one statement.  Of course, you could 
+> put between the calls to foo and foo2 something that would match two 
+> statements, and then that would match two statements.  Or something that 
+> would match one or two statements.
+> 
+> The problem for structure field initializations would seem to be that they 
+> are unordered.  That is, if you put an initialization for x and then an 
+> initialization for y, the C code might have x initialized before y or vice 
+> versa, and with arbitrary things between them.  So the #ifdef/#endif would 
+> very likely come out in undesirable places.
 
-Tree upstream: original code. Now copy it to two new trees,
-Tree a, and Tree b.
+Doesn't the original developer have the responsibility over the order?
+So long as we proceed on the code in order and perform the operations
+asked atomically its not clear to me how this would be an issue.
 
-Tree a: apply Coccinelle SmPL patch
-Tree b: apply patch series
+> The problem for functions is that Coccinelle only sees one at a time.  It 
+> has no idea whether one function is before or after another, and whether 
+> they are contiguous or there is something between them.
 
-diff -u -p a/ b/
+Understood, similarly -- it would seem to me fair for Coccinelle to trust
+the order already in place and just address disjunctions atomically as
+they are found top - down.
 
-If there is equivalence the diff should yield 0 delta.
-In practice there are some surprises which folks should
-expect and because of this the order of choosing a/ first
-instead of b/ was chosen here:
+I may have misunderstood the issue though.
 
-1) Extra new code (additions, green on git diff) are things
-   that you have not yet covered on your Coccinelle SmPL patch.
-2) Code removals observed (deletions, red in git diff) are
-   things your Coccinelle SmPL patch did that your old
-   patch series did not, so it was unexpected.
+> Maybe this would be better done with some tool that is separate from 
+> Coccinelle.  There could be a danger of modifying #ifdefs that were in the 
+> original code.  If that would be a bad thing, then the tool could take the 
+> old and new code as inputs, and only eliminate ifdefs that are unique to 
+> the new code.
 
-A person's first use of Coccinelle might be to expect 2)
-to be "bad", its why I chose the order of extra code to
-reflect deletions. In practice though 2) is pretty common
-but its because it might show work you forgot to do over
-an entire tree. In the end the order is quite subjective
-but we need to pick one.
-
-The above solution was implemented on the Linux backports
-project but its integration was within the gentree.py script
-and that script already does quite a lot of things for us,
-we've decided its integration just adds complexity which
-likely should instead be implemented within Coccinelle.
-
-Are there other folks who could make use of this? If so I
-could take some time to write a Coccinelle tool for this.
-Are there any concerns if we were to work on this for
-integration into Coccinelle? Any reason why we shouldn't?
-Is the algorithm described above sufficient?
-
-In practice the tool just displayed a 'git diff --stat'
-output, if you wanted to see the actual differences you
-would have to change directory to the copy directory created
-and run 'git diff', as git was used for tracking the changes.
-Using git is not a requirement, it was just convenian for us
-as we had a debug git option for development on backports.
-What we do for a generic tool might differ.
+A tool to optimize patches seems like a super useful tool. Grammatically
+however I also think it'd be useful to be able to use disjunctions on functions
+/ structur declarations. The last item (c) on grouping metavariables would also
+be extremey useful as it would shorten the length of the rules and I think also
+enable more readible SmPL patches.
 
  Luis
