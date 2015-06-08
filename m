@@ -1,88 +1,69 @@
-From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Mon,  8 Jun 2015 13:01:42 -0700
-Subject: [Cocci] [PATCH] pycocci: sync pycocci with Coccinelle upstream
-Message-ID: <1433793702-21322-1-git-send-email-mcgrof@do-not-panic.com>
+From: mcgrof@suse.com (Luis R. Rodriguez)
+Date: Mon, 8 Jun 2015 13:08:58 -0700
+Subject: [Cocci] [PATCH 3/4] gentree.py: add SmPL patch equivalence
+	proof support
+In-Reply-To: <1433792751.10172.0.camel@sipsolutions.net>
+References: <1433549401-17006-1-git-send-email-mcgrof@do-not-panic.com>
+ <1433549401-17006-4-git-send-email-mcgrof@do-not-panic.com>
+ <1433592743.2467.7.camel@sipsolutions.net>
+ <CAB=NE6X6=uuof0BdhVctobb_Ypvj-Q03Akma_PWGe17PUn=7PA@mail.gmail.com>
+ <1433792751.10172.0.camel@sipsolutions.net>
+Message-ID: <CAB=NE6WTxatq3BAw=_84qwVEOhQezY3ik8GMM-zxeHZYYPZKYg@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-pycocci is now part of Coccinelle upstream. Coccinelle has a plan
-to actually extend multithreaded support to enable us to not have
-to script this out. Until then pyccoci is used and I'll sync both
-solutions up as there is a bit of latency between a coccinelle release
-and what we may need from pycocci.
+On Mon, Jun 8, 2015 at 12:45 PM, Johannes Berg
+<johannes@sipsolutions.net> wrote:
+> On Mon, 2015-06-08 at 12:31 -0700, Luis R. Rodriguez wrote:
+>
+>> This is true, its in the like of how we wrote pycocci to provide us
+>> with a multithreaded solution for spatch integration / development as
+>> well and how pycocci now is upstream on Coccinelle.
+>
+> Speaking of which - are you aware that pycocci fails (or rather doesn't
+> fail!) miserably when cocci isn't installed/in the $PATH? At least I got
+> a report to that extent,
 
-Please send patches or report issues about pycocci to the coccinelle
-mailing list.
+Did you verify it?
 
-This commit syncs pycocci with the upstream pycocci with just one
-minor change introduced:
+> that it didn't really complete nor report an error in that case.
 
-commit cf8ef1aee7d40cddfee0f8707b2f481eb8258b4d
-Author: Luis R. Rodriguez <mcgrof@suse.com>
-Date:   Fri May 29 15:15:57 2015 -0700
+Definitely not. Error reporting from pycocci's use of Coccinelle use
+sucked though because it  was adding extra spaces in between each
+character though, I just fixed that last week, will sync now. Patches
+/ reports for issues are welcome but please note that pycocci is now
+part of Coccinelle so issues / patches should copy that list. For a
+while I'll just keep these in sync for convenience given that
+Coccinelle tends to batch a few commits before a release is made. I'll
+sync up now though.
 
-    pycocci: update Python script to print errors clearly
+mcgrof at ergon ~/linux-next (git::20150604-proto_ops-send-rcv-smpl)$ which pycocci
+which: no pycocci in
+(/usr/local/bin/:/usr/local/sbin/:/sbin/:/usr/sbin/:/home/mcgrof/bin/:/usr/bin:/usr/local/bin/:/usr/local/sbin/:/sbin/:/usr/sbin/:/home/mcgrof/bin/:/usr/bin:/usr/local/bin/:/usr/local/sbin/:/sbin/:/usr/sbin/:/home/mcgrof/bin/:/usr/bin:/home/mcgrof/bin:/usr/local/bin:/usr/bin:/bin:/usr/bin/X11:/usr/games)
 
-    When you run into errors with the pycocci script errors
-    seem cryptic, fix this. While at it also spit out what the
-    script will run, as typically when debugging you just want
-    to runt he same commands on your own.
+So not on my path.
 
-    For instance, when run on a 32 core machine you'll now see:
+mcgrof at ergon ~/linux-next (git::20150604-proto_ops-send-rcv-smpl)$
+/home/mcgrof/devel/coccinelle/tools/pycocci 0002-no_dmabuf.cocci
+drivers/media/v4l2-core/videobuf2-dma-contig.c
+spatch --sp-file 0002-no_dmabuf.cocci --in-place --recursive-includes
+--relax-include-path --use-coccigrep --timeout 120 --dir
+drivers/media/v4l2-core/videobuf2-dma-contig.c -max 4 -index 0
+spatch --sp-file 0002-no_dmabuf.cocci --in-place --recursive-includes
+--relax-include-path --use-coccigrep --timeout 120 --dir
+drivers/media/v4l2-core/videobuf2-dma-contig.c -max 4 -index 1
+spatch --sp-file 0002-no_dmabuf.cocci --in-place --recursive-includes
+--relax-include-path --use-coccigrep --timeout 120 --dir
+drivers/media/v4l2-core/videobuf2-dma-contig.c -max 4 -index 2
+spatch --sp-file 0002-no_dmabuf.cocci --in-place --recursive-includes
+--relax-include-path --use-coccigrep --timeout 120 --dir
+drivers/media/v4l2-core/videobuf2-dma-contig.c -max 4 -index 3
 
-    mcgrof at drvbp1 ~/linux-next (git::master)$ time pycocci rename-dma.cocci ./
-    spatch --sp-file rename-dma.cocci --in-place --recursive-includes --relax-include-path --use-coccigrep --timeout 120 --dir ./ -max 32 -index 0
-    ...
-    spatch --sp-file rename-dma.cocci --in-place --recursive-includes --relax-include-path --use-coccigrep --timeout 120 --dir ./ -max 32 -index 27
+and git diff yields exact same results as if when pycocci is in my
+path. Please have the user report the issue to this list  and copy the
+cocci list. Also Johannes, I value your time and I feel you're
+investing quite a bit of time into this NACK discussion, I obviously
+trust your judgement completely on gentree.py maintenance so for your
+convenience feel free to be concise in your NACK's for patches there.
 
-    real    0m50.074s
-    user    14m50.168s
-    sys     2m8.260s
-
-Signed-off-by: Luis R. Rodriguez <mcgrof@do-not-panic.com>
----
- devel/pycocci | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
-
-diff --git a/devel/pycocci b/devel/pycocci
-index b6bb78e..4aa1d36 100755
---- a/devel/pycocci
-+++ b/devel/pycocci
-@@ -45,22 +45,22 @@ class CoccinelleError(Exception):
- class ExecutionErrorThread(CoccinelleError):
-     def __init__(self, errcode, fn, cocci_file, threads, t, logwrite, print_name):
-         self.error_code = errcode
--        logwrite("Failed to apply changes from %s" % print_name)
-+        logwrite("Failed to apply changes from %s\n" % print_name)
- 
--        logwrite("Specific log output from change that failed using %s" % print_name)
-+        logwrite("Specific log output from change that failed using %s\n" % print_name)
-         tf = open(fn, 'r')
-         for line in tf.read():
--            logwrite('> %s' % line)
-+            logwrite(line)
-         tf.close()
- 
--        logwrite("Full log using %s" % print_name)
-+        logwrite("Full log using %s\n" % print_name)
-         for num in range(threads):
-             fn = os.path.join(t, '.tmp_spatch_worker.' + str(num))
-             if (not os.path.isfile(fn)):
-                 continue
-             tf = open(fn, 'r')
-             for line in tf.read():
--                logwrite('> %s' % line)
-+                logwrite(line)
-             tf.close()
-             os.unlink(fn)
- 
-@@ -82,6 +82,7 @@ def spatch(cocci_file, outdir,
- 
-     fn = os.path.join(temp_dir, '.tmp_spatch_worker.' + str(thread_id))
-     outfile = open(fn, 'w')
-+    logwrite("%s\n" % " ".join(cmd))
- 
-     sprocess = subprocess.Popen(cmd,
-                                stdout=outfile, stderr=subprocess.STDOUT,
--- 
-2.1.0
+ Luis
