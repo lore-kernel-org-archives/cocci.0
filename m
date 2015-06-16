@@ -1,19 +1,72 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 14 Jun 2015 09:44:42 +0200 (CEST)
-Subject: [Cocci] [PATCH RFC V2] coccinelle: flag constants being passed
- for jiffies
-In-Reply-To: <20150614073435.GA30149@opentech.at>
-References: <1434128979-2096-1-git-send-email-hofrat@osadl.org>
- <alpine.DEB.2.02.1506140900580.2085@localhost6.localdomain6>
- <20150614073435.GA30149@opentech.at>
-Message-ID: <alpine.DEB.2.02.1506140944190.2085@localhost6.localdomain6>
+From: mcgrof@suse.com (Luis R. Rodriguez)
+Date: Tue, 16 Jun 2015 21:05:04 +0200
+Subject: [Cocci] [PATCH v3 0/4] pci: add and use pci_ioremap_wc_bar()
+In-Reply-To: <557FCD1A.4020105@ti.com>
+References: <1429647634-17169-1-git-send-email-mcgrof@do-not-panic.com>
+ <CAB=NE6VYvd-Au58QRJprCquuvJkY9NYe1x8FmbW7qAhVrVE=QQ@mail.gmail.com>
+ <20150519175310.GH23057@wotan.suse.de>
+ <CAB=NE6UsMMoPhkKof+VN7ZUCd81VxrwP9nqHDUj5Lr3DJLm3bA@mail.gmail.com>
+ <CAB=NE6UdW2d6zO1hYbTnPcoZWt8+Yg5KdWE_bdqAuR_ysey_+A@mail.gmail.com>
+ <557FCD1A.4020105@ti.com>
+Message-ID: <20150616190504.GH11147@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Anyway it might also make more sense to put something like this
-> into one of the build-bots rather than push it into mainline for general
-> use.
+On Tue, Jun 16, 2015 at 10:15:38AM +0300, Tomi Valkeinen wrote:
+> On 22/05/15 00:23, Luis R. Rodriguez wrote:
+> > On Wed, May 20, 2015 at 1:54 PM, Luis R. Rodriguez <mcgrof@suse.com> wrote:
+> >> On Tue, May 19, 2015 at 10:53 AM, Luis R. Rodriguez <mcgrof@suse.com> wrote:
+> >>> On Wed, Apr 29, 2015 at 02:08:47PM -0700, Luis R. Rodriguez wrote:
+> >>>> On Tue, Apr 21, 2015 at 1:20 PM, Luis R. Rodriguez
+> >>>> <mcgrof@do-not-panic.com> wrote:
+> >>>>> From: "Luis R. Rodriguez" <mcgrof@suse.com>
+> >>>>>
+> >>>>> This series adds pci_ioremap_wc_bar() and makes use of it
+> >>>>> on a few framebuffer device drivers.
+> >>>>>
+> >>>>> Luis R. Rodriguez (4):
+> >>>>>   pci: add pci_ioremap_wc_bar()
+> >>>>>   video: fbdev: i740fb: use arch_phys_wc_add() and pci_ioremap_wc_bar()
+> >>>>>   video: fbdev: kyrofb: use arch_phys_wc_add() and pci_ioremap_wc_bar()
+> >>>>>   video: fbdev: gxt4500: use pci_ioremap_wc_bar() for framebuffer
+> >>>>
+> >>>> Bjorn,
+> >>>>
+> >>>> any feedback on this series?
+> >>>
+> >>> Hey Bjorn, any feedback on this series ?
+> >>
+> >> I meant this series. Also Tomi, do I get your Acks for these as well?
+> >> Since they depend on pci parts do you mind if we route them through
+> >> the PCI tree? I'll poke you soon about another similar type of patch
+> >> which has dependencies on another development tree.
+> > 
+> > Bjorn, Tomi, please let me know if this series is OK, if so I'll
+> > resubmit rebased onto Bjorn's pci tree.
+> 
+> For the fbdev patches:
+> 
+> Acked-by: Tomi Valkeinen <tomi.valkeinen@ti.com>
 
-I think that the build-bots take from the mainline.
+Thanks Tomi,
 
-julia
+there are two fbdev series that depend on PCI symbols I am introducing, this
+series and the pci_iomap_wc() series [0]. You've now provided Acks for the fbdev
+part of both series.
+
+Can the fbdev parts go through Bjorn's tree? We last discussed if the series
+was important to be fully merged or not by v4.2 and I recentlty provided a
+long winded review of the entire series to help maintainers pick and choose
+and decide [1].
+
+Based on this can the fbdev patches from both of these series go through Bjorn's tree?
+Another alternative that seems to be practiced for situations like this is for
+most of the merge window to trickle in and then towards the end send dependent
+API changes such as this one, but I think that would then have to go through
+your tree and since I realize you are busy I am not sure if this would work
+well to get this in, in time for v4.2.
+
+[0] http://lkml.kernel.org/r/1430415364-19679-1-git-send-email-mcgrof at do-not-panic.com
+[1] http://lkml.kernel.org/r/CAB=NE6UgtdSoBsA=8+ueYRAZHDnWUSmQAoHhAaefqudBrSY7Zw at mail.gmail.com
+
+ Luis
