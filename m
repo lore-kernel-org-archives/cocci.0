@@ -1,72 +1,28 @@
 From: mcgrof@suse.com (Luis R. Rodriguez)
-Date: Tue, 16 Jun 2015 21:05:04 +0200
-Subject: [Cocci] [PATCH v3 0/4] pci: add and use pci_ioremap_wc_bar()
-In-Reply-To: <557FCD1A.4020105@ti.com>
-References: <1429647634-17169-1-git-send-email-mcgrof@do-not-panic.com>
- <CAB=NE6VYvd-Au58QRJprCquuvJkY9NYe1x8FmbW7qAhVrVE=QQ@mail.gmail.com>
- <20150519175310.GH23057@wotan.suse.de>
- <CAB=NE6UsMMoPhkKof+VN7ZUCd81VxrwP9nqHDUj5Lr3DJLm3bA@mail.gmail.com>
- <CAB=NE6UdW2d6zO1hYbTnPcoZWt8+Yg5KdWE_bdqAuR_ysey_+A@mail.gmail.com>
- <557FCD1A.4020105@ti.com>
-Message-ID: <20150616190504.GH11147@wotan.suse.de>
+Date: Tue, 16 Jun 2015 12:31:49 -0700
+Subject: [Cocci] [PATCH v4 0/6] x86: document and address MTRR corner
+	cases
+In-Reply-To: <CAB=NE6X18Br51hpgjLiv350=gQ4UzbM2fF109EGRHD+QNMp6NQ@mail.gmail.com>
+References: <1430343851-967-1-git-send-email-mcgrof@do-not-panic.com>
+ <CAB=NE6VFvUj0Wg3dN8JogmfULxMejcymMJz9otUZ5xv=nwEEww@mail.gmail.com>
+ <CAB=NE6X18Br51hpgjLiv350=gQ4UzbM2fF109EGRHD+QNMp6NQ@mail.gmail.com>
+Message-ID: <CAB=NE6W8bmewTgwEnaz4R0v7GS1X0ps4LEWAKPDYE-gZCNU-Jw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, Jun 16, 2015 at 10:15:38AM +0300, Tomi Valkeinen wrote:
-> On 22/05/15 00:23, Luis R. Rodriguez wrote:
-> > On Wed, May 20, 2015 at 1:54 PM, Luis R. Rodriguez <mcgrof@suse.com> wrote:
-> >> On Tue, May 19, 2015 at 10:53 AM, Luis R. Rodriguez <mcgrof@suse.com> wrote:
-> >>> On Wed, Apr 29, 2015 at 02:08:47PM -0700, Luis R. Rodriguez wrote:
-> >>>> On Tue, Apr 21, 2015 at 1:20 PM, Luis R. Rodriguez
-> >>>> <mcgrof@do-not-panic.com> wrote:
-> >>>>> From: "Luis R. Rodriguez" <mcgrof@suse.com>
-> >>>>>
-> >>>>> This series adds pci_ioremap_wc_bar() and makes use of it
-> >>>>> on a few framebuffer device drivers.
-> >>>>>
-> >>>>> Luis R. Rodriguez (4):
-> >>>>>   pci: add pci_ioremap_wc_bar()
-> >>>>>   video: fbdev: i740fb: use arch_phys_wc_add() and pci_ioremap_wc_bar()
-> >>>>>   video: fbdev: kyrofb: use arch_phys_wc_add() and pci_ioremap_wc_bar()
-> >>>>>   video: fbdev: gxt4500: use pci_ioremap_wc_bar() for framebuffer
-> >>>>
-> >>>> Bjorn,
-> >>>>
-> >>>> any feedback on this series?
-> >>>
-> >>> Hey Bjorn, any feedback on this series ?
-> >>
-> >> I meant this series. Also Tomi, do I get your Acks for these as well?
-> >> Since they depend on pci parts do you mind if we route them through
-> >> the PCI tree? I'll poke you soon about another similar type of patch
-> >> which has dependencies on another development tree.
-> > 
-> > Bjorn, Tomi, please let me know if this series is OK, if so I'll
-> > resubmit rebased onto Bjorn's pci tree.
-> 
-> For the fbdev patches:
-> 
-> Acked-by: Tomi Valkeinen <tomi.valkeinen@ti.com>
+On Mon, Jun 8, 2015 at 4:43 PM, Luis R. Rodriguez <mcgrof@suse.com> wrote:
+> On Wed, Jun 3, 2015 at 4:50 PM, Luis R. Rodriguez <mcgrof@suse.com> wrote:
+>> Ville,
+>>
+>> the x86 patches are in and on their way to the next version of Linux.
+>> Can I trouble you for your review of the atyfb driver changes?
+>
+> Hey Ville, just a friendly *poke*.
 
-Thanks Tomi,
+Hey, Ville, trying your Intel address, just in case. Full context of
+the entire series, in case it helps as this happens to be the more
+complex of the changes in the entire series:
 
-there are two fbdev series that depend on PCI symbols I am introducing, this
-series and the pci_iomap_wc() series [0]. You've now provided Acks for the fbdev
-part of both series.
-
-Can the fbdev parts go through Bjorn's tree? We last discussed if the series
-was important to be fully merged or not by v4.2 and I recentlty provided a
-long winded review of the entire series to help maintainers pick and choose
-and decide [1].
-
-Based on this can the fbdev patches from both of these series go through Bjorn's tree?
-Another alternative that seems to be practiced for situations like this is for
-most of the merge window to trickle in and then towards the end send dependent
-API changes such as this one, but I think that would then have to go through
-your tree and since I realize you are busy I am not sure if this would work
-well to get this in, in time for v4.2.
-
-[0] http://lkml.kernel.org/r/1430415364-19679-1-git-send-email-mcgrof at do-not-panic.com
-[1] http://lkml.kernel.org/r/CAB=NE6UgtdSoBsA=8+ueYRAZHDnWUSmQAoHhAaefqudBrSY7Zw at mail.gmail.com
+http://lkml.kernel.org/r/CAB=NE6UgtdSoBsA=8+ueYRAZHDnWUSmQAoHhAaefqudBrSY7Zw at mail.gmail.com
 
  Luis
