@@ -1,28 +1,34 @@
 From: mcgrof@suse.com (Luis R. Rodriguez)
-Date: Tue, 16 Jun 2015 12:31:49 -0700
-Subject: [Cocci] [PATCH v4 0/6] x86: document and address MTRR corner
-	cases
-In-Reply-To: <CAB=NE6X18Br51hpgjLiv350=gQ4UzbM2fF109EGRHD+QNMp6NQ@mail.gmail.com>
-References: <1430343851-967-1-git-send-email-mcgrof@do-not-panic.com>
- <CAB=NE6VFvUj0Wg3dN8JogmfULxMejcymMJz9otUZ5xv=nwEEww@mail.gmail.com>
- <CAB=NE6X18Br51hpgjLiv350=gQ4UzbM2fF109EGRHD+QNMp6NQ@mail.gmail.com>
-Message-ID: <CAB=NE6W8bmewTgwEnaz4R0v7GS1X0ps4LEWAKPDYE-gZCNU-Jw@mail.gmail.com>
+Date: Wed, 17 Jun 2015 19:32:26 +0200
+Subject: [Cocci] [PATCH v3 0/4] pci: add and use pci_ioremap_wc_bar()
+In-Reply-To: <55810E42.4080500@ti.com>
+References: <1429647634-17169-1-git-send-email-mcgrof@do-not-panic.com>
+ <CAB=NE6VYvd-Au58QRJprCquuvJkY9NYe1x8FmbW7qAhVrVE=QQ@mail.gmail.com>
+ <20150519175310.GH23057@wotan.suse.de>
+ <CAB=NE6UsMMoPhkKof+VN7ZUCd81VxrwP9nqHDUj5Lr3DJLm3bA@mail.gmail.com>
+ <CAB=NE6UdW2d6zO1hYbTnPcoZWt8+Yg5KdWE_bdqAuR_ysey_+A@mail.gmail.com>
+ <557FCD1A.4020105@ti.com> <20150616190504.GH11147@wotan.suse.de>
+ <55810E42.4080500@ti.com>
+Message-ID: <20150617173226.GI11147@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, Jun 8, 2015 at 4:43 PM, Luis R. Rodriguez <mcgrof@suse.com> wrote:
-> On Wed, Jun 3, 2015 at 4:50 PM, Luis R. Rodriguez <mcgrof@suse.com> wrote:
->> Ville,
->>
->> the x86 patches are in and on their way to the next version of Linux.
->> Can I trouble you for your review of the atyfb driver changes?
->
-> Hey Ville, just a friendly *poke*.
+On Wed, Jun 17, 2015 at 09:05:54AM +0300, Tomi Valkeinen wrote:
+> Hi Luis,
+> 
+> On 16/06/15 22:05, Luis R. Rodriguez wrote:
+> 
+> > Can the fbdev parts go through Bjorn's tree? We last discussed if the series
+> > was important to be fully merged or not by v4.2 and I recentlty provided a
+> > long winded review of the entire series to help maintainers pick and choose
+> > and decide [1].
+> > 
+> > Based on this can the fbdev patches from both of these series go through Bjorn's tree?
+> 
+> Yes, they can go through Bjorn's tree if there are no non-trivial
+> conflicts with the main fbdev stuff. linux-next should contain all the
+> fbdev patches going for 4.2.
 
-Hey, Ville, trying your Intel address, just in case. Full context of
-the entire series, in case it helps as this happens to be the more
-complex of the changes in the entire series:
+Great, thanks Tomi.
 
-http://lkml.kernel.org/r/CAB=NE6UgtdSoBsA=8+ueYRAZHDnWUSmQAoHhAaefqudBrSY7Zw at mail.gmail.com
-
- Luis
+  Luis
