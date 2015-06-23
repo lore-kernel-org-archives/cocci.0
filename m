@@ -1,41 +1,106 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 23 Jun 2015 11:57:01 +0200
-Subject: [Cocci] release: 1.0.1: Checking installation dependencies
-In-Reply-To: <55892843.7070001@gmail.com>
-References: <alpine.DEB.2.10.1506180654120.2663@hadrien>
- <55845D5F.6010408@users.sourceforge.net>
- <55852F40.4000502@users.sourceforge.net> <5588106D.7020305@gmail.com>
- <558818EE.8000900@users.sourceforge.net> <55892843.7070001@gmail.com>
-Message-ID: <55892D6D.5000001@users.sourceforge.net>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Tue, 23 Jun 2015 14:25:38 +0200 (CEST)
+Subject: [Cocci] [PATCH v5] Added tables (i2c/platform)_device_id for
+ checking. Extend checking on tables containing structures which are
+ initialized without specifying member name.
+In-Reply-To: <1435057334-5751-1-git-send-email-d.granat@samsung.com>
+References: <alpine.DEB.2.10.1506031140360.2386@hadrien>
+ <1435057334-5751-1-git-send-email-d.granat@samsung.com>
+Message-ID: <alpine.DEB.2.10.1506231425150.2554@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> What about configure ?
-
-There are some software development ideas in the waiting queue.
 
 
-> Did you specify "--libdir=/usr/local/lib64" ?
+On Tue, 23 Jun 2015, Daniel Granat wrote:
 
-No.
+> Signed-off-by: Daniel Granat <d.granat@samsung.com>
 
+Acked-by: Julia Lawall <julia.lawall@lip6.fr>
 
->> Do settings need improvements for the variables "LIBDIR"
->> and "SHAREDIR" (in a script template)?
-> I did modify that since 1.0.1 release.
-
-Interesting.
-
-How do you think about to make the assignment "@prefix@/lib" configurable
-a bit more in the affected script template?
-
-
-> In case I missed something could you tell me the distrib you are using ?
-
-I guess that my usage of openSUSE does not really matter here.
-
-
-Would you like to correct also corresponding error display commands?
-
-Regards,
-Markus
+> ---
+>  scripts/coccinelle/misc/of_table.cocci | 33 ++++++++++++++++++++++++++++-----
+>  1 file changed, 28 insertions(+), 5 deletions(-)
+>
+> diff --git a/scripts/coccinelle/misc/of_table.cocci b/scripts/coccinelle/misc/of_table.cocci
+> index 3c93404..2294915 100644
+> --- a/scripts/coccinelle/misc/of_table.cocci
+> +++ b/scripts/coccinelle/misc/of_table.cocci
+> @@ -1,6 +1,6 @@
+> -/// Make sure of_device_id tables are NULL terminated
+> +/// Make sure (of/i2c/platform)_device_id tables are NULL terminated
+>  //
+> -// Keywords: of_table
+> +// Keywords: of_table i2c_table platform_table
+>  // Confidence: Medium
+>  // Options: --include-headers
+>
+> @@ -13,18 +13,26 @@ virtual report
+>  identifier var, arr;
+>  expression E;
+>  @@
+> -struct of_device_id arr[] = {
+> +(
+> +struct \(of_device_id \| i2c_device_id \| platform_device_id\) arr[] = {
+>  	...,
+>  	{
+>  	.var = E,
+>  *	}
+>  };
+> +|
+> +struct \(of_device_id \| i2c_device_id \| platform_device_id\) arr[] = {
+> +	...,
+> +*	{ ..., E, ... },
+> +};
+> +)
+>
+>  @depends on patch@
+>  identifier var, arr;
+>  expression E;
+>  @@
+> -struct of_device_id arr[] = {
+> +(
+> +struct \(of_device_id \| i2c_device_id \| platform_device_id\) arr[] = {
+>  	...,
+>  	{
+>  	.var = E,
+> @@ -32,19 +40,34 @@ struct of_device_id arr[] = {
+>  +	},
+>  +	{ }
+>  };
+> +|
+> +struct \(of_device_id \| i2c_device_id \| platform_device_id\) arr[] = {
+> +	...,
+> +	{ ..., E, ... },
+> ++	{ },
+> +};
+> +)
+>
+>  @r depends on org || report@
+>  position p1;
+>  identifier var, arr;
+>  expression E;
+>  @@
+> -struct of_device_id arr[] = {
+> +(
+> +struct \(of_device_id \| i2c_device_id \| platform_device_id\) arr[] = {
+>  	...,
+>  	{
+>  	.var = E,
+>  	}
+>  	@p1
+>  };
+> +|
+> +struct \(of_device_id \| i2c_device_id \| platform_device_id\) arr[] = {
+> +	...,
+> +	{ ..., E, ... }
+> +	@p1
+> +};
+> +)
+>
+>  @script:python depends on org@
+>  p1 << r.p1;
+> --
+> 1.9.1
+>
+>
