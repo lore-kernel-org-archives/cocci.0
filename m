@@ -1,23 +1,30 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 24 Jun 2015 09:36:05 +0200 (CEST)
-Subject: [Cocci] Various minor parsing bugs
-In-Reply-To: <1435098813.2577840.305986601.7F5C26BA@webmail.messagingengine.com>
-References: <1434594839.2823366.298546905.56C27EC5@webmail.messagingengine.com>
- <alpine.DEB.2.10.1506231430140.2554@hadrien>
- <1435098813.2577840.305986601.7F5C26BA@webmail.messagingengine.com>
-Message-ID: <alpine.DEB.2.10.1506240934280.2553@hadrien>
+From: der.herr@hofr.at (Nicholas Mc Guire)
+Date: Wed, 24 Jun 2015 15:41:15 +0200
+Subject: [Cocci] new release: 1.0.1
+In-Reply-To: <alpine.DEB.2.10.1506180654120.2663@hadrien>
+References: <alpine.DEB.2.10.1506180654120.2663@hadrien>
+Message-ID: <20150624134115.GA5698@opentech.at>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-For #ifdef, are the terms in the two branches proper expressions normally
-(like in your example)?  Perhaps we could do something for that.  Or are
-there things like
+On Thu, 18 Jun 2015, Julia Lawall wrote:
 
-#ifdef XXX
-3 +
-#else
-4 -
-#endif
-5
+> Main changes:
+> 
+> * There is a --use-gitgrep option for using git grep to preselect files.
+> I'm not sure about the exact performance tradeoffs.
+> 
+> * Small improvement on the handling of "default:" in a switch.
+> 
+> * A change in the treatment of ... in functions that contain loops.  This
+> could potentially cause a performance problem, although I have not
+> observed it.  The previous version was incorrect, though.  Some further
+> performance improvements could be possible.
+>
+just noticed that git pull says "Already up-to-date."
+but there is no 1.0.1 tag ?
 
-julia
+url = https://github.com/coccinelle/coccinelle - wrong repo ?
+
+thx!
+hofrat
