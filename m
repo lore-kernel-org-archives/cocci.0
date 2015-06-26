@@ -1,38 +1,54 @@
-From: skunk@iSKUNK.ORG (Daniel Richard G.)
-Date: Fri, 26 Jun 2015 00:33:06 -0400
+From: iago@itu.dk (Iago Abal)
+Date: Fri, 26 Jun 2015 14:50:12 +0200
 Subject: [Cocci] Various minor parsing bugs
-In-Reply-To: <558B9B75.2080006@users.sourceforge.net>
+In-Reply-To: <1435201805.2992101.307114657.0D123073@webmail.messagingengine.com>
 References: <1434594839.2823366.298546905.56C27EC5@webmail.messagingengine.com>
  <alpine.DEB.2.10.1506231430140.2554@hadrien>
  <1435098813.2577840.305986601.7F5C26BA@webmail.messagingengine.com>
  <alpine.DEB.2.10.1506240934280.2553@hadrien>
  <1435201805.2992101.307114657.0D123073@webmail.messagingengine.com>
- <558B9B75.2080006@users.sourceforge.net>
-Message-ID: <1435293186.3377577.308083673.65A335EF@webmail.messagingengine.com>
+Message-ID: <CAGbDTvr6DpQzjYktmTjBTYWGZYxNPBWtuW1qf5nFjCBzKxQ6Cw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 2015 Jun 25 08:11+0200, SF Markus Elfring wrote:
-> > Could some ifdefs be selectively evaluated/ignored for parsing
-> > purposes?
+Hi Daniel,
+
+On Thu, Jun 25, 2015 at 5:10 AM, Daniel Richard G. <skunk@iskunk.org> wrote:
+
+> Just about, yes. There are idioms like
 >
-> Would you like to consider any software improvements for the skipping
-> of source code analysis around specific parts?
-> https://github.com/coccinelle/coccinelle/issues/20
+>     int
+>     #ifdef WIN32
+>     WINAPI WinMain([...])
+>     #else
+>     main(int argc, char *argv[])
+>     #endif
+>     {
+>
+> and others where the conditional/surrounding parts can't stand on their
+> own. The wisdom of writing code in this way may be questionable, but I
+> would be happy for Coccinelle to evaluate the conditional itself, and
+> process only one side. (In my case, the WIN32 side is irrelevant.)
+>
 
-If by "consider" you mean "support," then sure. If "implement," then,
-well, OCaml isn't my strong suit :]
+Try passing --undefined WIN32 to spatch, this should work for you.
+Analogously, you can use --defined <SYMBOL>. This evaluates the condition
+of an #ifdef or #ifndef, and may convert them into #if 1 or #if 0. For #if
+0, Coccinelle has an option --if0-passing (enabled by default) that will
+ignore code under #if 0. The only constraint is that the code under the #if
+0 must still be lexically valid C code, because --if0-passing works after
+lexing.
 
-The magic coccinelle:skip comments are an interesting feature I was not
-aware of; that should prove useful. But I would like the ability to
-ignore certain sections of code that is based on existing preprocessor
-conditionals, since it would be counterproductive to require adding
-extra annotations that amount to the same thing.
+Using your example and passing --undefined WIN32 I get this from Coccinelle:
 
+PARSING: foo.c
+(ONCE) CPP-commenting a #if 0 or #if LINUX_VERSION or __cplusplus
+passed:#ifdef WIN32
+passed:WINAPI WinMain ( [ ... ] )
+passed:#else
+passed:#endif
 
---Daniel
-
-
--- 
-Daniel Richard G. || skunk at iSKUNK.ORG
-My ASCII-art .sig got a bad case of Times New Roman.
+-- iago
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20150626/707dca5b/attachment.html>
