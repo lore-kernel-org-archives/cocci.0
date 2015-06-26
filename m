@@ -1,36 +1,100 @@
-From: Andreas.Bach.Aaen@BEUMERGROUP.COM (Aaen, Andreas.Bach)
-Date: Mon, 29 Jun 2015 09:05:29 +0000
-Subject: [Cocci] Embedded Python Reference count
-Message-ID: <623657CD9C4EC04888E24CFF07E08211E13DB9F9@DKAAR-EXDB02.BEUMER.com>
+From: d.granat@samsung.com (Daniel Granat)
+Date: Fri, 26 Jun 2015 16:39:53 +0200
+Subject: [Cocci] [PATCH v6] coccinelle: Improve checking for missing NULL
+	terminators
+In-Reply-To: <alpine.DEB.2.10.1506231425150.2554@hadrien>
+References: <alpine.DEB.2.10.1506231425150.2554@hadrien>
+Message-ID: <1435329593-12481-1-git-send-email-d.granat@samsung.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi,
+Extend checking on tables containing structures which are
+initialized without specifying member name. Added new tables
+for checking: i2c_device_id and platform_device_id.
 
-I use Python embedded in a huge legacy C base. The python code calls functions in C which then return
-The result in Python structures. to build up these structures I use functions as PyDict_SetItemString and PyList_Append which insert an item into a dictionary or a list. Normally I don't use the inserted item any longer and must therefore remember by hand to decrement the reference counter to the python item.
+Signed-off-by: Daniel Granat <d.granat@samsung.com>
+Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+---
+ scripts/coccinelle/misc/of_table.cocci | 33 ++++++++++++++++++++++++++++-----
+ 1 file changed, 28 insertions(+), 5 deletions(-)
 
-have success in finding bugs with this script:
-
-@perfect@
-expression E1, E2, E3;
-position p;
-@@
-PyDict_SetItemString at p(E1,E2,E3);
-...
-Py_DECREF(E3);
-@rule2@
-expression E1, E2, E3;
-position p != perfect.p;
-@@
-PyDict_SetItemString at p(E1,E2,E3);
-+Py_DECREF(E3);
-
-
-This all goes well, except that the script isn't clever enough to see if E3 actually is referenced later on. Any clues to ensure this script doesn't provide me with false positives?
-
-BR
-Andreas Bach Aaen
--------------- next part --------------
-An HTML attachment was scrubbed...
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20150629/884d1278/attachment.html>
+diff --git a/scripts/coccinelle/misc/of_table.cocci b/scripts/coccinelle/misc/of_table.cocci
+index 3c93404..2294915 100644
+--- a/scripts/coccinelle/misc/of_table.cocci
++++ b/scripts/coccinelle/misc/of_table.cocci
+@@ -1,6 +1,6 @@
+-/// Make sure of_device_id tables are NULL terminated
++/// Make sure (of/i2c/platform)_device_id tables are NULL terminated
+ //
+-// Keywords: of_table
++// Keywords: of_table i2c_table platform_table
+ // Confidence: Medium
+ // Options: --include-headers
+ 
+@@ -13,18 +13,26 @@ virtual report
+ identifier var, arr;
+ expression E;
+ @@
+-struct of_device_id arr[] = {
++(
++struct \(of_device_id \| i2c_device_id \| platform_device_id\) arr[] = {
+ 	...,
+ 	{
+ 	.var = E,
+ *	}
+ };
++|
++struct \(of_device_id \| i2c_device_id \| platform_device_id\) arr[] = {
++	...,
++*	{ ..., E, ... },
++};
++)
+ 
+ @depends on patch@
+ identifier var, arr;
+ expression E;
+ @@
+-struct of_device_id arr[] = {
++(
++struct \(of_device_id \| i2c_device_id \| platform_device_id\) arr[] = {
+ 	...,
+ 	{
+ 	.var = E,
+@@ -32,19 +40,34 @@ struct of_device_id arr[] = {
+ +	},
+ +	{ }
+ };
++|
++struct \(of_device_id \| i2c_device_id \| platform_device_id\) arr[] = {
++	...,
++	{ ..., E, ... },
+++	{ },
++};
++)
+ 
+ @r depends on org || report@
+ position p1;
+ identifier var, arr;
+ expression E;
+ @@
+-struct of_device_id arr[] = {
++(
++struct \(of_device_id \| i2c_device_id \| platform_device_id\) arr[] = {
+ 	...,
+ 	{
+ 	.var = E,
+ 	}
+ 	@p1
+ };
++|
++struct \(of_device_id \| i2c_device_id \| platform_device_id\) arr[] = {
++	...,
++	{ ..., E, ... }
++	@p1
++};
++)
+ 
+ @script:python depends on org@
+ p1 << r.p1;
+-- 
+1.9.1
