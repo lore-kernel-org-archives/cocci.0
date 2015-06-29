@@ -1,54 +1,36 @@
-From: iago@itu.dk (Iago Abal)
-Date: Fri, 26 Jun 2015 14:50:12 +0200
-Subject: [Cocci] Various minor parsing bugs
-In-Reply-To: <1435201805.2992101.307114657.0D123073@webmail.messagingengine.com>
-References: <1434594839.2823366.298546905.56C27EC5@webmail.messagingengine.com>
- <alpine.DEB.2.10.1506231430140.2554@hadrien>
- <1435098813.2577840.305986601.7F5C26BA@webmail.messagingengine.com>
- <alpine.DEB.2.10.1506240934280.2553@hadrien>
- <1435201805.2992101.307114657.0D123073@webmail.messagingengine.com>
-Message-ID: <CAGbDTvr6DpQzjYktmTjBTYWGZYxNPBWtuW1qf5nFjCBzKxQ6Cw@mail.gmail.com>
+From: Andreas.Bach.Aaen@BEUMERGROUP.COM (Aaen, Andreas.Bach)
+Date: Mon, 29 Jun 2015 09:05:29 +0000
+Subject: [Cocci] Embedded Python Reference count
+Message-ID: <623657CD9C4EC04888E24CFF07E08211E13DB9F9@DKAAR-EXDB02.BEUMER.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi Daniel,
+Hi,
 
-On Thu, Jun 25, 2015 at 5:10 AM, Daniel Richard G. <skunk@iskunk.org> wrote:
+I use Python embedded in a huge legacy C base. The python code calls functions in C which then return
+The result in Python structures. to build up these structures I use functions as PyDict_SetItemString and PyList_Append which insert an item into a dictionary or a list. Normally I don't use the inserted item any longer and must therefore remember by hand to decrement the reference counter to the python item.
 
-> Just about, yes. There are idioms like
->
->     int
->     #ifdef WIN32
->     WINAPI WinMain([...])
->     #else
->     main(int argc, char *argv[])
->     #endif
->     {
->
-> and others where the conditional/surrounding parts can't stand on their
-> own. The wisdom of writing code in this way may be questionable, but I
-> would be happy for Coccinelle to evaluate the conditional itself, and
-> process only one side. (In my case, the WIN32 side is irrelevant.)
->
+have success in finding bugs with this script:
 
-Try passing --undefined WIN32 to spatch, this should work for you.
-Analogously, you can use --defined <SYMBOL>. This evaluates the condition
-of an #ifdef or #ifndef, and may convert them into #if 1 or #if 0. For #if
-0, Coccinelle has an option --if0-passing (enabled by default) that will
-ignore code under #if 0. The only constraint is that the code under the #if
-0 must still be lexically valid C code, because --if0-passing works after
-lexing.
+@perfect@
+expression E1, E2, E3;
+position p;
+@@
+PyDict_SetItemString at p(E1,E2,E3);
+...
+Py_DECREF(E3);
+@rule2@
+expression E1, E2, E3;
+position p != perfect.p;
+@@
+PyDict_SetItemString at p(E1,E2,E3);
++Py_DECREF(E3);
 
-Using your example and passing --undefined WIN32 I get this from Coccinelle:
 
-PARSING: foo.c
-(ONCE) CPP-commenting a #if 0 or #if LINUX_VERSION or __cplusplus
-passed:#ifdef WIN32
-passed:WINAPI WinMain ( [ ... ] )
-passed:#else
-passed:#endif
+This all goes well, except that the script isn't clever enough to see if E3 actually is referenced later on. Any clues to ensure this script doesn't provide me with false positives?
 
--- iago
+BR
+Andreas Bach Aaen
 -------------- next part --------------
 An HTML attachment was scrubbed...
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20150626/707dca5b/attachment.html>
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20150629/884d1278/attachment.html>
