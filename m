@@ -1,35 +1,37 @@
-From: Andreas.Bach.Aaen@BEUMERGROUP.COM (Aaen, Andreas.Bach)
-Date: Tue, 30 Jun 2015 06:58:32 +0000
-Subject: [Cocci] Embedded Python Reference count
-In-Reply-To: <alpine.DEB.2.10.1506291509260.2330@hadrien>
-References: <623657CD9C4EC04888E24CFF07E08211E13DB9F9@DKAAR-EXDB02.BEUMER.com>
- <alpine.DEB.2.10.1506291509260.2330@hadrien>
-Message-ID: <623657CD9C4EC04888E24CFF07E08211E13DC274@DKAAR-EXDB02.BEUMER.com>
+From: lambert.quentin@gmail.com (Quentin Lambert)
+Date: Wed, 01 Jul 2015 10:33:02 +0200
+Subject: [Cocci] release: 1.0.1: Checking installation dependencies
+In-Reply-To: <20150623172811.GU11147@wotan.suse.de>
+References: <alpine.DEB.2.10.1506180654120.2663@hadrien>
+ <55845D5F.6010408@users.sourceforge.net>
+ <55852F40.4000502@users.sourceforge.net> <5588106D.7020305@gmail.com>
+ <558818EE.8000900@users.sourceforge.net> <55892843.7070001@gmail.com>
+ <55892D6D.5000001@users.sourceforge.net>
+ <20150623172811.GU11147@wotan.suse.de>
+Message-ID: <5593A5BE.7090308@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Julia wrote:
->Do you just want to put
->... when != E3
->    when strict
->
->here?  The when strict ensures it checks everything, including things that it interprets as error exits.
 
-How can this cope with a c-code like this?
 
-    str = PyString_FromString(textlic);
-    PyDict_SetItemString(entry, "Licenceplate", str);
-    Py_DECREF(str);
+On 23/06/2015 19:28, Luis R. Rodriguez wrote:
+> On Tue, Jun 23, 2015 at 11:57:01AM +0200, SF Markus Elfring wrote:
+>>> What about configure ?
+>>> In case I missed something could you tell me the distrib you are using ?
+>> I guess that my usage of openSUSE does not really matter here.
+>>
+> I ran into the same issue FWIW, and also using OpenSUSE. I used the same fix
+> if I remember correctly.
+What I don't understand is why coccinelle was installed in /usr/local/lib64.
+The pattern lib64 is not used at all in my version of coccinelle's 
+source code
+and when I installed coccinelle on openSUSE it did end up in lib rather 
+than lib64.
 
-    str = PyString_FromString(textday);
-    PyDict_SetItemString(entry, "Day", str);
-    Py_DECREF(str);
+Do any of you have an idea why coccinelle was installed in lib64?
+Could you send me the result of
+grep -n lib64
+for coccinelle's directory after executing "./configure"?
 
-    str = PyString_FromString(textsix);
-    PyDict_SetItemString(entry, "SortIndex", str);
-    Py_DECREF(str);
-
-The str pointer must have a Py_DECREF() after each call to PyDictItemString() before the str pointer is reused to point to a new object. In the above example you have three scopes of the str pointer. The compiler most probably know this.
-
-BR
-Andreas Bach Aaen
+Regards,
+Quentin
