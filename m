@@ -1,33 +1,32 @@
-From: lambert.quentin@gmail.com (Quentin Lambert)
-Date: Thu, 02 Jul 2015 11:06:20 +0200
-Subject: [Cocci] release: 1.0.1: Checking installation dependencies
-In-Reply-To: <alpine.DEB.2.02.1507021011230.2017@localhost6.localdomain6>
-References: <alpine.DEB.2.10.1506180654120.2663@hadrien>
- <55845D5F.6010408@users.sourceforge.net>
- <55852F40.4000502@users.sourceforge.net> <5588106D.7020305@gmail.com>
- <558818EE.8000900@users.sourceforge.net> <55892843.7070001@gmail.com>
- <55892D6D.5000001@users.sourceforge.net>
- <20150623172811.GU11147@wotan.suse.de> <5593A5BE.7090308@gmail.com>
- <559402D7.7020203@users.sourceforge.net>
- <alpine.DEB.2.02.1507020806020.2017@localhost6.localdomain6>
- <5594E6EE.90202@users.sourceforge.net>
- <alpine.DEB.2.02.1507020934160.2017@localhost6.localdomain6>
- <5594F0E0.8090408@users.sourceforge.net>
- <alpine.DEB.2.02.1507021011230.2017@localhost6.localdomain6>
-Message-ID: <5594FF0C.7070206@gmail.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sat, 4 Jul 2015 10:16:39 +0200 (CEST)
+Subject: [Cocci] Various minor parsing bugs
+In-Reply-To: <1435997618.363960.314982145.35E4A6A9@webmail.messagingengine.com>
+References: <1434594839.2823366.298546905.56C27EC5@webmail.messagingengine.com>
+ <alpine.DEB.2.10.1506231430140.2554@hadrien>
+ <1435098813.2577840.305986601.7F5C26BA@webmail.messagingengine.com>
+ <alpine.DEB.2.10.1506240934280.2553@hadrien>
+ <1435201805.2992101.307114657.0D123073@webmail.messagingengine.com>
+ <CAGbDTvr6DpQzjYktmTjBTYWGZYxNPBWtuW1qf5nFjCBzKxQ6Cw@mail.gmail.com>
+ <1435997618.363960.314982145.35E4A6A9@webmail.messagingengine.com>
+Message-ID: <alpine.DEB.2.02.1507041016040.2057@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-I am very sorry, I must have made a mistake before I have successfully 
-reproduced the bug
-I am working on fixing it now.
+> I had seen --(un)defined in the "spatch --help" output, but without any
+> description:
+> 
+>   --defined
+>   --undefined
+> 
+> Julia, may I suggest the following text for these?
+> 
+>   --defined      <symbol> treat cpp symbol as defined in #ifdef
+>   --undefined    <symbol> treat cpp symbol as undefined in #ifdef
+> 
+> If this minimal documentation had been in place, I might have been able
+> to discover this functionality on my own.
 
-On 02/07/2015 10:11, Julia Lawall wrote:
-> On Thu, 2 Jul 2015, SF Markus Elfring wrote:
->
->>> But changing it at this point will not help to find the source
->>> of your problem.
->> Do we talk about the same meaning for the directory name "lib"?
-> The issue is the sequence of letters /lib and /lib64, not what they mean.
->
-> julia
+Sure.  I'll update the help text.  Thanks for the suggestion.
+
+julia
