@@ -1,174 +1,28 @@
-From: jh1009.sung@samsung.com (Junghak Sung)
-Date: Wed, 08 Jul 2015 09:55:09 +0900
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Wed, 8 Jul 2015 09:41:37 +0200 (CEST)
 Subject: [Cocci] [cocci] Ask for help
-In-Reply-To: <alpine.DEB.2.10.1507071349591.2492@hadrien>
+In-Reply-To: <559C74ED.8060305@samsung.com>
 References: <559B8E1F.2090803@samsung.com>
  <alpine.DEB.2.10.1507071043210.2516@hadrien> <559BA5E5.9000709@samsung.com>
- <alpine.DEB.2.10.1507071349591.2492@hadrien>
-Message-ID: <559C74ED.8060305@samsung.com>
+ <alpine.DEB.2.10.1507071349591.2492@hadrien> <559C74ED.8060305@samsung.com>
+Message-ID: <alpine.DEB.2.10.1507080940440.3823@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+It works a little better like this.  But you may end up with an empty
+declaration if all variables are changed.
 
+@exists@
+type T1;
+identifier i,i1;
+@@
 
-On 07/07/2015 08:51 PM, Julia Lawall wrote:
->
-> On Tue, 7 Jul 2015, Junghak Sung wrote:
->
->> First of all, Thank you for your quick response.
->> But, I'm still in trouble, because your cocci file also doesn't work with this
->> error.
->>
->> Fatal error: exception Failure("xxx.c: 112: More than one variable in the
->> declaration, and so it cannot be transformed.  Check that there is no
->> transformation on the type or the ;")
-> I think Peter took care of this.  Please check that you have the latest
-> version.
+++ struct type_b *i;
+- struct type_a *i;             // only change the type name
+<...                 // there may not be an i =... on every control flow
+path
+T1 i1;               // allow other type_a declarations
+...>
+i = foo();
 
-As Peter's comment, I installed the latest version and tried again.
-But, got a same result with this message.
-
------------------------------------------------------------------------
-
-let's go
-
------------------------------------------------------------------------
-
------------------------------------------------------------------------
-
------------------------------------------------------------------------
-
-rule starting on line 3 =
-
------------------------------------------------------------------------
-
-dependencies for rule rule starting on line 3 satisfied:
-
-binding in = []
-
-binding relevant in = []
-
-      (ONCE) ./t.c: 28: More than one variable in the declaration, and so it cannot be transformed.  Check that there is no transformation on the type or the ;
-
------------------------------------------------------------------------
-
-Finished
-
------------------------------------------------------------------------
-
-Check duplication for 1 files
-
-
-% spatch --version
-
-spatch version 1.0.1 without Python support and with Str regexp support
-
->
->> Moreover, in many case of my real code, the second variable is treated with
->> different way.
-> What do you mean exactly by "different way"?  It may indeed turn out that
-> the current state of Coccinelle can't help you here.  But still try with
-> the latest version.
-"different way" means that the first variable is used by foo(), but the 
-second is for other function foo2().
-It's unfortunate that Coccinelle can not support this case.
-I think Coccinelle would be very flexible and powerful tool,
-and I hope that upcoming version can treat this case.
-
-Thanks & Regards,
-Junghak
->
-> julia
->
->> struct type_b *foo(void);
->> struct type_b *foo2(void);
->>
->> int some_function(...)
->> {
->> -struct type_a *v1, *v2;
->> +struct type_b *v1, *v2;
->> ...
->> v1 = foo();
->> v2 = foo2();
->> ...
->> }
->>
->>
->> Does NOT coccinelle support this case?
->> If not, I'd be better to find out other way or do it manually.
->>
->> Thank you & regards,
->> Junghak
->>
->>
->> On 07/07/2015 05:49 PM, Julia Lawall wrote:
->>> On Tue, 7 Jul 2015, Junghak Sung wrote:
->>>
->>>> Hi~
->>>>
->>>> I'm a newbie for coccinelle.
->>>> I would like to make a cocci file to patch like :
->>>>
->>>> struct type_b *foo(void);
->>>>
->>>> int some_function(...)
->>>> {
->>>> -struct type_a *v1, *v2;
->>>> +struct type_b *v1, *v2;
->>>> ...
->>>> v1 = foo();
->>>> v2 = foo();
->>>> ...
->>>> }
->>>>
->>>> Return value of foo() was changed from struct type_a to struct type_b.
->>>> So, I want to find out the locations where a function use it in and modify
->>>> the
->>>> type of local variables.
->>>>
->>>> If the number of local variable is just one, this cocci could make the
->>>> patch
->>>> well.
->>>>
->>>> @@
->>>> identifier i;
->>>> @@
->>>> {
->>>> ...
->>>> -struct type_a *i;
->>>> +struct type_b *i;
->>>> ...
->>>> i = foo();
->>>> ...
->>>> }
->>>>
->>>> But, assuming that the number of local variables is two or more, I have
->>>> failed
->>>> again and again.
->>>> How can I make cocci file?
->>>> Thank you in advance for your consideration.
->>> Could you try the following?
->>>
->>> Coccinelle only allows specifying transformations on variable declarations
->>> one at a time.  But if all declarations are treated in the same way, this
->>> may be OK.  On the other hand, if there is a mixture of pointers and
->>> nonpointers, this will fail.  Such cases are not supported.
->>>
->>> @@
->>> type T1;
->>> identifier i,i1;
->>> @@
->>>
->>>    struct
->>> - type_a             // only change the type name
->>> + type_b
->>>    *i;
->>> <... when exists     // there may not be an i =... on every control flow
->>> path
->>> T1 i1;               // allow other type_a declarations
->>> ...>
->>> i = foo();
->>>
->>> julia
->>>
->>
+julia
