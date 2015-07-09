@@ -1,28 +1,72 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 8 Jul 2015 09:41:37 +0200 (CEST)
-Subject: [Cocci] [cocci] Ask for help
-In-Reply-To: <559C74ED.8060305@samsung.com>
-References: <559B8E1F.2090803@samsung.com>
- <alpine.DEB.2.10.1507071043210.2516@hadrien> <559BA5E5.9000709@samsung.com>
- <alpine.DEB.2.10.1507071349591.2492@hadrien> <559C74ED.8060305@samsung.com>
-Message-ID: <alpine.DEB.2.10.1507080940440.3823@hadrien>
+From: kborer@cpan.org (Kris Borer)
+Date: Thu, 9 Jul 2015 13:09:01 -0400
+Subject: [Cocci] binary operator matching
+Message-ID: <CAMy_N61zJQ8xg7BcsC6tGnNDLdK2nHHKDvfevc3MYpOdNzBBMw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-It works a little better like this.  But you may end up with an empty
-declaration if all variables are changed.
+ Could someone give an example of how to match binary operators? For
+example, I can create a rule that matches addition and subtraction using a
+disjunction, but would like to simplify it further. I tried using the
+contents of metaops0.cocci from the repository, but got an error. Any
+advice would be appreciated.
 
-@exists@
-type T1;
-identifier i,i1;
+bash> cat simple.c
+void main() {
+    int i = 0;
+    int j = 0;
+
+    i = i + 1;
+    j = j - 1;
+
+    i = i + j;
+    j = i - j;
+}
+bash> cat add_subtract.cocci
+@@
+identifier i, j;
 @@
 
-++ struct type_b *i;
-- struct type_a *i;             // only change the type name
-<...                 // there may not be an i =... on every control flow
-path
-T1 i1;               // allow other type_a declarations
-...>
-i = foo();
+(
+* i + j
+|
+* i - j
+)
+bash> spatch --sp-file add_subtract.cocci simple.c
+init_defs_builtins: /usr/share/coccinelle/standard.h
+HANDLING: simple.c
+diff =
+--- simple.c
++++ /tmp/cocci-output-11070-1e7c84-simple.c
+@@ -5,6 +5,4 @@ void main() {
+     i = i + 1;
+     j = j - 1;
 
-julia
+-    i = i + j;
+-    j = i - j;
+ }
+bash> cat metaops0.cocci
+@@
+expression e1, e2;
+binary operator op1;
+@@
+
+*  e1 op1 e2
+
+bash> spatch --sp-file metaops0.cocci simple.c
+init_defs_builtins: /usr/share/coccinelle/standard.h
+38 41
+Fatal error: exception Failure("meta: parse error:
+ = File "metaops0.cocci", line 3, column 16,  charpos = 38
+    around = 'op1', whole content = binary operator op1;
+")
+bash> spatch --version
+spatch version 1.0.0-rc19 with Python support and with PCRE support
+
+
+Thanks,
+
+Kris
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20150709/d48cac52/attachment.html>
