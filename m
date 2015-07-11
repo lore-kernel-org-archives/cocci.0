@@ -1,26 +1,37 @@
-From: k.kozlowski@samsung.com (Krzysztof Kozlowski)
-Date: Sat, 11 Jul 2015 15:41:22 +0900
-Subject: [Cocci] [PATCH] coccinelle: api: extend spatch for dropping
-	unnecessary owner
-In-Reply-To: <alpine.DEB.2.10.1507100901030.2559@hadrien>
-References: <1436503986-21487-1-git-send-email-k.kozlowski@samsung.com>
- <alpine.DEB.2.10.1507100901030.2559@hadrien>
-Message-ID: <CAJKOXPfYnXwVpc90bQG+S1+R32mh652QpSzaf=4NF6xBmfrA0w@mail.gmail.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sat, 11 Jul 2015 10:16:22 -0400 (EDT)
+Subject: [Cocci] binary operator matching on v1.0.1
+In-Reply-To: <CAMy_N609w3sYYyn54z4MTzPifpZVSaZ7gDPGPCcxajdbw=hhOA@mail.gmail.com>
+References: <CAMy_N609w3sYYyn54z4MTzPifpZVSaZ7gDPGPCcxajdbw=hhOA@mail.gmail.com>
+Message-ID: <alpine.DEB.2.10.1507111015350.2551@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-2015-07-10 22:01 GMT+09:00 Julia Lawall <julia.lawall@lip6.fr>:
-> Acked-by: Julia Lawall <Julia.Lawall@lip6.fr>
->
-> As a semantic patch, it looks fine.  Have you sent any patches based on
-> it?  I find hundreds of occurrences.
+On Thu, 9 Jul 2015, Kris Borer wrote:
 
-Yes, I sent patches fixing this for drivers I was able to compile
-(allyesconfig on arm, arm64, i386, x86_64, ppc64). There were many of
-them so I sent it only to specific maintainers, They are present on
-patchwork e.g.:
-https://patchwork.kernel.org/patch/6761401/
-In Google: https://www.google.co.kr/webhp?sourceid=chrome-instant&ion=1&espv=2&ie=UTF-8#q=kozlowski+Drop+owner+assignment+from+i2c_driver+platform_driver
+> I was able to get some basic binary operator matching working with version
+> 1.0.1, but got stuck with the following example. Any advice would be
+> appreciated.
 
-Best regards,
-Krzysztof
+Here is a patch.  Thanks again for the helpful bug report,
+
+julia
+
+diff --git a/parsing_cocci/iso_pattern.ml b/parsing_cocci/iso_pattern.ml
+index 3cbaf37..5967039 100644
+--- a/parsing_cocci/iso_pattern.ml
++++ b/parsing_cocci/iso_pattern.ml
+@@ -2184,9 +2184,10 @@ let copy_minus printer minusify model e =
+     Ast0.MINUS(mc) -> minusify e
+   | Ast0.CONTEXT(mc) -> e
+   | Ast0.MIXED(_) ->
+-      if !Flag.sgrep_mode2
+-      then e
+-      else failwith "not possible 8"
++      (* This is possible if the model of an isomorphism is a single
++	 metavariable, and this metavariable matches mixed code.
++	 Previously, this failed with impossible if not in sgrep mode. *)
++      e
+   | Ast0.PLUS _ -> failwith "not possible 9"
+
+ let whencode_allowed prev_ecount prev_icount prev_dcount
