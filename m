@@ -1,53 +1,38 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 13 Jul 2015 07:46:07 -0400 (EDT)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Mon, 13 Jul 2015 14:01:40 +0200
 Subject: [Cocci] Error predicate determination with SmPL?
-In-Reply-To: <55A39DA6.3030109@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.10.1507130743580.2561@hadrien>
 References: <55A36680.1020707@users.sourceforge.net>
  <55A39908.6060600@users.sourceforge.net>
  <alpine.DEB.2.10.1507130657040.2561@hadrien>
  <55A39DA6.3030109@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1507130743580.2561@hadrien>
+ <alpine.DEB.2.10.1507130743580.2561@hadrien>
+Message-ID: <55A3A8A4.9030101@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, 13 Jul 2015, SF Markus Elfring wrote:
+>> Does the metavariable type "expression" match also to the empty string?
+> 
+> No.
 
-> >> 1. Do I need to specify a SmPL constraint like "non-void"
-> >>    for such a script?
-> >
-> > It seems pointless.  If the code is returning something and the return
-> > type is void, then the problem is elsewhere.
->
-> A C compiler will usually will react with an error display
-> for this special case.
-> How should a static source code analysis tool deal with it?
+Thanks for your clarification.
 
-Ignore it.  Unless your goal is to check for this specific error.
+I hope then that the shown specification of the SmPL variable will be
+sufficient for a while to search for function implementations with
+a non-void return type.
 
-> Does the metavariable type "expression" match also to the empty string?
 
-No.
+>> How are the chances that more documentation will become available
+>> for safe processing of corresponding abstract syntax graph instances?
+> 
+> About the same as the chance that a user who wants the documentation will
+> write it.  I have no plans to do so.  In general, if you know enough OCaml
+> to use the abstract syntax tree, you also know enough OCaml to figure out
+> what it is from the source code.  Everything is defined in
+> parsing_c/ast_c.ml.
 
->
-> >> 2. The expression which is used for a specific return statement
-> >>    can be assigned to a SmPL metavariable in an other script variant.
-> >>    I would appreciate if I could process the extracted data
-> >>    in a more structured way somehow.
-> >
-> > I have no idea what you want to do.  You can get the AST if you write
-> > a script using OCaml:
-> >
-> > (stringrep,astrep) << r.express;
->
-> I guess that I am going to store elements into another SQL database.
->
-> How are the chances that more documentation will become available
-> for safe processing of corresponding abstract syntax graph instances?
+I would find it nice if a data structure representation will evolve
+which is more independent from specific programming languages.
 
-About the same as the chance that a user who wants the documentation will
-write it.  I have no plans to do so.  In general, if you know enough OCaml
-to use the abstract syntax tree, you also know enough OCaml to figure out
-what it is from the source code.  Everything is defined in
-parsing_c/ast_c.ml.
-
-julia
+Regards,
+Markus
