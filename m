@@ -1,19 +1,26 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Mon, 13 Jul 2015 19:20:31 +0200
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Mon, 13 Jul 2015 13:24:42 -0400 (EDT)
 Subject: [Cocci] Error predicate determination with SmPL?
-In-Reply-To: <alpine.DEB.2.10.1507131301110.6439@hadrien>
+In-Reply-To: <55A3F35F.5000501@users.sourceforge.net>
 References: <55A36680.1020707@users.sourceforge.net>
  <55A39908.6060600@users.sourceforge.net>
  <alpine.DEB.2.10.1507130657040.2561@hadrien>
  <55A3E506.90905@users.sourceforge.net>
  <alpine.DEB.2.10.1507131301110.6439@hadrien>
-Message-ID: <55A3F35F.5000501@users.sourceforge.net>
+ <55A3F35F.5000501@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.10.1507131322440.6439@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Perhaps you have a quite old version of ocaml?
 
-Is the software "OCaml 4.02.1-1.2" recent enough?
 
-Regards,
-Markus
+On Mon, 13 Jul 2015, SF Markus Elfring wrote:
+
+> > Perhaps you have a quite old version of ocaml?
+>
+> Is the software "OCaml 4.02.1-1.2" recent enough?
+
+Yes, the version seems fine.  It seems that you are not getting the proper
+dynamic linking with ocaml.  Perhaps send the result of running configure.
+
+julia
