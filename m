@@ -1,30 +1,65 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Mon, 13 Jul 2015 15:00:12 +0200
-Subject: [Cocci] Data processing for expression ASTs
-In-Reply-To: <alpine.DEB.2.10.1507130743580.2561@hadrien>
+Date: Mon, 13 Jul 2015 18:19:18 +0200
+Subject: [Cocci] Error predicate determination with SmPL?
+In-Reply-To: <alpine.DEB.2.10.1507130657040.2561@hadrien>
 References: <55A36680.1020707@users.sourceforge.net>
  <55A39908.6060600@users.sourceforge.net>
  <alpine.DEB.2.10.1507130657040.2561@hadrien>
- <55A39DA6.3030109@users.sourceforge.net>
- <alpine.DEB.2.10.1507130743580.2561@hadrien>
-Message-ID: <55A3B65C.9080708@users.sourceforge.net>
+Message-ID: <55A3E506.90905@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> How are the chances that more documentation will become available
->> for safe processing of corresponding abstract syntax graph instances?
+> You can get the AST if you write a script using OCaml:
 > 
-> About the same as the chance that a user who wants the documentation will
-> write it.  I have no plans to do so.  In general, if you know enough OCaml
-> to use the abstract syntax tree, you also know enough OCaml to figure out
-> what it is from the source code.  Everything is defined in
-> parsing_c/ast_c.ml.
+> (stringrep,astrep) << r.express;
 
-Does this "tree" data structure correspond to the complete input from
-the source file?
+I try to get another small SmPL experiment like the following running.
 
-I imagine that a special mapping for expression data should be sufficient
-for the discussed SmPL metavariable, shouldn' it?
+@initialize:ocaml@
+@@
+let show_positions f_name typ name_places ex_string ex_ASG e_places =
+(* First loop? *)
+Printf.printf "%s|%s\n" f_name typ;
+(* Second loop? *)
+Printf.printf "%s\n" ex_string
+
+@returns@
+expression express;
+identifier work;
+position e_pos, name_pos;
+type return_type;
+@@
+ return_type work at name_pos(...)
+ {
+  ...
+  return express at e_pos;
+  ...
+ }
+
+@script:ocaml display depends on returns@
+f_name << returns.work;
+typ << returns.return_type;
+(ex_string,ex_ASG) << returns.express;
+e_places << returns.e_pos;
+name_places << returns.name_pos;
+@@
+show_positions f_name typ name_places ex_string ex_ASG e_places
+
+
+elfring@Sonne:~/Projekte/Coccinelle/Probe> spatch.opt -sp-file show_returns2.cocci API-test1.c
+init_defs_builtins: /usr/local/lib/coccinelle/standard.h
+Using native version of ocamlc/ocamlopt/ocamldep
+ocamlopt.opt -shared -o /tmp/ocaml_cocci_368f40.cmxs -g -I /usr/lib64/ocaml  -I /usr/local/lib/coccinelle/ocaml /tmp/ocaml_cocci_368f40.ml
+File "/tmp/ocaml_cocci_368f40.ml", line 15, characters 6-36:
+Error: Unbound value Iteration.add_pending_instance
+Fatal error: exception Yes_prepare_ocamlcocci.CompileFailure("/tmp/ocaml_cocci_368f40.ml")
+
+
+Can you better explain the shown error messages than me?
+
+Does my OCaml approach contain mistakes?
+
+How can your software library help with pretty-printing of the syntax graph?
 
 Regards,
 Markus
