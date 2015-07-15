@@ -1,95 +1,34 @@
-From: kborer@cpan.org (Kris Borer)
-Date: Wed, 15 Jul 2015 09:29:15 -0400
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Wed, 15 Jul 2015 10:17:01 -0400 (EDT)
 Subject: [Cocci] logical not
-Message-ID: <CAMy_N63xCDJbVkXnBvPyoDx6AUE37qsYGb5N2WHJWVR+6Zawxg@mail.gmail.com>
+In-Reply-To: <CAMy_N63xCDJbVkXnBvPyoDx6AUE37qsYGb5N2WHJWVR+6Zawxg@mail.gmail.com>
+References: <CAMy_N63xCDJbVkXnBvPyoDx6AUE37qsYGb5N2WHJWVR+6Zawxg@mail.gmail.com>
+Message-ID: <alpine.DEB.2.10.1507151015070.2919@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-I am trying to combine two transformations that differ only by a logical
-not. I unsuccessfully tried using the ? annotation, disjunctions, and dots.
-Any advice would be appreciated. This is on v1.0.1 + 4 patches.
+> @@
+> identifier i;
+> expression E;
+> statement S;
+> @@
+>
+> + i = E;
+> ? if (
+> ? !
+> - (i = E)
+> + i
+> ? ) S
 
-bash> cat bang.c
-void main() {
-    int x = 0;
+Try this one without the ! and with S converted to
 
-    if ( x = 1 ) {
-        x = 1;
-    }
+S1 else S2
 
-    if ( ! (x=1) ) {
-        x = 1;
-    }
-}
-bash> cat bang.cocci
-@@
-identifier i;
-expression E;
-statement S;
-@@
+with S1 and S2 being statement metavariables.  I think that the various
+isoorphisms should cause this to do everything.  But you can check it by
+running spatch --parse-cocci file.cocci.  for this, it is more readable if
+you give your rule a short name, like r, because it will put the name of
+the rule in each metavariable that it prints, and the defaut is quite
+long.
 
-+ i = E;
-  if (
-- i = E
-+ i
-  ) S
-
-@@
-identifier i;
-expression E;
-statement S;
-@@
-
-+ i = E;
-  if (
-  !
-- (i = E)
-+ i
-  ) S
-bash> spatch --sp-file bang.cocci bang.c
-init_defs_builtins: /usr/local/lib/coccinelle/standard.h
-HANDLING: bang.c
-diff =
---- bang.c
-+++ /tmp/cocci-output-8392-707d21-bang.c
-@@ -1,11 +1,13 @@
- void main() {
-     int x = 0;
-
--    if ( x = 1 ) {
-+    x = 1;
-+    if (x) {
-         x = 1;
-     }
-
--    if ( ! (x=1) ) {
-+    x = 1;
-+    if ( ! x) {
-         x = 1;
-     }
- }
-bash> cat bang2.cocci
-@@
-identifier i;
-expression E;
-statement S;
-@@
-
-+ i = E;
-  if (
-? !
-- (i = E)
-+ i
-  ) S
-
-bash> spatch --sp-file bang2.cocci bang.c
-init_defs_builtins: /usr/local/lib/coccinelle/standard.h
-Fatal error: exception Failure("opt only allowed for the elements of a
-statement list")
-
-Thank you,
-
-Kris
--------------- next part --------------
-An HTML attachment was scrubbed...
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20150715/3ddb3bd5/attachment.html>
+julia
