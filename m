@@ -1,27 +1,42 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 15 Jul 2015 22:38:25 +0200
-Subject: [Cocci] Checking signal handler implementations with SmPL
-In-Reply-To: <alpine.DEB.2.10.1507151023270.2919@hadrien>
-References: <55A60721.5050209@users.sourceforge.net>
- <alpine.DEB.2.10.1507151023270.2919@hadrien>
-Message-ID: <55A6C4C1.9060600@users.sourceforge.net>
+From: kborer@cpan.org (Kris Borer)
+Date: Wed, 15 Jul 2015 13:42:20 -0400
+Subject: [Cocci] logical not
+In-Reply-To: <alpine.DEB.2.10.1507151015070.2919@hadrien>
+References: <CAMy_N63xCDJbVkXnBvPyoDx6AUE37qsYGb5N2WHJWVR+6Zawxg@mail.gmail.com>
+ <alpine.DEB.2.10.1507151015070.2919@hadrien>
+Message-ID: <CAMy_N63u+w25yWb8rfdHHih1CL52br0NXntY2nfq+JDZ9cF4bg@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Furthermore, ... matches the shortest path between two points.
+Thank you, this approach works for me. I will look more into isomorphisms.
 
-It seems that I am still not so used to all combinations of the SmPL ellipsis.
+On Wed, Jul 15, 2015 at 10:17 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
 
-
-> That is, in your rule, you will only match the case where a control-flow patch
-> contains exactly one call to either exit or fprintf.  If you want to allow
-> more occurrences, you can use <... ...> with searches for 0 or more or
-> something, or <+... ...+> which searches for one or more.
-
-I guess that the last option is more appropriate for my source code
-search pattern.
-
-Thanks for your explanation.
-
-Regards,
-Markus
+> > @@
+> > identifier i;
+> > expression E;
+> > statement S;
+> > @@
+> >
+> > + i = E;
+> >   if (
+> >   !
+> > - (i = E)
+> > + i
+> >   ) S
+>
+> Try this one without the ! and with S converted to
+>
+> S1 else S2
+>
+> with S1 and S2 being statement metavariables.  I think that the various
+> isoorphisms should cause this to do everything.  But you can check it by
+> running spatch --parse-cocci file.cocci.  for this, it is more readable if
+> you give your rule a short name, like r, because it will put the name of
+> the rule in each metavariable that it prints, and the defaut is quite
+> long.
+>
+> julia
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20150715/a7758e90/attachment-0001.html>
