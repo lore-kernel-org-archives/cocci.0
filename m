@@ -1,44 +1,31 @@
 From: sean.stalley@intel.com (Sean O. Stalley)
-Date: Wed, 15 Jul 2015 14:14:40 -0700
-Subject: [Cocci] [PATCH 1/4] mm: Add support for __GFP_ZERO flag to
-	dma_pool_alloc()
-In-Reply-To: <1436994883-16563-1-git-send-email-sean.stalley@intel.com>
-References: <1436994883-16563-1-git-send-email-sean.stalley@intel.com>
-Message-ID: <1436994883-16563-2-git-send-email-sean.stalley@intel.com>
+Date: Wed, 15 Jul 2015 14:14:39 -0700
+Subject: [Cocci] [PATCH 0/4] mm: add dma_pool_zalloc() & pci_pool_zalloc()
+Message-ID: <1436994883-16563-1-git-send-email-sean.stalley@intel.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Currently the __GFP_ZERO flag is ignored by dma_pool_alloc().
-Make dma_pool_alloc() zero the memory if this flag is set.
+Currently a call to dma_pool_alloc() with a ___GFP_ZERO flag returns
+a non-zeroed memory region.
 
-Signed-off-by: Sean O. Stalley <sean.stalley@intel.com>
----
- mm/dmapool.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+This patchset adds support for the ___GFP_ZERO flag to dma_pool_alloc(),
+adds 2 wrapper functions for allocing zeroed memory from a pool, 
+and provides a coccinelle script for finding & replacing instances of
+dma_pool_alloc() followed by memset(0) with a single dma_pool_zalloc() call.
 
-diff --git a/mm/dmapool.c b/mm/dmapool.c
-index fd5fe43..449a5d09 100644
---- a/mm/dmapool.c
-+++ b/mm/dmapool.c
-@@ -334,7 +334,7 @@ void *dma_pool_alloc(struct dma_pool *pool, gfp_t mem_flags,
- 	/* pool_alloc_page() might sleep, so temporarily drop &pool->lock */
- 	spin_unlock_irqrestore(&pool->lock, flags);
- 
--	page = pool_alloc_page(pool, mem_flags);
-+	page = pool_alloc_page(pool, mem_flags & (~__GFP_ZERO));
- 	if (!page)
- 		return NULL;
- 
-@@ -375,6 +375,10 @@ void *dma_pool_alloc(struct dma_pool *pool, gfp_t mem_flags,
- 	memset(retval, POOL_POISON_ALLOCATED, pool->size);
- #endif
- 	spin_unlock_irqrestore(&pool->lock, flags);
-+
-+	if (mem_flags & __GFP_ZERO)
-+		memset(retval, 0, pool->size);
-+
- 	return retval;
- }
- EXPORT_SYMBOL(dma_pool_alloc);
+Sean O. Stalley (4):
+  mm: Add support for __GFP_ZERO flag to dma_pool_alloc()
+  mm: Add dma_pool_zalloc() call to DMA API
+  pci: mm: Add pci_pool_zalloc() call
+  coccinelle: mm: scripts/coccinelle/api/alloc/pool_zalloc-simple.cocci
+
+ Documentation/DMA-API.txt                          |  7 ++
+ include/linux/dmapool.h                            |  6 ++
+ include/linux/pci.h                                |  2 +
+ mm/dmapool.c                                       |  6 +-
+ .../coccinelle/api/alloc/pool_zalloc-simple.cocci  | 84 ++++++++++++++++++++++
+ 5 files changed, 104 insertions(+), 1 deletion(-)
+ create mode 100644 scripts/coccinelle/api/alloc/pool_zalloc-simple.cocci
+
 -- 
 1.9.1
