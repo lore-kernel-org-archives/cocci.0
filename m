@@ -1,48 +1,132 @@
-From: kborer@cpan.org (Kris Borer)
-Date: Tue, 14 Jul 2015 19:28:09 -0400
-Subject: [Cocci] binary operator matching on v1.0.1
-In-Reply-To: <alpine.DEB.2.10.1507141337000.3373@hadrien>
-References: <CAMy_N609w3sYYyn54z4MTzPifpZVSaZ7gDPGPCcxajdbw=hhOA@mail.gmail.com>
- <alpine.DEB.2.10.1507111837110.6791@hadrien>
- <CAMy_N61Ce4jvQnrXMEvPPJrC_9sdJ3nuL3xmU8RyaWpOYoaUdA@mail.gmail.com>
- <alpine.DEB.2.10.1507141337000.3373@hadrien>
-Message-ID: <CAMy_N63m5G_ViwC1xjV4hfwLZohwyCmD3pqCWVaA1pT3d5=ieg@mail.gmail.com>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 15 Jul 2015 09:09:21 +0200
+Subject: [Cocci] Checking signal handler implementations with SmPL
+Message-ID: <55A60721.5050209@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Thank you for your help. Your patches and advice have solved my issue.
+Hello,
 
-On Tue, Jul 14, 2015 at 1:51 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
+I am looking for a specific programming mistake with the help
+of the semantic patch language once more.
 
-> Two patches are attachd that should help with this.  They can be applied
-> in any order.
->
-> > bash> cat binop4.cocci
-> > @@
-> > identifier i, i2;
-> > expression E1, E2;
-> > constant c;
-> > binary operator b;
-> > @@
-> >
-> > + if( E1->i ) {
-> > +      i2 = E2;
-> > +     if (i2 b c) {
-> > - if( E1->i && (i2 = E2) b c ) {
-> >   ...
-> > - }
-> > +     }
-> > + }
->
-> Even with the patches, it is necessary to adjust the above code.  The
-> problem is that with a binary operator metavariable, we don't know the
-> precedence or associativity of the operator.  However we have the paren
-> isomorphism that will drop extra parentheses in the semantic patch
-> (without changing th structure of the AST), so you can just add
-> parentheses to the semantic patch to get the precedence or associativity
-> you want.  I guess you would want ((i2 = E2) b c).
->
-> julia
--------------- next part --------------
-An HTML attachment was scrubbed...
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20150714/a355bc5c/attachment.html>
+
+1. A SmPL approach like the following seems to work to some degree.
+
+@find_unsafe@
+identifier receiver =~ "^(?x)
+(?:
+   (?:alarm|parent|sig(?:chld|hup|term))_handler
+|
+   handle_sigterm
+|
+   (?:CancelJ|cancel_j)ob
+)$";
+@@
+ void receiver(...)
+ {
+  ...
+(
+- exit(...);
+|
+- fprintf(...);
+)
+  ...
+ }
+
+elfring at Sonne:~/Projekte/CUPS> spatch.opt -sp-file async-unsafe1.cocci -dir lokal > async-unsafe1.diff && cat async-unsafe1.diff
+init_defs_builtins: /usr/local/lib/coccinelle/standard.h
+?
+Skipping:lokal/vcnet/regex/regerror.c
+diff -u -p a/backend/ipp.c b/backend/ipp.c
+--- a/backend/ipp.c
++++ b/backend/ipp.c
+@@ -3271,8 +3271,6 @@ sigterm_handler(int sig)          /* I - Signal
+ 
+   if (tmpfilename[0])
+     unlink(tmpfilename);
+-
+-  exit(1);
+
+
+
+2. I have tried another SmPL script variant out.
+
+@show_unsafe@
+identifier receiver =~ "^(?x)
+(?:
+   (?:alarm|parent|sig(?:chld|hup|term))_handler
+|
+   handle_sigterm
+|
+   (?:CancelJ|cancel_j)ob
+)$";
+@@
+ void receiver(...)
+ {
+  ...
+(
+* exit
+|
+* fprintf
+)
+  (...);
+  ...
+ }
+
+elfring at Sonne:~/Projekte/CUPS> spatch.opt -sp-file async-unsafe2.cocci -dir lokal > async-unsafe2.diff && cat async-unsafe2.diff
+init_defs_builtins: /usr/local/lib/coccinelle/standard.h
+?
+diff -u -p lokal/backend/dnssd.c /tmp/nothing/backend/dnssd.c
+--- lokal/backend/dnssd.c
++++ /tmp/nothing/backend/dnssd.c
+@@ -1289,7 +1289,6 @@ sigterm_handler(int sig)          /* I - Signal
+   (void)sig;
+ 
+   if (job_canceled)
+-    exit(CUPS_BACKEND_OK);
+   else
+     job_canceled = 1;
+ }
+diff -u -p lokal/backend/usb-darwin.c /tmp/nothing/backend/usb-darwin.c
+--- lokal/backend/usb-darwin.c
++++ /tmp/nothing/backend/usb-darwin.c
+@@ -2262,9 +2262,7 @@ sigterm_handler(int sig)          /* I - Signal
+     while (waitpid(child_pid, &status, 0) < 0 && errno == EINTR);
+ 
+     if (WIFEXITED(status))
+-      exit(WEXITSTATUS(status));
+     else if (status == SIGTERM || status == SIGKILL)
+-      exit(0);
+     else
+     {
+       fprintf(stderr, "DEBUG: Child crashed on signal %d\n", status);
+diff -u -p lokal/backend/ipp.c /tmp/nothing/backend/ipp.c
+--- lokal/backend/ipp.c
++++ /tmp/nothing/backend/ipp.c
+@@ -3272,7 +3272,6 @@ sigterm_handler(int sig)          /* I - Signal
+   if (tmpfilename[0])
+     unlink(tmpfilename);
+ 
+-  exit(1);
+ }
+
+
+   Why did the first approach find less?
+
+
+   Should the call of the function "fprintf" in the source file "usb-darwin.c"
+   also be marked for further considerations here?
+   Are there any more update candidates to consider?
+
+
+
+3. If I add the parameter "-jobs 4" to the shown commands for a parallel
+   source code analysis, I wonder about a message like the following.
+
+[Pid 5399]: Error creating async-unsafe2 : File exists; proceeding without stdout/stderr redirection
+
+   Should it be avoided usually?
+
+Regards,
+Markus
