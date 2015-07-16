@@ -1,112 +1,40 @@
-From: sean.stalley@intel.com (Sean O. Stalley)
-Date: Wed, 15 Jul 2015 14:14:43 -0700
-Subject: [Cocci] [PATCH 4/4] coccinelle: mm:
-	scripts/coccinelle/api/alloc/pool_zalloc-simple.cocci
-In-Reply-To: <1436994883-16563-1-git-send-email-sean.stalley@intel.com>
-References: <1436994883-16563-1-git-send-email-sean.stalley@intel.com>
-Message-ID: <1436994883-16563-5-git-send-email-sean.stalley@intel.com>
+From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
+Date: Wed, 15 Jul 2015 17:21:28 -0700
+Subject: [Cocci] [PATCH 0/2] coccinelle: extend pycocci checks
+Message-ID: <1437006090-25479-1-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-add [pci|dma]_pool_zalloc coccinelle check.
-replaces instances of [pci|dma]_pool_alloc() followed by memset(0)
-with [pci|dma]_pool_zalloc().
+From: "Luis R. Rodriguez" <mcgrof@suse.com>
 
-Signed-off-by: Sean O. Stalley <sean.stalley@intel.com>
----
- .../coccinelle/api/alloc/pool_zalloc-simple.cocci  | 84 ++++++++++++++++++++++
- 1 file changed, 84 insertions(+)
- create mode 100644 scripts/coccinelle/api/alloc/pool_zalloc-simple.cocci
+Cocccinelle has received quite a bit of features, one is the ability
+to use git grep functionality for indexing. Another is some fixes for
+parallelism support. Instead of just assuming everyone has the latest
+release of coccinelle have the script check for the release installed
+and use sensible defaults which are known to work the best. This also
+infers what indexing option should be used for you:
 
-diff --git a/scripts/coccinelle/api/alloc/pool_zalloc-simple.cocci b/scripts/coccinelle/api/alloc/pool_zalloc-simple.cocci
-new file mode 100644
-index 0000000..9b7eb32
---- /dev/null
-+++ b/scripts/coccinelle/api/alloc/pool_zalloc-simple.cocci
-@@ -0,0 +1,84 @@
-+///
-+/// Use *_pool_zalloc rather than *_pool_alloc followed by memset with 0
-+///
-+// Copyright: (C) 2015 Intel Corp.  GPLv2.
-+// Options: --no-includes --include-headers
-+//
-+// Keywords: dma_pool_zalloc, pci_pool_zalloc
-+//
-+
-+virtual context
-+virtual patch
-+virtual org
-+virtual report
-+
-+//----------------------------------------------------------
-+//  For context mode
-+//----------------------------------------------------------
-+
-+ at depends on context@
-+expression x;
-+statement S;
-+@@
-+
-+* x = \(dma_pool_alloc\|pci_pool_alloc\)(...);
-+  if ((x==NULL) || ...) S
-+* memset(x,0, ...);
-+
-+//----------------------------------------------------------
-+//  For patch mode
-+//----------------------------------------------------------
-+
-+ at depends on patch@
-+expression x;
-+expression a,b,c;
-+statement S;
-+@@
-+
-+- x = dma_pool_alloc(a,b,c);
-++ x = dma_pool_zalloc(a,b,c);
-+  if ((x==NULL) || ...) S
-+- memset(x,0,...);
-+
-+ at depends on patch@
-+expression x;
-+expression a,b,c;
-+statement S;
-+@@
-+
-+- x = pci_pool_alloc(a,b,c);
-++ x = pci_pool_zalloc(a,b,c);
-+  if ((x==NULL) || ...) S
-+- memset(x,0,...);
-+
-+//----------------------------------------------------------
-+//  For org and report mode
-+//----------------------------------------------------------
-+
-+ at r depends on org || report@
-+expression x;
-+expression a,b,c;
-+statement S;
-+position p;
-+@@
-+
-+ x = @p\(dma_pool_alloc\|pci_pool_alloc\)(a,b,c);
-+ if ((x==NULL) || ...) S
-+ memset(x,0, ...);
-+
-+ at script:python depends on org@
-+p << r.p;
-+x << r.x;
-+@@
-+
-+msg="%s" % (x)
-+msg_safe=msg.replace("[","@(").replace("]",")")
-+coccilib.org.print_todo(p[0], msg_safe)
-+
-+@script:python depends on report@
-+p << r.p;
-+x << r.x;
-+@@
-+
-+msg="WARNING: *_pool_zalloc should be used for %s, instead of *_pool_alloc/memset" % (x)
-+coccilib.report.print_report(p[0], msg)
+ - Use glimpse if you have glimpseindex; otherwise:
+ - Use git grep if you have a git tree; otherwise:
+ - Use cocci grep
+
+We'll use the new --jobs (paramap support) if the release is > 1.0.2,
+otherwise we'll default to our old Python wrappar parallelism support.
+
+This also preps up pycocci to be extended later with other tools, for
+example we're considering to add SmPL patch proof support into pycocci
+now, with the reqs checks stuff in place this should be rather easy to
+ensure folks have the requirements present.
+
+If there are no issues I'll push these into the Coccinelle git tree.
+
+Luis R. Rodriguez (2):
+  pycocci: add requirements class
+  pycocci: figure out if to enable --jobs, --use-gitgrep or
+    --use-glimpse
+
+ tools/pycocci | 289 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 279 insertions(+), 10 deletions(-)
+
 -- 
-1.9.1
+2.3.2.209.gd67f9d5.dirty
