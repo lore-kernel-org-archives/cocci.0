@@ -1,67 +1,55 @@
-From: jacob.keller@gmail.com (Jacob Keller)
-Date: Thu, 16 Jul 2015 21:23:54 -0700
-Subject: [Cocci] GNU diff and git diff - difference on myers algorithm?
-In-Reply-To: <CA+P7+xrOPS6NeQhte-ATdm2Nqo0PpmUAxS+XYzWDvZGtwPtWMw@mail.gmail.com>
-References: <CAB=NE6XRnKAY6t+dxT7vO_4wqngXvULh-CqezEAs2r99FkNCTg@mail.gmail.com>
- <0add7d95076f5b112af90d8566c29203@www.dscho.org>
- <CAB=NE6VGX332=CvhQM4sc27AM8ae5S1kdRnm5sMfoqkU=b=ebg@mail.gmail.com>
- <CAB=NE6UFMv0qu8fJ1P2-pJCF0tSGKoW+uKhfwt0jV5fj2wZGSQ@mail.gmail.com>
- <CA+P7+xrOPS6NeQhte-ATdm2Nqo0PpmUAxS+XYzWDvZGtwPtWMw@mail.gmail.com>
-Message-ID: <CA+P7+xq=J76N16XETKkUhRJKyShPtg4-K0aMjE5+_LzBJQ-t3A@mail.gmail.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Fri, 17 Jul 2015 11:50:52 +0200 (CEST)
+Subject: [Cocci] Deletion of blank lines?
+In-Reply-To: <55A743F3.6000500@users.sourceforge.net>
+References: <55A60721.5050209@users.sourceforge.net>
+ <55A743F3.6000500@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.10.1507171150150.2404@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, Jul 16, 2015 at 9:22 PM, Jacob Keller <jacob.keller@gmail.com> wrote:
-> On Thu, Jul 16, 2015 at 12:07 PM, Luis R. Rodriguez
-> <mcgrof@do-not-panic.com> wrote:
->> On Fri, Jun 12, 2015 at 11:52 AM, Luis R. Rodriguez
->> <mcgrof@do-not-panic.com> wrote:
->>> OK wells I'm curious about more research / effort when trying to
->>> evaluate a diff with two seprate but adjoining preprocessor directives
->>> and if anyone has implemented an optimizaiton option to let the diff
->>> generator join them.
->>>
->>> For example, to let it infer that:
->>>
->>> --- a/test.c
->>> +++ b/test.c
->>> @@ -10,8 +10,6 @@ int main(int argc, char *argv[])
->>>
->>>  #ifdef FOO
->>>         a = 4;
->>> -#endif /* FOO */
->>> -#ifdef FOO
->>>         a = 5;
->>>  #endif /* FOO */
->>>
->>> is possible.
->>
->> Anyone familiar if any tool exists today that would optimize this? Is
->> anyone working on it? Would git be a good place for such a thing? I'd
->> consider it as an option to optimize a diff. This for example is
->> extremely useful for us working with Coccinelle where we have a tool
->> writing code for us, while such an optimization might be useful to
->> Coccinelle it would seem like a rather generic feature, its just not
->> clear to me where to give such a tool a proper home.
->>
->>  Luis
+On Thu, 16 Jul 2015, SF Markus Elfring wrote:
+
+> >  void receiver(...)
+> >  {
+> >   ...
+> > (
+> > - exit(...);
+> > |
+> > - fprintf(...);
+> > )
+> >   ...
+> >  }
+> > ?
+> > diff -u -p a/backend/ipp.c b/backend/ipp.c
+> > --- a/backend/ipp.c
+> > +++ b/backend/ipp.c
+> > @@ -3271,8 +3271,6 @@ sigterm_handler(int sig)          /* I - Signal
+> >
+> >    if (tmpfilename[0])
+> >      unlink(tmpfilename);
+> > -
+> > -  exit(1);
 >
-> I do not understand exactly what would be optimized in this case?
+> I find another detail interesting in this generated patch.
+> The Coccinelle software suggests here to delete also a blank line
+> at a specific source code place. I would usually interpret
+> this SmPL script example in the way that I did not express the removal
+> of blank lines.
+
+Is there a blank line after the call to exit(1); also?  I think that it
+tries toavoid creeating two blank lines.
+
+julia
+
 >
-> In any regards, that's not a diff transformation, that is a code
-> transformation, and I would suggest starting with Coccinelle and
-> seeing if you can get that to do what you want.
-> http://coccinelle.lip6.fr/
+> How often do you care if additional source code reformatting should
+> happen around a specific change (or not)?
 >
 > Regards,
-> Jake
-
-I misread your comment. Coccinelle is a tool that could probably be
-coerced into doing this, but this is not a diff optimization unless I
-am completely understanding it. This is a code transformation concept,
-and doesn't have much to do with finding differences or code changes.
-My above comment is correct, but I don't think this belongs in diff
-parsing, but rather as part of something like Coccinelle
-
-Regards,
-Jake
+> Markus
+> _______________________________________________
+> Cocci mailing list
+> Cocci at systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
+>
