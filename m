@@ -1,88 +1,55 @@
-From: sean.stalley@intel.com (Sean O. Stalley)
-Date: Wed, 15 Jul 2015 16:13:57 -0700
-Subject: [Cocci] [PATCH 1/4] mm: Add support for __GFP_ZERO flag to
- dma_pool_alloc()
-In-Reply-To: <20150715142907.ccfd473ea0e039642d46893d@linux-foundation.org>
-References: <1436994883-16563-1-git-send-email-sean.stalley@intel.com>
- <1436994883-16563-2-git-send-email-sean.stalley@intel.com>
- <20150715142907.ccfd473ea0e039642d46893d@linux-foundation.org>
-Message-ID: <20150715231356.GA16638@sean.stalley.intel.com>
+From: jacob.keller@gmail.com (Jacob Keller)
+Date: Thu, 16 Jul 2015 21:22:27 -0700
+Subject: [Cocci] GNU diff and git diff - difference on myers algorithm?
+In-Reply-To: <CAB=NE6UFMv0qu8fJ1P2-pJCF0tSGKoW+uKhfwt0jV5fj2wZGSQ@mail.gmail.com>
+References: <CAB=NE6XRnKAY6t+dxT7vO_4wqngXvULh-CqezEAs2r99FkNCTg@mail.gmail.com>
+ <0add7d95076f5b112af90d8566c29203@www.dscho.org>
+ <CAB=NE6VGX332=CvhQM4sc27AM8ae5S1kdRnm5sMfoqkU=b=ebg@mail.gmail.com>
+ <CAB=NE6UFMv0qu8fJ1P2-pJCF0tSGKoW+uKhfwt0jV5fj2wZGSQ@mail.gmail.com>
+Message-ID: <CA+P7+xrOPS6NeQhte-ATdm2Nqo0PpmUAxS+XYzWDvZGtwPtWMw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Thanks for the review Andrew, my responses are inline.
+On Thu, Jul 16, 2015 at 12:07 PM, Luis R. Rodriguez
+<mcgrof@do-not-panic.com> wrote:
+> On Fri, Jun 12, 2015 at 11:52 AM, Luis R. Rodriguez
+> <mcgrof@do-not-panic.com> wrote:
+>> OK wells I'm curious about more research / effort when trying to
+>> evaluate a diff with two seprate but adjoining preprocessor directives
+>> and if anyone has implemented an optimizaiton option to let the diff
+>> generator join them.
+>>
+>> For example, to let it infer that:
+>>
+>> --- a/test.c
+>> +++ b/test.c
+>> @@ -10,8 +10,6 @@ int main(int argc, char *argv[])
+>>
+>>  #ifdef FOO
+>>         a = 4;
+>> -#endif /* FOO */
+>> -#ifdef FOO
+>>         a = 5;
+>>  #endif /* FOO */
+>>
+>> is possible.
+>
+> Anyone familiar if any tool exists today that would optimize this? Is
+> anyone working on it? Would git be a good place for such a thing? I'd
+> consider it as an option to optimize a diff. This for example is
+> extremely useful for us working with Coccinelle where we have a tool
+> writing code for us, while such an optimization might be useful to
+> Coccinelle it would seem like a rather generic feature, its just not
+> clear to me where to give such a tool a proper home.
+>
+>  Luis
 
--Sean
+I do not understand exactly what would be optimized in this case?
 
-On Wed, Jul 15, 2015 at 02:29:07PM -0700, Andrew Morton wrote:
-> On Wed, 15 Jul 2015 14:14:40 -0700 "Sean O. Stalley" <sean.stalley@intel.com> wrote:
-> 
-> > Currently the __GFP_ZERO flag is ignored by dma_pool_alloc().
-> > Make dma_pool_alloc() zero the memory if this flag is set.
-> > 
-> > ...
-> >
-> > --- a/mm/dmapool.c
-> > +++ b/mm/dmapool.c
-> > @@ -334,7 +334,7 @@ void *dma_pool_alloc(struct dma_pool *pool, gfp_t mem_flags,
-> >  	/* pool_alloc_page() might sleep, so temporarily drop &pool->lock */
-> >  	spin_unlock_irqrestore(&pool->lock, flags);
-> >  
-> > -	page = pool_alloc_page(pool, mem_flags);
-> > +	page = pool_alloc_page(pool, mem_flags & (~__GFP_ZERO));
-> >  	if (!page)
-> >  		return NULL;
-> >  
-> > @@ -375,6 +375,10 @@ void *dma_pool_alloc(struct dma_pool *pool, gfp_t mem_flags,
-> >  	memset(retval, POOL_POISON_ALLOCATED, pool->size);
-> >  #endif
-> >  	spin_unlock_irqrestore(&pool->lock, flags);
-> > +
-> > +	if (mem_flags & __GFP_ZERO)
-> > +		memset(retval, 0, pool->size);
-> > +
-> >  	return retval;
-> >  }
-> >  EXPORT_SYMBOL(dma_pool_alloc);
-> 
-> hm, this code is all a bit confused.
-> 
-> We'd really prefer that the __GFP_ZERO be passed all the way to the
-> bottom level, so that places which are responsible for zeroing memory
-> (eg, the page allocator) can do their designated function.  One reason
-> for this is that if someone comes up with a whizzy way of zeroing
-> memory on their architecture (eg, non-temporal store) then that will be
-> implemented in the core page allocator and the dma code will miss out.
+In any regards, that's not a diff transformation, that is a code
+transformation, and I would suggest starting with Coccinelle and
+seeing if you can get that to do what you want.
+http://coccinelle.lip6.fr/
 
-It would be nice if we could use the page allocator for whizzy zeroing.
-There are a few reasons why I didn't pass __GFP_ZERO down to the allocator:
-
- - dma_pool_alloc() reuses blocks of memory that were recently freed by dma_pool_free().
-   We have to memset(0) old blocks, since we don't know what's in them.
-
- - When a new page is alloced, pool_initalize_page() writes an integer to every block.
-   So even if we passed __GFP_ZERO down to the allocator, the block would not be empty
-   by the time dma_pool_alloc() returns.
-
- - Assuming a driver is allocing as often as it is freeing,
-   once the pool has enough memory it shouldn't call down to the allocator very often,
-   so any optimization down in the allocator shouldn't make much of a difference
-
-> Also, and just from a brief look around,
-> drivers/base/dma-coherent.c:dma_alloc_from_coherent() is already
-> zeroing the memory so under some circumstances I think we'll zero the
-> memory twice?  We could fix that by passing the gfp_t to
-> dma_alloc_from_coherent() and then changing dma_alloc_from_coherent()
-> to *not* zero the memory if __GFP_ZERO, but wouldn't that be peculiar?
-
-I noticed this as well. In this case, we would be zeroing twice.
-This is no worse than the current case (where dma_pool_alloc() returns,
-then the driver calls memset(0)).
-
-> Also, passing __GFP_ZERO will now cause pool_alloc_page()'s
-> memset(POOL_POISON_FREED) to be wiped out.  I guess that's harmless,
-> but a bit inefficient?
-
-Inefficient, but no more inefficient than the current case.
-I didn't think it would be a problem (since it only happens if dma pool debuging is enabled).
-I could add a check to only memset the poison if __GFP_ZERO is not set.
+Regards,
+Jake
