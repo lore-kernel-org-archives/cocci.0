@@ -1,31 +1,30 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 17 Jul 2015 13:12:37 +0200
-Subject: [Cocci] Deletion of blank lines?
-In-Reply-To: <alpine.DEB.2.10.1507171150150.2404@hadrien>
-References: <55A60721.5050209@users.sourceforge.net>
- <55A743F3.6000500@users.sourceforge.net>
- <alpine.DEB.2.10.1507171150150.2404@hadrien>
-Message-ID: <55A8E325.4030902@users.sourceforge.net>
+From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
+Date: Fri, 17 Jul 2015 22:05:07 -0700
+Subject: [Cocci] [PATCH v2 0/4] pycocci: index opts, SmPL patch proof support
+Message-ID: <1437195911-28821-1-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Is there a blank line after the call to exit(1); also?
+From: "Luis R. Rodriguez" <mcgrof@suse.com>
 
-No.
+This v2 changes the way we do git tree inference by using
+git rev-parse. While at it, I decided to mesh in SmPL  <--> patch
+equivalence proof support. This is a generalized solution, I
+originally had written for the backports project, we now give
+this instead a proper home and purpose under pycocci.
 
-The text line which follows the shown exit() call should only contain
-the closing curly bracket for the sigterm_handler() function according to
-the commit "Load cups into easysw/current."
-(ef416fc25c4af449e930416117bedb12fc9924ba) from 2006-01-13.
+If there are no issues I'll merge this soon, in hopes it will
+make it for the coccinelle 1.0.2 release.
 
+Luis R. Rodriguez (4):
+  pycocci: add requirements class
+  pycocci: add git class
+  pycocci: figure out if to enable --jobs, --use-gitgrep or
+    --use-glimpse
+  pycocci: add Coccinelle SmPL patch proof support
 
-> I think that it tries toavoid creeating two blank lines.
+ tools/pycocci | 475 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 462 insertions(+), 13 deletions(-)
 
-Should the blank line between the shown calls be usually preserved
-by default?
-
-When would the suggested functionality (like a bit of extra source code clean-up)
-be really needed?
-
-Regards,
-Markus
+-- 
+2.3.2.209.gd67f9d5.dirty
