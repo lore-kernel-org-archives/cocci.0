@@ -1,64 +1,46 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sat, 18 Jul 2015 15:36:39 +0200
-Subject: [Cocci] Finding unstored return values with SmPL
-In-Reply-To: <alpine.DEB.2.02.1507181451340.2016@localhost6.localdomain6>
-References: <55A62135.90206@users.sourceforge.net>
- <alpine.DEB.2.10.1507150629540.2670@hadrien>
- <55AA3B1F.5020807@users.sourceforge.net>
- <alpine.DEB.2.02.1507181351130.2042@localhost6.localdomain6>
- <55AA476F.7020907@users.sourceforge.net>
- <alpine.DEB.2.02.1507181451340.2016@localhost6.localdomain6>
-Message-ID: <55AA5667.5010009@users.sourceforge.net>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sat, 18 Jul 2015 19:01:32 +0200 (CEST)
+Subject: [Cocci] [PATCH v2 0/4] pycocci: index opts,
+ SmPL patch proof support
+In-Reply-To: <1437195911-28821-1-git-send-email-mcgrof@do-not-panic.com>
+References: <1437195911-28821-1-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <alpine.DEB.2.02.1507181901020.2059@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Between the regular expression and the undefined dependencies,
-> I have no idea what you are trying to do.
+On Fri, 17 Jul 2015, Luis R. Rodriguez wrote:
 
-I would present the "gap" (further SmPL rules) there if the main rule
-will be clear for the suggested top-down design approach.
+> From: "Luis R. Rodriguez" <mcgrof@suse.com>
+> 
+> This v2 changes the way we do git tree inference by using
+> git rev-parse. While at it, I decided to mesh in SmPL  <--> patch
+> equivalence proof support. This is a generalized solution, I
+> originally had written for the backports project, we now give
+> this instead a proper home and purpose under pycocci.
+> 
+> If there are no issues I'll merge this soon, in hopes it will
+> make it for the coccinelle 1.0.2 release.
+> 
+> Luis R. Rodriguez (4):
+>   pycocci: add requirements class
+>   pycocci: add git class
+>   pycocci: figure out if to enable --jobs, --use-gitgrep or
+>     --use-glimpse
 
+Do you need patches 2 and 3?
 
-> Maybe just give an example of code that you would like to match.
+julia
 
-I would like to achieve a bit of functionality which is already provided
-by other popular static source code analysis tools to some degree
-also by means of the Coccinelle software.
-
-Other tools can also detect unused/unchecked return values.
-Examples:
-http://www.splint.org/manual/html/sec8.html#_Toc534974997
-https://gcc.gnu.org/onlinedocs/gcc-5.2.0/gcc/Function-Attributes.html#index-g_t_0040code_007bwarn_005funused_005fresult_007d-function-attribute-3299
-
-
-The SmPL approach that we are discussing now should point open issues out
-in source code like the following small test example.
-
-int implementation_with_an_ignored_return_value(void)
-{
- malloc(123);
- return 0;
-}
-
-
-I imagine that a complete solution would need a detailed data flow analysis
-for this purpose. But I am not familiar enough will all necessary
-technology there so far.
-
-So I hope that a smaller solution can be achieved with Coccinelle.
-* I can find an ordinary function call without problems.
-
-* The corresponding software development challenges become apparent
-  when I would like to ensure by a SmPL filter that the source code position
-  of this call is different from all other function calls which were detected
-  at other places within a function implementation.
-
-  @show_unstored_return_values
-   depends on !find_calls_for_initialisations
-           && !find_calls_for_designated_initialisations
-           && !find_calls_for_assignments@
-
-  Should this dependency specification be extended anyhow?
-
-Regards,
-Markus
+>   pycocci: add Coccinelle SmPL patch proof support
+> 
+>  tools/pycocci | 475 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 462 insertions(+), 13 deletions(-)
+> 
+> -- 
+> 2.3.2.209.gd67f9d5.dirty
+> 
+> _______________________________________________
+> Cocci mailing list
+> Cocci at systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
+> 
