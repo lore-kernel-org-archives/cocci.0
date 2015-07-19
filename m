@@ -1,7 +1,7 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 19 Jul 2015 20:48:10 +0200
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sun, 19 Jul 2015 20:49:36 +0200 (CEST)
 Subject: [Cocci] Finding unstored return values with SmPL
-In-Reply-To: <alpine.DEB.2.02.1507191820360.2077@localhost6.localdomain6>
+In-Reply-To: <55ABF0EA.5080705@users.sourceforge.net>
 References: <55A62135.90206@users.sourceforge.net>
  <alpine.DEB.2.10.1507150629540.2670@hadrien>
  <55AA3B1F.5020807@users.sourceforge.net>
@@ -14,40 +14,47 @@ References: <55A62135.90206@users.sourceforge.net>
  <alpine.DEB.2.02.1507191504310.2002@localhost6.localdomain6>
  <55ABB754.1000109@users.sourceforge.net>
  <alpine.DEB.2.02.1507191820360.2077@localhost6.localdomain6>
-Message-ID: <55ABF0EA.5080705@users.sourceforge.net>
+ <55ABF0EA.5080705@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.02.1507192048360.2040@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> typedef int mytype;
+On Sun, 19 Jul 2015, SF Markus Elfring wrote:
+
+> > typedef int mytype;
+> > 
+> > mytype x;
+> > 
+> > Clearly this would not be the same as
+> > 
+> > typedef int x;
 > 
-> mytype x;
+> I see a bit more here.
 > 
-> Clearly this would not be the same as
+> But my knowledge in the application of the semantic patch language
+> is still evolving also around such details. The corresponding distinction
+> is not clear enough for me so far.
 > 
-> typedef int x;
+> Is the handling of "typedefs" another detail for later considerations?
 
-I see a bit more here.
+I just mentioned typedefs to make clear the difference between the name of 
+a type and the type of a variable.
 
-But my knowledge in the application of the semantic patch language
-is still evolving also around such details. The corresponding distinction
-is not clear enough for me so far.
+julia
 
-Is the handling of "typedefs" another detail for later considerations?
-
-
-
->> I am still unfamiliar with the consequences from the use of 
->> variables like "v" and "x" when they are not position variables
->> as you suggest in your example script.
+> >> I am still unfamiliar with the consequences from the use of 
+> >> variables like "v" and "x" when they are not position variables
+> >> as you suggest in your example script.
+> > 
+> > They match the closest enclosing expression.
 > 
-> They match the closest enclosing expression.
-
-I see that there are also a few other items mentioned in the manual.
-Unfortunately, the description is terse.
-https://github.com/coccinelle/coccinelle/blob/af8131522ee9aff575e4345f5068f4f138264cd6/docs/manual/cocci_syntax.tex#L258
-
-But I am unsure about when this special SmPL construct will help
-in the discussed use case.
-
-Regards,
-Markus
+> I see that there are also a few other items mentioned in the manual.
+> Unfortunately, the description is terse.
+> https://github.com/coccinelle/coccinelle/blob/af8131522ee9aff575e4345f5068f4f138264cd6/docs/manual/cocci_syntax.tex#L258
+> 
+> But I am unsure about when this special SmPL construct will help
+> in the discussed use case.
+> 
+> Regards,
+> Markus
+> 
