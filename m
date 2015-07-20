@@ -1,6 +1,6 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Mon, 20 Jul 2015 14:55:24 +0200
-Subject: [Cocci] Finding designated initialisers with SmPL
+Date: Mon, 20 Jul 2015 15:27:21 +0200
+Subject: [Cocci] Finding unstored return values with SmPL
 In-Reply-To: <alpine.DEB.2.10.1507201335030.2475@hadrien>
 References: <55A62135.90206@users.sourceforge.net>
  <alpine.DEB.2.10.1507150629540.2670@hadrien>
@@ -8,7 +8,7 @@ References: <55A62135.90206@users.sourceforge.net>
  <alpine.DEB.2.02.1507181351130.2042@localhost6.localdomain6>
  <55ACDC1C.1040005@users.sourceforge.net>
  <alpine.DEB.2.10.1507201335030.2475@hadrien>
-Message-ID: <55ACEFBC.1000101@users.sourceforge.net>
+Message-ID: <55ACF739.4020802@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -30,13 +30,14 @@ identifier allocation, structure_type, structure_var;
  ...+>
 
 
-elfring at Sonne:~/Projekte/Coccinelle/janitor> spatch.opt -sp-file show_unstored_return_values2.cocci unchecked_return_values1.c
+elfring at Sonne:~/Projekte/Coccinelle/janitor> spatch.opt -sp-file show_designated_initialisers1.cocci unchecked_return_values1.c
 init_defs_builtins: /usr/local/lib/coccinelle/standard.h
-327 328
-Fatal error: exception Failure("minus: parse error: \n = File \"show_unstored_return_values2.cocci\", line 17, column 46,  charpos = 327\n    around = '.', whole content =   struct structure_type structure_var = { ... .element = allocation(...) ... };\n")
+155 156
+Fatal error: exception Failure("minus: parse error: \n = File \"show_designated_initialisers1.cocci\", line 6, column 45,  charpos = 155\n    around = '.', whole content = *struct structure_type structure_var = { ... .element = allocation(...) ... };\n")
 
 
-How should this small SmPL example be improved further?
+How should my small SmPL example be improved further?
+
 http://en.cppreference.com/w/c/language/struct_initialization
 
 Regards,
