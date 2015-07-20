@@ -1,60 +1,132 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 19 Jul 2015 20:49:36 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Mon, 20 Jul 2015 13:31:40 +0200
 Subject: [Cocci] Finding unstored return values with SmPL
-In-Reply-To: <55ABF0EA.5080705@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.02.1507181351130.2042@localhost6.localdomain6>
 References: <55A62135.90206@users.sourceforge.net>
  <alpine.DEB.2.10.1507150629540.2670@hadrien>
  <55AA3B1F.5020807@users.sourceforge.net>
  <alpine.DEB.2.02.1507181351130.2042@localhost6.localdomain6>
- <55AA476F.7020907@users.sourceforge.net>
- <alpine.DEB.2.02.1507181451340.2016@localhost6.localdomain6>
- <55AA5667.5010009@users.sourceforge.net>
- <alpine.DEB.2.02.1507182206090.2086@localhost6.localdomain6>
- <55AB9E11.4080501@users.sourceforge.net>
- <alpine.DEB.2.02.1507191504310.2002@localhost6.localdomain6>
- <55ABB754.1000109@users.sourceforge.net>
- <alpine.DEB.2.02.1507191820360.2077@localhost6.localdomain6>
- <55ABF0EA.5080705@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1507192048360.2040@localhost6.localdomain6>
+Message-ID: <55ACDC1C.1040005@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, 19 Jul 2015, SF Markus Elfring wrote:
+> Do you really need to use a regular expression here?
+> Why not use a disjunction in the pattern?
 
-> > typedef int mytype;
-> > 
-> > mytype x;
-> > 
-> > Clearly this would not be the same as
-> > 
-> > typedef int x;
-> 
-> I see a bit more here.
-> 
-> But my knowledge in the application of the semantic patch language
-> is still evolving also around such details. The corresponding distinction
-> is not clear enough for me so far.
-> 
-> Is the handling of "typedefs" another detail for later considerations?
+Another source code analysis approach like the following might make
+the involved software design decisions a bit more clear.
 
-I just mentioned typedefs to make clear the difference between the name of 
-a type and the type of a variable.
 
-julia
+@show_unstored_return_values@
+identifier allocation =~ "^(?x)
+(?:
+   pthread_mutex_(?:try|un)?lock
+|
+   sigaction
+)$", structure_var, var, work;
+field element;
+struct structure_type;
+type data_type, return_type;
+@@
+ return_type work(...)
+ {
+  <+...
+(
+  data_type var = allocation(...);
+|
+  structure_type structure_var = { ... .element = allocation(...) ... };
+|
+(
+  var
+|
+  structure_var
+)
+  = allocation(...)
+|
+* (void) allocation(...);
+|
+* allocation(...)
+)
+  ...+>
+ }
 
-> >> I am still unfamiliar with the consequences from the use of 
-> >> variables like "v" and "x" when they are not position variables
-> >> as you suggest in your example script.
-> > 
-> > They match the closest enclosing expression.
-> 
-> I see that there are also a few other items mentioned in the manual.
-> Unfortunately, the description is terse.
-> https://github.com/coccinelle/coccinelle/blob/af8131522ee9aff575e4345f5068f4f138264cd6/docs/manual/cocci_syntax.tex#L258
-> 
-> But I am unsure about when this special SmPL construct will help
-> in the discussed use case.
-> 
-> Regards,
-> Markus
-> 
+
+elfring at Sonne:~/Projekte/Coccinelle/janitor> spatch.opt -sp-file show_unstored_return_values2.cocci unchecked_return_values1.c
+init_defs_builtins: /usr/local/lib/coccinelle/standard.h
+181 182
+Fatal error: exception Failure("meta: parse error: \n = File \"show_unstored_return_values2.cocci\", line 9, column 21,  charpos = 181\n    around = ';', whole content = struct structure_type;\n")
+
+
+How can this "surprise" be fixed?
+
+
+
+> How is it useful to match just thf function call.
+
+Does the following small source code example contain a few update candidates
+for further considerations?
+
+#include <pthread.h>
+
+static pthread_mutex_t my_lock = PTHREAD_MUTEX_INITIALIZER;
+static unsigned long my_counter = 1;
+
+void increment_a_shared_variable(void)
+{
+ pthread_mutex_lock(&my_lock);
+ ++my_counter;
+ pthread_mutex_unlock(&my_lock);
+}
+
+
+
+> This doesn't show anything about whether or not the return value is stored.
+
+Does the following SmPL script draft show another interesting application
+of the semantic patch language?
+
+@show_unstored_return_values@
+identifier allocation =~ "^(?x)
+(?:
+   pthread_mutex_(?:try|un)?lock
+|
+   sigaction
+)$", var, work;
+type data_type, return_type;
+@@
+ return_type work(...)
+ {
+  <+...
+(
+  data_type var = allocation(...);
+|
+  var = allocation(...)
+|
+* (void) allocation(...);
+|
+* allocation(...)
+)
+  ...+>
+ }
+
+
+elfring at Sonne:~/Projekte/Coccinelle/janitor> spatch.opt -sp-file show_unstored_return_values3.cocci unchecked_return_values1.c
+init_defs_builtins: /usr/local/lib/coccinelle/standard.h
+HANDLING: unchecked_return_values1.c
+diff = 
+--- unchecked_return_values1.c
++++ /tmp/cocci-output-7564-385170-unchecked_return_values1.c
+@@ -5,7 +5,5 @@ static unsigned long my_counter = 1;
+ 
+ void increment_a_shared_variable(void)
+ {
+- pthread_mutex_lock(&my_lock);
+  ++my_counter;
+- pthread_mutex_unlock(&my_lock);
+ }
+
+
+How do you think about my imaginations for corresponding software improvements?
+
+Regards,
+Markus
