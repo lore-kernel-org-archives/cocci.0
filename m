@@ -1,29 +1,43 @@
 From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Tue, 21 Jul 2015 13:51:00 -0700
-Subject: [Cocci] [PATCH 1/2] autotools: unify the way to determine version
-	information
+Date: Tue, 21 Jul 2015 13:51:01 -0700
+Subject: [Cocci] [PATCH 2/2] autotools: add localversion information
 In-Reply-To: <1437511861-2205-1-git-send-email-mcgrof@do-not-panic.com>
 References: <1437511861-2205-1-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <1437511861-2205-2-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1437511861-2205-3-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: "Luis R. Rodriguez" <mcgrof@suse.com>
 
-The version information you get when you run: spatch --version
-comes from what ./confgure.ac ends up figuring out for you.
-The top level Makefile uses the same mechanism to tell you
-and use the version information at build time, but if the
-strategy is updated in one place it would need to be updated
-in both places.
+When someone is building Coccinelle from source on a git tree
+with some modifications we currently cannot tell what type of
+modifications were, if any, were done. Add a localversion info
+postix which will be pegged onto the version string *iff* the
+git tree used has either a change non-commited  yet or if the
+git tree has some commits beyond what was officially released
+and tagged.
 
-Avoid this duplicatin of work and instead just make version
-information come from ./version.sh script. Then if we update
-how we get the version information it just needs to be done
-in one place.
+So if you have a dirty tree with some uncommited changes the
+version will be postfixed with -dirty. For example if 1.0.2 was
+blessed and released and you had a series of uncommited changes
+you'd end yup with:
 
-We make the version.sh script use old shell mechanisms to be
-able to work on any supported unix system.
+1.0.2-dirty
+
+Likewise if your tree has some commits not upstream these will be
+reflected. For instance, say you had one extra commit, you'd end
+up with:
+
+1.0.2-00001-g8870d8b0cf33
+
+The purpose of this is to enable developers and tools within
+Coccinelle to be able to tell when folks have modified upstream
+code.
+
+The setlocalversion file was take and modified from the Linux
+kernel, it was repurposed for Coccinelle by just simplifying it
+by hardcoding it to use the long version string if there is any
+delta.
 
 Cc: Peter Senna Tschudin <peter.senna@gmail.com>
 Cc: Nikolay Orlyuk <virkony@gmail.com>
@@ -31,46 +45,103 @@ Cc: S?bastien Hinderer <Sebastien.Hinderer@inria.fr>
 Cc: Quentin Lambert <lambert.quentin@gmail.com>
 Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
 ---
- Makefile     | 2 +-
- configure.ac | 2 +-
- version.sh   | 3 +++
- 3 files changed, 5 insertions(+), 2 deletions(-)
- create mode 100755 version.sh
+ scripts/setlocalversion | 77 +++++++++++++++++++++++++++++++++++++++++++++++++
+ version.sh              |  3 +-
+ 2 files changed, 79 insertions(+), 1 deletion(-)
+ create mode 100755 scripts/setlocalversion
 
-diff --git a/Makefile b/Makefile
-index fd369415b1ec..cff8412019fa 100644
---- a/Makefile
-+++ b/Makefile
-@@ -19,7 +19,7 @@ endif
- -include /etc/Makefile.coccinelle  # local customizations, if any
- 
- 
--VERSION=$(shell cat ./version | tr -d '\n')
-+VERSION=$(shell ./version.sh | tr -d '\n')
- CCVERSION=$(shell cat scripts/coccicheck/README | egrep -o '[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+' | head -n1)
- PKGVERSION=$(shell dpkg-parsechangelog -ldebian/changelog.$(DISTRIB_CODENAME) 2> /dev/null \
- 	 | sed -n 's/^Version: \(.*\)/\1/p' )
-diff --git a/configure.ac b/configure.ac
-index d4072004228c..679660956401 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -3,7 +3,7 @@ dnl  run 'automake -acf' to update setup/{install-sh,missing}
- 
- dnl  standard initialization (we only use autoconf not automake)
- AC_PREREQ([2.68])
--AC_INIT([coccinelle], m4_esyscmd([cat ./version | tr -d '\n']), [cocci at systeme.lip6.fr], [], [http://coccinelle.lip6.fr/])
-+AC_INIT([coccinelle], m4_esyscmd([./version.sh | tr -d '\n']), [cocci at systeme.lip6.fr], [], [http://coccinelle.lip6.fr/])
- AC_CONFIG_MACRO_DIR([setup])
- AC_CONFIG_AUX_DIR([setup])
- AC_SUBST([CONFIGURE_FLAGS], ["$*"])
-diff --git a/version.sh b/version.sh
+diff --git a/scripts/setlocalversion b/scripts/setlocalversion
 new file mode 100755
-index 000000000000..f18206344a76
+index 000000000000..f6b6d9df5ed9
 --- /dev/null
-+++ b/version.sh
-@@ -0,0 +1,3 @@
++++ b/scripts/setlocalversion
+@@ -0,0 +1,77 @@
 +#!/bin/sh
-+VERSION=`cat ./version | tr -d '\n'`
-+printf '%s' $VERSION
++#
++# This scripts adds local version information from the version
++# control systems. It was taken from the Linux kernel as of v4.2-rc2
++# and simplified for use on Coccinelle by mcgrof. The version info
++# was hard coded to use long version. The svn postfix details were
++# also removed.
++
++srctree=.
++
++scm_version()
++{
++	local short
++	short=false
++
++
++	# Check for git and a git repo.
++	if test -z "$(git rev-parse --show-cdup 2>/dev/null)" &&
++	   head=`git rev-parse --verify --short HEAD 2>/dev/null`; then
++
++		# If we are at a tagged commit (like "v2.6.30-rc6"), we ignore
++		# it, because this version is defined in the top level Makefile.
++		if [ -z "`git describe --exact-match 2>/dev/null`" ]; then
++
++			# If only the short version is requested, don't bother
++			# running further git commands
++			if $short; then
++				echo "+"
++				return
++			fi
++			# If we are past a tagged commit (like
++			# "v2.6.30-rc5-302-g72357d5"), we pretty print it.
++			if atag="`git describe 2>/dev/null`"; then
++				echo "$atag" | awk -F- '{printf("-%05d-%s", $(NF-1),$(NF))}'
++
++			# If we don't have a tag at all we print -g{commitish}.
++			else
++				printf '%s%s' -g $head
++			fi
++		fi
++
++		# Check for uncommitted changes
++		if git diff-index --name-only HEAD | grep -qv "^scripts/package"; then
++			printf '%s' -dirty
++		fi
++
++		# All done with git
++		return
++	fi
++
++	# Check for mercurial and a mercurial repo.
++	if test -d .hg && hgid=`hg id 2>/dev/null`; then
++		# Do we have an tagged version?  If so, latesttagdistance == 1
++		if [ "`hg log -r . --template '{latesttagdistance}'`" == "1" ]; then
++			id=`hg log -r . --template '{latesttag}'`
++			printf '%s%s' -hg "$id"
++		else
++			tag=`printf '%s' "$hgid" | cut -d' ' -f2`
++			if [ -z "$tag" -o "$tag" = tip ]; then
++				id=`printf '%s' "$hgid" | sed 's/[+ ].*//'`
++				printf '%s%s' -hg "$id"
++			fi
++		fi
++
++		# Are there uncommitted changes?
++		# These are represented by + after the changeset id.
++		case "$hgid" in
++			*+|*+\ *) printf '%s' -dirty ;;
++		esac
++
++		# All done with mercurial
++		return
++	fi
++}
++
++res="$res$(scm_version)"
++echo "$res"
+diff --git a/version.sh b/version.sh
+index f18206344a76..a12597c246ca 100755
+--- a/version.sh
++++ b/version.sh
+@@ -1,3 +1,4 @@
+ #!/bin/sh
+ VERSION=`cat ./version | tr -d '\n'`
+-printf '%s' $VERSION
++LOCALVERSION=`./scripts/setlocalversion | tr -d '\n'`
++printf '%s%s' $VERSION $LOCALVERSION
 -- 
 2.3.2.209.gd67f9d5.dirty
