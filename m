@@ -1,46 +1,58 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 21 Jul 2015 08:02:10 +0200 (CEST)
-Subject: [Cocci] [PATCH v3 5/5] pycocci: add man page and promote
- pycocci to install target
-In-Reply-To: <CAB=NE6VDgbDz9uF4OJeBc_y+4qycRHo1sqTcpcFGO7dm9HU85Q@mail.gmail.com>
+Date: Tue, 21 Jul 2015 08:11:43 +0200 (CEST)
+Subject: [Cocci] [PATCH v3 0/5] pycocci: few updates and add to install
+ target
+In-Reply-To: <1437431544-32662-1-git-send-email-mcgrof@do-not-panic.com>
 References: <1437431544-32662-1-git-send-email-mcgrof@do-not-panic.com>
- <1437431544-32662-6-git-send-email-mcgrof@do-not-panic.com>
- <CAB=NE6VDgbDz9uF4OJeBc_y+4qycRHo1sqTcpcFGO7dm9HU85Q@mail.gmail.com>
-Message-ID: <alpine.DEB.2.02.1507210801590.2065@localhost6.localdomain6>
+Message-ID: <alpine.DEB.2.02.1507210811190.2065@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 On Mon, 20 Jul 2015, Luis R. Rodriguez wrote:
 
-> On Mon, Jul 20, 2015 at 3:32 PM, Luis R. Rodriguez
-> <mcgrof@do-not-panic.com> wrote:
-> > diff --git a/Makefile b/Makefile
-> > index 27904f150204..63130b00af0f 100644
-> > --- a/Makefile
-> > +++ b/Makefile
-> > @@ -448,6 +448,7 @@ install-man:
-> >         $(MKDIR_P) $(DESTDIR)$(MANDIR)/man1
-> >         $(MKDIR_P) $(DESTDIR)$(MANDIR)/man3
-> >         $(INSTALL_DATA) docs/spatch.1 $(DESTDIR)$(MANDIR)/man1/
-> > +       $(INSTALL_DATA) docs/pycocci.1 $(DESTDIR)$(MANDIR)/man1/
-> >         $(INSTALL_DATA) docs/Coccilib.3cocci $(DESTDIR)$(MANDIR)/man3/
-> >
-> >  install-bash:
-> > @@ -487,6 +488,8 @@ install-stubs:
-> >  install: install-man install-common install-stubs $(PYTHON_INSTALL_TARGET)
-> >         rm -f $(DESTDIR)$(LIBDIR)/spatch
-> >         rm -f $(DESTDIR)$(LIBDIR)/spatch.opt
-> > +       rm -f $(DESTDIR)$(LIBDIR)/pycocci
-> > +       $(INSTALL_PROGRAM) tools/pycoci $(DESTDIR)$(LIBDIR)
-> >         @if test -x spatch -o -x spatch.opt; then \
-> >                 $(MAKE) install-def;fi
-> >         @if test -x spatch ; then \
+> From: "Luis R. Rodriguez" <mcgrof@suse.com>
 > 
-> Whoops sorry this should be using $BINDIR instead. There was already a
-> target for pycocci also on the install-tools target, but distros are
-> not using that install target so we just would move that to the
-> default install target to get distros to start carrying this.
+> This v3 addresses the changes noted by Julia. Since this is extending
+> features to help with SmPL patch development, in particular --show-proof,
+> and since we're using quite a bit of heuristics useful to users of Coccinelle
+> depending on their version installed document all this on a proper man page
+> for pycocci and also add pycocci into the install target.
+> 
+> In the future we should probably just let pycocci read ini type of file
+> on say your ~/.pycocci which will let you specify and customize further
+> defaults we'd inherit depending on your target. Then you can further
+> customize your options per project. Each upstream project can then also
+> have their own .pycocci perhaps which promotes a set of options to use.
+> For instance right now Linux scripts/coccinelle/ lets scripts gather
+> options to use per SmPL patch. We shoul standardize on a format format
+> for that and to enable project specific tuned variables.
+> 
+> If there are no issues with this v3 I'll merge soon.
 
-OK.
+I'm OK with the concept of all of these.
 
 julia
+
+
+> Luis R. Rodriguez (5):
+>   pycocci: add requirements class
+>   pycocci: add git class
+>   pycocci: figure out if to enable --jobs, --use-gitgrep or
+>     --use-glimpse
+>   pycocci: add Coccinelle SmPL patch proof support
+>   pycocci: add man page and promote pycocci to install target
+> 
+>  Makefile       |   3 +
+>  docs/pycocci.1 | 217 ++++++++++++++++++++++++++
+>  tools/pycocci  | 486 ++++++++++++++++++++++++++++++++++++++++++++++++++++++---
+>  3 files changed, 687 insertions(+), 19 deletions(-)
+>  create mode 100644 docs/pycocci.1
+> 
+> -- 
+> 2.3.2.209.gd67f9d5.dirty
+> 
+> _______________________________________________
+> Cocci mailing list
+> Cocci at systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
+> 
