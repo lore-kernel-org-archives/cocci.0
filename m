@@ -1,59 +1,76 @@
 From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Tue, 21 Jul 2015 13:50:59 -0700
-Subject: [Cocci] [PATCH 0/2] coccinelle: add localversion information
-Message-ID: <1437511861-2205-1-git-send-email-mcgrof@do-not-panic.com>
+Date: Tue, 21 Jul 2015 13:51:00 -0700
+Subject: [Cocci] [PATCH 1/2] autotools: unify the way to determine version
+	information
+In-Reply-To: <1437511861-2205-1-git-send-email-mcgrof@do-not-panic.com>
+References: <1437511861-2205-1-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1437511861-2205-2-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: "Luis R. Rodriguez" <mcgrof@suse.com>
 
-When working with pycocci I noticed that 1) the git tree version of coccinelle
-at Inria has different tags than the git tree at github, and 2) that I was not
-able to easily get Coccinelle's own tools to determine if we had some sort of
-dirty tree or tree with changes beyond a tagged official release. As an example
-even though --jobs is now fixed on the inria git tree, this code is not yet
-on github.
+The version information you get when you run: spatch --version
+comes from what ./confgure.ac ends up figuring out for you.
+The top level Makefile uses the same mechanism to tell you
+and use the version information at build time, but if the
+strategy is updated in one place it would need to be updated
+in both places.
 
-The issue with 1) prevents me to build custom versions of coccinelle
-and get pycocci to work with my goal to support the future 1.0.2 release
-or a release beyond 1.0.1. The issues with 1) may hopefully be fixed by
-streamlining how the releases are made with development but discussion is
-ongoing with this.
+Avoid this duplicatin of work and instead just make version
+information come from ./version.sh script. Then if we update
+how we get the version information it just needs to be done
+in one place.
 
-Provided 1) was fixed, and say the inria git tree had the proper 1.0.1 tag
-as well, I'd then be able to modify pycocci to say: hey, use --jobs if you
-detect you are on a release which is > 1.0.1. I can't do this though as the
-version information on coccinelle does not take into consideration local
-deltas. I've decided to borrow the Linux kernel mechanism for determining
-this and allowing Coccinelle to make use of it. With these changes we will
-keep the version string clean if no tree modifications are on your tree and
-your tags are synced up.
+We make the version.sh script use old shell mechanisms to be
+able to work on any supported unix system.
 
-If you have modifications you can end up either with a -dirty postfixed tree,
-or a tree that shows the delta of commits on top of a blessed release. For
-instance, if you have changes not commited you'll now get on spatch --version:
-
-1.0.2-dirty
-                                                                                
-Likewise if your tree has some commits not upstream these will be reflected.
-For instance, say you had one extra commit, you'd end up with something like:
-
-1.0.2-00001-g8870d8b0cf33
-
-Provided we address 1) then tools can infer local hacks and let you move on
-with life as the coccinelle development train moves forward.
-
-Luis R. Rodriguez (2):
-  autotools: unify the way to determine version information
-  autotools: add localversion information
-
- Makefile                |  2 +-
- configure.ac            |  2 +-
- scripts/setlocalversion | 77 +++++++++++++++++++++++++++++++++++++++++++++++++
- version.sh              |  4 +++
- 4 files changed, 83 insertions(+), 2 deletions(-)
- create mode 100755 scripts/setlocalversion
+Cc: Peter Senna Tschudin <peter.senna@gmail.com>
+Cc: Nikolay Orlyuk <virkony@gmail.com>
+Cc: S?bastien Hinderer <Sebastien.Hinderer@inria.fr>
+Cc: Quentin Lambert <lambert.quentin@gmail.com>
+Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
+---
+ Makefile     | 2 +-
+ configure.ac | 2 +-
+ version.sh   | 3 +++
+ 3 files changed, 5 insertions(+), 2 deletions(-)
  create mode 100755 version.sh
 
+diff --git a/Makefile b/Makefile
+index fd369415b1ec..cff8412019fa 100644
+--- a/Makefile
++++ b/Makefile
+@@ -19,7 +19,7 @@ endif
+ -include /etc/Makefile.coccinelle  # local customizations, if any
+ 
+ 
+-VERSION=$(shell cat ./version | tr -d '\n')
++VERSION=$(shell ./version.sh | tr -d '\n')
+ CCVERSION=$(shell cat scripts/coccicheck/README | egrep -o '[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+' | head -n1)
+ PKGVERSION=$(shell dpkg-parsechangelog -ldebian/changelog.$(DISTRIB_CODENAME) 2> /dev/null \
+ 	 | sed -n 's/^Version: \(.*\)/\1/p' )
+diff --git a/configure.ac b/configure.ac
+index d4072004228c..679660956401 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -3,7 +3,7 @@ dnl  run 'automake -acf' to update setup/{install-sh,missing}
+ 
+ dnl  standard initialization (we only use autoconf not automake)
+ AC_PREREQ([2.68])
+-AC_INIT([coccinelle], m4_esyscmd([cat ./version | tr -d '\n']), [cocci at systeme.lip6.fr], [], [http://coccinelle.lip6.fr/])
++AC_INIT([coccinelle], m4_esyscmd([./version.sh | tr -d '\n']), [cocci at systeme.lip6.fr], [], [http://coccinelle.lip6.fr/])
+ AC_CONFIG_MACRO_DIR([setup])
+ AC_CONFIG_AUX_DIR([setup])
+ AC_SUBST([CONFIGURE_FLAGS], ["$*"])
+diff --git a/version.sh b/version.sh
+new file mode 100755
+index 000000000000..f18206344a76
+--- /dev/null
++++ b/version.sh
+@@ -0,0 +1,3 @@
++#!/bin/sh
++VERSION=`cat ./version | tr -d '\n'`
++printf '%s' $VERSION
 -- 
 2.3.2.209.gd67f9d5.dirty
