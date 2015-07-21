@@ -1,41 +1,78 @@
-From: mcgrof@suse.com (Luis R. Rodriguez)
-Date: Mon, 20 Jul 2015 18:11:24 -0700
-Subject: [Cocci] [PATCH v3 5/5] pycocci: add man page and promote
- pycocci to install target
-In-Reply-To: <1437431544-32662-6-git-send-email-mcgrof@do-not-panic.com>
-References: <1437431544-32662-1-git-send-email-mcgrof@do-not-panic.com>
- <1437431544-32662-6-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <CAB=NE6VDgbDz9uF4OJeBc_y+4qycRHo1sqTcpcFGO7dm9HU85Q@mail.gmail.com>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Tue, 21 Jul 2015 07:47:47 +0200
+Subject: [Cocci] Finding designated initialisers with SmPL
+In-Reply-To: <alpine.DEB.2.02.1507202238110.2082@localhost6.localdomain6>
+References: <55A62135.90206@users.sourceforge.net>
+ <alpine.DEB.2.10.1507150629540.2670@hadrien>
+ <55AA3B1F.5020807@users.sourceforge.net>
+ <alpine.DEB.2.02.1507181351130.2042@localhost6.localdomain6>
+ <55ACDC1C.1040005@users.sourceforge.net>
+ <alpine.DEB.2.10.1507201335030.2475@hadrien>
+ <55ACF739.4020802@users.sourceforge.net>
+ <alpine.DEB.2.10.1507201828130.2475@hadrien>
+ <55AD58A7.6030507@users.sourceforge.net>
+ <alpine.DEB.2.02.1507202238110.2082@localhost6.localdomain6>
+Message-ID: <55ADDD03.6020401@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, Jul 20, 2015 at 3:32 PM, Luis R. Rodriguez
-<mcgrof@do-not-panic.com> wrote:
-> diff --git a/Makefile b/Makefile
-> index 27904f150204..63130b00af0f 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -448,6 +448,7 @@ install-man:
->         $(MKDIR_P) $(DESTDIR)$(MANDIR)/man1
->         $(MKDIR_P) $(DESTDIR)$(MANDIR)/man3
->         $(INSTALL_DATA) docs/spatch.1 $(DESTDIR)$(MANDIR)/man1/
-> +       $(INSTALL_DATA) docs/pycocci.1 $(DESTDIR)$(MANDIR)/man1/
->         $(INSTALL_DATA) docs/Coccilib.3cocci $(DESTDIR)$(MANDIR)/man3/
->
->  install-bash:
-> @@ -487,6 +488,8 @@ install-stubs:
->  install: install-man install-common install-stubs $(PYTHON_INSTALL_TARGET)
->         rm -f $(DESTDIR)$(LIBDIR)/spatch
->         rm -f $(DESTDIR)$(LIBDIR)/spatch.opt
-> +       rm -f $(DESTDIR)$(LIBDIR)/pycocci
-> +       $(INSTALL_PROGRAM) tools/pycoci $(DESTDIR)$(LIBDIR)
->         @if test -x spatch -o -x spatch.opt; then \
->                 $(MAKE) install-def;fi
->         @if test -x spatch ; then \
+>>  <+...
+>> *struct structure_type structure_var = { ..., .element = allocation(...), ... };
+>>  ...+>
+> 
+> Element should be an identifier.
 
-Whoops sorry this should be using $BINDIR instead. There was already a
-target for pycocci also on the install-tools target, but distros are
-not using that install target so we just would move that to the
-default install target to get distros to start carrying this.
+I find it not so obvious that the metavariable type "field"
+was inappropriate there. Would more explanations in the manual help, too?
+https://github.com/coccinelle/coccinelle/blob/af8131522ee9aff575e4345f5068f4f138264cd6/docs/manual/cocci_syntax.tex#L153
 
- Luis
+
+I have tried the following small SmPL script
+
+@show_designated_initialisers@
+identifier allocation, element, structure_type, structure_var;
+@@
+ <+...
+*struct structure_type structure_var = { ..., .element = allocation(...), ... };
+ ...+>
+
+
+on this
+
+
+char* get_default_message(short selection)
+{
+ static char xyz[123];
+ 
+ switch (selection)
+ {
+ case 1:
+  strcpy(xyz, "Test");
+ default:
+  strcpy(xyz, "working");
+ }
+ return xyz;
+}
+
+static unsigned long my_counter = 0;
+
+static struct my_string
+{
+ unsigned int length;
+ char* text;
+} message = { .text = get_default_message(1), .length = 123 };
+
+
+source code example.
+
+
+elfring at Sonne:~/Projekte/Coccinelle/janitor> spatch.opt -sp-file show_designated_initialisers1.cocci designated_initialiser1.c
+init_defs_builtins: /usr/local/lib/coccinelle/standard.h
+HANDLING: designated_initialiser1.c
+
+
+Unfortunately, I do not see a generated patch there.
+How should I improve my approach for the expected analysis result?
+
+Regards,
+Markus
