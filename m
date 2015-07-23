@@ -1,73 +1,107 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 23 Jul 2015 14:44:38 +0200 (CEST)
-Subject: [Cocci] comment indentation
-In-Reply-To: <CAMy_N63kc-dysJ3TS37Ju3+EqLtDqv50SyN31Poy3qTEprW=Xw@mail.gmail.com>
-References: <CAMy_N63kc-dysJ3TS37Ju3+EqLtDqv50SyN31Poy3qTEprW=Xw@mail.gmail.com>
-Message-ID: <alpine.DEB.2.10.1507231443510.2450@hadrien>
+From: kborer@cpan.org (Kris Borer)
+Date: Thu, 23 Jul 2015 17:56:42 -0400
+Subject: [Cocci] if conditions
+Message-ID: <CAMy_N60PKB7DYD5-s+pAHRAnpPFqLFGRAquYbP_HOtKCAW4aTQ@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 23 Jul 2015, Kris Borer wrote:
+I have a working semantic patch, but was wondering if there was a way to
+avoid some repetition. I am trying to match a number of if-statements, but
+only care about the first condition of each. Is there a way to match an
+arbitrary number of additional conditions? I tried using dots and various
+metavariables without success. Any advice would be appreciated.
 
-> I noticed a case where a comment seems to be incorrectly indented after
-> transformation. Any advice would be appreciated. This is on v1.0.1 + 4
-> patches.
->
-> bash> cat comment.c
-> void main() {
-> ??? int x = 0;
->
-> ??? if( x ) {
-> ??? ??? x = 1;
-> ??? } else if ( x = 1 ) {
-> ??? ??? // set x
-> ??? ??? x = 1;
-> ??? }
-> }
-> bash> cat comment.cocci
-> @@
-> identifier i;
-> expression E;
-> statement S1, S2;
-> @@
->
-> + i = E;
-> ? if (
-> - (i = E)
-> + i
-> ? ) S1 else S2
->
-> bash> spatch --sp-file comment.cocci comment.c
-> init_defs_builtins: /usr/local/lib/coccinelle/standard.h
-> HANDLING: comment.c
-> diff =
-> --- comment.c
-> +++ /tmp/cocci-output-7478-e7a9c5-comment.c
-> @@ -3,8 +3,11 @@ void main() {
-> ?
-> ???? if( x ) {
-> ???? ??? x = 1;
-> -??? } else if ( x = 1 ) {
-> -??? ??? // set x
-> +??? } else {
-> ???? ??? x = 1;
-> +??? ??? if (x) {
-> +??? ??? // set x
+bash> cat conditions.c
+void main(){
+    int x = 0;
 
-It looks like the indentation is simply not getting changed.  I'm not sure
-that it tries to update the indentation of comments when the nesting level
-changes.  I can check.
+    if ( (x = 0) != 0 ) {
+        x = 1;
+    }
 
-julia
+    if ( (x = 0) != 0 && x < 0 ) {
+        x = 1;
+    }
 
-> +??? ??? ??? x = 1;
-> +??? ??? }
-> ???? }
-> ?}
->
->
-> Thank you,
->
-> Kris
->
->
+    if ( (x = 0) != 0 && x < 0 && x > 1 ) {
+        x = 1;
+    }
+}
+bash> cat conditions.cocci
+@k1@
+identifier i;
+expression E;
+statement S, S2;
+constant c;
+binary operator b;
+@@
+
++ i = E;
+  if (
+- (i = E)
++ i
+  b c) S else S2
+
+@k2@
+identifier i;
+expression E, E2;
+statement S, S2;
+constant c;
+binary operator b, b2;
+@@
+
++ i = E;
+  if ( (
+- (i = E)
++ i
+  b c) b2 E2) S else S2
+
+@k3@
+identifier i;
+expression E, E2, E3;
+statement S, S2;
+constant c;
+binary operator b, b2, b3;
+@@
+
++ i = E;
+  if ( ( (
+- (i = E)
++ i
+  b c) b2 E2) b3 E3) S else S2
+
+bash> spatch --sp-file conditions.cocci conditions.c
+init_defs_builtins: /usr/local/lib/coccinelle/standard.h
+HANDLING: conditions.c
+diff =
+--- conditions.c
++++ /tmp/cocci-output-6769-da5e98-conditions.c
+@@ -1,15 +1,18 @@
+ void main(){
+     int x = 0;
+
+-    if ( (x = 0) != 0 ) {
++    x = 0;
++    if (x != 0 ) {
+         x = 1;
+     }
+
+-    if ( (x = 0) != 0 && x < 0 ) {
++    x = 0;
++    if (x != 0 && x < 0 ) {
+         x = 1;
+     }
+
+-    if ( (x = 0) != 0 && x < 0 && x > 1 ) {
++    x = 0;
++    if (x != 0 && x < 0 && x > 1 ) {
+         x = 1;
+     }
+ }
+
+Thank you,
+
+Kris
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20150723/87b3929a/attachment.html>
