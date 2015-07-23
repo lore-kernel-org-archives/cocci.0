@@ -1,30 +1,63 @@
-From: Sebastien.Hinderer@inria.fr (=?utf-8?Q?S=C3=A9bastien?= Hinderer)
-Date: Thu, 23 Jul 2015 09:12:44 +0200
-Subject: [Cocci] [PATCH 1/2] autotools: unify the way to determine
- version information
-In-Reply-To: <CAJLtBvOvZqYf0NP4R-Amu_sc6Cz8=J7_gFsCuKCtM1dQ4yk5tQ@mail.gmail.com>
-References: <1437511861-2205-1-git-send-email-mcgrof@do-not-panic.com>
- <1437511861-2205-2-git-send-email-mcgrof@do-not-panic.com>
- <CAJLtBvOvZqYf0NP4R-Amu_sc6Cz8=J7_gFsCuKCtM1dQ4yk5tQ@mail.gmail.com>
-Message-ID: <20150723071244.GA1536@pl-59055.rocqadm.inria.fr>
+From: kborer@cpan.org (Kris Borer)
+Date: Thu, 23 Jul 2015 08:17:40 -0400
+Subject: [Cocci] comment indentation
+Message-ID: <CAMy_N63kc-dysJ3TS37Ju3+EqLtDqv50SyN31Poy3qTEprW=Xw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi,
+I noticed a case where a comment seems to be incorrectly indented after
+transformation. Any advice would be appreciated. This is on v1.0.1 + 4
+patches.
 
-Nikolay Orlyuk (2015/07/23 07:18 +0300):
-> Do we still need VERSION=$(shell ./version.sh | tr -d '\n') ? I'm pretty
-> sure that VERSION=$(shell ./version.sh) will be enough. Same for
-> configure.ac.
-> Moreover why script version.sh can't be simply?
-> 
-> #!/bin/sh
-> > tr -d '\n' < ./version
-> >
-> 
-> Other option would be to introduce subst. variable in configure.ac and use
-> it in configurable Makefile. This approach might be more widespread.
+bash> cat comment.c
+void main() {
+    int x = 0;
 
-Yes, I believe this second approach would be better.
+    if( x ) {
+        x = 1;
+    } else if ( x = 1 ) {
+        // set x
+        x = 1;
+    }
+}
+bash> cat comment.cocci
+@@
+identifier i;
+expression E;
+statement S1, S2;
+@@
 
-S?bastien.
++ i = E;
+  if (
+- (i = E)
++ i
+  ) S1 else S2
+
+bash> spatch --sp-file comment.cocci comment.c
+init_defs_builtins: /usr/local/lib/coccinelle/standard.h
+HANDLING: comment.c
+diff =
+--- comment.c
++++ /tmp/cocci-output-7478-e7a9c5-comment.c
+@@ -3,8 +3,11 @@ void main() {
+
+     if( x ) {
+         x = 1;
+-    } else if ( x = 1 ) {
+-        // set x
++    } else {
+         x = 1;
++        if (x) {
++        // set x
++            x = 1;
++        }
+     }
+ }
+
+
+Thank you,
+
+Kris
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20150723/af5dd712/attachment.html>
