@@ -1,39 +1,45 @@
 From: mcgrof@suse.com (Luis R. Rodriguez)
-Date: Fri, 24 Jul 2015 19:12:28 +0200
-Subject: [Cocci] [PATCH 1/2] autotools: unify the way to determine
- version information
-In-Reply-To: <CAJLtBvOvZqYf0NP4R-Amu_sc6Cz8=J7_gFsCuKCtM1dQ4yk5tQ@mail.gmail.com>
-References: <1437511861-2205-1-git-send-email-mcgrof@do-not-panic.com>
- <1437511861-2205-2-git-send-email-mcgrof@do-not-panic.com>
- <CAJLtBvOvZqYf0NP4R-Amu_sc6Cz8=J7_gFsCuKCtM1dQ4yk5tQ@mail.gmail.com>
-Message-ID: <20150724171228.GM30479@wotan.suse.de>
+Date: Fri, 24 Jul 2015 19:17:59 +0200
+Subject: [Cocci] sys.path for Python?
+In-Reply-To: <CA+MoWDoKWWOpuUj=YoYWgVT73rOKhrcJPWCt_f-ro085D1T9cw@mail.gmail.com>
+References: <CA+MoWDoKWWOpuUj=YoYWgVT73rOKhrcJPWCt_f-ro085D1T9cw@mail.gmail.com>
+Message-ID: <20150724171759.GN30479@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, Jul 23, 2015 at 07:18:34AM +0300, Nikolay Orlyuk wrote: > Do we still need VERSION=$(shell ./version.sh | tr -d '\n') ? I'm pretty
-> sure that VERSION=$(shell ./version.sh) will be enough. Same for
-> configure.ac.
-> Moreover why script version.sh can't be simply?
+On Fri, Jul 24, 2015 at 07:09:59PM +0200, Peter Senna Tschudin wrote:
+> Hi,
 > 
-> #!/bin/sh
-> > tr -d '\n' < ./version
-> >
+> I'm writing a set of .cocci files that will use python. I'm making
+> some helper function that I want to include in multiple files. I'm
+> doing something like:
+> 
+> @initialize:python@
+> @@
+> from Common import *
+> 
+> which works fine, given spatch is called from the folder where
+> Commom.py is. If I move to the folder where I want to run spatch, and
+> try the same semantic patch it fails. The solution for now is:
+> 
+> @initialize:python@
+> @@
+> import sys
+> sys.path.append("/home/peter/devel/git/the-conference/devel/featureccinelle/cocci-files/")
+> from Common import *
+> 
+> So I ask:
+> 
+> - Can I access from Python the path to the semantic patch? Maybe I
+> could get that from the cmdline of spatch but that would be
+> complicated.
+> 
+> - Does it make sense to have a python command to extend the path to
+> append the folder where the semantic patch is in?
 
-These are identical:
+Can you try
 
-VERSION=`cat ./version | tr -d '\n'`
-VERSION=`tr -d '\n' < ./version`
-
-I'll give you calling cat can be avoided so lets go with that.
-Either way we want to stash it into a variable so we can later
-expand on it with something not in the version file which is
-instead taken from the script we are adding.
-
-> Other option would be to introduce subst. variable in configure.ac and use
-> it in configurable Makefile. This approach might be more widespread.
-
-We don't use automake, I think its best to keep it that way. I'll
-just remove the double tr -d calls on both configure.ac and the top
-level Makefile.
+source_dir = os.path.abspath(os.path.dirname(__file__))
+sys.path.append(source_dir)
 
   Luis
