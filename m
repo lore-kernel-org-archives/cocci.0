@@ -1,80 +1,76 @@
 From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Fri, 24 Jul 2015 11:50:11 -0700
-Subject: [Cocci] [PATCH v2 0/2] coccinelle: add localversion information
-Message-ID: <1437763813-6171-1-git-send-email-mcgrof@do-not-panic.com>
+Date: Fri, 24 Jul 2015 11:50:12 -0700
+Subject: [Cocci] [PATCH v2 1/2] autotools: unify the way to determine
+	version information
+In-Reply-To: <1437763813-6171-1-git-send-email-mcgrof@do-not-panic.com>
+References: <1437763813-6171-1-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1437763813-6171-2-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 From: "Luis R. Rodriguez" <mcgrof@suse.com>
 
-This v2 removes the superfluous tr calls and switches to using stdin
-instead of using cat for the first look at the version file. While
-at it, since I am taking this from the Linux kernel and since the
-script used had quite a bit of love over the years I've provided
-attribution information to the file. Since Coccinelle does not
-currently used PGP signed tags I've also added support for that
-and enabled its use by default but am in hopes we can consider
-using PGP keys for signed tags in the future.
+The version information you get when you run: spatch --version
+comes from what ./confgure.ac ends up figuring out for you.
+The top level Makefile uses the same mechanism to tell you
+and use the version information at build time, but if the
+strategy is updated in one place it would need to be updated
+in both places.
 
-I also made a small note about using PGP subkeys for deprecating releases,
-for details on why that may be good see:
+Avoid this duplicatin of work and instead just make version
+information come from ./version.sh script. Then if we update
+how we get the version information it just needs to be done
+in one place.
 
-http://lkml.kernel.org/r/20150721002438.GG30479 at wotan.suse.de
+We make the version.sh script use old shell mechanisms to be
+able to work on any supported unix system.
 
-In short, I'd encourage folks to use PGP subkeys for different purposes.
-For instance use one PGP subkey for making releases, and another different
-PGP subkey for deprecating releaes. Using two different PGP keys (different
-keys are overkill, hence why I say just use subkeys) can help tools to infer
-what releases are supported and unsupported, directly from the git tree.
-Feel free to ignore all this if you do not care for tools to infer releases
-for coccinelle, but if for instance you do care for it and if it is desirable
-for the release page to be made automatically, I can volunteer to help
-integrate it as part of rel-html. Example release pages with rel-html:
-
-http://drvbp1.linux-foundation.org/~mcgrof/rel-html/
-
-Lastly, I realize a 'make release' is used right now for releases, I
-didn't amend those instructions (on Makefile.release) but here's a way 
-to use upkeep a linear git tree (not done right now on Coccinelle) even
-if you wanted to bump release with autotools:
-
-Say you have a linear set of history and you are about to make a 1.0.2
-release, you'd do this:
-
-a) edit version file and bump it to 1.0.2
-b) git clean -f -x -d
-   Careful, this will delete *everything* that is not commited in your
-   git tree.
-c) make a temporary tag for git with 1.0.2, so that when you run ./autogen it
-   will pick up all the 1.0.2 tag and detect your tree is intact and all code
-   is part of the release.
-   git tag -s 1.0.2
-d) run ./autogen
-e) git commit -a -s
-f) delete the temporary tag:
-   git tag -d 1.0.2
-g) make a new tag now that matches the autogen run:
-   git tag -s 1.0.2
-
-This allows you to keep using 1 tag for both git development and autotools
-official releases. This means that if people check out a release on the
-tag 1.0.2 you will always get 1.0.2 on the version information so long as
-you didn't do any modifications and provided your autotools versions match
-(this later requirement is less important to developers). It also means that
-same git tree checkout for non-developers, who do not run ./autgen but just
-run ./configure will always get the same version information.
-
-Luis R. Rodriguez (2):
-  autotools: unify the way to determine version information
-  autotools: add localversion information
-
- Makefile                |   2 +-
- configure.ac            |   2 +-
- scripts/setlocalversion | 117 ++++++++++++++++++++++++++++++++++++++++++++++++
- version.sh              |   4 ++
- 4 files changed, 123 insertions(+), 2 deletions(-)
- create mode 100755 scripts/setlocalversion
+Cc: Peter Senna Tschudin <peter.senna@gmail.com>
+Cc: Nikolay Orlyuk <virkony@gmail.com>
+Cc: S?bastien Hinderer <Sebastien.Hinderer@inria.fr>
+Cc: Quentin Lambert <lambert.quentin@gmail.com>
+Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
+---
+ Makefile     | 2 +-
+ configure.ac | 2 +-
+ version.sh   | 3 +++
+ 3 files changed, 5 insertions(+), 2 deletions(-)
  create mode 100755 version.sh
 
+diff --git a/Makefile b/Makefile
+index fd369415b1ec..57e01e2afb1c 100644
+--- a/Makefile
++++ b/Makefile
+@@ -19,7 +19,7 @@ endif
+ -include /etc/Makefile.coccinelle  # local customizations, if any
+ 
+ 
+-VERSION=$(shell cat ./version | tr -d '\n')
++VERSION=$(shell ./version.sh)
+ CCVERSION=$(shell cat scripts/coccicheck/README | egrep -o '[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+' | head -n1)
+ PKGVERSION=$(shell dpkg-parsechangelog -ldebian/changelog.$(DISTRIB_CODENAME) 2> /dev/null \
+ 	 | sed -n 's/^Version: \(.*\)/\1/p' )
+diff --git a/configure.ac b/configure.ac
+index d4072004228c..4c610afa5a2d 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -3,7 +3,7 @@ dnl  run 'automake -acf' to update setup/{install-sh,missing}
+ 
+ dnl  standard initialization (we only use autoconf not automake)
+ AC_PREREQ([2.68])
+-AC_INIT([coccinelle], m4_esyscmd([cat ./version | tr -d '\n']), [cocci at systeme.lip6.fr], [], [http://coccinelle.lip6.fr/])
++AC_INIT([coccinelle], m4_esyscmd([./version.sh]), [cocci at systeme.lip6.fr], [], [http://coccinelle.lip6.fr/])
+ AC_CONFIG_MACRO_DIR([setup])
+ AC_CONFIG_AUX_DIR([setup])
+ AC_SUBST([CONFIGURE_FLAGS], ["$*"])
+diff --git a/version.sh b/version.sh
+new file mode 100755
+index 000000000000..a464ab47dbd6
+--- /dev/null
++++ b/version.sh
+@@ -0,0 +1,3 @@
++#!/bin/sh
++VERSION=`tr -d '\n' < ./version`
++printf '%s' $VERSION
 -- 
 2.3.2.209.gd67f9d5.dirty
