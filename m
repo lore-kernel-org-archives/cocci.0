@@ -1,22 +1,32 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 24 Jul 2015 19:21:56 +0200
+From: peter.senna@gmail.com (Peter Senna Tschudin)
+Date: Fri, 24 Jul 2015 19:30:46 +0200
 Subject: [Cocci] sys.path for Python?
-In-Reply-To: <CA+MoWDoKWWOpuUj=YoYWgVT73rOKhrcJPWCt_f-ro085D1T9cw@mail.gmail.com>
+In-Reply-To: <20150724171759.GN30479@wotan.suse.de>
 References: <CA+MoWDoKWWOpuUj=YoYWgVT73rOKhrcJPWCt_f-ro085D1T9cw@mail.gmail.com>
-Message-ID: <55B27434.40303@users.sourceforge.net>
+ <20150724171759.GN30479@wotan.suse.de>
+Message-ID: <CA+MoWDpm2W+9k66du7M=U1ANkK+VW64DjqCrAypu4g8mVuauuQ@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> sys.path.append("/home/peter/devel/git/the-conference/devel/featureccinelle/cocci-files/")
-> from Common import *
+Hi Luis,
 
-Do you prefer to store such a string in your SmPL script
-as a temporary workaround?
+Thank you for the prompt reply.
 
-How do you think about to make the directory name configurable
-by a corresponding variable?
-Should other shell scripts control and adjust the desired source code
-analysis eventually?
+> Can you try
+>
+> source_dir = os.path.abspath(os.path.dirname(__file__))
+> sys.path.append(source_dir)
 
-Regards,
-Markus
+Looks like __file__  is not defined, but cocci.cocci_file contains the
+path to the semantic patch, so:
+
+source_dir = os.path.abspath(os.path.dirname(cocci.cocci_file))
+sys.path.append(source_dir)
+
+works perfectly fine! Thanks a lot!
+
+
+
+
+-- 
+Peter
