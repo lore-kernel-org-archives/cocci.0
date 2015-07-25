@@ -1,15 +1,34 @@
-From: mcgrof@suse.com (Luis R. Rodriguez)
-Date: Fri, 24 Jul 2015 20:56:20 +0200
-Subject: [Cocci] [PATCH v2 0/2] coccinelle: add localversion information
-In-Reply-To: <1437763813-6171-1-git-send-email-mcgrof@do-not-panic.com>
-References: <1437763813-6171-1-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <20150724185620.GP30479@wotan.suse.de>
+From: peter.senna@gmail.com (Peter Senna Tschudin)
+Date: Sat, 25 Jul 2015 15:00:52 +0200
+Subject: [Cocci] expression list[n] el and ...
+Message-ID: <CA+MoWDoK_ZD2YEKYn-2ejG+to4SgRg5obz1YKiRKqF4ZmgFNnA@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, Jul 24, 2015 at 11:50:11AM -0700, Luis R. Rodriguez wrote:
-> a) edit version file and bump it to 1.0.2
+This works fine:
 
-Forgot to mention you'd need to commit this after as part of this step.
+@r1@
+identifier i;
+position p;
+expression list[n] el;
+@@
+i at p(el)
 
-  Luis
+@script:python@
+p << r1.p;
+i << r1.i;
+n << r1.n;
+@@
+print "f," + i + "," + n + "," + p[0].file
+
+But if I change:
+
+i at p(el)
+
+to
+
+i@p(el, ...)
+
+Then I get multiple matches for each function call: One match for each
+parameter. I don't need the ..., but it was there on my first version,
+so I'm reporting in case this is not a feature.
