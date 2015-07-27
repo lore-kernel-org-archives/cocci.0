@@ -1,52 +1,23 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Mon, 27 Jul 2015 17:18:56 +0200
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Mon, 27 Jul 2015 17:34:38 +0200 (CEST)
 Subject: [Cocci] Finding non-zero returning functions with SmPL
-Message-ID: <55B64BE0.7050303@users.sourceforge.net>
+In-Reply-To: <55B64BE0.7050303@users.sourceforge.net>
+References: <55B64BE0.7050303@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.10.1507271733380.2453@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hello,
+> *return_type work(...)
+>  {
+>   <+...
+>   return ... when != 0
+>              when != NULL
 
-I have tried the following small SmPL script out
+You can't put when on a ... that represents a single expression.
 
+The simplest thing would be to put return e; and then when you declare e,
+put
 
-@non_zero_returning_functions@
-identifier work;
-type return_type;
-@@
-*return_type work(...)
- {
-  <+...
-  return ... when != 0
-             when != NULL
-         ;
-  ...+>
- }
+expression e != {0,NULL};
 
-
-on this bit of source code.
-
-
-#include <API-test1.h>
-
-int my_status(void)
-{
-  return 1;
-}
-
-int main(void)
-{
-  return my_status();
-}
-
-
-elfring at Sonne:~/Projekte/Coccinelle/janitor> spatch.opt -sp-file show_non-zero_returning_functions1.cocci ../Probe/API-test1.c
-init_defs_builtins: /usr/local/lib/coccinelle/standard.h
-116 120
-Fatal error: exception Failure("minus: parse error: \n = File \"show_non-zero_returning_functions1.cocci\", line 8, column 13,  charpos = 116\n    around = 'when', whole content =   return ... when != 0;\n")
-
-
-Do I use the SmPL construct "when" in an inappropriate way here?
-
-Regards,
-Markus
+julia
