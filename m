@@ -1,23 +1,30 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 27 Jul 2015 17:34:38 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Mon, 27 Jul 2015 18:02:46 +0200
 Subject: [Cocci] Finding non-zero returning functions with SmPL
-In-Reply-To: <55B64BE0.7050303@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.10.1507271733380.2453@hadrien>
 References: <55B64BE0.7050303@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1507271733380.2453@hadrien>
+ <alpine.DEB.2.10.1507271733380.2453@hadrien>
+Message-ID: <55B65626.4040209@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> *return_type work(...)
->  {
->   <+...
->   return ... when != 0
->              when != NULL
+>> *return_type work(...)
+>>  {
+>>   <+...
+>>   return ... when != 0
+>>              when != NULL
+> 
+> You can't put when on a ... that represents a single expression.
 
-You can't put when on a ... that represents a single expression.
+Thanks for your quick clarification.
 
-The simplest thing would be to put return e; and then when you declare e,
-put
+Would it make sense that the Coccinelle software will also support
+this construct at such a script place directly?
 
-expression e != {0,NULL};
 
-julia
+> expression e != {0,NULL};
+
+The use of this SmPL metavariable seems to work to some degree.
+
+Regards,
+Markus
