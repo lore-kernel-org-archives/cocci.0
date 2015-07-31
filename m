@@ -1,28 +1,53 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 31 Jul 2015 15:40:38 +0200
-Subject: [Cocci] autotools: unify the way to determine version
-	information
-In-Reply-To: <20150724185302.GO30479@wotan.suse.de>
-References: <1437511861-2205-1-git-send-email-mcgrof@do-not-panic.com>
- <1437511861-2205-2-git-send-email-mcgrof@do-not-panic.com>
- <CAJLtBvOvZqYf0NP4R-Amu_sc6Cz8=J7_gFsCuKCtM1dQ4yk5tQ@mail.gmail.com>
- <20150723071244.GA1536@pl-59055.rocqadm.inria.fr>
- <20150724185302.GO30479@wotan.suse.de>
-Message-ID: <55BB7AD6.4000307@users.sourceforge.net>
+From: sean.stalley@intel.com (Sean O. Stalley)
+Date: Fri, 31 Jul 2015 12:36:40 -0700
+Subject: [Cocci] [PATCH v2 0/4] mm: add dma_pool_zalloc() & pci_pool_zalloc()
+Message-ID: <1438371404-3219-1-git-send-email-sean.stalley@intel.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Using AC_SUBST() is overkill and we don't use automake.
+Currently a call to dma_pool_alloc() with a ___GFP_ZERO flag returns
+a non-zeroed memory region.
 
-How do you think about the consequences from a call of the macro "AM_INIT_AUTOMAKE" then?
-https://github.com/coccinelle/coccinelle/blob/e7dd46783d6addd7efad735144d85ed8fde841ce/configure.ac#L13
-http://www.gnu.org/software/automake/manual/html_node/Requirements.html
+This patchset adds support for the __GFP_ZERO flag to dma_pool_alloc(),
+adds 2 wrapper functions for allocing zeroed memory from a pool, 
+and provides a coccinelle script for finding & replacing instances of
+dma_pool_alloc() followed by memset(0) with a single dma_pool_zalloc() call.
+
+Changes from v1 to v2:
+	- don't memset() POOL_POISON_ALLOCATED in dma_pool_alloc() if
+	  __GFP_ZERO is set
+	- Ran test to see how often pool_alloc_page() is called
 
 
-> I try to avoid using autotools at all costs so if you would like that
-> instead a replacement patch by you might be more suitable.
+There was some concern that this always calls memset() to zero,
+instead of passing __GFP_ZERO into the page allocator.
+[https://lkml.org/lkml/2015/7/15/881]
 
-Do you fiddle also with other software build specifications occasionally?
+I ran a test on my system to get an idea of how often dma_pool_alloc()
+calls into pool_alloc_page().
 
-Regards,
-Markus
+After Boot:	[   30.119863] alloc_calls:541, page_allocs:7
+After an hour:	[ 3600.951031] alloc_calls:9566, page_allocs:12
+After copying 1GB file onto a USB drive:
+		[ 4260.657148] alloc_calls:17225, page_allocs:12
+
+It doesn't look like dma_pool_alloc() calls down to the page allocator
+very often (at least on my system).
+
+
+Sean O. Stalley (4):
+  mm: Add support for __GFP_ZERO flag to dma_pool_alloc()
+  mm: Add dma_pool_zalloc() call to DMA API
+  pci: mm: Add pci_pool_zalloc() call
+  coccinelle: mm: scripts/coccinelle/api/alloc/pool_zalloc-simple.cocci
+
+ Documentation/DMA-API.txt                          |  7 ++
+ include/linux/dmapool.h                            |  6 ++
+ include/linux/pci.h                                |  2 +
+ mm/dmapool.c                                       |  9 ++-
+ .../coccinelle/api/alloc/pool_zalloc-simple.cocci  | 84 ++++++++++++++++++++++
+ 5 files changed, 106 insertions(+), 2 deletions(-)
+ create mode 100644 scripts/coccinelle/api/alloc/pool_zalloc-simple.cocci
+
+-- 
+1.9.1
