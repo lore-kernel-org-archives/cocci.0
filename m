@@ -1,119 +1,46 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 2 Aug 2015 21:30:00 +0200 (CEST)
-Subject: [Cocci] [PATCH v2 4/4] coccinelle: mm:
- scripts/coccinelle/api/alloc/pool_zalloc-simple.cocci
-In-Reply-To: <1438371404-3219-5-git-send-email-sean.stalley@intel.com>
-References: <1438371404-3219-1-git-send-email-sean.stalley@intel.com>
- <1438371404-3219-5-git-send-email-sean.stalley@intel.com>
-Message-ID: <alpine.DEB.2.02.1508022129500.2044@localhost6.localdomain6>
+From: oss@malat.biz (=?UTF-8?Q?Petr_Mal=C3=A1t?=)
+Date: Tue, 4 Aug 2015 10:15:57 +0200
+Subject: [Cocci] Replacing function definition with a macro
+Message-ID: <CANMuvJ=qX99uQAL4PL1jt8ExqthVq_BJO6q+GNoqzLSrHCxqqw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+Hi All,
+I'm trying to replace a function prototype in the definition with a
+macro. The reason is to generate stubs to do some argument mangling.
+The following is my cocci file:
 
-On Fri, 31 Jul 2015, Sean O. Stalley wrote:
+@@
+type T1;
+identifier i1, name;
+@@
+- long name(T1 i1) {
++ COMPAT_SYSCALL_DEFINE1(name, T1, i1) {
+  ...
+  }
 
-> add [pci|dma]_pool_zalloc coccinelle check.
-> replaces instances of [pci|dma]_pool_alloc() followed by memset(0)
-> with [pci|dma]_pool_zalloc().
-> 
-> Signed-off-by: Sean O. Stalley <sean.stalley@intel.com>
-> ---
->  .../coccinelle/api/alloc/pool_zalloc-simple.cocci  | 84 ++++++++++++++++++++++
->  1 file changed, 84 insertions(+)
->  create mode 100644 scripts/coccinelle/api/alloc/pool_zalloc-simple.cocci
-> 
-> diff --git a/scripts/coccinelle/api/alloc/pool_zalloc-simple.cocci b/scripts/coccinelle/api/alloc/pool_zalloc-simple.cocci
-> new file mode 100644
-> index 0000000..9b7eb32
-> --- /dev/null
-> +++ b/scripts/coccinelle/api/alloc/pool_zalloc-simple.cocci
-> @@ -0,0 +1,84 @@
-> +///
-> +/// Use *_pool_zalloc rather than *_pool_alloc followed by memset with 0
-> +///
-> +// Copyright: (C) 2015 Intel Corp.  GPLv2.
-> +// Options: --no-includes --include-headers
-> +//
-> +// Keywords: dma_pool_zalloc, pci_pool_zalloc
-> +//
-> +
-> +virtual context
-> +virtual patch
-> +virtual org
-> +virtual report
-> +
-> +//----------------------------------------------------------
-> +//  For context mode
-> +//----------------------------------------------------------
-> +
-> + at depends on context@
-> +expression x;
-> +statement S;
-> +@@
-> +
-> +* x = \(dma_pool_alloc\|pci_pool_alloc\)(...);
-> +  if ((x==NULL) || ...) S
-> +* memset(x,0, ...);
-> +
-> +//----------------------------------------------------------
-> +//  For patch mode
-> +//----------------------------------------------------------
-> +
-> + at depends on patch@
-> +expression x;
-> +expression a,b,c;
-> +statement S;
-> +@@
-> +
-> +- x = dma_pool_alloc(a,b,c);
-> ++ x = dma_pool_zalloc(a,b,c);
-> +  if ((x==NULL) || ...) S
-> +- memset(x,0,...);
-> +
-> + at depends on patch@
-> +expression x;
-> +expression a,b,c;
-> +statement S;
-> +@@
-> +
-> +- x = pci_pool_alloc(a,b,c);
-> ++ x = pci_pool_zalloc(a,b,c);
-> +  if ((x==NULL) || ...) S
-> +- memset(x,0,...);
-> +
-> +//----------------------------------------------------------
-> +//  For org and report mode
-> +//----------------------------------------------------------
-> +
-> + at r depends on org || report@
-> +expression x;
-> +expression a,b,c;
-> +statement S;
-> +position p;
-> +@@
-> +
-> + x = @p\(dma_pool_alloc\|pci_pool_alloc\)(a,b,c);
-> + if ((x==NULL) || ...) S
-> + memset(x,0, ...);
-> +
-> + at script:python depends on org@
-> +p << r.p;
-> +x << r.x;
-> +@@
-> +
-> +msg="%s" % (x)
-> +msg_safe=msg.replace("[","@(").replace("]",")")
-> +coccilib.org.print_todo(p[0], msg_safe)
-> +
-> + at script:python depends on report@
-> +p << r.p;
-> +x << r.x;
-> +@@
-> +
-> +msg="WARNING: *_pool_zalloc should be used for %s, instead of *_pool_alloc/memset" % (x)
-> +coccilib.report.print_report(p[0], msg)
-> -- 
-> 1.9.1
-> 
-> 
+And the following is my testing code:
+
+#define __SC_DECL1(t1, a1) t1 a1
+#define COMPAT_SYSCALL_DEFINE1(name, ...) \
+                long compat_sys_##name(__SC_DECL1(__VA_ARGS__))
+long test(int first) {
+        return 0;
+}
+
+
+And I expect spatch to replace
+  long test(int first) {
+with
+  COMPAT_SYSCALL_DEFINE1(test, int, first) {
+but when I try to run it, I get
+  init_defs_builtins: /usr/local/lib/coccinelle/standard.h
+  82 86
+  Fatal error: exception Failure("plus: parse error:
+   = File "test.cocci", line 6, column 25,  charpos = 82
+      around = 'name', whole content = + COMPAT_SYSCALL_DEFINE1(name, T1, i1) {
+  ")
+Any idea what am I doing wrong?
+
+Thanks,
+  Petr
