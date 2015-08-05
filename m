@@ -1,28 +1,29 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 4 Aug 2015 19:09:16 +0200
-Subject: [Cocci] Replacing function definition with a macro
-In-Reply-To: <alpine.DEB.2.10.1508041029360.2327@hadrien>
-References: <CANMuvJ=qX99uQAL4PL1jt8ExqthVq_BJO6q+GNoqzLSrHCxqqw@mail.gmail.com>
- <alpine.DEB.2.10.1508041029360.2327@hadrien>
-Message-ID: <55C0F1BC.2040206@users.sourceforge.net>
+Date: Wed, 5 Aug 2015 13:00:43 +0200
+Subject: [Cocci] Finding unstored return values with SmPL
+In-Reply-To: <alpine.DEB.2.02.1507230724180.2062@localhost6.localdomain6>
+References: <55A62135.90206@users.sourceforge.net>
+ <alpine.DEB.2.10.1507150629540.2670@hadrien>
+ <55AA3B1F.5020807@users.sourceforge.net>
+ <alpine.DEB.2.02.1507181351130.2042@localhost6.localdomain6>
+ <55ACDC1C.1040005@users.sourceforge.net>
+ <55AFD615.3070905@users.sourceforge.net>
+ <alpine.DEB.2.10.1507221943550.2405@hadrien>
+ <55B0798B.1010507@users.sourceforge.net>
+ <alpine.DEB.2.02.1507230724180.2062@localhost6.localdomain6>
+Message-ID: <55C1ECDB.2060509@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Coccinelle expects that each element in a parameter list will have the
-> form type identifier.
+>> How do you think about to try another analysis out with one
+>> of your test systems?
+> 
+> I don't have your semantic patch.  If you want me to to try something,
+> you have to send the semantic patch, even if you have sent it before.
 
-Is the Coccinelle software still limited to some degree for the handling
-of function parameters?
-
-
-> In the case of name, you just have an identifier.
-> I don't really see a solution.
-
-How do you think about direct support for macro parameter lists?
-Does anybody dare to contribute corresponding software development efforts?
-
-Are there any more limitations to reconsider so that further post-processing
-can be avoided for generated patches?
+I sent you two SmPL script examples for this purpose in the meantime.
+Would you like to share any more experiences from a corresponding
+software run time analysis?
 
 Regards,
 Markus
