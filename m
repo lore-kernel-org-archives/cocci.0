@@ -1,36 +1,38 @@
 From: mcgrof@suse.com (Luis R. Rodriguez)
-Date: Wed, 5 Aug 2015 23:13:41 +0200
-Subject: [Cocci] autotools: unify the way to determine version
-	information
-In-Reply-To: <55BB7AD6.4000307@users.sourceforge.net>
-References: <1437511861-2205-1-git-send-email-mcgrof@do-not-panic.com>
- <1437511861-2205-2-git-send-email-mcgrof@do-not-panic.com>
- <CAJLtBvOvZqYf0NP4R-Amu_sc6Cz8=J7_gFsCuKCtM1dQ4yk5tQ@mail.gmail.com>
- <20150723071244.GA1536@pl-59055.rocqadm.inria.fr>
- <20150724185302.GO30479@wotan.suse.de>
- <55BB7AD6.4000307@users.sourceforge.net>
-Message-ID: <20150805211341.GH30479@wotan.suse.de>
+Date: Wed, 5 Aug 2015 23:15:54 +0200
+Subject: [Cocci] [PATCH v3 0/2] coccinelle: add localversion information
+In-Reply-To: <1438034612-10595-1-git-send-email-mcgrof@do-not-panic.com>
+References: <1438034612-10595-1-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <20150805211554.GI30479@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, Jul 31, 2015 at 03:40:38PM +0200, SF Markus Elfring wrote:
-> > Using AC_SUBST() is overkill and we don't use automake.
+On Mon, Jul 27, 2015 at 03:03:30PM -0700, Luis R. Rodriguez wrote:
+> From: "Luis R. Rodriguez" <mcgrof@suse.com>
 > 
-> How do you think about the consequences from a call of the macro "AM_INIT_AUTOMAKE" then?
-> https://github.com/coccinelle/coccinelle/blob/e7dd46783d6addd7efad735144d85ed8fde841ce/configure.ac#L13
-> http://www.gnu.org/software/automake/manual/html_node/Requirements.html
-
-Can't say I care.
-
-> > I try to avoid using autotools at all costs so if you would like that
-> > instead a replacement patch by you might be more suitable.
+> This v3 makes use of the recommended strategy by Nikolay to avoid
+> a local variable for the version.sh. It also clarifies in the commit
+> log on patch 2 that PGP signed tags are not required by default. If
+> Coccinelle switches over to using PGP tags the scripts/setlocalversion
+> file can be modified to require them, but for now this is disabled.
 > 
-> Do you fiddle also with other software build specifications occasionally?
+> Lastly, in order to try to help simplify the way release managers might make a
+> release in a linear fashion with a git tree I modified autogen.sh to accept
+> a new argument:
+> 
+> ./autogen --ignore_localversion
+> 
+> which can be used by release managers to skip the local version string
+> when making a release. This is in contrast to my v2 series which would
+> have otherwise required release managers to make temporary tags, delete
+> them, and them finally add a new tag later. This is much simpler solution.
+> 
+> The default is to parse the localversion string then if available.
+> 
+> Luis R. Rodriguez (2):
+>   autotools: simplify the way to determine version information
+>   autotools: add localversion information
 
-I've only looked enough at autotools to pationately hate it.
-
-Its year 2015 and the requirements for designing autotools
-should now be superceded with simple mechanisms and modern
-helpers.
+S?bastien, Nikolay, are you folks OK with this being merged?
 
   Luis
