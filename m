@@ -1,38 +1,83 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Thu, 6 Aug 2015 11:04:53 +0200
-Subject: [Cocci] Fine-tuning for the processing of function name lists?
-In-Reply-To: <alpine.DEB.2.02.1508051948060.2039@localhost6.localdomain6>
-References: <55A62135.90206@users.sourceforge.net>
- <alpine.DEB.2.10.1507150629540.2670@hadrien>
- <55AA3B1F.5020807@users.sourceforge.net>
- <alpine.DEB.2.02.1507181351130.2042@localhost6.localdomain6>
- <55ACDC1C.1040005@users.sourceforge.net>
- <55AFD615.3070905@users.sourceforge.net>
- <alpine.DEB.2.10.1507221943550.2405@hadrien>
- <55B0798B.1010507@users.sourceforge.net>
- <alpine.DEB.2.02.1507230724180.2062@localhost6.localdomain6>
- <55C1ECDB.2060509@users.sourceforge.net>
- <alpine.DEB.2.02.1508051434540.2198@localhost6.localdomain6>
- <55C2229E.7030409@users.sourceforge.net>
- <alpine.DEB.2.02.1508051652140.2198@localhost6.localdomain6>
- <55C2280A.6000204@users.sourceforge.net>
- <alpine.DEB.2.02.1508051718110.2198@localhost6.localdomain6>
- <55C2328C.5020405@users.sourceforge.net>
- <alpine.DEB.2.02.1508051948060.2039@localhost6.localdomain6>
-Message-ID: <55C32335.8090802@users.sourceforge.net>
+From: a.hajda@samsung.com (Andrzej Hajda)
+Date: Thu, 06 Aug 2015 14:14:14 +0200
+Subject: [Cocci] [PATCH] coccinelle: memdup.cocci: fix matching rules
+Message-ID: <1438863254-19897-1-git-send-email-a.hajda@samsung.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> It should be much better for the understandability of your code,
-> for the maintainability of your code, and for the speed of processing
-> your code to say
-> 
-> identifier allocation = {function1, function2, function3, function4, ...};
+This patch fixes three things, listed in order of importance.
+1. Removes matching of kmemdup from !patch rule - it is incorrect and
+in fact makes report mode unusable.
+2. Adds unlikely to if clause. It allows to match more cases - the ones with
+unlikely and the ones without it.
+3. Fixes report message.
 
-Function names from various application programming interfaces follow
-a few naming patterns.
-Can SmPL scripts benefit from the fact that such identifiers contain
-a couple of identical name components?
+Signed-off-by: Andrzej Hajda <a.hajda@samsung.com>
+---
+Hi Julia,
 
-Regards,
-Markus
+I guess 1st and 3rd changes are OK. I am not sure about 2nd change, without
+it I was not able to catch cases containing unlikely macro. For example
+fs/ntfs/dir.c:1175:
+  ir = kmalloc(rc, GFP_NOFS);
+  if (unlikely(!ir)) {
+    err = -ENOMEM;
+    goto err_out;
+  }
+  /* Copy the index root value (it has been verified in read_inode). */
+  memcpy(ir, (u8*)ctx->attr +
+    le16_to_cpu(ctx->attr->data.resident.value_offset), rc);
+
+It seems quite strange for me, as these rules looks to me isomorphic.
+Is this expected behavior of coccinelle or just some bug?
+
+After this fix, cocci finds 46 places to patch, I will send patchset if this
+change looks OK to you.
+
+I have used:
+spatch version 1.0.1 with Python support and with PCRE support
+latest linux-next.
+
+Regards
+Andrzej
+---
+ scripts/coccinelle/api/memdup.cocci | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/scripts/coccinelle/api/memdup.cocci b/scripts/coccinelle/api/memdup.cocci
+index 3d1aa71..2297205 100644
+--- a/scripts/coccinelle/api/memdup.cocci
++++ b/scripts/coccinelle/api/memdup.cocci
+@@ -39,7 +39,7 @@ statement S;
+ 
+ -  to = \(kmalloc at p\|kzalloc at p\)(size,flag);
+ +  to = kmemdup(from,size,flag);
+-   if (to==NULL || ...) S
++   if (unlikely(to==NULL) || ...) S
+ -  memcpy(to, from, size);
+ 
+ @r depends on !patch@
+@@ -49,18 +49,17 @@ statement S;
+ @@
+ 
+ *  to = \(kmalloc at p\|kzalloc at p\)(size,flag);
+-   to = kmemdup(from,size,flag);
+-   if (to==NULL || ...) S
++   if (unlikely(to==NULL) || ...) S
+ *  memcpy(to, from, size);
+ 
+ @script:python depends on org@
+ p << r.p;
+ @@
+ 
+-coccilib.org.print_todo(p[0], "WARNING opportunity for kmemdep")
++coccilib.org.print_todo(p[0], "WARNING opportunity for kmemdup")
+ 
+ @script:python depends on report@
+ p << r.p;
+ @@
+ 
+-coccilib.report.print_report(p[0], "WARNING opportunity for kmemdep")
++coccilib.report.print_report(p[0], "WARNING opportunity for kmemdup")
+-- 
+1.9.1
