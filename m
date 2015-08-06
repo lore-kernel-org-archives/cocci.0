@@ -1,38 +1,38 @@
-From: mcgrof@suse.com (Luis R. Rodriguez)
-Date: Wed, 5 Aug 2015 23:15:54 +0200
-Subject: [Cocci] [PATCH v3 0/2] coccinelle: add localversion information
-In-Reply-To: <1438034612-10595-1-git-send-email-mcgrof@do-not-panic.com>
-References: <1438034612-10595-1-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <20150805211554.GI30479@wotan.suse.de>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Thu, 6 Aug 2015 11:04:53 +0200
+Subject: [Cocci] Fine-tuning for the processing of function name lists?
+In-Reply-To: <alpine.DEB.2.02.1508051948060.2039@localhost6.localdomain6>
+References: <55A62135.90206@users.sourceforge.net>
+ <alpine.DEB.2.10.1507150629540.2670@hadrien>
+ <55AA3B1F.5020807@users.sourceforge.net>
+ <alpine.DEB.2.02.1507181351130.2042@localhost6.localdomain6>
+ <55ACDC1C.1040005@users.sourceforge.net>
+ <55AFD615.3070905@users.sourceforge.net>
+ <alpine.DEB.2.10.1507221943550.2405@hadrien>
+ <55B0798B.1010507@users.sourceforge.net>
+ <alpine.DEB.2.02.1507230724180.2062@localhost6.localdomain6>
+ <55C1ECDB.2060509@users.sourceforge.net>
+ <alpine.DEB.2.02.1508051434540.2198@localhost6.localdomain6>
+ <55C2229E.7030409@users.sourceforge.net>
+ <alpine.DEB.2.02.1508051652140.2198@localhost6.localdomain6>
+ <55C2280A.6000204@users.sourceforge.net>
+ <alpine.DEB.2.02.1508051718110.2198@localhost6.localdomain6>
+ <55C2328C.5020405@users.sourceforge.net>
+ <alpine.DEB.2.02.1508051948060.2039@localhost6.localdomain6>
+Message-ID: <55C32335.8090802@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, Jul 27, 2015 at 03:03:30PM -0700, Luis R. Rodriguez wrote:
-> From: "Luis R. Rodriguez" <mcgrof@suse.com>
+> It should be much better for the understandability of your code,
+> for the maintainability of your code, and for the speed of processing
+> your code to say
 > 
-> This v3 makes use of the recommended strategy by Nikolay to avoid
-> a local variable for the version.sh. It also clarifies in the commit
-> log on patch 2 that PGP signed tags are not required by default. If
-> Coccinelle switches over to using PGP tags the scripts/setlocalversion
-> file can be modified to require them, but for now this is disabled.
-> 
-> Lastly, in order to try to help simplify the way release managers might make a
-> release in a linear fashion with a git tree I modified autogen.sh to accept
-> a new argument:
-> 
-> ./autogen --ignore_localversion
-> 
-> which can be used by release managers to skip the local version string
-> when making a release. This is in contrast to my v2 series which would
-> have otherwise required release managers to make temporary tags, delete
-> them, and them finally add a new tag later. This is much simpler solution.
-> 
-> The default is to parse the localversion string then if available.
-> 
-> Luis R. Rodriguez (2):
->   autotools: simplify the way to determine version information
->   autotools: add localversion information
+> identifier allocation = {function1, function2, function3, function4, ...};
 
-S?bastien, Nikolay, are you folks OK with this being merged?
+Function names from various application programming interfaces follow
+a few naming patterns.
+Can SmPL scripts benefit from the fact that such identifiers contain
+a couple of identical name components?
 
-  Luis
+Regards,
+Markus
