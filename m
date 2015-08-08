@@ -1,7 +1,7 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 8 Aug 2015 10:25:02 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sat, 8 Aug 2015 10:41:12 +0200
 Subject: [Cocci] Finding designated initialisers with SmPL
-In-Reply-To: <55C5B85A.8060508@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.02.1508081024390.2027@localhost6.localdomain6>
 References: <55A62135.90206@users.sourceforge.net>
  <alpine.DEB.2.10.1507150629540.2670@hadrien>
  <55AA3B1F.5020807@users.sourceforge.net>
@@ -14,71 +14,24 @@ References: <55A62135.90206@users.sourceforge.net>
  <alpine.DEB.2.02.1507202238110.2082@localhost6.localdomain6>
  <55ADDD03.6020401@users.sourceforge.net>
  <55C5B85A.8060508@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1508081024390.2027@localhost6.localdomain6>
+ <alpine.DEB.2.02.1508081024390.2027@localhost6.localdomain6>
+Message-ID: <55C5C0A8.3020500@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sat, 8 Aug 2015, SF Markus Elfring wrote:
-
-> > I have tried the following small SmPL script
-> > 
-> > @show_designated_initialisers@
-> > identifier allocation, element, structure_type, structure_var;
-> > @@
-> >  <+...
-> > *struct structure_type structure_var = { ..., .element = allocation(...), ... };
-> >  ...+>
-
-Why do you have <+... ...+> around the pattern?
-
-julia
-
-> > 
-> > 
-> > on this
-> > 
-> > 
-> > char* get_default_message(short selection)
-> > {
-> >  static char xyz[123];
-> >  
-> >  switch (selection)
-> >  {
-> >  case 1:
-> >   strcpy(xyz, "Test");
-> >  default:
-> >   strcpy(xyz, "working");
-> >  }
-> >  return xyz;
-> > }
-> > 
-> > static unsigned long my_counter = 0;
-> > 
-> > static struct my_string
-> > {
-> >  unsigned int length;
-> >  char* text;
-> > } message = { .text = get_default_message(1), .length = 123 };
-> > 
-> > 
-> > source code example.
-> > 
-> > 
-> > elfring at Sonne:~/Projekte/Coccinelle/janitor> spatch.opt -sp-file show_designated_initialisers1.cocci designated_initialiser1.c
-> > init_defs_builtins: /usr/local/lib/coccinelle/standard.h
-> > HANDLING: designated_initialiser1.c
-> > 
-> > 
-> > Unfortunately, I do not see a generated patch there.
-> > How should I improve my approach for the expected analysis result?
+>>> @show_designated_initialisers@
+>>> identifier allocation, element, structure_type, structure_var;
+>>> @@
+>>>  <+...
+>>> *struct structure_type structure_var = { ..., .element = allocation(...), ... };
+>>>  ...+>
 > 
-> How is the status for the support of data processing for designated initialisers
-> with the semantic patch language?
-> 
-> Regards,
-> Markus
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
-> 
+> Why do you have <+... ...+> around the pattern?
+
+I tried to express that the special case "nothing found" should be excluded here.
+
+I do also not get the expected analysis result if I omit the SmPL ellipsis
+for such an use case. How should I improve this approach then?
+
+Regards,
+Markus
