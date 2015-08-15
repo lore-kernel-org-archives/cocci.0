@@ -1,21 +1,132 @@
-From: rientjes@google.com (David Rientjes)
-Date: Wed, 12 Aug 2015 16:52:12 -0700 (PDT)
-Subject: [Cocci] [PATCH v2 1/4] mm: Add support for __GFP_ZERO flag to
- dma_pool_alloc()
-In-Reply-To: <1438371404-3219-2-git-send-email-sean.stalley@intel.com>
-References: <1438371404-3219-1-git-send-email-sean.stalley@intel.com>
- <1438371404-3219-2-git-send-email-sean.stalley@intel.com>
-Message-ID: <alpine.DEB.2.10.1508121649310.30617@chino.kir.corp.google.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sat, 15 Aug 2015 19:30:45 +0200 (CEST)
+Subject: [Cocci] [PATCH] coccinelle: add style check for assignment in if
+In-Reply-To: <1439659132-4452-1-git-send-email-kborer@gmail.com>
+References: <1439659132-4452-1-git-send-email-kborer@gmail.com>
+Message-ID: <alpine.DEB.2.02.1508151930030.2060@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, 31 Jul 2015, Sean O. Stalley wrote:
 
-> Currently the __GFP_ZERO flag is ignored by dma_pool_alloc().
-> Make dma_pool_alloc() zero the memory if this flag is set.
+
+On Sat, 15 Aug 2015, Kris Borer wrote:
+
+> Add a semantic patch for fixing some cases of checkpatch.pl error:
 > 
-> Signed-off-by: Sean O. Stalley <sean.stalley@intel.com>
+> ERROR: do not use assignment in if condition
+> 
+> Reviewed-by: Julia Lawall <julia.lawall@lip6.fr>
 
-Acked-by: David Rientjes <rientjes@google.com>
+Sorry, but I'm not done reviewing it.  I have a lot of changes to propose.  
+Is this different than the RFC v2?
 
-This has impacted us as well, and I'm glad to see it fixed.
+julia
+
+> Signed-off-by: Kris Borer <kborer@gmail.com>
+> ---
+>  scripts/coccinelle/style/assignment_in_if.cocci | 92 +++++++++++++++++++++++++
+>  1 file changed, 92 insertions(+)
+>  create mode 100644 scripts/coccinelle/style/assignment_in_if.cocci
+> 
+> diff --git a/scripts/coccinelle/style/assignment_in_if.cocci b/scripts/coccinelle/style/assignment_in_if.cocci
+> new file mode 100644
+> index 0000000..22ab161
+> --- /dev/null
+> +++ b/scripts/coccinelle/style/assignment_in_if.cocci
+> @@ -0,0 +1,92 @@
+> +// find checkpatch.pl errors of the type:
+> +//	ERROR: do not use assignment in if condition
+> +//
+> +// This script is designed to correct code where assignments exist in if
+> +// conditions. It is only capable of handling a subset of such problems.
+> +//
+> +// For example:
+> +//
+> +//	if(result = myfun())
+> +//
+> +// would become:
+> +//
+> +//	result = myfun();
+> +//	if(result)
+> +//
+> +// Confidence: Moderate
+> +
+> +
+> +// if ( ret = call() )
+> + at if1@
+> +identifier i;
+> +expression E;
+> +statement S1, S2;
+> +@@
+> +
+> ++ i = E;
+> +  if (
+> +- (i = E)
+> ++ i
+> +  ) S1 else S2
+> +
+> +
+> +// if ( (ret = call()) < 0 )
+> + at if2@
+> +identifier i;
+> +expression E;
+> +statement S1, S2;
+> +binary operator b;
+> +@@
+> +
+> ++ i = E;
+> +  if (
+> +- (i = E)
+> ++ i
+> +  b ... ) S1 else S2
+> +
+> +// if ( ptr->fun && (ret = ptr->fun()) < 0 )
+> + at if3@
+> +identifier i, i2;
+> +expression E1, E2;
+> +constant c;
+> +binary operator b;
+> +@@
+> +
+> ++ if( E1->i ) {
+> ++  	i2 = E2;
+> ++ 	if (i2 b c) {
+> +- if( E1->i && ((i2 = E2) b c) ) {
+> +  ...
+> +- }
+> ++ 	}
+> ++ }
+> +
+> +// if ( (ret = call()) < 0 && ret != -1 )
+> + at if4@
+> +identifier i;
+> +expression E, E2;
+> +statement S1, S2;
+> +binary operator b;
+> +@@
+> +
+> ++ i = E;
+> +  if (
+> +- (i = E)
+> ++ i
+> +  b
+> +  ... && E2 ) S1 else S2
+> +
+> +// if ( (ret = call()) < 0 && ret != -1 && ret != -2 )
+> + at if5@
+> +identifier i;
+> +expression E, E2, E3;
+> +statement S1, S2;
+> +binary operator b;
+> +@@
+> +
+> ++ i = E;
+> +  if (
+> +- (i = E)
+> ++ i
+> +  b
+> +  ... && E2 && E3 ) S1 else S2
+> -- 
+> 1.9.1
+> 
+> 
