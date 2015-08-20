@@ -1,37 +1,171 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 26 Aug 2015 11:11:22 +0200 (CEST)
-Subject: [Cocci] release: 1.0.2: Software evolution around
- parallelisation support
-In-Reply-To: <55DD53B8.1010205@users.sourceforge.net>
-References: <alpine.DEB.2.10.1508220653050.2531@hadrien>
- <55DA0DFD.8090005@users.sourceforge.net>
- <alpine.DEB.2.10.1508231227480.2916@hadrien>
- <55DD53B8.1010205@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1508261109060.2334@hadrien>
+From: kborer@gmail.com (Kris Borer)
+Date: Thu, 20 Aug 2015 08:33:58 -0400
+Subject: [Cocci] [RFC v3] coccinelle: add style check for assignment in if
+Message-ID: <1440074038-646-1-git-send-email-kborer@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Add a semantic patch for fixing some cases of checkpatch.pl error:
 
+ERROR: do not use assignment in if condition
 
-On Wed, 26 Aug 2015, SF Markus Elfring wrote:
+Signed-off-by: Kris Borer <kborer@gmail.com>
+---
+Differences from Julia's version:
+ - removed some disjuction variations that led to improper transformations
+ - fixed header format
+ - added and updated comments
+ - reformatted some rules
 
-> > There is no shared memory in ocaml.
->
-> How do you think about to reuse any other application programming interfaces
-> for inter-process communication?
-> https://ocaml.github.io/ocamlunix/sockets.html
->
->
-> Can it be determined from the content of a semantic patch language script
-> if the spawned subprocesses need any more data exchange (with the parent process)
-> besides the usual files like standard output and standard error?
+ scripts/coccinelle/style/assignment_in_if.cocci | 140 ++++++++++++++++++++++++
+ 1 file changed, 140 insertions(+)
+ create mode 100644 scripts/coccinelle/style/assignment_in_if.cocci
 
-In the short term, there is no improvement planned in this direction.  It
-is important that Coccinelle does not know anything about the script code
-- we don't want to include parsers for other languages, and it would
-further raise the barrier for adding other scripting languages.  If you
-need initialize and finalize, just use the current parallelism solution.
-You will get n results instead of 1 result, but it is better than getting
-15 000 results, as would happen with parmap.
-
-julia
+diff --git a/scripts/coccinelle/style/assignment_in_if.cocci b/scripts/coccinelle/style/assignment_in_if.cocci
+new file mode 100644
+index 0000000..57f692d
+--- /dev/null
++++ b/scripts/coccinelle/style/assignment_in_if.cocci
+@@ -0,0 +1,140 @@
++/// move assignments out of if conditions
++///
++//# This script is designed to correct code where assignments exist in if
++//# conditions. It is only capable of handling a subset of such problems.
++//# Ideally it would handle all checkpatch errors of the following type:
++//#	ERROR: do not use assignment in if condition
++//#
++//# For example:
++//#	if(result = myfun())
++//#
++//# would become:
++//#	result = myfun();
++//#	if(result)
++//
++// Confidence: Moderate
++// Copyright: (C) 2015 Kris Borer.  GPLv2.
++// URL: http://coccinelle.lip6.fr/
++// Comments:
++// Options: --no-includes --include-headers
++
++virtual patch
++
++
++// if ( (ret = call()) )
++// if ( (ret = call()) < 0 )
++@if1@
++expression i;
++expression E, E2;
++statement S1, S2;
++binary operator b;
++@@
++
+++ i = E;
++  if (
++(
++- (i = E)
+++ i
++|
++- (i = E)
+++ i
++  b ...
++|
++- (i = E),
++  E2
++)
++  ) S1 else S2
++
++
++// if ( ptr->fun && (ret = ptr->fun()) )
++ at if2@
++expression i2;
++expression E1, E2;
++@@
++
+++ if( E1 ) {
+++       i2 = E2;
+++       if (i2) {
++- if( E1 && (i2 = E2) ) {
++  ...
++- }
+++       }
+++ }
++
++
++// if ( ptr->fun && (ret = ptr->fun()) < 0 )
++ at if3@
++expression i2;
++expression E1, E2;
++constant c;
++binary operator b;
++@@
++
+++ if( E1 ) {
+++       i2 = E2;
+++       if (i2 b c) {
++- if( E1 && ((i2 = E2) b c) ) {
++  ...
++- }
+++       }
+++ }
++
++
++// if ( (ret = call()) && ret != -1 )
++// if ( (ret = call()) < 0 && ret != -1 )
++ at if4@
++expression i;
++expression E, E2;
++statement S1, S2;
++binary operator b;
++@@
++
+++ i = E;
++  if (
++(
++- (i = E)
+++ i
++|
++  (
++- (i = E)
+++ i
++  b
++  ...)
++)
++  && E2 ) S1 else S2
++
++
++// if ( (ret = call()) && ret != -1 && ret != -2 )
++// if ( (ret = call()) < 0 && ret != -1 && ret != -2 )
++ at if5@
++expression i;
++expression E, E2, E3;
++statement S1, S2;
++binary operator b;
++@@
++
+++ i = E;
++  if (
++(
++- (i = E)
+++ i
++|
++  (
++- (i = E)
+++ i
++  b
++  ...)
++)
++  && E2 && E3 ) S1 else S2
++
++
++// warn about any assignments that were missed
++@if6@
++expression i,e;
++statement S1,S2;
++@@
++
++  if (<+...
++- i = e
+++ BAD
++  ...+>) S1 else S2
+-- 
+1.9.1
