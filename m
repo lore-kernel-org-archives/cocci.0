@@ -1,65 +1,66 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 22 Aug 2015 07:09:54 -0700 (PDT)
-Subject: [Cocci] 1.0.2
-Message-ID: <alpine.DEB.2.10.1508220653050.2531@hadrien>
+Date: Sat, 22 Aug 2015 07:17:45 -0700 (PDT)
+Subject: [Cocci] Checking data structure modification with SmPL
+In-Reply-To: <55D31848.1060900@users.sourceforge.net>
+References: <55D31848.1060900@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.10.1508220716010.2531@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Some of the main changes:
 
-* OCaml 3.10 is no longer supported.
 
-* --use-gitgrep falls back to --use-coccigrep for a non-git repository.
-Thus, it is generally safe to use --use-gitgrep, except when processing an
-unmanaged subdirectory of a git repository.
+On Tue, 18 Aug 2015, SF Markus Elfring wrote:
 
-* It is no longer possible to create an identifier in OCaml code by saying
-x := "identifier_name".  Instead some constructors have been added for
-constructing various kinds of code:
+> Hello,
+>
+> I have tried another small SmPL script out.
+>
+> @show_modification_before_memory_release@
+> expression value;
+> identifier element, var;
+> @@
+>  <+...
+> *var->element = value;
+>  ...+>
+>  free(var);
+>
+>
+> This approach is working to some degree.
+> Now I would like to support more possibilities for the determination
+> of affected members from the shown variable.
+>
+>
+> @show_modification_before_memory_release@
+> expression element, value;
+> identifier var;
+> @@
+>  <+...
+> *var->element = value;
 
-val make_ident : string -> Ast_c.metavar_binding_kind
-   (* string is the identifier name *)
-
-val make_expr : string -> Ast_c.metavar_binding_kind
-   (* string is the expression *)
-
-val make_expr_with_env : string -> string -> Ast_c.metavar_binding_kind
-   (* The first argument is a series of variable declarations, designed to
-      provide type information for the second argument, which is an
-      expression.  For example, make_expr_with_env "int x;" "x+3". *)
-
-val make_stmt : string -> Ast_c.metavar_binding_kind
-   (* The string argument is a statement *)
-
-val make_stmt_with_env : string -> string -> Ast_c.metavar_binding_kind
-   (* The first argument is a series of declarations and the second
-      argument is the statement to create *)
-
-val make_type : string -> Ast_c.metavar_binding_kind
-   (* The string is the type to create *)
-
-val make_listlen : int -> Ast_c.metavar_binding_kind
-   (* The integer is the list length to create, eg for a parameter list *)
-
-val make_position :
-  Common.filename ->
-  string -> int -> int -> int -> int -> Ast_c.metavar_binding_kind
-    (* The arguments are: file name (string), function name, start line,
-       start column, end line, end column.  Lines start with 1, columns
-       start with 0. *)
-
-* exp at S will bind statement metavariable to the smallest statement
-enclosing the expression exp.  For example, for the C code, return x;, x at S
-would match S to return x;
-
-* If an identifier metavariable is constrained to match a set of possible
-names, eg identifier fn = {kmalloc, kfree};, then these names will be
-taken into account when selecting files.  On the other hand, constraints
-expressed as regular expressions are still not taken into account.
-
-* Autogen creates a version number that corresponds to the most recent
-commit.
-
-* -j should now work correctly.
+Element is not an expression.  An expression is something that has a
+value.  A field name has no value.  It just enables selecting a field.
+Probably what you want is <+...var->element...+>, ie something that has
+var->element as a subexpression.  To avoid parsing ambiguities, you will
+need to put () around this, but it will not affect the results.
 
 julia
+
+>  ...+>
+>  free(var);
+>
+>
+> elfring at Sonne:~/Projekte/Miller/lokal> spatch.opt -sp-file ~/Projekte/Coccinelle/janitor/show_modification_before_memory_release1.cocci c/containers/hss.c
+> init_defs_builtins: /usr/local/lib/coccinelle/standard.h
+> 101 108
+> Fatal error: exception Failure("minus: parse error: \n = File \"/home/elfring/Projekte/Coccinelle/janitor/show_modification_before_memory_release1.cocci\", line 6, column 6,  charpos = 101\n    around = 'element', whole content = *var->element = value;\n")
+>
+>
+> How can this source code analysis be improved?
+>
+> Regards,
+> Markus
+> _______________________________________________
+> Cocci mailing list
+> Cocci at systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
+>
