@@ -1,7 +1,7 @@
 From: kborer@gmail.com (Kris Borer)
-Date: Thu, 20 Aug 2015 08:33:58 -0400
-Subject: [Cocci] [RFC v3] coccinelle: add style check for assignment in if
-Message-ID: <1440074038-646-1-git-send-email-kborer@gmail.com>
+Date: Sat, 22 Aug 2015 13:04:10 -0400
+Subject: [Cocci] [PATCH v2] coccinelle: add style check for assignment in if
+Message-ID: <1440263050-4278-1-git-send-email-kborer@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -10,23 +10,18 @@ Add a semantic patch for fixing some cases of checkpatch.pl error:
 ERROR: do not use assignment in if condition
 
 Signed-off-by: Kris Borer <kborer@gmail.com>
+Acked-by: Julia Lawall <julia.lawall@lip6.fr>
 ---
-Differences from Julia's version:
- - removed some disjuction variations that led to improper transformations
- - fixed header format
- - added and updated comments
- - reformatted some rules
-
- scripts/coccinelle/style/assignment_in_if.cocci | 140 ++++++++++++++++++++++++
- 1 file changed, 140 insertions(+)
+ scripts/coccinelle/style/assignment_in_if.cocci | 128 ++++++++++++++++++++++++
+ 1 file changed, 128 insertions(+)
  create mode 100644 scripts/coccinelle/style/assignment_in_if.cocci
 
 diff --git a/scripts/coccinelle/style/assignment_in_if.cocci b/scripts/coccinelle/style/assignment_in_if.cocci
 new file mode 100644
-index 0000000..57f692d
+index 0000000..b23db8f
 --- /dev/null
 +++ b/scripts/coccinelle/style/assignment_in_if.cocci
-@@ -0,0 +1,140 @@
+@@ -0,0 +1,128 @@
 +/// move assignments out of if conditions
 +///
 +//# This script is designed to correct code where assignments exist in if
@@ -135,7 +130,7 @@ index 0000000..57f692d
 +
 +// if ( (ret = call()) && ret != -1 && ret != -2 )
 +// if ( (ret = call()) < 0 && ret != -1 && ret != -2 )
-+ at if5@
++@if5@
 +expression i;
 +expression E, E2, E3;
 +statement S1, S2;
@@ -155,17 +150,5 @@ index 0000000..57f692d
 +  ...)
 +)
 +  && E2 && E3 ) S1 else S2
-+
-+
-+// warn about any assignments that were missed
-+@if6@
-+expression i,e;
-+statement S1,S2;
-+@@
-+
-+  if (<+...
-+- i = e
-++ BAD
-+  ...+>) S1 else S2
 -- 
 1.9.1
