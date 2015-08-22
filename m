@@ -1,66 +1,185 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 22 Aug 2015 07:17:45 -0700 (PDT)
-Subject: [Cocci] Checking data structure modification with SmPL
-In-Reply-To: <55D31848.1060900@users.sourceforge.net>
-References: <55D31848.1060900@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1508220716010.2531@hadrien>
+Date: Sat, 22 Aug 2015 08:54:08 -0700 (PDT)
+Subject: [Cocci] [RFC v3] coccinelle: add style check for assignment in
+	if
+In-Reply-To: <1440074038-646-1-git-send-email-kborer@gmail.com>
+References: <1440074038-646-1-git-send-email-kborer@gmail.com>
+Message-ID: <alpine.DEB.2.10.1508220850440.2384@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Acked-by: Julia Lawall <julia.lawall@lip6.fr>
 
-
-On Tue, 18 Aug 2015, SF Markus Elfring wrote:
-
-> Hello,
->
-> I have tried another small SmPL script out.
->
-> @show_modification_before_memory_release@
-> expression value;
-> identifier element, var;
-> @@
->  <+...
-> *var->element = value;
->  ...+>
->  free(var);
->
->
-> This approach is working to some degree.
-> Now I would like to support more possibilities for the determination
-> of affected members from the shown variable.
->
->
-> @show_modification_before_memory_release@
-> expression element, value;
-> identifier var;
-> @@
->  <+...
-> *var->element = value;
-
-Element is not an expression.  An expression is something that has a
-value.  A field name has no value.  It just enables selecting a field.
-Probably what you want is <+...var->element...+>, ie something that has
-var->element as a subexpression.  To avoid parsing ambiguities, you will
-need to put () around this, but it will not affect the results.
+However, I think it would be better to remove the "BAD" rulle at the end.
 
 julia
 
->  ...+>
->  free(var);
+
+On Thu, 20 Aug 2015, Kris Borer wrote:
+
+> Add a semantic patch for fixing some cases of checkpatch.pl error:
 >
+> ERROR: do not use assignment in if condition
 >
-> elfring at Sonne:~/Projekte/Miller/lokal> spatch.opt -sp-file ~/Projekte/Coccinelle/janitor/show_modification_before_memory_release1.cocci c/containers/hss.c
-> init_defs_builtins: /usr/local/lib/coccinelle/standard.h
-> 101 108
-> Fatal error: exception Failure("minus: parse error: \n = File \"/home/elfring/Projekte/Coccinelle/janitor/show_modification_before_memory_release1.cocci\", line 6, column 6,  charpos = 101\n    around = 'element', whole content = *var->element = value;\n")
+> Signed-off-by: Kris Borer <kborer@gmail.com>
+> ---
+> Differences from Julia's version:
+>  - removed some disjuction variations that led to improper transformations
+>  - fixed header format
+>  - added and updated comments
+>  - reformatted some rules
 >
+>  scripts/coccinelle/style/assignment_in_if.cocci | 140 ++++++++++++++++++++++++
+>  1 file changed, 140 insertions(+)
+>  create mode 100644 scripts/coccinelle/style/assignment_in_if.cocci
 >
-> How can this source code analysis be improved?
+> diff --git a/scripts/coccinelle/style/assignment_in_if.cocci b/scripts/coccinelle/style/assignment_in_if.cocci
+> new file mode 100644
+> index 0000000..57f692d
+> --- /dev/null
+> +++ b/scripts/coccinelle/style/assignment_in_if.cocci
+> @@ -0,0 +1,140 @@
+> +/// move assignments out of if conditions
+> +///
+> +//# This script is designed to correct code where assignments exist in if
+> +//# conditions. It is only capable of handling a subset of such problems.
+> +//# Ideally it would handle all checkpatch errors of the following type:
+> +//#	ERROR: do not use assignment in if condition
+> +//#
+> +//# For example:
+> +//#	if(result = myfun())
+> +//#
+> +//# would become:
+> +//#	result = myfun();
+> +//#	if(result)
+> +//
+> +// Confidence: Moderate
+> +// Copyright: (C) 2015 Kris Borer.  GPLv2.
+> +// URL: http://coccinelle.lip6.fr/
+> +// Comments:
+> +// Options: --no-includes --include-headers
+> +
+> +virtual patch
+> +
+> +
+> +// if ( (ret = call()) )
+> +// if ( (ret = call()) < 0 )
+> + at if1@
+> +expression i;
+> +expression E, E2;
+> +statement S1, S2;
+> +binary operator b;
+> +@@
+> +
+> ++ i = E;
+> +  if (
+> +(
+> +- (i = E)
+> ++ i
+> +|
+> +- (i = E)
+> ++ i
+> +  b ...
+> +|
+> +- (i = E),
+> +  E2
+> +)
+> +  ) S1 else S2
+> +
+> +
+> +// if ( ptr->fun && (ret = ptr->fun()) )
+> + at if2@
+> +expression i2;
+> +expression E1, E2;
+> +@@
+> +
+> ++ if( E1 ) {
+> ++       i2 = E2;
+> ++       if (i2) {
+> +- if( E1 && (i2 = E2) ) {
+> +  ...
+> +- }
+> ++       }
+> ++ }
+> +
+> +
+> +// if ( ptr->fun && (ret = ptr->fun()) < 0 )
+> + at if3@
+> +expression i2;
+> +expression E1, E2;
+> +constant c;
+> +binary operator b;
+> +@@
+> +
+> ++ if( E1 ) {
+> ++       i2 = E2;
+> ++       if (i2 b c) {
+> +- if( E1 && ((i2 = E2) b c) ) {
+> +  ...
+> +- }
+> ++       }
+> ++ }
+> +
+> +
+> +// if ( (ret = call()) && ret != -1 )
+> +// if ( (ret = call()) < 0 && ret != -1 )
+> + at if4@
+> +expression i;
+> +expression E, E2;
+> +statement S1, S2;
+> +binary operator b;
+> +@@
+> +
+> ++ i = E;
+> +  if (
+> +(
+> +- (i = E)
+> ++ i
+> +|
+> +  (
+> +- (i = E)
+> ++ i
+> +  b
+> +  ...)
+> +)
+> +  && E2 ) S1 else S2
+> +
+> +
+> +// if ( (ret = call()) && ret != -1 && ret != -2 )
+> +// if ( (ret = call()) < 0 && ret != -1 && ret != -2 )
+> + at if5@
+> +expression i;
+> +expression E, E2, E3;
+> +statement S1, S2;
+> +binary operator b;
+> +@@
+> +
+> ++ i = E;
+> +  if (
+> +(
+> +- (i = E)
+> ++ i
+> +|
+> +  (
+> +- (i = E)
+> ++ i
+> +  b
+> +  ...)
+> +)
+> +  && E2 && E3 ) S1 else S2
+> +
+> +
+> +// warn about any assignments that were missed
+> + at if6@
+> +expression i,e;
+> +statement S1,S2;
+> +@@
+> +
+> +  if (<+...
+> +- i = e
+> ++ BAD
+> +  ...+>) S1 else S2
+> --
+> 1.9.1
 >
-> Regards,
-> Markus
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
 >
