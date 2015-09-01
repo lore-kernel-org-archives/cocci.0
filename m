@@ -1,28 +1,28 @@
-From: mcgrof@suse.com (Luis R. Rodriguez)
-Date: Thu, 3 Sep 2015 03:24:44 +0200
-Subject: [Cocci] [PATCH] Makefile: fix autotools pre ./configure version
- regression
-In-Reply-To: <1441243250-23830-1-git-send-email-mcgrof@do-not-panic.com>
-References: <1441243250-23830-1-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <20150903012444.GN8051@wotan.suse.de>
+From: jwboyer@fedoraproject.org (Josh Boyer)
+Date: Tue, 1 Sep 2015 13:28:27 -0400
+Subject: [Cocci] [RFC] firmware: annotate thou shalt not request fw on
+	init or probe
+In-Reply-To: <1440811107-861-1-git-send-email-mcgrof@do-not-panic.com>
+References: <1440811107-861-1-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <CA+5PVA6toGj5iboTgK5Casy9vUAQC8SXYWKEx+ojwC51UEV0HA@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, Sep 02, 2015 at 06:20:50PM -0700, Luis R. Rodriguez wrote:
-> +VERSION?=$(shell MAKE_COCCI_RELEASE="y" ./version.sh)
+On Fri, Aug 28, 2015 at 9:18 PM, Luis R. Rodriguez
+<mcgrof@do-not-panic.com> wrote:
+> From: "Luis R. Rodriguez" <mcgrof@suse.com>
+>
+> We are phasing out the usermode helper from the kernel,
+> systemd already ripped support for this a while ago, the
+> only remaining valid user is the Dell rbu driver. The
 
-To be clear usage of
+Actually, I don't think that is accurate any longer.  The Dell rbu
+driver certainly requires this, but it seems that the following
+drivers select FW_LOADER_USER_HELPER_FALLBACK as well:
 
-FOO ?= bar
+CONFIG_DRM_STI
+CONFIG_LEDS_LP55XX_COMMON
 
-is equivalent to using:
+Why they do that, I have no idea.  It's kind of disappointing.
 
-ifeq ($(origin FOO), undefined)
-  FOO = bar
-endif
-
-So once the user has run ./configure the right version will be set.
-
-https://www.gnu.org/software/make/manual/html_node/Flavors.html#Flavors
-
-  Luis
+josh
