@@ -1,213 +1,47 @@
-From: johan@kernel.org (Johan Hovold)
-Date: Wed, 30 Sep 2015 18:37:27 -0400
-Subject: [Cocci] [PATCH] coccinelle: misc: remove "complex return code"
-	warnings
-Message-ID: <1443652647-23097-1-git-send-email-johan@kernel.org>
+From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
+Date: Wed,  2 Sep 2015 18:20:50 -0700
+Subject: [Cocci] [PATCH] Makefile: fix autotools pre ./configure version
+	regression
+Message-ID: <1441243250-23830-1-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-This effectively reverts 932058a5d5f9 ("coccinelle: misc: semantic patch
-to delete overly complex return code processing").
+From: "Luis R. Rodriguez" <mcgrof@suse.com>
 
-There can be both symmetry and readability reasons for not wanting to do
-the final function call as part of the return statement and to maintain
-a clear separation of success and error paths.
+The change to fold version information into a single helper
+removed access to the VERSION variable before ./configure was
+run. We have a slew of dependencies on this variable though,
+users of this variable are typically only used for release
+purpose so when the user hasn't yet run ./configure simply
+assume we want the version information as if we're making
+a release and don't want any dirty tree annotations.
 
-Since this is in no way mandated by the coding standard, let's just
-remove this semantic patch to avoid having "clean up" patches being
-posted over and over in response to these Coccinelle warnings.
-
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Reported-by: S?bastien Hinderer <Sebastien.Hinderer@inria.fr>
+Signed-off-by: Luis R. Rodriguez <mcgrof@suse.com>
 ---
- scripts/coccinelle/misc/simple_return.cocci | 180 ----------------------------
- 1 file changed, 180 deletions(-)
- delete mode 100644 scripts/coccinelle/misc/simple_return.cocci
+ Makefile | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/scripts/coccinelle/misc/simple_return.cocci b/scripts/coccinelle/misc/simple_return.cocci
-deleted file mode 100644
-index e8b6313b116f..000000000000
---- a/scripts/coccinelle/misc/simple_return.cocci
-+++ /dev/null
-@@ -1,180 +0,0 @@
--/// Simplify a trivial if-return sequence.  Possibly combine with a
--/// preceding function call.
--///
--// Confidence: High
--// Copyright: (C) 2014 Julia Lawall, INRIA/LIP6.  GPLv2.
--// Copyright: (C) 2014 Gilles Muller, INRIA/LiP6.  GPLv2.
--// URL: http://coccinelle.lip6.fr/
--// Comments:
--// Options: --no-includes --include-headers
--
--virtual patch
--virtual context
--virtual org
--virtual report
--
-- at r depends on patch@
--local idexpression e;
--identifier i,f,fn;
--@@
--
--fn(...) { <...
--- e@i =
--+ return
--    f(...);
---if (i != 0) return i;
---return 0;
--...> }
--
-- at depends on patch@
--identifier r.i;
--type t;
--@@
--
---t i;
-- ... when != i
--
-- at depends on patch@
--expression e;
--@@
--
---if (e != 0)
--   return e;
---return 0;
--
--// -----------------------------------------------------------------------
--
-- at s1 depends on context || org || report@
--local idexpression e;
--identifier i,f,fn;
--position p,p1,p2;
--@@
--
--fn(...) { <...
--* e at i@p = f(...);
--  if (\(i at p1 != 0\|i@p2 < 0\))
--     return i;
--  return 0;
--...> }
--
-- at s2 depends on context || org || report forall@
--identifier s1.i;
--type t;
--position q,s1.p;
--expression e,f;
--@@
--
--* t i at q;
--  ... when != i
--  e at p = f(...);
--
-- at s3 depends on context || org || report@
--expression e;
--position p1!=s1.p1;
--position p2!=s1.p2;
--@@
--
--*if (\(e at p1 != 0\|e at p2 < 0\))
--   return e;
-- return 0;
--
--// -----------------------------------------------------------------------
--
-- at script:python depends on org@
--p << s1.p;
--p1 << s1.p1;
--q << s2.q;
--@@
--
--cocci.print_main("decl",q)
--cocci.print_secs("use",p)
--cocci.include_match(False)
--
-- at script:python depends on org@
--p << s1.p;
--p2 << s1.p2;
--q << s2.q;
--@@
--
--cocci.print_main("decl",q)
--cocci.print_secs("use with questionable test",p)
--cocci.include_match(False)
--
-- at script:python depends on org@
--p << s1.p;
--p1 << s1.p1;
--@@
--
--cocci.print_main("use",p)
--
-- at script:python depends on org@
--p << s1.p;
--p2 << s1.p2;
--@@
--
--cocci.print_main("use with questionable test",p)
--
-- at script:python depends on org@
--p << s3.p1;
--@@
--
--cocci.print_main("test",p)
--
-- at script:python depends on org@
--p << s3.p2;
--@@
--
--cocci.print_main("questionable test",p)
--
--// -----------------------------------------------------------------------
--
-- at script:python depends on report@
--p << s1.p;
--p1 << s1.p1;
--q << s2.q;
--@@
--
--msg = "WARNING: end returns can be simpified and declaration on line %s can be dropped" % (q[0].line)
--coccilib.report.print_report(p[0],msg)
--cocci.include_match(False)
--
-- at script:python depends on report@
--p << s1.p;
--p1 << s1.p1;
--q << s2.q
--;
--@@
--
--msg = "WARNING: end returns may be simpified if negative or 0 value and declaration on line %s can be dropped" % (q[0].line)
--coccilib.report.print_report(p[0],msg)
--cocci.include_match(False)
--
-- at script:python depends on report@
--p << s1.p;
--p1 << s1.p1;
--@@
--
--msg = "WARNING: end returns can be simpified"
--coccilib.report.print_report(p[0],msg)
--
-- at script:python depends on report@
--p << s1.p;
--p2 << s1.p2;
--@@
--
--msg = "WARNING: end returns can be simpified if negative or 0 value"
--coccilib.report.print_report(p[0],msg)
--
-- at script:python depends on report@
--p << s3.p1;
--@@
--
--msg = "WARNING: end returns can be simpified"
--coccilib.report.print_report(p[0],msg)
--
--@script:python depends on report@
--p << s3.p2;
--@@
--
--msg = "WARNING: end returns can be simpified if tested value is negative or 0"
--coccilib.report.print_report(p[0],msg)
+diff --git a/Makefile b/Makefile
+index 1564f7197ee1..f706cb86e255 100644
+--- a/Makefile
++++ b/Makefile
+@@ -18,6 +18,16 @@ endif
+ -include Makefile.override         # local customizations, if any
+ -include /etc/Makefile.coccinelle  # local customizations, if any
+ 
++# We inherit the version information *after* the user has run
++# ./configure but in the absence of that the build system has
++# a few dependencies on the version information, we need a default
++# setting then prior to the user running ./configure, this provides
++# that, but will only be set if the user hasn't already run ./configure
++#
++# The only thing we can do is assume that the user relying on this
++# variable then was going to make a release, this means we don't
++# tell them that the tree is dirty.
++VERSION?=$(shell MAKE_COCCI_RELEASE="y" ./version.sh)
+ 
+ CCVERSION=$(shell cat scripts/coccicheck/README | egrep -o '[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+' | head -n1)
+ PKGVERSION=$(shell dpkg-parsechangelog -ldebian/changelog.$(DISTRIB_CODENAME) 2> /dev/null \
 -- 
-2.4.9
+2.4.3
