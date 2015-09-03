@@ -1,52 +1,33 @@
 From: mcgrof@suse.com (Luis R. Rodriguez)
-Date: Thu, 3 Sep 2015 03:35:33 +0200
+Date: Thu, 3 Sep 2015 03:37:25 +0200
 Subject: [Cocci] [RFC] firmware: annotate thou shalt not request fw on
  init or probe
-In-Reply-To: <alpine.DEB.2.02.1508291812350.2057@localhost6.localdomain6>
+In-Reply-To: <CA+5PVA6toGj5iboTgK5Casy9vUAQC8SXYWKEx+ojwC51UEV0HA@mail.gmail.com>
 References: <1440811107-861-1-git-send-email-mcgrof@do-not-panic.com>
- <alpine.DEB.2.02.1508291812350.2057@localhost6.localdomain6>
-Message-ID: <20150903013533.GO8051@wotan.suse.de>
+ <CA+5PVA6toGj5iboTgK5Casy9vUAQC8SXYWKEx+ojwC51UEV0HA@mail.gmail.com>
+Message-ID: <20150903013725.GP8051@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sat, Aug 29, 2015 at 06:18:20PM +0200, Julia Lawall wrote:
-> > +@ defines_module_init exists @
-> > +declarer name module_init;
-> > +identifier init;
-> > +@@
-> > +
-> > +module_init(init);
-> > +
-> > +@ has_probe depends on defines_module_init @
-> > +identifier drv_calls, drv_probe;
-> > +type bus_driver;
-> > +identifier probe_op =~ "(probe)";
-> > +@@
-> > +
-> > +bus_driver drv_calls = {
-> > +	.probe_op = drv_probe,
-> > +};
+On Tue, Sep 01, 2015 at 01:28:27PM -0400, Josh Boyer wrote:
+> On Fri, Aug 28, 2015 at 9:18 PM, Luis R. Rodriguez
+> <mcgrof@do-not-panic.com> wrote:
+> > From: "Luis R. Rodriguez" <mcgrof@suse.com>
+> >
+> > We are phasing out the usermode helper from the kernel,
+> > systemd already ripped support for this a while ago, the
+> > only remaining valid user is the Dell rbu driver. The
 > 
-> I'm not sure that this is enough.  For example, there is the macro
-> platform_driver_probe that initializes probe fields.  There is likewise
-> module_platform_driver, which is a top-level declaration that encapsulates
-> the module_init and the definition of the module_init function, which in
-> turn calls platform_driver_probe.  There is also module_platform_driver,
-> which encapsulates the module_init, but not the initialization of the probe
-> field.  Are you concerned with any of these cases?
+> Actually, I don't think that is accurate any longer.  The Dell rbu
+> driver certainly requires this, but it seems that the following
+> drivers select FW_LOADER_USER_HELPER_FALLBACK as well:
+> 
+> CONFIG_DRM_STI
+> CONFIG_LEDS_LP55XX_COMMON
+> 
+> Why they do that, I have no idea.  It's kind of disappointing.
 
-Yes, and also it would seem this would only capture simple one level of
-routine indirection, for instance if probe called bar() and it was within
-bar() that the driver code called a fw request call, that would not be picked
-up, correct?
-
-If true then the hunt is yet even more complex. The discussion that prompted me
-to send this is still unfolding though [0] and it seems we may want to allow
-for these type of calls within probe in the end but in order to vet for drivers
-that fw is available through the direct filesystem lookup we may need help from
-userspace. As that discussion unfolds it will be good to keep in mind what
-effort we'd need to hunt all users down for now.
-
-[0] http://lkml.kernel.org/r/CAB=NE6UBRa0K7=PomJzKxsoj4GzAqkYrkp=O+UfVvu2fwM25pA at mail.gmail.com
+What The Flying-hipster-typewriters! Indeed. With more reason to
+put the user mode helper to sleep sooner rather than later.
 
   Luis
