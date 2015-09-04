@@ -1,89 +1,75 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 4 Sep 2015 08:00:43 +0200
+Date: Fri, 4 Sep 2015 16:15:32 +0200
 Subject: [Cocci] Handling of sub-packages by autoconf interfaces
-In-Reply-To: <20150903140906.GA9379@pl-59055.rocqadm.inria.fr>
+In-Reply-To: <20150904122620.GA8717@pl-59055.rocqadm.inria.fr>
 References: <20150903140906.GA9379@pl-59055.rocqadm.inria.fr>
-Message-ID: <55E9338B.2040106@users.sourceforge.net>
+ <55E98987.9010300@redhat.com>
+ <20150904122620.GA8717@pl-59055.rocqadm.inria.fr>
+Message-ID: <55E9A784.4030106@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> The tool is distributed with the libraries it depends on
-> (they are provided as bundles).
+> I think the bundle approach is favoured because the Objective Camllanguage
+> and its libraries are not as widespread as gettext and libtool.
+> So the idea of the bundles is tomake life of end-users simpler,
+> but of course it also makes thelifeofdevelopers and maintainers
+> a bit harder.
 
-This approach is generally fine in principle.
-
-
-> For each dependency, coccinelle's configure script checks whether the
-> library is already installed. If not, the system is prepared to use the
-> bundled version.
-
-The configuration interface needs also to be designed in a way so that
-a software builder can select the preferred variant.
+The corresponding software development challenges can be manageable,
+can't they?
 
 
-> This approach does not seem very satisfactory to me.
+>>> Then, assuming we continue to bundle the dependencies, it seems to me
+>>> that it would be more coherent to have the configure script of each
+>>> required bundle run by the tool's main configure script. I am aware of
+>>> the AC_CONFIG_SUBDIRS macro, but this seems a bit limited to me. For
+>>> instance it means that the sub-package's configure may find a different
+>>> compiler to use than the one found by the main conigure, which is not good.
+>>
+>> I'm not sure why you think a different compiler would be picked for a
+>> sub-package. [...]
+> 
+> Because that already happened. ;-)
+> 
+> The thing is that the macros to detect the OCaml compiler and the
+> associated tools are not yet included in autoconf. So we provide them in
+> the tool I am responsible for, and it turns out that one o the bundled
+> library provides them, too, but in a different version.
 
-Interesting ?
-
-
-> For a start, I find it cumbersome to provide the dependencies as bundles
-
-Is it usual that a working version of a needed software component
-is distributed together with your evolving tool?
-
-
-> but I'm not the person making the decisions.
-
-Would any more maintainers like to share their experiences?
-
-
-> However, any opinion or pointer about software bundling their dependencies,
-> pros and cons and the techniques used to do so would be warmly appreciated.
-
-I assume that you are more looking for general solutions which can make
-the involved software management a bit easier and safer.
+This is an interesting package detail.
 
 
-> Then, assuming we continue to bundle the dependencies, it seems to me
-> that it would be more coherent to have the configure script of each
-> required bundle run by the tool's main configure script.
+> And the twoversions of the macro found different compilers.
 
-You can call another configuration script already if a bundle provides one.
+Do the package requirements need another look?
 
 
-> I am aware of the AC_CONFIG_SUBDIRS macro, but this seems a bit limited to me.
-> For instance it means that the sub-package's configure may find a different
-> compiler to use than the one found by the main conigure, which is not good.
+> So things are not as standard and straightforward for OCaml as they are
+> for C-like languages.
 
-Would you like to revive discussions around an issue which is described in
-a similar way in the article "Autoconf: AC_CONFIG_SUBDIRS With Custom Flags
-for Subprojects" by Clemens Lang?
-https://neverpanic.de/blog/2014/04/10/autoconf-ac-config-subdirs-with-custom-flags-for-subprojects/
-
-
-> One other issue is that we bundle the dependencies as .tar.gz archives
-> and we would like to be able to extract the archives only for those
-> dependencies that will really be needed (because they are not already
-> installed on the system).
-
-Did we stumble on similar software management challenges often enough already?
-
-Do any "problems" come from design details like the following?
-* How much control have you got on the bundle format for each item?
-
-* Do the involved data formats support the determination of dependencies
-  without unpacking the available archives completely?
+I imagine that further version surprises can happen also with more popular
+programming languages if deeper component hierarchies will be considered.
+How often do you need to take special care for changes around application
+binary interfaces?
 
 
-> Can this be achieved somehow with autoconf?
+>> If you can come up with appropriate shell code to do that, then you can
+>> embed that shell code in your configure.ac. I don't know of any autoconf
+>> macros that would automate some of the work, but it sounds like it might
+>> be something that could be cobbled together, if you still want to go the
+>> route of shipping dependent library bundles.
+> 
+> Thanks. I indeed think it should be possible to achieve this.
 
-Partly, yes.
+I am curious if a bit more momentum will evolve to improve the affected
+build scripts.
 
-The autoconf software is reusing the programming language "M4".
-https://www.gnu.org/savannah-checkouts/gnu/autoconf/manual/autoconf-2.69/html_node/Autoconf-Language.html
 
-It can be extended with libraries as usual.
-https://www.gnu.org/software/autoconf-archive/
+> As I said I would personally prefer not to bundle libraries but I'm not
+> in a position where I can take this decision.
+
+Are there any distribution situations where software bundling is
+finally unavoidable?
 
 Regards,
 Markus
