@@ -1,38 +1,55 @@
-From: joe@perches.com (Joe Perches)
-Date: Fri, 04 Sep 2015 09:43:38 -0700
-Subject: [Cocci] [PATCH] coccinelle: misc: move constants to the right
-In-Reply-To: <1441382154-16840-1-git-send-email-Julia.Lawall@lip6.fr>
-References: <1441382154-16840-1-git-send-email-Julia.Lawall@lip6.fr>
-Message-ID: <1441385018.9666.51.camel@perches.com>
+From: joern@purestorage.com (=?iso-8859-1?Q?J=F6rn?= Engel)
+Date: Tue, 8 Sep 2015 11:07:59 -0700
+Subject: [Cocci] coccinelle problems with kernel code
+Message-ID: <20150908180759.GA27133@Sligo.logfs.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, 2015-09-04 at 17:55 +0200, Julia Lawall wrote:
-> Move constants to the right in binary operators.
+Tried to use coccinelle on the linux kernel for the first time.  It
+seems to get things mostly right, but not quite.  Here is the semantic
+patch:
 
-Thanks Julia.
+@@ expression E; @@
+-down_read(&E->mmap_sem)
++mm_read_lock(E)
+@@ expression E; @@
+-down_read_trylock(&E->mmap_sem)
++mm_read_trylock(E)
+@@ expression E; @@
+-up_read(&E->mmap_sem)
++mm_read_unlock(E)
+@@ expression E; @@
+-down_write(&E->mmap_sem)
++mm_write_lock(E)
+@@ expression E; @@
+-down_write_trylock(&E->mmap_sem)
++mm_write_trylock(E)
+@@ expression E; @@
+-up_write(&E->mmap_sem)
++mm_write_unlock(E)
 
-I think this should be sent to lkml.
+I run into problems whenever handling system calls.  Looks like the
+SYSCALL_DEFINE5() macro and friends are causing problems.  Here is my
+attempt to handle things.
 
-Does this manage to not move upper case identifiers
-that aren't constants?
+#define SYSCALL_DEFINE1(func, t1, a1) \
+	asmlinkage unsigned long func(t1 a1)
+#define SYSCALL_DEFINE2(func, t1, a1, t2, a2) \
+	asmlinkage unsigned long func(t1 a1, t2 a2)
+#define SYSCALL_DEFINE3(func, t1, a1, t2, a2, t3, a3) \
+	asmlinkage unsigned long func(t1 a1, t2 a2, t3 a3)
+#define SYSCALL_DEFINE4(func, t1, a1, t2, a2, t3, a3, t4, a4) \
+	asmlinkage unsigned long func(t1 a1, t2 a2, t3 a3, t4 a4)
+#define SYSCALL_DEFINE5(func, t1, a1, t2, a2, t3, a3, t4, a4, t5, a5) \
+	asmlinkage unsigned long func(t1 a1, t2 a2, t3 a3, t4 a4, t5 a5)
+#define SYSCALL_DEFINE6(func, t1, a1, t2, a2, t3, a3, t4, a4, t5, a5, t6, a6) \
+	asmlinkage unsigned long func(t1 a1, t2 a2, t3 a3, t4 a4, t5 a5, t6 a6)
 
-{
-	int E = foo();
+Should that be included into standard.h?
 
-	if (E < bar())
-		baz();
-}
+J?rn
 
-> diff --git a/var/julia/linuxcopy/scripts/coccinelle/misc/compare_const_fl.cocci b/var/julia/linuxcopy/scripts/coccinelle/misc/compare_const_fl.cocci
-[]
-> +++ b/scripts/coccinelle/misc/compare_const_fl.cocci
-> @@ -0,0 +1,171 @@
-> +/// Move constants to the right of binary operators.
-> +//# Depends on personal taste in some cases.
-> +///
-> +// Confidence: Moderate
-
-If not, maybe some of the cases that don't work
-well should be noted in the commit message and
-perhaps here in the code comments as well.
+--
+It is a clich? that most clich?s are true, but then, like most clich?s,
+that clich? is untrue.
+-- Stephen Fry
