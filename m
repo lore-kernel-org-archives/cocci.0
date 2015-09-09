@@ -1,41 +1,29 @@
-From: kieranbingham@gmail.com (Kieran Bingham)
-Date: Wed, 9 Sep 2015 16:18:26 +0100
-Subject: [Cocci] White space formatting
-In-Reply-To: <CAB3z_RqDzy-OjJxuiXEaTGZg6M=jw7rrDQZy1Q4DdyPLpXJjSQ@mail.gmail.com>
-References: <CAB3z_RouDi7OcMBM3nZx2SKv6NRR6wb0TLRLqzQ9_jE49AHGUg@mail.gmail.com>
- <alpine.DEB.2.10.1509091603370.2798@hadrien>
- <CAB3z_RpF=3hXRrEgNCpPS96FUBTYKCt9E+EmNQ_1qQ=jPrVD6w@mail.gmail.com>
- <55F04AD1.2040009@users.sourceforge.net>
- <CAB3z_RqDzy-OjJxuiXEaTGZg6M=jw7rrDQZy1Q4DdyPLpXJjSQ@mail.gmail.com>
-Message-ID: <CAB3z_RreJKU2fzXaDOA=HJfBToquEauX_H_JURy42C-0sx0VxQ@mail.gmail.com>
+From: joern@purestorage.com (=?iso-8859-1?Q?J=F6rn?= Engel)
+Date: Wed, 9 Sep 2015 09:40:26 -0700
+Subject: [Cocci] coccinelle problems with kernel code
+In-Reply-To: <alpine.DEB.2.10.1509091206380.3224@hadrien>
+References: <20150908180759.GA27133@Sligo.logfs.org>
+ <alpine.DEB.2.02.1509082316550.2050@localhost6.localdomain6>
+ <20150908214536.GC27133@Sligo.logfs.org>
+ <alpine.DEB.2.02.1509090717080.2047@localhost6.localdomain6>
+ <20150909055721.GD27133@Sligo.logfs.org>
+ <alpine.DEB.2.10.1509091206380.3224@hadrien>
+Message-ID: <20150909164026.GA19823@Sligo.logfs.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi Markus,
+On Wed, Sep 09, 2015 at 12:08:02PM +0200, Julia Lawall wrote:
+> 
+> This is available is you have Coccinelle version 1.0.2.  Just give -j X
+> where X is the number of cores that you want to use.
 
-On 9 September 2015 at 16:08, Kieran Bingham <kieranbingham@gmail.com> wrote:
-> On 9 September 2015 at 16:05, SF Markus Elfring
-> <elfring@users.sourceforge.net> wrote:
->>> Hmm.. This will be a self compile then.
->>
->> How do you think about to try the OPAM interface out for this purpose then?
->> https://opam.ocaml.org/packages/coccinelle/coccinelle.1.0.2/
->
-> I'll give it a go now ...
+Debian is still at 1.0.0.  I suspect I will wait for them to upgrade
+rather than package a newer version myself.  Laziness wins the day.
 
-That was relatively painless, I had to install a package as suggested
-by  OPAM, and then retry - but after that :
+Again, thank you for this.  It turned a nightmare into mere work.
 
-spatch --version
-spatch version 1.0.2 with Python support and with PCRE support
+J?rn
 
-
-(with a sudo apt-get remove coccinelle to get rid of the existing
-installation too)
-
-
-Thanks for the pointer :)
 --
-Regards
-
-Kieran
+It's just what we asked for, but not what we want!
+-- anonymous
