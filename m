@@ -1,96 +1,89 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 9 Sep 2015 16:07:14 +0200 (CEST)
-Subject: [Cocci] White space formatting
-In-Reply-To: <CAB3z_RouDi7OcMBM3nZx2SKv6NRR6wb0TLRLqzQ9_jE49AHGUg@mail.gmail.com>
-References: <CAB3z_RouDi7OcMBM3nZx2SKv6NRR6wb0TLRLqzQ9_jE49AHGUg@mail.gmail.com>
-Message-ID: <alpine.DEB.2.10.1509091603370.2798@hadrien>
+From: kieranbingham@gmail.com (Kieran Bingham)
+Date: Wed, 9 Sep 2015 15:07:48 +0100
+Subject: [Cocci] Comments removed on (adjacent) lines not touched ... ?
+In-Reply-To: <alpine.DEB.2.10.1509091559330.2798@hadrien>
+References: <CAB3z_Rpt-nF3=V_OFcBiLkYvbPefPZXA0DsRm+BUJU6gG95RMw@mail.gmail.com>
+ <alpine.DEB.2.10.1509091559330.2798@hadrien>
+Message-ID: <CAB3z_Rp9V9U8KcD6OgY=tuTmO3AHVT-UwwVim+yxitMAvQWWgw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hi Julia
+
+On 9 September 2015 at 15:01, Julia Lawall <julia.lawall@lip6.fr> wrote:
+>
+>
+> On Wed, 9 Sep 2015, Kieran Bingham wrote:
+>
+>> Reviewing the changes made by my s-patch, I've come across the following hunk :
+>>
+>> ============================================================
+>> --- a/drivers/hwmon/jc42.c
+>> +++ b/drivers/hwmon/jc42.c
+>> ...
+>> @@ -529,13 +529,7 @@ static const struct dev_pm_ops jc42_dev_pm_ops = {
+>>  #define JC42_DEV_PM_OPS (&jc42_dev_pm_ops)
+>>  #else
+>>  #define JC42_DEV_PM_OPS NULL
+>> -#endif /* CONFIG_PM */
+>> -
+>> -static const struct i2c_device_id jc42_id[] = {
+>> -       { "jc42", 0 },
+>> -       { }
+>> -};
+>> -MODULE_DEVICE_TABLE(i2c, jc42_id);
+>> +#endif
+>>
+>>  static struct i2c_driver jc42_driver = {
+>>         .class          = I2C_CLASS_SPD,
+>> ============================================================
+>>
+>> Is this removal of the /* CONFIG_PM */ expected behaviour?
+>>
+>> I guess under the hood, Coccinelle is stripping comments from code to
+>> make parsing possible/easier?
+>
+> Not at all. It sees this as a comment before the start of a top level
+> declaration, and considers that since you don't want the declaration any
+> more, you don't want the comment either.
+>
 
 
-On Wed, 9 Sep 2015, Kieran Bingham wrote:
+Ahh yes, I see this here! (Actually sounds like a reasonable thing to do!)
+@@ -207,37 +207,6 @@ enum chips { lm90, adm1032, lm99, lm86, max6657,
+max6659, adt7461, max6680,
+ #define MAX6696_STATUS2_LOT2   (1 << 7) /* local emergency limit tripped */
 
-> Hi Julia et al.
->
-> Working on an s-patch for a large linux change, I am removing a
-> function argument.
-> This works as expected, but seems to leave a lot of lonely dangling
-> brackets which would really benefit from being hugged!
->
-> Full patch on viewable here:
-> https://gist.github.com/kbingham/96477177dd20a72b1c2f
->
-> but the relevant segment is:
->
-> ===========================================
-> // Convert the probe function
->
-> @ depends on driver @
-> identifier driver.probefunc;
-> identifier client;
-> identifier id;
-> @@
-> static int probefunc(
->     struct i2c_client *client,
-> -    const struct i2c_device_id *id
->     )
->     { ... }
-> ===========================================
->
->
->
-> This ends up creating a lot of changes that look like:
-> ===========================================
-> @@ -489,8 +489,8 @@ static struct at24_platform_data eeprom_info = {
->   */
->  static struct i2c_client *dm6446evm_msp;
->
-> -static int dm6446evm_msp_probe(struct i2c_client *client,
-> -               const struct i2c_device_id *id)
-> +static int dm6446evm_msp_probe(struct i2c_client *client
-> +               )
->  {
->         dm6446evm_msp = client;
->         return 0;
-> ===========================================
->
->
-> I am using --linux-spacing - but as the help states :
->   --linux-spacing               spacing of + code follows the
-> conventions of Linux
->
-> I suspect code is perhaps not refactored on - lines?
->
->
->
-> The lines where I make additions are also not as I desire (aligned
-> with the block) - but I suspect I will have to manually align these or
-> try running lindent:
->
-> ===========================================
-> -
->  static struct i2c_driver dm6446evm_msp_driver = {
->         .driver.name    = "dm6446evm_msp",
-> -       .id_table       = dm6446evm_msp_ids,
-> -       .probe          = dm6446evm_msp_probe,
-> +       .probe2 = dm6446evm_msp_probe,
+ /*
+- * Driver data (common to all clients)
+- */
+-
+-static const struct i2c_device_id lm90_id[] = {
+-       { "adm1032", adm1032 },
+-       { "adt7461", adt7461 },
+-       { "adt7461a", adt7461 },
+-       { "g781", g781 },
 
-Yeah, there is nothing to address this.  It's kind of a special case, so
-I'm not sure that there will be anything in the near future either.
 
->         .remove         = dm6446evm_msp_remove,
->  };
-> ===========================================
->
->
-> Are there any other ways to control the white-space adjustments made?
->
->
-> For reference: I'm on Ubuntu 15.04 with default coccinelle from the distro:
->   spatch --version
->   spatch version 1.0.0-rc22 with Python support and with PCRE support
 
-You should upgrade to 1.0.2.
 
-julia
+
+
+> It would need to observe that the comment does not start at the beginning
+> of the line, and treat it differntly.  Just to check, are you using
+> Coccinelle 1.0.2?  I made a change in this regard recently, but I'm not
+> sure it was an overall improvement.
+
+No - I'm afraid I'm using the version shipped with ubuntu 15.04:
+
+spatch --version
+spatch version 1.0.0-rc22 with Python support and with PCRE support
+
+
+--
+Regards
+
+Kieran
+
+>
+> julia
