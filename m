@@ -1,31 +1,47 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 9 Sep 2015 19:50:00 +0200 (CEST)
-Subject: [Cocci] coccinelle problems with kernel code
-In-Reply-To: <20150909164026.GA19823@Sligo.logfs.org>
-References: <20150908180759.GA27133@Sligo.logfs.org>
- <alpine.DEB.2.02.1509082316550.2050@localhost6.localdomain6>
- <20150908214536.GC27133@Sligo.logfs.org>
- <alpine.DEB.2.02.1509090717080.2047@localhost6.localdomain6>
- <20150909055721.GD27133@Sligo.logfs.org>
- <alpine.DEB.2.10.1509091206380.3224@hadrien>
- <20150909164026.GA19823@Sligo.logfs.org>
-Message-ID: <alpine.DEB.2.10.1509091949220.2798@hadrien>
+From: kieranbingham@gmail.com (Kieran Bingham)
+Date: Wed, 9 Sep 2015 19:57:43 +0100
+Subject: [Cocci] Spatch fail on v1.0.2
+Message-ID: <CAB3z_Rqaiz1f9TLbpwjU0kZ2yJKKAK-CBdkD8oOQAcLWyA0FRw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, 9 Sep 2015, J?rn Engel wrote:
+Having now updated using OPAM from earlier, my spatch no longer executes.
 
-> On Wed, Sep 09, 2015 at 12:08:02PM +0200, Julia Lawall wrote:
-> >
-> > This is available is you have Coccinelle version 1.0.2.  Just give -j X
-> > where X is the number of cores that you want to use.
->
-> Debian is still at 1.0.0.  I suspect I will wait for them to upgrade
-> rather than package a newer version myself.  Laziness wins the day.
+Has there been a change, whereby I need to adapt my patch? Or was
+there a fault in the OPAM installation? or does this patch simply not
+run on v.1.0.2?
 
-There is a scrit that provides an alternative soluiton to parallelism
-here:
+Spatch available at: https://gist.github.com/kbingham/96477177dd20a72b1c2f
 
-http://article.gmane.org/gmane.comp.version-control.coccinelle/684/match=kees+cook
+Run it on a linux kernel tree:
 
-julia
+with spatch v.1.0.2 I get the following:
+
+kbingham at CookieMonster:/opt/projects/linaro/hikey/kernel$ spatch
+--linux-spacing --sp-file patches/i2c-dt.cocci . --in-place
+init_defs_builtins: /home/kbingham/.opam/system/lib/coccinelle/standard.h
+1115 1116
+Fatal error: exception Failure("plus: parse error:
+ = File "patches/i2c-dt.cocci", line 66, column 1,  charpos = 1115
+    around = ')', whole content =       )
+")
+kbingham at CookieMonster:/opt/projects/linaro/hikey/kernel$ spatch --version
+spatch version 1.0.2 with Python support and with PCRE support
+
+
+However, re-installing v.1.0.0 executes fine:
+
+kbingham at CookieMonster:/opt/projects/linaro/hikey/kernel$ spatch --version
+spatch version 1.0.0-rc22 with Python support and with PCRE support
+
+init_defs_builtins: /usr/share/coccinelle/standard.h
+(ONCE) Expected tokens i2c_device_id
+Skipping:./firmware/ihex2fw.c
+Skipping:./arch/ia64/lib/checksum.c
+... <continues>
+
+
+--
+Any thoughts?
+
+Kieran
