@@ -1,54 +1,44 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 9 Sep 2015 21:14:32 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 9 Sep 2015 22:51:04 +0200
 Subject: [Cocci] Spatch fail on v1.0.2
-In-Reply-To: <CAB3z_RoXxOpMQgS27zA-WVSWs5BZ0whq7RZRO_WShsY782fiBg@mail.gmail.com>
+In-Reply-To: <CAB3z_Rqaiz1f9TLbpwjU0kZ2yJKKAK-CBdkD8oOQAcLWyA0FRw@mail.gmail.com>
 References: <CAB3z_Rqaiz1f9TLbpwjU0kZ2yJKKAK-CBdkD8oOQAcLWyA0FRw@mail.gmail.com>
- <alpine.DEB.2.10.1509092103580.2798@hadrien>
- <CAB3z_RoXxOpMQgS27zA-WVSWs5BZ0whq7RZRO_WShsY782fiBg@mail.gmail.com>
-Message-ID: <alpine.DEB.2.10.1509092113500.2798@hadrien>
+Message-ID: <55F09BB8.3010701@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> Spatch available at: https://gist.github.com/kbingham/96477177dd20a72b1c2f
+> 
+> Run it on a linux kernel tree:
+> 
+> with spatch v.1.0.2 I get the following:
+> 
+> kbingham at CookieMonster:/opt/projects/linaro/hikey/kernel$ spatch
+> --linux-spacing --sp-file patches/i2c-dt.cocci . --in-place
+> init_defs_builtins: /home/kbingham/.opam/system/lib/coccinelle/standard.h
+> 1115 1116
+> Fatal error: exception Failure("plus: parse error:
+>  = File "patches/i2c-dt.cocci", line 66, column 1,  charpos = 1115
+>     around = ')', whole content =       )
+> ")
+> kbingham at CookieMonster:/opt/projects/linaro/hikey/kernel$ spatch --version
+> spatch version 1.0.2 with Python support and with PCRE support
+> 
+> 
+> However, re-installing v.1.0.0 executes fine:
+> 
+> kbingham at CookieMonster:/opt/projects/linaro/hikey/kernel$ spatch --version
+> spatch version 1.0.0-rc22 with Python support and with PCRE support
 
+You show another interesting version comparison.
 
-On Wed, 9 Sep 2015, Kieran Bingham wrote:
+I suggest to be a bit more careful when you try this tool out installed
+in a few directories in parallel.
+I would expect that the command calls should reference a directory explicitly
+so that potential misunderstanding can be avoided.
 
-> On 9 September 2015 at 20:05, Julia Lawall <julia.lawall@lip6.fr> wrote:
-> >
-> >
-> > On Wed, 9 Sep 2015, Kieran Bingham wrote:
-> >
-> >> Having now updated using OPAM from earlier, my spatch no longer executes.
-> >>
-> >> Has there been a change, whereby I need to adapt my patch? Or was
-> >> there a fault in the OPAM installation? or does this patch simply not
-> >> run on v.1.0.2?
-> >
-> > You have:
-> >
-> > @ depends on driver @
-> > identifier driver.probefunc;
-> > identifier client;
-> > identifier id;
-> > @@
-> > static int probefunc(
-> >         struct i2c_client *client,
-> > -       const struct i2c_device_id *id
-> >         )
-> >         { ... }
-> >
-> > You should move the trailing comma after client onto the - line.
-> > Actually, I'm surprised that it worked in a previous version, but perhaps
-> > Coccinelle got more strict about commas at some point.
->
-> Yes, that was it, thank you.
->
-> And yes, it worked fine on the earlier version, and removed the comma
-> even thought I hadn't asked it to.
->
-> However, now on this version, Coccinelle is correctly moving those
-> lonely ) up to the probe function line  :)
+Do you eventually use separate test systems for the development
+of semantic patch scripts?
 
-Great :)
-
-julia
+Regards,
+Markus
