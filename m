@@ -1,94 +1,87 @@
 From: kieranbingham@gmail.com (Kieran Bingham)
-Date: Wed, 9 Sep 2015 14:33:43 +0100
-Subject: [Cocci] Comments removed on (adjacent) lines not touched ... ?
-In-Reply-To: <55F02297.6070503@users.sourceforge.net>
-References: <CAB3z_Rpt-nF3=V_OFcBiLkYvbPefPZXA0DsRm+BUJU6gG95RMw@mail.gmail.com>
- <55F02297.6070503@users.sourceforge.net>
-Message-ID: <CAB3z_RqRF3t8UvJPUOugDst=i-gM4N3sbcx7zO4wwx6Bjcz5Cg@mail.gmail.com>
+Date: Wed, 9 Sep 2015 11:04:51 +0100
+Subject: [Cocci] White space formatting
+Message-ID: <CAB3z_RouDi7OcMBM3nZx2SKv6NRR6wb0TLRLqzQ9_jE49AHGUg@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi Markus,
+Hi Julia et al.
 
-On 9 September 2015 at 13:14, SF Markus Elfring
-<elfring@users.sourceforge.net> wrote:
->> Reviewing the changes made by my s-patch, I've come across the following hunk :
->
-> How do you think about to show your semantic patch script here?
-
-My apologies, I should have considered that!
-This is actually my second thread to the list today - the first is
-still held in moderation I think. (posted before I joined the list)
-
-The full patch was referenced in the first thread, so in my head was
-just continuing as if there was context which I appreciate there isn't
-:)
+Working on an s-patch for a large linux change, I am removing a
+function argument.
+This works as expected, but seems to leave a lot of lonely dangling
+brackets which would really benefit from being hugged!
 
 Full patch on viewable here:
 https://gist.github.com/kbingham/96477177dd20a72b1c2f
 
+but the relevant segment is:
 
-The relevant segment of the patch is:
-============================================================
-// Remove the i2c_device_id array
+===========================================
+// Convert the probe function
 
-@ dev_id depends on of_dev_id_present @
-identifier arr;
+@ depends on driver @
+identifier driver.probefunc;
+identifier client;
+identifier id;
 @@
-- struct i2c_device_id arr[] = { ... };
+static int probefunc(
+    struct i2c_client *client,
+-    const struct i2c_device_id *id
+    )
+    { ... }
+===========================================
 
 
-// Now remove the MODULE_DEVICE_TABLE entry
-@ depends on dev_id @
-declarer name MODULE_DEVICE_TABLE;
-identifier i2c;
-identifier dev_id.arr;
-@@
-- MODULE_DEVICE_TABLE(i2c, arr);
-============================================================
+
+This ends up creating a lot of changes that look like:
+===========================================
+@@ -489,8 +489,8 @@ static struct at24_platform_data eeprom_info = {
+  */
+ static struct i2c_client *dm6446evm_msp;
+
+-static int dm6446evm_msp_probe(struct i2c_client *client,
+-               const struct i2c_device_id *id)
++static int dm6446evm_msp_probe(struct i2c_client *client
++               )
+ {
+        dm6446evm_msp = client;
+        return 0;
+===========================================
 
 
->> +++ b/drivers/hwmon/jc42.c
->> ...
->> @@ -529,13 +529,7 @@ static const struct dev_pm_ops jc42_dev_pm_ops = {
->>  #define JC42_DEV_PM_OPS (&jc42_dev_pm_ops)
->>  #else
->>  #define JC42_DEV_PM_OPS NULL
->> -#endif /* CONFIG_PM */
->> -
->> -static const struct i2c_device_id jc42_id[] = {
->> -       { "jc42", 0 },
->> -       { }
->> -};
->> -MODULE_DEVICE_TABLE(i2c, jc42_id);
->> +#endif
->>
->>  static struct i2c_driver jc42_driver = {
->>         .class          = I2C_CLASS_SPD,
->> ============================================================
->>
->> Is this removal of the /* CONFIG_PM */ expected behaviour?
->
-> I would interpret the shown changes in the way that a preprocessor
-> statement "#endif" is repositioned after a variable initialisation which
-> was not a part for conditional compilation is deleted. I find such a
-> detail also strange.
->
->
->> I guess under the hood, Coccinelle is stripping comments from code to
->> make parsing possible/easier?
->
-> This software is tackling some challenges to preserve comments for
-> various source code places.
+I am using --linux-spacing - but as the help states :
+  --linux-spacing               spacing of + code follows the
+conventions of Linux
 
-Having only got started with Coccinelle yesterday, I find it
-fascinating how well it performs.
-Its a marvellous tool, and I wish I had taken the energy to start
-using it long before now!
+I suspect code is perhaps not refactored on - lines?
 
-> Regards,
-> Markus
 
+
+The lines where I make additions are also not as I desire (aligned
+with the block) - but I suspect I will have to manually align these or
+try running lindent:
+
+===========================================
+-
+ static struct i2c_driver dm6446evm_msp_driver = {
+        .driver.name    = "dm6446evm_msp",
+-       .id_table       = dm6446evm_msp_ids,
+-       .probe          = dm6446evm_msp_probe,
++       .probe2 = dm6446evm_msp_probe,
+        .remove         = dm6446evm_msp_remove,
+ };
+===========================================
+
+
+Are there any other ways to control the white-space adjustments made?
+
+
+For reference: I'm on Ubuntu 15.04 with default coccinelle from the distro:
+  spatch --version
+  spatch version 1.0.0-rc22 with Python support and with PCRE support
+
+--
 Regards
 
 Kieran
