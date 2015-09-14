@@ -1,23 +1,65 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 11 Sep 2015 12:56:18 +0200
-Subject: [Cocci] Spatch fail on v1.0.2
-In-Reply-To: <CAB3z_Rp+AiG-n2zK1niGnOP0yMD9yuScTOzyaYOdXnLxWAw4=w@mail.gmail.com>
-References: <CAB3z_Rqaiz1f9TLbpwjU0kZ2yJKKAK-CBdkD8oOQAcLWyA0FRw@mail.gmail.com>
- <55F09BB8.3010701@users.sourceforge.net>
- <CAB3z_Rp+AiG-n2zK1niGnOP0yMD9yuScTOzyaYOdXnLxWAw4=w@mail.gmail.com>
-Message-ID: <55F2B352.6020600@users.sourceforge.net>
+From: mq+coccinelle@ucw.cz (Jan Moskyto Matejka)
+Date: Mon, 14 Sep 2015 10:29:05 +0200
+Subject: [Cocci] Find expressions of given type
+Message-ID: <20150914082905.GA11348@kaficko.joja.cz>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> I'm sticking with 1.0.2 now that Julia has highlighted that the fault
-> was mine in not removing the comma :)
+Hello,
 
-I find it just interesting that such a detail was discovered by your
-version comparison.
+I'm trying to match all expressions of a given type. I want to check
+whether all accesses to any part of some struct are locked.
 
-There might further situations situations follow where it will be also
-useful to experiment with some software versions by appropriate settings
-of a few environment variables, won't it?
+In the hypothetical case (which doesn't happen), every access to that
+struct would create a local variable of the wanted type and I could then
+match it with something like this:
 
-Regards,
-Markus
+@@
+identifier	   i;
+@@
+
+...
+my_specific_type  *var;
+...
+var->i
+...
+
+Unfortunately, this structure may be also referenced from another
+structure, like this:
+
+struct A { int foo; int bar; };
+struct B { int foo; struct A *bar };
+
+struct B *b;
+...
+b->bar->foo;
+
+I would like to write something like:
+
+@@
+expression struct A* E;
+@@
+
+...
++E
+...
+
+and match every occurence of not only variables of the given type, but
+also an expression.
+
+I was first trying to find some hint in the doc, found 
+expression struct *E;
+which is almost what I want but still too broad.
+
+Does there exist some way to
+A) achieve the behaviour I want by config
+or
+B) implement it?
+
+If A, could you please give me a hint?
+If B, I wanted to implement it but got totally lost in the code. Could
+you please give me a pointer, where to begin? I'd like to contribute the
+result then.
+
+Best regards and thanks
+MQ
