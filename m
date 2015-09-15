@@ -1,52 +1,80 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 15 Sep 2015 15:31:58 +0200 (CEST)
-Subject: [Cocci] [PATCH] coccinelle: tests: unsigned value cannot be
- lesser than zero
-In-Reply-To: <55F81A31.3040808@users.sourceforge.net>
-References: <1442309232-5902-1-git-send-email-a.hajda@samsung.com>
- <55F816BC.5050407@users.sourceforge.net>
- <alpine.DEB.2.10.1509151505240.2537@hadrien>
- <55F81A31.3040808@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1509151530190.2537@hadrien>
+From: a.hajda@samsung.com (Andrzej Hajda)
+Date: Tue, 15 Sep 2015 11:27:12 +0200
+Subject: [Cocci] [PATCH] coccinelle: tests: unsigned value cannot be lesser
+	than zero
+Message-ID: <1442309232-5902-1-git-send-email-a.hajda@samsung.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, 15 Sep 2015, SF Markus Elfring wrote:
+Code comparing unsigned variables with zero using operators < or >= does not
+make sense. It is always false or true, respectively. However, its presence
+often indicates bugs in the code.
+gcc can detect it also using -Wtype-limits switch, but it warns also in correct
+cases, making too much noise.
 
-> >>  v at p
-> >> (
-> >> *< 0
-> >> |
-> >> *<= 0
-> >> )
-> >
-> > It does not, and is not intended to, work.  The branches of a disjunction
-> > should be complete expressions.
->
-> Will the following SmPL approach be more appropriate then?
->
-> (
-> *v at p < 0
-> |
-> *v at p <= 0
-> )
+Signed-off-by: Andrzej Hajda <a.hajda@samsung.com>
+---
+Hi Julia,
 
-Actually, all of
+This test finds 93 issues in kernel code (with --all-includes) which could
+be corrected. Some of them are harmless, just unnecessary code, but there
+are also serious bugs, like:
+	u32 irq = platform_get_irq(...)
+	if (irq < 0)
+		...
+	unsigned int target = cpumask_any_but(cpu_online_mask, cpu);
+	if (target < 0)
+		...
 
-v < 0 (never true)
-v <= 0 (same as v == 0)
-v >= 0 (always true)
+Regards
+Andrzej
+---
+ .../tests/unsigned_lesser_than_zero.cocci          | 37 ++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
+ create mode 100644 scripts/coccinelle/tests/unsigned_lesser_than_zero.cocci
 
-would seem to merit attention.  Andrzej, what do you think?
-
-julia
-
-
->
-> Regards,
-> Markus
-> --
-> To unsubscribe from this list: send the line "unsubscribe kernel-janitors" in
-> the body of a message to majordomo at vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+diff --git a/scripts/coccinelle/tests/unsigned_lesser_than_zero.cocci b/scripts/coccinelle/tests/unsigned_lesser_than_zero.cocci
+new file mode 100644
+index 0000000..6a90510
+--- /dev/null
++++ b/scripts/coccinelle/tests/unsigned_lesser_than_zero.cocci
+@@ -0,0 +1,37 @@
++/// Unsigned variables cannot be lesser than zero. Presence of such checks
++/// can indicate incorrect variable type or just unnecessary code.
++///
++// Confidence: High
++// Copyright: (C) 2015 Andrzej Hajda, Samsung Electronics Co., Ltd. GPLv2.
++// URL: http://coccinelle.lip6.fr/
++// Options: --include-headers
++
++virtual context
++virtual org
++virtual report
++
++ at r depends on context || org || report@
++position p;
++typedef u8, u16, u32, u64;
++{unsigned char, unsigned short int, unsigned int, unsigned long, unsigned long long, size_t, u8, u16, u32, u64} v;
++@@
++
++(
++*v at p < 0
++|
++*v@p >= 0
++)
++
++ at script:python depends on org@
++p << r.p;
++@@
++
++msg = "WARNING: Unsigned value cannot be lesser than zero"
++coccilib.org.print_todo(p[0], msg)
++
++@script:python depends on report@
++p << r.p;
++@@
++
++msg = "WARNING: Unsigned value cannot be lesser than zero"
++coccilib.report.print_report(p[0], msg)
+-- 
+1.9.1
