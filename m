@@ -1,39 +1,27 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 16 Sep 2015 20:56:57 +0200
-Subject: [Cocci] [PATCH v2] coccinelle: tests: unsigned value cannot be
- lesser than zero
-In-Reply-To: <1442409749-32700-1-git-send-email-a.hajda@samsung.com>
-References: <alpine.DEB.2.10.1509161125370.2429@hadrien>
- <1442409749-32700-1-git-send-email-a.hajda@samsung.com>
-Message-ID: <55F9BB79.20203@users.sourceforge.net>
+Date: Thu, 17 Sep 2015 10:10:34 +0200
+Subject: [Cocci] Work in progress: How To
+In-Reply-To: <55F6BDB4.8020809@inria.fr>
+References: <55F6BDB4.8020809@inria.fr>
+Message-ID: <55FA757A.8050300@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> As we discussed earlier I have dropped idea of adding v <= 0 as it is widely
-> used in checking ranges, counters, quantities.
+> https://btrlinux.inria.fr/coccinelle/
+?
+> However, I would be very interested in feedbacks to adjust
+> what is already there and improve the quality of further additions.
 
-I find that such a design decision will need more fine-tuning of the suggested
-small SmPL script.
-
-
-> + at r depends on context || org || report@
-> +position p;
-> +typedef u8, u16, u32, u64;
-> +{unsigned char, unsigned short int, unsigned int, unsigned long, unsigned long long, size_t, u8, u16, u32, u64} v;
-
-Is it eventually needed to mention the key word "int" also together with the "long" data types?
+I would prefer the header "? to find source code" before the five
+examples "Match ?" (because they do not deal with "bugs").
 
 
-> +@@
-> +
-> +(
-> +*v at p < 0
-> +|
-> +*v at p >= 0
-> +)
+The article "Matching usage of bool variables" shows difficulties to
+explain the SmPL variable type "idexpression".
+https://btrlinux.inria.fr/matching-usage-of-bool-variables/
 
-How do you think about to split this SmPL rule so that corresponding warning
-messages will really fit?
+Will this documentation approach influence also the content of the
+current manual?
 
 Regards,
 Markus
