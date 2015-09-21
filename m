@@ -1,41 +1,51 @@
-From: a.hajda@samsung.com (Andrzej Hajda)
-Date: Mon, 21 Sep 2015 15:34:47 +0200
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Mon, 21 Sep 2015 16:06:27 +0200
 Subject: [Cocci] [PATCH v3] coccinelle: tests: unsigned value cannot be
  lesser than zero
-In-Reply-To: <55FFFFF4.4000007@users.sourceforge.net>
+In-Reply-To: <56000777.6060208@samsung.com>
 References: <alpine.DEB.2.02.1509180734350.2064@localhost6.localdomain6>
  <1442831864-25759-1-git-send-email-a.hajda@samsung.com>
- <55FFFFF4.4000007@users.sourceforge.net>
-Message-ID: <56000777.6060208@samsung.com>
+ <55FFFFF4.4000007@users.sourceforge.net> <56000777.6060208@samsung.com>
+Message-ID: <56000EE3.7040602@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 09/21/2015 03:02 PM, SF Markus Elfring wrote:
->> v3: added bool type
-> I would appreciate a bit more feedback for my concerns around your
-> evolving approach.
+>> * Reuse of "long int"?
+> If you mean adding int to 'unsigned long [long]' types, it does not work.
 
-Ups, I have missed your email.
+I am surprised.
 
-> * Reuse of "long int"?
-If you mean adding int to 'unsigned long [long]' types, it does not work.
-For some reason it works only without adding int after long.
 
-> * Splitting of the suggested SmPL rule so that each source code check
-> will be connected with appropriate warning messages.
+> For some reason it works only without adding int after long.
 
-Personally I prefer one message as it is more compact and
-fits quite well in both cases, but I have no strong fillings with separate
-message for each case.
+The  Coccinelle software should support the term "generic_ctype" from
+the SmPL grammar so far, shouldn't it?
+http://coccinelle.lip6.fr/docs/main_grammar005.html#ctype
 
->
-> Will any more fine-tuning be useful?
-Could you elaborate it.
 
-Regards
-Andrzej
+>> * Splitting of the suggested SmPL rule so that each source code check
+>> will be connected with appropriate warning messages.
+> Personally I prefer one message as it is more compact
 
->
-> Regards,
-> Markus
->
+It might look convenient to combine a few source code checks.
+
+
+> and fits quite well in both cases,
+
+I got an other impression.
+
+
+> but I have no strong fillings with separate message for each case.
+
+* v at p < 0
+  Find places where this condition will always be false.
+
+*v@p >= 0
+  Find places where this condition will always be true.
+
+
+Will it help to distinguish these special cases also in your SmPL script
+strictly?
+
+Regards,
+Markus
