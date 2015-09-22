@@ -1,51 +1,30 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Mon, 21 Sep 2015 16:06:27 +0200
-Subject: [Cocci] [PATCH v3] coccinelle: tests: unsigned value cannot be
- lesser than zero
-In-Reply-To: <56000777.6060208@samsung.com>
-References: <alpine.DEB.2.02.1509180734350.2064@localhost6.localdomain6>
- <1442831864-25759-1-git-send-email-a.hajda@samsung.com>
- <55FFFFF4.4000007@users.sourceforge.net> <56000777.6060208@samsung.com>
-Message-ID: <56000EE3.7040602@users.sourceforge.net>
+From: a.hajda@samsung.com (Andrzej Hajda)
+Date: Tue, 22 Sep 2015 14:48:50 +0200
+Subject: [Cocci] [PATCH] Coccinelle: remove incorrect -include option
+	transformation
+Message-ID: <1442926130-17817-1-git-send-email-a.hajda@samsung.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> * Reuse of "long int"?
-> If you mean adding int to 'unsigned long [long]' types, it does not work.
+kbuild/gcc uses -include option to include files and -I to provide paths for
+#include <> directive. The same is true for spatch.
 
-I am surprised.
+Signed-off-by: Andrzej Hajda <a.hajda@samsung.com>
+---
+ scripts/coccicheck | 1 -
+ 1 file changed, 1 deletion(-)
 
-
-> For some reason it works only without adding int after long.
-
-The  Coccinelle software should support the term "generic_ctype" from
-the SmPL grammar so far, shouldn't it?
-http://coccinelle.lip6.fr/docs/main_grammar005.html#ctype
-
-
->> * Splitting of the suggested SmPL rule so that each source code check
->> will be connected with appropriate warning messages.
-> Personally I prefer one message as it is more compact
-
-It might look convenient to combine a few source code checks.
-
-
-> and fits quite well in both cases,
-
-I got an other impression.
-
-
-> but I have no strong fillings with separate message for each case.
-
-* v at p < 0
-  Find places where this condition will always be false.
-
-*v@p >= 0
-  Find places where this condition will always be true.
-
-
-Will it help to distinguish these special cases also in your SmPL script
-strictly?
-
-Regards,
-Markus
+diff --git a/scripts/coccicheck b/scripts/coccicheck
+index bbf901a..6d84b05 100755
+--- a/scripts/coccicheck
++++ b/scripts/coccicheck
+@@ -30,7 +30,6 @@ FLAGS="$SPFLAGS --very-quiet"
+ # spatch only allows include directories with the syntax "-I include"
+ # while gcc also allows "-Iinclude" and "-include include"
+ COCCIINCLUDE=${LINUXINCLUDE//-I/-I }
+-COCCIINCLUDE=${COCCIINCLUDE//-include/-I}
+ 
+ if [ "$C" = "1" -o "$C" = "2" ]; then
+     ONLINE=1
+-- 
+1.9.1
