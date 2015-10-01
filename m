@@ -1,80 +1,233 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 30 Sep 2015 23:51:43 +0200 (CEST)
-Subject: [Cocci] [PATCH v2] coccinelle: assign signed result to unsigned
- variable
-In-Reply-To: <56092BBB.2060006@samsung.com>
-References: <alpine.DEB.2.10.1509261106040.2737@hadrien>
- <1443437687-16559-1-git-send-email-a.hajda@samsung.com>
- <alpine.DEB.2.10.1509281332030.3165@hadrien> <56092BBB.2060006@samsung.com>
-Message-ID: <alpine.DEB.2.02.1509302351250.1977@localhost6.localdomain6>
+Date: Thu, 1 Oct 2015 07:20:10 +0200 (CEST)
+Subject: [Cocci] [PATCH] coccinelle: misc: remove "complex return code"
+ warnings
+In-Reply-To: <1443652647-23097-1-git-send-email-johan@kernel.org>
+References: <1443652647-23097-1-git-send-email-johan@kernel.org>
+Message-ID: <alpine.DEB.2.02.1510010716280.2233@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 
 
-On Mon, 28 Sep 2015, Andrzej Hajda wrote:
+On Wed, 30 Sep 2015, Johan Hovold wrote:
 
-> On 09/28/2015 01:32 PM, Julia Lawall wrote:
-> >
-> > On Mon, 28 Sep 2015, Andrzej Hajda wrote:
-> >
-> >> Assigning signed function result to unsigned variable can indicate error.
-> >> To decrease number of false positives patch looks if after assignment
-> >> there is also check for negative values of the result.
-> >>
-> >> Signed-off-by: Andrzej Hajda <a.hajda@samsung.com>
-> >> ---
-> >> Hi Julia,
-> >>
-> >> Thanks for the hint. Now it looks much better.
-> >> Summarizing this patch has found 20 problems and has 22 false positives [1][2].
-> > Do you have some examples of the false positives?
-> ./drivers/acpi/acpica/nsarguments.c:130:1: WARNING: Assigning signed result to
-> unsigned variable: required_param_count = METHOD_GET_ARG_COUNT(...)
-> ./drivers/char/agp/intel-gtt.c:361:3: WARNING: Assigning signed result to
-> unsigned variable: stolen_size = KB(...)
-> ./drivers/char/agp/intel-gtt.c:364:3: WARNING: Assigning signed result to
-> unsigned variable: stolen_size = MB(...)
-> ./drivers/char/agp/intel-gtt.c:367:3: WARNING: Assigning signed result to
-> unsigned variable: stolen_size = MB(...)
-> ./drivers/char/agp/intel-gtt.c:382:3: WARNING: Assigning signed result to
-> unsigned variable: stolen_size = MB(...)
-> ./drivers/char/agp/intel-gtt.c:385:3: WARNING: Assigning signed result to
-> unsigned variable: stolen_size = MB(...)
-> ./drivers/char/agp/intel-gtt.c:388:3: WARNING: Assigning signed result to
-> unsigned variable: stolen_size = MB(...)
-> ./drivers/char/agp/intel-gtt.c:391:3: WARNING: Assigning signed result to
-> unsigned variable: stolen_size = MB(...)
-> ./drivers/char/agp/intel-gtt.c:394:3: WARNING: Assigning signed result to
-> unsigned variable: stolen_size = MB(...)
-> ./drivers/char/agp/intel-gtt.c:397:3: WARNING: Assigning signed result to
-> unsigned variable: stolen_size = MB(...)
-> ./drivers/char/agp/intel-gtt.c:400:3: WARNING: Assigning signed result to
-> unsigned variable: stolen_size = MB(...)
-> ./drivers/char/agp/intel-gtt.c:403:3: WARNING: Assigning signed result to
-> unsigned variable: stolen_size = MB(...)
-> ./drivers/char/agp/intel-gtt.c:406:3: WARNING: Assigning signed result to
-> unsigned variable: stolen_size = MB(...)
-> ./drivers/char/agp/intel-gtt.c:409:3: WARNING: Assigning signed result to
-> unsigned variable: stolen_size = MB(...)
-> ./drivers/char/agp/intel-gtt.c:412:3: WARNING: Assigning signed result to
-> unsigned variable: stolen_size = MB(...)
-> ./drivers/char/agp/intel-gtt.c:415:3: WARNING: Assigning signed result to
-> unsigned variable: stolen_size = MB(...)
-> ./drivers/char/agp/intel-gtt.c:418:3: WARNING: Assigning signed result to
-> unsigned variable: stolen_size = MB(...)
-> ./drivers/input/touchscreen/cyttsp4_core.c:967:1: WARNING: Assigning signed
-> result to unsigned variable: num_cur_tch = GET_NUM_TOUCHES(...)
-> ./drivers/pinctrl/freescale/pinctrl-imx.c:648:2: WARNING: Assigning signed
-> result to unsigned variable: nfuncs = of_get_child_count(...)
-> ./fs/btrfs/file.c:1572:2: WARNING: Assigning signed result to unsigned variable:
-> copied = btrfs_copy_from_user(...)
-> ./fs/xfs/libxfs/xfs_inode_fork.c:541:2: WARNING: Assigning signed result to
-> unsigned variable: new_size = XFS_BMAP_BROOT_SPACE_CALC(...)
+> This effectively reverts 932058a5d5f9 ("coccinelle: misc: semantic patch
+> to delete overly complex return code processing").
 > 
-> As you see most of them are macros, of_get_child_count and btrfs_copy_from_user
-> return int but always non-negative.
+> There can be both symmetry and readability reasons for not wanting to do
+> the final function call as part of the return statement and to maintain
+> a clear separation of success and error paths.
+> 
+> Since this is in no way mandated by the coding standard, let's just
+> remove this semantic patch to avoid having "clean up" patches being
+> posted over and over in response to these Coccinelle warnings.
 
-OK, perhaps we could just live with them...
+What do you mean by "posted"?  Are you referring to 0-day build testing 
+or individual usage of make coccicheck?  Maybe it would make sense to 
+remove the semantic patch from 0-day build testing but leave it in the 
+kernel, perhaps removing the < 0 case because that one in practice doesn't 
+seem to turn up much that is useful?
+
+Perhaps it could also be improved to detect a previous != 0 case and then 
+not return a warning.  On some functions, this change can make some nice 
+simplifications.
 
 julia
+
+> Signed-off-by: Johan Hovold <johan@kernel.org>
+> ---
+>  scripts/coccinelle/misc/simple_return.cocci | 180 ----------------------------
+>  1 file changed, 180 deletions(-)
+>  delete mode 100644 scripts/coccinelle/misc/simple_return.cocci
+> 
+> diff --git a/scripts/coccinelle/misc/simple_return.cocci b/scripts/coccinelle/misc/simple_return.cocci
+> deleted file mode 100644
+> index e8b6313b116f..000000000000
+> --- a/scripts/coccinelle/misc/simple_return.cocci
+> +++ /dev/null
+> @@ -1,180 +0,0 @@
+> -/// Simplify a trivial if-return sequence.  Possibly combine with a
+> -/// preceding function call.
+> -///
+> -// Confidence: High
+> -// Copyright: (C) 2014 Julia Lawall, INRIA/LIP6.  GPLv2.
+> -// Copyright: (C) 2014 Gilles Muller, INRIA/LiP6.  GPLv2.
+> -// URL: http://coccinelle.lip6.fr/
+> -// Comments:
+> -// Options: --no-includes --include-headers
+> -
+> -virtual patch
+> -virtual context
+> -virtual org
+> -virtual report
+> -
+> - at r depends on patch@
+> -local idexpression e;
+> -identifier i,f,fn;
+> -@@
+> -
+> -fn(...) { <...
+> -- e at i =
+> -+ return
+> -    f(...);
+> --if (i != 0) return i;
+> --return 0;
+> -...> }
+> -
+> - at depends on patch@
+> -identifier r.i;
+> -type t;
+> -@@
+> -
+> --t i;
+> - ... when != i
+> -
+> - at depends on patch@
+> -expression e;
+> -@@
+> -
+> --if (e != 0)
+> -   return e;
+> --return 0;
+> -
+> -// -----------------------------------------------------------------------
+> -
+> - at s1 depends on context || org || report@
+> -local idexpression e;
+> -identifier i,f,fn;
+> -position p,p1,p2;
+> -@@
+> -
+> -fn(...) { <...
+> -* e at i@p = f(...);
+> -  if (\(i at p1 != 0\|i at p2 < 0\))
+> -     return i;
+> -  return 0;
+> -...> }
+> -
+> - at s2 depends on context || org || report forall@
+> -identifier s1.i;
+> -type t;
+> -position q,s1.p;
+> -expression e,f;
+> -@@
+> -
+> -* t i at q;
+> -  ... when != i
+> -  e at p = f(...);
+> -
+> - at s3 depends on context || org || report@
+> -expression e;
+> -position p1!=s1.p1;
+> -position p2!=s1.p2;
+> -@@
+> -
+> -*if (\(e at p1 != 0\|e at p2 < 0\))
+> -   return e;
+> - return 0;
+> -
+> -// -----------------------------------------------------------------------
+> -
+> - at script:python depends on org@
+> -p << s1.p;
+> -p1 << s1.p1;
+> -q << s2.q;
+> -@@
+> -
+> -cocci.print_main("decl",q)
+> -cocci.print_secs("use",p)
+> -cocci.include_match(False)
+> -
+> - at script:python depends on org@
+> -p << s1.p;
+> -p2 << s1.p2;
+> -q << s2.q;
+> -@@
+> -
+> -cocci.print_main("decl",q)
+> -cocci.print_secs("use with questionable test",p)
+> -cocci.include_match(False)
+> -
+> - at script:python depends on org@
+> -p << s1.p;
+> -p1 << s1.p1;
+> -@@
+> -
+> -cocci.print_main("use",p)
+> -
+> - at script:python depends on org@
+> -p << s1.p;
+> -p2 << s1.p2;
+> -@@
+> -
+> -cocci.print_main("use with questionable test",p)
+> -
+> - at script:python depends on org@
+> -p << s3.p1;
+> -@@
+> -
+> -cocci.print_main("test",p)
+> -
+> - at script:python depends on org@
+> -p << s3.p2;
+> -@@
+> -
+> -cocci.print_main("questionable test",p)
+> -
+> -// -----------------------------------------------------------------------
+> -
+> - at script:python depends on report@
+> -p << s1.p;
+> -p1 << s1.p1;
+> -q << s2.q;
+> -@@
+> -
+> -msg = "WARNING: end returns can be simpified and declaration on line %s can be dropped" % (q[0].line)
+> -coccilib.report.print_report(p[0],msg)
+> -cocci.include_match(False)
+> -
+> - at script:python depends on report@
+> -p << s1.p;
+> -p1 << s1.p1;
+> -q << s2.q
+> -;
+> -@@
+> -
+> -msg = "WARNING: end returns may be simpified if negative or 0 value and declaration on line %s can be dropped" % (q[0].line)
+> -coccilib.report.print_report(p[0],msg)
+> -cocci.include_match(False)
+> -
+> - at script:python depends on report@
+> -p << s1.p;
+> -p1 << s1.p1;
+> -@@
+> -
+> -msg = "WARNING: end returns can be simpified"
+> -coccilib.report.print_report(p[0],msg)
+> -
+> - at script:python depends on report@
+> -p << s1.p;
+> -p2 << s1.p2;
+> -@@
+> -
+> -msg = "WARNING: end returns can be simpified if negative or 0 value"
+> -coccilib.report.print_report(p[0],msg)
+> -
+> - at script:python depends on report@
+> -p << s3.p1;
+> -@@
+> -
+> -msg = "WARNING: end returns can be simpified"
+> -coccilib.report.print_report(p[0],msg)
+> -
+> - at script:python depends on report@
+> -p << s3.p2;
+> -@@
+> -
+> -msg = "WARNING: end returns can be simpified if tested value is negative or 0"
+> -coccilib.report.print_report(p[0],msg)
+> -- 
+> 2.4.9
+> 
+> 
