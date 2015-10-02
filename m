@@ -1,72 +1,62 @@
-From: javier@osg.samsung.com (Javier Martinez Canillas)
-Date: Fri,  2 Oct 2015 14:59:45 +0200
-Subject: [Cocci] [PATCH] coccinelle: simple_return: fix typos in messages
-Message-ID: <1443790785-17663-1-git-send-email-javier@osg.samsung.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Fri, 2 Oct 2015 23:33:46 +0200 (CEST)
+Subject: [Cocci] [PATCH] coccinelle: misc: remove "complex return code"
+ warnings
+In-Reply-To: <20151001174718.GJ4284@localhost>
+References: <1443652647-23097-1-git-send-email-johan@kernel.org>
+ <alpine.DEB.2.02.1510010716280.2233@localhost6.localdomain6>
+ <20151001174718.GJ4284@localhost>
+Message-ID: <alpine.DEB.2.02.1510022328560.2163@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-All messages have a typo that misspells the word simplified.
+Do you consider that this function would be better off in two lines?
 
-Signed-off-by: Javier Martinez Canillas <javier@osg.samsung.com>
+static int mxt_acquire_irq(struct mxt_data *data)
+{
+        int error;
 
----
+        enable_irq(data->irq);
 
- scripts/coccinelle/misc/simple_return.cocci | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+        error = mxt_process_messages_until_invalid(data);
+        if (error)
+                return error;
 
-diff --git a/scripts/coccinelle/misc/simple_return.cocci b/scripts/coccinelle/misc/simple_return.cocci
-index e8b6313b116f..ad22c5236ff6 100644
---- a/scripts/coccinelle/misc/simple_return.cocci
-+++ b/scripts/coccinelle/misc/simple_return.cocci
-@@ -134,7 +134,7 @@ p1 << s1.p1;
- q << s2.q;
- @@
- 
--msg = "WARNING: end returns can be simpified and declaration on line %s can be dropped" % (q[0].line)
-+msg = "WARNING: end returns can be simplified and declaration on line %s can be dropped" % (q[0].line)
- coccilib.report.print_report(p[0],msg)
- cocci.include_match(False)
- 
-@@ -145,7 +145,7 @@ q << s2.q
- ;
- @@
- 
--msg = "WARNING: end returns may be simpified if negative or 0 value and declaration on line %s can be dropped" % (q[0].line)
-+msg = "WARNING: end returns may be simplified if negative or 0 value and declaration on line %s can be dropped" % (q[0].line)
- coccilib.report.print_report(p[0],msg)
- cocci.include_match(False)
- 
-@@ -154,7 +154,7 @@ p << s1.p;
- p1 << s1.p1;
- @@
- 
--msg = "WARNING: end returns can be simpified"
-+msg = "WARNING: end returns can be simplified"
- coccilib.report.print_report(p[0],msg)
- 
- @script:python depends on report@
-@@ -162,19 +162,19 @@ p << s1.p;
- p2 << s1.p2;
- @@
- 
--msg = "WARNING: end returns can be simpified if negative or 0 value"
-+msg = "WARNING: end returns can be simplified if negative or 0 value"
- coccilib.report.print_report(p[0],msg)
- 
- @script:python depends on report@
- p << s3.p1;
- @@
- 
--msg = "WARNING: end returns can be simpified"
-+msg = "WARNING: end returns can be simplified"
- coccilib.report.print_report(p[0],msg)
- 
- @script:python depends on report@
- p << s3.p2;
- @@
- 
--msg = "WARNING: end returns can be simpified if tested value is negative or 0"
-+msg = "WARNING: end returns can be simplified if tested value is negative or 0"
- coccilib.report.print_report(p[0],msg)
--- 
-2.4.3
+        return 0;
+}
+
+Would simplifying the code at the end of the following function be helpful
+or not?
+
+static int adnp_gpio_setup(struct adnp *adnp, unsigned int num_gpios)
+{
+        struct gpio_chip *chip = &adnp->gpio;
+        int err;
+
+        adnp->reg_shift = get_count_order(num_gpios) - 3;
+
+        chip->direction_input = adnp_gpio_direction_input;
+        chip->direction_output = adnp_gpio_direction_output;
+        chip->get = adnp_gpio_get;
+        chip->set = adnp_gpio_set;
+        chip->can_sleep = true;
+
+        if (IS_ENABLED(CONFIG_DEBUG_FS))
+                chip->dbg_show = adnp_gpio_dbg_show;
+
+        chip->base = -1;
+        chip->ngpio = num_gpios;
+        chip->label = adnp->client->name;
+        chip->dev = &adnp->client->dev;
+        chip->of_node = chip->dev->of_node;
+        chip->owner = THIS_MODULE;
+
+        err = gpiochip_add(chip);
+        if (err)
+                return err;
+
+        return 0;
+}
+
+thanks,
+julia
