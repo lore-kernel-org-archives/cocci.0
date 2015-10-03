@@ -1,45 +1,93 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 3 Oct 2015 09:09:22 +0200 (CEST)
-Subject: [Cocci] [PATCH v2] coccinelle: assign signed result to unsigned
- variable
-In-Reply-To: <1443437687-16559-1-git-send-email-a.hajda@samsung.com>
-References: <alpine.DEB.2.10.1509261106040.2737@hadrien>
- <1443437687-16559-1-git-send-email-a.hajda@samsung.com>
-Message-ID: <alpine.DEB.2.02.1510030901180.2022@localhost6.localdomain6>
+Date: Sat, 3 Oct 2015 18:24:27 +0200 (CEST)
+Subject: [Cocci] [PATCH] coccinelle: misc: remove "complex return code"
+ warnings
+In-Reply-To: <20151001174718.GJ4284@localhost>
+References: <1443652647-23097-1-git-send-email-johan@kernel.org>
+ <alpine.DEB.2.02.1510010716280.2233@localhost6.localdomain6>
+ <20151001174718.GJ4284@localhost>
+Message-ID: <alpine.DEB.2.10.1510031823480.2586@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Some comments:
+Acked-by: Julia Lawall <julia.lawall@lip6.fr>
 
-If you get 20 good results and 22 false positives, I'm not sure whether 
-high confidence is justified.  That seemes more like moderate confidence.
-
-On the other hand, I think it is possible to get rid of the false 
-positives.  The false positives are coming from the fact that you have:
-
-if ( \( vu < 0 \| vu <= 0 \) ) S1 else S2
-
-This can be flipped around to
-
-if ( ! \( vu < 0 \| vu <= 0 \) ) S2 else S1
-
-and then when we propagate the ! into the disjunction, we get v >= 0 for 
-the first condition and v > 0 for the second condition.  v >= 0 is always 
-true, so it could be reasonable to highlight it, but v > 0 is a perfectly 
-reasonable test for an unsigned value, and is where you are getting the 
-false positives from.  If you want to get rid of both v >= 0 and v < 0 
-then you can just put disable neg_if in the initial @@, just after r, ie
-
-@r disable neg_if@
-
-On the other hand, if you want to keep the warning on v >= 0 but drop the 
-warning on v > 0, then you will have to split the rules and put the 
-disable neg_if on the one for v <= 0.
-
-I think it would also be reasonable to merge the proposed semantic 
-patches.  I guess this one gives most of the results anyway?
-
-With recursive_includes, I got 70 results,@least 20 of which should be 
-false positives due to the MB case.
+Perhaps there is a more restricted version that can be acceptable, but I'm
+OK with dropping the current version.
 
 julia
+
+On Thu, 1 Oct 2015, Johan Hovold wrote:
+
+> On Thu, Oct 01, 2015 at 07:20:10AM +0200, Julia Lawall wrote:
+> > On Wed, 30 Sep 2015, Johan Hovold wrote:
+> >
+> > > This effectively reverts 932058a5d5f9 ("coccinelle: misc: semantic patch
+> > > to delete overly complex return code processing").
+> > >
+> > > There can be both symmetry and readability reasons for not wanting to do
+> > > the final function call as part of the return statement and to maintain
+> > > a clear separation of success and error paths.
+> > >
+> > > Since this is in no way mandated by the coding standard, let's just
+> > > remove this semantic patch to avoid having "clean up" patches being
+> > > posted over and over in response to these Coccinelle warnings.
+> >
+> > What do you mean by "posted"?  Are you referring to 0-day build testing
+> > or individual usage of make coccicheck?  Maybe it would make sense to
+> > remove the semantic patch from 0-day build testing but leave it in the
+> > kernel, perhaps removing the < 0 case because that one in practice doesn't
+> > seem to turn up much that is useful?
+>
+> Individuals running coccicheck on in-kernel code and posting patches to
+> "fix warnings", where the end result is not necessarily an improvement.
+>
+> But I don't think these warnings should be enabled for 0-day build
+> testing either as it is should be up to the author to decide what style
+> to prefer in each case.
+>
+> > Perhaps it could also be improved to detect a previous != 0 case and then
+> > not return a warning.  On some functions, this change can make some nice
+> > simplifications.
+>
+> Yes, that would at least improve things.
+>
+> I don't think warnings should be generated at all for the following
+> code:
+>
+> {
+> 	int ret;
+>
+> 	ret = init_a(...);
+> 	if (ret)
+> 		return ret;
+>
+> 	ret = init_b(...);
+> 	if (ret)
+> 		return ret;
+>
+> 	return 0;
+> }
+>
+> as it is (at least to me) preferred over:
+>
+> {
+> 	int ret;
+>
+> 	ret = init_a(...);
+> 	if (ret)
+> 		return ret;
+>
+> 	return init_b(...);
+> }
+>
+> for symmetry and readability reasons (e.g. I don't have to look at
+> init_b to figure out what the functions returns). And with a long
+> parameter list to init_b with line breaks, this would look even worse.
+>
+> But either way, it should be up to the author of the code to decide what
+> style to use.
+>
+> Thanks,
+> Johan
+>
