@@ -1,62 +1,45 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 2 Oct 2015 23:33:46 +0200 (CEST)
-Subject: [Cocci] [PATCH] coccinelle: misc: remove "complex return code"
- warnings
-In-Reply-To: <20151001174718.GJ4284@localhost>
-References: <1443652647-23097-1-git-send-email-johan@kernel.org>
- <alpine.DEB.2.02.1510010716280.2233@localhost6.localdomain6>
- <20151001174718.GJ4284@localhost>
-Message-ID: <alpine.DEB.2.02.1510022328560.2163@localhost6.localdomain6>
+Date: Sat, 3 Oct 2015 09:09:22 +0200 (CEST)
+Subject: [Cocci] [PATCH v2] coccinelle: assign signed result to unsigned
+ variable
+In-Reply-To: <1443437687-16559-1-git-send-email-a.hajda@samsung.com>
+References: <alpine.DEB.2.10.1509261106040.2737@hadrien>
+ <1443437687-16559-1-git-send-email-a.hajda@samsung.com>
+Message-ID: <alpine.DEB.2.02.1510030901180.2022@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Do you consider that this function would be better off in two lines?
+Some comments:
 
-static int mxt_acquire_irq(struct mxt_data *data)
-{
-        int error;
+If you get 20 good results and 22 false positives, I'm not sure whether 
+high confidence is justified.  That seemes more like moderate confidence.
 
-        enable_irq(data->irq);
+On the other hand, I think it is possible to get rid of the false 
+positives.  The false positives are coming from the fact that you have:
 
-        error = mxt_process_messages_until_invalid(data);
-        if (error)
-                return error;
+if ( \( vu < 0 \| vu <= 0 \) ) S1 else S2
 
-        return 0;
-}
+This can be flipped around to
 
-Would simplifying the code at the end of the following function be helpful
-or not?
+if ( ! \( vu < 0 \| vu <= 0 \) ) S2 else S1
 
-static int adnp_gpio_setup(struct adnp *adnp, unsigned int num_gpios)
-{
-        struct gpio_chip *chip = &adnp->gpio;
-        int err;
+and then when we propagate the ! into the disjunction, we get v >= 0 for 
+the first condition and v > 0 for the second condition.  v >= 0 is always 
+true, so it could be reasonable to highlight it, but v > 0 is a perfectly 
+reasonable test for an unsigned value, and is where you are getting the 
+false positives from.  If you want to get rid of both v >= 0 and v < 0 
+then you can just put disable neg_if in the initial @@, just after r, ie
 
-        adnp->reg_shift = get_count_order(num_gpios) - 3;
+@r disable neg_if@
 
-        chip->direction_input = adnp_gpio_direction_input;
-        chip->direction_output = adnp_gpio_direction_output;
-        chip->get = adnp_gpio_get;
-        chip->set = adnp_gpio_set;
-        chip->can_sleep = true;
+On the other hand, if you want to keep the warning on v >= 0 but drop the 
+warning on v > 0, then you will have to split the rules and put the 
+disable neg_if on the one for v <= 0.
 
-        if (IS_ENABLED(CONFIG_DEBUG_FS))
-                chip->dbg_show = adnp_gpio_dbg_show;
+I think it would also be reasonable to merge the proposed semantic 
+patches.  I guess this one gives most of the results anyway?
 
-        chip->base = -1;
-        chip->ngpio = num_gpios;
-        chip->label = adnp->client->name;
-        chip->dev = &adnp->client->dev;
-        chip->of_node = chip->dev->of_node;
-        chip->owner = THIS_MODULE;
+With recursive_includes, I got 70 results,@least 20 of which should be 
+false positives due to the MB case.
 
-        err = gpiochip_add(chip);
-        if (err)
-                return err;
-
-        return 0;
-}
-
-thanks,
 julia
