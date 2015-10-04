@@ -1,84 +1,68 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 3 Oct 2015 18:26:20 +0200 (CEST)
-Subject: [Cocci] [PATCH] coccinelle: simple_return: fix typos in messages
-In-Reply-To: <1443790785-17663-1-git-send-email-javier@osg.samsung.com>
-References: <1443790785-17663-1-git-send-email-javier@osg.samsung.com>
-Message-ID: <alpine.DEB.2.10.1510031825500.2586@hadrien>
+From: johan@kernel.org (Johan Hovold)
+Date: Sun, 4 Oct 2015 06:50:56 -0400
+Subject: [Cocci] [PATCH] coccinelle: misc: remove "complex return code"
+	warnings
+In-Reply-To: <alpine.DEB.2.02.1510022328560.2163@localhost6.localdomain6>
+References: <1443652647-23097-1-git-send-email-johan@kernel.org>
+ <alpine.DEB.2.02.1510010716280.2233@localhost6.localdomain6>
+ <20151001174718.GJ4284@localhost>
+ <alpine.DEB.2.02.1510022328560.2163@localhost6.localdomain6>
+Message-ID: <20151004105056.GM4284@localhost>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, 2 Oct 2015, Javier Martinez Canillas wrote:
+On Fri, Oct 02, 2015 at 11:33:46PM +0200, Julia Lawall wrote:
+> Do you consider that this function would be better off in two lines?
+> 
+> static int mxt_acquire_irq(struct mxt_data *data)
+> {
+>         int error;
+> 
+>         enable_irq(data->irq);
+> 
+>         error = mxt_process_messages_until_invalid(data);
+>         if (error)
+>                 return error;
+> 
+>         return 0;
+> }
 
-> All messages have a typo that misspells the word simplified.
+Actually no, but again I'd say it's up to the author to decide.
 
-Thanks for your contribution, but in another thread it has been proposed
-to drop the semantic patch completely.
+> Would simplifying the code at the end of the following function be helpful
+> or not?
+> 
+> static int adnp_gpio_setup(struct adnp *adnp, unsigned int num_gpios)
+> {
+>         struct gpio_chip *chip = &adnp->gpio;
+>         int err;
+> 
+>         adnp->reg_shift = get_count_order(num_gpios) - 3;
+> 
+>         chip->direction_input = adnp_gpio_direction_input;
+>         chip->direction_output = adnp_gpio_direction_output;
+>         chip->get = adnp_gpio_get;
+>         chip->set = adnp_gpio_set;
+>         chip->can_sleep = true;
+> 
+>         if (IS_ENABLED(CONFIG_DEBUG_FS))
+>                 chip->dbg_show = adnp_gpio_dbg_show;
+> 
+>         chip->base = -1;
+>         chip->ngpio = num_gpios;
+>         chip->label = adnp->client->name;
+>         chip->dev = &adnp->client->dev;
+>         chip->of_node = chip->dev->of_node;
+>         chip->owner = THIS_MODULE;
+> 
+>         err = gpiochip_add(chip);
+>         if (err)
+>                 return err;
+> 
+>         return 0;
+> }
 
-julia
+I think this is just fine as is as well.
 
->
-> Signed-off-by: Javier Martinez Canillas <javier@osg.samsung.com>
->
-> ---
->
->  scripts/coccinelle/misc/simple_return.cocci | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
->
-> diff --git a/scripts/coccinelle/misc/simple_return.cocci b/scripts/coccinelle/misc/simple_return.cocci
-> index e8b6313b116f..ad22c5236ff6 100644
-> --- a/scripts/coccinelle/misc/simple_return.cocci
-> +++ b/scripts/coccinelle/misc/simple_return.cocci
-> @@ -134,7 +134,7 @@ p1 << s1.p1;
->  q << s2.q;
->  @@
->
-> -msg = "WARNING: end returns can be simpified and declaration on line %s can be dropped" % (q[0].line)
-> +msg = "WARNING: end returns can be simplified and declaration on line %s can be dropped" % (q[0].line)
->  coccilib.report.print_report(p[0],msg)
->  cocci.include_match(False)
->
-> @@ -145,7 +145,7 @@ q << s2.q
->  ;
->  @@
->
-> -msg = "WARNING: end returns may be simpified if negative or 0 value and declaration on line %s can be dropped" % (q[0].line)
-> +msg = "WARNING: end returns may be simplified if negative or 0 value and declaration on line %s can be dropped" % (q[0].line)
->  coccilib.report.print_report(p[0],msg)
->  cocci.include_match(False)
->
-> @@ -154,7 +154,7 @@ p << s1.p;
->  p1 << s1.p1;
->  @@
->
-> -msg = "WARNING: end returns can be simpified"
-> +msg = "WARNING: end returns can be simplified"
->  coccilib.report.print_report(p[0],msg)
->
->  @script:python depends on report@
-> @@ -162,19 +162,19 @@ p << s1.p;
->  p2 << s1.p2;
->  @@
->
-> -msg = "WARNING: end returns can be simpified if negative or 0 value"
-> +msg = "WARNING: end returns can be simplified if negative or 0 value"
->  coccilib.report.print_report(p[0],msg)
->
->  @script:python depends on report@
->  p << s3.p1;
->  @@
->
-> -msg = "WARNING: end returns can be simpified"
-> +msg = "WARNING: end returns can be simplified"
->  coccilib.report.print_report(p[0],msg)
->
->  @script:python depends on report@
->  p << s3.p2;
->  @@
->
-> -msg = "WARNING: end returns can be simpified if tested value is negative or 0"
-> +msg = "WARNING: end returns can be simplified if tested value is negative or 0"
->  coccilib.report.print_report(p[0],msg)
-> --
-> 2.4.3
->
->
+Thanks,
+Johan
