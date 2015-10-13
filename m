@@ -1,61 +1,143 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 13 Oct 2015 07:33:01 +0200 (CEST)
-Subject: [Cocci] elision of unneeded parens
-In-Reply-To: <CAP6exYKikd_mkcewXF10Ch7J-LWSVXKuuxNu3Eo3Aek6rUANBQ@mail.gmail.com>
-References: <CAP6exY+Mzdo=_hNUksjCfYPVKU6Fx0TgJRUZuVw8K15Y0Yo1mA@mail.gmail.com>
- <CA+MoWDp13SaQHQSCkf50WvQWMB1E3v_0kTFs94HbJ3onw4-SuA@mail.gmail.com>
- <CAP6exYLMymc3OeLMDJfvu5xkPUZe8UGRDNGfufMM-c=VUONd9A@mail.gmail.com>
- <CA+MoWDoJan191KVHOYvRCLGSP56co9NsfjcxCF=eLUtjUZpsGg@mail.gmail.com>
- <CA+MoWDqt19jGAiiz27guRq==3gC8fF7GfdAsAKSXEjoTGk1A0Q@mail.gmail.com>
- <CAP6exYKikd_mkcewXF10Ch7J-LWSVXKuuxNu3Eo3Aek6rUANBQ@mail.gmail.com>
-Message-ID: <alpine.DEB.2.02.1510130720100.2063@localhost6.localdomain6>
+From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
+Date: Tue, 13 Oct 2015 13:19:32 -0700
+Subject: [Cocci] Compiling latest coccinelle with opensuse
+Message-ID: <CAB=NE6XEE0zMpt7HBfEmxg1fDk4AqgfJ9F5oa_h0uMe4tCuzVQ@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-This seems to work pretty well.  Unfortunately, the spacing is not as nice 
-as one would hope for showing off to someone else.
+I'm trying to build coccinelle to use on opensuse for a cocci file
+with iteration support. I'm using the latest and greatest (inria git).
 
-@@
-binary operator op = {==,!=};
-expression e1,e2,e3,e4,e5;
-@@
+After ./autogen and and then configuring with --enable-release:
 
-(
- (e3 || e4)
-|
--(
-e1 op e2
--)
-)
- &&
- e5
+configure flags:  --enable-release
+findlib:          /usr/bin/ocamlfind (an actual version is strongly recommended)
+menhir:           /usr/local/bin//menhir (should be an optional tool)
+menhirLib module: yes (for local package use --disable-menhirLib)
 
-@@
-binary operator op = {==,!=};
-expression e1,e2,e3,e4,e5;
-@@
+ocaml scripting:  yes (overridable with --enable-ocaml)
+python scripting: yes (overridable with --enable-python)
+pycaml module:    local (for local package use --disable-pycaml)
 
- e5
- &&
-(
- (e3 || e4)
-|
--(
-  e1 op e2
--)
-)
+pcre regexes:     local (overridable with --enable-pcre-syntax)
+pcre module:      local (for local package use --disable-pcre)
+pcre library:     yes (requires the dev version of libpcre)
 
------------------------------------------------------
+release config:   yes (strongly recommended to be 'yes', overridable
+with --enable-release)
+optimized spatch: yes (overridable with --disable-opt)
 
-int main () {
-  if ((a == b) && (c != d)) return 12;
-  if ((a == b) && (c != d) && (c == d)) return 12;
-  if (a == b && (c != d)) return 12;
-  if (a == b && (c != d) && (c == d)) return 12;
-  if ((a == b) && c != d) return 12;
-  if ((a == b) && c != d && (c == d)) return 12;
-  if ((a == b) && (c != d) && c == d) return 12;
-  if ((a == b) && c != d && c == d) return 12;
-  if (a == b && (c != d) && c == d) return 12;
-  if ((a == b) + c) return 12;  // should not change
-}
+My build fails with:
+
+/usr/bin/ocamlopt.opt -unsafe -I ../commons -I ../commons/ocamlextra
+-I ../globals -I /usr/lib64/ocaml/menhirLib -c parser_cocci_menhir.ml
+File "parser_cocci_menhir.ml", line 1:
+Error: The files /usr/lib64/ocaml/obj.cmi
+       and /usr/lib64/ocaml/menhirLib/menhirLib.cmi
+       make inconsistent assumptions over interface Obj
+Makefile:90: recipe for target 'parser_cocci_menhir.cmx' failed
+make[6]: *** [parser_cocci_menhir.cmx] Error 2
+make[6]: *** Waiting for unfinished jobs....
+make[6]: Leaving directory '/sda3/home/mcgrof/devel/coccinelle/parsing_cocci'
+Makefile:61: recipe for target 'all.opt' failed
+make[5]: *** [all.opt] Error 2
+make[5]: Leaving directory '/sda3/home/mcgrof/devel/coccinelle/parsing_cocci'
+Makefile:202: recipe for target 'parsing_cocci.opt' failed
+make[4]: *** [parsing_cocci.opt] Error 2
+make[4]: Leaving directory '/sda3/home/mcgrof/devel/coccinelle'
+Makefile:196: recipe for target 'subdirs.opt' failed
+make[3]: *** [subdirs.opt] Error 1
+make[3]: Leaving directory '/sda3/home/mcgrof/devel/coccinelle'
+Makefile:167: recipe for target 'opt-compil' failed
+make[2]: *** [opt-compil] Error 2
+make[2]: Leaving directory '/sda3/home/mcgrof/devel/coccinelle'
+Makefile:147: recipe for target 'all-release' failed
+make[1]: *** [all-release] Error 2
+make[1]: Leaving directory '/sda3/home/mcgrof/devel/coccinelle'
+Makefile:125: recipe for target 'all' failed
+make: *** [all] Error 2
+
+
+If I try to disable ocaml scripting with:
+
+./configure --enable-release --disable-ocaml
+
+My build still fails with:
+
+/usr/bin/ocamlopt.opt -unsafe -I ../commons -I ../commons/ocamlextra
+-I ../globals -I /usr/lib64/ocaml/menhirLib -c parser_cocci_menhir.ml
+File "parser_cocci_menhir.ml", line 1:
+Error: The files /usr/lib64/ocaml/obj.cmi
+       and /usr/lib64/ocaml/menhirLib/menhirLib.cmi
+       make inconsistent assumptions over interface Obj
+Makefile:90: recipe for target 'parser_cocci_menhir.cmx' failed
+
+If I disable good 'ol mehir as well with:
+
+./configure --enable-release --disable-ocaml --disable-menhirLib
+
+it does not seem to disable menhir:
+
+Summary
+
+configure flags:  --enable-release --disable-ocaml --disable-menhirLib
+--disable-menhirlib
+findlib:          /usr/bin/ocamlfind (an actual version is strongly recommended)
+menhir:           /usr/local/bin//menhir (should be an optional tool)
+menhirLib module: local (for local package use --disable-menhirLib)
+
+ocaml scripting:  no (overridable with --enable-ocaml)
+python scripting: yes (overridable with --enable-python)
+pycaml module:    local (for local package use --disable-pycaml)
+
+pcre regexes:     local (overridable with --enable-pcre-syntax)
+pcre module:      local (for local package use --disable-pcre)
+pcre library:     yes (requires the dev version of libpcre)
+
+release config:   yes (strongly recommended to be 'yes', overridable
+with --enable-release)
+optimized spatch: yes (overridable with --disable-opt)
+
+I checked configure.ac but can't see why disabling menhirLib won't work.
+
+If I nuke my local menhir, then:
+
+./configure --enable-release --disable-ocaml
+
+Summary
+
+configure flags:  --enable-release --disable-ocaml
+findlib:          /usr/bin/ocamlfind (an actual version is strongly recommended)
+menhir:           /home/mcgrof/devel/coccinelle/setup/fake-menhir.sh
+menhir (should be an optional tool)
+menhirLib module: yes (for local package use --disable-menhirLib)
+
+ocaml scripting:  no (overridable with --enable-ocaml)
+python scripting: yes (overridable with --enable-python)
+pycaml module:    local (for local package use --disable-pycaml)
+
+pcre regexes:     local (overridable with --enable-pcre-syntax)
+pcre module:      local (for local package use --disable-pcre)
+pcre library:     yes (requires the dev version of libpcre)
+
+release config:   yes (strongly recommended to be 'yes', overridable
+with --enable-release)
+optimized spatch: yes (overridable with --disable-opt)
+
+then I get:
+
+/home/mcgrof/devel/coccinelle/setup/fake-menhir.sh menhir --ocamlc
+"/usr/bin/ocamlc.opt" --ocamldep "/usr/bin/ocamldep" --table --base
+parser_cocci_menhir parser_cocci_menhir.mly
+error: the file parser_cocci_menhir.ml is needed, which requires
+preprocessing by menhir to obtain it from parser_cocci_menhir.mly.
+However, menhir is not enabled.
+error: the file parser_cocci_menhir.ml is needed, which requires
+preprocessing by menhir to obtain it from parser_cocci_menhir.mly.
+However, menhir is not enabled.
+make[3]: *** No rule to make target 'parser_cocci_menhir.ml', needed
+by 'depend'.  Stop.
+make[3]: Leaving directory '/sda3/home/mcgrof/devel/coccinelle/parsing_cocci'
+Makefile:566: recipe for target 'depend' failed
+
+  Luis
