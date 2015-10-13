@@ -1,158 +1,71 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 13 Oct 2015 22:26:46 +0200 (CEST)
+From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
+Date: Tue, 13 Oct 2015 13:37:15 -0700
 Subject: [Cocci] Compiling latest coccinelle with opensuse
-In-Reply-To: <CAB=NE6XEE0zMpt7HBfEmxg1fDk4AqgfJ9F5oa_h0uMe4tCuzVQ@mail.gmail.com>
+In-Reply-To: <alpine.DEB.2.02.1510132225490.2189@localhost6.localdomain6>
 References: <CAB=NE6XEE0zMpt7HBfEmxg1fDk4AqgfJ9F5oa_h0uMe4tCuzVQ@mail.gmail.com>
-Message-ID: <alpine.DEB.2.02.1510132225490.2189@localhost6.localdomain6>
+ <alpine.DEB.2.02.1510132225490.2189@localhost6.localdomain6>
+Message-ID: <CAB=NE6V1K8-dq7A8PNY95+hSDGOFGdL8N=kjed5CF=ABLFqWLA@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, 13 Oct 2015, Luis R. Rodriguez wrote:
+On Tue, Oct 13, 2015 at 1:26 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
+> On Tue, 13 Oct 2015, Luis R. Rodriguez wrote:
+>
+>> I'm trying to build coccinelle to use on opensuse for a cocci file
+>> with iteration support. I'm using the latest and greatest (inria git).
+>>
+>> After ./autogen and and then configuring with --enable-release:
+>>
+>> configure flags:  --enable-release
+>> findlib:          /usr/bin/ocamlfind (an actual version is strongly recommended)
+>> menhir:           /usr/local/bin//menhir (should be an optional tool)
+>> menhirLib module: yes (for local package use --disable-menhirLib)
+>>
+>> ocaml scripting:  yes (overridable with --enable-ocaml)
+>> python scripting: yes (overridable with --enable-python)
+>> pycaml module:    local (for local package use --disable-pycaml)
+>>
+>> pcre regexes:     local (overridable with --enable-pcre-syntax)
+>> pcre module:      local (for local package use --disable-pcre)
+>> pcre library:     yes (requires the dev version of libpcre)
+>>
+>> release config:   yes (strongly recommended to be 'yes', overridable
+>> with --enable-release)
+>> optimized spatch: yes (overridable with --disable-opt)
+>>
+>> My build fails with:
+>>
+>> /usr/bin/ocamlopt.opt -unsafe -I ../commons -I ../commons/ocamlextra
+>> -I ../globals -I /usr/lib64/ocaml/menhirLib -c parser_cocci_menhir.ml
+>> File "parser_cocci_menhir.ml", line 1:
+>> Error: The files /usr/lib64/ocaml/obj.cmi
+>>        and /usr/lib64/ocaml/menhirLib/menhirLib.cmi
+>>        make inconsistent assumptions over interface Obj
+>
+> Try make clean, or make distclean.  If you had a build without ocaml, you
+> may have some old code lying around.
 
-> I'm trying to build coccinelle to use on opensuse for a cocci file
-> with iteration support. I'm using the latest and greatest (inria git).
-> 
-> After ./autogen and and then configuring with --enable-release:
-> 
-> configure flags:  --enable-release
-> findlib:          /usr/bin/ocamlfind (an actual version is strongly recommended)
-> menhir:           /usr/local/bin//menhir (should be an optional tool)
-> menhirLib module: yes (for local package use --disable-menhirLib)
-> 
-> ocaml scripting:  yes (overridable with --enable-ocaml)
-> python scripting: yes (overridable with --enable-python)
-> pycaml module:    local (for local package use --disable-pycaml)
-> 
-> pcre regexes:     local (overridable with --enable-pcre-syntax)
-> pcre module:      local (for local package use --disable-pcre)
-> pcre library:     yes (requires the dev version of libpcre)
-> 
-> release config:   yes (strongly recommended to be 'yes', overridable
-> with --enable-release)
-> optimized spatch: yes (overridable with --disable-opt)
-> 
-> My build fails with:
-> 
-> /usr/bin/ocamlopt.opt -unsafe -I ../commons -I ../commons/ocamlextra
-> -I ../globals -I /usr/lib64/ocaml/menhirLib -c parser_cocci_menhir.ml
-> File "parser_cocci_menhir.ml", line 1:
-> Error: The files /usr/lib64/ocaml/obj.cmi
->        and /usr/lib64/ocaml/menhirLib/menhirLib.cmi
->        make inconsistent assumptions over interface Obj
+Instead of 'make clean' or 'make distclean' I do:
 
-Try make clean, or make distclean.  If you had a build without ocaml, you 
-may have some old code lying around.
+git clean -f -x -d
 
-julia
+Its faster than 'make clean' but caution: this will delete *anything*
+from your tree that is *not* in a git record, so watch out. Only try
+this on a repo you don't care about.
 
-> Makefile:90: recipe for target 'parser_cocci_menhir.cmx' failed
-> make[6]: *** [parser_cocci_menhir.cmx] Error 2
-> make[6]: *** Waiting for unfinished jobs....
-> make[6]: Leaving directory '/sda3/home/mcgrof/devel/coccinelle/parsing_cocci'
-> Makefile:61: recipe for target 'all.opt' failed
-> make[5]: *** [all.opt] Error 2
-> make[5]: Leaving directory '/sda3/home/mcgrof/devel/coccinelle/parsing_cocci'
-> Makefile:202: recipe for target 'parsing_cocci.opt' failed
-> make[4]: *** [parsing_cocci.opt] Error 2
-> make[4]: Leaving directory '/sda3/home/mcgrof/devel/coccinelle'
-> Makefile:196: recipe for target 'subdirs.opt' failed
-> make[3]: *** [subdirs.opt] Error 1
-> make[3]: Leaving directory '/sda3/home/mcgrof/devel/coccinelle'
-> Makefile:167: recipe for target 'opt-compil' failed
-> make[2]: *** [opt-compil] Error 2
-> make[2]: Leaving directory '/sda3/home/mcgrof/devel/coccinelle'
-> Makefile:147: recipe for target 'all-release' failed
-> make[1]: *** [all-release] Error 2
-> make[1]: Leaving directory '/sda3/home/mcgrof/devel/coccinelle'
-> Makefile:125: recipe for target 'all' failed
-> make: *** [all] Error 2
-> 
-> 
-> If I try to disable ocaml scripting with:
-> 
-> ./configure --enable-release --disable-ocaml
-> 
-> My build still fails with:
-> 
-> /usr/bin/ocamlopt.opt -unsafe -I ../commons -I ../commons/ocamlextra
-> -I ../globals -I /usr/lib64/ocaml/menhirLib -c parser_cocci_menhir.ml
-> File "parser_cocci_menhir.ml", line 1:
-> Error: The files /usr/lib64/ocaml/obj.cmi
->        and /usr/lib64/ocaml/menhirLib/menhirLib.cmi
->        make inconsistent assumptions over interface Obj
-> Makefile:90: recipe for target 'parser_cocci_menhir.cmx' failed
-> 
-> If I disable good 'ol mehir as well with:
-> 
-> ./configure --enable-release --disable-ocaml --disable-menhirLib
-> 
-> it does not seem to disable menhir:
-> 
-> Summary
-> 
-> configure flags:  --enable-release --disable-ocaml --disable-menhirLib
-> --disable-menhirlib
-> findlib:          /usr/bin/ocamlfind (an actual version is strongly recommended)
-> menhir:           /usr/local/bin//menhir (should be an optional tool)
-> menhirLib module: local (for local package use --disable-menhirLib)
-> 
-> ocaml scripting:  no (overridable with --enable-ocaml)
-> python scripting: yes (overridable with --enable-python)
-> pycaml module:    local (for local package use --disable-pycaml)
-> 
-> pcre regexes:     local (overridable with --enable-pcre-syntax)
-> pcre module:      local (for local package use --disable-pcre)
-> pcre library:     yes (requires the dev version of libpcre)
-> 
-> release config:   yes (strongly recommended to be 'yes', overridable
-> with --enable-release)
-> optimized spatch: yes (overridable with --disable-opt)
-> 
-> I checked configure.ac but can't see why disabling menhirLib won't work.
-> 
-> If I nuke my local menhir, then:
-> 
-> ./configure --enable-release --disable-ocaml
-> 
-> Summary
-> 
-> configure flags:  --enable-release --disable-ocaml
-> findlib:          /usr/bin/ocamlfind (an actual version is strongly recommended)
-> menhir:           /home/mcgrof/devel/coccinelle/setup/fake-menhir.sh
-> menhir (should be an optional tool)
-> menhirLib module: yes (for local package use --disable-menhirLib)
-> 
-> ocaml scripting:  no (overridable with --enable-ocaml)
-> python scripting: yes (overridable with --enable-python)
-> pycaml module:    local (for local package use --disable-pycaml)
-> 
-> pcre regexes:     local (overridable with --enable-pcre-syntax)
-> pcre module:      local (for local package use --disable-pcre)
-> pcre library:     yes (requires the dev version of libpcre)
-> 
-> release config:   yes (strongly recommended to be 'yes', overridable
-> with --enable-release)
-> optimized spatch: yes (overridable with --disable-opt)
-> 
-> then I get:
-> 
-> /home/mcgrof/devel/coccinelle/setup/fake-menhir.sh menhir --ocamlc
-> "/usr/bin/ocamlc.opt" --ocamldep "/usr/bin/ocamldep" --table --base
-> parser_cocci_menhir parser_cocci_menhir.mly
-> error: the file parser_cocci_menhir.ml is needed, which requires
-> preprocessing by menhir to obtain it from parser_cocci_menhir.mly.
-> However, menhir is not enabled.
-> error: the file parser_cocci_menhir.ml is needed, which requires
-> preprocessing by menhir to obtain it from parser_cocci_menhir.mly.
-> However, menhir is not enabled.
-> make[3]: *** No rule to make target 'parser_cocci_menhir.ml', needed
-> by 'depend'.  Stop.
-> make[3]: Leaving directory '/sda3/home/mcgrof/devel/coccinelle/parsing_cocci'
-> Makefile:566: recipe for target 'depend' failed
-> 
->   Luis
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
-> 
+Even if I try make distclean things still fail, as suspected. I've
+tried all combination all around with distclean, clean etc.
+
+mcgrof at ergon ~/devel/coccinelle (git::master)$ rpm -qa | grep ocaml
+ocaml-ocamldoc-4.02.3-1.1.x86_64
+ocaml-runtime-4.02.3-1.1.x86_64
+ocaml-camlp4-devel-4.02.1-1.5.x86_64
+ocaml-facile-1.1-193.6.x86_64
+ocaml-4.02.3-1.1.x86_64
+ocaml-camlp4-4.02.1-1.5.x86_64
+ocaml-findlib-1.5.5-1.6.x86_64
+ocaml-compiler-libs-4.02.3-1.1.x86_64
+
+All these seem to be up to date.
+
+ Luis
