@@ -1,30 +1,39 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 14 Oct 2015 12:32:21 +0200
-Subject: [Cocci] Compiling Coccinelle with specific OCaml versions on
-	openSUSE
-In-Reply-To: <CAB=NE6XEE0zMpt7HBfEmxg1fDk4AqgfJ9F5oa_h0uMe4tCuzVQ@mail.gmail.com>
+Date: Wed, 14 Oct 2015 12:54:37 +0200
+Subject: [Cocci] Compiling latest Coccinelle with openSUSE
+In-Reply-To: <20151014071143.GA6178@pema>
 References: <CAB=NE6XEE0zMpt7HBfEmxg1fDk4AqgfJ9F5oa_h0uMe4tCuzVQ@mail.gmail.com>
-Message-ID: <561E2F35.2080803@users.sourceforge.net>
+ <alpine.DEB.2.02.1510132225490.2189@localhost6.localdomain6>
+ <CAB=NE6V1K8-dq7A8PNY95+hSDGOFGdL8N=kjed5CF=ABLFqWLA@mail.gmail.com>
+ <alpine.DEB.2.02.1510132256380.2189@localhost6.localdomain6>
+ <20151013211451.GD14464@wotan.suse.de>
+ <alpine.DEB.2.02.1510132317080.2189@localhost6.localdomain6>
+ <20151013220512.GE14464@wotan.suse.de>
+ <alpine.DEB.2.02.1510140724160.2038@localhost6.localdomain6>
+ <20151014071143.GA6178@pema>
+Message-ID: <561E346D.2090005@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Error: The files /usr/lib64/ocaml/obj.cmi
->        and /usr/lib64/ocaml/menhirLib/menhirLib.cmi
->        make inconsistent assumptions over interface Obj
-> Makefile:90: recipe for target 'parser_cocci_menhir.cmx' failed
+> Normally, when Menhir is not installed, Coccinelle's buil system
+> should use the one provided in the bundles directory (same for MenhirLib).
+> At the moment this does not work quite wll and I am currently working on
+> fixing this issue.
 
-I stumbled on the following message since I installed
-the package "OCaml 4.02.3-1.1" also on my openSUSE system.
-
-
-Error: Files type_cocci.cmx and menhirLib.cmx
-       make inconsistent assumptions over implementation Printf
-Makefile:89: die Regel f?r Ziel ?cocci_parser.cmxa? scheiterte
+I am curious on how this software development will evolve.
 
 
-How do you think about to circumvent this software dependency hiccup
-by the OPAM interface for a while?
-https://opam.ocaml.org/packages/coccinelle/coccinelle.1.0.2/
+> Meanwhile, one other simple thing you could try is to install menhir
+> either through your distribution if it is packaged, or directly from sources.
+> Then start from a clean git repository and do the usual procedure
+> and I believe that shold work and would appreciate to know if it does not.
+
+I guess that there are further dependencies to consider.
+For which data processing tasks is this library needed in Coccinelle so far?
+http://cristal.inria.fr/~fpottier/menhir/CHANGES
+
+How do you think about to reuse the package "menhir-20151012.tar.gz"
+(together with the software "OCaml 4.02.3")?
 
 Regards,
 Markus
