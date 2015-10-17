@@ -1,28 +1,61 @@
 From: Julia.Lawall@lip6.fr (Julia Lawall)
-Date: Sat, 17 Oct 2015 11:35:46 +0200
-Subject: [Cocci] [PATCH] scripts/coccinelle: fix typos
-Message-ID: <1445074546-22023-1-git-send-email-Julia.Lawall@lip6.fr>
+Date: Sat, 17 Oct 2015 19:23:24 +0200
+Subject: [Cocci] [PATCH 1/2] coccinelle: ifnullfree: improve and extend
+	ifnullfree
+Message-ID: <1445102605-22408-1-git-send-email-Julia.Lawall@lip6.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Fix a couple spelling mistakes.
+Adjust tests to compare against NULL, to match cases that explicitly make
+that comparison.
+
+Remove removal and re-addition of freeing functions.
+
+Add position variable on usb_free_urb in the non-patch case.
 
 Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
 ---
- scripts/coccinelle/null/deref_null.cocci |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ scripts/coccinelle/free/ifnullfree.cocci |   18 +++++++-----------
+ 1 file changed, 7 insertions(+), 11 deletions(-)
 
-diff --git a/scripts/coccinelle/null/deref_null.cocci b/scripts/coccinelle/null/deref_null.cocci
-index cdac6cf..f192d60 100644
---- a/scripts/coccinelle/null/deref_null.cocci
-+++ b/scripts/coccinelle/null/deref_null.cocci
-@@ -1,6 +1,6 @@
- ///
--/// A variable is dereference under a NULL test.
--/// Even though it is know to be NULL.
-+/// A variable is dereferenced under a NULL test.
-+/// Even though it is known to be NULL.
- ///
- // Confidence: Moderate
- // Copyright: (C) 2010 Nicolas Palix, DIKU.  GPLv2.
+diff --git a/scripts/coccinelle/free/ifnullfree.cocci b/scripts/coccinelle/free/ifnullfree.cocci
+index a42d70b..d4a072d 100644
+--- a/scripts/coccinelle/free/ifnullfree.cocci
++++ b/scripts/coccinelle/free/ifnullfree.cocci
+@@ -16,19 +16,15 @@ virtual context
+ @r2 depends on patch@
+ expression E;
+ @@
+-- if (E)
++- if (E != NULL)
+ (
+--	kfree(E);
+-+ kfree(E);
++  kfree(E);
+ |
+--	debugfs_remove(E);
+-+ debugfs_remove(E);
++  debugfs_remove(E);
+ |
+--	debugfs_remove_recursive(E);
+-+ debugfs_remove_recursive(E);
++  debugfs_remove_recursive(E);
+ |
+--	usb_free_urb(E);
+-+ usb_free_urb(E);
++  usb_free_urb(E);
+ )
+ 
+ @r depends on context || report || org @
+@@ -36,8 +32,8 @@ expression E;
+ position p;
+ @@
+ 
+-* if (E)
+-*	\(kfree at p\|debugfs_remove at p\|debugfs_remove_recursive at p\|usb_free_urb\)(E);
++* if (E != NULL)
++*	\(kfree at p\|debugfs_remove at p\|debugfs_remove_recursive at p\|usb_free_urb at p\)(E);
+ 
+ @script:python depends on org@
+ p << r.p;
