@@ -1,123 +1,99 @@
-From: Julia.Lawall@lip6.fr (Julia Lawall)
-Date: Thu, 22 Oct 2015 22:11:59 +0200
-Subject: [Cocci] [PATCH] cocinelle: iterators: semantic patch to delete
-	unneeded of_node_put
-Message-ID: <1445544719-11953-1-git-send-email-Julia.Lawall@lip6.fr>
+From: d.granat@samsung.com (Daniel Granat)
+Date: Fri, 23 Oct 2015 17:31:06 +0200
+Subject: [Cocci] [PATCH v6] coccinelle: Improve checking for missing NULL
+	terminators
+In-Reply-To: <1425043313-15844-1-git-send-email-d.granat@samsung.com>
+References: <1425043313-15844-1-git-send-email-d.granat@samsung.com>
+Message-ID: <1445614266-14609-1-git-send-email-d.granat@samsung.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Device node iterators perform an of_node_put on each iteration, so putting
-an of_node_put before a continue results in a double put.
+* Extend checking on tables containing structures which are
+  initialized without specifying member name. Added new tables
+  for checking: i2c_device_id and platform_device_id.
 
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-
+Signed-off-by: Daniel Granat <d.granat@samsung.com>
 ---
- scripts/coccinelle/iterators/device_node_continue.cocci |  100 ++++++++++++++++
- 1 file changed, 100 insertions(+)
+ scripts/coccinelle/misc/of_table.cocci | 33 ++++++++++++++++++++++++++++-----
+ 1 file changed, 28 insertions(+), 5 deletions(-)
 
-diff --git a/scripts/coccinelle/iterators/device_node_continue.cocci b/scripts/coccinelle/iterators/device_node_continue.cocci
-new file mode 100644
-index 0000000..38ab744
---- /dev/null
-+++ b/scripts/coccinelle/iterators/device_node_continue.cocci
-@@ -0,0 +1,100 @@
-+/// Device node iterators put the previous value of the index variable, so an
-+/// explicit put causes a double put.
-+///
-+// Confidence: High
-+// Copyright: (C) 2015 Julia Lawall, Inria. GPLv2.
-+// URL: http://coccinelle.lip6.fr/
-+// Options: --no-includes --include-headers
-+// Keywords: for_each_child_of_node, etc.
-+
-+virtual patch
-+virtual context
-+virtual org
-+virtual report
-+
-+ at r exists@
-+expression e1,e2;
-+local idexpression n;
-+iterator name for_each_node_by_name, for_each_node_by_type,
-+for_each_compatible_node, for_each_matching_node,
-+for_each_matching_node_and_match, for_each_child_of_node,
-+for_each_available_child_of_node, for_each_node_with_property;
-+iterator i;
-+position p1,p2;
-+statement S;
-+@@
-+
+diff --git a/scripts/coccinelle/misc/of_table.cocci b/scripts/coccinelle/misc/of_table.cocci
+index 3c93404..2294915 100644
+--- a/scripts/coccinelle/misc/of_table.cocci
++++ b/scripts/coccinelle/misc/of_table.cocci
+@@ -1,6 +1,6 @@
+-/// Make sure of_device_id tables are NULL terminated
++/// Make sure (of/i2c/platform)_device_id tables are NULL terminated
+ //
+-// Keywords: of_table
++// Keywords: of_table i2c_table platform_table
+ // Confidence: Medium
+ // Options: --include-headers
+ 
+@@ -13,18 +13,26 @@ virtual report
+ identifier var, arr;
+ expression E;
+ @@
+-struct of_device_id arr[] = {
 +(
++struct \(of_device_id \| i2c_device_id \| platform_device_id\) arr[] = {
+ 	...,
+ 	{
+ 	.var = E,
+ *	}
+ };
++|
++struct \(of_device_id \| i2c_device_id \| platform_device_id\) arr[] = {
++	...,
++*	{ ..., E, ... },
++};
++)
+ 
+ @depends on patch@
+ identifier var, arr;
+ expression E;
+ @@
+-struct of_device_id arr[] = {
 +(
-+for_each_node_by_name(n,e1) S
++struct \(of_device_id \| i2c_device_id \| platform_device_id\) arr[] = {
+ 	...,
+ 	{
+ 	.var = E,
+@@ -32,19 +40,34 @@ struct of_device_id arr[] = {
+ +	},
+ +	{ }
+ };
 +|
-+for_each_node_by_type(n,e1) S
-+|
-+for_each_compatible_node(n,e1,e2) S
-+|
-+for_each_matching_node(n,e1) S
-+|
-+for_each_matching_node_and_match(n,e1,e2) S
-+|
-+for_each_child_of_node(e1,n) S
-+|
-+for_each_available_child_of_node(e1,n) S
-+|
-+for_each_node_with_property(n,e1) S
++struct \(of_device_id \| i2c_device_id \| platform_device_id\) arr[] = {
++	...,
++	{ ..., E, ... },
+++	{ },
++};
 +)
-+&
-+i at p1(...) {
-+   ... when != of_node_get(n)
-+       when any
-+   of_node_put at p2(n);
-+   ... when any
-+}
+ 
+ @r depends on org || report@
+ position p1;
+ identifier var, arr;
+ expression E;
+ @@
+-struct of_device_id arr[] = {
++(
++struct \(of_device_id \| i2c_device_id \| platform_device_id\) arr[] = {
+ 	...,
+ 	{
+ 	.var = E,
+ 	}
+ 	@p1
+ };
++|
++struct \(of_device_id \| i2c_device_id \| platform_device_id\) arr[] = {
++	...,
++	{ ..., E, ... }
++	@p1
++};
 +)
-+
-+ at s exists@
-+local idexpression r.n;
-+statement S;
-+position r.p1,r.p2;
-+iterator i;
-+@@
-+
-+ of_node_put at p2(n);
-+ ... when any
-+ i at p1(..., n, ...)
-+ S
-+
-+ at t depends on s && patch && !context && !org && !report@
-+local idexpression n;
-+position r.p2;
-+@@
-+
-+- of_node_put at p2(n);
-+
-+// ----------------------------------------------------------------------------
-+
-+ at t_context depends on s && !patch && (context || org || report)@
-+local idexpression n;
-+position r.p2;
-+position j0;
-+@@
-+
-+*  of_node_put at j0@p2(n);
-+
-+// ----------------------------------------------------------------------------
-+
-+ at script:python t_org depends on org@
-+j0 << t_context.j0;
-+@@
-+
-+msg = "ERROR: probable double put."
-+coccilib.org.print_todo(j0[0], msg)
-+
-+// ----------------------------------------------------------------------------
-+
-+@script:python t_report depends on report@
-+j0 << t_context.j0;
-+@@
-+
-+msg = "ERROR: probable double put."
-+coccilib.report.print_report(j0[0], msg)
-+
+ 
+ @script:python depends on org@
+ p1 << r.p1;
+-- 
+1.9.1
