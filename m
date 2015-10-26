@@ -1,18 +1,17 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 28 Oct 2015 23:06:34 +0100 (CET)
-Subject: [Cocci] version 1.0.4 released
-In-Reply-To: <20151027123748.GA27349@pl-59055.rocqadm.inria.fr>
-References: <alpine.DEB.2.02.1510262151580.2079@localhost6.localdomain6>
- <20151027101421.GA14273@redhat.com>
- <20151027102517.GA3871@pl-59055.rocqadm.inria.fr>
- <20151027115733.GB14273@redhat.com>
- <20151027123748.GA27349@pl-59055.rocqadm.inria.fr>
-Message-ID: <alpine.DEB.2.02.1510282304240.2054@localhost6.localdomain6>
+From: mmarek@suse.com (Michal Marek)
+Date: Mon, 26 Oct 2015 20:44:16 +0100
+Subject: [Cocci] [PATCH v2] coccinelle: misc: move constants to the right
+In-Reply-To: <1441394871-17774-1-git-send-email-Julia.Lawall@lip6.fr>
+References: <1441394871-17774-1-git-send-email-Julia.Lawall@lip6.fr>
+Message-ID: <562E8290.7070104@suse.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Version 1.0.4 is released.  This removes the make of spgen when making 
-spatch, removes the pre-generated menhir file when menhir is available, 
-and adds the ability to reason about the lengths of statement lists.
+Dne 4.9.2015 v 21:27 Julia Lawall napsal(a):
+> Move constants to the right in binary operators.
+> 
+> Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
-julia
+Applied to kbuild.git#misc, thanks.
+
+Michal
