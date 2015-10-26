@@ -1,37 +1,62 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 26 Oct 2015 22:36:02 +0100 (CET)
-Subject: [Cocci] [PATCH 1/2] coccinelle: ifnullfree: improve and extend
- ifnullfree
-In-Reply-To: <562E9BE3.5080004@suse.com>
-References: <1445102605-22408-1-git-send-email-Julia.Lawall@lip6.fr>
- <56236C9A.8060906@users.sourceforge.net> <562E9BE3.5080004@suse.com>
-Message-ID: <alpine.DEB.2.02.1510262235490.2079@localhost6.localdomain6>
+From: Julia.Lawall@lip6.fr (Julia Lawall)
+Date: Mon, 26 Oct 2015 22:28:25 +0100
+Subject: [Cocci] [PATCH 1/2 v2] coccinelle: ifnullfree: various cleanups
+Message-ID: <1445894906-28137-1-git-send-email-Julia.Lawall@lip6.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, 26 Oct 2015, Michal Marek wrote:
+Adjust tests to compare against NULL, to match cases that explicitly make
+that comparison.
 
-> Dne 18.10.2015 v 11:55 SF Markus Elfring napsal(a):
-> >> Remove removal and re-addition of freeing functions.
-> > 
-> > I find such a wording confusing for a commit message.
-> 
-> It is also a bit confusing to use the same subject for two patches in a
-> series. How about
-> 
-> [PATCH 1/2] coccinelle: ifnullfree: Adjust tests to compare against NULL
-> [PATCH 2/2] coccinelle: ifnullfree: handle various destroy functions
+Remove removal and re-addition of freeing functions.
 
-Sorry.  I'll send them again.
+Add position variable on usb_free_urb in the non-patch case.
 
-julia
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
-> 
-> ?
-> 
-> Michal
-> --
-> To unsubscribe from this list: send the line "unsubscribe kernel-janitors" in
-> the body of a message to majordomo at vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+---
+v2: better subject
+
+ scripts/coccinelle/free/ifnullfree.cocci |   18 +++++++-----------
+ 1 file changed, 7 insertions(+), 11 deletions(-)
+
+diff --git a/scripts/coccinelle/free/ifnullfree.cocci b/scripts/coccinelle/free/ifnullfree.cocci
+index a42d70b..d4a072d 100644
+--- a/scripts/coccinelle/free/ifnullfree.cocci
++++ b/scripts/coccinelle/free/ifnullfree.cocci
+@@ -16,19 +16,15 @@ virtual context
+ @r2 depends on patch@
+ expression E;
+ @@
+-- if (E)
++- if (E != NULL)
+ (
+--	kfree(E);
+-+ kfree(E);
++  kfree(E);
+ |
+--	debugfs_remove(E);
+-+ debugfs_remove(E);
++  debugfs_remove(E);
+ |
+--	debugfs_remove_recursive(E);
+-+ debugfs_remove_recursive(E);
++  debugfs_remove_recursive(E);
+ |
+--	usb_free_urb(E);
+-+ usb_free_urb(E);
++  usb_free_urb(E);
+ )
+ 
+ @r depends on context || report || org @
+@@ -36,8 +32,8 @@ expression E;
+ position p;
+ @@
+ 
+-* if (E)
+-*	\(kfree at p\|debugfs_remove at p\|debugfs_remove_recursive at p\|usb_free_urb\)(E);
++* if (E != NULL)
++*	\(kfree at p\|debugfs_remove at p\|debugfs_remove_recursive at p\|usb_free_urb at p\)(E);
+ 
+ @script:python depends on org@
+ p << r.p;
