@@ -1,26 +1,26 @@
-From: mmarek@suse.com (Michal Marek)
-Date: Mon, 26 Oct 2015 22:46:16 +0100
-Subject: [Cocci] [PATCH v6] coccinelle: Improve checking for missing
- NULL terminators
-In-Reply-To: <alpine.DEB.2.02.1510232135430.2052@localhost6.localdomain6>
-References: <1425043313-15844-1-git-send-email-d.granat@samsung.com>
- <1445614266-14609-1-git-send-email-d.granat@samsung.com>
- <alpine.DEB.2.02.1510232135430.2052@localhost6.localdomain6>
-Message-ID: <562E9F28.5040409@suse.com>
+From: Sebastien.Hinderer@inria.fr (=?utf-8?Q?S=C3=A9bastien?= Hinderer)
+Date: Tue, 27 Oct 2015 10:38:39 +0100
+Subject: [Cocci] version 1.0.3 released
+In-Reply-To: <alpine.DEB.2.02.1510262151580.2079@localhost6.localdomain6>
+References: <alpine.DEB.2.02.1510262151580.2079@localhost6.localdomain6>
+Message-ID: <20151027093839.GA1503@pl-59055.rocqadm.inria.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Dne 23.10.2015 v 21:35 Julia Lawall napsal(a):
-> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
-> 
-> On Fri, 23 Oct 2015, Daniel Granat wrote:
-> 
->> * Extend checking on tables containing structures which are
->>   initialized without specifying member name. Added new tables
->>   for checking: i2c_device_id and platform_device_id.
->>
->> Signed-off-by: Daniel Granat <d.granat@samsung.com>
+Hello,
 
-Applied to kbuild.git#misc.
+Julia Lawall (2015/10/26 22:12 +0100):
+> * The dependency on ocamlp4 is removed, except when support for python is 
+> included.
 
-Michal
+Read camlp4 rather than ocamlp4.
+To be more precise, Coccinelle relies on a library called pycaml to
+support Python scripts. camlp4 is required only to compile this library.
+So if the library has been installed independently, e.g. through the
+distribution's packaging system (as can be done on Debian since pycaml
+is packaed), then camlp4 is not required. If the library has not been
+installed and Python scripting support is requested, then Coccinelle's
+build systemwill attempt to compile the bundled version of the camlp4
+library, which will require camlp4.
+
+S?bastien.
