@@ -1,25 +1,39 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 28 Oct 2015 08:33:21 +0100 (CET)
-Subject: [Cocci] version 1.0.3 released
-In-Reply-To: <alpine.DEB.2.02.1510280805420.2056@localhost6.localdomain6>
-References: <alpine.DEB.2.02.1510262151580.2079@localhost6.localdomain6>
- <20151027101421.GA14273@redhat.com>
- <20151027102517.GA3871@pl-59055.rocqadm.inria.fr>
- <20151027115733.GB14273@redhat.com>
- <20151027123748.GA27349@pl-59055.rocqadm.inria.fr>
- <20151027212658.GC14273@redhat.com>
- <alpine.DEB.2.02.1510280805420.2056@localhost6.localdomain6>
-Message-ID: <alpine.DEB.2.02.1510280832460.2056@localhost6.localdomain6>
+From: mmarek@suse.com (Michal Marek)
+Date: Wed, 28 Oct 2015 11:04:56 +0100
+Subject: [Cocci] [PATCH] coccinelle: misc: remove "complex return code"
+	warnings
+In-Reply-To: <20151028095414.GD28572@localhost>
+References: <1443652647-23097-1-git-send-email-johan@kernel.org>
+ <alpine.DEB.2.10.1510031825170.2586@hadrien>
+ <20151028095414.GD28572@localhost>
+Message-ID: <56309DC8.5030202@suse.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> It is used to make a semntic patche acceptable for inclusion in the Linux 
-> kernel.  There is actually a very nice documentation for it in the 
-> spgen/documentation directory.  But don't worry about distributing it now.  
-> We will try to make it available in a better manner for the next release 
-> (not the one planned for today, but after that).
+Dne 28.10.2015 v 10:54 Johan Hovold napsal(a):
+> On Sat, Oct 03, 2015 at 06:25:39PM +0200, Julia Lawall wrote:
+>> Should have acked this message...
+>>
+>> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+>>
+>> On Wed, 30 Sep 2015, Johan Hovold wrote:
+>>
+>>> This effectively reverts 932058a5d5f9 ("coccinelle: misc: semantic patch
+>>> to delete overly complex return code processing").
+>>>
+>>> There can be both symmetry and readability reasons for not wanting to do
+>>> the final function call as part of the return statement and to maintain
+>>> a clear separation of success and error paths.
+>>>
+>>> Since this is in no way mandated by the coding standard, let's just
+>>> remove this semantic patch to avoid having "clean up" patches being
+>>> posted over and over in response to these Coccinelle warnings.
+>>>
+>>> Signed-off-by: Johan Hovold <johan@kernel.org>
+> 
+> Is anyone planning on picking this patch up?
 
-spgen should have a man page too.  Not sure what is the status of that, 
-though.
+It is already in kbuild.git as commit 1a617a8475e8, I apparenly forgot
+to reply to this thread.
 
-julia
+Michal
