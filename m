@@ -1,17 +1,20 @@
-From: mmarek@suse.com (Michal Marek)
-Date: Mon, 26 Oct 2015 20:44:16 +0100
-Subject: [Cocci] [PATCH v2] coccinelle: misc: move constants to the right
-In-Reply-To: <1441394871-17774-1-git-send-email-Julia.Lawall@lip6.fr>
-References: <1441394871-17774-1-git-send-email-Julia.Lawall@lip6.fr>
-Message-ID: <562E8290.7070104@suse.com>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Thu, 29 Oct 2015 11:21:56 +0100
+Subject: [Cocci] Release 1.0.3: Clarification around SmPL conjunctions
+In-Reply-To: <alpine.DEB.2.02.1510262151580.2079@localhost6.localdomain6>
+References: <alpine.DEB.2.02.1510262151580.2079@localhost6.localdomain6>
+Message-ID: <5631F344.9080804@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Dne 4.9.2015 v 21:27 Julia Lawall napsal(a):
-> Move constants to the right in binary operators.
-> 
-> Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+> * There is now support for conjunctions ( & ... & ).  As for a 
+> disjunction, the () and & should be in column 0.  A conjunction requires 
+> two patterns to match against a given piece of code in a consistent way.
 
-Applied to kbuild.git#misc, thanks.
+When will corresponding descriptions appear also in the manual?
 
-Michal
+How does this software extension differ in the handling of several changes
+in patch scripts together without using an ampersand?
+
+Regards,
+Markus
