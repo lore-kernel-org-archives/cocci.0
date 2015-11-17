@@ -1,27 +1,153 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 30 Oct 2015 17:52:25 +0100
-Subject: [Cocci] Release 1.0.3: Clarification around SmPL conjunctions
-In-Reply-To: <alpine.DEB.2.10.1510301705060.2364@hadrien>
-References: <alpine.DEB.2.02.1510262151580.2079@localhost6.localdomain6>
- <5631F344.9080804@users.sourceforge.net>
- <alpine.DEB.2.10.1510301405330.2364@hadrien>
- <56337A59.8030804@users.sourceforge.net>
- <alpine.DEB.2.10.1510301535230.2364@hadrien>
- <563383DF.9000509@users.sourceforge.net>
- <alpine.DEB.2.10.1510301606020.2364@hadrien>
- <56338C69.3030401@users.sourceforge.net>
- <alpine.DEB.2.10.1510301643040.2364@hadrien>
- <563390EE.1000306@users.sourceforge.net>
- <alpine.DEB.2.10.1510301705060.2364@hadrien>
-Message-ID: <5633A049.9090801@users.sourceforge.net>
+From: kborer@gmail.com (Kris Borer)
+Date: Tue, 17 Nov 2015 11:34:21 -0500
+Subject: [Cocci] [PATCH v2] coccinelle: add style check for assignment in if
+Message-ID: <1447778061-13096-1-git-send-email-kborer@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> demos/conjunction.c is only intended for use with demos/conjunction.cocci,
-> which doesn't care at all about the name of the containing function.
+Add a semantic patch for fixing some cases of checkpatch.pl error:
 
-Will this source code example become a bit easier to understand
-if one of the test functions will be renamed so that the names are unique?
+ERROR: do not use assignment in if condition
 
-Regards,
-Markus
+Signed-off-by: Kris Borer <kborer@gmail.com>
+---
+ scripts/coccinelle/style/assignment_in_if.cocci | 128 ++++++++++++++++++++++++
+ 1 file changed, 128 insertions(+)
+ create mode 100644 scripts/coccinelle/style/assignment_in_if.cocci
+
+diff --git a/scripts/coccinelle/style/assignment_in_if.cocci b/scripts/coccinelle/style/assignment_in_if.cocci
+new file mode 100644
+index 0000000..b23db8f
+--- /dev/null
++++ b/scripts/coccinelle/style/assignment_in_if.cocci
+@@ -0,0 +1,128 @@
++/// move assignments out of if conditions
++///
++//# This script is designed to correct code where assignments exist in if
++//# conditions. It is only capable of handling a subset of such problems.
++//# Ideally it would handle all checkpatch errors of the following type:
++//#	ERROR: do not use assignment in if condition
++//#
++//# For example:
++//#	if(result = myfun())
++//#
++//# would become:
++//#	result = myfun();
++//#	if(result)
++//
++// Confidence: Moderate
++// Copyright: (C) 2015 Kris Borer.  GPLv2.
++// URL: http://coccinelle.lip6.fr/
++// Comments:
++// Options: --no-includes --include-headers
++
++virtual patch
++
++
++// if ( (ret = call()) )
++// if ( (ret = call()) < 0 )
++@if1@
++expression i;
++expression E, E2;
++statement S1, S2;
++binary operator b;
++@@
++
+++ i = E;
++  if (
++(
++- (i = E)
+++ i
++|
++- (i = E)
+++ i
++  b ...
++|
++- (i = E),
++  E2
++)
++  ) S1 else S2
++
++
++// if ( ptr->fun && (ret = ptr->fun()) )
++ at if2@
++expression i2;
++expression E1, E2;
++@@
++
+++ if( E1 ) {
+++       i2 = E2;
+++       if (i2) {
++- if( E1 && (i2 = E2) ) {
++  ...
++- }
+++       }
+++ }
++
++
++// if ( ptr->fun && (ret = ptr->fun()) < 0 )
++ at if3@
++expression i2;
++expression E1, E2;
++constant c;
++binary operator b;
++@@
++
+++ if( E1 ) {
+++       i2 = E2;
+++       if (i2 b c) {
++- if( E1 && ((i2 = E2) b c) ) {
++  ...
++- }
+++       }
+++ }
++
++
++// if ( (ret = call()) && ret != -1 )
++// if ( (ret = call()) < 0 && ret != -1 )
++ at if4@
++expression i;
++expression E, E2;
++statement S1, S2;
++binary operator b;
++@@
++
+++ i = E;
++  if (
++(
++- (i = E)
+++ i
++|
++  (
++- (i = E)
+++ i
++  b
++  ...)
++)
++  && E2 ) S1 else S2
++
++
++// if ( (ret = call()) && ret != -1 && ret != -2 )
++// if ( (ret = call()) < 0 && ret != -1 && ret != -2 )
++@if5@
++expression i;
++expression E, E2, E3;
++statement S1, S2;
++binary operator b;
++@@
++
+++ i = E;
++  if (
++(
++- (i = E)
+++ i
++|
++  (
++- (i = E)
+++ i
++  b
++  ...)
++)
++  && E2 && E3 ) S1 else S2
+-- 
+1.9.1
