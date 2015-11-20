@@ -1,10 +1,10 @@
 From: mcgrof@do-not-panic.com (Luis R. Rodriguez)
-Date: Thu, 19 Nov 2015 15:22:14 -0800
+Date: Fri, 20 Nov 2015 09:47:45 -0800
 Subject: [Cocci] [PATCH 2/9] Use gnutls_priority_set_direct() to deprecate
 	gnutls_*_set()
-In-Reply-To: <1447975341-32070-1-git-send-email-mcgrof@do-not-panic.com>
-References: <1447975341-32070-1-git-send-email-mcgrof@do-not-panic.com>
-Message-ID: <1447975341-32070-3-git-send-email-mcgrof@do-not-panic.com>
+In-Reply-To: <1448041672-3986-1-git-send-email-mcgrof@do-not-panic.com>
+References: <1448041672-3986-1-git-send-email-mcgrof@do-not-panic.com>
+Message-ID: <1448041672-3986-3-git-send-email-mcgrof@do-not-panic.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
