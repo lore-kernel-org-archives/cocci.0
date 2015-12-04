@@ -1,93 +1,98 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 4 Dec 2015 15:44:20 +0100 (CET)
-Subject: [Cocci] Searching with SmPL for missing clean-up settings in
- designated initialisers
-In-Reply-To: <56619B56.7040508@users.sourceforge.net>
-References: <56603DC3.8040609@hurleysoftware.com>
- <56608E06.9060003@metafoo.de> <alpine.DEB.2.10.1512032310280.2777@hadrien>
- <20151203234832.GB20409@wotan.suse.de>
- <56619B56.7040508@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1512041543520.2764@hadrien>
+From: peter.maydell@linaro.org (Peter Maydell)
+Date: Fri, 4 Dec 2015 15:46:58 +0000
+Subject: [Cocci] Using Coccinelle to add #include lines
+Message-ID: <CAFEAcA-HKiMsz36SbfaGN3Oaz3Jn_h+f8McaHo48zmsngJtyRg@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hi. I'm trying to use Coccinelle to automate the process of imposing
+this rule:
+ * every .c file should #include "qemu/osdep.h" as the first thing it
+   #includes
+
+but I'm having some trouble figuring out how to get Coccinelle to do this.
+I'm hoping somebody can suggest to me where I'm going wrong and/or
+the right way to do this. Below I'll explain the things I've tried
+already:
+
+My first attempt was:
+
+===begin===
+// Add new include before first "..." include
+@ add1 @
+@@
+
++ #include "qemu/osdep.h"
+ #include "..."
+
+===endit===
+
+This almost works, but if the first include happens to be "#include <...>"
+rather than "..." then it will put the include in the wrong place. (It
+also doesn't remove any existing-but-not-at-the-top include of osdep.h,
+but I'll get to that later). So I tried:
+
+===begin===
+@ add2 @
+@@
+
++ #include "qemu/osdep.h"
+(
+ #include "..."
+|
+ #include <...>
+)
+
+===endit===
+
+This causes Coccinelle to complain:
+init_defs_builtins: /usr/share/coccinelle/standard.h
+Fatal error: exception Failure("6: no available token to attach to")
+
+So then I tried:
+===begin===
+@ add3 @
+@@
+
++ #include "qemu/osdep.h"
+ #include
+(
+ "..."
+|
+ <...>
+)
+
+===endit===
+
+which produces a different cryptic error:
+init_defs_builtins: /usr/share/coccinelle/standard.h
+File "/home/petmay01/linaro/coccinelle-patches/osdep-include-2.spatch",
+line 7, column 1,  charpos = 87
+    around = '#', whole content =  #include
+Fatal error: exception Lexer_cocci.Lexical("unrecognised symbol, in
+token rule: #")
 
 
-On Fri, 4 Dec 2015, SF Markus Elfring wrote:
+OK, plan B: have two rules like 'add1', one for each kind of include. This
+might result in two includes per file, but we need to remove any
+extra existing includes anyway, and that will delete the extras.
+However my removal rule:
 
-> > virtual context
-> >
-> > @ is_tty @
-> > identifier fops;
-> > @@
-> > struct tty_operations fops = {
-> > };
-> >
-> > @ tty_has_cleanup depends on is_tty @
-> > identifier is_tty.fops;
-> > identifier fn;
-> > @@
-> > struct tty_operations fops = {
-> >         .cleanup = fn,
-> > };
-> >
-> > @ depends on is_tty && !tty_has_cleanup && context @
-> > identifier is_tty.fops;
-> > @@
-> > * struct tty_operations fops = {
-> > };
->
-> How do you think about a SmPL approach like the following?
->
->
-> virtual show_context_diff
->
-> @contains_member_functions@
-> identifier var;
-> struct operations =~ "^(?x)
-> (?:
->    \w+_operations
-> |
->    (?:
-> # Alternation placeholder
->    )
-> )$";
-> @@
->  operations var = { ... };
->
-> @contains_cleanup_function
->  contains_member_functions@
-> expression assign;
-> identifier release =~ "^(?x)
-> (?:
->    cleanup
-> |
->    (?:
-> # Another alternation placeholder
->    )
-> )$",
->            contains_member_functions.var;
-> type contains_member_functions.operations;
-> @@
->  operations var = { ...,
->                     .cleanup = (assign),
->                     ...
->                   };
->
-> @show_member_functions
->  depends on show_context_diff
->             && contains_member_functions
->             && !contains_cleanup_function@
-> identifier contains_member_functions.var;
-> struct contains_member_functions.operations;
-> @@
-> *operations var = { ... };
->
->
-> Would this SmPL script variant need any further fine-tuning
-> (or other software extensions)?
+===begin===
+@ delete @
+@@
 
-I have no idea what the above does.  The previous proposed variants were
-completely fine.
+ #include "qemu/osdep.h"
+ ...
+- #include "qemu/osdep.h"
 
-julia
+===endit===
+
+doesn't result in coccinelle thinking it needs to change the file.
+How do I say "delete the 2nd, 3rd, etc instances of this line" ?
+
+(I'm using "spatch version 1.0.0-rc19 with Python support and with
+PCRE support", which is the version in Ubuntu Trusty.)
+
+thanks in advance
+-- PMM
