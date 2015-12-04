@@ -1,32 +1,33 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 4 Dec 2015 09:55:29 +0100
+Date: Fri, 4 Dec 2015 12:31:02 +0100
 Subject: [Cocci] how to find missing initializer
-In-Reply-To: <56603DC3.8040609@hurleysoftware.com>
+In-Reply-To: <alpine.DEB.2.10.1512032310280.2777@hadrien>
 References: <56603DC3.8040609@hurleysoftware.com>
-Message-ID: <56615501.4070200@users.sourceforge.net>
+ <56608E06.9060003@metafoo.de> <alpine.DEB.2.10.1512032310280.2777@hadrien>
+Message-ID: <56617976.9040405@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> So trying to find those in-tree drivers which _do not_ define a cleanup
-> method with coccinelle, led to this fragment which has a parse error.
+>> @r1@
+>> identifier fops;
+>> identifier fn;
+>> position p;
+>> @@
+>> struct tty_operations fops at p = {
+>>     ...,
+>>     .cleanup = fn,
+>>     ...
+>> };
 > 
-> Apologies if my question is obvious or trivial;
+> You don't need the ...
 
-Your support request is fine. - You show just another interesting use case.
-
-The preferred approach is mostly not so obvious for things you find
-to be missing.
+I find it interesting that you suggest to omit the use of SmPL ellipsis here.
 
 
-> I'm still learning coccinelle.
+> Coccinelle is very relaxed about matching structure initializers.
 
-It is usual that it will take some time to become familiar to express
-better solutions also with another programming language.
-My knowledge is still evolving ?
-
-There are more software development challenges to consider for
-the semantic patch language around the handling of function pointers,
-aren't there?
+Would you like to explain the handling of designated initialisers
+with the semantic patch language a bit more?
 
 Regards,
 Markus
