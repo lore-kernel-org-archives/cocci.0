@@ -1,45 +1,59 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 9 Dec 2015 15:15:18 +0100
-Subject: [Cocci] Finding usage of the statement "goto" with SmPL
-In-Reply-To: <alpine.DEB.2.10.1512091458390.2491@hadrien>
-References: <566831B8.1020306@users.sourceforge.net>
- <alpine.DEB.2.10.1512091458390.2491@hadrien>
-Message-ID: <56683776.3000602@users.sourceforge.net>
+From: Sebastien.Hinderer@inria.fr (=?utf-8?Q?S=C3=A9bastien?= Hinderer)
+Date: Thu, 10 Dec 2015 16:17:48 +0100
+Subject: [Cocci] Request 339055 commented by jengelh (submit
+ devel:tools/coccinelle)
+In-Reply-To: <20151022131829.GQ9528@wotan.suse.de>
+References: <obs-request-339055@build.opensuse.org>
+ <561ec27032c86_2e7132ba18787fc@build.opensuse.org>
+ <20151014210450.GI14464@wotan.suse.de>
+ <alpine.LSU.2.20.1510142311580.17133@nerf40.vanv.qr>
+ <20151014212342.GK14464@wotan.suse.de>
+ <alpine.LSU.2.20.1510150045200.18488@nerf40.vanv.qr>
+ <562872D8.3060004@users.sourceforge.net>
+ <alpine.LSU.2.20.1510220948270.20948@nerf40.vanv.qr>
+ <20151022131829.GQ9528@wotan.suse.de>
+Message-ID: <20151210151748.GD2253@pl-59055.rocqadm.inria.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> It doesn't match anything because when you write a rule that has no *,
-> then it is considered that you want the pattern to match on every
-> execution path.  It is unlikely that the goto is on every execution path,
-> so you get nothing.
+Hi,
 
-This is true.
+Sorry for the delayed response.
 
+Luis R. Rodriguez (2015/10/22 15:18 +0200):
+> On Thu, Oct 22, 2015 at 09:51:17AM +0200, Jan Engelhardt wrote:
+> > 
+> > On Thursday 2015-10-22 07:23, SF Markus Elfring wrote:
+> > >
+> > >> Since coccinelle.spec does not invoke autoreconf
+> > >
+> > >How does the script "https://github.com/coccinelle/coccinelle/blob/a46bef70162d17cec6b0fc6101d737989f735ee4/autogen"
+> > >fit to your view?
+> > 
+> > 1. Running `aclocal; autoconf` is not enough. I spot a Makefile.am
+> > in the source tree, so you more or less need `autoreconf -fi`
+> > instead in the "autogen" script.
 
-> To solve the problem, just put exists in the initial @@
+Well, the Makefile.am is indeed present but not actually used so are you
+really sure the change you suggest is required?
 
-Thanks for your quick clarification.
+Is there any specific problem you are trying to solve with the current
+code?
 
-I'm sorry that I overlooked this SmPL script setting somehow.
-Now I get also the expected results for this SmPL approach.
+> > 2. My point was that autogen / aclocal / autoconf / etc.
+> > only needs to be run if there is no "configure" script present.
+> > Because there is a configure script in the released tarballs
+> > (at least there was so far), there is no need for coccinelle.spec to run
+> > autogen. And if autogen/aclocal/autoconf/etc. is not run, we do not need to
+> > BuildRequire it.
+> 
+> The latest tarballs do not require it but the next releases will, so configure
+> will not be carried, so this was more of a heads up note / pro-active
+> patch.
 
+Well, so far my idea was to not provide configure in a public coccinelle
+repository but to provide it in tarballs, following an approach which I
+believe is common to many open-source projects, i.e. not
+version-controlling any generated file but still distribute them in tarballs.
 
-function|"source file"|line|column|go_to|label_line|label_column
-__zram_make_request|"/home/elfring/Projekte/Linux/next-patched/drivers/block/zram/zram_drv.c"|841|13|out|874|10
-?
-zram_rw_page|"/home/elfring/Projekte/Linux/next-patched/drivers/block/zram/zram_drv.c"|937|12|put_zram|952|8
-
-
-> If you don't care about the position of the function header of the
-> containing function, but could live with just the function name,
-
-I reuse the information "line" and "column" from this metavariable intentionally.
-
-
-> you can access it much more efficiently from a position variable on the goto,
-> in the field current_element.
-
-I will consider such fine-tuning for other source code analysis.
-
-Regards,
-Markus
+S?bastien.
