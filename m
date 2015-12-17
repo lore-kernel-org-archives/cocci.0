@@ -1,24 +1,51 @@
-From: dganesan@fc-md.umd.edu (Dharmalingam Ganesan)
-Date: Thu, 17 Dec 2015 11:38:29 -0500
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Thu, 17 Dec 2015 18:28:42 +0100 (CET)
 Subject: [Cocci] Coccinelle for other programming languages
-Message-ID: <B517F47C2F6D914AA8121201F9EBEE6701C7CF57C22C@Mail1.FCMD.local>
+In-Reply-To: <B517F47C2F6D914AA8121201F9EBEE6701C7CF57C22C@Mail1.FCMD.local>
+References: <B517F47C2F6D914AA8121201F9EBEE6701C7CF57C22C@Mail1.FCMD.local>
+Message-ID: <alpine.DEB.2.10.1512171825240.10291@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi,
-Coccinelle sounds very interesting. I'm curious whether you can comment on any other tools for other programming languages.
+On Thu, 17 Dec 2015, Dharmalingam Ganesan wrote:
 
-Thanks a lot.
-Dharma
+>
+> Hi,
+>
+> Coccinelle sounds very interesting. I?m curious whether you can comment on any other tools for other programming languages.
 
-Dr. Dharmalingam Ganesan, PhD
-Senior Research Scientist
-Fraunhofer Center for Experimental Software Engineering (CESE)
-5825 University Research Court (Suite 1300)
-College Park, Maryland 20740
+Coccinelle doesn't support any languages other than C, and a small amount
+of C++.  For C++, it parses the C-like parts of the code, and ignores the
+rest.  It could be conceptually possible to design a version of Coccinelle
+for other languages, but it would require a lot of development work, so
+funding would be required.
 
-Tel: 240 487 2915
+julia
 
--------------- next part --------------
-An HTML attachment was scrubbed...
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20151217/0049248e/attachment.html>
+>
+> ?
+>
+> Thanks a lot.
+>
+> Dharma
+>
+> ?
+>
+> Dr. Dharmalingam Ganesan, PhD
+>
+> Senior Research Scientist
+>
+> Fraunhofer Center for Experimental Software Engineering (CESE)
+>
+> 5825 University Research Court (Suite 1300)
+>
+> College Park, Maryland 20740
+>
+> ?
+>
+> Tel: 240 487 2915
+>
+> ?
+>
+>
+>
