@@ -1,28 +1,47 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 18 Dec 2015 17:46:22 +0100 (CET)
+From: dganesan@fc-md.umd.edu (Dharmalingam Ganesan)
+Date: Fri, 18 Dec 2015 11:28:58 -0500
 Subject: [Cocci] Coccinelle for other programming languages
-In-Reply-To: <B517F47C2F6D914AA8121201F9EBEE6701C7CF57C291@Mail1.FCMD.local>
+In-Reply-To: <alpine.DEB.2.10.1512181603050.2499@hadrien>
 References: <B517F47C2F6D914AA8121201F9EBEE6701C7CF57C22C@Mail1.FCMD.local>
  <alpine.DEB.2.10.1512171825240.10291@hadrien>
  <20151217221143.GV20409@wotan.suse.de>
  <5673BF55.4010902@users.sourceforge.net>
  <B517F47C2F6D914AA8121201F9EBEE6701C7CF57C282@Mail1.FCMD.local>
  <alpine.DEB.2.10.1512181603050.2499@hadrien>
- <B517F47C2F6D914AA8121201F9EBEE6701C7CF57C291@Mail1.FCMD.local>
-Message-ID: <alpine.DEB.2.10.1512181745050.2499@hadrien>
+Message-ID: <B517F47C2F6D914AA8121201F9EBEE6701C7CF57C291@Mail1.FCMD.local>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Thanks for the quick response. I'm watching your youtube videos. 
 
+I saw " She develops the tool Coccinelle and has over 1000 patches in the Linux kernel based on this work". 
+
+Is it possible to get access to all your patches? I went over the Coccinelle web page gallery, but not sure it has 1000 patches.
+
+Thanks,
+Dharma
+
+-----Original Message-----
+From: Julia Lawall [mailto:julia.lawall at lip6.fr] 
+Sent: Friday, December 18, 2015 10:11 AM
+To: Dharmalingam Ganesan
+Cc: SF Markus Elfring; Luis R. Rodriguez; cocci at systeme.lip6.fr
+Subject: Re: [Cocci] Coccinelle for other programming languages
 
 On Fri, 18 Dec 2015, Dharmalingam Ganesan wrote:
 
-> Thanks for the quick response. I'm watching your youtube videos.
+> Hi,
 >
-> I saw " She develops the tool Coccinelle and has over 1000 patches in the Linux kernel based on this work".
+> What is the effort it will take to come up with a Coccinelle for 
+> dynamic languages such as Python, JavaScript, etc.
 >
-> Is it possible to get access to all your patches? I went over the Coccinelle web page gallery, but not sure it has 1000 patches.
+> Which parts of Coccinelle would require customization, rework, etc.
 
-https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git/log/?id=refs%2Ftags%2Fnext-20151218&qt=author&q=Lawall
+Pretty much everything.  The whole thing is built on an abstract syntax tree (embedded into a control-flow graph), so almost all of the code is determined by the various productions of the abstract syntax tree.  Of course, many kinds of syntax found in C have counterparts in other languages, so the work would mostly be tedious rather than hard.
+
+Working on a dynamic language shouldn't make that much difference.  There will just be no types; types have turned out to be often useful when working on the Linux kernel.
+
+Finally, interprocedural analysis with Coccinelle is somewhat awkward.
+This hasn't been too much of an issue for the Linux kernel, where most of the functions are large, but it could be a problem for other programming styles.
 
 julia
