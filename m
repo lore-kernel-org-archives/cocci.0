@@ -1,46 +1,74 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 27 Dec 2015 12:41:30 +0100 (CET)
+From: sergei.shtylyov@cogentembedded.com (Sergei Shtylyov)
+Date: Sun, 27 Dec 2015 01:26:36 +0300
 Subject: [Cocci] [PATCH v2] coccinelle: api: check for propagation of
  error from platform_get_irq
-In-Reply-To: <567F9A29.50202@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.02.1512262156580.2070@localhost6.localdomain6>
 References: <1451157891-24881-1-git-send-email-Julia.Lawall@lip6.fr>
  <567EF188.7020203@cogentembedded.com>
  <alpine.DEB.2.02.1512262107340.2070@localhost6.localdomain6>
  <alpine.DEB.2.02.1512262123500.2070@localhost6.localdomain6>
  <567EF895.6080702@cogentembedded.com>
  <alpine.DEB.2.02.1512262156580.2070@localhost6.localdomain6>
- <567F9A29.50202@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.02.1512271239460.2038@localhost6.localdomain6>
+Message-ID: <567F141C.8010000@cogentembedded.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On 12/26/2015 11:58 PM, Julia Lawall wrote:
 
+> The error return value of platform_get_irq seems to often get dropped.
+>
+> Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+>
+> ---
+>
+> v2: Check for the direct return case also.  Added some mailing lists of
+> common offenders.
+>
+> diff --git a/scripts/coccinelle/api/platform_get_irq_return.cocci b/scripts/coccinelle/api/platform_get_irq_return.cocci
+> new file mode 100644
+> index 0000000..44680d0
+> --- /dev/null
+> +++ b/scripts/coccinelle/api/platform_get_irq_return.cocci
+> @@ -0,0 +1,58 @@
+> +/// Propagate the return value of platform_get_irq.
+> +//# Sometimes the return value of platform_get_irq is tested using <= 0, but 0
+> +//# might not be an appropriate return value in an error case.
+> +///
+> +// Confidence: Moderate
+> +// Copyright: (C) 2015 Julia Lawall, Inria. GPLv2.
+> +// URL: http://coccinelle.lip6.fr/
+> +// Options: --no-includes --include-headers
+> +
+> +virtual context
+> +virtual org
+> +virtual report
+> +
+> +// ----------------------------------------------------------------------------
+> +
+> + at r depends on context || org || report@
+> +constant C;
+> +statement S;
+> +expression e, ret;
+> +position j0, j1;
+> +@@
+> +
+> +* e at j0 = platform_get_irq(...);
+> +(
+> +if at j1 (...) {
+> +  ...
+> +  return -C;
+> +} else S
+> +|
+> +if at j1 (...) {
+> +  ...
+> +  ret = -C;
+> +  ...
+> +  return ret;
+> +} else S
 
-On Sun, 27 Dec 2015, SF Markus Elfring wrote:
+    Well, this seems to also cover the (e <= 0) checks which do make same 
+sense in the light of Linus considering IRQ0 invalid. So I'd be more specific 
+about the checks here -- 0 should indeed be overridden with something if it's 
+considered invalid.
 
-> > The error return value of platform_get_irq seems to often get dropped.
-> 
-> How do you think about any more fine-tuning here?
-> 
-> Commit message:
-> * ? of the platform_get_irq() function seems to get dropped too often.
-> 
-> * Why do you concentrate on a single function name?
->   Do you plan to extend this source code analysis approach?
-> 
-> 
-> > + at script:python r_report depends on report@
-> > +j0 << r.j0;
-> > +j1 << r.j1;
-> > +@@
-> > +
-> > +msg = "Propagate return value of platform_get_irq around line %s." % (j1[0].line)
-> 
-> Are there more unchecked return values which are interesting
-> for further considerations?
-> https://cwe.mitre.org/data/definitions/252.html
-
-The value is not unchecked.  I made a specific rule because the specific 
-problem is quite common.
-
-julia
+MBR, Sergei
