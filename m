@@ -1,75 +1,60 @@
 From: hofrat@osadl.org (Nicholas Mc Guire)
-Date: Thu,  7 Jan 2016 21:17:58 +0100
-Subject: [Cocci] [PATCH RFC] coccinelle: flag double conversions in msleep*
-Message-ID: <1452197878-26296-1-git-send-email-hofrat@osadl.org>
+Date: Thu,  7 Jan 2016 21:19:56 +0100
+Subject: [Cocci] [PATCH V2] coccinelle: flag HZ dependent constants being
+	passed for jiffies
+Message-ID: <1452197996-26357-1-git-send-email-hofrat@osadl.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-This spatch flags cases where msleep/msleep_interruptible converts the
-timeout parameter with jiffies_to_msecs(). msleep* performs a conversion
-of the milliseconds passed in back to jiffies and then calls the
-appropriate schedule_timeout* variant.
+A large set of calls in the kernel takes jiffies as an argument - passing 
+in a constant makes the timeout HZ dependent which is wrong in all cases
+found by this spatch and probably is wrong for any call that expects 
+jiffies with the exception of passing in 1 (minimum delay). 
 
-In cases where the timeout is constant, there is effectively no 
-difference with respect to the generated code (atleast not for the x86
-.lst files of a few cases checked) but for cases where the timeout is 
-non-constant there is an actual call to jiffies_to_msecs() at runtime, 
-that overhead can be removed.
+Checking for constants only yields many false positives so they are 
+filtered for digits only. A numeric value of 1 is though commonly in use 
+for "shortest possible delay" so those cases are treated as false 
+positives as well and not reported.
 
 Signed-off-by: Nicholas Mc Guire <hofrat@osadl.org>
 ---
 
-As of linux-next next-20160107 it finds 24 cases in the kernel
-
-An example of where this makes a slight code difference is
-drivers/scsi/osst.c:osst_wait_ready()
-<        if (initial_delay > 0)
-<    2293:       7e 0f                   jle    22a4 <osst_wait_ready+0x34>
-<                msleep(jiffies_to_msecs(initial_delay));
-<    2295:       48 63 f9                movslq %ecx,%rdi
-<    2298:       e8 00 00 00 00          callq  229d <osst_wait_ready+0x2d>
-<                        2299: R_X86_64_PC32     jiffies_to_msecs-0x4
-<    229d:       89 c7                   mov    %eax,%edi
-<    229f:       e8 00 00 00 00          callq  22a4 <osst_wait_ready+0x34>
-<                        22a0: R_X86_64_PC32     msleep-0x4
-<
-<        memset(cmd, 0, MAX_COMMAND_SIZE);
-
-vs:                                                                             
-
->        if (initial_delay > 0)
->    2293:       7e 08                   jle    229d <osst_wait_ready+0x2d>
->                schedule_timeout_uninterruptible(initial_delay);
->    2295:       48 63 f9                movslq %ecx,%rdi
->    2298:       e8 00 00 00 00          callq  229d <osst_wait_ready+0x2d>
->                        2299: R_X86_64_PC32     schedule_timeout_uninterruptible-0x4
->
->        memset(cmd, 0, MAX_COMMAND_SIZE);
+V2: fixed up the documentation
 
 This patch was tested with coccinelle version 1.0.4
 
-Confidence: Medium as I did not find any false positives for the 24
-cases that were found - some of the patches generated do not actually
-improve readability though (e.g. drivers/i2c/busses/i2c-highlander.c)
-but technically it is not incorrect ither.
-
 patch is against linux-next (localversion-next is next-20160107)
 
- scripts/coccinelle/api/msleep_double_convert.cocci | 63 ++++++++++++++++++++++
- 1 file changed, 63 insertions(+)
- create mode 100644 scripts/coccinelle/api/msleep_double_convert.cocci
+ scripts/coccinelle/api/timeout_HZ_dependent.cocci | 125 ++++++++++++++++++++++
+ 1 file changed, 125 insertions(+)
+ create mode 100644 scripts/coccinelle/api/timeout_HZ_dependent.cocci
 
-diff --git a/scripts/coccinelle/api/msleep_double_convert.cocci b/scripts/coccinelle/api/msleep_double_convert.cocci
+diff --git a/scripts/coccinelle/api/timeout_HZ_dependent.cocci b/scripts/coccinelle/api/timeout_HZ_dependent.cocci
 new file mode 100644
-index 0000000..b39dd36
+index 0000000..9da5092
 --- /dev/null
-+++ b/scripts/coccinelle/api/msleep_double_convert.cocci
-@@ -0,0 +1,63 @@
-+/// Check for double conversion of timeouts values
-+//
-+// for constants this actually makes little sense - other than
-+// for readability - in cases where non-constants are involved there is
-+// a call to jiffies_to_msecs that is saved here.
++++ b/scripts/coccinelle/api/timeout_HZ_dependent.cocci
+@@ -0,0 +1,125 @@
++/// Check for hard-coded numeric timeout values which are thus HZ dependent
++//# Only report findings if the value is digits and != 1 as hard-coded
++//# 1 seems to be in use for short delays.
++//#
++//# For kernel API that expects jiffies to be passed in a hard-coded value
++//# makes the effective timeout dependent on the compile-time HZ setting
++//# which is wrong in most (all?) cases. Any timeout should be passed
++//# through msecs_to_jiffies() or usecs_to_jiffies() to make the timeout
++//# values HZ independent.
++//#
++//# No patch mode for this, as converting the value from C to
++//# msecs_to_jiffies(C) could be changing the effective timeout by more
++//# than a factor of 10 so this always needs manual inspection Most notably
++//# code that pre-dates variable HZ (prior to 2.4 kernel series) had HZ=100
++//# so a constant of 10 should be converted to 100ms for any old driver.
++//#
++//# In some cases C-constants are passed in that are not converted to
++//# jiffies, to locate these cases run in MODE=strict in which case these
++//# will also be reported except if HZ is passed. Note though many are
++//# likely to be false positives !
 +//
 +// Confidence: Medium
 +// Copyright: (C) 2015 Nicholas Mc Guire <hofrat@osadl.org>, OSADL, GPL v2
@@ -77,56 +62,103 @@ index 0000000..b39dd36
 +// Options: --no-includes --include-headers
 +
 +virtual org
-+virtual patch
 +virtual report
++virtual strict
 +
-+ at depends on patch@
++ at cc depends on !patch && (context || org || report || strict)@
 +constant C;
-+expression E;
-+@@
-+
-+(
-+- msleep_interruptible(jiffies_to_msecs(C))
-++ schedule_timeout_interruptible(C)
-+|
-+- msleep_interruptible(jiffies_to_msecs(E))
-++ schedule_timeout_interruptible(E)
-+|
-+- msleep(jiffies_to_msecs(C))
-++ schedule_timeout(C)
-+|
-+- msleep(jiffies_to_msecs(E))
-++ schedule_timeout(E)
-+)
-+
-+ at cc depends on !patch && (org || report)@
-+constant C;
-+expression E;
 +position p;
 +@@
 +
 +(
-+* msleep_interruptible at p(jiffies_to_msecs(C))
++schedule_timeout at p(C)
 +|
-+* msleep_interruptible at p(jiffies_to_msecs(E))
++schedule_timeout_interruptible at p(C)
 +|
-+* msleep at p(jiffies_to_msecs(C))
++schedule_timeout_killable at p(C)
 +|
-+* msleep at p(jiffies_to_msecs(E))
++schedule_timeout_uninterruptible at p(C)
++|
++mod_timer(...,C)
++|
++mod_timer_pinned(...,C)
++|
++mod_timer_pending(...,C)
++|
++apply_slack(...,C)
++|
++queue_delayed_work(...,C)
++|
++mod_delayed_work(...,C)
++|
++schedule_delayed_work_on(...,C)
++|
++schedule_delayed_work(...,C)
++|
++schedule_timeout(C)
++|
++schedule_timeout_interruptible(C)
++|
++schedule_timeout_killable(C)
++|
++schedule_timeout_uninterruptibl(C)
++|
++wait_event_timeout(...,C)
++|
++wait_event_interruptible_timeout(...,C)
++|
++wait_event_uninterruptible_timeout(...,C)
++|
++wait_event_interruptible_lock_irq_timeout(...,C)
++|
++wait_on_bit_timeout(...,C)
++|
++wait_for_completion_timeout(...,C)
++|
++wait_for_completion_io_timeout(...,C)
++|
++wait_for_completion_interruptible_timeout(...,C)
++|
++wait_for_completion_killable_timeout(...,C)
 +)
 +
 + at script:python depends on org@
 +p << cc.p;
++timeout << cc.C;
 +@@
 +
-+msg = "INFO: schedule_timeout*() preferred if timeout in jiffies"
-+coccilib.org.print_safe_todo(p[0], msg)
++# schedule_timeout(1) for a "short" delay is not really HZ dependent
++# as it always would be converted to 1 by msecs_to_jiffies as well
++# so count this as false positive
++if str.isdigit(timeout):
++   if (int(timeout) != 1):
++      msg = "WARNING: timeout is HZ dependent"
++      coccilib.org.print_safe_todo(p[0], msg)
 +
-+@script:python depends on report@
++ at script:python depends on report@
 +p << cc.p;
++timeout << cc.C;
 +@@
 +
-+msg = "INFO: schedule_timeout*() preferred if timeout in jiffies"
-+coccilib.report.print_report(p[0], msg)
++if str.isdigit(timeout):
++   if (int(timeout) != 1):
++      msg = "WARNING: timeout (%s) seems HZ dependent" % (timeout)
++      coccilib.report.print_report(p[0], msg)
++
++@script:python depends on strict@
++p << cc.p;
++timeout << cc.C;
++@@
++
++# "strict" mode prints the cases that use C-constants != HZ
++# as well as the numeric constants != 1. This will deliver a false
++# positives if the C-constant is already in jiffies !
++if str.isdigit(timeout):
++   if (int(timeout) != 1):
++      msg = "WARNING: timeout %s is HZ dependent" % (timeout)
++      coccilib.report.print_report(p[0], msg)
++elif (timeout != "HZ"):
++   msg = "INFO: timeout %s may be HZ dependent" % (timeout)
++   coccilib.report.print_report(p[0], msg)
 -- 
 2.1.4
