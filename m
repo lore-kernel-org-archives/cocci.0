@@ -1,10 +1,10 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 13 Jan 2016 15:15:33 +0100 (CET)
+Date: Wed, 13 Jan 2016 15:17:36 +0100 (CET)
 Subject: [Cocci] Build failure on ppc64le: Failure("dump: impossible tag
  (1002)")
 In-Reply-To: <20160113134818.GA30557@redhat.com>
 References: <20160113134818.GA30557@redhat.com>
-Message-ID: <alpine.DEB.2.10.1601131514250.5214@hadrien>
+Message-ID: <alpine.DEB.2.10.1601131516180.5214@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -29,8 +29,13 @@ On Wed, 13 Jan 2016, Richard W.M. Jones wrote:
 > replace it soon(-ish) with the new upstream POWER code generator that
 > Xavier wrote last year.
 
-I would suspect that there is some structure type that has been added to
-OCaml that we don't take into account.  I'll try to find out more
-information.
+It is actually your code that is crashing :)
+
+(* Dump an OCaml value into a printable string.
+ * By Richard W.M. Jones (rich at annexia.org).
+ * dumper.ml 1.2 2005/02/06 12:38:21 rich Exp
+ *)
+
+Maybe you could send the output of man Obj in your version of Ocaml?
 
 julia
