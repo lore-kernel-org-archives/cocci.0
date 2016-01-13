@@ -1,72 +1,52 @@
 From: rjones@redhat.com (Richard W.M. Jones)
-Date: Wed, 13 Jan 2016 14:30:57 +0000
+Date: Wed, 13 Jan 2016 15:01:33 +0000
 Subject: [Cocci] Build failure on ppc64le: Failure("dump: impossible tag
  (1002)")
-In-Reply-To: <alpine.DEB.2.10.1601131525460.5214@hadrien>
+In-Reply-To: <5696652C.5080903@users.sourceforge.net>
 References: <20160113134818.GA30557@redhat.com>
  <alpine.DEB.2.10.1601131516180.5214@hadrien>
- <20160113142304.GL1766@redhat.com>
- <alpine.DEB.2.10.1601131525460.5214@hadrien>
-Message-ID: <20160113143057.GN1766@redhat.com>
+ <20160113142332.GM1766@redhat.com>
+ <5696652C.5080903@users.sourceforge.net>
+Message-ID: <20160113150133.GO1766@redhat.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, Jan 13, 2016 at 03:26:50PM +0100, Julia Lawall wrote:
+On Wed, Jan 13, 2016 at 03:54:36PM +0100, SF Markus Elfring wrote:
+> > But note I'm not saying this is not a compiler bug.
+> > We've had a few.
 > 
+> Interesting ?
 > 
-> On Wed, 13 Jan 2016, Richard W.M. Jones wrote:
-> 
-> > On Wed, Jan 13, 2016 at 03:17:36PM +0100, Julia Lawall wrote:
-> > >
-> > >
-> > > On Wed, 13 Jan 2016, Richard W.M. Jones wrote:
-> > >
-> > > >
-> > > > https://bugzilla.redhat.com/show_bug.cgi?id=1297855
-> > > > Build log:
-> > > > http://ppc.koji.fedoraproject.org/kojifiles/work/tasks/345/3060345/build.log
-> > > >
-> > > > In brief the build fails at:
-> > > >
-> > > > + /builddir/build/BUILDROOT/coccinelle-1.0.4-2.fc24.ppc64le/usr/bin/spatch -sp_file demos/simple.cocci demos/simple.c
-> > > > init_defs_builtins: /builddir/build/BUILDROOT/coccinelle-1.0.4-2.fc24.ppc64le/usr/lib64/coccinelle/standard.h
-> > > > Fatal error: exception Failure("dump: impossible tag (1002)")
-> > > >
-> > > > When thinking about this bug, don't exclude the possibility that there
-> > > > could be a problem in the OCaml compiler.  In Fedora we currently use
-> > > > a non-upstream ppc64le code generator, although we are planning to
-> > > > replace it soon(-ish) with the new upstream POWER code generator that
-> > > > Xavier wrote last year.
-> > >
-> > > It is actually your code that is crashing :)
-> > >
-> > > (* Dump an OCaml value into a printable string.
-> > >  * By Richard W.M. Jones (rich at annexia.org).
-> > >  * dumper.ml 1.2 2005/02/06 12:38:21 rich Exp
-> > >  *)
-> > >
-> > > Maybe you could send the output of man Obj in your version of Ocaml?
-> >
-> > Not sure I understand - we don't change the Obj man page at all.
-> >
-> > The implementation of OCaml objects (as in the object header and so
-> > on) should also be the same, AFAIK.  Certainly the ppc64le backend
-> > doesn't make any changes inside the OCaml compiler core, eg. to the GC
-> > or libraries.  It's a 64 bit LE platform, so AFAIK the memory
-> > structures ought to be identical to x86-64.
-> 
-> Actually, I'm not sure to understand which version of OCaml you are using?
+> How do you think about to share any more information
+> about the last working system configuration
+> for your special build environment?
 
-4.02.3
+I'm not sure that it has ever worked on ppc64le.  Looking at our POWER
+build systems status:
 
-The sources (including the non-upstream backend) is:
+http://ppc.koji.fedoraproject.org/koji/packageinfo?packageID=919
 
-  https://git.fedorahosted.org/cgit/fedora-ocaml.git/log/?h=fedora-24-4.02
+it looks like it has not built successfully for 3 years, and the last
+time it was building that was only on ppc32.
+
+> > Is there a test case you could send me?
+> 
+> In which kind of test scripts are you interested in?
+
+Anything that would narrow down or potentially reproduce this
+particular error, I guess.  Basically if you need me to run any
+diagnostic tests, I can.
+
+We also (in partnership with IBM) have a public rack of POWER systems
+that anyone can provision (but you have to agree to some legal stuff):
+
+http://research.redhat.com/powerlinux-openpower-development-hosting/
 
 Rich.
 
 -- 
 Richard Jones, Virtualization Group, Red Hat http://people.redhat.com/~rjones
 Read my programming and virtualization blog: http://rwmj.wordpress.com
-virt-builder quickly builds VMs from scratch
-http://libguestfs.org/virt-builder.1.html
+virt-df lists disk usage of guests without needing to install any
+software inside the virtual machine.  Supports Linux and Windows.
+http://people.redhat.com/~rjones/virt-df/
