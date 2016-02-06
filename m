@@ -1,31 +1,32 @@
-From: mcgrof@suse.com (Luis R. Rodriguez)
-Date: Sat, 6 Feb 2016 05:36:17 +0100
-Subject: [Cocci] [Xen-devel] [PATCH 2/9] Use
- gnutls_priority_set_direct() to deprecate gnutls_*_set()
-In-Reply-To: <20160206041235.GA1232@localhost.localdomain>
-References: <1448041672-3986-1-git-send-email-mcgrof@do-not-panic.com>
- <1448041672-3986-3-git-send-email-mcgrof@do-not-panic.com>
- <20151125145322.GA24630@x230.dumpdata.com>
- <20151125193651.GH9528@wotan.suse.de>
- <20151125204420.GA20267@x230.dumpdata.com>
- <20160206014454.GA25240@wotan.suse.de>
- <20160206034554.GA14513@localhost.localdomain>
- <20160206040322.GB25240@wotan.suse.de>
- <20160206041235.GA1232@localhost.localdomain>
-Message-ID: <20160206043617.GD25240@wotan.suse.de>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sat, 6 Feb 2016 09:21:36 +0100
+Subject: [Cocci] The Coccinelle repository on GitHub
+In-Reply-To: <20160205220708.GA10217@pl-59055.rocqadm.inria.fr>
+References: <20160205202627.GA9705@pl-59055.rocqadm.inria.fr>
+ <56B50FE6.70707@users.sourceforge.net>
+ <20160205212810.GA10041@pl-59055.rocqadm.inria.fr>
+ <56B51756.2020700@users.sourceforge.net>
+ <20160205220708.GA10217@pl-59055.rocqadm.inria.fr>
+Message-ID: <56B5AD10.9000301@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, Feb 05, 2016 at 11:12:36PM -0500, Konrad Rzeszutek Wilk wrote:
-> > a library could just add a helper gnutls_priority_set_direct() wrapper to
-> > do things the old way.
+>> Will any special branches be introduced in the near future?
 > 
-> Any ideas on how to detect whether the wrapper should be used from
-> within the qemu-traditional code? Does the library have an programatic way
-> to expose this? (#ifdef machinery?)
+> Not that I know.
 
-Sorry no I do not deal with backporting userspace applications. Is it a
-requirement for developers on Xen to figure this out? I though this
-would be for the folks who productize.
+Would you like to clarify the application of "advanced" software development methodologies
+any further?
 
-  Luis
+
+It seems that there are only two committers active in the leading Git repository
+for this software at the moment.
+https://github.com/coccinelle/coccinelle/graphs/contributors
+
+
+How do you think about to talk a bit more about role distribution between
+various contributors?
+https://github.com/coccinelle/coccinelle/network/members
+
+Regards,
+Markus
