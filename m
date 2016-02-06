@@ -1,23 +1,42 @@
-From: Sebastien.Hinderer@inria.fr (=?utf-8?Q?S=C3=A9bastien?= Hinderer)
-Date: Fri, 5 Feb 2016 23:07:08 +0100
-Subject: [Cocci] The Coccinelle repository on GitHub
-In-Reply-To: <56B51756.2020700@users.sourceforge.net>
-References: <20160205202627.GA9705@pl-59055.rocqadm.inria.fr>
- <56B50FE6.70707@users.sourceforge.net>
- <20160205212810.GA10041@pl-59055.rocqadm.inria.fr>
- <56B51756.2020700@users.sourceforge.net>
-Message-ID: <20160205220708.GA10217@pl-59055.rocqadm.inria.fr>
+From: mcgrof@suse.com (Luis R. Rodriguez)
+Date: Sat, 6 Feb 2016 02:44:54 +0100
+Subject: [Cocci] [Xen-devel] [PATCH 2/9] Use
+ gnutls_priority_set_direct() to deprecate gnutls_*_set()
+In-Reply-To: <20151125204420.GA20267@x230.dumpdata.com>
+References: <1448041672-3986-1-git-send-email-mcgrof@do-not-panic.com>
+ <1448041672-3986-3-git-send-email-mcgrof@do-not-panic.com>
+ <20151125145322.GA24630@x230.dumpdata.com>
+ <20151125193651.GH9528@wotan.suse.de>
+ <20151125204420.GA20267@x230.dumpdata.com>
+Message-ID: <20160206014454.GA25240@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-SF Markus Elfring (2016/02/05 22:42 +0100):
-> >> Are there any plans to adjust the affected software development process
-> >> a bit more?
+On Wed, Nov 25, 2015 at 03:44:30PM -0500, Konrad Rzeszutek Wilk wrote:
+> On Wed, Nov 25, 2015 at 08:36:51PM +0100, Luis R. Rodriguez wrote:
+> > On Wed, Nov 25, 2015 at 09:53:27AM -0500, Konrad Rzeszutek Wilk wrote:
+> > > On Fri, Nov 20, 2015 at 09:47:45AM -0800, Luis R. Rodriguez wrote:
+> > > > From: "Luis R. Rodriguez" <mcgrof@suse.com>
+> > > > 
+> > > > Using deprecate gnutls_*_set() triggers a failure to compile
+> > > > with gnutls30-3.4.4, used on OpenSUSE factory:
+> > > > 
+> > > > ../libqemu_common.a(vnc.o): In function `vnc_start_tls':
+> > > > ~/devel/xen/tools/qemu-xen-traditional-dir/vnc.c:2164: undefined reference to `gnutls_kx_set_priority'
+> > > > ~/devel/xen/tools/qemu-xen-traditional-dir/vnc.c:2171: undefined reference to `gnutls_certificate_type_set_priority'
+> > > > ~/devel/xen/tools/qemu-xen-traditional-dir/vnc.c:2178: undefined reference to `gnutls_protocol_set_priority'
+> > > > 
+> > > > This compilation issue can be fixed by using the new routine
+> > > > gnutls_priority_set_direct() which replaces the deprecated calls
+> > > > which also simplifies the code considerably.
+> > > 
+> > > 
+> > > Thanks for posting that! It certainly fixes that issue.
 > > 
-> > Not that I know.
+> > Acked-by?
 > 
-> Will any special branches be introduced in the near future?
+> Tested-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
 
-Not that I know.
+None of these are merged yet...
 
-S?bastien.
+ Luis
