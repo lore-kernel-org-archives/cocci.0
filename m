@@ -1,92 +1,49 @@
-From: cardoe@cardoe.com (Doug Goldstein)
-Date: Sat, 6 Feb 2016 14:18:46 -0600
-Subject: [Cocci] [Xen-devel] [PATCH 2/9] Use
- gnutls_priority_set_direct() to deprecate gnutls_*_set()
-In-Reply-To: <20160206040322.GB25240@wotan.suse.de>
-References: <1448041672-3986-1-git-send-email-mcgrof@do-not-panic.com>
- <1448041672-3986-3-git-send-email-mcgrof@do-not-panic.com>
- <20151125145322.GA24630@x230.dumpdata.com>
- <20151125193651.GH9528@wotan.suse.de>
- <20151125204420.GA20267@x230.dumpdata.com>
- <20160206014454.GA25240@wotan.suse.de>
- <20160206034554.GA14513@localhost.localdomain>
- <20160206040322.GB25240@wotan.suse.de>
-Message-ID: <56B65526.3060002@cardoe.com>
+From: bp@alien8.de (Borislav Petkov)
+Date: Sat, 6 Feb 2016 23:04:37 +0100
+Subject: [Cocci] [PATCH v2 3/3] paravirt: rename paravirt_enabled to
+ paravirt_legacy
+In-Reply-To: <CALCETrWSiN+te_0aYH0NH9oBzGALLhKqxkupiGwbAm2GdCNyVQ@mail.gmail.com>
+References: <1454733014-15237-1-git-send-email-mcgrof@kernel.org>
+ <1454733014-15237-4-git-send-email-mcgrof@kernel.org>
+ <CALCETrU3DaqUeo-n2dV_UmeAcTEV2dQRtxyb-atMP6WFDDif3Q@mail.gmail.com>
+ <20160206085930.GF25240@wotan.suse.de>
+ <CALCETrWSiN+te_0aYH0NH9oBzGALLhKqxkupiGwbAm2GdCNyVQ@mail.gmail.com>
+Message-ID: <20160206220437.GA4435@pd.tnic>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 2/5/16 10:03 PM, Luis R. Rodriguez wrote:
-> On Fri, Feb 05, 2016 at 10:45:54PM -0500, Konrad Rzeszutek Wilk wrote:
->> On Sat, Feb 06, 2016 at 02:44:54AM +0100, Luis R. Rodriguez wrote:
->>> On Wed, Nov 25, 2015 at 03:44:30PM -0500, Konrad Rzeszutek Wilk wrote:
->>>> On Wed, Nov 25, 2015 at 08:36:51PM +0100, Luis R. Rodriguez wrote:
->>>>> On Wed, Nov 25, 2015 at 09:53:27AM -0500, Konrad Rzeszutek Wilk wrote:
->>>>>> On Fri, Nov 20, 2015 at 09:47:45AM -0800, Luis R. Rodriguez wrote:
->>>>>>> From: "Luis R. Rodriguez" <mcgrof@suse.com>
->>>>>>>
->>>>>>> Using deprecate gnutls_*_set() triggers a failure to compile
->>>>>>> with gnutls30-3.4.4, used on OpenSUSE factory:
->>>>>>>
->>>>>>> ../libqemu_common.a(vnc.o): In function `vnc_start_tls':
->>>>>>> ~/devel/xen/tools/qemu-xen-traditional-dir/vnc.c:2164: undefined reference to `gnutls_kx_set_priority'
->>>>>>> ~/devel/xen/tools/qemu-xen-traditional-dir/vnc.c:2171: undefined reference to `gnutls_certificate_type_set_priority'
->>>>>>> ~/devel/xen/tools/qemu-xen-traditional-dir/vnc.c:2178: undefined reference to `gnutls_protocol_set_priority'
->>>>>>>
->>>>>>> This compilation issue can be fixed by using the new routine
->>>>>>> gnutls_priority_set_direct() which replaces the deprecated calls
->>>>>>> which also simplifies the code considerably.
->>>>>>
->>>>>>
->>>>>> Thanks for posting that! It certainly fixes that issue.
->>>>>
->>>>> Acked-by?
->>>>
->>>> Tested-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
->>>
->>> None of these are merged yet...
->>
->> And it looks like you didn't CC the maintainer.
+On Sat, Feb 06, 2016 at 12:05:32PM -0800, Andy Lutomirski wrote:
+> int __init microcode_init(void)
+> {
+>         [...]
+>         if (paravirt_enabled() || dis_ucode_ldr)
+>                 return -EINVAL;
 > 
-> mcgrof at garbanzo ~/devel/xen (git::staging)$ ./scripts/get_maintainer.pl ../xen-fixes/0002-proper-qemu-trad-gnutls.patch 
-> Ian Campbell <ian.campbell@citrix.com>
-> Ian Jackson <ian.jackson@eu.citrix.com>
-> Jan Beulich <jbeulich@suse.com>
-> Keir Fraser <keir@xen.org>
-> Tim Deegan <tim@xen.org>
-> xen-devel at lists.xen.org
-> 
-> I missed Ian Jackson, Keir and Tim.
-> 
->> Also - how does this work if you have an older version of SuSE,
->> say SLES10?
-> 
-> Beats me. I just dealt with getting this to compile with what is current.
-> I kind of doubt what is in xen master or staging will end up in SLE10's
-> version of Xen too. If that had to happen people porting this to an old
-> library could just add a helper gnutls_priority_set_direct() wrapper to
-> do things the old way.
-> 
->   Luis
-> 
+> This is also asking "are we the natively booted kernel?"  This is
+> plausibly useful for real.  (Borislav, is this actually necessary?)
 
-I'd personally love to know what's the real minimum that needs to be
-supported by Xen master/staging. I tried [1] to put a line in the sand
-but that died. I'm also in the process on standing up some basic build
-CI [2] and as part of that I would build on new stuff and build on the
-oldest set that's supported.
+There was some breakage on 32-bit pvops with that.
 
-[1]
-http://lists.xenproject.org/archives/html/xen-devel/2016-01/msg03577.html
-[2]
-http://lists.xenproject.org/archives/html/xen-devel/2016-02/msg00984.html
+> Seems to me there should be a function is_native_root_kernel() or
+> similar.  Obviously it could have false positives and code will have
+> to deal with that.  (This also could be entirely wrong.  What code is
+> responsible for CPU microcode updates on Xen?  For all I know, dom0 is
+> *supposed* to apply microcode updates, in which case that check really
+> should be deleted.
+
+So there are two aspects:
+
+- the guest loading the microcode driver. Xen should behave like
+qemu+kvm does: emulate the MSR accesses the microcode loader does.
+
+- microcode application on Xen: we've had this before. The hypervisor
+should do that (if it doesn't do so already).
+
+So yes, that paravirt_enabled() thing should go away. Even more so if we
+have CPUID leaf 0x4... reserved for hypervisors.
 
 -- 
-Doug Goldstein
+Regards/Gruss,
+    Boris.
 
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 959 bytes
-Desc: OpenPGP digital signature
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20160206/1c189064/attachment-0001.asc>
+ECO tip #101: Trim your mails when you reply.
