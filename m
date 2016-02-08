@@ -1,49 +1,153 @@
-From: bp@alien8.de (Borislav Petkov)
-Date: Sat, 6 Feb 2016 23:04:37 +0100
-Subject: [Cocci] [PATCH v2 3/3] paravirt: rename paravirt_enabled to
- paravirt_legacy
-In-Reply-To: <CALCETrWSiN+te_0aYH0NH9oBzGALLhKqxkupiGwbAm2GdCNyVQ@mail.gmail.com>
-References: <1454733014-15237-1-git-send-email-mcgrof@kernel.org>
- <1454733014-15237-4-git-send-email-mcgrof@kernel.org>
- <CALCETrU3DaqUeo-n2dV_UmeAcTEV2dQRtxyb-atMP6WFDDif3Q@mail.gmail.com>
- <20160206085930.GF25240@wotan.suse.de>
- <CALCETrWSiN+te_0aYH0NH9oBzGALLhKqxkupiGwbAm2GdCNyVQ@mail.gmail.com>
-Message-ID: <20160206220437.GA4435@pd.tnic>
+From: kborer@gmail.com (Kris Borer)
+Date: Mon,  8 Feb 2016 07:46:11 -0500
+Subject: [Cocci] [PATCH v2] coccinelle: add style check for assignment in if
+Message-ID: <1454935571-4054-1-git-send-email-kborer@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sat, Feb 06, 2016 at 12:05:32PM -0800, Andy Lutomirski wrote:
-> int __init microcode_init(void)
-> {
->         [...]
->         if (paravirt_enabled() || dis_ucode_ldr)
->                 return -EINVAL;
-> 
-> This is also asking "are we the natively booted kernel?"  This is
-> plausibly useful for real.  (Borislav, is this actually necessary?)
+Add a semantic patch for fixing some cases of checkpatch.pl error:
 
-There was some breakage on 32-bit pvops with that.
+ERROR: do not use assignment in if condition
 
-> Seems to me there should be a function is_native_root_kernel() or
-> similar.  Obviously it could have false positives and code will have
-> to deal with that.  (This also could be entirely wrong.  What code is
-> responsible for CPU microcode updates on Xen?  For all I know, dom0 is
-> *supposed* to apply microcode updates, in which case that check really
-> should be deleted.
+Signed-off-by: Kris Borer <kborer@gmail.com>
+---
+ scripts/coccinelle/style/assignment_in_if.cocci | 128 ++++++++++++++++++++++++
+ 1 file changed, 128 insertions(+)
+ create mode 100644 scripts/coccinelle/style/assignment_in_if.cocci
 
-So there are two aspects:
-
-- the guest loading the microcode driver. Xen should behave like
-qemu+kvm does: emulate the MSR accesses the microcode loader does.
-
-- microcode application on Xen: we've had this before. The hypervisor
-should do that (if it doesn't do so already).
-
-So yes, that paravirt_enabled() thing should go away. Even more so if we
-have CPUID leaf 0x4... reserved for hypervisors.
-
+diff --git a/scripts/coccinelle/style/assignment_in_if.cocci b/scripts/coccinelle/style/assignment_in_if.cocci
+new file mode 100644
+index 0000000..b23db8f
+--- /dev/null
++++ b/scripts/coccinelle/style/assignment_in_if.cocci
+@@ -0,0 +1,128 @@
++/// move assignments out of if conditions
++///
++//# This script is designed to correct code where assignments exist in if
++//# conditions. It is only capable of handling a subset of such problems.
++//# Ideally it would handle all checkpatch errors of the following type:
++//#	ERROR: do not use assignment in if condition
++//#
++//# For example:
++//#	if(result = myfun())
++//#
++//# would become:
++//#	result = myfun();
++//#	if(result)
++//
++// Confidence: Moderate
++// Copyright: (C) 2015 Kris Borer.  GPLv2.
++// URL: http://coccinelle.lip6.fr/
++// Comments:
++// Options: --no-includes --include-headers
++
++virtual patch
++
++
++// if ( (ret = call()) )
++// if ( (ret = call()) < 0 )
++@if1@
++expression i;
++expression E, E2;
++statement S1, S2;
++binary operator b;
++@@
++
+++ i = E;
++  if (
++(
++- (i = E)
+++ i
++|
++- (i = E)
+++ i
++  b ...
++|
++- (i = E),
++  E2
++)
++  ) S1 else S2
++
++
++// if ( ptr->fun && (ret = ptr->fun()) )
++ at if2@
++expression i2;
++expression E1, E2;
++@@
++
+++ if( E1 ) {
+++       i2 = E2;
+++       if (i2) {
++- if( E1 && (i2 = E2) ) {
++  ...
++- }
+++       }
+++ }
++
++
++// if ( ptr->fun && (ret = ptr->fun()) < 0 )
++ at if3@
++expression i2;
++expression E1, E2;
++constant c;
++binary operator b;
++@@
++
+++ if( E1 ) {
+++       i2 = E2;
+++       if (i2 b c) {
++- if( E1 && ((i2 = E2) b c) ) {
++  ...
++- }
+++       }
+++ }
++
++
++// if ( (ret = call()) && ret != -1 )
++// if ( (ret = call()) < 0 && ret != -1 )
++ at if4@
++expression i;
++expression E, E2;
++statement S1, S2;
++binary operator b;
++@@
++
+++ i = E;
++  if (
++(
++- (i = E)
+++ i
++|
++  (
++- (i = E)
+++ i
++  b
++  ...)
++)
++  && E2 ) S1 else S2
++
++
++// if ( (ret = call()) && ret != -1 && ret != -2 )
++// if ( (ret = call()) < 0 && ret != -1 && ret != -2 )
++@if5@
++expression i;
++expression E, E2, E3;
++statement S1, S2;
++binary operator b;
++@@
++
+++ i = E;
++  if (
++(
++- (i = E)
+++ i
++|
++  (
++- (i = E)
+++ i
++  b
++  ...)
++)
++  && E2 && E3 ) S1 else S2
 -- 
-Regards/Gruss,
-    Boris.
-
-ECO tip #101: Trim your mails when you reply.
+1.9.1
