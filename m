@@ -1,43 +1,31 @@
 From: boris.ostrovsky@oracle.com (Boris Ostrovsky)
-Date: Mon, 8 Feb 2016 11:31:04 -0500
+Date: Mon, 8 Feb 2016 11:41:16 -0500
 Subject: [Cocci] [Xen-devel] [PATCH v2 3/3] paravirt: rename
  paravirt_enabled to paravirt_legacy
-In-Reply-To: <56B8C1BC.9040603@citrix.com>
-References: <1454733014-15237-1-git-send-email-mcgrof@kernel.org>
- <1454733014-15237-4-git-send-email-mcgrof@kernel.org>
- <CALCETrU3DaqUeo-n2dV_UmeAcTEV2dQRtxyb-atMP6WFDDif3Q@mail.gmail.com>
+In-Reply-To: <20160208163526.GI28980@pd.tnic>
+References: <CALCETrU3DaqUeo-n2dV_UmeAcTEV2dQRtxyb-atMP6WFDDif3Q@mail.gmail.com>
  <20160206085930.GF25240@wotan.suse.de>
  <CALCETrWSiN+te_0aYH0NH9oBzGALLhKqxkupiGwbAm2GdCNyVQ@mail.gmail.com>
  <20160206220437.GA4435@pd.tnic> <56B8B6BF.6030007@oracle.com>
  <20160208155507.GF28980@pd.tnic> <56B8BCDB.9040701@citrix.com>
  <56B8BE58.6070003@oracle.com> <56B8C1BC.9040603@citrix.com>
-Message-ID: <56B8C2C8.8050406@oracle.com>
+ <56B8C2C8.8050406@oracle.com> <20160208163526.GI28980@pd.tnic>
+Message-ID: <56B8C52C.1070301@oracle.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 
 
-On 02/08/2016 11:26 AM, Andrew Cooper wrote:
-> On 08/02/16 16:12, Boris Ostrovsky wrote:
->>
->> On 02/08/2016 11:05 AM, Andrew Cooper wrote:
->>> For compatibility with other virtualisation specs, Xen's cpuid leaves
->>> shift depending on configuration.
->>>
->>> Spec at
->>> http://xenbits.xen.org/gitweb/?p=xen.git;a=blob;f=xen/include/public/arch-x86/cpuid.h;h=d709340f18d089560b959835eabb7b6609542c7e;hb=HEAD#l33
->>>
->>>
->>> Basically, they are either at 0x40000000, or 0x40000100 if viridian or
->>> vmware compatibility has been enabled.
->> (Also in arch/x86/include/asm/xen/cpuid.h in Linux tree).
-> The other complication is that, for a PV guest, you must use the forced
-> emulation prefix for the cpuid instruction to trap into the hypervisor.
->
-> This either means you must be sure you are under Xen to start with, or
-> use an extable entry to catch the #UD fault if you are not under Xen.
+On 02/08/2016 11:35 AM, Borislav Petkov wrote:
+> On Mon, Feb 08, 2016 at 11:31:04AM -0500, Boris Ostrovsky wrote:
+>> I think we are OK for PV because this code will be executed after pvops are
+>> set and so we will be calling xen_cpuid().
+> Not for the early loader - it is too early for pvops then. So you're
+> saying something like that won't work?
 
-I think we are OK for PV because this code will be executed after pvops 
-are set and so we will be calling xen_cpuid().
+Keep in mind that Xen PV doesn't go through startup_32|64(). It starts 
+at xen_start_kernel (save for a small stub before that), which sets 
+pvops.  It "joins" regular/baremetal code in 
+i386_start_kernel/x86_64_start_reservation().
 
 -boris
