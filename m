@@ -1,56 +1,45 @@
-From: mcgrof@suse.com (Luis R. Rodriguez)
-Date: Tue, 9 Feb 2016 19:04:17 -0800
-Subject: [Cocci] [Xen-devel] [PATCH 2/9] Use
- gnutls_priority_set_direct() to deprecate gnutls_*_set()
-In-Reply-To: <20160209182327.GA25161@aepfle.de>
-References: <1448041672-3986-1-git-send-email-mcgrof@do-not-panic.com>
- <1448041672-3986-3-git-send-email-mcgrof@do-not-panic.com>
- <20151125145322.GA24630@x230.dumpdata.com>
- <20151125193651.GH9528@wotan.suse.de>
- <20151125204420.GA20267@x230.dumpdata.com>
- <20160206014454.GA25240@wotan.suse.de>
- <20160206034554.GA14513@localhost.localdomain>
- <20160209163618.GA20583@gmail.com>
- <20160209164242.GR25240@wotan.suse.de> <20160209182327.GA25161@aepfle.de>
-Message-ID: <CAB=NE6URhBm2FDYY=7a3GnhS=_5jhstHXj+Dm3xaYzh2yxxNPw@mail.gmail.com>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 10 Feb 2016 10:00:53 +0100
+Subject: [Cocci] coccinelle: add style check for assignment in if
+In-Reply-To: <1455062207.3333.6.camel@perches.com>
+References: <1454935571-4054-1-git-send-email-kborer@gmail.com>
+ <56B9A2F6.4040109@users.sourceforge.net>
+ <alpine.DEB.2.10.1602091016200.2578@hadrien>
+ <56B9E1C2.7070008@users.sourceforge.net>
+ <1455062207.3333.6.camel@perches.com>
+Message-ID: <56BAFC45.5000003@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, Feb 9, 2016 at 10:23 AM, Olaf Hering <olaf@aepfle.de> wrote:
-> On Tue, Feb 09, Luis R. Rodriguez wrote:
->
->> Thanks so it seems the other option is to bump the release, can that
->> be decided? What's the process for deciding that?
->
-> Which release should be bumped?
+>> Can the check result display be more convenient from the semantic
+>> patch script interface in comparison to the other tool?
+> 
+> -ENOPARSE.  More detail please.
 
-In so far as TLS is concerned:
+Kris Borer suggested a SmPL script which can generate (only) patches
+so far by the usual application of the Coccinelle software.
+I assume that this approach was limited just because Julia Lawall
+indicated that this functionality would be sufficient for a while.
 
-mcgrof at ergon ~/devel/qemu (git::master)$ git describe --contains
-f40d55081667a716312b9a8b6e13835c4074f56b
-v1.0-rc0~325
+The documentation for the command "make coccicheck" mentions
+additional modes.
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/coccinelle.txt?id=ec97946ed038f4b3faa587bc76152b198805b0c4#n170
 
-mcgrof at ergon ~/devel/qemu (git::master)$ git describe --contains
-7d2a929feba319c18603e324b1750830d6c8b7a1
-v1.5.0-rc0~660
+They refer to specific output formats for the result from the
+static source code analysis.
 
-mcgrof at ergon ~/devel/qemu (git::master)$ git describe --contains d321e1e526810
-v2.5.0-rc0~125^2~2
+* How often would you like to look at proposed changes by the
+  Org mode format (of Emacs)?
+  http://orgmode.org/
 
-As for the other fix I backported for the existing release carried:
+* Do you find the report mode also useful occasionally?
 
-mcgrof at ergon ~/devel/qemu (git::master)$ git describe --contains
-98d23704138e0be17a3ed9eb2631077bf92cc028
-v1.1-rc0~785
 
-I wanted to see what is the current version on Xen for
-qemu-xen-traditional-dir-remote thing, is this the right way to check
-what version is on /tools/qemu-xen-traditional-dir-remote ?
+Are you interested to get further output variants?
 
-mcgrof at ergon ~/devel/xen/tools/qemu-xen-traditional-dir-remote
-(git::dummy)$ cat VERSION
-0.10.2
+Examples:
+* CSV
+* XML
 
-If so.. I'm scared.
-
- Luis
+Regards,
+Markus
