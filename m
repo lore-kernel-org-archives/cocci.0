@@ -1,45 +1,223 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 10 Feb 2016 10:00:53 +0100
-Subject: [Cocci] coccinelle: add style check for assignment in if
-In-Reply-To: <1455062207.3333.6.camel@perches.com>
-References: <1454935571-4054-1-git-send-email-kborer@gmail.com>
- <56B9A2F6.4040109@users.sourceforge.net>
- <alpine.DEB.2.10.1602091016200.2578@hadrien>
- <56B9E1C2.7070008@users.sourceforge.net>
- <1455062207.3333.6.camel@perches.com>
-Message-ID: <56BAFC45.5000003@users.sourceforge.net>
+From: vaishali.thakkar@oracle.com (Vaishali Thakkar)
+Date: Wed, 10 Feb 2016 15:31:33 +0530
+Subject: [Cocci] [PATCH] Coccinelle: Add api/setup_timer.cocci
+Message-ID: <1455098493-11141-1-git-send-email-vaishali.thakkar@oracle.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> Can the check result display be more convenient from the semantic
->> patch script interface in comparison to the other tool?
-> 
-> -ENOPARSE.  More detail please.
+Use the timer API function setup_timer instead of structure field
+assignments to initialize a timer.
 
-Kris Borer suggested a SmPL script which can generate (only) patches
-so far by the usual application of the Coccinelle software.
-I assume that this approach was limited just because Julia Lawall
-indicated that this functionality would be sufficient for a while.
+Signed-off-by: Vaishali Thakkar <vaishali.thakkar@oracle.com>
+---
+ scripts/coccinelle/api/setup_timer.cocci | 199 +++++++++++++++++++++++++++++++
+ 1 file changed, 199 insertions(+)
+ create mode 100644 scripts/coccinelle/api/setup_timer.cocci
 
-The documentation for the command "make coccicheck" mentions
-additional modes.
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/coccinelle.txt?id=ec97946ed038f4b3faa587bc76152b198805b0c4#n170
-
-They refer to specific output formats for the result from the
-static source code analysis.
-
-* How often would you like to look at proposed changes by the
-  Org mode format (of Emacs)?
-  http://orgmode.org/
-
-* Do you find the report mode also useful occasionally?
-
-
-Are you interested to get further output variants?
-
-Examples:
-* CSV
-* XML
-
-Regards,
-Markus
+diff --git a/scripts/coccinelle/api/setup_timer.cocci b/scripts/coccinelle/api/setup_timer.cocci
+new file mode 100644
+index 0000000..8ee0ac3
+--- /dev/null
++++ b/scripts/coccinelle/api/setup_timer.cocci
+@@ -0,0 +1,199 @@
++/// Use setup_timer function instead of initializing timer with the function
++/// and data fields
++// Confidence: High
++// Copyright: (C) 2016 Vaishali Thakkar, Oracle. GPLv2
++// Options: --no-includes --include-headers
++// Keywords: init_timer, setup_timer
++
++virtual patch
++virtual context
++virtual org
++virtual report
++
++ at match_immediate_function_data_after_init_timer
++depends on patch && !context && !org && !report@
++expression e, func, da;
++@@
++
++-init_timer (&e);
+++setup_timer (&e, func, da);
++
++(
++-e.function = func;
++-e.data = da;
++|
++-e.data = da;
++-e.function = func;
++)
++
++ at match_function_and_data_after_init_timer
++depends on patch && !context && !org && !report@
++expression e1, e2, e3, e4, e5, a, b;
++@@
++
++-init_timer (&e1);
+++setup_timer (&e1, a, b);
++
++... when != a = e2
++    when != b = e3
++(
++-e1.function = a;
++... when != b = e4
++-e1.data = b;
++|
++-e1.data = b;
++... when != a = e5
++-e1.function = a;
++)
++
++ at r1 exists@
++identifier f;
++position p;
++@@
++
++f(...) { ... when any
++  init_timer at p(...)
++  ... when any
++}
++
++ at r2 exists@
++identifier g != r1.f;
++struct timer_list t;
++expression e8;
++@@
++
++g(...) { ... when any
++  t.data = e8
++  ... when any
++}
++
++// It is dangerous to use setup_timer if data field is initialized
++// in another function.
++
++ at script:python depends on r2@
++p << r1.p;
++@@
++
++cocci.include_match(False)
++
++ at r3 depends on patch && !context && !org && !report@
++expression e6, e7, c;
++position r1.p;
++@@
++
++-init_timer at p (&e6);
+++setup_timer (&e6, c, 0UL);
++... when != c = e7
++-e6.function = c;
++
++// ----------------------------------------------------------------------------
++
++ at match_immediate_function_data_after_init_timer_context
++depends on !patch && (context || org || report)@
++expression da, e, func;
++position j0, j1, j2;
++@@
++
++* init_timer at j0 (&e);
++(
++* e at j1.function = func;
++* e at j2.data = da;
++|
++* e at j1.data = da;
++* e at j2.function = func;
++)
++
++ at match_function_and_data_after_init_timer_context
++depends on !patch &&
++!match_immediate_function_data_after_init_timer_context &&
++(context || org || report)@
++expression a, b, e1, e2, e3, e4, e5;
++position j0, j1, j2;
++@@
++
++* init_timer at j0 (&e1);
++... when != a = e2
++    when != b = e3
++(
++* e1 at j1.function = a;
++... when != b = e4
++* e1 at j2.data = b;
++|
++* e1 at j1.data = b;
++... when != a = e5
++* e1 at j2.function = a;
++)
++
++ at r3_context depends on !patch &&
++!match_immediate_function_data_after_init_timer_context &&
++!match_function_and_data_after_init_timer_context &&
++(context || org || report)@
++expression c, e6, e7;
++position r1.p;
++position j0, j1;
++@@
++
++* init_timer at j0@p (&e6);
++... when != c = e7
++* e6 at j1.function = c;
++
++// ----------------------------------------------------------------------------
++
++ at script:python match_immediate_function_data_after_init_timer_org
++depends on org@
++j0 << match_immediate_function_data_after_init_timer_context.j0;
++j1 << match_immediate_function_data_after_init_timer_context.j1;
++j2 << match_immediate_function_data_after_init_timer_context.j2;
++@@
++
++msg = "Use setup_timer function."
++coccilib.org.print_todo(j0[0], msg)
++coccilib.org.print_link(j1[0], "")
++coccilib.org.print_link(j2[0], "")
++
++ at script:python match_function_and_data_after_init_timer_org depends on org@
++j0 << match_function_and_data_after_init_timer_context.j0;
++j1 << match_function_and_data_after_init_timer_context.j1;
++j2 << match_function_and_data_after_init_timer_context.j2;
++@@
++
++msg = "Use setup_timer function."
++coccilib.org.print_todo(j0[0], msg)
++coccilib.org.print_link(j1[0], "")
++coccilib.org.print_link(j2[0], "")
++
++ at script:python r3_org depends on org@
++j0 << r3_context.j0;
++j1 << r3_context.j1;
++@@
++
++msg = "Use setup_timer function."
++coccilib.org.print_todo(j0[0], msg)
++coccilib.org.print_link(j1[0], "")
++
++// ----------------------------------------------------------------------------
++
++ at script:python match_immediate_function_data_after_init_timer_report
++depends on report@
++j0 << match_immediate_function_data_after_init_timer_context.j0;
++j1 << match_immediate_function_data_after_init_timer_context.j1;
++@@
++
++msg = "Use setup_timer function for function on line %s." % (j1[0].line)
++coccilib.report.print_report(j0[0], msg)
++
++ at script:python match_function_and_data_after_init_timer_report depends on report@
++j0 << match_function_and_data_after_init_timer_context.j0;
++j1 << match_function_and_data_after_init_timer_context.j1;
++@@
++
++msg = "Use setup_timer function for function on line %s." % (j1[0].line)
++coccilib.report.print_report(j0[0], msg)
++
++@script:python r3_report depends on report@
++j0 << r3_context.j0;
++j1 << r3_context.j1;
++@@
++
++msg = "Use setup_timer function for function on line %s." % (j1[0].line)
++coccilib.report.print_report(j0[0], msg)
+-- 
+2.1.4
