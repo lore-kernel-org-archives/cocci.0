@@ -1,307 +1,271 @@
-From: nicstange@gmail.com (Nicolai Stange)
-Date: Sun, 14 Feb 2016 02:46:16 +0100
-Subject: [Cocci] [PATCH v3.1 4/7] debugfs: unproxify attribute files created
-	through debugfs_create_*()
-In-Reply-To: <87k2m8krhf.fsf@gmail.com> (Nicolai Stange's message of "Sun, 14
- Feb 2016 02:31:08 +0100")
-References: <87k2m8krhf.fsf@gmail.com>
-Message-ID: <87k2m8jc7r.fsf@gmail.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sun, 14 Feb 2016 08:03:25 +0100 (CET)
+Subject: [Cocci] [PATCH v3 3/7] debugfs: add support for self-protecting
+ attribute file fops
+In-Reply-To: <8760xskrar.fsf@gmail.com>
+References: <87k2m8krhf.fsf@gmail.com> <8760xskrar.fsf@gmail.com>
+Message-ID: <alpine.DEB.2.02.1602140802540.2039@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Currently, the struct file_operations associated with the attribute style
-files created through the debugfs_create_*() helpers are not file
-lifetime aware as they are defined by means of DEFINE_SIMPLE_ATTRIBUTE().
 
-Thus, a lifetime managing proxy is created around the original fops each
-time such a file is opened which is an unnecessary waste of resources.
 
-Migrate all usages of DEFINE_SIMPLE_ATTRIBUTE() within debugfs itself
-to DEFINE_DEBUGFS_ATTRIBUTE() in order to implement file lifetime managing
-within the struct file_operations thus defined.
+On Sun, 14 Feb 2016, Nicolai Stange wrote:
 
-Introduce the debugfs_create_mode_unsafe() helper, analogous to
-debugfs_create_mode(), but distinct in that it creates the files in
-non-proxying operation mode through debugfs_create_file_unsafe().
+> In order to protect them against file removal issues, debugfs_create_file()
+> creates a lifetime managing proxy around each struct file_operations
+> handed in.
+> 
+> In cases where this struct file_operations is able to manage file lifetime
+> by itself already, the proxy created by debugfs is a waste of resources.
+> 
+> The most common class of struct file_operations given to debugfs are those
+> defined by means of the DEFINE_SIMPLE_ATTRIBUTE() macro.
+> 
+> Introduce a DEFINE_DEBUGFS_ATTRIBUTE() macro to allow any
+> struct file_operations of this class to be easily made file lifetime aware
+> and thus, to be operated unproxied.
+> 
+> Specifically, introduce debugfs_attr_read() and debugfs_attr_write()
+> which wrap simple_attr_read() and simple_attr_write() under the protection
+> of a debugfs_use_file_start()/debugfs_use_file_finish() pair.
+> 
+> Make DEFINE_DEBUGFS_ATTRIBUTE() set the defined struct file_operations'
+> ->read() and ->write() members to these wrappers.
+> 
+> Export debugfs_create_file_unsafe() in order to allow debugfs users to
+> create their files in non-proxying operation mode.
+> 
+> Finally, add a Coccinelle script chasing down possible candidates
+> for a DEFINE_SIMPLE_ATTRIBUTE()/debugfs_create_file() to
+> DEFINE_DEBUGFS_ATTRIBUTE()/debugfs_create_file_unsafe() migration.
+> 
+> Signed-off-by: Nicolai Stange <nicstange@gmail.com>
+> ---
+>  fs/debugfs/file.c                                  | 28 +++++++++
+>  fs/debugfs/inode.c                                 | 28 +++++++++
+>  include/linux/debugfs.h                            | 26 +++++++++
+>  .../api/debugfs/debugfs_simple_attr.cocci          | 68 ++++++++++++++++++++++
 
-Feed all struct file_operations migrated to DEFINE_DEBUGFS_ATTRIBUTE()
-into debugfs_create_mode_unsafe() instead of former debugfs_create_mode().
+Shouldn't the .cocci file be in a different patch, since it has a 
+different maintainer?
 
-Signed-off-by: Nicolai Stange <nicstange@gmail.com>
----
- linux-kernel at vger.kernel.org doesn't like triple-X in subject names.
- and rejected that one.
- s/XXX/*/. Otherwise identical to triple-X'ed original.
+julia
 
- fs/debugfs/file.c | 123 +++++++++++++++++++++++++++++++++---------------------
- 1 file changed, 75 insertions(+), 48 deletions(-)
-
-diff --git a/fs/debugfs/file.c b/fs/debugfs/file.c
-index 2da5fb0..74de110 100644
---- a/fs/debugfs/file.c
-+++ b/fs/debugfs/file.c
-@@ -329,6 +329,24 @@ static struct dentry *debugfs_create_mode(const char *name, umode_t mode,
- 	return debugfs_create_file(name, mode, parent, value, fops);
- }
- 
-+static struct dentry *debugfs_create_mode_unsafe(const char *name, umode_t mode,
-+					struct dentry *parent, void *value,
-+					const struct file_operations *fops,
-+					const struct file_operations *fops_ro,
-+					const struct file_operations *fops_wo)
-+{
-+	/* if there are no write bits set, make read only */
-+	if (!(mode & S_IWUGO))
-+		return debugfs_create_file_unsafe(name, mode, parent, value,
-+						fops_ro);
-+	/* if there are no read bits set, make write only */
-+	if (!(mode & S_IRUGO))
-+		return debugfs_create_file_unsafe(name, mode, parent, value,
-+						fops_wo);
-+
-+	return debugfs_create_file_unsafe(name, mode, parent, value, fops);
-+}
-+
- static int debugfs_u8_set(void *data, u64 val)
- {
- 	*(u8 *)data = val;
-@@ -339,9 +357,9 @@ static int debugfs_u8_get(void *data, u64 *val)
- 	*val = *(u8 *)data;
- 	return 0;
- }
--DEFINE_SIMPLE_ATTRIBUTE(fops_u8, debugfs_u8_get, debugfs_u8_set, "%llu\n");
--DEFINE_SIMPLE_ATTRIBUTE(fops_u8_ro, debugfs_u8_get, NULL, "%llu\n");
--DEFINE_SIMPLE_ATTRIBUTE(fops_u8_wo, NULL, debugfs_u8_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_u8, debugfs_u8_get, debugfs_u8_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_u8_ro, debugfs_u8_get, NULL, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_u8_wo, NULL, debugfs_u8_set, "%llu\n");
- 
- /**
-  * debugfs_create_u8 - create a debugfs file that is used to read and write an unsigned 8-bit value
-@@ -370,7 +388,7 @@ DEFINE_SIMPLE_ATTRIBUTE(fops_u8_wo, NULL, debugfs_u8_set, "%llu\n");
- struct dentry *debugfs_create_u8(const char *name, umode_t mode,
- 				 struct dentry *parent, u8 *value)
- {
--	return debugfs_create_mode(name, mode, parent, value, &fops_u8,
-+	return debugfs_create_mode_unsafe(name, mode, parent, value, &fops_u8,
- 				   &fops_u8_ro, &fops_u8_wo);
- }
- EXPORT_SYMBOL_GPL(debugfs_create_u8);
-@@ -385,9 +403,9 @@ static int debugfs_u16_get(void *data, u64 *val)
- 	*val = *(u16 *)data;
- 	return 0;
- }
--DEFINE_SIMPLE_ATTRIBUTE(fops_u16, debugfs_u16_get, debugfs_u16_set, "%llu\n");
--DEFINE_SIMPLE_ATTRIBUTE(fops_u16_ro, debugfs_u16_get, NULL, "%llu\n");
--DEFINE_SIMPLE_ATTRIBUTE(fops_u16_wo, NULL, debugfs_u16_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_u16, debugfs_u16_get, debugfs_u16_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_u16_ro, debugfs_u16_get, NULL, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_u16_wo, NULL, debugfs_u16_set, "%llu\n");
- 
- /**
-  * debugfs_create_u16 - create a debugfs file that is used to read and write an unsigned 16-bit value
-@@ -416,7 +434,7 @@ DEFINE_SIMPLE_ATTRIBUTE(fops_u16_wo, NULL, debugfs_u16_set, "%llu\n");
- struct dentry *debugfs_create_u16(const char *name, umode_t mode,
- 				  struct dentry *parent, u16 *value)
- {
--	return debugfs_create_mode(name, mode, parent, value, &fops_u16,
-+	return debugfs_create_mode_unsafe(name, mode, parent, value, &fops_u16,
- 				   &fops_u16_ro, &fops_u16_wo);
- }
- EXPORT_SYMBOL_GPL(debugfs_create_u16);
-@@ -431,9 +449,9 @@ static int debugfs_u32_get(void *data, u64 *val)
- 	*val = *(u32 *)data;
- 	return 0;
- }
--DEFINE_SIMPLE_ATTRIBUTE(fops_u32, debugfs_u32_get, debugfs_u32_set, "%llu\n");
--DEFINE_SIMPLE_ATTRIBUTE(fops_u32_ro, debugfs_u32_get, NULL, "%llu\n");
--DEFINE_SIMPLE_ATTRIBUTE(fops_u32_wo, NULL, debugfs_u32_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_u32, debugfs_u32_get, debugfs_u32_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_u32_ro, debugfs_u32_get, NULL, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_u32_wo, NULL, debugfs_u32_set, "%llu\n");
- 
- /**
-  * debugfs_create_u32 - create a debugfs file that is used to read and write an unsigned 32-bit value
-@@ -462,7 +480,7 @@ DEFINE_SIMPLE_ATTRIBUTE(fops_u32_wo, NULL, debugfs_u32_set, "%llu\n");
- struct dentry *debugfs_create_u32(const char *name, umode_t mode,
- 				 struct dentry *parent, u32 *value)
- {
--	return debugfs_create_mode(name, mode, parent, value, &fops_u32,
-+	return debugfs_create_mode_unsafe(name, mode, parent, value, &fops_u32,
- 				   &fops_u32_ro, &fops_u32_wo);
- }
- EXPORT_SYMBOL_GPL(debugfs_create_u32);
-@@ -478,9 +496,9 @@ static int debugfs_u64_get(void *data, u64 *val)
- 	*val = *(u64 *)data;
- 	return 0;
- }
--DEFINE_SIMPLE_ATTRIBUTE(fops_u64, debugfs_u64_get, debugfs_u64_set, "%llu\n");
--DEFINE_SIMPLE_ATTRIBUTE(fops_u64_ro, debugfs_u64_get, NULL, "%llu\n");
--DEFINE_SIMPLE_ATTRIBUTE(fops_u64_wo, NULL, debugfs_u64_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_u64, debugfs_u64_get, debugfs_u64_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_u64_ro, debugfs_u64_get, NULL, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_u64_wo, NULL, debugfs_u64_set, "%llu\n");
- 
- /**
-  * debugfs_create_u64 - create a debugfs file that is used to read and write an unsigned 64-bit value
-@@ -509,7 +527,7 @@ DEFINE_SIMPLE_ATTRIBUTE(fops_u64_wo, NULL, debugfs_u64_set, "%llu\n");
- struct dentry *debugfs_create_u64(const char *name, umode_t mode,
- 				 struct dentry *parent, u64 *value)
- {
--	return debugfs_create_mode(name, mode, parent, value, &fops_u64,
-+	return debugfs_create_mode_unsafe(name, mode, parent, value, &fops_u64,
- 				   &fops_u64_ro, &fops_u64_wo);
- }
- EXPORT_SYMBOL_GPL(debugfs_create_u64);
-@@ -525,9 +543,10 @@ static int debugfs_ulong_get(void *data, u64 *val)
- 	*val = *(unsigned long *)data;
- 	return 0;
- }
--DEFINE_SIMPLE_ATTRIBUTE(fops_ulong, debugfs_ulong_get, debugfs_ulong_set, "%llu\n");
--DEFINE_SIMPLE_ATTRIBUTE(fops_ulong_ro, debugfs_ulong_get, NULL, "%llu\n");
--DEFINE_SIMPLE_ATTRIBUTE(fops_ulong_wo, NULL, debugfs_ulong_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_ulong, debugfs_ulong_get, debugfs_ulong_set,
-+			"%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_ulong_ro, debugfs_ulong_get, NULL, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_ulong_wo, NULL, debugfs_ulong_set, "%llu\n");
- 
- /**
-  * debugfs_create_ulong - create a debugfs file that is used to read and write
-@@ -557,26 +576,30 @@ DEFINE_SIMPLE_ATTRIBUTE(fops_ulong_wo, NULL, debugfs_ulong_set, "%llu\n");
- struct dentry *debugfs_create_ulong(const char *name, umode_t mode,
- 				    struct dentry *parent, unsigned long *value)
- {
--	return debugfs_create_mode(name, mode, parent, value, &fops_ulong,
--				   &fops_ulong_ro, &fops_ulong_wo);
-+	return debugfs_create_mode_unsafe(name, mode, parent, value,
-+					&fops_ulong, &fops_ulong_ro,
-+					&fops_ulong_wo);
- }
- EXPORT_SYMBOL_GPL(debugfs_create_ulong);
- 
--DEFINE_SIMPLE_ATTRIBUTE(fops_x8, debugfs_u8_get, debugfs_u8_set, "0x%02llx\n");
--DEFINE_SIMPLE_ATTRIBUTE(fops_x8_ro, debugfs_u8_get, NULL, "0x%02llx\n");
--DEFINE_SIMPLE_ATTRIBUTE(fops_x8_wo, NULL, debugfs_u8_set, "0x%02llx\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_x8, debugfs_u8_get, debugfs_u8_set, "0x%02llx\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_x8_ro, debugfs_u8_get, NULL, "0x%02llx\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_x8_wo, NULL, debugfs_u8_set, "0x%02llx\n");
- 
--DEFINE_SIMPLE_ATTRIBUTE(fops_x16, debugfs_u16_get, debugfs_u16_set, "0x%04llx\n");
--DEFINE_SIMPLE_ATTRIBUTE(fops_x16_ro, debugfs_u16_get, NULL, "0x%04llx\n");
--DEFINE_SIMPLE_ATTRIBUTE(fops_x16_wo, NULL, debugfs_u16_set, "0x%04llx\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_x16, debugfs_u16_get, debugfs_u16_set,
-+			"0x%04llx\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_x16_ro, debugfs_u16_get, NULL, "0x%04llx\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_x16_wo, NULL, debugfs_u16_set, "0x%04llx\n");
- 
--DEFINE_SIMPLE_ATTRIBUTE(fops_x32, debugfs_u32_get, debugfs_u32_set, "0x%08llx\n");
--DEFINE_SIMPLE_ATTRIBUTE(fops_x32_ro, debugfs_u32_get, NULL, "0x%08llx\n");
--DEFINE_SIMPLE_ATTRIBUTE(fops_x32_wo, NULL, debugfs_u32_set, "0x%08llx\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_x32, debugfs_u32_get, debugfs_u32_set,
-+			"0x%08llx\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_x32_ro, debugfs_u32_get, NULL, "0x%08llx\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_x32_wo, NULL, debugfs_u32_set, "0x%08llx\n");
- 
--DEFINE_SIMPLE_ATTRIBUTE(fops_x64, debugfs_u64_get, debugfs_u64_set, "0x%016llx\n");
--DEFINE_SIMPLE_ATTRIBUTE(fops_x64_ro, debugfs_u64_get, NULL, "0x%016llx\n");
--DEFINE_SIMPLE_ATTRIBUTE(fops_x64_wo, NULL, debugfs_u64_set, "0x%016llx\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_x64, debugfs_u64_get, debugfs_u64_set,
-+			"0x%016llx\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_x64_ro, debugfs_u64_get, NULL, "0x%016llx\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_x64_wo, NULL, debugfs_u64_set, "0x%016llx\n");
- 
- /*
-  * debugfs_create_x{8,16,32,64} - create a debugfs file that is used to read and write an unsigned {8,16,32,64}-bit value
-@@ -599,7 +622,7 @@ DEFINE_SIMPLE_ATTRIBUTE(fops_x64_wo, NULL, debugfs_u64_set, "0x%016llx\n");
- struct dentry *debugfs_create_x8(const char *name, umode_t mode,
- 				 struct dentry *parent, u8 *value)
- {
--	return debugfs_create_mode(name, mode, parent, value, &fops_x8,
-+	return debugfs_create_mode_unsafe(name, mode, parent, value, &fops_x8,
- 				   &fops_x8_ro, &fops_x8_wo);
- }
- EXPORT_SYMBOL_GPL(debugfs_create_x8);
-@@ -617,7 +640,7 @@ EXPORT_SYMBOL_GPL(debugfs_create_x8);
- struct dentry *debugfs_create_x16(const char *name, umode_t mode,
- 				 struct dentry *parent, u16 *value)
- {
--	return debugfs_create_mode(name, mode, parent, value, &fops_x16,
-+	return debugfs_create_mode_unsafe(name, mode, parent, value, &fops_x16,
- 				   &fops_x16_ro, &fops_x16_wo);
- }
- EXPORT_SYMBOL_GPL(debugfs_create_x16);
-@@ -635,7 +658,7 @@ EXPORT_SYMBOL_GPL(debugfs_create_x16);
- struct dentry *debugfs_create_x32(const char *name, umode_t mode,
- 				 struct dentry *parent, u32 *value)
- {
--	return debugfs_create_mode(name, mode, parent, value, &fops_x32,
-+	return debugfs_create_mode_unsafe(name, mode, parent, value, &fops_x32,
- 				   &fops_x32_ro, &fops_x32_wo);
- }
- EXPORT_SYMBOL_GPL(debugfs_create_x32);
-@@ -653,7 +676,7 @@ EXPORT_SYMBOL_GPL(debugfs_create_x32);
- struct dentry *debugfs_create_x64(const char *name, umode_t mode,
- 				 struct dentry *parent, u64 *value)
- {
--	return debugfs_create_mode(name, mode, parent, value, &fops_x64,
-+	return debugfs_create_mode_unsafe(name, mode, parent, value, &fops_x64,
- 				   &fops_x64_ro, &fops_x64_wo);
- }
- EXPORT_SYMBOL_GPL(debugfs_create_x64);
-@@ -669,10 +692,10 @@ static int debugfs_size_t_get(void *data, u64 *val)
- 	*val = *(size_t *)data;
- 	return 0;
- }
--DEFINE_SIMPLE_ATTRIBUTE(fops_size_t, debugfs_size_t_get, debugfs_size_t_set,
--			"%llu\n");	/* %llu and %zu are more or less the same */
--DEFINE_SIMPLE_ATTRIBUTE(fops_size_t_ro, debugfs_size_t_get, NULL, "%llu\n");
--DEFINE_SIMPLE_ATTRIBUTE(fops_size_t_wo, NULL, debugfs_size_t_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_size_t, debugfs_size_t_get, debugfs_size_t_set,
-+			"%llu\n"); /* %llu and %zu are more or less the same */
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_size_t_ro, debugfs_size_t_get, NULL, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_size_t_wo, NULL, debugfs_size_t_set, "%llu\n");
- 
- /**
-  * debugfs_create_size_t - create a debugfs file that is used to read and write an size_t value
-@@ -687,8 +710,9 @@ DEFINE_SIMPLE_ATTRIBUTE(fops_size_t_wo, NULL, debugfs_size_t_set, "%llu\n");
- struct dentry *debugfs_create_size_t(const char *name, umode_t mode,
- 				     struct dentry *parent, size_t *value)
- {
--	return debugfs_create_mode(name, mode, parent, value, &fops_size_t,
--				   &fops_size_t_ro, &fops_size_t_wo);
-+	return debugfs_create_mode_unsafe(name, mode, parent, value,
-+					&fops_size_t, &fops_size_t_ro,
-+					&fops_size_t_wo);
- }
- EXPORT_SYMBOL_GPL(debugfs_create_size_t);
- 
-@@ -702,10 +726,12 @@ static int debugfs_atomic_t_get(void *data, u64 *val)
- 	*val = atomic_read((atomic_t *)data);
- 	return 0;
- }
--DEFINE_SIMPLE_ATTRIBUTE(fops_atomic_t, debugfs_atomic_t_get,
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_atomic_t, debugfs_atomic_t_get,
- 			debugfs_atomic_t_set, "%lld\n");
--DEFINE_SIMPLE_ATTRIBUTE(fops_atomic_t_ro, debugfs_atomic_t_get, NULL, "%lld\n");
--DEFINE_SIMPLE_ATTRIBUTE(fops_atomic_t_wo, NULL, debugfs_atomic_t_set, "%lld\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_atomic_t_ro, debugfs_atomic_t_get, NULL,
-+			"%lld\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_atomic_t_wo, NULL, debugfs_atomic_t_set,
-+			"%lld\n");
- 
- /**
-  * debugfs_create_atomic_t - create a debugfs file that is used to read and
-@@ -721,8 +747,9 @@ DEFINE_SIMPLE_ATTRIBUTE(fops_atomic_t_wo, NULL, debugfs_atomic_t_set, "%lld\n");
- struct dentry *debugfs_create_atomic_t(const char *name, umode_t mode,
- 				 struct dentry *parent, atomic_t *value)
- {
--	return debugfs_create_mode(name, mode, parent, value, &fops_atomic_t,
--				   &fops_atomic_t_ro, &fops_atomic_t_wo);
-+	return debugfs_create_mode_unsafe(name, mode, parent, value,
-+					&fops_atomic_t, &fops_atomic_t_ro,
-+					&fops_atomic_t_wo);
- }
- EXPORT_SYMBOL_GPL(debugfs_create_atomic_t);
- 
--- 
-2.7.1
+>  4 files changed, 150 insertions(+)
+>  create mode 100644 scripts/coccinelle/api/debugfs/debugfs_simple_attr.cocci
+> 
+> diff --git a/fs/debugfs/file.c b/fs/debugfs/file.c
+> index f638dbc..2da5fb0 100644
+> --- a/fs/debugfs/file.c
+> +++ b/fs/debugfs/file.c
+> @@ -285,6 +285,34 @@ const struct file_operations debugfs_full_proxy_file_operations = {
+>  	.open = full_proxy_open,
+>  };
+>  
+> +ssize_t debugfs_attr_read(struct file *file, char __user *buf,
+> +			size_t len, loff_t *ppos)
+> +{
+> +	ssize_t ret;
+> +	int srcu_idx;
+> +
+> +	ret = debugfs_use_file_start(F_DENTRY(file), &srcu_idx);
+> +	if (likely(!ret))
+> +		ret = simple_attr_read(file, buf, len, ppos);
+> +	debugfs_use_file_finish(srcu_idx);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(debugfs_attr_read);
+> +
+> +ssize_t debugfs_attr_write(struct file *file, const char __user *buf,
+> +			 size_t len, loff_t *ppos)
+> +{
+> +	ssize_t ret;
+> +	int srcu_idx;
+> +
+> +	ret = debugfs_use_file_start(F_DENTRY(file), &srcu_idx);
+> +	if (likely(!ret))
+> +		ret = simple_attr_write(file, buf, len, ppos);
+> +	debugfs_use_file_finish(srcu_idx);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(debugfs_attr_write);
+> +
+>  static struct dentry *debugfs_create_mode(const char *name, umode_t mode,
+>  					  struct dentry *parent, void *value,
+>  				          const struct file_operations *fops,
+> diff --git a/fs/debugfs/inode.c b/fs/debugfs/inode.c
+> index 42a9b34..f95e355 100644
+> --- a/fs/debugfs/inode.c
+> +++ b/fs/debugfs/inode.c
+> @@ -368,6 +368,33 @@ struct dentry *debugfs_create_file(const char *name, umode_t mode,
+>  }
+>  EXPORT_SYMBOL_GPL(debugfs_create_file);
+>  
+> +/**
+> + * debugfs_create_file_unsafe - create a file in the debugfs filesystem
+> + * @name: a pointer to a string containing the name of the file to create.
+> + * @mode: the permission that the file should have.
+> + * @parent: a pointer to the parent dentry for this file.  This should be a
+> + *          directory dentry if set.  If this parameter is NULL, then the
+> + *          file will be created in the root of the debugfs filesystem.
+> + * @data: a pointer to something that the caller will want to get to later
+> + *        on.  The inode.i_private pointer will point to this value on
+> + *        the open() call.
+> + * @fops: a pointer to a struct file_operations that should be used for
+> + *        this file.
+> + *
+> + * debugfs_create_file_unsafe() is completely analogous to
+> + * debugfs_create_file(), the only difference being that the fops
+> + * handed it will not get protected against file removals by the
+> + * debugfs core.
+> + *
+> + * It is your responsibility to protect your struct file_operation
+> + * methods against file removals by means of debugfs_use_file_start()
+> + * and debugfs_use_file_finish(). ->open() is still protected by
+> + * debugfs though.
+> + *
+> + * Any struct file_operations defined by means of
+> + * DEFINE_DEBUGFS_ATTRIBUTE() is protected against file removals and
+> + * thus, may be used here.
+> + */
+>  struct dentry *debugfs_create_file_unsafe(const char *name, umode_t mode,
+>  				   struct dentry *parent, void *data,
+>  				   const struct file_operations *fops)
+> @@ -378,6 +405,7 @@ struct dentry *debugfs_create_file_unsafe(const char *name, umode_t mode,
+>  					&debugfs_noop_file_operations,
+>  				fops);
+>  }
+> +EXPORT_SYMBOL_GPL(debugfs_create_file_unsafe);
+>  
+>  /**
+>   * debugfs_create_file_size - create a file in the debugfs filesystem
+> diff --git a/include/linux/debugfs.h b/include/linux/debugfs.h
+> index 6d45ae6..c880fe9 100644
+> --- a/include/linux/debugfs.h
+> +++ b/include/linux/debugfs.h
+> @@ -50,6 +50,9 @@ extern struct srcu_struct debugfs_srcu;
+>  struct dentry *debugfs_create_file(const char *name, umode_t mode,
+>  				   struct dentry *parent, void *data,
+>  				   const struct file_operations *fops);
+> +struct dentry *debugfs_create_file_unsafe(const char *name, umode_t mode,
+> +				   struct dentry *parent, void *data,
+> +				   const struct file_operations *fops);
+>  
+>  struct dentry *debugfs_create_file_size(const char *name, umode_t mode,
+>  					struct dentry *parent, void *data,
+> @@ -74,6 +77,26 @@ int debugfs_use_file_start(const struct dentry *dentry, int *srcu_idx)
+>  
+>  void debugfs_use_file_finish(int srcu_idx) __releases(&debugfs_srcu);
+>  
+> +ssize_t debugfs_attr_read(struct file *file, char __user *buf,
+> +			size_t len, loff_t *ppos);
+> +ssize_t debugfs_attr_write(struct file *file, const char __user *buf,
+> +			size_t len, loff_t *ppos);
+> +
+> +#define DEFINE_DEBUGFS_ATTRIBUTE(__fops, __get, __set, __fmt)		\
+> +static int __fops ## _open(struct inode *inode, struct file *file)	\
+> +{									\
+> +	__simple_attr_check_format(__fmt, 0ull);			\
+> +	return simple_attr_open(inode, file, __get, __set, __fmt);	\
+> +}									\
+> +static const struct file_operations __fops = {				\
+> +	.owner	 = THIS_MODULE,					\
+> +	.open	 = __fops ## _open,					\
+> +	.release = simple_attr_release,				\
+> +	.read	 = debugfs_attr_read,					\
+> +	.write	 = debugfs_attr_write,					\
+> +	.llseek  = generic_file_llseek,				\
+> +}
+> +
+>  struct dentry *debugfs_rename(struct dentry *old_dir, struct dentry *old_dentry,
+>                  struct dentry *new_dir, const char *new_name);
+>  
+> @@ -183,6 +206,9 @@ static int debugfs_use_file_start(const struct dentry *dentry, int *srcu_idx)
+>  static void debugfs_use_file_finish(int srcu_idx) __releases(&debugfs_srcu)
+>  { }
+>  
+> +#define DEFINE_DEBUGFS_ATTRIBUTE(__fops, __get, __set, __fmt)	\
+> +	static const struct file_operations __fops = { 0 }
+> +
+>  static inline struct dentry *debugfs_rename(struct dentry *old_dir, struct dentry *old_dentry,
+>                  struct dentry *new_dir, char *new_name)
+>  {
+> diff --git a/scripts/coccinelle/api/debugfs/debugfs_simple_attr.cocci b/scripts/coccinelle/api/debugfs/debugfs_simple_attr.cocci
+> new file mode 100644
+> index 0000000..bdc418d
+> --- /dev/null
+> +++ b/scripts/coccinelle/api/debugfs/debugfs_simple_attr.cocci
+> @@ -0,0 +1,68 @@
+> +///
+> +/// Use DEFINE_DEBUGFS_ATTRIBUTE rather than DEFINE_SIMPLE_ATTRIBUTE
+> +/// for debugfs files.
+> +///
+> +/// Rationale: DEFINE_SIMPLE_ATTRIBUTE + debugfs_create_file()
+> +/// imposes some significant overhead as compared to
+> +/// DEFINE_DEBUGFS_ATTRIBUTE + debugfs_create_file_unsafe().
+> +///
+> +// Copyright (C): 2016 Nicolai Stange
+> +// Options: --no-includes
+> +//
+> +
+> +virtual context
+> +virtual patch
+> +virtual org
+> +virtual report
+> +
+> + at dsa@
+> +declarer name DEFINE_SIMPLE_ATTRIBUTE;
+> +identifier dsa_fops;
+> +expression dsa_get, dsa_set, dsa_fmt;
+> +position p;
+> +@@
+> +DEFINE_SIMPLE_ATTRIBUTE at p(dsa_fops, dsa_get, dsa_set, dsa_fmt);
+> +
+> + at dcf@
+> +expression name, mode, parent, data;
+> +identifier dsa.dsa_fops;
+> +@@
+> +debugfs_create_file(name, mode, parent, data, &dsa_fops)
+> +
+> +
+> + at context_dsa depends on context && dcf@
+> +declarer name DEFINE_DEBUGFS_ATTRIBUTE;
+> +identifier dsa.dsa_fops;
+> +expression dsa.dsa_get, dsa.dsa_set, dsa.dsa_fmt;
+> +@@
+> +* DEFINE_SIMPLE_ATTRIBUTE(dsa_fops, dsa_get, dsa_set, dsa_fmt);
+> +
+> +
+> + at patch_dcf depends on patch expression@
+> +expression name, mode, parent, data;
+> +identifier dsa.dsa_fops;
+> +@@
+> +- debugfs_create_file(name, mode, parent, data, &dsa_fops)
+> ++ debugfs_create_file_unsafe(name, mode, parent, data, &dsa_fops)
+> +
+> + at patch_dsa depends on patch_dcf && patch@
+> +identifier dsa.dsa_fops;
+> +expression dsa.dsa_get, dsa.dsa_set, dsa.dsa_fmt;
+> +@@
+> +- DEFINE_SIMPLE_ATTRIBUTE(dsa_fops, dsa_get, dsa_set, dsa_fmt);
+> ++ DEFINE_DEBUGFS_ATTRIBUTE(dsa_fops, dsa_get, dsa_set, dsa_fmt);
+> +
+> +
+> + at script:python depends on org && dcf@
+> +fops << dsa.dsa_fops;
+> +p << dsa.p;
+> +@@
+> +msg="%s should be defined with DEFINE_DEBUGFS_ATTRIBUTE" % (fops)
+> +coccilib.org.print_todo(p[0], msg)
+> +
+> + at script:python depends on report && dcf@
+> +fops << dsa.dsa_fops;
+> +p << dsa.p;
+> +@@
+> +msg="WARNING: %s should be defined with DEFINE_DEBUGFS_ATTRIBUTE" % (fops)
+> +coccilib.report.print_report(p[0], msg)
+> -- 
+> 2.7.1
+> 
+> 
