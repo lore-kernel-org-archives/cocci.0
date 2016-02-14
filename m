@@ -1,63 +1,44 @@
 From: nicstange@gmail.com (Nicolai Stange)
-Date: Sun, 14 Feb 2016 02:38:17 +0100
-Subject: [Cocci] [PATCH v3 6/7] debugfs: unproxify files created through
-	debugfs_create_blob()
+Date: Sun, 14 Feb 2016 02:39:20 +0100
+Subject: [Cocci] [PATCH v3 7/7] debugfs: unproxify files created through
+	debugfs_create_u32_array()
 In-Reply-To: <87k2m8krhf.fsf@gmail.com> (Nicolai Stange's message of "Sun, 14
  Feb 2016 02:31:08 +0100")
 References: <87k2m8krhf.fsf@gmail.com>
-Message-ID: <87si0wjcl2.fsf@gmail.com>
+Message-ID: <87oabkjcjb.fsf@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Currently, the struct file_operations fops_blob associated with files
-created through the debugfs_create_blob() helpers are not file
-lifetime aware.
+The struct file_operations u32_array_fops associated with files created
+through debugfs_create_u32_array() has been lifetime aware already:
+everything needed for subsequent operation is copied to a ->f_private
+buffer at file opening time in u32_array_open(). Now, ->open() is always
+protected against file removal issues by the debugfs core.
 
-Thus, a lifetime managing proxy is created around fops_blob each time such
-a file is opened which is an unnecessary waste of resources.
+There is no need for the debugfs core to wrap the u32_array_fops
+with a file lifetime managing proxy.
 
-Implement file lifetime management for the fops_bool file_operations.
-Namely, make read_file_blob() safe gainst file removals by means of
-debugfs_use_file_start() and debugfs_use_file_finish().
-
-Make debugfs_create_blob() create its files in non-proxying operation mode
-by means of debugfs_create_file_unsafe().
+Make debugfs_create_u32_array() create its files in non-proxying operation
+mode by means of debugfs_create_file_unsafe().
 
 Signed-off-by: Nicolai Stange <nicstange@gmail.com>
 ---
- fs/debugfs/file.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ fs/debugfs/file.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/fs/debugfs/file.c b/fs/debugfs/file.c
-index da24e0b..036ec3f 100644
+index 036ec3f..1a03e99 100644
 --- a/fs/debugfs/file.c
 +++ b/fs/debugfs/file.c
-@@ -843,8 +843,15 @@ static ssize_t read_file_blob(struct file *file, char __user *user_buf,
- 			      size_t count, loff_t *ppos)
- {
- 	struct debugfs_blob_wrapper *blob = file->private_data;
--	return simple_read_from_buffer(user_buf, count, ppos, blob->data,
--			blob->size);
-+	ssize_t r;
-+	int srcu_idx;
-+
-+	r = debugfs_use_file_start(F_DENTRY(file), &srcu_idx);
-+	if (likely(!r))
-+		r = simple_read_from_buffer(user_buf, count, ppos, blob->data,
-+					blob->size);
-+	debugfs_use_file_finish(srcu_idx);
-+	return r;
- }
+@@ -993,7 +993,8 @@ struct dentry *debugfs_create_u32_array(const char *name, umode_t mode,
+ 	data->array = array;
+ 	data->elements = elements;
  
- static const struct file_operations fops_blob = {
-@@ -881,7 +888,7 @@ struct dentry *debugfs_create_blob(const char *name, umode_t mode,
- 				   struct dentry *parent,
- 				   struct debugfs_blob_wrapper *blob)
- {
--	return debugfs_create_file(name, mode, parent, blob, &fops_blob);
-+	return debugfs_create_file_unsafe(name, mode, parent, blob, &fops_blob);
+-	return debugfs_create_file(name, mode, parent, data, &u32_array_fops);
++	return debugfs_create_file_unsafe(name, mode, parent, data,
++					&u32_array_fops);
  }
- EXPORT_SYMBOL_GPL(debugfs_create_blob);
+ EXPORT_SYMBOL_GPL(debugfs_create_u32_array);
  
 -- 
 2.7.1
