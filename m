@@ -1,84 +1,32 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 16 Feb 2016 18:18:42 +0100 (CET)
-Subject: [Cocci] [PATCH 2/3] coccinelle: recognize more devm_* memory
- allocation functions
-In-Reply-To: <1487ffe4e20d92c3c4489c160ce92b999e7bde68.1455638829.git.ydroneaud@opteya.com>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Tue, 16 Feb 2016 21:02:17 +0100
+Subject: [Cocci] coccinelle: also catch kzfree() issues
+In-Reply-To: <alpine.DEB.2.10.1602161815190.2685@hadrien>
 References: <cover.1455638829.git.ydroneaud@opteya.com>
- <1487ffe4e20d92c3c4489c160ce92b999e7bde68.1455638829.git.ydroneaud@opteya.com>
-Message-ID: <alpine.DEB.2.10.1602161818100.2685@hadrien>
+ <326298cef17f5109dc7b08094901aa1c69be83d5.1455638829.git.ydroneaud@opteya.com>
+ <alpine.DEB.2.10.1602161815190.2685@hadrien>
+Message-ID: <56C38049.7090205@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+>>  @free@
+>> +identifier kfree =~ "kz?free";
+> 
+> Thanks for the suggestions.  However, the regular expression is not such a
+> good idea.
 
-On Tue, 16 Feb 2016, Yann Droneaud wrote:
+How much is such a SmPL constraint still usable then?
 
-> Updates free/devm_free.cocci to recognize functions added by:
->
-> - commit 64c862a839a8 ('devres: add kernel standard devm_k.alloc functions')
-> - commit e31108cad3de ('devres: introduce API "devm_kstrdup"')
-> - commit 3046365bb470 ('devres: introduce API "devm_kmemdup')
-> - commit 43339bed7010 ('devres: Add devm_get_free_pages API')
-> - commit 75f2a4ead5d5 ('devres: Add devm_kasprintf and devm_kvasprintf API')
->
-> See also Documentation/driver-model/devres.txt
->
-> Cc: Joe Perches <joe@perches.com>
-> Cc: Manish Badarkhe <badarkhe.manish@gmail.com>
-> Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> Cc: Eli Billauer <eli.billauer@gmail.com>
-> Cc: Himangi Saraogi <himangi774@gmail.com>
-> Cc: Geert Uytterhoeven <geert+renesas@glider.be>
-> Cc: Wolfram Sang <w.sang@pengutronix.de>
-> Cc: Daniel Thompson <daniel.thompson@linaro.org>
-> Signed-off-by: Yann Droneaud <ydroneaud@opteya.com>
 
-Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+> Coccinelle doesn't make any optimizations based on regulat expressions.
 
-> ---
->  scripts/coccinelle/free/devm_free.cocci | 20 ++++++++++++++++++++
->  1 file changed, 20 insertions(+)
->
-> diff --git a/scripts/coccinelle/free/devm_free.cocci b/scripts/coccinelle/free/devm_free.cocci
-> index 83c03adec1c5..3794cd97494b 100644
-> --- a/scripts/coccinelle/free/devm_free.cocci
-> +++ b/scripts/coccinelle/free/devm_free.cocci
-> @@ -29,8 +29,24 @@ expression x;
->  @@
->
->  (
-> + x = devm_kmalloc(...)
-> +|
-> + x = devm_kvasprintf(...)
-> +|
-> + x = devm_kasprintf(...)
-> +|
->   x = devm_kzalloc(...)
->  |
-> + x = devm_kmalloc_array(...)
-> +|
-> + x = devm_kcalloc(...)
-> +|
-> + x = devm_kstrdup(...)
-> +|
-> + x = devm_kmemdup(...)
-> +|
-> + x = devm_get_free_pages(...)
-> +|
->   x = devm_request_irq(...)
->  |
->   x = devm_ioremap(...)
-> @@ -50,6 +66,10 @@ position p;
->  |
->  * kzfree at p(x)
->  |
-> +* free_pages at p(x, ...)
-> +|
-> +* free_page at p(x)
-> +|
->  * free_irq at p(x)
->  |
->  * iounmap at p(x)
-> --
-> 2.5.0
->
->
+Where can your software optimise the source code search?
+
+
+> It would be better to put a disjunction with kfree and kzfree explicitly,
+> as in the other cases.
+
+What are the circumstances for corresponding benefits?
+
+Regards,
+Markus
