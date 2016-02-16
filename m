@@ -1,86 +1,75 @@
 From: ydroneaud@opteya.com (Yann Droneaud)
-Date: Tue, 16 Feb 2016 18:06:36 +0100
-Subject: [Cocci] [PATCH 1/3] coccinelle: also catch kzfree() issues
+Date: Tue, 16 Feb 2016 18:06:37 +0100
+Subject: [Cocci] [PATCH 2/3] coccinelle: recognize more devm_* memory
+	allocation functions
 In-Reply-To: <cover.1455638829.git.ydroneaud@opteya.com>
 References: <cover.1455638829.git.ydroneaud@opteya.com>
-Message-ID: <326298cef17f5109dc7b08094901aa1c69be83d5.1455638829.git.ydroneaud@opteya.com>
+Message-ID: <1487ffe4e20d92c3c4489c160ce92b999e7bde68.1455638829.git.ydroneaud@opteya.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Since commit 3ef0e5ba4673 ('slab: introduce kzfree()'),
-kfree() is no more the only function to be considered.
+Updates free/devm_free.cocci to recognize functions added by:
 
-Cc: Johannes Weiner <hannes@cmpxchg.org>
+- commit 64c862a839a8 ('devres: add kernel standard devm_k.alloc functions')
+- commit e31108cad3de ('devres: introduce API "devm_kstrdup"')
+- commit 3046365bb470 ('devres: introduce API "devm_kmemdup')
+- commit 43339bed7010 ('devres: Add devm_get_free_pages API')
+- commit 75f2a4ead5d5 ('devres: Add devm_kasprintf and devm_kvasprintf API')
+
+See also Documentation/driver-model/devres.txt
+
+Cc: Joe Perches <joe@perches.com>
+Cc: Manish Badarkhe <badarkhe.manish@gmail.com>
+Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Eli Billauer <eli.billauer@gmail.com>
+Cc: Himangi Saraogi <himangi774@gmail.com>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Wolfram Sang <w.sang@pengutronix.de>
+Cc: Daniel Thompson <daniel.thompson@linaro.org>
 Signed-off-by: Yann Droneaud <ydroneaud@opteya.com>
 ---
- scripts/coccinelle/free/devm_free.cocci | 2 ++
- scripts/coccinelle/free/kfree.cocci     | 3 +++
- scripts/coccinelle/free/kfreeaddr.cocci | 6 +++++-
- 3 files changed, 10 insertions(+), 1 deletion(-)
+ scripts/coccinelle/free/devm_free.cocci | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
 diff --git a/scripts/coccinelle/free/devm_free.cocci b/scripts/coccinelle/free/devm_free.cocci
-index 3d9349012bb3..83c03adec1c5 100644
+index 83c03adec1c5..3794cd97494b 100644
 --- a/scripts/coccinelle/free/devm_free.cocci
 +++ b/scripts/coccinelle/free/devm_free.cocci
-@@ -48,6 +48,8 @@ position p;
+@@ -29,8 +29,24 @@ expression x;
+ @@
+ 
  (
- * kfree at p(x)
++ x = devm_kmalloc(...)
++|
++ x = devm_kvasprintf(...)
++|
++ x = devm_kasprintf(...)
++|
+  x = devm_kzalloc(...)
  |
-+* kzfree at p(x)
++ x = devm_kmalloc_array(...)
++|
++ x = devm_kcalloc(...)
++|
++ x = devm_kstrdup(...)
++|
++ x = devm_kmemdup(...)
++|
++ x = devm_get_free_pages(...)
++|
+  x = devm_request_irq(...)
+ |
+  x = devm_ioremap(...)
+@@ -50,6 +66,10 @@ position p;
+ |
+ * kzfree at p(x)
+ |
++* free_pages at p(x, ...)
++|
++* free_page at p(x)
 +|
  * free_irq at p(x)
  |
  * iounmap at p(x)
-diff --git a/scripts/coccinelle/free/kfree.cocci b/scripts/coccinelle/free/kfree.cocci
-index 577b78056990..c3246b47f51f 100644
---- a/scripts/coccinelle/free/kfree.cocci
-+++ b/scripts/coccinelle/free/kfree.cocci
-@@ -16,6 +16,7 @@ virtual org
- virtual report
- 
- @free@
-+identifier kfree =~ "kz?free";
- expression E;
- position p1;
- @@
-@@ -54,6 +55,7 @@ position p;
-  sizeof(<+...E@p...+>)
- 
- @loop exists@
-+identifier kfree =~ "kz?free";
- expression E;
- identifier l;
- position ok;
-@@ -67,6 +69,7 @@ while (1) { ...
- }
- 
- @r exists@
-+identifier kfree =~ "kz?free";
- expression free.E, subE<=free.E, E2;
- expression E1;
- iterator iter;
-diff --git a/scripts/coccinelle/free/kfreeaddr.cocci b/scripts/coccinelle/free/kfreeaddr.cocci
-index ce8aacc314cb..d46063b1db8b 100644
---- a/scripts/coccinelle/free/kfreeaddr.cocci
-+++ b/scripts/coccinelle/free/kfreeaddr.cocci
-@@ -16,7 +16,11 @@ identifier f;
- position p;
- @@
- 
-+(
- * kfree@p(&e->f)
-+|
-+* kzfree at p(&e->f)
-+)
- 
- @script:python depends on org@
- p << r.p;
-@@ -28,5 +32,5 @@ cocci.print_main("kfree",p)
- p << r.p;
- @@
- 
--msg = "ERROR: kfree of structure field"
-+msg = "ERROR: invalid free of structure field"
- coccilib.report.print_report(p[0],msg)
 -- 
 2.5.0
