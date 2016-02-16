@@ -1,58 +1,101 @@
-From: ydroneaud@opteya.com (Yann Droneaud)
-Date: Tue, 16 Feb 2016 18:06:38 +0100
-Subject: [Cocci] [PATCH 3/3] coccinelle: catch krealloc() on devm_*()
-	allocated memory
-In-Reply-To: <cover.1455638829.git.ydroneaud@opteya.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Tue, 16 Feb 2016 18:16:53 +0100 (CET)
+Subject: [Cocci] [PATCH 1/3] coccinelle: also catch kzfree() issues
+In-Reply-To: <326298cef17f5109dc7b08094901aa1c69be83d5.1455638829.git.ydroneaud@opteya.com>
 References: <cover.1455638829.git.ydroneaud@opteya.com>
-Message-ID: <5783128fc07898adc6860a398fc4f4e0893bc91a.1455638829.git.ydroneaud@opteya.com>
+ <326298cef17f5109dc7b08094901aa1c69be83d5.1455638829.git.ydroneaud@opteya.com>
+Message-ID: <alpine.DEB.2.10.1602161815190.2685@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-krealloc() must not be used against devm_*() allocated
-memory regions:
 
-- if a bigger memory is to be allocated, krealloc() and
-  __krealloc() could return a different pointer than the
-  one given to them, creating a memory region which is not
-  managed, thus it will not be automatically released on
-  device removal.
 
-- if a bigger memory is to be allocated, krealloc() could
-  kfree() the managed memory region which is passed to it.
-  The old pointer is left registered as a resource for the
-  device. On device removal, this dangling pointer will be
-  used and an unrelated memory region could be released.
+On Tue, 16 Feb 2016, Yann Droneaud wrote:
 
-- if the requested size is equal to 0, krealloc() can also
-  just behave like kfree(). Here too, the old pointer is
-  kept associated with the device. On device removal, this
-  invalid pointer will be used and an unrelated memory
-  region could be released.
+> Since commit 3ef0e5ba4673 ('slab: introduce kzfree()'),
+> kfree() is no more the only function to be considered.
+>
+> Cc: Johannes Weiner <hannes@cmpxchg.org>
+> Signed-off-by: Yann Droneaud <ydroneaud@opteya.com>
+> ---
+>  scripts/coccinelle/free/devm_free.cocci | 2 ++
+>  scripts/coccinelle/free/kfree.cocci     | 3 +++
+>  scripts/coccinelle/free/kfreeaddr.cocci | 6 +++++-
+>  3 files changed, 10 insertions(+), 1 deletion(-)
+>
+> diff --git a/scripts/coccinelle/free/devm_free.cocci b/scripts/coccinelle/free/devm_free.cocci
+> index 3d9349012bb3..83c03adec1c5 100644
+> --- a/scripts/coccinelle/free/devm_free.cocci
+> +++ b/scripts/coccinelle/free/devm_free.cocci
+> @@ -48,6 +48,8 @@ position p;
+>  (
+>  * kfree at p(x)
+>  |
+> +* kzfree at p(x)
+> +|
+>  * free_irq at p(x)
+>  |
+>  * iounmap at p(x)
+> diff --git a/scripts/coccinelle/free/kfree.cocci b/scripts/coccinelle/free/kfree.cocci
+> index 577b78056990..c3246b47f51f 100644
+> --- a/scripts/coccinelle/free/kfree.cocci
+> +++ b/scripts/coccinelle/free/kfree.cocci
+> @@ -16,6 +16,7 @@ virtual org
+>  virtual report
+>
+>  @free@
+> +identifier kfree =~ "kz?free";
 
-For all these reasons, krealloc() must not be used on a
-pointer returned by devm_*() functions.
+Thanks for the suggestions.  However, the regular expression is not such a
+good idea.  Coccinelle doesn't make any optimizations based on regulat
+expressions.  It would be better to put a disjunction with kfree and
+kzfree explicitly, as in the other cases.
 
-Cc: Tejun Heo <tj@kernel.org>
-Cc: Pekka Enberg <penberg@cs.helsinki.fi>
-Signed-off-by: Yann Droneaud <ydroneaud@opteya.com>
----
- scripts/coccinelle/free/devm_free.cocci | 4 ++++
- 1 file changed, 4 insertions(+)
+julia
 
-diff --git a/scripts/coccinelle/free/devm_free.cocci b/scripts/coccinelle/free/devm_free.cocci
-index 3794cd97494b..c990d2c7ee16 100644
---- a/scripts/coccinelle/free/devm_free.cocci
-+++ b/scripts/coccinelle/free/devm_free.cocci
-@@ -66,6 +66,10 @@ position p;
- |
- * kzfree at p(x)
- |
-+* __krealloc at p(x, ...)
-+|
-+* krealloc at p(x, ...)
-+|
- * free_pages at p(x, ...)
- |
- * free_page at p(x)
--- 
-2.5.0
+>  expression E;
+>  position p1;
+>  @@
+> @@ -54,6 +55,7 @@ position p;
+>   sizeof(<+...E@p...+>)
+>
+>  @loop exists@
+> +identifier kfree =~ "kz?free";
+>  expression E;
+>  identifier l;
+>  position ok;
+> @@ -67,6 +69,7 @@ while (1) { ...
+>  }
+>
+>  @r exists@
+> +identifier kfree =~ "kz?free";
+>  expression free.E, subE<=free.E, E2;
+>  expression E1;
+>  iterator iter;
+> diff --git a/scripts/coccinelle/free/kfreeaddr.cocci b/scripts/coccinelle/free/kfreeaddr.cocci
+> index ce8aacc314cb..d46063b1db8b 100644
+> --- a/scripts/coccinelle/free/kfreeaddr.cocci
+> +++ b/scripts/coccinelle/free/kfreeaddr.cocci
+> @@ -16,7 +16,11 @@ identifier f;
+>  position p;
+>  @@
+>
+> +(
+>  * kfree at p(&e->f)
+> +|
+> +* kzfree at p(&e->f)
+> +)
+>
+>  @script:python depends on org@
+>  p << r.p;
+> @@ -28,5 +32,5 @@ cocci.print_main("kfree",p)
+>  p << r.p;
+>  @@
+>
+> -msg = "ERROR: kfree of structure field"
+> +msg = "ERROR: invalid free of structure field"
+>  coccilib.report.print_report(p[0],msg)
+> --
+> 2.5.0
+>
+>
