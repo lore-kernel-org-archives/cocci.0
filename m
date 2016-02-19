@@ -1,17 +1,36 @@
-From: mmarek@suse.com (Michal Marek)
-Date: Thu, 18 Feb 2016 22:10:54 +0100
-Subject: [Cocci] [PATCH] coccinelle: bugon: reduce rule applicability
-In-Reply-To: <1454522746-396-1-git-send-email-Julia.Lawall@lip6.fr>
-References: <1454522746-396-1-git-send-email-Julia.Lawall@lip6.fr>
-Message-ID: <56C6335E.2010006@suse.com>
+From: harish.chegondi@intel.com (Chegondi, Harish)
+Date: Fri, 19 Feb 2016 02:35:14 +0000
+Subject: [Cocci] Coccinelle parse errors
+Message-ID: <2821164A880A16429BC851319A6EBBC57128DD99@ORSMSX111.amr.corp.intel.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Dne 3.2.2016 v 19:05 Julia Lawall napsal(a):
-> Rule r is only use in org or report mode, so only execute it in those
-> cases.
+Hello,
 
-I applied this and the previous three patches to kbuild.git#misc.
+I am trying to run coccicheck (make coccicheck M=<path>) against my code and I have been seeing the following exception failure parse errors with Coccinelle releases 1.0.2 and 1.0.4. I have installed OCaml version 4.01.0. Any help on how to resolve these issues would be appreciated.
 
-Thanks,
-Michal
+
+With release 1.0.2:
+
+999 1000
+Fatal error: exception Failure("minus: parse error:
+= File "./scripts/coccinelle/iterators/device_node_continue.cocci", line 46, column 0,  charpos = 999
+    around = 'i', whole content = i at p1(...) {
+")
+
+
+With release 1.0.4:
+
+3561 3562
+Fatal error: exception Failure("minus: parse error:
+= File "./scripts/coccinelle/iterators/use_after_iter.cocci", line 126, column 0,  charpos = 3561
+    around = '&', whole content = &c->member
+")
+
+
+
+Thank You very much
+Harish.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20160219/a926e3bc/attachment.html>
