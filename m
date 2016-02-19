@@ -1,80 +1,48 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 18 Feb 2016 22:10:27 -0500 (EST)
-Subject: [Cocci] Coccinelle parse errors
-In-Reply-To: <2821164A880A16429BC851319A6EBBC57128DD99@ORSMSX111.amr.corp.intel.com>
-References: <2821164A880A16429BC851319A6EBBC57128DD99@ORSMSX111.amr.corp.intel.com>
-Message-ID: <alpine.DEB.2.10.1602182209430.2821@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Fri, 19 Feb 2016 13:25:05 +0100
+Subject: [Cocci] [PATCH] scripts/coccinelle: modernize &
+In-Reply-To: <1455750974-24339-1-git-send-email-Julia.Lawall@lip6.fr>
+References: <1455750974-24339-1-git-send-email-Julia.Lawall@lip6.fr>
+Message-ID: <56C709A1.6060004@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> & is no longer allowed in column 0, since Coccinelle 1.0.4.
+
+This information corresponds to the support for handling of conjunctions
+in the semantic patch language which was added with the software
+release "Coccinelle 1.0.3".
+https://systeme.lip6.fr/pipermail/cocci/2015-October/002634.html
 
 
-On Fri, 19 Feb 2016, Chegondi, Harish wrote:
+> diff --git a/scripts/coccinelle/iterators/use_after_iter.cocci b/scripts/coccinelle/iterators/use_after_iter.cocci
+> index f085f59..ce8cc9c 100644
+> --- a/scripts/coccinelle/iterators/use_after_iter.cocci
+> +++ b/scripts/coccinelle/iterators/use_after_iter.cocci
+> @@ -123,7 +123,7 @@ list_remove_head(x,c,...)
+>  |
+>  sizeof(<+...c...+>)
+>  |
+> -&c->member
+> + &c->member
 
->
-> Hello,
->
-> ?
->
-> I am trying to run coccicheck (make coccicheck M=<path>) against my code and
-> I have been seeing the following exception failure parse errors with
-> Coccinelle releases 1.0.2 and 1.0.4. I have installed OCaml version 4.01.0.
-> Any help on how to resolve these issues would be appreciated.
->
-> ?
->
-> ?
->
-> With release 1.0.2:
->
-> ?
->
-> 999 1000
->
-> Fatal error: exception Failure("minus: parse error:
->
-> = File "./scripts/coccinelle/iterators/device_node_continue.cocci", line 46,
-> column 0,? charpos = 999
->
-> ??? around = 'i', whole content = i at p1(...) {
->
-> ")
->
-> ?
->
-> ?
->
-> With release 1.0.4:
->
-> ?
->
-> 3561 3562
->
-> Fatal error: exception Failure("minus: parse error:
->
-> = File "./scripts/coccinelle/iterators/use_after_iter.cocci", line 126,
-> column 0,? charpos = 3561
->
-> ??? around = '&', whole content = &c->member
+The added space character is not in the first column of this SmPL script.
 
-Please use 1.0.4.  A patch has been submitted for this problem.  The
-solution is just to put a space in front of this line.  Sorry for the
-inconvenience.
+* Can it be that the additional character will be transformed according to
+  special pretty-printing rules?
+  https://github.com/coccinelle/coccinelle/issues/37
 
-julia
+* Is such a change a possible workaround for open issues around
+  the message "minus: parse error" (or software improvements
+  which were developed in the meantime)?
 
->
-> ")
->
-> ?
->
-> ?
->
-> ?
->
-> Thank You very much
->
-> Harish.
->
->
->
+
+>  |
+>  c = E
+>  |
+
+
+Does the shown tweak need any further considerations?
+
+Regards,
+Markus
