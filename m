@@ -1,181 +1,160 @@
-From: ydroneaud@opteya.com (Yann Droneaud)
-Date: Mon, 22 Feb 2016 16:24:34 +0100
-Subject: [Cocci] [PATCHv1 1/3] coccinelle: also catch kzfree() issues
-In-Reply-To: <alpine.DEB.2.10.1602220918530.2532@hadrien>
-References: <cover.1455638829.git.ydroneaud@opteya.com>
- <326298cef17f5109dc7b08094901aa1c69be83d5.1455638829.git.ydroneaud@opteya.com>
- <alpine.DEB.2.10.1602161815190.2685@hadrien>
- <1456150168-24028-1-git-send-email-ydroneaud@opteya.com>
- <alpine.DEB.2.10.1602220918530.2532@hadrien>
-Message-ID: <1456154674.5678.17.camel@opteya.com>
+From: kborer@gmail.com (Kris Borer)
+Date: Mon, 22 Feb 2016 12:50:50 -0500
+Subject: [Cocci] [PATCH v3] coccinelle: add style check for assignment in if
+Message-ID: <1456163450-28640-1-git-send-email-kborer@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Le lundi 22 f?vrier 2016 ? 09:20 -0500, Julia Lawall a ?crit?:
-> On Mon, 22 Feb 2016, Yann Droneaud wrote:
-> 
-> > Since commit 3ef0e5ba4673 ('slab: introduce kzfree()'),
-> > kfree() is no more the only function to be considered.
-> >
-> > In particular, kzfree() must not be called on memory
-> > allocated through devm_*() functions.
-> >
-> > Cc: Johannes Weiner <hannes@cmpxchg.org>
-> > Signed-off-by: Yann Droneaud <ydroneaud@opteya.com>
-> > ---
-> > Hi Julia,
-> >
-> > As you suggested, I've use disjunctions instead of regular
-> > expressions (which I managed to use incorrectly: eg.
-> > without ^...$ they catch other functions than kfree(),
-> > such as kfree_skb()).
-> >
-> > I've think we should also catch krealloc(, size), where size
-> > is 0, but it's beyond my understanding of coccinelle if size
-> > is not a plain 0 constant.
-> >
-> > Perhaps you could help me for this one.
-> 
-> Do you have some examples?
+Add a semantic patch for fixing some cases of checkpatch.pl error:
 
-I don't have any real world examples (hopefully) and I don't think it's
-going to catch issues, as it's unlikely someone would write
-krealloc(ptr, 0) instead of kfree().
+ERROR: do not use assignment in if condition
 
-> ? Coccinelle is not very good at tracking
-> values.? You can say something like:
-> 
-> size = 0
-> ... when != size = e
-> krealloc(...,size)
-> 
+Signed-off-by: Kris Borer <kborer@gmail.com>
+---
+changes since v2
+- added comment warning that changes may not work well with ifdefs
 
-It works for the most simple cases I can think of. Thanks a lot !
+ scripts/coccinelle/style/assignment_in_if.cocci | 132 ++++++++++++++++++++++++
+ 1 file changed, 132 insertions(+)
+ create mode 100644 scripts/coccinelle/style/assignment_in_if.cocci
 
-> I don't know if that would be useful in practice though.
-> 
-
-It will be difficult to shoehorn such construct in the dijunctions
-added here.
-
-Perhaps we could add a new cocci rules file that would translate such
-call to krealloc() to kfree():
-
-@@
-expression e;
-expression p;
-identifier size;
-@@
-? size = 0
-? ... when != size = e
--??krealloc(p,size)
-+??kfree(p)
-
-
-@@
-expression p;
-@@
--??krealloc(p, 0)
-+??kfree(p)
-
-But I'm not sure it worth it.
-
-> > Regards.
-> >
-> >? scripts/coccinelle/free/devm_free.cocci |? 2 ++
-> >? scripts/coccinelle/free/kfree.cocci???? | 18 +++++++++++++++---
-> >? scripts/coccinelle/free/kfreeaddr.cocci |? 6 +++++-
-> >? 3 files changed, 22 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/scripts/coccinelle/free/devm_free.cocci
-> b/scripts/coccinelle/free/devm_free.cocci
-> > index 3d9349012bb3..83c03adec1c5 100644
-> > --- a/scripts/coccinelle/free/devm_free.cocci
-> > +++ b/scripts/coccinelle/free/devm_free.cocci
-> > @@ -48,6 +48,8 @@ position p;
-> >? (
-> >? * kfree at p(x)
-> >? |
-> > +* kzfree at p(x)
-> > +|
-> >? * free_irq at p(x)
-> >? |
-> >? * iounmap at p(x)
-> > diff --git a/scripts/coccinelle/free/kfree.cocci
-> b/scripts/coccinelle/free/kfree.cocci
-> > index 577b78056990..ac438da4fd7b 100644
-> > --- a/scripts/coccinelle/free/kfree.cocci
-> > +++ b/scripts/coccinelle/free/kfree.cocci
-> > @@ -20,7 +20,11 @@ expression E;
-> >? position p1;
-> >? @@
-> >
-> > -kfree at p1(E)
-> > +(
-> > +* kfree at p1(E)
-> > +|
-> > +* kzfree at p1(E)
-> > +)
-> >
-> >? @print expression@
-> >? constant char [] c;
-> > @@ -60,7 +64,11 @@ position ok;
-> >? @@
-> >
-> >? while (1) { ...
-> > -? kfree at ok(E)
-> > +(
-> > +* kfree at ok(E)
-> > +|
-> > +* kzfree at ok(E)
-> > +)
-> >??? ... when != break;
-> >??????? when != goto l;
-> >??????? when forall
-> > @@ -74,7 +82,11 @@ statement S;
-> >? position free.p1!=loop.ok,p2!={print.p,sz.p};
-> >? @@
-> >
-> > -kfree at p1(E,...)
-> > +(
-> > +* kfree at p1(E,...)
-> > +|
-> > +* kzfree at p1(E,...)
-> > +)
-> >? ...
-> >? (
-> >?? iter(...,subE,...) S // no use
-> > diff --git a/scripts/coccinelle/free/kfreeaddr.cocci
-> b/scripts/coccinelle/free/kfreeaddr.cocci
-> > index ce8aacc314cb..d46063b1db8b 100644
-> > --- a/scripts/coccinelle/free/kfreeaddr.cocci
-> > +++ b/scripts/coccinelle/free/kfreeaddr.cocci
-> > @@ -16,7 +16,11 @@ identifier f;
-> >? position p;
-> >? @@
-> >
-> > +(
-> >? * kfree at p(&e->f)
-> > +|
-> > +* kzfree at p(&e->f)
-> > +)
-> >
-> >? @script:python depends on org@
-> >? p << r.p;
-> > @@ -28,5 +32,5 @@ cocci.print_main("kfree",p)
-> >? p << r.p;
-> >? @@
-> >
-> > -msg = "ERROR: kfree of structure field"
-> > +msg = "ERROR: invalid free of structure field"
-> >? coccilib.report.print_report(p[0],msg)
-> > --
-> > 2.5.0
-> >
-> >
-
-Regards.
-
---?
-Yann Droneaud
-OPTEYA
+diff --git a/scripts/coccinelle/style/assignment_in_if.cocci b/scripts/coccinelle/style/assignment_in_if.cocci
+new file mode 100644
+index 0000000..c99cd7e
+--- /dev/null
++++ b/scripts/coccinelle/style/assignment_in_if.cocci
+@@ -0,0 +1,132 @@
++/// move assignments out of if conditions
++///
++//# This script is designed to correct code where assignments exist in if
++//# conditions. It is only capable of handling a subset of such problems.
++//# Ideally it would handle all checkpatch errors of the following type:
++//#	ERROR: do not use assignment in if condition
++//#
++//# For example:
++//#	if(result = myfun())
++//#
++//# would become:
++//#	result = myfun();
++//#	if(result)
++//#
++//# note:
++//#	added braces due to the replacement of an if by multiple statements
++//#	may not interact well with ifdefs
++//
++// Confidence: Moderate
++// Copyright: (C) 2015 Kris Borer.  GPLv2.
++// URL: http://coccinelle.lip6.fr/
++// Comments:
++// Options: --no-includes --include-headers
++
++virtual patch
++
++
++// if ( (ret = call()) )
++// if ( (ret = call()) < 0 )
++@if1@
++expression i;
++expression E, E2;
++statement S1, S2;
++binary operator b;
++@@
++
+++ i = E;
++  if (
++(
++- (i = E)
+++ i
++|
++- (i = E)
+++ i
++  b ...
++|
++- (i = E),
++  E2
++)
++  ) S1 else S2
++
++
++// if ( ptr->fun && (ret = ptr->fun()) )
++ at if2@
++expression i2;
++expression E1, E2;
++@@
++
+++ if( E1 ) {
+++       i2 = E2;
+++       if (i2) {
++- if( E1 && (i2 = E2) ) {
++  ...
++- }
+++       }
+++ }
++
++
++// if ( ptr->fun && (ret = ptr->fun()) < 0 )
++ at if3@
++expression i2;
++expression E1, E2;
++constant c;
++binary operator b;
++@@
++
+++ if( E1 ) {
+++       i2 = E2;
+++       if (i2 b c) {
++- if( E1 && ((i2 = E2) b c) ) {
++  ...
++- }
+++       }
+++ }
++
++
++// if ( (ret = call()) && ret != -1 )
++// if ( (ret = call()) < 0 && ret != -1 )
++ at if4@
++expression i;
++expression E, E2;
++statement S1, S2;
++binary operator b;
++@@
++
+++ i = E;
++  if (
++(
++- (i = E)
+++ i
++|
++  (
++- (i = E)
+++ i
++  b
++  ...)
++)
++  && E2 ) S1 else S2
++
++
++// if ( (ret = call()) && ret != -1 && ret != -2 )
++// if ( (ret = call()) < 0 && ret != -1 && ret != -2 )
++@if5@
++expression i;
++expression E, E2, E3;
++statement S1, S2;
++binary operator b;
++@@
++
+++ i = E;
++  if (
++(
++- (i = E)
+++ i
++|
++  (
++- (i = E)
+++ i
++  b
++  ...)
++)
++  && E2 && E3 ) S1 else S2
+-- 
+1.9.1
