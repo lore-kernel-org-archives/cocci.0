@@ -1,117 +1,172 @@
-From: nicstange@gmail.com (Nicolai Stange)
-Date: Tue, 23 Feb 2016 14:59:44 +0100
-Subject: [Cocci] [PATCH v4 6/8] debugfs: unproxify files created through
-	debugfs_create_bool()
-In-Reply-To: <8737sjo7qa.fsf@gmail.com> (Nicolai Stange's message of "Tue, 23
- Feb 2016 14:51:25 +0100")
-References: <8737sjo7qa.fsf@gmail.com>
-Message-ID: <87a8mrmsrz.fsf@gmail.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Tue, 23 Feb 2016 15:00:51 +0100 (CET)
+Subject: [Cocci] [PATCH v3] coccinelle: add style check for assignment
+	in if
+In-Reply-To: <1456163450-28640-1-git-send-email-kborer@gmail.com>
+References: <1456163450-28640-1-git-send-email-kborer@gmail.com>
+Message-ID: <alpine.DEB.2.02.1602231500260.2168@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Currently, the struct file_operations fops_bool associated with files
-created through the debugfs_create_bool() helpers are not file
-lifetime aware.
 
-Thus, a lifetime managing proxy is created around fops_bool each time such
-a file is opened which is an unnecessary waste of resources.
 
-Implement file lifetime management for the fops_bool file_operations.
-Namely, make debugfs_read_file_bool() and debugfs_write_file_bool() safe
-against file removals by means of debugfs_use_file_start() and
-debugfs_use_file_finish().
+On Mon, 22 Feb 2016, Kris Borer wrote:
 
-Make debugfs_create_bool() create its files in non-proxying operation mode
-through debugfs_create_mode_unsafe().
+> Add a semantic patch for fixing some cases of checkpatch.pl error:
+> 
+> ERROR: do not use assignment in if condition
+> 
+> Signed-off-by: Kris Borer <kborer@gmail.com>
 
-Finally, purge debugfs_create_mode() as debugfs_create_bool() had been its
-last user.
+Acked-by: Julia Lawall <julia.lawall@lip6.fr>
 
-Signed-off-by: Nicolai Stange <nicstange@gmail.com>
----
- fs/debugfs/file.c | 41 ++++++++++++++++++++---------------------
- 1 file changed, 20 insertions(+), 21 deletions(-)
-
-diff --git a/fs/debugfs/file.c b/fs/debugfs/file.c
-index 74de110..da24e0b 100644
---- a/fs/debugfs/file.c
-+++ b/fs/debugfs/file.c
-@@ -313,22 +313,6 @@ ssize_t debugfs_attr_write(struct file *file, const char __user *buf,
- }
- EXPORT_SYMBOL_GPL(debugfs_attr_write);
- 
--static struct dentry *debugfs_create_mode(const char *name, umode_t mode,
--					  struct dentry *parent, void *value,
--				          const struct file_operations *fops,
--				          const struct file_operations *fops_ro,
--				          const struct file_operations *fops_wo)
--{
--	/* if there are no write bits set, make read only */
--	if (!(mode & S_IWUGO))
--		return debugfs_create_file(name, mode, parent, value, fops_ro);
--	/* if there are no read bits set, make write only */
--	if (!(mode & S_IRUGO))
--		return debugfs_create_file(name, mode, parent, value, fops_wo);
--
--	return debugfs_create_file(name, mode, parent, value, fops);
--}
--
- static struct dentry *debugfs_create_mode_unsafe(const char *name, umode_t mode,
- 					struct dentry *parent, void *value,
- 					const struct file_operations *fops,
-@@ -757,9 +741,17 @@ ssize_t debugfs_read_file_bool(struct file *file, char __user *user_buf,
- 			       size_t count, loff_t *ppos)
- {
- 	char buf[3];
--	bool *val = file->private_data;
-+	bool val;
-+	int r, srcu_idx;
-+
-+	r = debugfs_use_file_start(F_DENTRY(file), &srcu_idx);
-+	if (likely(!r))
-+		val = *(bool *)file->private_data;
-+	debugfs_use_file_finish(srcu_idx);
-+	if (r)
-+		return r;
- 
--	if (*val)
-+	if (val)
- 		buf[0] = 'Y';
- 	else
- 		buf[0] = 'N';
-@@ -775,6 +767,7 @@ ssize_t debugfs_write_file_bool(struct file *file, const char __user *user_buf,
- 	char buf[32];
- 	size_t buf_size;
- 	bool bv;
-+	int r, srcu_idx;
- 	bool *val = file->private_data;
- 
- 	buf_size = min(count, (sizeof(buf)-1));
-@@ -782,8 +775,14 @@ ssize_t debugfs_write_file_bool(struct file *file, const char __user *user_buf,
- 		return -EFAULT;
- 
- 	buf[buf_size] = '\0';
--	if (strtobool(buf, &bv) == 0)
--		*val = bv;
-+	if (strtobool(buf, &bv) == 0) {
-+		r = debugfs_use_file_start(F_DENTRY(file), &srcu_idx);
-+		if (likely(!r))
-+			*val = bv;
-+		debugfs_use_file_finish(srcu_idx);
-+		if (r)
-+			return r;
-+	}
- 
- 	return count;
- }
-@@ -835,7 +834,7 @@ static const struct file_operations fops_bool_wo = {
- struct dentry *debugfs_create_bool(const char *name, umode_t mode,
- 				   struct dentry *parent, bool *value)
- {
--	return debugfs_create_mode(name, mode, parent, value, &fops_bool,
-+	return debugfs_create_mode_unsafe(name, mode, parent, value, &fops_bool,
- 				   &fops_bool_ro, &fops_bool_wo);
- }
- EXPORT_SYMBOL_GPL(debugfs_create_bool);
--- 
-2.7.1
+> ---
+> changes since v2
+> - added comment warning that changes may not work well with ifdefs
+> 
+>  scripts/coccinelle/style/assignment_in_if.cocci | 132 ++++++++++++++++++++++++
+>  1 file changed, 132 insertions(+)
+>  create mode 100644 scripts/coccinelle/style/assignment_in_if.cocci
+> 
+> diff --git a/scripts/coccinelle/style/assignment_in_if.cocci b/scripts/coccinelle/style/assignment_in_if.cocci
+> new file mode 100644
+> index 0000000..c99cd7e
+> --- /dev/null
+> +++ b/scripts/coccinelle/style/assignment_in_if.cocci
+> @@ -0,0 +1,132 @@
+> +/// move assignments out of if conditions
+> +///
+> +//# This script is designed to correct code where assignments exist in if
+> +//# conditions. It is only capable of handling a subset of such problems.
+> +//# Ideally it would handle all checkpatch errors of the following type:
+> +//#	ERROR: do not use assignment in if condition
+> +//#
+> +//# For example:
+> +//#	if(result = myfun())
+> +//#
+> +//# would become:
+> +//#	result = myfun();
+> +//#	if(result)
+> +//#
+> +//# note:
+> +//#	added braces due to the replacement of an if by multiple statements
+> +//#	may not interact well with ifdefs
+> +//
+> +// Confidence: Moderate
+> +// Copyright: (C) 2015 Kris Borer.  GPLv2.
+> +// URL: http://coccinelle.lip6.fr/
+> +// Comments:
+> +// Options: --no-includes --include-headers
+> +
+> +virtual patch
+> +
+> +
+> +// if ( (ret = call()) )
+> +// if ( (ret = call()) < 0 )
+> + at if1@
+> +expression i;
+> +expression E, E2;
+> +statement S1, S2;
+> +binary operator b;
+> +@@
+> +
+> ++ i = E;
+> +  if (
+> +(
+> +- (i = E)
+> ++ i
+> +|
+> +- (i = E)
+> ++ i
+> +  b ...
+> +|
+> +- (i = E),
+> +  E2
+> +)
+> +  ) S1 else S2
+> +
+> +
+> +// if ( ptr->fun && (ret = ptr->fun()) )
+> + at if2@
+> +expression i2;
+> +expression E1, E2;
+> +@@
+> +
+> ++ if( E1 ) {
+> ++       i2 = E2;
+> ++       if (i2) {
+> +- if( E1 && (i2 = E2) ) {
+> +  ...
+> +- }
+> ++       }
+> ++ }
+> +
+> +
+> +// if ( ptr->fun && (ret = ptr->fun()) < 0 )
+> + at if3@
+> +expression i2;
+> +expression E1, E2;
+> +constant c;
+> +binary operator b;
+> +@@
+> +
+> ++ if( E1 ) {
+> ++       i2 = E2;
+> ++       if (i2 b c) {
+> +- if( E1 && ((i2 = E2) b c) ) {
+> +  ...
+> +- }
+> ++       }
+> ++ }
+> +
+> +
+> +// if ( (ret = call()) && ret != -1 )
+> +// if ( (ret = call()) < 0 && ret != -1 )
+> + at if4@
+> +expression i;
+> +expression E, E2;
+> +statement S1, S2;
+> +binary operator b;
+> +@@
+> +
+> ++ i = E;
+> +  if (
+> +(
+> +- (i = E)
+> ++ i
+> +|
+> +  (
+> +- (i = E)
+> ++ i
+> +  b
+> +  ...)
+> +)
+> +  && E2 ) S1 else S2
+> +
+> +
+> +// if ( (ret = call()) && ret != -1 && ret != -2 )
+> +// if ( (ret = call()) < 0 && ret != -1 && ret != -2 )
+> + at if5@
+> +expression i;
+> +expression E, E2, E3;
+> +statement S1, S2;
+> +binary operator b;
+> +@@
+> +
+> ++ i = E;
+> +  if (
+> +(
+> +- (i = E)
+> ++ i
+> +|
+> +  (
+> +- (i = E)
+> ++ i
+> +  b
+> +  ...)
+> +)
+> +  && E2 && E3 ) S1 else S2
+> -- 
+> 1.9.1
+> 
+> 
