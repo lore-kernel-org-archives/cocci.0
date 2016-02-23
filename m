@@ -1,172 +1,63 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 23 Feb 2016 15:00:51 +0100 (CET)
-Subject: [Cocci] [PATCH v3] coccinelle: add style check for assignment
-	in if
-In-Reply-To: <1456163450-28640-1-git-send-email-kborer@gmail.com>
-References: <1456163450-28640-1-git-send-email-kborer@gmail.com>
-Message-ID: <alpine.DEB.2.02.1602231500260.2168@localhost6.localdomain6>
+From: nicstange@gmail.com (Nicolai Stange)
+Date: Tue, 23 Feb 2016 15:00:48 +0100
+Subject: [Cocci] [PATCH v4 7/8] debugfs: unproxify files created through
+	debugfs_create_blob()
+In-Reply-To: <8737sjo7qa.fsf@gmail.com> (Nicolai Stange's message of "Tue, 23
+ Feb 2016 14:51:25 +0100")
+References: <8737sjo7qa.fsf@gmail.com>
+Message-ID: <8760xfmsq7.fsf@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Currently, the struct file_operations fops_blob associated with files
+created through the debugfs_create_blob() helpers are not file
+lifetime aware.
 
+Thus, a lifetime managing proxy is created around fops_blob each time such
+a file is opened which is an unnecessary waste of resources.
 
-On Mon, 22 Feb 2016, Kris Borer wrote:
+Implement file lifetime management for the fops_bool file_operations.
+Namely, make read_file_blob() safe gainst file removals by means of
+debugfs_use_file_start() and debugfs_use_file_finish().
 
-> Add a semantic patch for fixing some cases of checkpatch.pl error:
-> 
-> ERROR: do not use assignment in if condition
-> 
-> Signed-off-by: Kris Borer <kborer@gmail.com>
+Make debugfs_create_blob() create its files in non-proxying operation mode
+by means of debugfs_create_file_unsafe().
 
-Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+Signed-off-by: Nicolai Stange <nicstange@gmail.com>
+---
+ fs/debugfs/file.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-> ---
-> changes since v2
-> - added comment warning that changes may not work well with ifdefs
-> 
->  scripts/coccinelle/style/assignment_in_if.cocci | 132 ++++++++++++++++++++++++
->  1 file changed, 132 insertions(+)
->  create mode 100644 scripts/coccinelle/style/assignment_in_if.cocci
-> 
-> diff --git a/scripts/coccinelle/style/assignment_in_if.cocci b/scripts/coccinelle/style/assignment_in_if.cocci
-> new file mode 100644
-> index 0000000..c99cd7e
-> --- /dev/null
-> +++ b/scripts/coccinelle/style/assignment_in_if.cocci
-> @@ -0,0 +1,132 @@
-> +/// move assignments out of if conditions
-> +///
-> +//# This script is designed to correct code where assignments exist in if
-> +//# conditions. It is only capable of handling a subset of such problems.
-> +//# Ideally it would handle all checkpatch errors of the following type:
-> +//#	ERROR: do not use assignment in if condition
-> +//#
-> +//# For example:
-> +//#	if(result = myfun())
-> +//#
-> +//# would become:
-> +//#	result = myfun();
-> +//#	if(result)
-> +//#
-> +//# note:
-> +//#	added braces due to the replacement of an if by multiple statements
-> +//#	may not interact well with ifdefs
-> +//
-> +// Confidence: Moderate
-> +// Copyright: (C) 2015 Kris Borer.  GPLv2.
-> +// URL: http://coccinelle.lip6.fr/
-> +// Comments:
-> +// Options: --no-includes --include-headers
-> +
-> +virtual patch
-> +
-> +
-> +// if ( (ret = call()) )
-> +// if ( (ret = call()) < 0 )
-> + at if1@
-> +expression i;
-> +expression E, E2;
-> +statement S1, S2;
-> +binary operator b;
-> +@@
-> +
-> ++ i = E;
-> +  if (
-> +(
-> +- (i = E)
-> ++ i
-> +|
-> +- (i = E)
-> ++ i
-> +  b ...
-> +|
-> +- (i = E),
-> +  E2
-> +)
-> +  ) S1 else S2
-> +
-> +
-> +// if ( ptr->fun && (ret = ptr->fun()) )
-> + at if2@
-> +expression i2;
-> +expression E1, E2;
-> +@@
-> +
-> ++ if( E1 ) {
-> ++       i2 = E2;
-> ++       if (i2) {
-> +- if( E1 && (i2 = E2) ) {
-> +  ...
-> +- }
-> ++       }
-> ++ }
-> +
-> +
-> +// if ( ptr->fun && (ret = ptr->fun()) < 0 )
-> + at if3@
-> +expression i2;
-> +expression E1, E2;
-> +constant c;
-> +binary operator b;
-> +@@
-> +
-> ++ if( E1 ) {
-> ++       i2 = E2;
-> ++       if (i2 b c) {
-> +- if( E1 && ((i2 = E2) b c) ) {
-> +  ...
-> +- }
-> ++       }
-> ++ }
-> +
-> +
-> +// if ( (ret = call()) && ret != -1 )
-> +// if ( (ret = call()) < 0 && ret != -1 )
-> + at if4@
-> +expression i;
-> +expression E, E2;
-> +statement S1, S2;
-> +binary operator b;
-> +@@
-> +
-> ++ i = E;
-> +  if (
-> +(
-> +- (i = E)
-> ++ i
-> +|
-> +  (
-> +- (i = E)
-> ++ i
-> +  b
-> +  ...)
-> +)
-> +  && E2 ) S1 else S2
-> +
-> +
-> +// if ( (ret = call()) && ret != -1 && ret != -2 )
-> +// if ( (ret = call()) < 0 && ret != -1 && ret != -2 )
-> + at if5@
-> +expression i;
-> +expression E, E2, E3;
-> +statement S1, S2;
-> +binary operator b;
-> +@@
-> +
-> ++ i = E;
-> +  if (
-> +(
-> +- (i = E)
-> ++ i
-> +|
-> +  (
-> +- (i = E)
-> ++ i
-> +  b
-> +  ...)
-> +)
-> +  && E2 && E3 ) S1 else S2
-> -- 
-> 1.9.1
-> 
-> 
+diff --git a/fs/debugfs/file.c b/fs/debugfs/file.c
+index da24e0b..036ec3f 100644
+--- a/fs/debugfs/file.c
++++ b/fs/debugfs/file.c
+@@ -843,8 +843,15 @@ static ssize_t read_file_blob(struct file *file, char __user *user_buf,
+ 			      size_t count, loff_t *ppos)
+ {
+ 	struct debugfs_blob_wrapper *blob = file->private_data;
+-	return simple_read_from_buffer(user_buf, count, ppos, blob->data,
+-			blob->size);
++	ssize_t r;
++	int srcu_idx;
++
++	r = debugfs_use_file_start(F_DENTRY(file), &srcu_idx);
++	if (likely(!r))
++		r = simple_read_from_buffer(user_buf, count, ppos, blob->data,
++					blob->size);
++	debugfs_use_file_finish(srcu_idx);
++	return r;
+ }
+ 
+ static const struct file_operations fops_blob = {
+@@ -881,7 +888,7 @@ struct dentry *debugfs_create_blob(const char *name, umode_t mode,
+ 				   struct dentry *parent,
+ 				   struct debugfs_blob_wrapper *blob)
+ {
+-	return debugfs_create_file(name, mode, parent, blob, &fops_blob);
++	return debugfs_create_file_unsafe(name, mode, parent, blob, &fops_blob);
+ }
+ EXPORT_SYMBOL_GPL(debugfs_create_blob);
+ 
+-- 
+2.7.1
