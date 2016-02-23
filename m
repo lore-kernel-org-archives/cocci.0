@@ -1,160 +1,162 @@
-From: kborer@gmail.com (Kris Borer)
-Date: Mon, 22 Feb 2016 12:50:50 -0500
-Subject: [Cocci] [PATCH v3] coccinelle: add style check for assignment in if
-Message-ID: <1456163450-28640-1-git-send-email-kborer@gmail.com>
+From: nicstange@gmail.com (Nicolai Stange)
+Date: Tue, 23 Feb 2016 14:51:25 +0100
+Subject: [Cocci] [PATCH v4 0/8] fix debugfs file removal races
+Message-ID: <8737sjo7qa.fsf@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Add a semantic patch for fixing some cases of checkpatch.pl error:
+The changes from v3 to v4 are style changes regarding the Coccinelle
+part only -- it has been split off from former [3/7] into its own
+patch [4/8].
 
-ERROR: do not use assignment in if condition
+The big step has been from v2 to v3 and these changes haven't got any
+review yet.
 
-Signed-off-by: Kris Borer <kborer@gmail.com>
----
-changes since v2
-- added comment warning that changes may not work well with ifdefs
+Original v2 thread is here:
 
- scripts/coccinelle/style/assignment_in_if.cocci | 132 ++++++++++++++++++++++++
- 1 file changed, 132 insertions(+)
- create mode 100644 scripts/coccinelle/style/assignment_in_if.cocci
+  http://lkml.kernel.org/g/87fux3memd.fsf at gmail.com
 
-diff --git a/scripts/coccinelle/style/assignment_in_if.cocci b/scripts/coccinelle/style/assignment_in_if.cocci
-new file mode 100644
-index 0000000..c99cd7e
---- /dev/null
-+++ b/scripts/coccinelle/style/assignment_in_if.cocci
-@@ -0,0 +1,132 @@
-+/// move assignments out of if conditions
-+///
-+//# This script is designed to correct code where assignments exist in if
-+//# conditions. It is only capable of handling a subset of such problems.
-+//# Ideally it would handle all checkpatch errors of the following type:
-+//#	ERROR: do not use assignment in if condition
-+//#
-+//# For example:
-+//#	if(result = myfun())
-+//#
-+//# would become:
-+//#	result = myfun();
-+//#	if(result)
-+//#
-+//# note:
-+//#	added braces due to the replacement of an if by multiple statements
-+//#	may not interact well with ifdefs
-+//
-+// Confidence: Moderate
-+// Copyright: (C) 2015 Kris Borer.  GPLv2.
-+// URL: http://coccinelle.lip6.fr/
-+// Comments:
-+// Options: --no-includes --include-headers
-+
-+virtual patch
-+
-+
-+// if ( (ret = call()) )
-+// if ( (ret = call()) < 0 )
-+@if1@
-+expression i;
-+expression E, E2;
-+statement S1, S2;
-+binary operator b;
-+@@
-+
-++ i = E;
-+  if (
-+(
-+- (i = E)
-++ i
-+|
-+- (i = E)
-++ i
-+  b ...
-+|
-+- (i = E),
-+  E2
-+)
-+  ) S1 else S2
-+
-+
-+// if ( ptr->fun && (ret = ptr->fun()) )
-+ at if2@
-+expression i2;
-+expression E1, E2;
-+@@
-+
-++ if( E1 ) {
-++       i2 = E2;
-++       if (i2) {
-+- if( E1 && (i2 = E2) ) {
-+  ...
-+- }
-++       }
-++ }
-+
-+
-+// if ( ptr->fun && (ret = ptr->fun()) < 0 )
-+ at if3@
-+expression i2;
-+expression E1, E2;
-+constant c;
-+binary operator b;
-+@@
-+
-++ if( E1 ) {
-++       i2 = E2;
-++       if (i2 b c) {
-+- if( E1 && ((i2 = E2) b c) ) {
-+  ...
-+- }
-++       }
-++ }
-+
-+
-+// if ( (ret = call()) && ret != -1 )
-+// if ( (ret = call()) < 0 && ret != -1 )
-+ at if4@
-+expression i;
-+expression E, E2;
-+statement S1, S2;
-+binary operator b;
-+@@
-+
-++ i = E;
-+  if (
-+(
-+- (i = E)
-++ i
-+|
-+  (
-+- (i = E)
-++ i
-+  b
-+  ...)
-+)
-+  && E2 ) S1 else S2
-+
-+
-+// if ( (ret = call()) && ret != -1 && ret != -2 )
-+// if ( (ret = call()) < 0 && ret != -1 && ret != -2 )
-+@if5@
-+expression i;
-+expression E, E2, E3;
-+statement S1, S2;
-+binary operator b;
-+@@
-+
-++ i = E;
-+  if (
-+(
-+- (i = E)
-++ i
-+|
-+  (
-+- (i = E)
-++ i
-+  b
-+  ...)
-+)
-+  && E2 && E3 ) S1 else S2
+In the discussion of v2, it turned out that touching each and every of
+the ~1000 debugfs users in order to make them save against file
+removals is unfeasible.
+
+Thus, v3/v4 take a different approach: every struct file_operations
+handed to debugfs is wrapped by a protecting proxy in [2/8].
+Only those struct file_operations which are easy to fix directly,
+i.e. those defined by debugfs itself, opt-out from this proxying in
+[5-8/8].
+
+
+The SRCU part really needs some fresh review: in v2 the
+rcu_assign_pointer()'ed and srcu_derefence()'d ->d_fsdata has been
+effectively used as an indication of whether a file is dead or not.
+
+With the full proxy approach in v3/v4, ->d_fsdata can't be cleared out at
+file removal because open files might still hold a reference to it and
+those must be released again from the proxy's ->release().
+
+Thus, the properly memory- and compiler-barriered accesses to
+->d_fsdata have now been replaced by not explicitly barriered d_delete()
+and d_unlinked() calls in debugfs_use_file_start() and
+debugfs_remove() (all in [1/8] now).
+
+I believe that no extra barriers are needed:
+The SRCU read side critical sections around any file usage looks like this:
+    srcu_read_lock();
+    if(d_unlinked(dentry)) {
+      srcu_read_unlock();
+      return -EIO
+    }
+    cope_around_with(d_inode(dentry)->i_private);
+    srcu_read_unlock()
+- srcu_read_lock() and srcu_read_unlock() already contain a barrier()
+  each. Thus, the compiler is forced to make the dentry's state being
+  read at least once within the read side critical section.  
+- I don't care for speculative reads to the file's private data
+  in cope_around_with().
+- Writes in cope_around_with() should be properly handled by the control
+  dependency in that they don't occur on the bus if d_unlinked() holds.
+  Furthermore, any writes in cope_around_with() are emitted by the
+  compiler before the srcu_read_unlock().
+
+For the file removing side of things, the SRCU usage looks like this:
+  d_delete(dentry);
+  synchronize_srcu();
+  free(d_inode(dentry)->i_private);
+d_delete() is defined in another compilation unit. Thus, its call can't be
+reorded with the one to synchronize_srcu() and the dentry state is written
+(on that CPU) before synchronize_srcu() is entered.
+
+
+Changes v3 -> v4:
+  [4/8] ("debugfs, coccinelle: check for obsolete DEFINE_SIMPLE_ATTRIBUTE() usage")
+   - This one is new, the Coccinelle related changes have been split
+     off from former
+       [3/7] ("debugfs: add support for self-protecting attribute file fops")
+     into this patch.
+   - Style fixes as suggested by Julia Lawall have been applied to the
+     contained cocci script's comment header.
+
+  [5/8] ("debugfs: unproxify integer attribute files")
+   - The commit messages has been reworded in order to get rid of the
+     unfortunate triple-X in former [4/7].
+
+  [6-8/8]
+   - Former [5-7/8], only the numbering has changed.
+
+
+Changes v2 -> v3:
+  [1/7] ("debugfs: prevent access to possibly dead file_operations at file open")
+   - move the definition of the debugfs_use_file_start() and _end() from former
+     [2/2] to [1/7]. Also, they've been renamed from debugfs_file_use_data*().
+   - Make the ->open() proxy use the debugfs_use_file_*() helpers.
+   - In debugfs_use_file_start(), use d_unlinked() rather than
+     (->d_fsdata == NULL) as a flag whether the dentry is dead.
+   - Make the ->open() proxy include the forwarded call to the original fops' ->open
+     within the SRCU read side critical section.
+   - debugfs_proxy_file_operations has been renamed to
+     "debugfs_open_proxy_file_operations"  to distinguish it from the full proxy
+     introduced in [2/7].
+
+  [2/7] ("debugfs: prevent access to removed files' private data")
+   - This one has changed completely: instead of providing file
+     removal-safe fops helpers to opt-into at the debugfs users, the
+     original struct file_operations get completely and
+     unconditionally proxied now.
+
+  [3-7/7]
+   New. Opt-out from the full proxying introduced in [2/7] for some
+   special case struct file_operations provided by debugfs itself.
+
+
+Changes v1 -> v2:
+  [1/2] ("debugfs: prevent access to possibly dead file_operations at file open")
+   - Resolve trivial diff conflict in debugfs_remove_recursive():
+     in the meanwhile, an unrelated 'mutex_unlock(...)' had been rewritten to
+     'inode_unlock(...)' which broke the diff's context.
+   - Introduce the fs/debugfs/internal.h header and move the declarations of
+     debugfs_noop_file_operations, debugfs_proxy_file_operations and
+     debugfs_rcu from include/linux/debugfs.h thereinto. Include this header
+     from file.c and inode.c.
+   - Add a word about the new internal header to the commit message.
+   - Move the inclusion of linux/srcu.h from include/linux/debugfs.h
+     into file.c and inode.c respectively.
+
+  [2/2] ("debugfs: prevent access to removed files' private data")
+   - Move the definitions of debugfs_file_use_data_start() and
+     debugfs_file_use_data_finish() from include/linux/debugfs.h to
+     file.c. Export them and keep their declarations in debugfs.h,
+   - In order to be able to attach proper __acquires() and __releases() tags
+     to the decalarations of debugfs_file_use_data_*() in debugfs.h,
+     move the debugfs_srcu declaration from internal.h into debugfs.h.
+   - Since the definitions as well as the docstrings of
+     debugfs_file_use_data_*() have been moved into file.c,
+     there is no need to run DocBook on debugfs.h: do not modify
+     Documentation/DocBook/filesystems.tmpl anymore.
+   - In the commit message, encourage new users of debugfs to prefer
+     DEFINE_DEBUGFS_ATTRIBUTE() and friends over DEFINE_SIMPLE_ATTRIBUTE().
+
+
+Nicolai Stange (8):
+  debugfs: prevent access to possibly dead file_operations at file open
+  debugfs: prevent access to removed files' private data
+  debugfs: add support for self-protecting attribute file fops
+  debugfs, coccinelle: check for obsolete DEFINE_SIMPLE_ATTRIBUTE()
+    usage
+  debugfs: unproxify integer attribute files
+  debugfs: unproxify files created through debugfs_create_bool()
+  debugfs: unproxify files created through debugfs_create_blob()
+  debugfs: unproxify files created through debugfs_create_u32_array()
+
+ fs/debugfs/file.c                                  | 437 +++++++++++++++++----
+ fs/debugfs/inode.c                                 | 101 ++++-
+ fs/debugfs/internal.h                              |  26 ++
+ include/linux/debugfs.h                            |  47 ++-
+ lib/Kconfig.debug                                  |   1 +
+ .../api/debugfs/debugfs_simple_attr.cocci          |  67 ++++
+ 6 files changed, 591 insertions(+), 88 deletions(-)
+ create mode 100644 fs/debugfs/internal.h
+ create mode 100644 scripts/coccinelle/api/debugfs/debugfs_simple_attr.cocci
+
 -- 
-1.9.1
+2.7.1
