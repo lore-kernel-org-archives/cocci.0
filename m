@@ -1,493 +1,177 @@
 From: nicstange@gmail.com (Nicolai Stange)
-Date: Tue, 23 Feb 2016 14:54:09 +0100
-Subject: [Cocci] [PATCH v4 2/8] debugfs: prevent access to removed files'
-	private data
+Date: Tue, 23 Feb 2016 14:55:31 +0100
+Subject: [Cocci] [PATCH v4 3/8] debugfs: add support for self-protecting
+	attribute file fops
 In-Reply-To: <8737sjo7qa.fsf@gmail.com> (Nicolai Stange's message of "Tue, 23
  Feb 2016 14:51:25 +0100")
 References: <8737sjo7qa.fsf@gmail.com>
-Message-ID: <87r3g3mt1a.fsf@gmail.com>
+Message-ID: <87mvqrmsz0.fsf@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Upon return of debugfs_remove()/debugfs_remove_recursive(), it might
-still be attempted to access associated private file data through
-previously opened struct file objects. If that data has been freed by
-the caller of debugfs_remove*() in the meanwhile, the reading/writing
-process would either encounter a fault or, if the memory address in
-question has been reassigned again, unrelated data structures could get
-overwritten.
+In order to protect them against file removal issues, debugfs_create_file()
+creates a lifetime managing proxy around each struct file_operations
+handed in.
 
-However, since debugfs files are seldomly removed, usually from module
-exit handlers only, the impact is very low.
+In cases where this struct file_operations is able to manage file lifetime
+by itself already, the proxy created by debugfs is a waste of resources.
 
-Currently, there are ~1000 call sites of debugfs_create_file() spread
-throughout the whole tree and touching all of those struct file_operations
-in order to make them file removal aware by means of checking the result of
-debugfs_use_file_start() from within their methods is unfeasible.
+The most common class of struct file_operations given to debugfs are those
+defined by means of the DEFINE_SIMPLE_ATTRIBUTE() macro.
 
-Instead, wrap the struct file_operations by a lifetime managing proxy at
-file open:
-- In debugfs_create_file(), the original fops handed in has got stashed
-  away in ->d_fsdata already.
-- In debugfs_create_file(), install a proxy file_operations factory,
-  debugfs_full_proxy_file_operations, at ->i_fop.
+Introduce a DEFINE_DEBUGFS_ATTRIBUTE() macro to allow any
+struct file_operations of this class to be easily made file lifetime aware
+and thus, to be operated unproxied.
 
-This proxy factory has got an ->open() method only. It carries out some
-lifetime checks and if successful, dynamically allocates and sets up a new
-struct file_operations proxy at ->f_op. Afterwards, it forwards to the
-->open() of the original struct file_operations in ->d_fsdata, if any.
+Specifically, introduce debugfs_attr_read() and debugfs_attr_write()
+which wrap simple_attr_read() and simple_attr_write() under the protection
+of a debugfs_use_file_start()/debugfs_use_file_finish() pair.
 
-The dynamically set up proxy at ->f_op has got a lifetime managing wrapper
-set for each of the methods defined in the original struct file_operations
-in ->d_fsdata.
+Make DEFINE_DEBUGFS_ATTRIBUTE() set the defined struct file_operations'
+->read() and ->write() members to these wrappers.
 
-Its ->release()er frees the proxy again and forwards to the original
-->release(), if any.
-
-In order not to mislead the VFS layer, it is strictly necessary to leave
-those fields blank in the proxy that have been NULL in the original
-struct file_operations also, i.e. aren't supported. This is why there is a
-need for dynamically allocated proxies. The choice made not to allocate a
-proxy instance for every dentry at file creation, but for every
-struct file object instantiated thereof is justified by the expected usage
-pattern of debugfs, namely that in general very few files get opened more
-than once at a time.
-
-The wrapper methods set in the struct file_operations implement lifetime
-managing by means of the SRCU protection facilities already in place for
-debugfs:
-They set up a SRCU read side critical section and check whether the dentry
-is still alive by means of debugfs_use_file_start(). If so, they forward
-the call to the original struct file_operation stored in ->d_fsdata, still
-under the protection of the SRCU read side critical section.
-This SRCU read side critical section prevents any pending debugfs_remove()
-and friends to return to their callers. Since a file's private data must
-only be freed after the return of debugfs_remove(), the ongoing proxied
-call is guarded against any file removal race.
-
-If, on the other hand, the initial call to debugfs_use_file_start() detects
-that the dentry is dead, the wrapper simply returns -EIO and does not
-forward the call. Note that the ->poll() wrapper is special in that its
-signature does not allow for the return of arbitrary -EXXX values and thus,
-POLLHUP is returned here.
-
-In order not to pollute debugfs with wrapper definitions that aren't ever
-needed, I chose not to define a wrapper for every struct file_operations
-method possible. Instead, a wrapper is defined only for the subset of
-methods which are actually set by any debugfs users.
-Currently, these are:
-
-  ->llseek()
-  ->read()
-  ->write()
-  ->unlocked_ioctl()
-  ->poll()
-
-The ->release() wrapper is special in that it does not protect the original
-->release() in any way from dead files in order not to leak resources.
-Thus, any ->release() handed to debugfs must implement file lifetime
-management manually, if needed.
-For only 33 out of a total of 434 releasers handed in to debugfs, it could
-not be verified immediately whether they access data structures that might
-have been freed upon a debugfs_remove() return in the meanwhile.
-
-Export debugfs_use_file_start() and debugfs_use_file_finish() in order to
-allow any ->release() to manually implement file lifetime management.
-
-For a set of common cases of struct file_operations implemented by the
-debugfs_core itself, future patches will incorporate file lifetime
-management directly within those in order to allow for their unproxied
-operation. Rename the original, non-proxying "debugfs_create_file()" to
-"debugfs_create_file_unsafe()" and keep it for future internal use by
-debugfs itself. Factor out code common to both into the new
-__debugfs_create_file().
+Export debugfs_create_file_unsafe() in order to allow debugfs users to
+create their files in non-proxying operation mode.
 
 Signed-off-by: Nicolai Stange <nicstange@gmail.com>
 ---
- fs/debugfs/file.c       | 157 +++++++++++++++++++++++++++++++++++++++++++++++-
- fs/debugfs/inode.c      |  70 ++++++++++++++-------
- fs/debugfs/internal.h   |   6 +-
- include/linux/debugfs.h |  18 ++++++
- 4 files changed, 224 insertions(+), 27 deletions(-)
+ fs/debugfs/file.c       | 28 ++++++++++++++++++++++++++++
+ fs/debugfs/inode.c      | 28 ++++++++++++++++++++++++++++
+ include/linux/debugfs.h | 26 ++++++++++++++++++++++++++
+ 3 files changed, 82 insertions(+)
 
 diff --git a/fs/debugfs/file.c b/fs/debugfs/file.c
-index 3377e0fe..f638dbc 100644
+index f638dbc..2da5fb0 100644
 --- a/fs/debugfs/file.c
 +++ b/fs/debugfs/file.c
-@@ -23,9 +23,12 @@
- #include <linux/atomic.h>
- #include <linux/device.h>
- #include <linux/srcu.h>
-+#include <asm/poll.h>
- 
- #include "internal.h"
- 
-+struct poll_table_struct;
-+
- static ssize_t default_read_file(struct file *file, char __user *buf,
- 				 size_t count, loff_t *ppos)
- {
-@@ -66,7 +69,7 @@ const struct file_operations debugfs_noop_file_operations = {
-  * debugfs_use_file_start() must be followed by a matching call
-  * to debugfs_use_file_finish().
-  */
--static int debugfs_use_file_start(const struct dentry *dentry, int *srcu_idx)
-+int debugfs_use_file_start(const struct dentry *dentry, int *srcu_idx)
- 	__acquires(&debugfs_srcu)
- {
- 	*srcu_idx = srcu_read_lock(&debugfs_srcu);
-@@ -75,6 +78,7 @@ static int debugfs_use_file_start(const struct dentry *dentry, int *srcu_idx)
- 		return -EIO;
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(debugfs_use_file_start);
- 
- /**
-  * debugfs_use_file_finish - mark the end of file data access
-@@ -85,10 +89,11 @@ static int debugfs_use_file_start(const struct dentry *dentry, int *srcu_idx)
-  * debugfs_remove_recursive() blocked by a former call to
-  * debugfs_use_file_start() to proceed and return to its caller.
-  */
--static void debugfs_use_file_finish(int srcu_idx) __releases(&debugfs_srcu)
-+void debugfs_use_file_finish(int srcu_idx) __releases(&debugfs_srcu)
- {
- 	srcu_read_unlock(&debugfs_srcu, srcu_idx);
- }
-+EXPORT_SYMBOL_GPL(debugfs_use_file_finish);
- 
- #define F_DENTRY(filp) ((filp)->f_path.dentry)
- 
-@@ -132,6 +137,154 @@ const struct file_operations debugfs_open_proxy_file_operations = {
- 	.open = open_proxy_open,
+@@ -285,6 +285,34 @@ const struct file_operations debugfs_full_proxy_file_operations = {
+ 	.open = full_proxy_open,
  };
  
-+#define PROTO(args...) args
-+#define ARGS(args...) args
-+
-+#define FULL_PROXY_FUNC(name, ret_type, filp, proto, args)		\
-+static ret_type full_proxy_ ## name(proto)				\
-+{									\
-+	const struct dentry *dentry = F_DENTRY(filp);			\
-+	const struct file_operations *real_fops =			\
-+		REAL_FOPS_DEREF(dentry);				\
-+	int srcu_idx;							\
-+	ret_type r;							\
-+									\
-+	r = debugfs_use_file_start(dentry, &srcu_idx);			\
-+	if (likely(!r))						\
-+		r = real_fops->name(args);				\
-+	debugfs_use_file_finish(srcu_idx);				\
-+	return r;							\
-+}
-+
-+FULL_PROXY_FUNC(llseek, loff_t, filp,
-+		PROTO(struct file *filp, loff_t offset, int whence),
-+		ARGS(filp, offset, whence));
-+
-+FULL_PROXY_FUNC(read, ssize_t, filp,
-+		PROTO(struct file *filp, char __user *buf, size_t size,
-+			loff_t *ppos),
-+		ARGS(filp, buf, size, ppos));
-+
-+FULL_PROXY_FUNC(write, ssize_t, filp,
-+		PROTO(struct file *filp, const char __user *buf, size_t size,
-+			loff_t *ppos),
-+		ARGS(filp, buf, size, ppos));
-+
-+FULL_PROXY_FUNC(unlocked_ioctl, long, filp,
-+		PROTO(struct file *filp, unsigned int cmd, unsigned long arg),
-+		ARGS(filp, cmd, arg));
-+
-+static unsigned int full_proxy_poll(struct file *filp,
-+				struct poll_table_struct *wait)
++ssize_t debugfs_attr_read(struct file *file, char __user *buf,
++			size_t len, loff_t *ppos)
 +{
-+	const struct dentry *dentry = F_DENTRY(filp);
-+	const struct file_operations *real_fops = REAL_FOPS_DEREF(dentry);
++	ssize_t ret;
 +	int srcu_idx;
-+	unsigned int r = 0;
 +
-+	if (debugfs_use_file_start(dentry, &srcu_idx)) {
-+		debugfs_use_file_finish(srcu_idx);
-+		return POLLHUP;
-+	}
-+
-+	r = real_fops->poll(filp, wait);
++	ret = debugfs_use_file_start(F_DENTRY(file), &srcu_idx);
++	if (likely(!ret))
++		ret = simple_attr_read(file, buf, len, ppos);
 +	debugfs_use_file_finish(srcu_idx);
-+	return r;
++	return ret;
 +}
++EXPORT_SYMBOL_GPL(debugfs_attr_read);
 +
-+static int full_proxy_release(struct inode *inode, struct file *filp)
++ssize_t debugfs_attr_write(struct file *file, const char __user *buf,
++			 size_t len, loff_t *ppos)
 +{
-+	const struct dentry *dentry = F_DENTRY(filp);
-+	const struct file_operations *real_fops = REAL_FOPS_DEREF(dentry);
-+	const struct file_operations *proxy_fops = filp->f_op;
-+	int r = 0;
++	ssize_t ret;
++	int srcu_idx;
 +
-+	/*
-+	 * We must not protect this against removal races here: the
-+	 * original releaser should be called unconditionally in order
-+	 * not to leak any resources. Releasers must not assume that
-+	 * ->i_private is still being meaningful here.
-+	 */
-+	if (real_fops->release)
-+		r = real_fops->release(inode, filp);
-+
-+	replace_fops(filp, d_inode(dentry)->i_fop);
-+	kfree((void *)proxy_fops);
-+	fops_put(real_fops);
-+	return 0;
-+}
-+
-+static void __full_proxy_fops_init(struct file_operations *proxy_fops,
-+				const struct file_operations *real_fops)
-+{
-+	proxy_fops->release = full_proxy_release;
-+	if (real_fops->llseek)
-+		proxy_fops->llseek = full_proxy_llseek;
-+	if (real_fops->read)
-+		proxy_fops->read = full_proxy_read;
-+	if (real_fops->write)
-+		proxy_fops->write = full_proxy_write;
-+	if (real_fops->poll)
-+		proxy_fops->poll = full_proxy_poll;
-+	if (real_fops->unlocked_ioctl)
-+		proxy_fops->unlocked_ioctl = full_proxy_unlocked_ioctl;
-+}
-+
-+static int full_proxy_open(struct inode *inode, struct file *filp)
-+{
-+	const struct dentry *dentry = F_DENTRY(filp);
-+	const struct file_operations *real_fops = NULL;
-+	struct file_operations *proxy_fops = NULL;
-+	int srcu_idx, r;
-+
-+	r = debugfs_use_file_start(dentry, &srcu_idx);
-+	if (r) {
-+		r = -ENOENT;
-+		goto out;
-+	}
-+
-+	real_fops = REAL_FOPS_DEREF(dentry);
-+	real_fops = fops_get(real_fops);
-+	if (!real_fops) {
-+		/* Huh? Module did not cleanup after itself at exit? */
-+		WARN(1, "debugfs file owner did not clean up at exit: %pd",
-+			dentry);
-+		r = -ENXIO;
-+		goto out;
-+	}
-+
-+	proxy_fops = kzalloc(sizeof(*proxy_fops), GFP_KERNEL);
-+	if (!proxy_fops) {
-+		r = -ENOMEM;
-+		goto free_proxy;
-+	}
-+	__full_proxy_fops_init(proxy_fops, real_fops);
-+	replace_fops(filp, proxy_fops);
-+
-+	if (real_fops->open) {
-+		r = real_fops->open(inode, filp);
-+
-+		if (filp->f_op != proxy_fops) {
-+			/* No protection against file removal anymore. */
-+			WARN(1, "debugfs file owner replaced proxy fops: %pd",
-+				dentry);
-+			goto free_proxy;
-+		}
-+	}
-+
-+	goto out;
-+free_proxy:
-+	kfree(proxy_fops);
-+	fops_put(real_fops);
-+out:
++	ret = debugfs_use_file_start(F_DENTRY(file), &srcu_idx);
++	if (likely(!ret))
++		ret = simple_attr_write(file, buf, len, ppos);
 +	debugfs_use_file_finish(srcu_idx);
-+	return r;
++	return ret;
 +}
-+
-+const struct file_operations debugfs_full_proxy_file_operations = {
-+	.open = full_proxy_open,
-+};
++EXPORT_SYMBOL_GPL(debugfs_attr_write);
 +
  static struct dentry *debugfs_create_mode(const char *name, umode_t mode,
  					  struct dentry *parent, void *value,
  				          const struct file_operations *fops,
 diff --git a/fs/debugfs/inode.c b/fs/debugfs/inode.c
-index 26880ad..42a9b34 100644
+index 42a9b34..f95e355 100644
 --- a/fs/debugfs/inode.c
 +++ b/fs/debugfs/inode.c
-@@ -299,6 +299,37 @@ static struct dentry *end_creating(struct dentry *dentry)
- 	return dentry;
+@@ -368,6 +368,33 @@ struct dentry *debugfs_create_file(const char *name, umode_t mode,
  }
+ EXPORT_SYMBOL_GPL(debugfs_create_file);
  
-+static struct dentry *__debugfs_create_file(const char *name, umode_t mode,
-+				struct dentry *parent, void *data,
-+				const struct file_operations *proxy_fops,
-+				const struct file_operations *real_fops)
-+{
-+	struct dentry *dentry;
-+	struct inode *inode;
-+
-+	if (!(mode & S_IFMT))
-+		mode |= S_IFREG;
-+	BUG_ON(!S_ISREG(mode));
-+	dentry = start_creating(name, parent);
-+
-+	if (IS_ERR(dentry))
-+		return NULL;
-+
-+	inode = debugfs_get_inode(dentry->d_sb);
-+	if (unlikely(!inode))
-+		return failed_creating(dentry);
-+
-+	inode->i_mode = mode;
-+	inode->i_private = data;
-+
-+	inode->i_fop = proxy_fops;
-+	dentry->d_fsdata = (void *)real_fops;
-+
-+	d_instantiate(dentry, inode);
-+	fsnotify_create(d_inode(dentry->d_parent), dentry);
-+	return end_creating(dentry);
-+}
-+
- /**
-  * debugfs_create_file - create a file in the debugfs filesystem
-  * @name: a pointer to a string containing the name of the file to create.
-@@ -329,33 +360,24 @@ struct dentry *debugfs_create_file(const char *name, umode_t mode,
++/**
++ * debugfs_create_file_unsafe - create a file in the debugfs filesystem
++ * @name: a pointer to a string containing the name of the file to create.
++ * @mode: the permission that the file should have.
++ * @parent: a pointer to the parent dentry for this file.  This should be a
++ *          directory dentry if set.  If this parameter is NULL, then the
++ *          file will be created in the root of the debugfs filesystem.
++ * @data: a pointer to something that the caller will want to get to later
++ *        on.  The inode.i_private pointer will point to this value on
++ *        the open() call.
++ * @fops: a pointer to a struct file_operations that should be used for
++ *        this file.
++ *
++ * debugfs_create_file_unsafe() is completely analogous to
++ * debugfs_create_file(), the only difference being that the fops
++ * handed it will not get protected against file removals by the
++ * debugfs core.
++ *
++ * It is your responsibility to protect your struct file_operation
++ * methods against file removals by means of debugfs_use_file_start()
++ * and debugfs_use_file_finish(). ->open() is still protected by
++ * debugfs though.
++ *
++ * Any struct file_operations defined by means of
++ * DEFINE_DEBUGFS_ATTRIBUTE() is protected against file removals and
++ * thus, may be used here.
++ */
+ struct dentry *debugfs_create_file_unsafe(const char *name, umode_t mode,
  				   struct dentry *parent, void *data,
  				   const struct file_operations *fops)
- {
--	struct dentry *dentry;
--	struct inode *inode;
--
--	if (!(mode & S_IFMT))
--		mode |= S_IFREG;
--	BUG_ON(!S_ISREG(mode));
--	dentry = start_creating(name, parent);
--
--	if (IS_ERR(dentry))
--		return NULL;
--
--	inode = debugfs_get_inode(dentry->d_sb);
--	if (unlikely(!inode))
--		return failed_creating(dentry);
- 
--	inode->i_mode = mode;
--	inode->i_private = data;
-+	return __debugfs_create_file(name, mode, parent, data,
-+				fops ? &debugfs_full_proxy_file_operations :
-+					&debugfs_noop_file_operations,
-+				fops);
-+}
-+EXPORT_SYMBOL_GPL(debugfs_create_file);
- 
--	inode->i_fop = fops ? &debugfs_open_proxy_file_operations
--		: &debugfs_noop_file_operations;
--	dentry->d_fsdata = (void *)fops;
-+struct dentry *debugfs_create_file_unsafe(const char *name, umode_t mode,
-+				   struct dentry *parent, void *data,
-+				   const struct file_operations *fops)
-+{
- 
--	d_instantiate(dentry, inode);
--	fsnotify_create(d_inode(dentry->d_parent), dentry);
--	return end_creating(dentry);
-+	return __debugfs_create_file(name, mode, parent, data,
-+				fops ? &debugfs_open_proxy_file_operations :
-+					&debugfs_noop_file_operations,
-+				fops);
+@@ -378,6 +405,7 @@ struct dentry *debugfs_create_file_unsafe(const char *name, umode_t mode,
+ 					&debugfs_noop_file_operations,
+ 				fops);
  }
--EXPORT_SYMBOL_GPL(debugfs_create_file);
++EXPORT_SYMBOL_GPL(debugfs_create_file_unsafe);
  
  /**
   * debugfs_create_file_size - create a file in the debugfs filesystem
-@@ -574,6 +596,7 @@ void debugfs_remove(struct dentry *dentry)
- 	inode_unlock(d_inode(parent));
- 	if (!ret)
- 		simple_release_fs(&debugfs_mount, &debugfs_mount_count);
-+
- 	synchronize_srcu(&debugfs_srcu);
- }
- EXPORT_SYMBOL_GPL(debugfs_remove);
-@@ -652,6 +675,7 @@ void debugfs_remove_recursive(struct dentry *dentry)
- 	if (!__debugfs_remove(child, parent))
- 		simple_release_fs(&debugfs_mount, &debugfs_mount_count);
- 	inode_unlock(d_inode(parent));
-+
- 	synchronize_srcu(&debugfs_srcu);
- }
- EXPORT_SYMBOL_GPL(debugfs_remove_recursive);
-diff --git a/fs/debugfs/internal.h b/fs/debugfs/internal.h
-index c7aaa5c..bba5263 100644
---- a/fs/debugfs/internal.h
-+++ b/fs/debugfs/internal.h
-@@ -13,12 +13,14 @@
- #define _DEBUGFS_INTERNAL_H_
- 
- struct file_operations;
--struct srcu_struct;
- 
- /* declared over in file.c */
- extern const struct file_operations debugfs_noop_file_operations;
- extern const struct file_operations debugfs_open_proxy_file_operations;
-+extern const struct file_operations debugfs_full_proxy_file_operations;
- 
--extern struct srcu_struct debugfs_srcu;
-+struct dentry *debugfs_create_file_unsafe(const char *name, umode_t mode,
-+					struct dentry *parent, void *data,
-+					const struct file_operations *fops);
- 
- #endif /* _DEBUGFS_INTERNAL_H_ */
 diff --git a/include/linux/debugfs.h b/include/linux/debugfs.h
-index 8b44093..6d45ae6 100644
+index 6d45ae6..c880fe9 100644
 --- a/include/linux/debugfs.h
 +++ b/include/linux/debugfs.h
-@@ -19,9 +19,11 @@
- #include <linux/seq_file.h>
- 
- #include <linux/types.h>
-+#include <linux/compiler.h>
- 
- struct device;
- struct file_operations;
-+struct srcu_struct;
- 
- struct debugfs_blob_wrapper {
- 	void *data;
-@@ -41,6 +43,8 @@ struct debugfs_regset32 {
- 
- extern struct dentry *arch_debugfs_dir;
- 
-+extern struct srcu_struct debugfs_srcu;
-+
- #if defined(CONFIG_DEBUG_FS)
- 
+@@ -50,6 +50,9 @@ extern struct srcu_struct debugfs_srcu;
  struct dentry *debugfs_create_file(const char *name, umode_t mode,
-@@ -65,6 +69,11 @@ struct dentry *debugfs_create_automount(const char *name,
- void debugfs_remove(struct dentry *dentry);
- void debugfs_remove_recursive(struct dentry *dentry);
+ 				   struct dentry *parent, void *data,
+ 				   const struct file_operations *fops);
++struct dentry *debugfs_create_file_unsafe(const char *name, umode_t mode,
++				   struct dentry *parent, void *data,
++				   const struct file_operations *fops);
  
-+int debugfs_use_file_start(const struct dentry *dentry, int *srcu_idx)
-+	__acquires(&debugfs_srcu);
+ struct dentry *debugfs_create_file_size(const char *name, umode_t mode,
+ 					struct dentry *parent, void *data,
+@@ -74,6 +77,26 @@ int debugfs_use_file_start(const struct dentry *dentry, int *srcu_idx)
+ 
+ void debugfs_use_file_finish(int srcu_idx) __releases(&debugfs_srcu);
+ 
++ssize_t debugfs_attr_read(struct file *file, char __user *buf,
++			size_t len, loff_t *ppos);
++ssize_t debugfs_attr_write(struct file *file, const char __user *buf,
++			size_t len, loff_t *ppos);
 +
-+void debugfs_use_file_finish(int srcu_idx) __releases(&debugfs_srcu);
++#define DEFINE_DEBUGFS_ATTRIBUTE(__fops, __get, __set, __fmt)		\
++static int __fops ## _open(struct inode *inode, struct file *file)	\
++{									\
++	__simple_attr_check_format(__fmt, 0ull);			\
++	return simple_attr_open(inode, file, __get, __set, __fmt);	\
++}									\
++static const struct file_operations __fops = {				\
++	.owner	 = THIS_MODULE,					\
++	.open	 = __fops ## _open,					\
++	.release = simple_attr_release,				\
++	.read	 = debugfs_attr_read,					\
++	.write	 = debugfs_attr_write,					\
++	.llseek  = generic_file_llseek,				\
++}
 +
  struct dentry *debugfs_rename(struct dentry *old_dir, struct dentry *old_dentry,
                  struct dentry *new_dir, const char *new_name);
  
-@@ -165,6 +174,15 @@ static inline void debugfs_remove(struct dentry *dentry)
- static inline void debugfs_remove_recursive(struct dentry *dentry)
+@@ -183,6 +206,9 @@ static int debugfs_use_file_start(const struct dentry *dentry, int *srcu_idx)
+ static void debugfs_use_file_finish(int srcu_idx) __releases(&debugfs_srcu)
  { }
  
-+static int debugfs_use_file_start(const struct dentry *dentry, int *srcu_idx)
-+	__acquires(&debugfs_srcu)
-+{
-+	return 0;
-+}
-+
-+static void debugfs_use_file_finish(int srcu_idx) __releases(&debugfs_srcu)
-+{ }
++#define DEFINE_DEBUGFS_ATTRIBUTE(__fops, __get, __set, __fmt)	\
++	static const struct file_operations __fops = { 0 }
 +
  static inline struct dentry *debugfs_rename(struct dentry *old_dir, struct dentry *old_dentry,
                  struct dentry *new_dir, char *new_name)
