@@ -1,44 +1,45 @@
-From: nicstange@gmail.com (Nicolai Stange)
-Date: Tue, 23 Feb 2016 15:02:07 +0100
-Subject: [Cocci] [PATCH v4 8/8] debugfs: unproxify files created through
-	debugfs_create_u32_array()
-In-Reply-To: <8737sjo7qa.fsf@gmail.com> (Nicolai Stange's message of "Tue, 23
- Feb 2016 14:51:25 +0100")
-References: <8737sjo7qa.fsf@gmail.com>
-Message-ID: <871t83mso0.fsf@gmail.com>
+From: wagi@monom.org (Daniel Wagner)
+Date: Fri, 26 Feb 2016 11:40:51 +0100
+Subject: [Cocci] Filter out field names
+In-Reply-To: <alpine.DEB.2.10.1601211138470.2530@hadrien>
+References: <56A0A94A.9070702@monom.org>
+ <alpine.DEB.2.10.1601211138470.2530@hadrien>
+Message-ID: <56D02BB3.1060501@monom.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-The struct file_operations u32_array_fops associated with files created
-through debugfs_create_u32_array() has been lifetime aware already:
-everything needed for subsequent operation is copied to a ->f_private
-buffer at file opening time in u32_array_open(). Now, ->open() is always
-protected against file removal issues by the debugfs core.
+Hi Julia,
 
-There is no need for the debugfs core to wrap the u32_array_fops
-with a file lifetime managing proxy.
+Sorry for the long delay. Got distracted again.
 
-Make debugfs_create_u32_array() create its files in non-proxying operation
-mode by means of debugfs_create_file_unsafe().
+On 01/21/2016 12:02 PM, Julia Lawall wrote:
+> An issue that remains is that you assume that the lock field has type
+> lock.  A quick grep in the Linux kernel shows that this is not always the
+> case.  You can make a virtual identifier for the lock field as well.  A
+> more complicated approach would be to have Coccinelle figure out the type
+> from the structure type definition.
+> 
+> A final issue is that my quick grep in the Linux kernel also shows that not
+> all locks are in structures.  But then it is less obvious how to connect
+> the locks to the protected references.
+> 
+> And thinking on, it is not always the case that because a structure has a
+> lock, that every field has to be accessed under a lock.  So in the end, it
+> may be necessary to do something even more clever.  For example,
+> if a field is somewhere referenced under a lock, and not referenced under a
+> lock in some other place, then perhaps that is more likely to be a real
+> problem.  But even that is not 100% certain, because there can be eg an
+> initialization phase that is not done concurrently, so no locks are
+> actually needed at that point, even though locks are needed elsewhere.
 
-Signed-off-by: Nicolai Stange <nicstange@gmail.com>
----
- fs/debugfs/file.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Your analysis is absolutely correct. Automatically annotating is not
+really feasibly. At least without a lot of additional hand work.
+Especially the more interesting data structure do no have a simple
+locking pattern. Instead all access is heavily optimized which makes
+writing  generic cocci rules really difficult (impossible?).
 
-diff --git a/fs/debugfs/file.c b/fs/debugfs/file.c
-index 036ec3f..1a03e99 100644
---- a/fs/debugfs/file.c
-+++ b/fs/debugfs/file.c
-@@ -993,7 +993,8 @@ struct dentry *debugfs_create_u32_array(const char *name, umode_t mode,
- 	data->array = array;
- 	data->elements = elements;
- 
--	return debugfs_create_file(name, mode, parent, data, &u32_array_fops);
-+	return debugfs_create_file_unsafe(name, mode, parent, data,
-+					&u32_array_fops);
- }
- EXPORT_SYMBOL_GPL(debugfs_create_u32_array);
- 
--- 
-2.7.1
+I think my idea isn't that simple as I hoped. Well, at least I have
+learned something.
+
+thanks a lot for your help,
+daniel
