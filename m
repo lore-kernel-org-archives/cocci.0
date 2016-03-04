@@ -1,18 +1,37 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 26 Feb 2016 13:40:46 +0100
-Subject: [Cocci] Filter out field names
-In-Reply-To: <56D02BB3.1060501@monom.org>
-References: <56A0A94A.9070702@monom.org>
- <alpine.DEB.2.10.1601211138470.2530@hadrien> <56D02BB3.1060501@monom.org>
-Message-ID: <56D047CE.4040606@users.sourceforge.net>
+From: aftabh@uci.edu (Aftab Hussain)
+Date: Thu, 3 Mar 2016 16:43:22 -0800
+Subject: [Cocci] Coccinelle Compilation Problem: configure file
+Message-ID: <CAJTCqFadstafOZPgjDoV48zNFBHkTdp+4=a0WLGbfKaTCSqgOw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> I think my idea isn't that simple as I hoped. Well, at least I have
-> learned something.
+Dear Members of the Coccinelle Team,
 
-How do you think about to extend your software development experiences
-for technology around data flow analysis?
+Hope you are doing well. Me and my team mates have been recently working on
+program analysis, and are very keen on working with your tool.
+Unfortunately, we faced a compilation problem.
 
-Regards,
-Markus
+I was trying to compile Coccinelle using the source (
+https://github.com/coccinelle/coccinelle). I followed all instructions,
+mentioned in the "*install.txt*" file, but
+when I enter the following command in the "*coccinelle-master*" directory,
+
+*./configure --enable-release*
+
+I get the following error message,
+
+*bash: ./configure: No such file or directory*
+
+I see the "configure" file is missing from your source. I would be most
+grateful if you could please advise on how I may fix this.
+
+Thanks,
+Aftab
+
+Aftab Hussain
+PhD Student,
+Department of Computer Science,
+University of California, Irvine
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20160303/0fd4bdcd/attachment.html>
