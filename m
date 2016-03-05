@@ -1,35 +1,23 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 4 Mar 2016 15:32:21 +0100
-Subject: [Cocci] Regeneration of the script "configure" for Coccinelle
-In-Reply-To: <CAJTCqFadstafOZPgjDoV48zNFBHkTdp+4=a0WLGbfKaTCSqgOw@mail.gmail.com>
-References: <CAJTCqFadstafOZPgjDoV48zNFBHkTdp+4=a0WLGbfKaTCSqgOw@mail.gmail.com>
-Message-ID: <56D99C75.7080100@users.sourceforge.net>
+From: gregkh@linuxfoundation.org (Greg Kroah-Hartman)
+Date: Sat, 5 Mar 2016 13:26:13 -0800
+Subject: [Cocci] [PATCH v4 0/8] fix debugfs file removal races
+In-Reply-To: <8737sjo7qa.fsf@gmail.com>
+References: <8737sjo7qa.fsf@gmail.com>
+Message-ID: <20160305212613.GA29738@kroah.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Me and my team mates have been recently working on program analysis,
-> and are very keen on working with your tool.
+On Tue, Feb 23, 2016 at 02:51:25PM +0100, Nicolai Stange wrote:
+> The changes from v3 to v4 are style changes regarding the Coccinelle
+> part only -- it has been split off from former [3/7] into its own
+> patch [4/8].
+> 
+> The big step has been from v2 to v3 and these changes haven't got any
+> review yet.
 
-I am curious in which directions you would like to experiment with this
-software further.
+Well, given that they look sane to me, I've applied them to my tree,
+let's see what breaks in linux-next now :)
 
+thanks,
 
-> Unfortunately, we faced a compilation problem.
-
-I find that this issue does not affect "compilation" so far.
-How much do you care for the configuration of the software build process?
-
-
-> I see the "configure" file is missing from your source.
-
-Julia Lawall pointed the possibility out to regenerate it by the
-execution of the script "autogen".
-
-
-> I would be most grateful if you could please advise on how I may fix this.
-
-Are you interested to get also another approach working by using the
-command "autoreconf"?
-
-Regards,
-Markus
+greg k-h
