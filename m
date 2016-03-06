@@ -1,116 +1,34 @@
 From: nicstange@gmail.com (Nicolai Stange)
-Date: Sun,  6 Mar 2016 13:25:01 +0100
-Subject: [Cocci] [PATCH v5 6/8] debugfs: unproxify files created through
-	debugfs_create_bool()
-In-Reply-To: <1457267103-28910-1-git-send-email-nicstange@gmail.com>
-References: <1457267103-28910-1-git-send-email-nicstange@gmail.com>
-Message-ID: <1457267103-28910-7-git-send-email-nicstange@gmail.com>
+Date: Sun, 06 Mar 2016 13:54:40 +0100
+Subject: [Cocci] [PATCH v4 0/8] fix debugfs file removal races
+In-Reply-To: <20160305212613.GA29738@kroah.com> (Greg Kroah-Hartman's message
+ of "Sat, 5 Mar 2016 13:26:13 -0800")
+References: <8737sjo7qa.fsf@gmail.com> <20160305212613.GA29738@kroah.com>
+Message-ID: <87egbn3gxb.fsf@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Currently, the struct file_operations fops_bool associated with files
-created through the debugfs_create_bool() helpers are not file
-lifetime aware.
+Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
 
-Thus, a lifetime managing proxy is created around fops_bool each time such
-a file is opened which is an unnecessary waste of resources.
+> On Tue, Feb 23, 2016 at 02:51:25PM +0100, Nicolai Stange wrote:
+>> The changes from v3 to v4 are style changes regarding the Coccinelle
+>> part only -- it has been split off from former [3/7] into its own
+>> patch [4/8].
+>> 
+>> The big step has been from v2 to v3 and these changes haven't got any
+>> review yet.
+>
+> Well, given that they look sane to me, I've applied them to my tree,
+> let's see what breaks in linux-next now :)
 
-Implement file lifetime management for the fops_bool file_operations.
-Namely, make debugfs_read_file_bool() and debugfs_write_file_bool() safe
-against file removals by means of debugfs_use_file_start() and
-debugfs_use_file_finish().
+Great, thank you!
 
-Make debugfs_create_bool() create its files in non-proxying operation mode
-through debugfs_create_mode_unsafe().
+Unfortunately, the kbuild test robot detected two minor issues and I've
+sent v5 in order to correct this.
 
-Finally, purge debugfs_create_mode() as debugfs_create_bool() had been its
-last user.
+In case that it isn't possible to simply replace v4 by v5, please let me
+know and I'll send two fixup patches instead.
 
-Signed-off-by: Nicolai Stange <nicstange@gmail.com>
----
- fs/debugfs/file.c | 41 ++++++++++++++++++++---------------------
- 1 file changed, 20 insertions(+), 21 deletions(-)
+Best,
 
-diff --git a/fs/debugfs/file.c b/fs/debugfs/file.c
-index 8f13fa4..4eac1a1 100644
---- a/fs/debugfs/file.c
-+++ b/fs/debugfs/file.c
-@@ -313,22 +313,6 @@ ssize_t debugfs_attr_write(struct file *file, const char __user *buf,
- }
- EXPORT_SYMBOL_GPL(debugfs_attr_write);
- 
--static struct dentry *debugfs_create_mode(const char *name, umode_t mode,
--					  struct dentry *parent, void *value,
--				          const struct file_operations *fops,
--				          const struct file_operations *fops_ro,
--				          const struct file_operations *fops_wo)
--{
--	/* if there are no write bits set, make read only */
--	if (!(mode & S_IWUGO))
--		return debugfs_create_file(name, mode, parent, value, fops_ro);
--	/* if there are no read bits set, make write only */
--	if (!(mode & S_IRUGO))
--		return debugfs_create_file(name, mode, parent, value, fops_wo);
--
--	return debugfs_create_file(name, mode, parent, value, fops);
--}
--
- static struct dentry *debugfs_create_mode_unsafe(const char *name, umode_t mode,
- 					struct dentry *parent, void *value,
- 					const struct file_operations *fops,
-@@ -757,9 +741,17 @@ ssize_t debugfs_read_file_bool(struct file *file, char __user *user_buf,
- 			       size_t count, loff_t *ppos)
- {
- 	char buf[3];
--	bool *val = file->private_data;
-+	bool val;
-+	int r, srcu_idx;
-+
-+	r = debugfs_use_file_start(F_DENTRY(file), &srcu_idx);
-+	if (likely(!r))
-+		val = *(bool *)file->private_data;
-+	debugfs_use_file_finish(srcu_idx);
-+	if (r)
-+		return r;
- 
--	if (*val)
-+	if (val)
- 		buf[0] = 'Y';
- 	else
- 		buf[0] = 'N';
-@@ -775,6 +767,7 @@ ssize_t debugfs_write_file_bool(struct file *file, const char __user *user_buf,
- 	char buf[32];
- 	size_t buf_size;
- 	bool bv;
-+	int r, srcu_idx;
- 	bool *val = file->private_data;
- 
- 	buf_size = min(count, (sizeof(buf)-1));
-@@ -782,8 +775,14 @@ ssize_t debugfs_write_file_bool(struct file *file, const char __user *user_buf,
- 		return -EFAULT;
- 
- 	buf[buf_size] = '\0';
--	if (strtobool(buf, &bv) == 0)
--		*val = bv;
-+	if (strtobool(buf, &bv) == 0) {
-+		r = debugfs_use_file_start(F_DENTRY(file), &srcu_idx);
-+		if (likely(!r))
-+			*val = bv;
-+		debugfs_use_file_finish(srcu_idx);
-+		if (r)
-+			return r;
-+	}
- 
- 	return count;
- }
-@@ -835,7 +834,7 @@ static const struct file_operations fops_bool_wo = {
- struct dentry *debugfs_create_bool(const char *name, umode_t mode,
- 				   struct dentry *parent, bool *value)
- {
--	return debugfs_create_mode(name, mode, parent, value, &fops_bool,
-+	return debugfs_create_mode_unsafe(name, mode, parent, value, &fops_bool,
- 				   &fops_bool_ro, &fops_bool_wo);
- }
- EXPORT_SYMBOL_GPL(debugfs_create_bool);
--- 
-2.7.2
+Nicolai
