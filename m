@@ -1,39 +1,95 @@
-From: gregkh@linuxfoundation.org (Greg Kroah-Hartman)
-Date: Sun, 6 Mar 2016 05:54:30 -0800
-Subject: [Cocci] [PATCH v4 0/8] fix debugfs file removal races
-In-Reply-To: <87egbn3gxb.fsf@gmail.com>
-References: <8737sjo7qa.fsf@gmail.com> <20160305212613.GA29738@kroah.com>
- <87egbn3gxb.fsf@gmail.com>
-Message-ID: <20160306135430.GA17315@kroah.com>
+From: aftab.hussain46@gmail.com (Aftab Hussain)
+Date: Mon, 7 Mar 2016 07:54:06 -0800
+Subject: [Cocci] Coccinelle Compilation Problem: configure file
+In-Reply-To: <alpine.DEB.2.02.1603040808450.2062@localhost6.localdomain6>
+References: <CAJTCqFadstafOZPgjDoV48zNFBHkTdp+4=a0WLGbfKaTCSqgOw@mail.gmail.com>
+ <alpine.DEB.2.02.1603040808450.2062@localhost6.localdomain6>
+Message-ID: <CAO=9Y+2fMJ58zUc5JdxZrvist=vj3AVMGd9gj9opVtOXJrjQDg@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, Mar 06, 2016 at 01:54:40PM +0100, Nicolai Stange wrote:
-> Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
-> 
-> > On Tue, Feb 23, 2016 at 02:51:25PM +0100, Nicolai Stange wrote:
-> >> The changes from v3 to v4 are style changes regarding the Coccinelle
-> >> part only -- it has been split off from former [3/7] into its own
-> >> patch [4/8].
-> >> 
-> >> The big step has been from v2 to v3 and these changes haven't got any
-> >> review yet.
+Hi Julia Lawall and the Coccinelle Team,
+
+I really appreciate your response. I was able to generate the configure
+file using *>./autogen*,
+and all the installation steps. Thank you so much. Unfortunately, now I'm
+unable to execute spatch.
+
+On executing this:
+
+*spatch -sp_file demos/simple.cocci demos/simple.c -o /tmp/new_simple.c*
+
+I get "spatch is not installed".
+
+Also when I execute the following to test spatch,
+
+
+*COCCINELLE_HOME=/home/aftab/workspace/coccinelle-master ./scripts/spatch
+-sp_file demos/simple.cocci demos/simple.c -o /tmp/new_simple.c*
+I get,
+
+*bash: ./scripts/spatch: No such file or directory*
+
+I would like to let you know that I performed all the installation steps (make,
+make install), and I noticed no errors.
+However, I am sceptical about why "make install" is carrying out the
+following operations,
+
+
+
+*rm -f /usr/local/lib/coccinelle/spatchrm -f
+/usr/local/lib/coccinelle/spatch.optrm -f /usr/local/bin/pycocci*
+
+I wonder whether this is causing the problem. I would be most glad if you
+could please help me install spatch.
+
+Just in case, I installed the latest versions of OCaml and Menhir using
+OPAM.
+
+Best Regards,
+Aftab
+
+On Thu, Mar 3, 2016 at 11:09 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
+
+> On Thu, 3 Mar 2016, Aftab Hussain wrote:
+>
+> > Dear Members of the Coccinelle Team,
 > >
-> > Well, given that they look sane to me, I've applied them to my tree,
-> > let's see what breaks in linux-next now :)
-> 
-> Great, thank you!
-> 
-> Unfortunately, the kbuild test robot detected two minor issues and I've
-> sent v5 in order to correct this.
-> 
-> In case that it isn't possible to simply replace v4 by v5, please let me
-> know and I'll send two fixup patches instead.
-
-What do the fixup patches look like?  That might be easier to take if
-they aren't really major issues (one was a documentation issue, which
-isn't a big deal...)
-
-thanks,
-
-greg k-h
+> > Hope you are doing well. Me and my team mates have been recently working
+> on
+> > program analysis, and are very keen on working with your tool.
+> > Unfortunately, we faced a compilation problem.
+> >
+> > I was trying to compile Coccinelle using the source
+> > (https://github.com/coccinelle/coccinelle). I followed all instructions,
+> > mentioned in the "install.txt" file, but
+> > when I enter the following command in the "coccinelle-master" directory,
+> >
+> > ./configure --enable-release
+> >
+> > I get the following error message,
+> >
+> > bash: ./configure: No such file or directory
+> >
+> > I see the "configure" file is missing from your source. I would be most
+> > grateful if you could please advise on how I may fix this.
+>
+> Did you run ./autogen first?  Probably the install.txt file needs to be
+> updated.  Thanks for the report.
+>
+> julia
+>
+> >
+> > Thanks,
+> > Aftab
+> >
+> > Aftab Hussain
+> > PhD Student,
+> > Department of Computer Science,
+> > University of California, Irvine
+> >
+> >
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20160307/c282673f/attachment.html>
