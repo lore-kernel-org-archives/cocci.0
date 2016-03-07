@@ -1,45 +1,39 @@
-From: nicstange@gmail.com (Nicolai Stange)
-Date: Sun, 06 Mar 2016 21:03:55 +0100
-Subject: [Cocci] [PATCH v4 0/8] fix debugfs file removal races
-In-Reply-To: <20160306135430.GA17315@kroah.com> (Greg Kroah-Hartman's message
- of "Sun, 6 Mar 2016 05:54:30 -0800")
-References: <8737sjo7qa.fsf@gmail.com> <20160305212613.GA29738@kroah.com>
- <87egbn3gxb.fsf@gmail.com> <20160306135430.GA17315@kroah.com>
-Message-ID: <87a8mb2x1w.fsf@gmail.com>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Mon, 7 Mar 2016 19:39:15 +0100
+Subject: [Cocci] Parsing C source files by Coccinelle
+In-Reply-To: <CAO=9Y+2Qm+A9a91zGrYNJavOXcWFR2hj5Xx+=FPG1p02KdC7Ew@mail.gmail.com>
+References: <CAJTCqFadstafOZPgjDoV48zNFBHkTdp+4=a0WLGbfKaTCSqgOw@mail.gmail.com>
+ <56D99C75.7080100@users.sourceforge.net>
+ <CAO=9Y+2Qm+A9a91zGrYNJavOXcWFR2hj5Xx+=FPG1p02KdC7Ew@mail.gmail.com>
+Message-ID: <56DDCAD3.2080309@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
+> I am interested in exploring how Coccinelle is parsing C programs,
 
-> On Sun, Mar 06, 2016 at 01:54:40PM +0100, Nicolai Stange wrote:
->> Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
->> 
->> > On Tue, Feb 23, 2016 at 02:51:25PM +0100, Nicolai Stange wrote:
->> >> The changes from v3 to v4 are style changes regarding the Coccinelle
->> >> part only -- it has been split off from former [3/7] into its own
->> >> patch [4/8].
->> >> 
->> >> The big step has been from v2 to v3 and these changes haven't got any
->> >> review yet.
->> >
->> > Well, given that they look sane to me, I've applied them to my tree,
->> > let's see what breaks in linux-next now :)
->> 
->> Great, thank you!
->> 
->> Unfortunately, the kbuild test robot detected two minor issues and I've
->> sent v5 in order to correct this.
->> 
->> In case that it isn't possible to simply replace v4 by v5, please let me
->> know and I'll send two fixup patches instead.
->
-> What do the fixup patches look like?  That might be easier to take if
-> they aren't really major issues (one was a documentation issue, which
-> isn't a big deal...)
+The software library "http://cristal.inria.fr/~fpottier/menhir/"
+is involved to some degree.
 
-I sent the two fixup patches as a proposal in a series of their own:
-http://lkml.kernel.org/g/1457294345-4588-1-git-send-email-nicstange at gmail.com
 
-Thank you!
+> in order to detect the bugs indicated by SmPL patches.
 
-Nicolai
+Would you like to develop your own source code search patterns?
+
+
+> This is the reason why I was trying to examine the source
+> and perform the compilation myself.
+
+Will it be a bit easier to ask about relevant implementation details here?
+
+
+> However, I am facing issues executing spatch.
+
+Which ones?
+
+
+> The installation probably didn't work.
+
+How did you get this impression?
+
+Regards,
+Markus
