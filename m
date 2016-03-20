@@ -1,36 +1,42 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 19 Mar 2016 18:47:56 +0100 (CET)
-Subject: [Cocci] [PATCH] scripts: coccinelle: remove check to move
- constants to right
-In-Reply-To: <20160319174625.GA3981@tetsubishi>
-References: <1458409079-4669-1-git-send-email-wsa@the-dreams.de>
- <alpine.DEB.2.02.1603191840121.2259@localhost6.localdomain6>
- <20160319174625.GA3981@tetsubishi>
-Message-ID: <alpine.DEB.2.02.1603191847460.2259@localhost6.localdomain6>
+From: vaishali.thakkar@oracle.com (Vaishali Thakkar)
+Date: Sun, 20 Mar 2016 10:57:32 +0530
+Subject: [Cocci] [PATCH] Coccinelle: setup_timer: Add space in front of
+	parentheses
+Message-ID: <1458451652-5933-1-git-send-email-vaishali.thakkar@oracle.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Add space in front of the offending parentheses to silent the
+parse error for older Coccinelle versions. This makes the rule
+usable with all Coccinelle versions.
 
+Reported-by: Nishanth Menon <nm@ti.com>
+Signed-off-by: Vaishali Thakkar <vaishali.thakkar@oracle.com>
+---
+ scripts/coccinelle/api/setup_timer.cocci | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-On Sat, 19 Mar 2016, Wolfram Sang wrote:
-
-> On Sat, Mar 19, 2016 at 06:43:08PM +0100, Julia Lawall wrote:
-> > On Sat, 19 Mar 2016, Wolfram Sang wrote:
-> > 
-> > > The header mentions this check depends on personal taste. I agree.
-> > > Running coccicheck on patches before I apply them, this SmPL produced
-> > > enough false positives for me that I'd rather see it removed.
-> > 
-> > An improvement is coming up, that should be more acceptable.  However, 
-> > it's being held up by the need for some bug fixes in Coccinelle.  A 
-> > release of Coccinelle is planned for the beginning of April.  Perhaps 
-> > it is just as well to just remove this version for now.
-> > 
-> > Acked-by: Julia Lawall <julia.lawall@lip6.fr>
-> 
-> Thanks, Julia. If you put me on CC of the new version, I'll be happy to
-> test.
-
-Thanks :)
-
-julia
+diff --git a/scripts/coccinelle/api/setup_timer.cocci b/scripts/coccinelle/api/setup_timer.cocci
+index 8ee0ac3..eb6bd9e 100644
+--- a/scripts/coccinelle/api/setup_timer.cocci
++++ b/scripts/coccinelle/api/setup_timer.cocci
+@@ -106,7 +106,7 @@ position j0, j1, j2;
+ @match_function_and_data_after_init_timer_context
+ depends on !patch &&
+ !match_immediate_function_data_after_init_timer_context &&
+-(context || org || report)@
++ (context || org || report)@
+ expression a, b, e1, e2, e3, e4, e5;
+ position j0, j1, j2;
+ @@
+@@ -127,7 +127,7 @@ position j0, j1, j2;
+ @r3_context depends on !patch &&
+ !match_immediate_function_data_after_init_timer_context &&
+ !match_function_and_data_after_init_timer_context &&
+-(context || org || report)@
++ (context || org || report)@
+ expression c, e6, e7;
+ position r1.p;
+ position j0, j1;
+-- 
+2.1.4
