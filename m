@@ -1,141 +1,288 @@
 From: nicstange@gmail.com (Nicolai Stange)
-Date: Tue, 22 Mar 2016 14:11:12 +0100
-Subject: [Cocci] [PATCH v6 0/8] fix debugfs file removal races
-Message-ID: <1458652280-19785-1-git-send-email-nicstange@gmail.com>
+Date: Tue, 22 Mar 2016 14:11:13 +0100
+Subject: [Cocci] [PATCH v6 1/8] debugfs: prevent access to possibly dead
+	file_operations at file open
+In-Reply-To: <1458652280-19785-1-git-send-email-nicstange@gmail.com>
+References: <1458652280-19785-1-git-send-email-nicstange@gmail.com>
+Message-ID: <1458652280-19785-2-git-send-email-nicstange@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi Greg,
+Nothing prevents a dentry found by path lookup before a return of
+__debugfs_remove() to actually get opened after that return. Now, after
+the return of __debugfs_remove(), there are no guarantees whatsoever
+regarding the memory the corresponding inode's file_operations object
+had been kept in.
 
-this series' v6 is meant to replace the v4 currently sitting in your
-driver-core tree's driver-core-testing branch.
+Since __debugfs_remove() is seldomly invoked, usually from module exit
+handlers only, the race is hard to trigger and the impact is very low.
 
-All the three fixup patches to v4 (not applied anywhere) have been
-incorporated into this v6. I'll explicitly mark them as "please drop".
+A discussion of the problem outlined above as well as a suggested
+solution can be found in the (sub-)thread rooted at
 
+  http://lkml.kernel.org/g/20130401203445.GA20862 at ZenIV.linux.org.uk
+  ("Yet another pipe related oops.")
 
-Former v5 thread can be found here:
+Basically, Greg KH suggests to introduce an intermediate fops and
+Al Viro points out that a pointer to the original ones may be stored in
+->d_fsdata.
 
-  http://lkml.kernel.org/g/1457267103-28910-1-git-send-email-nicstange at gmail.com
+Follow this line of reasoning:
+- Add SRCU as a reverse dependency of DEBUG_FS.
+- Introduce a srcu_struct object for the debugfs subsystem.
+- In debugfs_create_file(), store a pointer to the original
+  file_operations object in ->d_fsdata.
+- Make debugfs_remove() and debugfs_remove_recursive() wait for a
+  SRCU grace period after the dentry has been delete()'d and before they
+  return to their callers.
+- Introduce an intermediate file_operations object named
+  "debugfs_open_proxy_file_operations". It's ->open() functions checks,
+  under the protection of a SRCU read lock, whether the dentry is still
+  alive, i.e. has not been d_delete()'d and if so, tries to acquire a
+  reference on the owning module.
+  On success, it sets the file object's ->f_op to the original
+  file_operations and forwards the ongoing open() call to the original
+  ->open().
+- For clarity, rename the former debugfs_file_operations to
+  debugfs_noop_file_operations -- they are in no way canonical.
 
+The choice of SRCU over "normal" RCU is justified by the fact, that the
+former may also be used to protect ->i_private data from going away
+during the execution of a file's readers and writers which may (and do)
+sleep.
 
-Applicable to current mainline.
+Finally, introduce the fs/debugfs/internal.h header containing some
+declarations internal to the debugfs implementation.
 
-
-Thanks,
-
-Nicolai
-
-
-Changes v5 -> v6:
-  [1/8] ("debugfs: prevent access to possibly dead file_operations at file open")
-   - Fix the double unlock issue found by Rasmus Villemoes and reported
-     in reply to v5.
-
-
-Changes v4 -> v5:
-  [1/8] ("debugfs: prevent access to possibly dead file_operations at file open")
-   - In the DocBook comment for debugfs_use_file_start(), rename the
-     "@file" parameter into the now correct "@dentry".
-
-  [2/8] ("debugfs: prevent access to removed files' private data)"
-   - In include/linux/debugfs.h, add the inline keyword to the
-     CONFIG_DEBUG_FS=n dummy implementations of
-     debugfs_use_file_start()/_finish()
-
-  [3-8/8] unchanged
-
-
-Changes v3 -> v4:
-  [4/8] ("debugfs, coccinelle: check for obsolete DEFINE_SIMPLE_ATTRIBUTE() usage")
-   - This one is new, the Coccinelle related changes have been split
-     off from former
-       [3/7] ("debugfs: add support for self-protecting attribute file fops")
-     into this patch.
-   - Style fixes as suggested by Julia Lawall have been applied to the
-     contained cocci script's comment header.
-
-  [5/8] ("debugfs: unproxify integer attribute files")
-   - The commit messages has been reworded in order to get rid of the
-     unfortunate triple-X in former [4/7].
-
-  [6-8/8]
-   - Former [5-7/8], only the numbering has changed.
-
-
-Changes v2 -> v3:
-  [1/7] ("debugfs: prevent access to possibly dead file_operations at file open")
-   - move the definition of the debugfs_use_file_start() and _end() from former
-     [2/2] to [1/7]. Also, they've been renamed from debugfs_file_use_data*().
-   - Make the ->open() proxy use the debugfs_use_file_*() helpers.
-   - In debugfs_use_file_start(), use d_unlinked() rather than
-     (->d_fsdata == NULL) as a flag whether the dentry is dead.
-   - Make the ->open() proxy include the forwarded call to the original fops' ->open
-     within the SRCU read side critical section.
-   - debugfs_proxy_file_operations has been renamed to
-     "debugfs_open_proxy_file_operations"  to distinguish it from the full proxy
-     introduced in [2/7].
-
-  [2/7] ("debugfs: prevent access to removed files' private data")
-   - This one has changed completely: instead of providing file
-     removal-safe fops helpers to opt-into at the debugfs users, the
-     original struct file_operations get completely and
-     unconditionally proxied now.
-
-  [3-7/7]
-   New. Opt-out from the full proxying introduced in [2/7] for some
-   special case struct file_operations provided by debugfs itself.
-
-
-Changes v1 -> v2:
-  [1/2] ("debugfs: prevent access to possibly dead file_operations at file open")
-   - Resolve trivial diff conflict in debugfs_remove_recursive():
-     in the meanwhile, an unrelated 'mutex_unlock(...)' had been rewritten to
-     'inode_unlock(...)' which broke the diff's context.
-   - Introduce the fs/debugfs/internal.h header and move the declarations of
-     debugfs_noop_file_operations, debugfs_proxy_file_operations and
-     debugfs_rcu from include/linux/debugfs.h thereinto. Include this header
-     from file.c and inode.c.
-   - Add a word about the new internal header to the commit message.
-   - Move the inclusion of linux/srcu.h from include/linux/debugfs.h
-     into file.c and inode.c respectively.
-
-  [2/2] ("debugfs: prevent access to removed files' private data")
-   - Move the definitions of debugfs_file_use_data_start() and
-     debugfs_file_use_data_finish() from include/linux/debugfs.h to
-     file.c. Export them and keep their declarations in debugfs.h,
-   - In order to be able to attach proper __acquires() and __releases() tags
-     to the decalarations of debugfs_file_use_data_*() in debugfs.h,
-     move the debugfs_srcu declaration from internal.h into debugfs.h.
-   - Since the definitions as well as the docstrings of
-     debugfs_file_use_data_*() have been moved into file.c,
-     there is no need to run DocBook on debugfs.h: do not modify
-     Documentation/DocBook/filesystems.tmpl anymore.
-   - In the commit message, encourage new users of debugfs to prefer
-     DEFINE_DEBUGFS_ATTRIBUTE() and friends over DEFINE_SIMPLE_ATTRIBUTE().
-
-
-
-Nicolai Stange (8):
-  debugfs: prevent access to possibly dead file_operations at file open
-  debugfs: prevent access to removed files' private data
-  debugfs: add support for self-protecting attribute file fops
-  debugfs, coccinelle: check for obsolete DEFINE_SIMPLE_ATTRIBUTE()
-    usage
-  debugfs: unproxify integer attribute files
-  debugfs: unproxify files created through debugfs_create_bool()
-  debugfs: unproxify files created through debugfs_create_blob()
-  debugfs: unproxify files created through debugfs_create_u32_array()
-
- fs/debugfs/file.c                                  | 436 +++++++++++++++++----
- fs/debugfs/inode.c                                 | 101 ++++-
- fs/debugfs/internal.h                              |  26 ++
- include/linux/debugfs.h                            |  49 ++-
- lib/Kconfig.debug                                  |   1 +
- .../api/debugfs/debugfs_simple_attr.cocci          |  67 ++++
- 6 files changed, 592 insertions(+), 88 deletions(-)
+Signed-off-by: Nicolai Stange <nicstange@gmail.com>
+---
+ fs/debugfs/file.c       | 91 ++++++++++++++++++++++++++++++++++++++++++++++++-
+ fs/debugfs/inode.c      | 13 ++++++-
+ fs/debugfs/internal.h   | 24 +++++++++++++
+ include/linux/debugfs.h |  3 --
+ lib/Kconfig.debug       |  1 +
+ 5 files changed, 127 insertions(+), 5 deletions(-)
  create mode 100644 fs/debugfs/internal.h
- create mode 100644 scripts/coccinelle/api/debugfs/debugfs_simple_attr.cocci
 
+diff --git a/fs/debugfs/file.c b/fs/debugfs/file.c
+index d2ba12e..736ab3c 100644
+--- a/fs/debugfs/file.c
++++ b/fs/debugfs/file.c
+@@ -22,6 +22,9 @@
+ #include <linux/slab.h>
+ #include <linux/atomic.h>
+ #include <linux/device.h>
++#include <linux/srcu.h>
++
++#include "internal.h"
+ 
+ static ssize_t default_read_file(struct file *file, char __user *buf,
+ 				 size_t count, loff_t *ppos)
+@@ -35,13 +38,99 @@ static ssize_t default_write_file(struct file *file, const char __user *buf,
+ 	return count;
+ }
+ 
+-const struct file_operations debugfs_file_operations = {
++const struct file_operations debugfs_noop_file_operations = {
+ 	.read =		default_read_file,
+ 	.write =	default_write_file,
+ 	.open =		simple_open,
+ 	.llseek =	noop_llseek,
+ };
+ 
++/**
++ * debugfs_use_file_start - mark the beginning of file data access
++ * @dentry: the dentry object whose data is being accessed.
++ * @srcu_idx: a pointer to some memory to store a SRCU index in.
++ *
++ * Up to a matching call to debugfs_use_file_finish(), any
++ * successive call into the file removing functions debugfs_remove()
++ * and debugfs_remove_recursive() will block. Since associated private
++ * file data may only get freed after a successful return of any of
++ * the removal functions, you may safely access it after a successful
++ * call to debugfs_use_file_start() without worrying about
++ * lifetime issues.
++ *
++ * If -%EIO is returned, the file has already been removed and thus,
++ * it is not safe to access any of its data. If, on the other hand,
++ * it is allowed to access the file data, zero is returned.
++ *
++ * Regardless of the return code, any call to
++ * debugfs_use_file_start() must be followed by a matching call
++ * to debugfs_use_file_finish().
++ */
++static int debugfs_use_file_start(const struct dentry *dentry, int *srcu_idx)
++	__acquires(&debugfs_srcu)
++{
++	*srcu_idx = srcu_read_lock(&debugfs_srcu);
++	barrier();
++	if (d_unlinked(dentry))
++		return -EIO;
++	return 0;
++}
++
++/**
++ * debugfs_use_file_finish - mark the end of file data access
++ * @srcu_idx: the SRCU index "created" by a former call to
++ *            debugfs_use_file_start().
++ *
++ * Allow any ongoing concurrent call into debugfs_remove() or
++ * debugfs_remove_recursive() blocked by a former call to
++ * debugfs_use_file_start() to proceed and return to its caller.
++ */
++static void debugfs_use_file_finish(int srcu_idx) __releases(&debugfs_srcu)
++{
++	srcu_read_unlock(&debugfs_srcu, srcu_idx);
++}
++
++#define F_DENTRY(filp) ((filp)->f_path.dentry)
++
++#define REAL_FOPS_DEREF(dentry)					\
++	((const struct file_operations *)(dentry)->d_fsdata)
++
++static int open_proxy_open(struct inode *inode, struct file *filp)
++{
++	const struct dentry *dentry = F_DENTRY(filp);
++	const struct file_operations *real_fops = NULL;
++	int srcu_idx, r;
++
++	r = debugfs_use_file_start(dentry, &srcu_idx);
++	if (r) {
++		r = -ENOENT;
++		goto out;
++	}
++
++	real_fops = REAL_FOPS_DEREF(dentry);
++	real_fops = fops_get(real_fops);
++	if (!real_fops) {
++		/* Huh? Module did not clean up after itself at exit? */
++		WARN(1, "debugfs file owner did not clean up at exit: %pd",
++			dentry);
++		r = -ENXIO;
++		goto out;
++	}
++	replace_fops(filp, real_fops);
++
++	if (real_fops->open)
++		r = real_fops->open(inode, filp);
++
++out:
++	fops_put(real_fops);
++	debugfs_use_file_finish(srcu_idx);
++	return r;
++}
++
++const struct file_operations debugfs_open_proxy_file_operations = {
++	.open = open_proxy_open,
++};
++
+ static struct dentry *debugfs_create_mode(const char *name, umode_t mode,
+ 					  struct dentry *parent, void *value,
+ 				          const struct file_operations *fops,
+diff --git a/fs/debugfs/inode.c b/fs/debugfs/inode.c
+index bece948..26880ad 100644
+--- a/fs/debugfs/inode.c
++++ b/fs/debugfs/inode.c
+@@ -27,9 +27,14 @@
+ #include <linux/parser.h>
+ #include <linux/magic.h>
+ #include <linux/slab.h>
++#include <linux/srcu.h>
++
++#include "internal.h"
+ 
+ #define DEBUGFS_DEFAULT_MODE	0700
+ 
++DEFINE_SRCU(debugfs_srcu);
++
+ static struct vfsmount *debugfs_mount;
+ static int debugfs_mount_count;
+ static bool debugfs_registered;
+@@ -340,8 +345,12 @@ struct dentry *debugfs_create_file(const char *name, umode_t mode,
+ 		return failed_creating(dentry);
+ 
+ 	inode->i_mode = mode;
+-	inode->i_fop = fops ? fops : &debugfs_file_operations;
+ 	inode->i_private = data;
++
++	inode->i_fop = fops ? &debugfs_open_proxy_file_operations
++		: &debugfs_noop_file_operations;
++	dentry->d_fsdata = (void *)fops;
++
+ 	d_instantiate(dentry, inode);
+ 	fsnotify_create(d_inode(dentry->d_parent), dentry);
+ 	return end_creating(dentry);
+@@ -565,6 +574,7 @@ void debugfs_remove(struct dentry *dentry)
+ 	inode_unlock(d_inode(parent));
+ 	if (!ret)
+ 		simple_release_fs(&debugfs_mount, &debugfs_mount_count);
++	synchronize_srcu(&debugfs_srcu);
+ }
+ EXPORT_SYMBOL_GPL(debugfs_remove);
+ 
+@@ -642,6 +652,7 @@ void debugfs_remove_recursive(struct dentry *dentry)
+ 	if (!__debugfs_remove(child, parent))
+ 		simple_release_fs(&debugfs_mount, &debugfs_mount_count);
+ 	inode_unlock(d_inode(parent));
++	synchronize_srcu(&debugfs_srcu);
+ }
+ EXPORT_SYMBOL_GPL(debugfs_remove_recursive);
+ 
+diff --git a/fs/debugfs/internal.h b/fs/debugfs/internal.h
+new file mode 100644
+index 0000000..c7aaa5c
+--- /dev/null
++++ b/fs/debugfs/internal.h
+@@ -0,0 +1,24 @@
++/*
++ *  internal.h - declarations internal to debugfs
++ *
++ *  Copyright (C) 2016 Nicolai Stange <nicstange@gmail.com>
++ *
++ *	This program is free software; you can redistribute it and/or
++ *	modify it under the terms of the GNU General Public License version
++ *	2 as published by the Free Software Foundation.
++ *
++ */
++
++#ifndef _DEBUGFS_INTERNAL_H_
++#define _DEBUGFS_INTERNAL_H_
++
++struct file_operations;
++struct srcu_struct;
++
++/* declared over in file.c */
++extern const struct file_operations debugfs_noop_file_operations;
++extern const struct file_operations debugfs_open_proxy_file_operations;
++
++extern struct srcu_struct debugfs_srcu;
++
++#endif /* _DEBUGFS_INTERNAL_H_ */
+diff --git a/include/linux/debugfs.h b/include/linux/debugfs.h
+index 981e53a..fcafe2d 100644
+--- a/include/linux/debugfs.h
++++ b/include/linux/debugfs.h
+@@ -43,9 +43,6 @@ extern struct dentry *arch_debugfs_dir;
+ 
+ #if defined(CONFIG_DEBUG_FS)
+ 
+-/* declared over in file.c */
+-extern const struct file_operations debugfs_file_operations;
+-
+ struct dentry *debugfs_create_file(const char *name, umode_t mode,
+ 				   struct dentry *parent, void *data,
+ 				   const struct file_operations *fops);
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index 5a60f45..0d5177f 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -257,6 +257,7 @@ config PAGE_OWNER
+ 
+ config DEBUG_FS
+ 	bool "Debug Filesystem"
++	select SRCU
+ 	help
+ 	  debugfs is a virtual file system that kernel developers use to put
+ 	  debugging files into.  Enable this option to be able to read and
 -- 
 2.7.4
