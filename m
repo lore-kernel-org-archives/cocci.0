@@ -1,114 +1,43 @@
 From: nicstange@gmail.com (Nicolai Stange)
-Date: Tue, 22 Mar 2016 14:11:16 +0100
-Subject: [Cocci] [PATCH v6 4/8] debugfs,
-	coccinelle: check for obsolete DEFINE_SIMPLE_ATTRIBUTE() usage
+Date: Tue, 22 Mar 2016 14:11:20 +0100
+Subject: [Cocci] [PATCH v6 8/8] debugfs: unproxify files created through
+	debugfs_create_u32_array()
 In-Reply-To: <1458652280-19785-1-git-send-email-nicstange@gmail.com>
 References: <1458652280-19785-1-git-send-email-nicstange@gmail.com>
-Message-ID: <1458652280-19785-5-git-send-email-nicstange@gmail.com>
+Message-ID: <1458652280-19785-9-git-send-email-nicstange@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-In order to protect against file removal races, debugfs files created via
-debugfs_create_file() now get wrapped by a struct file_operations at their
-opening.
+The struct file_operations u32_array_fops associated with files created
+through debugfs_create_u32_array() has been lifetime aware already:
+everything needed for subsequent operation is copied to a ->f_private
+buffer at file opening time in u32_array_open(). Now, ->open() is always
+protected against file removal issues by the debugfs core.
 
-If the original struct file_operations are known to be safe against removal
-races by themselves already, the proxy creation may be bypassed by creating
-the files through debugfs_create_file_unsafe().
+There is no need for the debugfs core to wrap the u32_array_fops
+with a file lifetime managing proxy.
 
-In order to help debugfs users who use the common
-  DEFINE_SIMPLE_ATTRIBUTE() + debugfs_create_file()
-idiom to transition to removal safe struct file_operations, the helper
-macro DEFINE_DEBUGFS_ATTRIBUTE() has been introduced.
-
-Thus, the preferred strategy is to use
-  DEFINE_DEBUGFS_ATTRIBUTE() + debugfs_create_file_unsafe()
-now.
-
-Introduce a Coccinelle script that searches for
-DEFINE_SIMPLE_ATTRIBUTE()-defined struct file_operations handed into
-debugfs_create_file(). Suggest to turn these usages into the
-  DEFINE_DEBUGFS_ATTRIBUTE() + debugfs_create_file_unsafe()
-pattern.
+Make debugfs_create_u32_array() create its files in non-proxying operation
+mode by means of debugfs_create_file_unsafe().
 
 Signed-off-by: Nicolai Stange <nicstange@gmail.com>
 ---
- .../api/debugfs/debugfs_simple_attr.cocci          | 67 ++++++++++++++++++++++
- 1 file changed, 67 insertions(+)
- create mode 100644 scripts/coccinelle/api/debugfs/debugfs_simple_attr.cocci
+ fs/debugfs/file.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/scripts/coccinelle/api/debugfs/debugfs_simple_attr.cocci b/scripts/coccinelle/api/debugfs/debugfs_simple_attr.cocci
-new file mode 100644
-index 0000000..85cf540
---- /dev/null
-+++ b/scripts/coccinelle/api/debugfs/debugfs_simple_attr.cocci
-@@ -0,0 +1,67 @@
-+/// Use DEFINE_DEBUGFS_ATTRIBUTE rather than DEFINE_SIMPLE_ATTRIBUTE
-+/// for debugfs files.
-+///
-+//# Rationale: DEFINE_SIMPLE_ATTRIBUTE + debugfs_create_file()
-+//# imposes some significant overhead as compared to
-+//# DEFINE_DEBUGFS_ATTRIBUTE + debugfs_create_file_unsafe().
-+//
-+// Copyright (C): 2016 Nicolai Stange
-+// Options: --no-includes
-+//
-+
-+virtual context
-+virtual patch
-+virtual org
-+virtual report
-+
-+ at dsa@
-+declarer name DEFINE_SIMPLE_ATTRIBUTE;
-+identifier dsa_fops;
-+expression dsa_get, dsa_set, dsa_fmt;
-+position p;
-+@@
-+DEFINE_SIMPLE_ATTRIBUTE at p(dsa_fops, dsa_get, dsa_set, dsa_fmt);
-+
-+ at dcf@
-+expression name, mode, parent, data;
-+identifier dsa.dsa_fops;
-+@@
-+debugfs_create_file(name, mode, parent, data, &dsa_fops)
-+
-+
-+ at context_dsa depends on context && dcf@
-+declarer name DEFINE_DEBUGFS_ATTRIBUTE;
-+identifier dsa.dsa_fops;
-+expression dsa.dsa_get, dsa.dsa_set, dsa.dsa_fmt;
-+@@
-+* DEFINE_SIMPLE_ATTRIBUTE(dsa_fops, dsa_get, dsa_set, dsa_fmt);
-+
-+
-+ at patch_dcf depends on patch expression@
-+expression name, mode, parent, data;
-+identifier dsa.dsa_fops;
-+@@
-+- debugfs_create_file(name, mode, parent, data, &dsa_fops)
-++ debugfs_create_file_unsafe(name, mode, parent, data, &dsa_fops)
-+
-+ at patch_dsa depends on patch_dcf && patch@
-+identifier dsa.dsa_fops;
-+expression dsa.dsa_get, dsa.dsa_set, dsa.dsa_fmt;
-+@@
-+- DEFINE_SIMPLE_ATTRIBUTE(dsa_fops, dsa_get, dsa_set, dsa_fmt);
-++ DEFINE_DEBUGFS_ATTRIBUTE(dsa_fops, dsa_get, dsa_set, dsa_fmt);
-+
-+
-+ at script:python depends on org && dcf@
-+fops << dsa.dsa_fops;
-+p << dsa.p;
-+@@
-+msg="%s should be defined with DEFINE_DEBUGFS_ATTRIBUTE" % (fops)
-+coccilib.org.print_todo(p[0], msg)
-+
-+@script:python depends on report && dcf@
-+fops << dsa.dsa_fops;
-+p << dsa.p;
-+@@
-+msg="WARNING: %s should be defined with DEFINE_DEBUGFS_ATTRIBUTE" % (fops)
-+coccilib.report.print_report(p[0], msg)
+diff --git a/fs/debugfs/file.c b/fs/debugfs/file.c
+index 2e86d66..9c1c9a0 100644
+--- a/fs/debugfs/file.c
++++ b/fs/debugfs/file.c
+@@ -992,7 +992,8 @@ struct dentry *debugfs_create_u32_array(const char *name, umode_t mode,
+ 	data->array = array;
+ 	data->elements = elements;
+ 
+-	return debugfs_create_file(name, mode, parent, data, &u32_array_fops);
++	return debugfs_create_file_unsafe(name, mode, parent, data,
++					&u32_array_fops);
+ }
+ EXPORT_SYMBOL_GPL(debugfs_create_u32_array);
+ 
 -- 
 2.7.4
