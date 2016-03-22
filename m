@@ -1,116 +1,125 @@
-From: nicstange@gmail.com (Nicolai Stange)
-Date: Tue, 22 Mar 2016 14:11:18 +0100
-Subject: [Cocci] [PATCH v6 6/8] debugfs: unproxify files created through
-	debugfs_create_bool()
-In-Reply-To: <1458652280-19785-1-git-send-email-nicstange@gmail.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Tue, 22 Mar 2016 14:18:22 +0100 (CET)
+Subject: [Cocci] [PATCH v6 4/8] debugfs,
+ coccinelle: check for obsolete DEFINE_SIMPLE_ATTRIBUTE() usage
+In-Reply-To: <1458652280-19785-5-git-send-email-nicstange@gmail.com>
 References: <1458652280-19785-1-git-send-email-nicstange@gmail.com>
-Message-ID: <1458652280-19785-7-git-send-email-nicstange@gmail.com>
+ <1458652280-19785-5-git-send-email-nicstange@gmail.com>
+Message-ID: <alpine.DEB.2.10.1603221417430.3301@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Currently, the struct file_operations fops_bool associated with files
-created through the debugfs_create_bool() helpers are not file
-lifetime aware.
 
-Thus, a lifetime managing proxy is created around fops_bool each time such
-a file is opened which is an unnecessary waste of resources.
 
-Implement file lifetime management for the fops_bool file_operations.
-Namely, make debugfs_read_file_bool() and debugfs_write_file_bool() safe
-against file removals by means of debugfs_use_file_start() and
-debugfs_use_file_finish().
+On Tue, 22 Mar 2016, Nicolai Stange wrote:
 
-Make debugfs_create_bool() create its files in non-proxying operation mode
-through debugfs_create_mode_unsafe().
+> In order to protect against file removal races, debugfs files created via
+> debugfs_create_file() now get wrapped by a struct file_operations at their
+> opening.
+>
+> If the original struct file_operations are known to be safe against removal
+> races by themselves already, the proxy creation may be bypassed by creating
+> the files through debugfs_create_file_unsafe().
+>
+> In order to help debugfs users who use the common
+>   DEFINE_SIMPLE_ATTRIBUTE() + debugfs_create_file()
+> idiom to transition to removal safe struct file_operations, the helper
+> macro DEFINE_DEBUGFS_ATTRIBUTE() has been introduced.
+>
+> Thus, the preferred strategy is to use
+>   DEFINE_DEBUGFS_ATTRIBUTE() + debugfs_create_file_unsafe()
+> now.
+>
+> Introduce a Coccinelle script that searches for
+> DEFINE_SIMPLE_ATTRIBUTE()-defined struct file_operations handed into
+> debugfs_create_file(). Suggest to turn these usages into the
+>   DEFINE_DEBUGFS_ATTRIBUTE() + debugfs_create_file_unsafe()
+> pattern.
+>
+> Signed-off-by: Nicolai Stange <nicstange@gmail.com>
 
-Finally, purge debugfs_create_mode() as debugfs_create_bool() had been its
-last user.
+In terms of the structure of the semantic patch:
+Acked-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
-Signed-off-by: Nicolai Stange <nicstange@gmail.com>
----
- fs/debugfs/file.c | 41 ++++++++++++++++++++---------------------
- 1 file changed, 20 insertions(+), 21 deletions(-)
-
-diff --git a/fs/debugfs/file.c b/fs/debugfs/file.c
-index 4b3967e..8a548be 100644
---- a/fs/debugfs/file.c
-+++ b/fs/debugfs/file.c
-@@ -312,22 +312,6 @@ ssize_t debugfs_attr_write(struct file *file, const char __user *buf,
- }
- EXPORT_SYMBOL_GPL(debugfs_attr_write);
- 
--static struct dentry *debugfs_create_mode(const char *name, umode_t mode,
--					  struct dentry *parent, void *value,
--				          const struct file_operations *fops,
--				          const struct file_operations *fops_ro,
--				          const struct file_operations *fops_wo)
--{
--	/* if there are no write bits set, make read only */
--	if (!(mode & S_IWUGO))
--		return debugfs_create_file(name, mode, parent, value, fops_ro);
--	/* if there are no read bits set, make write only */
--	if (!(mode & S_IRUGO))
--		return debugfs_create_file(name, mode, parent, value, fops_wo);
--
--	return debugfs_create_file(name, mode, parent, value, fops);
--}
--
- static struct dentry *debugfs_create_mode_unsafe(const char *name, umode_t mode,
- 					struct dentry *parent, void *value,
- 					const struct file_operations *fops,
-@@ -756,9 +740,17 @@ ssize_t debugfs_read_file_bool(struct file *file, char __user *user_buf,
- 			       size_t count, loff_t *ppos)
- {
- 	char buf[3];
--	bool *val = file->private_data;
-+	bool val;
-+	int r, srcu_idx;
-+
-+	r = debugfs_use_file_start(F_DENTRY(file), &srcu_idx);
-+	if (likely(!r))
-+		val = *(bool *)file->private_data;
-+	debugfs_use_file_finish(srcu_idx);
-+	if (r)
-+		return r;
- 
--	if (*val)
-+	if (val)
- 		buf[0] = 'Y';
- 	else
- 		buf[0] = 'N';
-@@ -774,6 +766,7 @@ ssize_t debugfs_write_file_bool(struct file *file, const char __user *user_buf,
- 	char buf[32];
- 	size_t buf_size;
- 	bool bv;
-+	int r, srcu_idx;
- 	bool *val = file->private_data;
- 
- 	buf_size = min(count, (sizeof(buf)-1));
-@@ -781,8 +774,14 @@ ssize_t debugfs_write_file_bool(struct file *file, const char __user *user_buf,
- 		return -EFAULT;
- 
- 	buf[buf_size] = '\0';
--	if (strtobool(buf, &bv) == 0)
--		*val = bv;
-+	if (strtobool(buf, &bv) == 0) {
-+		r = debugfs_use_file_start(F_DENTRY(file), &srcu_idx);
-+		if (likely(!r))
-+			*val = bv;
-+		debugfs_use_file_finish(srcu_idx);
-+		if (r)
-+			return r;
-+	}
- 
- 	return count;
- }
-@@ -834,7 +833,7 @@ static const struct file_operations fops_bool_wo = {
- struct dentry *debugfs_create_bool(const char *name, umode_t mode,
- 				   struct dentry *parent, bool *value)
- {
--	return debugfs_create_mode(name, mode, parent, value, &fops_bool,
-+	return debugfs_create_mode_unsafe(name, mode, parent, value, &fops_bool,
- 				   &fops_bool_ro, &fops_bool_wo);
- }
- EXPORT_SYMBOL_GPL(debugfs_create_bool);
--- 
-2.7.4
+> ---
+>  .../api/debugfs/debugfs_simple_attr.cocci          | 67 ++++++++++++++++++++++
+>  1 file changed, 67 insertions(+)
+>  create mode 100644 scripts/coccinelle/api/debugfs/debugfs_simple_attr.cocci
+>
+> diff --git a/scripts/coccinelle/api/debugfs/debugfs_simple_attr.cocci b/scripts/coccinelle/api/debugfs/debugfs_simple_attr.cocci
+> new file mode 100644
+> index 0000000..85cf540
+> --- /dev/null
+> +++ b/scripts/coccinelle/api/debugfs/debugfs_simple_attr.cocci
+> @@ -0,0 +1,67 @@
+> +/// Use DEFINE_DEBUGFS_ATTRIBUTE rather than DEFINE_SIMPLE_ATTRIBUTE
+> +/// for debugfs files.
+> +///
+> +//# Rationale: DEFINE_SIMPLE_ATTRIBUTE + debugfs_create_file()
+> +//# imposes some significant overhead as compared to
+> +//# DEFINE_DEBUGFS_ATTRIBUTE + debugfs_create_file_unsafe().
+> +//
+> +// Copyright (C): 2016 Nicolai Stange
+> +// Options: --no-includes
+> +//
+> +
+> +virtual context
+> +virtual patch
+> +virtual org
+> +virtual report
+> +
+> + at dsa@
+> +declarer name DEFINE_SIMPLE_ATTRIBUTE;
+> +identifier dsa_fops;
+> +expression dsa_get, dsa_set, dsa_fmt;
+> +position p;
+> +@@
+> +DEFINE_SIMPLE_ATTRIBUTE at p(dsa_fops, dsa_get, dsa_set, dsa_fmt);
+> +
+> + at dcf@
+> +expression name, mode, parent, data;
+> +identifier dsa.dsa_fops;
+> +@@
+> +debugfs_create_file(name, mode, parent, data, &dsa_fops)
+> +
+> +
+> + at context_dsa depends on context && dcf@
+> +declarer name DEFINE_DEBUGFS_ATTRIBUTE;
+> +identifier dsa.dsa_fops;
+> +expression dsa.dsa_get, dsa.dsa_set, dsa.dsa_fmt;
+> +@@
+> +* DEFINE_SIMPLE_ATTRIBUTE(dsa_fops, dsa_get, dsa_set, dsa_fmt);
+> +
+> +
+> + at patch_dcf depends on patch expression@
+> +expression name, mode, parent, data;
+> +identifier dsa.dsa_fops;
+> +@@
+> +- debugfs_create_file(name, mode, parent, data, &dsa_fops)
+> ++ debugfs_create_file_unsafe(name, mode, parent, data, &dsa_fops)
+> +
+> + at patch_dsa depends on patch_dcf && patch@
+> +identifier dsa.dsa_fops;
+> +expression dsa.dsa_get, dsa.dsa_set, dsa.dsa_fmt;
+> +@@
+> +- DEFINE_SIMPLE_ATTRIBUTE(dsa_fops, dsa_get, dsa_set, dsa_fmt);
+> ++ DEFINE_DEBUGFS_ATTRIBUTE(dsa_fops, dsa_get, dsa_set, dsa_fmt);
+> +
+> +
+> + at script:python depends on org && dcf@
+> +fops << dsa.dsa_fops;
+> +p << dsa.p;
+> +@@
+> +msg="%s should be defined with DEFINE_DEBUGFS_ATTRIBUTE" % (fops)
+> +coccilib.org.print_todo(p[0], msg)
+> +
+> + at script:python depends on report && dcf@
+> +fops << dsa.dsa_fops;
+> +p << dsa.p;
+> +@@
+> +msg="WARNING: %s should be defined with DEFINE_DEBUGFS_ATTRIBUTE" % (fops)
+> +coccilib.report.print_report(p[0], msg)
+> --
+> 2.7.4
+>
+>
