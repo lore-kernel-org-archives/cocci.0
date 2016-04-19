@@ -1,28 +1,53 @@
-From: mmarek@suse.cz (Michal Marek)
-Date: Wed, 20 Apr 2016 09:57:24 +0200
-Subject: [Cocci] [PATCH] scripts: coccinelle: remove check to move
-	constants to	right
-In-Reply-To: <alpine.DEB.2.02.1603191840121.2259@localhost6.localdomain6>
-References: <1458409079-4669-1-git-send-email-wsa@the-dreams.de>
- <alpine.DEB.2.02.1603191840121.2259@localhost6.localdomain6>
-Message-ID: <20160420075723.GA15339@pobox.suse.cz>
+From: joe@perches.com (Joe Perches)
+Date: Tue, 19 Apr 2016 12:12:32 -0700
+Subject: [Cocci] coccinelle: bool if (foo) return true; else return false;
+In-Reply-To: <alpine.DEB.2.02.1604172001410.2004@localhost6.localdomain6>
+References: <1460828078-5224-1-git-send-email-dave@stgolabs.net>
+ <1460833453.19090.79.camel@perches.com>
+ <1460836099.19090.82.camel@perches.com>
+ <alpine.DEB.2.02.1604170743060.2068@localhost6.localdomain6>
+ <1460881671.19090.90.camel@perches.com>
+ <alpine.DEB.2.02.1604171337450.2034@localhost6.localdomain6>
+ <1460908959.19090.95.camel@perches.com>
+ <alpine.DEB.2.02.1604171944500.2004@localhost6.localdomain6>
+ <1460915801.19090.100.camel@perches.com>
+ <alpine.DEB.2.02.1604172001410.2004@localhost6.localdomain6>
+Message-ID: <1461093152.1917.26.camel@perches.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sat, Mar 19, 2016 at 06:43:08PM +0100, Julia Lawall wrote:
-> On Sat, 19 Mar 2016, Wolfram Sang wrote:
-> 
-> > The header mentions this check depends on personal taste. I agree.
-> > Running coccicheck on patches before I apply them, this SmPL produced
-> > enough false positives for me that I'd rather see it removed.
-> 
-> An improvement is coming up, that should be more acceptable.  However, 
-> it's being held up by the need for some bug fixes in Coccinelle.  A 
-> release of Coccinelle is planned for the beginning of April.  Perhaps 
-> it is just as well to just remove this version for now.
-> 
-> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+There's ~150 of these in the kernel.
 
-Applied to kbuild.git#misc.
+Maybe there's use for this conversion to be added
+to?scripts/coccinelle/misc/boolreturn.cocci or in
+a separate file.
 
-Michal
+$ cat booltruefalse.cocci
+@@
+identifier fn;
+expression e;
+typedef bool;
+symbol true;
+symbol false;
+@@
+
+bool fn ( ... )
+{
+<...
+-	if (e) return true; else return false;
++	return e;
+...>
+}
+
+@@
+identifier fn;
+expression e;
+@@
+
+bool fn ( ... )
+{
+<...
+-	if (e) return false; else return true;
++	return !e;
+...>
+}
