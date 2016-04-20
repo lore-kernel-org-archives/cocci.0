@@ -1,96 +1,103 @@
-From: kieranbingham@gmail.com (Kieran Bingham)
-Date: Tue, 19 Apr 2016 22:14:38 +0100
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Wed, 20 Apr 2016 07:17:53 +0200 (CEST)
 Subject: [Cocci] Matching if a function parameter is used at all
-Message-ID: <CAB3z_Rp5FopeSSMM0HC_8eP4wdO7of5onrm+tWioWPBrZq3rQQ@mail.gmail.com>
+In-Reply-To: <CAB3z_Rp5FopeSSMM0HC_8eP4wdO7of5onrm+tWioWPBrZq3rQQ@mail.gmail.com>
+References: <CAB3z_Rp5FopeSSMM0HC_8eP4wdO7of5onrm+tWioWPBrZq3rQQ@mail.gmail.com>
+Message-ID: <alpine.DEB.2.02.1604200717190.2052@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi All,
 
-I would like to match on when a function *doesn't* use a parameter, so that
-those use-cases can be swapped to new function prototype, as an interim -
-leaving code which needs fixing up still compiling successfully.
-To do this, I believe I need to identify the functions that use that
-parameter, and then make the conversion dependant upon that hunk.
 
-I've been trying various combinations of below:
+On Tue, 19 Apr 2016, Kieran Bingham wrote:
 
-======================================
+> Hi All,
+> 
+> I would like to match on when a function *doesn't* use a parameter, so that
+> those use-cases can be swapped to new function prototype, as an interim -
+> leaving code which needs fixing up still compiling successfully.
+> To do this, I believe I need to identify the functions that use that
+> parameter, and then make the conversion dependant upon that hunk.
+> 
+> I've been trying various combinations of below:
+> 
+> ======================================
+> 
+> // Detect if id is used in the probe function
+> 
+> @ probe_id_used depends on driver @
+> identifier driver.probefunc;
+> identifier client;
+> identifier idt;
+> @@
+> static int probefunc( struct i2c_client *client, const struct i2c_device_id
+> *idt)
+> ?{
+> ?...
+> ?idt
+> ?...
+> ?}
+> 
+> //
+> // Then, only if requirements are met, start making adjustments
+> //
+> 
+> // Convert the probe function
+> 
+> @ convert depends on driver && !probe_id_used @
+> identifier driver.probefunc;
+> identifier client;
+> identifier id;
+> @@
+> static int probefunc(
+> ??? struct i2c_client *client
+> -??? , const struct i2c_device_id *id
+> ??? )
+> ??? { ... }
+> ======================================
+> 
+> However, I can't get the probe_id_used to match correctly for the idt
+> identifier. I'd like it to match if it is mentioned at all in the function,
+> but I have also tried mapping a disjunction on known conditionals to no
+> avail:
+> 
+> ======================================
+> // Detect if id is used in the probe function
+> 
+> @ probe_id_used depends on driver @
+> identifier driver.probefunc;
+> identifier client;
+> identifier idt;
+> expression e;
+> statement S;
+> @@
+> static int probefunc( struct i2c_client *client, const struct i2c_device_id
+> *idt)
+> ?{
+> ?...
+> (
+> ? if(idt) S;
+> |
+> ? if (idt) { ... }
+> |
+> ? e = idt->name
+> |
+> ? e = idt->driver_data
+> )
+> ?...
+> ?}
+> ======================================
+> 
+> And that still doesn't match
+> 
+> Is there an easier / correct way to achieve what I'm trying to do ? Or am I
+> missing something obvious?
 
-// Detect if id is used in the probe function
+I think that
 
-@ probe_id_used depends on driver @
-identifier driver.probefunc;
-identifier client;
-identifier idt;
-@@
-static int probefunc( struct i2c_client *client, const struct i2c_device_id
-*idt)
- {
- ...
- idt
- ...
- }
+f(...,T i,...) { ... when != i
+}
 
-//
-// Then, only if requirements are met, start making adjustments
-//
+would do what you want?
 
-// Convert the probe function
-
-@ convert depends on driver && !probe_id_used @
-identifier driver.probefunc;
-identifier client;
-identifier id;
-@@
-static int probefunc(
-    struct i2c_client *client
--    , const struct i2c_device_id *id
-    )
-    { ... }
-======================================
-
-However, I can't get the probe_id_used to match correctly for the idt
-identifier. I'd like it to match if it is mentioned at all in the function,
-but I have also tried mapping a disjunction on known conditionals to no
-avail:
-
-======================================
-// Detect if id is used in the probe function
-
-@ probe_id_used depends on driver @
-identifier driver.probefunc;
-identifier client;
-identifier idt;
-expression e;
-statement S;
-@@
-static int probefunc( struct i2c_client *client, const struct i2c_device_id
-*idt)
- {
- ...
-(
-  if(idt) S;
-|
-  if (idt) { ... }
-|
-  e = idt->name
-|
-  e = idt->driver_data
-)
- ...
- }
-======================================
-
-And that still doesn't match
-
-Is there an easier / correct way to achieve what I'm trying to do ? Or am I
-missing something obvious?
-
---
-Regards
-
-Kieran
--------------- next part --------------
-An HTML attachment was scrubbed...
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20160419/68910dee/attachment.html>
+julia
