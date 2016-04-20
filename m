@@ -1,55 +1,28 @@
-From: joe@perches.com (Joe Perches)
-Date: Wed, 20 Apr 2016 00:25:34 -0700
-Subject: [Cocci] coccinelle: bool if (foo) return true; else return false;
-In-Reply-To: <57172D78.707@redhat.com>
-References: <1460828078-5224-1-git-send-email-dave@stgolabs.net>
- <1460833453.19090.79.camel@perches.com>
- <1460836099.19090.82.camel@perches.com>
- <alpine.DEB.2.02.1604170743060.2068@localhost6.localdomain6>
- <1460881671.19090.90.camel@perches.com>
- <alpine.DEB.2.02.1604171337450.2034@localhost6.localdomain6>
- <1460908959.19090.95.camel@perches.com>
- <alpine.DEB.2.02.1604171944500.2004@localhost6.localdomain6>
- <1460915801.19090.100.camel@perches.com>
- <alpine.DEB.2.02.1604172001410.2004@localhost6.localdomain6>
- <1461093152.1917.26.camel@perches.com>
- <alpine.DEB.2.02.1604192115300.2054@localhost6.localdomain6>
- <57172D78.707@redhat.com>
-Message-ID: <1461137134.1917.48.camel@perches.com>
+From: mmarek@suse.com (Michal Marek)
+Date: Wed, 20 Apr 2016 09:51:46 +0200
+Subject: [Cocci] [PATCH] Coccinelle: setup_timer: Add space in front of
+ parentheses
+In-Reply-To: <alpine.DEB.2.10.1603201325011.2597@hadrien>
+References: <1458451652-5933-1-git-send-email-vaishali.thakkar@oracle.com>
+ <alpine.DEB.2.10.1603201325011.2597@hadrien>
+Message-ID: <57173512.2050903@suse.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, 2016-04-20 at 09:19 +0200, Michael Stefaniuc wrote:
-> On 04/19/2016 09:15 PM, Julia Lawall wrote:
-> > On Tue, 19 Apr 2016, Joe Perches wrote:
-> > > There's ~150 of these in the kernel.
-> > > 
-> > > Maybe there's use for this conversion to be added
-> > > to scripts/coccinelle/misc/boolreturn.cocci or in
-> > > a separate file.
-> > > 
-> > > $ cat booltruefalse.cocci
-> > > @@
-> > > identifier fn;
-> > > expression e;
-> > > typedef bool;
-> > > symbol true;
-> > > symbol false;
-> > > @@
-> > > 
-> > > bool fn ( ... )
-> > > {
-> > > <...
-> > > -	if (e) return true; else return false;
-> > > +	return e;
-> Shouldn't that be:
-> ????return !!e
-> ?
+Dne 20.3.2016 v 13:25 Julia Lawall napsal(a):
+> 
+> 
+> On Sun, 20 Mar 2016, Vaishali Thakkar wrote:
+> 
+>> Add space in front of the offending parentheses to silent the
+>> parse error for older Coccinelle versions. This makes the rule
+>> usable with all Coccinelle versions.
+>>
+>> Reported-by: Nishanth Menon <nm@ti.com>
+>> Signed-off-by: Vaishali Thakkar <vaishali.thakkar@oracle.com>
+> 
+> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
 
-No, it's not necessary.
-The compiler does that because the return type is bool
+Applied to kbuild.git#misc.
 
-6.3.1.2 Boolean type
-
-When any scalar value is converted to _Bool, the result is 0 if the value compares equal
-to 0; otherwise, the result is 1.
+Michal
