@@ -1,7 +1,7 @@
-From: mstefani@redhat.com (Michael Stefaniuc)
-Date: Wed, 20 Apr 2016 09:19:20 +0200
+From: joe@perches.com (Joe Perches)
+Date: Wed, 20 Apr 2016 00:25:34 -0700
 Subject: [Cocci] coccinelle: bool if (foo) return true; else return false;
-In-Reply-To: <alpine.DEB.2.02.1604192115300.2054@localhost6.localdomain6>
+In-Reply-To: <57172D78.707@redhat.com>
 References: <1460828078-5224-1-git-send-email-dave@stgolabs.net>
  <1460833453.19090.79.camel@perches.com>
  <1460836099.19090.82.camel@perches.com>
@@ -14,58 +14,42 @@ References: <1460828078-5224-1-git-send-email-dave@stgolabs.net>
  <alpine.DEB.2.02.1604172001410.2004@localhost6.localdomain6>
  <1461093152.1917.26.camel@perches.com>
  <alpine.DEB.2.02.1604192115300.2054@localhost6.localdomain6>
-Message-ID: <57172D78.707@redhat.com>
+ <57172D78.707@redhat.com>
+Message-ID: <1461137134.1917.48.camel@perches.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 04/19/2016 09:15 PM, Julia Lawall wrote:
-> 
-> 
-> On Tue, 19 Apr 2016, Joe Perches wrote:
-> 
->> There's ~150 of these in the kernel.
->>
->> Maybe there's use for this conversion to be added
->> to scripts/coccinelle/misc/boolreturn.cocci or in
->> a separate file.
->>
->> $ cat booltruefalse.cocci
->> @@
->> identifier fn;
->> expression e;
->> typedef bool;
->> symbol true;
->> symbol false;
->> @@
->>
->> bool fn ( ... )
->> {
->> <...
->> -	if (e) return true; else return false;
->> +	return e;
-Shouldn't that be:
-    return !!e
-?
+On Wed, 2016-04-20 at 09:19 +0200, Michael Stefaniuc wrote:
+> On 04/19/2016 09:15 PM, Julia Lawall wrote:
+> > On Tue, 19 Apr 2016, Joe Perches wrote:
+> > > There's ~150 of these in the kernel.
+> > > 
+> > > Maybe there's use for this conversion to be added
+> > > to scripts/coccinelle/misc/boolreturn.cocci or in
+> > > a separate file.
+> > > 
+> > > $ cat booltruefalse.cocci
+> > > @@
+> > > identifier fn;
+> > > expression e;
+> > > typedef bool;
+> > > symbol true;
+> > > symbol false;
+> > > @@
+> > > 
+> > > bool fn ( ... )
+> > > {
+> > > <...
+> > > -	if (e) return true; else return false;
+> > > +	return e;
+> Shouldn't that be:
+> ????return !!e
+> ?
 
+No, it's not necessary.
+The compiler does that because the return type is bool
 
->> ...>
->> }
->>
->> @@
->> identifier fn;
->> expression e;
->> @@
->>
->> bool fn ( ... )
->> {
->> <...
->> -	if (e) return false; else return true;
->> +	return !e;
->> ...>
->> }
-> 
-> Thanks for the suggestion.  I will take care of it shortly.
+6.3.1.2 Boolean type
 
-
-bye
-	michael
+When any scalar value is converted to _Bool, the result is 0 if the value compares equal
+to 0; otherwise, the result is 1.
