@@ -1,122 +1,41 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 20 Apr 2016 19:07:27 +0200 (CEST)
-Subject: [Cocci] Dependencies between spatch hunks
-In-Reply-To: <CAB3z_RqnG46pYiFaFpFPzUHxHcnck9jtGTPgF7TJgwe+K8n7dg@mail.gmail.com>
-References: <571787F0.7050200@gmail.com>
- <alpine.DEB.2.10.1604201749590.3089@hadrien> <5717ADB2.1050403@gmail.com>
- <alpine.DEB.2.10.1604201827090.3089@hadrien>
- <CAB3z_RqnG46pYiFaFpFPzUHxHcnck9jtGTPgF7TJgwe+K8n7dg@mail.gmail.com>
-Message-ID: <alpine.DEB.2.10.1604201904200.3089@hadrien>
+From: mcgrof@kernel.org (Luis R. Rodriguez)
+Date: Wed, 20 Apr 2016 19:03:36 +0100
+Subject: [Cocci] Splitting a function in two with SmPL
+Message-ID: <CAB=NE6XnxL_xMXKZYQtcqWdSmnfAtg2-MhXz5TcgR9a=TmEf6A@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Is there a way to split a function in 2 with SmPL? For example, let's
+say I've created a helper routine which accepts a callback to be set,
+it will then use the callback. The code that goes into the callback
+will be the code you had below an old API call.
 
+For instance I'm writing a new firmware API for the kernel and I'd
+like to help developers to do conversion by supplying a transformation
+set of SmPL rules for them, so their work is minimized, and so the
+changes on the API can also more easily be understood. The firmware
+API has to types of calls, async and sync calls, for the async
+functionality I believe I have a good solution already given that a
+callback is always expected so we can re-use that. For sync mechanism
+the old firmware API never required one, but I'd like to do that now.
+I do this to help the API do more work for the users, to help avoid
+bugs. This borrows some ideas from the devm functionality, so for
+instance it does the free'ing of the firmware for you now.
 
-On Wed, 20 Apr 2016, Kieran Bingham wrote:
+So for instance, this works really well, but it does not let me move a
+section of statements below the old API to a new routine. I take it,
+that this would probably be hard to do as Coccinelle would need to
+somehow figure out on its own all the required declarations it may
+need. Since a human can do it, I'm confident we can figure this out,
+however I'd like to know if this is a known limitation or if I can get
+this to work as-is already with the engine.
 
->
->
-> On 20 Apr 2016 17:31, "Julia Lawall" <julia.lawall@lip6.fr> wrote:
-> >
-> >
-> >
-> > On Wed, 20 Apr 2016, Kieran Bingham wrote:
-> >
-> > > On 20/04/16 16:53, Julia Lawall wrote:
-> > > >
-> > > > On Wed, 20 Apr 2016, Kieran Bingham wrote:
-> > > >
-> > > >> Hi all,
-> > > >>
-> > > >> I am finding that a rule which matches a part of code, sometimes
-> causes
-> > > >> hunks which depend on it to act, and sometimes not to act
-> > > >>
-> > > >> My spatch is successfully removing and converting hunks that I desire
-> > > >> changed, however the requirement became apparent *to not process the
-> > > >> file at all* if the variable is used in the probe function, so I
-> added
-> > > >> in a dependency on probe_id_unused (established in my previous mail
-> thread).
-> > > >
-> > > > I'll check on the rest shortly, but if you really want to not process
-> the
-> > > > file at all, just look for the condition in which that is the case,
-> and
-> > > > then write a python rule that depends on it, and run Cocci.exit() (not
-> > > > sure about the exact syntax - writing an ocaml rule and putting
-> > > > Coccilib.exit() will also work).
-> > >
-> > >
-> > > Thanks Julia,
-> > >
-> > > The following worked for my needs:
-> > >
-> > > @ script:python depends on driver && !probe_id_unused @
-> > > @@
-> > > print("Probe function uses the ID parameter")
-> > > cocci.exit()
-> > >
-> > > However, interestingly - it's not useful if I specify a minimal set of
-> > > files on the command line:
-> > >
-> > > Using the command:
-> > > spatch --linux-spacing --sp-file patches/i2c-dt.cocci $A $B $C $D
-> > > HANDLING: sound/soc/codecs/wm8737.c drivers/staging/iio/light/isl29018.c
-> > > drivers/gpio/gpio-pca953x.c ./drivers/rtc/rtc-ds1307.c
-> > > Probe function uses the ID parameter
-> > > kbingham at CookieMonster:/opt/projects/linux/kbuild-bbb/sources/linux$
-> > >
-> > > appears to stop at the first file (which is expected to stop) without
-> > > processing the next files.
-> > >
-> > > However, simply using the '.' target - does appear to iterate through
-> > > the entire sources successfully, parsing files it can, and stopping on
-> > > files that it should stop on.
-> >
-> > Putting multiple files on the command line is not the right way to process
-> > multiple files.? What that means is to process those files all at once.
-> > Normally Coccinelle processes only one file at a time, which means that
-> > when there is a call from a function in one file to a function in another,
-> > it won't find the definition of the called function.? If you put multiple
-> > files on the command line, it will see them all at once.? The downside
-> > though is that Coccinelle will ultimately run more slowly, because it will
-> > be using a lot more memory at a given time.
-> >
-> > If you have a directory where you want to process only some of the files,
-> > you can use the --file-groups <file> option.? <file> could be eg
-> >
-> > path/foo.c
-> > path/bar.c
-> >
-> > path/xyz.c
-> >
-> > Then foo.c and bar.c will be processed at once, and xyz.c will be
-> > processed separately.
-> >
-> > But it could be easier to just work on the whole directory and let
-> > Coccinelle to fail to do anything with most of the files.
->
-> Ah I see.? I bet that explains my other dependency issue as well.? It was
-> probably matching state from other processed files in the same processing
-> group.
->
-> I had been specifying a group of files to make sure the right thing was
-> being done in the processing. In the whole tree about 250 files match so I
-> was trying to reduce the set to verify.?
->
-> It looks like the act of me trying to reduce the set changed the processing
-> though ;-)
->
-> I guess I could create a single folder with the reduced set in, but it looks
-> like its doing the right thing now with the exit ()
+Here's the rule I have so far:
 
-You may find it useful to use glimpse or id-utils to index your files.  In
-coccinelle/scripts there are idutils_index.sh and glimpseindex_cocci.sh,
-respectively.  The you can use --use-glimpse or --use-idutils, and it will
-go directly to the files that contain the important keywords of your
-semantic patch.  Not parsing the other files will be a big savings.  The
-downside of course is that you have to redo the index every time your code
-base changes.
+http://drvbp1.linux-foundation.org/~mcgrof/2016/04/20/convert-sysdata-sync-v1.cocci
 
-julia
+It works but that's because I haven't tried / figured out how to lift
+the statement S1 out from f() and into the new sync_found_cb() I'm
+adding.
+
+  Luis
