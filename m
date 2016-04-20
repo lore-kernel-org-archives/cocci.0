@@ -1,140 +1,77 @@
 From: kieranbingham@gmail.com (Kieran Bingham)
-Date: Wed, 20 Apr 2016 13:42:19 +0100
-Subject: [Cocci] Matching if a function parameter is used at all
-In-Reply-To: <alpine.DEB.2.02.1604200717190.2052@localhost6.localdomain6>
-References: <CAB3z_Rp5FopeSSMM0HC_8eP4wdO7of5onrm+tWioWPBrZq3rQQ@mail.gmail.com>
- <alpine.DEB.2.02.1604200717190.2052@localhost6.localdomain6>
-Message-ID: <CAB3z_RparJ7Dkj9ah=tz0E1BYPf+hOHq9cwXbXvpkqfVUR+E0g@mail.gmail.com>
+Date: Wed, 20 Apr 2016 14:45:20 +0100
+Subject: [Cocci] Dependencies between spatch hunks
+Message-ID: <571787F0.7050200@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 20 April 2016 at 06:17, Julia Lawall <julia.lawall@lip6.fr> wrote:
+Hi all,
 
->
-> On Tue, 19 Apr 2016, Kieran Bingham wrote:
->
-> > Hi All,
-> >
-> > I would like to match on when a function *doesn't* use a parameter, so
-> that
-> > those use-cases can be swapped to new function prototype, as an interim -
-> > leaving code which needs fixing up still compiling successfully.
-> > To do this, I believe I need to identify the functions that use that
-> > parameter, and then make the conversion dependant upon that hunk.
-> >
-> > I've been trying various combinations of below:
-> >
-> > ======================================
-> >
-> > // Detect if id is used in the probe function
-> >
-> > @ probe_id_used depends on driver @
-> > identifier driver.probefunc;
-> > identifier client;
-> > identifier idt;
-> > @@
-> > static int probefunc( struct i2c_client *client, const struct
-> i2c_device_id
-> > *idt)
-> >  {
-> >  ...
-> >  idt
-> >  ...
-> >  }
-> >
-> > //
-> > // Then, only if requirements are met, start making adjustments
-> > //
-> >
-> > // Convert the probe function
-> >
-> > @ convert depends on driver && !probe_id_used @
-> > identifier driver.probefunc;
-> > identifier client;
-> > identifier id;
-> > @@
-> > static int probefunc(
-> >     struct i2c_client *client
-> > -    , const struct i2c_device_id *id
-> >     )
-> >     { ... }
-> > ======================================
-> >
-> > However, I can't get the probe_id_used to match correctly for the idt
-> > identifier. I'd like it to match if it is mentioned at all in the
-> function,
-> > but I have also tried mapping a disjunction on known conditionals to no
-> > avail:
-> >
-> > ======================================
-> > // Detect if id is used in the probe function
-> >
-> > @ probe_id_used depends on driver @
-> > identifier driver.probefunc;
-> > identifier client;
-> > identifier idt;
-> > expression e;
-> > statement S;
-> > @@
-> > static int probefunc( struct i2c_client *client, const struct
-> i2c_device_id
-> > *idt)
-> >  {
-> >  ...
-> > (
-> >   if(idt) S;
-> > |
-> >   if (idt) { ... }
-> > |
-> >   e = idt->name
-> > |
-> >   e = idt->driver_data
-> > )
-> >  ...
-> >  }
-> > ======================================
-> >
-> > And that still doesn't match
-> >
-> > Is there an easier / correct way to achieve what I'm trying to do ? Or
-> am I
-> > missing something obvious?
->
-> I think that
->
-> f(...,T i,...) { ... when != i
-> }
->
-> would do what you want?
->
+I am finding that a rule which matches a part of code, sometimes causes
+hunks which depend on it to act, and sometimes not to act
 
-Aha - yes, I believe this did match as I needed, with the hunk renamed for
-the inversion
+My spatch is successfully removing and converting hunks that I desire
+changed, however the requirement became apparent *to not process the
+file at all* if the variable is used in the probe function, so I added
+in a dependency on probe_id_unused (established in my previous mail thread).
 
-// Detect if id is used in the probe function
+Therefore, I would expect to be able to set the 'depends on' to be on
+'probe_id_unused' for each of the actions, and have actions only taken
+if the full dependency chain (C4->C1 below) is met.
 
-@ probe_id_unused depends on driver @
-identifier driver.probefunc;
-identifier client;
-identifier idt;
-@@
-static int probefunc( struct i2c_client *client, const struct i2c_device_id
-*idt)
- {
- ...
- when != idt
- }
+However, I get a non-consistent application of this, where some hunks
+operate when (I believe) they shouldn't:
 
-but I think I now understand that the root of my issue as being something
-different. It looks like I had got the match working in other ways but the
-depends chain wasn't working.
-Your version is cleaner though - so thank-you for that!
+My full spatch for reference, is at:
 
-I will post a new thread for the depends issue, as I think that is separate
+https://gist.github.com/kbingham/96477177dd20a72b1c2f
+
+In essence, it does the following {C}hecks:
+C1 - of_dev_id_present : Check for a struct of_device_id
+C2 - dev_id : Check for a struct i2c_device_id
+C3 - driver : Check and identify the probefunc in the driver structure
+C4 - probe_id_unused : Establish if the id is used in the probe function
+
+Where C4 depends on C3 depends on C2 depends on C1
+
+The aim is that if all of the above checks/identifiers are met, it will
+take the following actions:
+A rewrite the probe function declaration
+B re-point the function pointer in the driver structure
+C remove the i2c_device_id reference
+D remove the i2c_device_id array
+E remove the MODULE_DEVICE_TABLE macro
+
+For this example, I'll take three files from the kernel source, all of
+which meet conditions C1 - > C3 (but only F3 meets C4):
+
+F1: drivers/gpio/gpio-pca953x.c  : probe id used ( ! C4 )
+F2: drivers/staging/iio/light/isl29018.c : probe id used ( ! C4 )
+F3: sound/soc/codecs/wm8737.c : probe id UNUSED ( C4 )
+
+If all the actions (A->E) start with @ depends on driver @ (to depend on
+C3) all the actions complete on these files. (Shown in sequence in the c
+file)
+
+F1 : D E A B C
+F2 : A D E B C
+F3 : A D E B C
+
+However, if all the actions depend on @ depends on probe_id_unused @
+(depends on C4), Some actions complete, and some do not!
+
+F1 : D E C       (Unexpected behaviour - I expect F1 : <no change>)
+F2 : D E C       (Unexpected behaviour - I expect F2 : <no change>)
+F3 : A D E B C   (Expected behaviour)
+
+So of course, I want actions D E and C to *not* complete on F1 and F2,
+but I can't understand why they do not comply with their 'depends'
+chain. Am I looking at a bug in Coccinelle here or a bug with my
+interpretation of the depends keyword?
+
+Sorry for the long mail, and look forward to any ideas!
+
 --
 Regards
 
 Kieran
--------------- next part --------------
-An HTML attachment was scrubbed...
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20160420/e678b653/attachment.html>
