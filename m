@@ -1,38 +1,61 @@
 From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Thu,  5 May 2016 13:03:41 -0700
-Subject: [Cocci] [PATCH 2/5] pycocci: add git branch support to git library
+Date: Thu,  5 May 2016 13:03:42 -0700
+Subject: [Cocci] [PATCH 3/5] pycocci: skip proof if git dir is dirty
 In-Reply-To: <1462478624-25117-1-git-send-email-mcgrof@kernel.org>
 References: <1462478624-25117-1-git-send-email-mcgrof@kernel.org>
-Message-ID: <1462478624-25117-3-git-send-email-mcgrof@kernel.org>
+Message-ID: <1462478624-25117-4-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-This will be used later on an new command for pycocci.
+SmPL <=> Patch equivalence proof support requires your
+git tree to be clean, if it is dirty it will fail. To
+avoid confusing users complain if their tree is dirty.
+
+You will either need commit any local pending changes
+or discard them before proceeding with SmPL <=> Patch
+equivalence proof support.
+
+Extend documentation for this.
 
 Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
 ---
- tools/pycocci | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ docs/pycocci.1 | 3 +++
+ tools/pycocci  | 9 +++++++++
+ 2 files changed, 12 insertions(+)
 
+diff --git a/docs/pycocci.1 b/docs/pycocci.1
+index 63df731fdf46..e7f6b072589c 100644
+--- a/docs/pycocci.1
++++ b/docs/pycocci.1
+@@ -201,6 +201,9 @@ will set the tree back to the master branch. Each run of \fBpycocci --show-proof
+ will create two new git branches. 8 random characters are postixed to each new
+ git branch created to avoid conflicts with previous runs.
+ 
++You must run this option with a clean git tree, if you have any pending changes
++you must commit them or discard them.
++
+ .SH AUTHOR
+ \fBpycocci\fP and this man page was written by Luis R. Rodriguez <mcgrof@do-not-panic.com>
+ 
 diff --git a/tools/pycocci b/tools/pycocci
-index a7b0f69b25f0..b53bcb778be2 100755
+index b53bcb778be2..4bcfb46af24b 100755
 --- a/tools/pycocci
 +++ b/tools/pycocci
-@@ -276,6 +276,15 @@ def git_checkout(tree=None, extra_args=None):
-     process.wait()
-     _check(process)
- 
-+def git_branch(tree=None, extra_args=None):
-+    cmd = ['git', 'branch' ] + extra_args
-+    process = subprocess.Popen(cmd,
-+                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-+                               close_fds=True, universal_newlines=True, cwd=tree)
-+    stdout = process.communicate()[0]
-+    process.wait()
-+    _check(process)
-+
- def git_commit_all(message, tree=None):
-     git_add('.', tree=tree)
-     process = subprocess.Popen(['git', 'commit', '--allow-empty', '-a', '-m', message],
+@@ -575,6 +575,15 @@ def _main():
+             logwrite("Path (%s) not part of a git tree, creating one for you...\n" % (args.target_dir))
+             git_init(tree=args.target_dir)
+             git_commit_all(tree=args.target_dir, message="Initial commit")
++        else:
++            diff_stat = git_diff(tree=args.target_dir, extra_args = [ '--stat' ] )
++            if len(diff_stat) != 0:
++                logwrite("SmPL <--> Patch proof equivalence requires a "
++                         "clean tree.\nYou have a dirty tree with "
++                         "uncommitted changes:\n\n")
++                logwrite(diff_stat)
++                logwrite("\nEither commit these changes, or stash them away somewhere\n")
++                return -2
+         cmd = [ '--abbrev-ref', 'HEAD' ]
+         current_branch = git_rev_parse(tree=args.target_dir, extra_args = cmd)
+         logwrite("\n")
 -- 
 2.7.2
