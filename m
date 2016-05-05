@@ -1,34 +1,49 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Thu, 5 May 2016 13:10:20 +0200
-Subject: [Cocci] [RFC 0/2] coccinelle: extend test coverage
-In-Reply-To: <1462426254-22633-1-git-send-email-mcgrof@kernel.org>
-References: <1462426254-22633-1-git-send-email-mcgrof@kernel.org>
-Message-ID: <f862ba3d-f3f2-6e58-ad51-7e1840c48af3@users.sourceforge.net>
+From: mcgrof@kernel.org (Luis R. Rodriguez)
+Date: Thu,  5 May 2016 13:03:40 -0700
+Subject: [Cocci] [PATCH 1/5] pycocci: use os.path.abspath() for gitname
+In-Reply-To: <1462478624-25117-1-git-send-email-mcgrof@kernel.org>
+References: <1462478624-25117-1-git-send-email-mcgrof@kernel.org>
+Message-ID: <1462478624-25117-2-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> I wanted to extend tests coverage for coccinelle but noticed
-> that tests are limited to single c file, these are attached
-> to respective .res files, but this also means that you have
-> a direct relationship and requirement between tests from
-> a single C file and a respective cocci file.
+gitname() is currently used for SmPL <=> Patch
+equivalence proof support. It uses git to test
+for proofs and also show any differences found.
+If the target directory passed where the user
+wishes to do work on has is not part of a git
+tree, it creates a git tree for you there.
 
-Do you imagine to measure test coverage with any advanced techniques?
+When using relative paths the check for if a
+target directory is part of a git tree currently
+always fails, the consequences of which are that
+if you try to show proof on an existing git tree
+you'll end up with a sub-git project, and as such
+a new .git under some directory under your target
+path.
 
+Correct this by using absolute paths.
 
-> To go wild we want to be able to support really complex
-> types of examples.
+Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
+---
+ tools/pycocci | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Is there any kind of target conflict between nice software
-demonstrations and the desire for better test procedures?
-
-
-> We can easily take advantage of this to extend Coccinelle test cases
-> way beyond a single C file, but to more complex real life
-> style projects.
-
-How much would you like to improve the automatic checking
-of generated patches?
-
-Regards,
-Markus
+diff --git a/tools/pycocci b/tools/pycocci
+index 43bb9a4dd412..a7b0f69b25f0 100755
+--- a/tools/pycocci
++++ b/tools/pycocci
+@@ -246,9 +246,10 @@ def git_rev_parse(tree=None, extra_args=None):
+     return stdout.split('\n', 1)[0]
+ 
+ def gitname(path=None):
++    path = os.path.abspath(path)
+     work_dir = path
+     if not os.path.isdir(path):
+-        work_dir = os.path.dirname(path)
++        work_dir = os.path.abspath(os.path.dirname(path))
+     process = subprocess.Popen(['git', 'rev-parse', '--show-toplevel', path],
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                close_fds=True, universal_newlines=True, cwd=work_dir)
+-- 
+2.7.2
