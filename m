@@ -1,61 +1,141 @@
 From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Thu,  5 May 2016 13:03:42 -0700
-Subject: [Cocci] [PATCH 3/5] pycocci: skip proof if git dir is dirty
+Date: Thu,  5 May 2016 13:03:44 -0700
+Subject: [Cocci] [PATCH 5/5] pycocci: enable SmPL <=> Patch equivalence tests
 In-Reply-To: <1462478624-25117-1-git-send-email-mcgrof@kernel.org>
 References: <1462478624-25117-1-git-send-email-mcgrof@kernel.org>
-Message-ID: <1462478624-25117-4-git-send-email-mcgrof@kernel.org>
+Message-ID: <1462478624-25117-6-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-SmPL <=> Patch equivalence proof support requires your
-git tree to be clean, if it is dirty it will fail. To
-avoid confusing users complain if their tree is dirty.
+Coccinelle has integrated tests support into it, these
+tests are performed really fast, the current test framework
+enables testing with respective single C file and a respective
+cocci file, ie: foo.c, foo.cocci, foo.res. If one wants to add
+extensive tests, to reflect more real-life sized projects the
+current test scheme is a bit limited.
 
-You will either need commit any local pending changes
-or discard them before proceeding with SmPL <=> Patch
-equivalence proof support.
+We can extend Coccinelle's existing test framework to support
+multiple files, header files, but a different can also consist
+of making use of SmPL <=> Patch equivalence support. Instead of
+relying on .res files, this relies on patches that provide
+a outline of differences using standard diff. This enables
+extending test coverage to more complex cases. This is not
+meant to replace Coccinelle's internal test functionality but
+rather complement it.
 
-Extend documentation for this.
+For now, since I can't figure out how to only remove from
+the reflog the temporary branch creation stuff without expiring
+your entire relog immediately, just keep the pycocci-check
+separate from the standard tests. If we're happy to have a
+chatty reflog when testing we can later enable this by
+default, but this just doesn't seem appropriate as a default
+setting.
 
 Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
 ---
- docs/pycocci.1 | 3 +++
- tools/pycocci  | 9 +++++++++
- 2 files changed, 12 insertions(+)
+ Makefile                                               |  3 +++
+ scripts/pycocci-check.sh                               |  8 ++++++++
+ tests/pycocci/code/0001-proto3/proto3.c                |  7 +++++++
+ tests/pycocci/code/0001-proto3/proto3.h                |  3 +++
+ tests/pycocci/patches/0001-proto3.cocci                | 11 +++++++++++
+ .../patches/0001-proto3/0001-change-prototypes.patch   | 18 ++++++++++++++++++
+ 6 files changed, 50 insertions(+)
+ create mode 100755 scripts/pycocci-check.sh
+ create mode 100644 tests/pycocci/code/0001-proto3/proto3.c
+ create mode 100644 tests/pycocci/code/0001-proto3/proto3.h
+ create mode 100644 tests/pycocci/patches/0001-proto3.cocci
+ create mode 100644 tests/pycocci/patches/0001-proto3/0001-change-prototypes.patch
 
-diff --git a/docs/pycocci.1 b/docs/pycocci.1
-index 63df731fdf46..e7f6b072589c 100644
---- a/docs/pycocci.1
-+++ b/docs/pycocci.1
-@@ -201,6 +201,9 @@ will set the tree back to the master branch. Each run of \fBpycocci --show-proof
- will create two new git branches. 8 random characters are postixed to each new
- git branch created to avoid conflicts with previous runs.
+diff --git a/Makefile b/Makefile
+index a98eefd2d83b..364e1cc68154 100644
+--- a/Makefile
++++ b/Makefile
+@@ -489,6 +489,9 @@ check: scripts/spatch
+ 	@$(ECHO) running the test suite
+ 	COCCINELLE_HOME="$$(pwd)" ./scripts/spatch --testall --no-update-score-file
  
-+You must run this option with a clean git tree, if you have any pending changes
-+you must commit them or discard them.
++pycocci-check:
++	COCCINELLE_HOME="$$(pwd)" ./scripts/pycocci-check.sh
 +
- .SH AUTHOR
- \fBpycocci\fP and this man page was written by Luis R. Rodriguez <mcgrof@do-not-panic.com>
- 
-diff --git a/tools/pycocci b/tools/pycocci
-index b53bcb778be2..4bcfb46af24b 100755
---- a/tools/pycocci
-+++ b/tools/pycocci
-@@ -575,6 +575,15 @@ def _main():
-             logwrite("Path (%s) not part of a git tree, creating one for you...\n" % (args.target_dir))
-             git_init(tree=args.target_dir)
-             git_commit_all(tree=args.target_dir, message="Initial commit")
-+        else:
-+            diff_stat = git_diff(tree=args.target_dir, extra_args = [ '--stat' ] )
-+            if len(diff_stat) != 0:
-+                logwrite("SmPL <--> Patch proof equivalence requires a "
-+                         "clean tree.\nYou have a dirty tree with "
-+                         "uncommitted changes:\n\n")
-+                logwrite(diff_stat)
-+                logwrite("\nEither commit these changes, or stash them away somewhere\n")
-+                return -2
-         cmd = [ '--abbrev-ref', 'HEAD' ]
-         current_branch = git_rev_parse(tree=args.target_dir, extra_args = cmd)
-         logwrite("\n")
+ # -inline 0  to see all the functions in the profile.
+ # Can also use the profile framework in commons/ and run your program
+ # with -profile.
+diff --git a/scripts/pycocci-check.sh b/scripts/pycocci-check.sh
+new file mode 100755
+index 000000000000..ca81ca9cb156
+--- /dev/null
++++ b/scripts/pycocci-check.sh
+@@ -0,0 +1,8 @@
++#!/bin/bash
++set -e
++
++for i in tests/pycocci/patches/*.cocci; do
++	TEST=${i%%.cocci}
++	CODE_TEST=tests/pycocci/code/$(basename $TEST)
++	./tools/pycocci --clean-proof $i $CODE_TEST
++done
+diff --git a/tests/pycocci/code/0001-proto3/proto3.c b/tests/pycocci/code/0001-proto3/proto3.c
+new file mode 100644
+index 000000000000..db3818afd5da
+--- /dev/null
++++ b/tests/pycocci/code/0001-proto3/proto3.c
+@@ -0,0 +1,7 @@
++#include "proto3.h"
++
++static void bch_sched_event(struct BCState *bcs, int event)
++{
++	bcs->event |= 1 << event;
++	schedule_work(&bcs->work);
++}
+diff --git a/tests/pycocci/code/0001-proto3/proto3.h b/tests/pycocci/code/0001-proto3/proto3.h
+new file mode 100644
+index 000000000000..d4365e8c890e
+--- /dev/null
++++ b/tests/pycocci/code/0001-proto3/proto3.h
+@@ -0,0 +1,3 @@
++void bch_l2l1(struct PStack *st, int pr, void *arg);
++void bch_sched_event(struct BCState *bcs, int event);
++void bch_empty_fifo(struct BCState *bcs, int count);
+diff --git a/tests/pycocci/patches/0001-proto3.cocci b/tests/pycocci/patches/0001-proto3.cocci
+new file mode 100644
+index 000000000000..d81678ef6d6e
+--- /dev/null
++++ b/tests/pycocci/patches/0001-proto3.cocci
+@@ -0,0 +1,11 @@
++@@
++identifier fn2;
++identifier bcs, ev;
++@@
++
++- fn2(struct BCState *bcs, int ev) {
+++ fn2(int ev) {
++   ...
++   bcs->event |= 1 << ev;
++   schedule_work(&bcs->work);
++ }
+diff --git a/tests/pycocci/patches/0001-proto3/0001-change-prototypes.patch b/tests/pycocci/patches/0001-proto3/0001-change-prototypes.patch
+new file mode 100644
+index 000000000000..e5b504e0acbb
+--- /dev/null
++++ b/tests/pycocci/patches/0001-proto3/0001-change-prototypes.patch
+@@ -0,0 +1,18 @@
++--- a/proto3.c
+++++ b/proto3.c
++@@ -1,7 +1,6 @@
++ #include "proto3.h"
++ 
++-static void bch_sched_event(struct BCState *bcs, int event)
++-{
+++static void bch_sched_event(int event) {
++ 	bcs->event |= 1 << event;
++ 	schedule_work(&bcs->work);
++ }
++--- a/proto3.h
+++++ b/proto3.h
++@@ -1,3 +1,3 @@
++ void bch_l2l1(struct PStack *st, int pr, void *arg);
++-void bch_sched_event(struct BCState *bcs, int event);
+++void bch_sched_event(int event);
++ void bch_empty_fifo(struct BCState *bcs, int count);
 -- 
 2.7.2
