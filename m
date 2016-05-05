@@ -1,49 +1,45 @@
 From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Thu,  5 May 2016 13:03:40 -0700
-Subject: [Cocci] [PATCH 1/5] pycocci: use os.path.abspath() for gitname
-In-Reply-To: <1462478624-25117-1-git-send-email-mcgrof@kernel.org>
-References: <1462478624-25117-1-git-send-email-mcgrof@kernel.org>
-Message-ID: <1462478624-25117-2-git-send-email-mcgrof@kernel.org>
+Date: Thu,  5 May 2016 13:03:39 -0700
+Subject: [Cocci] [PATCH 0/5] coccinelle: extend testing with check-pycocci
+Message-ID: <1462478624-25117-1-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-gitname() is currently used for SmPL <=> Patch
-equivalence proof support. It uses git to test
-for proofs and also show any differences found.
-If the target directory passed where the user
-wishes to do work on has is not part of a git
-tree, it creates a git tree for you there.
+Coccinelle has its own test framework built-in to spatch, this
+is used to test against small tests cases written in tests/*.c
+with their respective tests/*.cocci and tests/*.res file. This
+is however a bit limited as it only handles single C file. In
+real world projects where more files are used we need to support
+testing against larger series of file structures.
 
-When using relative paths the check for if a
-target directory is part of a git tree currently
-always fails, the consequences of which are that
-if you try to show proof on an existing git tree
-you'll end up with a sub-git project, and as such
-a new .git under some directory under your target
-path.
+pycocci already had SmPL <=> Patch equivalence support, we can
+leverage this to extend testing in a more generic fashion. This
+does that work.
 
-Correct this by using absolute paths.
+For now, we disable pycocci-tests given we touch your git tree
+for these tests.
 
-Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
----
- tools/pycocci | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Luis R. Rodriguez (5):
+  pycocci: use os.path.abspath() for gitname
+  pycocci: add git branch support to git library
+  pycocci: skip proof if git dir is dirty
+  pycocci: add clean version of SmPL <=> Patch equivalence proof support
+  pycocci: enable SmPL <=> Patch equivalence tests
 
-diff --git a/tools/pycocci b/tools/pycocci
-index 43bb9a4dd412..a7b0f69b25f0 100755
---- a/tools/pycocci
-+++ b/tools/pycocci
-@@ -246,9 +246,10 @@ def git_rev_parse(tree=None, extra_args=None):
-     return stdout.split('\n', 1)[0]
- 
- def gitname(path=None):
-+    path = os.path.abspath(path)
-     work_dir = path
-     if not os.path.isdir(path):
--        work_dir = os.path.dirname(path)
-+        work_dir = os.path.abspath(os.path.dirname(path))
-     process = subprocess.Popen(['git', 'rev-parse', '--show-toplevel', path],
-                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                close_fds=True, universal_newlines=True, cwd=work_dir)
+ Makefile                                           |  3 +
+ docs/pycocci.1                                     | 24 +++++-
+ scripts/pycocci-check.sh                           |  8 ++
+ tests/pycocci/code/0001-proto3/proto3.c            |  7 ++
+ tests/pycocci/code/0001-proto3/proto3.h            |  3 +
+ tests/pycocci/patches/0001-proto3.cocci            | 11 +++
+ .../0001-proto3/0001-change-prototypes.patch       | 18 +++++
+ tools/pycocci                                      | 89 ++++++++++++++++------
+ 8 files changed, 140 insertions(+), 23 deletions(-)
+ create mode 100755 scripts/pycocci-check.sh
+ create mode 100644 tests/pycocci/code/0001-proto3/proto3.c
+ create mode 100644 tests/pycocci/code/0001-proto3/proto3.h
+ create mode 100644 tests/pycocci/patches/0001-proto3.cocci
+ create mode 100644 tests/pycocci/patches/0001-proto3/0001-change-prototypes.patch
+
 -- 
 2.7.2
