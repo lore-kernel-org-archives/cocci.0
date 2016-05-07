@@ -1,18 +1,18 @@
-From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Fri, 6 May 2016 16:26:47 -0700
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sat, 7 May 2016 12:49:02 +0200
 Subject: [Cocci] Out of tree instrumentation with coccinelle demo
-Message-ID: <CAB=NE6XrFxvTJrJVVLvT-4ii-UU-tgAqB=AgzgFH20prR1DoUA@mail.gmail.com>
+In-Reply-To: <CAB=NE6XrFxvTJrJVVLvT-4ii-UU-tgAqB=AgzgFH20prR1DoUA@mail.gmail.com>
+References: <CAB=NE6XrFxvTJrJVVLvT-4ii-UU-tgAqB=AgzgFH20prR1DoUA@mail.gmail.com>
+Message-ID: <94e11fff-d10c-91ce-93fc-e25702bbcedb@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Julia and I had discussed the possibility to instrument Linux code as
-an alternative to complex debugging strategies (lockdep is one) that
-often may be frowned upon due to how intrusive some changes may be or
-how much extra stuff would be needed upstream. It has been hard to
-explain the idea to folks who might make some use of it so I've gone
-ahead and created a demo tree for userspace code that shows some basic
-instrumentation ideas. You can fetch it here:
+> You can fetch it here:
+> https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/cocci-tact.git
 
-https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/cocci-tact.git
+* Can any source files be also reviewed by a web interface?
 
-  Luis
+* Under which addresses would you like to discuss the suggested software developments?
+
+Regards,
+Markus
