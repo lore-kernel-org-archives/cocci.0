@@ -1,193 +1,258 @@
-From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Sun, 8 May 2016 21:23:03 +0200
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sun, 8 May 2016 21:51:43 +0200 (CEST)
 Subject: [Cocci] Out of tree instrumentation with coccinelle demo
-In-Reply-To: <572F27FF.7040301@oracle.com>
+In-Reply-To: <20160508192303.GB14141@wotan.suse.de>
 References: <CAB=NE6XrFxvTJrJVVLvT-4ii-UU-tgAqB=AgzgFH20prR1DoUA@mail.gmail.com>
- <572F27FF.7040301@oracle.com>
-Message-ID: <20160508192303.GB14141@wotan.suse.de>
+ <572F27FF.7040301@oracle.com> <20160508192303.GB14141@wotan.suse.de>
+Message-ID: <alpine.DEB.2.02.1605082133430.2237@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, May 08, 2016 at 07:50:23AM -0400, Sasha Levin wrote:
-> On 05/06/2016 07:26 PM, Luis R. Rodriguez wrote:
-> > Julia and I had discussed the possibility to instrument Linux code as
-> > an alternative to complex debugging strategies (lockdep is one) that
-> > often may be frowned upon due to how intrusive some changes may be or
-> > how much extra stuff would be needed upstream. It has been hard to
-> > explain the idea to folks who might make some use of it so I've gone
-> > ahead and created a demo tree for userspace code that shows some basic
-> > instrumentation ideas. You can fetch it here:
+
+
+On Sun, 8 May 2016, Luis R. Rodriguez wrote:
+
+> On Sun, May 08, 2016 at 07:50:23AM -0400, Sasha Levin wrote:
+> > On 05/06/2016 07:26 PM, Luis R. Rodriguez wrote:
+> > > Julia and I had discussed the possibility to instrument Linux code as
+> > > an alternative to complex debugging strategies (lockdep is one) that
+> > > often may be frowned upon due to how intrusive some changes may be or
+> > > how much extra stuff would be needed upstream. It has been hard to
+> > > explain the idea to folks who might make some use of it so I've gone
+> > > ahead and created a demo tree for userspace code that shows some basic
+> > > instrumentation ideas. You can fetch it here:
+> > > 
+> > > https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/cocci-tact.git
 > > 
-> > https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/cocci-tact.git
+> > Thanks Luis! I haven't reviewed it yet, just Cc'ing Quentin and Vegard
+> > who are also working on the lock poisoning patchset.
 > 
-> Thanks Luis! I haven't reviewed it yet, just Cc'ing Quentin and Vegard
-> who are also working on the lock poisoning patchset.
+> Another strategy can be to do instrumentation internally in Coccinelle
+> with the help of its standard rule dependency or extending use by
+> using Python scripting for a replacement for internall book keeping.
+> 
+> The patch below is a simple alternative to adding C instrumentation
+> code but instead it actually tries to fix the code given a certain
+> set of conditions and rules.
+> 
+> The cocci script doesn't work yet as I haven't figured out how to tell
+> coccinelle what is needed, but I'm confident its posible:
+> 
+>   * remove_helper_lock rule should take effect if
+>     helper_accessing_with_lock was found, but so was
+>     helper_accessing_without_lock, check_helpers,
+>     check_fn_access.
+> 
+>   * Likewise for fix_top_level -- we want to add the lock
+>     to the top level if helpers of both types were found,
+>     one which adds a lock and others which missed it
+> 
+> Oh and I forgot to place the unlock before pthread_exit() but
+> that's an easy fix. It should be possible to address all
+> these requirements within coccinelle, its just not clear
+> right now to me exactly how -- perhaps python variables?
+> 
+>   Luis
+> 
+> @ find_drv_name @
+> identifier drv;
+> identifier mutex;
+> @@
+> 
+> pthread_mutex_protects_3(&drv->mutex, ...);
+> 
+> @ find_hint @
+> type T;
+> T *drv;
+> identifier mutex, item_1, item_2, item_3;
+> @@
+> 
+> pthread_mutex_protects_3(&drv->mutex, drv->item_1, drv->item_2, drv->item_3);
 
-Another strategy can be to do instrumentation internally in Coccinelle
-with the help of its standard rule dependency or extending use by
-using Python scripting for a replacement for internall book keeping.
+Why do you need both of the above rules?  I think that the second one 
+should be fine.
 
-The patch below is a simple alternative to adding C instrumentation
-code but instead it actually tries to fix the code given a certain
-set of conditions and rules.
+> @ find_pthread_fn depends on find_hint @
+> identifier fn, ret;
+> expression thread, attr, val;
+> @@
+> 
+> ret = pthread_create(thread, attr, fn, val);
 
-The cocci script doesn't work yet as I haven't figured out how to tell
-coccinelle what is needed, but I'm confident its posible:
+The connection to find_hint is rather weak here.  Is there any way that 
+they could be better tied together?
 
-  * remove_helper_lock rule should take effect if
-    helper_accessing_with_lock was found, but so was
-    helper_accessing_without_lock, check_helpers,
-    check_fn_access.
+> @ check_fn_access @
+> identifier find_pthread_fn.fn;
+> type find_hint.T;
+> T *drv;
+> identifier find_hint.item_1;
+> identifier find_hint.item_2;
+> identifier find_hint.item_3;
+> @@
+> 
+> fn (...)
+> {
+> 	<+...
+> (
+> 	drv->item_1
+> |
+> 	drv->item_2
+> |
+> 	drv->item_3
+> )
+>         ...+>
+> }
+>
+> @ check_helpers depends on find_pthread_fn @
+> identifier helper;
+> identifier find_pthread_fn.fn;
+> identifier find_hint.mutex;
+> type find_hint.T;
+> T *drv;
+> @@
+> 
+> fn (...)
+> {
+> 	<+... when != pthread_mutex_lock(&drv->mutex);
+> 	helper(...);
+> 	...+>
+> }
 
-  * Likewise for fix_top_level -- we want to add the lock
-    to the top level if helpers of both types were found,
-    one which adds a lock and others which missed it
+The depends on should not be needed in the above two rules, because they 
+can only match if fn has a value, which can only happen if find_pthread_fn 
+matched.
 
-Oh and I forgot to place the unlock before pthread_exit() but
-that's an easy fix. It should be possible to address all
-these requirements within coccinelle, its just not clear
-right now to me exactly how -- perhaps python variables?
+In each case, fn is the callback function of the thread_create.  I guess 
+it is the function to be run by the thread.  The first rule looks for a 
+direct reference to one of the protected fields.  The second rule looks 
+for a call to another function, in the case where the protecting lock is 
+not taken anywhere in the function.
 
-  Luis
+I'm surprised that there is no consideration of the lock in the first 
+rule.  The rules seem to be doing sort of the same thing, but don't have 
+the same constraints.
 
-@ find_drv_name @
-identifier drv;
-identifier mutex;
-@@
+But in general, I think that there are two cases that are wanted:
 
-pthread_mutex_protects_3(&drv->mutex, ...);
+... when != lock()
+XXX
+... when any
 
-@ find_hint @
-type T;
-T *drv;
-identifier mutex, item_1, item_2, item_3;
-@@
+and
 
-pthread_mutex_protects_3(&drv->mutex, drv->item_1, drv->item_2, drv->item_3);
+... when any
+unlock()
+... when != lock()
+XXX
+... when any
 
-@ find_pthread_fn depends on find_hint @
-identifier fn, ret;
-expression thread, attr, val;
-@@
+That is, in the first case there has been no lock yet and in the second 
+case there was an unlock and there was no subsequent lock.
 
-ret = pthread_create(thread, attr, fn, val);
+> @ helper_accessing_with_lock exists @
+> identifier check_helpers.helper;
+> type find_hint.T;
+> T *drv;
+> identifier find_hint.mutex;
+> identifier find_hint.item_1;
+> identifier find_hint.item_2;
+> identifier find_hint.item_3;
+> position p1, p2;
+> @@
+> 
+> helper(...)
+> {
+> 	...
+> 	pthread_mutex_lock at p1(&drv->mutex);
+> 	<+...
+> (
+> 	drv->item_1
+> |
+> 	drv->item_2
+> |
+> 	drv->item_3
+> )
+>         ...+>
+> 	pthread_mutex_unlock at p2(&drv->mutex);
+> }
 
-@ check_fn_access @
-identifier find_pthread_fn.fn;
-type find_hint.T;
-T *drv;
-identifier find_hint.item_1;
-identifier find_hint.item_2;
-identifier find_hint.item_3;
-@@
+This requires the unlock to be at the end of the function.  The whole 
+function body should be surrounded in <+... ...+>
 
-fn (...)
-{
-	<+...
-(
-	drv->item_1
-|
-	drv->item_2
-|
-	drv->item_3
-)
-        ...+>
-}
+This is finding that everything is OK for the helper, because the helper 
+has a lock of its own.
 
-@ check_helpers depends on find_pthread_fn @
-identifier helper;
-identifier find_pthread_fn.fn;
-identifier find_hint.mutex;
-type find_hint.T;
-T *drv;
-@@
+> @ helper_accessing_without_lock exists @
+> identifier check_helpers.helper;
+> type find_hint.T;
+> T *drv;
+> identifier find_hint.mutex;
+> identifier find_hint.item_1;
+> identifier find_hint.item_2;
+> identifier find_hint.item_3;
+> @@
+> 
+> helper(...)
+> {
+> 	<+... when != pthread_mutex_lock(&drv->mutex);
+> (
+> 	drv->item_1
+> |
+> 	drv->item_2
+> |
+> 	drv->item_3
+> )
+>         ...+>
+> }
 
-fn (...)
-{
-	<+... when != pthread_mutex_lock(&drv->mutex);
-	helper(...);
-	...+>
-}
+This one is finding that the helper is not correct, because it doesn't 
+have a lock either, and it does have references.  See the above two 
+patterns for a better way to match the case where the references are not 
+in a lock.
 
-@ helper_accessing_with_lock exists @
-identifier check_helpers.helper;
-type find_hint.T;
-T *drv;
-identifier find_hint.mutex;
-identifier find_hint.item_1;
-identifier find_hint.item_2;
-identifier find_hint.item_3;
-position p1, p2;
-@@
+> @ remove_helper_lock @
+> identifier check_helpers.helper;
+> type find_hint.T;
+> T *drv;
+> identifier find_hint.mutex;
+> identifier find_hint.item_1;
+> identifier find_hint.item_2;
+> identifier find_hint.item_3;
+> position helper_accessing_with_lock.p1, helper_accessing_with_lock.p2;
+> @@
+> 
+> helper(...)
+> {
+> 	...
+> -	pthread_mutex_lock at p1(&drv->mutex);
+> 	...
+> -	pthread_mutex_unlock at p2(&drv->mutex);
+> }
+> 
+> 
+> @ fix_top_level @
+> identifier find_pthread_fn.fn;
+> identifier find_hint.mutex;
+> identifier find_drv_name.drv;
+> @@
+> 
+> fn (...)
+> {
+> +	pthread_mutex_lock(&drv->mutex);
+> 	...
+> +	pthread_mutex_unlock(&drv->mutex);
+> }
 
-helper(...)
-{
-	...
-	pthread_mutex_lock at p1(&drv->mutex);
-	<+...
-(
-	drv->item_1
-|
-	drv->item_2
-|
-	drv->item_3
-)
-        ...+>
-	pthread_mutex_unlock at p2(&drv->mutex);
-}
+Hmm, not sure to understand the goal of the above two rules.  Why do you 
+want to put the lock around the entire body of the callback function?
 
-@ helper_accessing_without_lock exists @
-identifier check_helpers.helper;
-type find_hint.T;
-T *drv;
-identifier find_hint.mutex;
-identifier find_hint.item_1;
-identifier find_hint.item_2;
-identifier find_hint.item_3;
-@@
+The weakness seems to be that helper has to be called directly from the 
+callback function.  One would have to use iteration to trace the calls 
+down more deeply.
 
-helper(...)
-{
-	<+... when != pthread_mutex_lock(&drv->mutex);
-(
-	drv->item_1
-|
-	drv->item_2
-|
-	drv->item_3
-)
-        ...+>
-}
+Also, the whole set of rules would be needed for 1, 2, 3, ...  With 
+iteration, one could schedule the work on the protected fields one by one, 
+if the protection declaration could take any number of arguments.
 
-@ remove_helper_lock @
-identifier check_helpers.helper;
-type find_hint.T;
-T *drv;
-identifier find_hint.mutex;
-identifier find_hint.item_1;
-identifier find_hint.item_2;
-identifier find_hint.item_3;
-position helper_accessing_with_lock.p1, helper_accessing_with_lock.p2;
-@@
-
-helper(...)
-{
-	...
--	pthread_mutex_lock at p1(&drv->mutex);
-	...
--	pthread_mutex_unlock at p2(&drv->mutex);
-}
-
-
-@ fix_top_level @
-identifier find_pthread_fn.fn;
-identifier find_hint.mutex;
-identifier find_drv_name.drv;
-@@
-
-fn (...)
-{
-+	pthread_mutex_lock(&drv->mutex);
-	...
-+	pthread_mutex_unlock(&drv->mutex);
-}
+julia
