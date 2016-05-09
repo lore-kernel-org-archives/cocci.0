@@ -1,62 +1,68 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 9 May 2016 07:25:55 +0200 (CEST)
-Subject: [Cocci] [PATCH 0/5] coccinelle: extend testing with
- check-pycocci
-In-Reply-To: <1462478624-25117-1-git-send-email-mcgrof@kernel.org>
-References: <1462478624-25117-1-git-send-email-mcgrof@kernel.org>
-Message-ID: <alpine.DEB.2.02.1605090725310.2067@localhost6.localdomain6>
+From: vaishali.thakkar@oracle.com (Vaishali Thakkar)
+Date: Mon,  9 May 2016 18:04:40 +0530
+Subject: [Cocci] [PATCH v2] Coccinelle: noderef: Add a rule and correct the
+	old rule
+Message-ID: <1462797280-14332-1-git-send-email-vaishali.thakkar@oracle.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+Add a new rule to detect the cases where sizeof is used as a
+subexpression rather than a top level argument.
 
-for all of the patches in this series.
+Also, for the patch mode third rule should behave same as
+second rule with arguments reversed. So, change that as well.
 
-julia
+Signed-off-by: Vaishali Thakkar <vaishali.thakkar@oracle.com>
+---
+Changes since v1:
+	- Declare i as an expression instead of identifier to
+	  cover more cases
+---
+ scripts/coccinelle/misc/noderef.cocci | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-On Thu, 5 May 2016, Luis R. Rodriguez wrote:
-
-> Coccinelle has its own test framework built-in to spatch, this
-> is used to test against small tests cases written in tests/*.c
-> with their respective tests/*.cocci and tests/*.res file. This
-> is however a bit limited as it only handles single C file. In
-> real world projects where more files are used we need to support
-> testing against larger series of file structures.
-> 
-> pycocci already had SmPL <=> Patch equivalence support, we can
-> leverage this to extend testing in a more generic fashion. This
-> does that work.
-> 
-> For now, we disable pycocci-tests given we touch your git tree
-> for these tests.
-> 
-> Luis R. Rodriguez (5):
->   pycocci: use os.path.abspath() for gitname
->   pycocci: add git branch support to git library
->   pycocci: skip proof if git dir is dirty
->   pycocci: add clean version of SmPL <=> Patch equivalence proof support
->   pycocci: enable SmPL <=> Patch equivalence tests
-> 
->  Makefile                                           |  3 +
->  docs/pycocci.1                                     | 24 +++++-
->  scripts/pycocci-check.sh                           |  8 ++
->  tests/pycocci/code/0001-proto3/proto3.c            |  7 ++
->  tests/pycocci/code/0001-proto3/proto3.h            |  3 +
->  tests/pycocci/patches/0001-proto3.cocci            | 11 +++
->  .../0001-proto3/0001-change-prototypes.patch       | 18 +++++
->  tools/pycocci                                      | 89 ++++++++++++++++------
->  8 files changed, 140 insertions(+), 23 deletions(-)
->  create mode 100755 scripts/pycocci-check.sh
->  create mode 100644 tests/pycocci/code/0001-proto3/proto3.c
->  create mode 100644 tests/pycocci/code/0001-proto3/proto3.h
->  create mode 100644 tests/pycocci/patches/0001-proto3.cocci
->  create mode 100644 tests/pycocci/patches/0001-proto3/0001-change-prototypes.patch
-> 
-> -- 
-> 2.7.2
-> 
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
-> 
+diff --git a/scripts/coccinelle/misc/noderef.cocci b/scripts/coccinelle/misc/noderef.cocci
+index 80a831c..584dd01 100644
+--- a/scripts/coccinelle/misc/noderef.cocci
++++ b/scripts/coccinelle/misc/noderef.cocci
+@@ -16,6 +16,7 @@ virtual patch
+ @depends on patch@
+ expression *x;
+ expression f;
++expression i;
+ type T;
+ @@
+ 
+@@ -30,7 +31,12 @@ f(...,(T)(x),...,sizeof(
+ + *x
+    ),...)
+ |
+-f(...,sizeof(x),...,(T)(
++f(...,sizeof(
++- x
+++ *x
++   ),...,(T)(x),...)
++|
++x = f(...,i*sizeof(
+ - x
+ + *x
+    ),...)
+@@ -39,6 +45,7 @@ f(...,sizeof(x),...,(T)(
+ @r depends on !patch@
+ expression *x;
+ expression f;
++expression i;
+ position p;
+ type T;
+ @@
+@@ -49,6 +56,8 @@ type T;
+ *f(...,(T)(x),...,sizeof at p(x),...)
+ |
+ *f(...,sizeof at p(x),...,(T)(x),...)
++|
++*x = f(...,i*sizeof at p(x),...)
+ )
+ 
+ @script:python depends on org@
+-- 
+2.1.4
