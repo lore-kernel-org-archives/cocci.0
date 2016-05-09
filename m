@@ -1,258 +1,62 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 8 May 2016 21:51:43 +0200 (CEST)
-Subject: [Cocci] Out of tree instrumentation with coccinelle demo
-In-Reply-To: <20160508192303.GB14141@wotan.suse.de>
-References: <CAB=NE6XrFxvTJrJVVLvT-4ii-UU-tgAqB=AgzgFH20prR1DoUA@mail.gmail.com>
- <572F27FF.7040301@oracle.com> <20160508192303.GB14141@wotan.suse.de>
-Message-ID: <alpine.DEB.2.02.1605082133430.2237@localhost6.localdomain6>
+Date: Mon, 9 May 2016 07:25:55 +0200 (CEST)
+Subject: [Cocci] [PATCH 0/5] coccinelle: extend testing with
+ check-pycocci
+In-Reply-To: <1462478624-25117-1-git-send-email-mcgrof@kernel.org>
+References: <1462478624-25117-1-git-send-email-mcgrof@kernel.org>
+Message-ID: <alpine.DEB.2.02.1605090725310.2067@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Acked-by: Julia Lawall <julia.lawall@lip6.fr>
 
-
-On Sun, 8 May 2016, Luis R. Rodriguez wrote:
-
-> On Sun, May 08, 2016 at 07:50:23AM -0400, Sasha Levin wrote:
-> > On 05/06/2016 07:26 PM, Luis R. Rodriguez wrote:
-> > > Julia and I had discussed the possibility to instrument Linux code as
-> > > an alternative to complex debugging strategies (lockdep is one) that
-> > > often may be frowned upon due to how intrusive some changes may be or
-> > > how much extra stuff would be needed upstream. It has been hard to
-> > > explain the idea to folks who might make some use of it so I've gone
-> > > ahead and created a demo tree for userspace code that shows some basic
-> > > instrumentation ideas. You can fetch it here:
-> > > 
-> > > https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/cocci-tact.git
-> > 
-> > Thanks Luis! I haven't reviewed it yet, just Cc'ing Quentin and Vegard
-> > who are also working on the lock poisoning patchset.
-> 
-> Another strategy can be to do instrumentation internally in Coccinelle
-> with the help of its standard rule dependency or extending use by
-> using Python scripting for a replacement for internall book keeping.
-> 
-> The patch below is a simple alternative to adding C instrumentation
-> code but instead it actually tries to fix the code given a certain
-> set of conditions and rules.
-> 
-> The cocci script doesn't work yet as I haven't figured out how to tell
-> coccinelle what is needed, but I'm confident its posible:
-> 
->   * remove_helper_lock rule should take effect if
->     helper_accessing_with_lock was found, but so was
->     helper_accessing_without_lock, check_helpers,
->     check_fn_access.
-> 
->   * Likewise for fix_top_level -- we want to add the lock
->     to the top level if helpers of both types were found,
->     one which adds a lock and others which missed it
-> 
-> Oh and I forgot to place the unlock before pthread_exit() but
-> that's an easy fix. It should be possible to address all
-> these requirements within coccinelle, its just not clear
-> right now to me exactly how -- perhaps python variables?
-> 
->   Luis
-> 
-> @ find_drv_name @
-> identifier drv;
-> identifier mutex;
-> @@
-> 
-> pthread_mutex_protects_3(&drv->mutex, ...);
-> 
-> @ find_hint @
-> type T;
-> T *drv;
-> identifier mutex, item_1, item_2, item_3;
-> @@
-> 
-> pthread_mutex_protects_3(&drv->mutex, drv->item_1, drv->item_2, drv->item_3);
-
-Why do you need both of the above rules?  I think that the second one 
-should be fine.
-
-> @ find_pthread_fn depends on find_hint @
-> identifier fn, ret;
-> expression thread, attr, val;
-> @@
-> 
-> ret = pthread_create(thread, attr, fn, val);
-
-The connection to find_hint is rather weak here.  Is there any way that 
-they could be better tied together?
-
-> @ check_fn_access @
-> identifier find_pthread_fn.fn;
-> type find_hint.T;
-> T *drv;
-> identifier find_hint.item_1;
-> identifier find_hint.item_2;
-> identifier find_hint.item_3;
-> @@
-> 
-> fn (...)
-> {
-> 	<+...
-> (
-> 	drv->item_1
-> |
-> 	drv->item_2
-> |
-> 	drv->item_3
-> )
->         ...+>
-> }
->
-> @ check_helpers depends on find_pthread_fn @
-> identifier helper;
-> identifier find_pthread_fn.fn;
-> identifier find_hint.mutex;
-> type find_hint.T;
-> T *drv;
-> @@
-> 
-> fn (...)
-> {
-> 	<+... when != pthread_mutex_lock(&drv->mutex);
-> 	helper(...);
-> 	...+>
-> }
-
-The depends on should not be needed in the above two rules, because they 
-can only match if fn has a value, which can only happen if find_pthread_fn 
-matched.
-
-In each case, fn is the callback function of the thread_create.  I guess 
-it is the function to be run by the thread.  The first rule looks for a 
-direct reference to one of the protected fields.  The second rule looks 
-for a call to another function, in the case where the protecting lock is 
-not taken anywhere in the function.
-
-I'm surprised that there is no consideration of the lock in the first 
-rule.  The rules seem to be doing sort of the same thing, but don't have 
-the same constraints.
-
-But in general, I think that there are two cases that are wanted:
-
-... when != lock()
-XXX
-... when any
-
-and
-
-... when any
-unlock()
-... when != lock()
-XXX
-... when any
-
-That is, in the first case there has been no lock yet and in the second 
-case there was an unlock and there was no subsequent lock.
-
-> @ helper_accessing_with_lock exists @
-> identifier check_helpers.helper;
-> type find_hint.T;
-> T *drv;
-> identifier find_hint.mutex;
-> identifier find_hint.item_1;
-> identifier find_hint.item_2;
-> identifier find_hint.item_3;
-> position p1, p2;
-> @@
-> 
-> helper(...)
-> {
-> 	...
-> 	pthread_mutex_lock at p1(&drv->mutex);
-> 	<+...
-> (
-> 	drv->item_1
-> |
-> 	drv->item_2
-> |
-> 	drv->item_3
-> )
->         ...+>
-> 	pthread_mutex_unlock at p2(&drv->mutex);
-> }
-
-This requires the unlock to be at the end of the function.  The whole 
-function body should be surrounded in <+... ...+>
-
-This is finding that everything is OK for the helper, because the helper 
-has a lock of its own.
-
-> @ helper_accessing_without_lock exists @
-> identifier check_helpers.helper;
-> type find_hint.T;
-> T *drv;
-> identifier find_hint.mutex;
-> identifier find_hint.item_1;
-> identifier find_hint.item_2;
-> identifier find_hint.item_3;
-> @@
-> 
-> helper(...)
-> {
-> 	<+... when != pthread_mutex_lock(&drv->mutex);
-> (
-> 	drv->item_1
-> |
-> 	drv->item_2
-> |
-> 	drv->item_3
-> )
->         ...+>
-> }
-
-This one is finding that the helper is not correct, because it doesn't 
-have a lock either, and it does have references.  See the above two 
-patterns for a better way to match the case where the references are not 
-in a lock.
-
-> @ remove_helper_lock @
-> identifier check_helpers.helper;
-> type find_hint.T;
-> T *drv;
-> identifier find_hint.mutex;
-> identifier find_hint.item_1;
-> identifier find_hint.item_2;
-> identifier find_hint.item_3;
-> position helper_accessing_with_lock.p1, helper_accessing_with_lock.p2;
-> @@
-> 
-> helper(...)
-> {
-> 	...
-> -	pthread_mutex_lock at p1(&drv->mutex);
-> 	...
-> -	pthread_mutex_unlock at p2(&drv->mutex);
-> }
-> 
-> 
-> @ fix_top_level @
-> identifier find_pthread_fn.fn;
-> identifier find_hint.mutex;
-> identifier find_drv_name.drv;
-> @@
-> 
-> fn (...)
-> {
-> +	pthread_mutex_lock(&drv->mutex);
-> 	...
-> +	pthread_mutex_unlock(&drv->mutex);
-> }
-
-Hmm, not sure to understand the goal of the above two rules.  Why do you 
-want to put the lock around the entire body of the callback function?
-
-The weakness seems to be that helper has to be called directly from the 
-callback function.  One would have to use iteration to trace the calls 
-down more deeply.
-
-Also, the whole set of rules would be needed for 1, 2, 3, ...  With 
-iteration, one could schedule the work on the protected fields one by one, 
-if the protection declaration could take any number of arguments.
+for all of the patches in this series.
 
 julia
+
+On Thu, 5 May 2016, Luis R. Rodriguez wrote:
+
+> Coccinelle has its own test framework built-in to spatch, this
+> is used to test against small tests cases written in tests/*.c
+> with their respective tests/*.cocci and tests/*.res file. This
+> is however a bit limited as it only handles single C file. In
+> real world projects where more files are used we need to support
+> testing against larger series of file structures.
+> 
+> pycocci already had SmPL <=> Patch equivalence support, we can
+> leverage this to extend testing in a more generic fashion. This
+> does that work.
+> 
+> For now, we disable pycocci-tests given we touch your git tree
+> for these tests.
+> 
+> Luis R. Rodriguez (5):
+>   pycocci: use os.path.abspath() for gitname
+>   pycocci: add git branch support to git library
+>   pycocci: skip proof if git dir is dirty
+>   pycocci: add clean version of SmPL <=> Patch equivalence proof support
+>   pycocci: enable SmPL <=> Patch equivalence tests
+> 
+>  Makefile                                           |  3 +
+>  docs/pycocci.1                                     | 24 +++++-
+>  scripts/pycocci-check.sh                           |  8 ++
+>  tests/pycocci/code/0001-proto3/proto3.c            |  7 ++
+>  tests/pycocci/code/0001-proto3/proto3.h            |  3 +
+>  tests/pycocci/patches/0001-proto3.cocci            | 11 +++
+>  .../0001-proto3/0001-change-prototypes.patch       | 18 +++++
+>  tools/pycocci                                      | 89 ++++++++++++++++------
+>  8 files changed, 140 insertions(+), 23 deletions(-)
+>  create mode 100755 scripts/pycocci-check.sh
+>  create mode 100644 tests/pycocci/code/0001-proto3/proto3.c
+>  create mode 100644 tests/pycocci/code/0001-proto3/proto3.h
+>  create mode 100644 tests/pycocci/patches/0001-proto3.cocci
+>  create mode 100644 tests/pycocci/patches/0001-proto3/0001-change-prototypes.patch
+> 
+> -- 
+> 2.7.2
+> 
+> _______________________________________________
+> Cocci mailing list
+> Cocci at systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
+> 
