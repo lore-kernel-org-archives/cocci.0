@@ -1,68 +1,19 @@
-From: vaishali.thakkar@oracle.com (Vaishali Thakkar)
-Date: Mon,  9 May 2016 18:04:40 +0530
-Subject: [Cocci] [PATCH v2] Coccinelle: noderef: Add a rule and correct the
-	old rule
-Message-ID: <1462797280-14332-1-git-send-email-vaishali.thakkar@oracle.com>
+From: mcgrof@kernel.org (Luis R. Rodriguez)
+Date: Mon, 9 May 2016 18:45:43 +0200
+Subject: [Cocci] [PATCH 0/5] coccinelle: extend testing with
+	check-pycocci
+In-Reply-To: <alpine.DEB.2.02.1605090725310.2067@localhost6.localdomain6>
+References: <1462478624-25117-1-git-send-email-mcgrof@kernel.org>
+ <alpine.DEB.2.02.1605090725310.2067@localhost6.localdomain6>
+Message-ID: <20160509164543.GD14141@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Add a new rule to detect the cases where sizeof is used as a
-subexpression rather than a top level argument.
+On Mon, May 09, 2016 at 07:25:55AM +0200, Julia Lawall wrote:
+> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+> 
+> for all of the patches in this series.
 
-Also, for the patch mode third rule should behave same as
-second rule with arguments reversed. So, change that as well.
+Thanks, applied and pushed.
 
-Signed-off-by: Vaishali Thakkar <vaishali.thakkar@oracle.com>
----
-Changes since v1:
-	- Declare i as an expression instead of identifier to
-	  cover more cases
----
- scripts/coccinelle/misc/noderef.cocci | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
-
-diff --git a/scripts/coccinelle/misc/noderef.cocci b/scripts/coccinelle/misc/noderef.cocci
-index 80a831c..584dd01 100644
---- a/scripts/coccinelle/misc/noderef.cocci
-+++ b/scripts/coccinelle/misc/noderef.cocci
-@@ -16,6 +16,7 @@ virtual patch
- @depends on patch@
- expression *x;
- expression f;
-+expression i;
- type T;
- @@
- 
-@@ -30,7 +31,12 @@ f(...,(T)(x),...,sizeof(
- + *x
-    ),...)
- |
--f(...,sizeof(x),...,(T)(
-+f(...,sizeof(
-+- x
-++ *x
-+   ),...,(T)(x),...)
-+|
-+x = f(...,i*sizeof(
- - x
- + *x
-    ),...)
-@@ -39,6 +45,7 @@ f(...,sizeof(x),...,(T)(
- @r depends on !patch@
- expression *x;
- expression f;
-+expression i;
- position p;
- type T;
- @@
-@@ -49,6 +56,8 @@ type T;
- *f(...,(T)(x),...,sizeof at p(x),...)
- |
- *f(...,sizeof at p(x),...,(T)(x),...)
-+|
-+*x = f(...,i*sizeof at p(x),...)
- )
- 
- @script:python depends on org@
--- 
-2.1.4
+  Luis
