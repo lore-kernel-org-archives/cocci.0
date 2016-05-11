@@ -1,218 +1,80 @@
-From: soren.brinkmann@xilinx.com (=?utf-8?B?U8O2cmVu?= Brinkmann)
-Date: Wed, 11 May 2016 11:48:30 -0700
-Subject: [Cocci] remove redundant const qualifiers from function
-	arguments
-In-Reply-To: <alpine.DEB.2.10.1605111148220.5036@hadrien>
-References: <20160511031419.GY3766@xsjsorenbubuntu>
- <alpine.DEB.2.10.1605110738430.5606@hadrien>
- <20160511055515.GA3766@xsjsorenbubuntu>
- <alpine.DEB.2.10.1605110758230.5606@hadrien>
- <20160511060438.GB3766@xsjsorenbubuntu>
- <alpine.DEB.2.10.1605111148220.5036@hadrien>
-Message-ID: <20160511184830.GG3766@xsjsorenbubuntu>
+From: mcgrof@kernel.org (Luis R. Rodriguez)
+Date: Wed, 11 May 2016 22:55:41 +0200
+Subject: [Cocci] Out of tree instrumentation with coccinelle demo
+In-Reply-To: <20160508192303.GB14141@wotan.suse.de>
+References: <CAB=NE6XrFxvTJrJVVLvT-4ii-UU-tgAqB=AgzgFH20prR1DoUA@mail.gmail.com>
+ <572F27FF.7040301@oracle.com>
+ <20160508192303.GB14141@wotan.suse.de>
+Message-ID: <20160511205541.GF14141@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi Julia,
-
-On Wed, 2016-05-11 at 11:51:43 +0200, Julia Lawall wrote:
+On Sun, May 08, 2016 at 09:23:03PM +0200, Luis R. Rodriguez wrote:
+> On Sun, May 08, 2016 at 07:50:23AM -0400, Sasha Levin wrote:
+> > On 05/06/2016 07:26 PM, Luis R. Rodriguez wrote:
+> > > Julia and I had discussed the possibility to instrument Linux code as
+> > > an alternative to complex debugging strategies (lockdep is one) that
+> > > often may be frowned upon due to how intrusive some changes may be or
+> > > how much extra stuff would be needed upstream. It has been hard to
+> > > explain the idea to folks who might make some use of it so I've gone
+> > > ahead and created a demo tree for userspace code that shows some basic
+> > > instrumentation ideas. You can fetch it here:
+> > > 
+> > > https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/cocci-tact.git
+> > 
+> > Thanks Luis! I haven't reviewed it yet, just Cc'ing Quentin and Vegard
+> > who are also working on the lock poisoning patchset.
 > 
+> Another strategy can be to do instrumentation internally in Coccinelle
+> with the help of its standard rule dependency or extending use by
+> using Python scripting for a replacement for internall book keeping.
 > 
-> On Tue, 10 May 2016, S?ren Brinkmann wrote:
-> 
-> > On Wed, 2016-05-11 at 07:59:06 +0200, Julia Lawall wrote:
-> > >
-> > >
-> > > On Tue, 10 May 2016, S?ren Brinkmann wrote:
-> > >
-> > > > Hi Julia,
-> > > >
-> > > > On Wed, 2016-05-11 at 07:41:20 +0200, Julia Lawall wrote:
-> > > > >
-> > > > >
-> > > > > On Tue, 10 May 2016, S?ren Brinkmann wrote:
-> > > > >
-> > > > > > Hi,
-> > > > > >
-> > > > > > I'm trying to remove 'const' qualifiers from function arguments that are
-> > > > > > passed by value.
-> > > > > >
-> > > > > > e.g. I want to convert:
-> > > > > >
-> > > > > > void foobar(const int bar, const int *baz);
-> > > > > > to
-> > > > > > void foobar(int bar, const int *baz);
-> > > > > >
-> > > > > > I came up with this semantic patch:
-> > > > > > /* Remove const from arguments passed by value */
-> > > > > > @ rule1 @
-> > > > > > identifier fi, I;
-> > > > > > type T;
-> > > > > > @@
-> > > > > >  fi ( ...,
-> > > > > > -	const T
-> > > > > > +	T
-> > > > > > 	I
-> > > > > > 	,...
-> > > > > >  )
-> > > > > >  { ... }
-> > > > > >
-> > > > > > That seems to work fine on function declarations, but does not cover
-> > > > > > function prototypes. Extending the patch to function prototypes I ran
-> > > > > > into some trouble. As complete separate patch, I evolved the above to
-> > > > > > (just replacing the function body with a ';'):
-> > > > > > /* Remove const from arguments passed by value */
-> > > > > > @ rule1 @
-> > > > > > identifier fi, I;
-> > > > > > type T;
-> > > > > > @@
-> > > > > >  fi ( ...,
-> > > > > > -	const T
-> > > > > > +	T
-> > > > > > 	I
-> > > > > > 	,...
-> > > > > >  ) ;
-> > > > > >
-> > > > > > But that is not parsed by spatch, causing this error:
-> > > > > >   init_defs_builtins: /usr/local/lib/coccinelle/standard.h
-> > > > > >   minus: parse error:
-> > > > > >     File "const_proto.cocci", line 9, column 1, charpos = 115
-> > > > > >     around = 'I',
-> > > > > >     whole content = '     I'
-> > > > > >
-> > > > > > Also, using the first version of a patch on a c-file with matching function
-> > > > > > declarations that also includes function prototypes, results in both,
-> > > > > > declarations and prototypes, while using it on a header with prototypes
-> > > > > > only doesn't result in any replacements.
-> > > > > >
-> > > > > > I attach the patches and some test files for reference.
-> > > > > > const.cocci apparently correctly removes all const keywords from the
-> > > > > > test.c file, but does not change the .h at all (which is correct, just
-> > > > > > weird that it changes the prototype in the .c).
-> > > > > >
-> > > > > > The const_proto.cocci file causes the above-mentioned error.
-> > > > > >
-> > > > > > Does anybody know what I'm missing here?
-> > > > >
-> > > > > By default, when you change a function header, Coccinell changes the
-> > > > > prototype accordingly.  But to be able to do that it needs to have access
-> > > > > to the prototype.  So you may need to give an argument like --all-includes
-> > > > > (include all the .h files mentioned in the .c file) or --recursive-incudes
-> > > > > (include all the .h files recurively included by any .h file mentioned in
-> > > > > the .c file).  --recursive-includes at least may be slow, but things will
-> > > > > be done in a consistent manner.
-> > > >
-> > > > Interesting. I tried different variations of the include switches on the
-> > > > real code base, but none resulted in the headers to be updated. Though,
-> > > > with those switches I get 'different modification result for foo.h' warnings.
-> > > >
-> > > > For the test files, including the header in the c file and running
-> > > > spatch with --local-includes works as expected.
-> > > >
-> > > > Guess I'll dig into the headers and check if there are any unusual
-> > > > constructs causing the problem. Any hints would be appreciated :)
-> > > >
-> > > > > I will check on why the expliciti prototype rule doesn't parse.
-> > > >
-> > > > Thanks for looking into it.
-> > >
-> > > Could you send an example of a .c and .h file where the result is not as
-> > > expected?
-> >
-> > It works now... It seems something is handled significantly different
-> > depending on how the target files are specified on the command line.
-> >
-> > Initially I ran:
-> >   spatch --sp-file const.cocci --local-includes --in-place --dir .
-> > and now with your hints, I changed to
-> >   spatch --sp-file const.cocci --local-includes --in-place *.c
-> >
-> > That way headers are updated as expected and the warnings are gone.
-> >
-> > I can try to condense a small test case tomorrow, if you're interested/necessary.
-> 
-> --dir is the proper solution.  Since it is not working, I would be
-> interested in having a test case.  I guess it should be a directory with
-> multiple .c files.
-> 
-> When you put multiple files on the command line, you are treating them all
-> at once, ie they are all parsed and in memory at the same time.  This is
-> good if there are references between .c files that have to be taken into
-> account.  But obviously it doesn't scale.  On the other hand, .h files
-> should be treated at the same time as the .c files that reference them, so
-> it should work.
+> The patch below is a simple alternative to adding C instrumentation
+> code but instead it actually tries to fix the code given a certain
+> set of conditions and rules.
 
-I think I have a test case that is minimal.
-I attach the following files:
- - module_a.c  -- c source
- - module_a.h  -- c header providing prototypes for functions in module_a.c
- - module_b.c  -- c source including module_a.h
- - const.cocci  -- semantic patch using fundecl syntax
- - const_proto.cocci  -- semantic patch using funproto syntax
+<-- snip -->
 
-The patch with funproto syntax fails as described above and is also
-redundant when headers are included in the transformation the other
-patch is doing.
+Lastly, it just occurred to me that if a set of Coccinelle scripts
+do not suffice (I mentioned two options for instrumentation), another
+alternative building off of the first Coccinelle approach I mentioned
+would be to complement that with *new code* and *regular patches* that
+would otherwise simply not be appropriate with just Coccinelle. For
+instance, take the addition of code which initializes the instrumentation,
+or helpers definitions which may be generic. This need not belong in
+each piece of kernel code but perhaps more in a generic place, and if
+not upstream, one alternative can be a kernel complement framework to
+enable both to co-exist. It took me a bit to realize that we already
+have this... but once I realized it, it became an obvious alternative:
+the Linux backports infrastructure [0] already enables:
 
-When I run:
-  spatch --sp-file const.cocci --local-includes --in-place *.c
-things work fine and both, module_a[ch], get updated as intended.
+  a) serializing applying regular patches, and
+  b) if one finds generalization rules also serializes
+     applying series Coccinelle SmPL patches
+  c) adding custom code which any of the above can use
+     through its own module (compat)
+  d) enables for module replacements (using depmod.d updates/),
+     so your distro has iwlagn for v3.5, backports lets you get
+     iwlagn update from code as of v4.3 [1]
+  e) enables as an alternative kenrel integration [2]
 
-When I run
-  spatch --sp-file const.cocci --local-includes --in-place --dir .
-then only the c files are updated (in-place). But, the patch output
-includes the correct header transformation (I was expecting headers to
-be updated in-place too, just as in the first case).
-Also, removing module_b.c from the test, makes spatch update both
-module.[ch] in place.
+In a way, the backports infrastructure provides a framework to let
+you roll out your own customized Linux distribution but with utmost
+focus upstream. For backports this makes sense -- we just re-use
+upstream and port. We do this as backporting is not welcomed upstream
+as it would mean having to add tons of nasty #ifdefs, and helper code..
+sound familiar? Instrumentation code which may be considered
+"too intrusive to have upstream" is another possible candidate
+that can benefit from it given all the bells and whistles have been
+ironed out already -- we strive to automate backporting ;)
 
-	Thanks,
-	S?ren
+Now granted, we didn't set out to write backports to make it a generic
+framework, but -- its there, and if you guys have such an interest
+I think we can both benefit from collaborations... that is unless
+you do find a reasonable way to just shove everything upstream.
 
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: module_a.c
-Type: text/x-csrc
-Size: 73 bytes
-Desc: not available
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20160511/92bfe6b1/attachment.bin>
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: module_a.h
-Type: text/x-chdr
-Size: 96 bytes
-Desc: not available
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20160511/92bfe6b1/attachment-0001.bin>
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: module_b.c
-Type: text/x-csrc
-Size: 22 bytes
-Desc: not available
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20160511/92bfe6b1/attachment-0002.bin>
--------------- next part --------------
-/* Remove const from arguments passed by value */
-@ rule1 @
-identifier fi, I;
-type T;
-@@
- fi ( ...,
--	const T
-+	T
-	I
-	,...
- )
- { ... }
+[0] https://backports.wiki.kernel.org
+[1] https://backports.wiki.kernel.org/index.php/Documentation/packaging
+[2] https://backports.wiki.kernel.org/index.php/Documentation/integration
 
--------------- next part --------------
-/* Remove const from arguments passed by value */
-@ rule1 @
-identifier fi, I;
-type T;
-@@
- fi ( ...,
--	const T
-+	T
-	I
-	,...
- ) ;
+  Luis
