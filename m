@@ -1,66 +1,61 @@
-From: nicstange@gmail.com (Nicolai Stange)
-Date: Wed, 18 May 2016 18:32:15 +0200
-Subject: [Cocci] [PATCH v6 2/8] debugfs: prevent access to removed
-	files' private data
-In-Reply-To: <573C87B8.902@oracle.com> (Sasha Levin's message of "Wed, 18 May
- 2016 11:18:16 -0400")
-References: <1458652280-19785-1-git-send-email-nicstange@gmail.com>
- <1458652280-19785-3-git-send-email-nicstange@gmail.com>
- <573C80C8.6090307@oracle.com> <87r3czxvea.fsf@gmail.com>
- <573C87B8.902@oracle.com>
-Message-ID: <87mvnnxr74.fsf@gmail.com>
+From: mcgrof@kernel.org (Luis R. Rodriguez)
+Date: Wed, 18 May 2016 14:42:21 -0700
+Subject: [Cocci] [RFC 1/3] tests: add test to remove single statement from
+	branch
+In-Reply-To: <1463607743-11947-1-git-send-email-mcgrof@kernel.org>
+References: <1463607743-11947-1-git-send-email-mcgrof@kernel.org>
+Message-ID: <1463607743-11947-2-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Sasha Levin <sasha.levin@oracle.com> writes:
+At leaset with coccinelle 1.0.4 this test fails with
+two issues, one is the return statement is shifted,
+another is debatable -- an empty branch statement is
+left. This is funtional however its debatable if this
+is desirable by default.
 
-> On 05/18/2016 11:01 AM, Nicolai Stange wrote:
->> Thanks a million for reporting!
->> 
->> 1.) Do you have lockdep enabled?
->
-> Yup, nothing there.
->
->> 2.) Does this happen before or after userspace init has been spawned,
->>     i.e. does the lockup happen at debugfs file creation time or
->>     possibly at usage time?
->
-> So I looked closer, and it seems to happen after starting syzkaller, which
-> as far as I know tries to open many different debugfs files.
->
-> Is there debug code I can add it that'll help us figure out what's up?
+Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
+---
+ tests/remove-code-in-branch1.c     | 7 +++++++
+ tests/remove-code-in-branch1.cocci | 4 ++++
+ tests/remove-code-in-branch1.res   | 4 ++++
+ 3 files changed, 15 insertions(+)
+ create mode 100644 tests/remove-code-in-branch1.c
+ create mode 100644 tests/remove-code-in-branch1.cocci
+ create mode 100644 tests/remove-code-in-branch1.res
 
-Could you try the patch below? I stared at the new full_proxy_open() for
-a while now and had to recognize the fact that if the original real_fops'
-->open() fails, then its owning module's reference won't ever get
-dropped :(
-
-diff --git a/fs/debugfs/file.c b/fs/debugfs/file.c
-index 6eb58a8..2e663d4 100644
---- a/fs/debugfs/file.c
-+++ b/fs/debugfs/file.c
-@@ -263,10 +263,14 @@ static int full_proxy_open(struct inode *inode, struct file *filp)
-        if (real_fops->open) {
-                r = real_fops->open(inode, filp);
-
--               if (filp->f_op != proxy_fops) {
-+               if (r) {
-+                       replace_fops(filp, d_inode(dentry)->i_fop);
-+                       goto free_proxy;
-+               } else if (filp->f_op != proxy_fops) {
-                        /* No protection against file removal anymore. */
-                        WARN(1, "debugfs file owner replaced proxy fops: %pd",
-                                dentry);
-+                       replace_fops(filp, d_inode(dentry)->i_fop);
-                        goto free_proxy;
-                }
-        }
-
-
-I don't see directly how this could lead to lockups, but I think it's
-better to rule out the obvious before inserting more or less random
-printks...
-
-Thank you very much again,
-
-Nicolai
+diff --git a/tests/remove-code-in-branch1.c b/tests/remove-code-in-branch1.c
+new file mode 100644
+index 000000000000..83840bdd99ac
+--- /dev/null
++++ b/tests/remove-code-in-branch1.c
+@@ -0,0 +1,7 @@
++int main(void)
++{
++	if (a > 1)
++		c();
++
++	return 0;
++}
+diff --git a/tests/remove-code-in-branch1.cocci b/tests/remove-code-in-branch1.cocci
+new file mode 100644
+index 000000000000..b3f03523ac92
+--- /dev/null
++++ b/tests/remove-code-in-branch1.cocci
+@@ -0,0 +1,4 @@
++ at r@
++@@
++
++-c();
+diff --git a/tests/remove-code-in-branch1.res b/tests/remove-code-in-branch1.res
+new file mode 100644
+index 000000000000..31dbf45bf99c
+--- /dev/null
++++ b/tests/remove-code-in-branch1.res
+@@ -0,0 +1,4 @@
++int main(void)
++{
++	return 0;
++}
+-- 
+2.7.2
