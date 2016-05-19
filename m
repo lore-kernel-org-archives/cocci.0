@@ -1,25 +1,29 @@
-From: mcgrof@suse.com (Luis R. Rodriguez)
-Date: Fri, 20 May 2016 00:47:47 +0200
-Subject: [Cocci] [RFC 2/3] tests: add basic series of tests for exists
- and forall
-In-Reply-To: <alpine.DEB.2.10.1605191235180.2865@hadrien>
+From: mcgrof@kernel.org (Luis R. Rodriguez)
+Date: Fri, 20 May 2016 00:53:31 +0200
+Subject: [Cocci] [RFC 3/3] coccinelle: add control flow documentation
+In-Reply-To: <17faa474-e8f4-1cc0-b585-3c0840d44d00@users.sourceforge.net>
 References: <1463607743-11947-1-git-send-email-mcgrof@kernel.org>
- <1463607743-11947-3-git-send-email-mcgrof@kernel.org>
- <alpine.DEB.2.10.1605191235180.2865@hadrien>
-Message-ID: <20160519224747.GI11948@wotan.suse.de>
+ <1463607743-11947-4-git-send-email-mcgrof@kernel.org>
+ <17faa474-e8f4-1cc0-b585-3c0840d44d00@users.sourceforge.net>
+Message-ID: <20160519225331.GJ11948@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, May 19, 2016 at 12:35:58PM +0200, Julia Lawall wrote:
-> On Wed, 18 May 2016, Luis R. Rodriguez wrote:
+On Thu, May 19, 2016 at 09:36:50AM +0200, SF Markus Elfring wrote:
+> > +this rule by providing additional requirements and usign ellipses in between.
 > 
-> > This should not only help test but also demo use of exists
-> > and forall.
-> 
-> Thanks for the examples.  But should it go in tests or in demos?  Demos
-> could be better if the main purpose is to help the user understand exists
-> and forall.
+> Will the wording "using" be better here?
 
-Sure thing, will move!
+Fixed.
+
+> > +or that the statements in between must be present at leaset once (<+... ...+).
+> 
+> Please fix another typo: least.
+
+Fixed.
+
+> How do you think about to add any references (or links) for this functionality?
+
+Please feel free to follow up with patches, preferably examples.
 
   Luis
