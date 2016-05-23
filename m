@@ -1,59 +1,76 @@
 From: ydroneaud@opteya.com (Yann Droneaud)
-Date: Mon, 23 May 2016 17:07:21 +0200
-Subject: [Cocci] [PATCH v2 3/3] coccinelle: catch krealloc() on devm_*()
-	allocated memory
+Date: Mon, 23 May 2016 17:07:20 +0200
+Subject: [Cocci] [PATCH v2 2/3] coccinelle: recognize more devm_* memory
+	allocation functions
 In-Reply-To: <cover.1464013817.git.ydroneaud@opteya.com>
 References: <cover.1464013817.git.ydroneaud@opteya.com>
-Message-ID: <9a230c4f8a38b6a029bec56b7a005d2e2cd7a324.1464013817.git.ydroneaud@opteya.com>
+Message-ID: <ac950d1d8fca04ecc903f97083cb539ba538e7c2.1464013817.git.ydroneaud@opteya.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-krealloc() must not be used against devm_*() allocated
-memory regions:
+Updates free/devm_free.cocci to recognize functions added by:
 
-- if a bigger memory is to be allocated, krealloc() and
-  __krealloc() could return a different pointer than the
-  one given to them, creating a memory region which is not
-  managed, thus it will not be automatically released on
-  device removal.
+- commit 64c862a839a8 ('devres: add kernel standard devm_k.alloc functions')
+- commit e31108cad3de ('devres: introduce API "devm_kstrdup"')
+- commit 3046365bb470 ('devres: introduce API "devm_kmemdup')
+- commit 43339bed7010 ('devres: Add devm_get_free_pages API')
+- commit 75f2a4ead5d5 ('devres: Add devm_kasprintf and devm_kvasprintf API')
 
-- if a bigger memory is to be allocated, krealloc() could
-  kfree() the managed memory region which is passed to it.
-  The old pointer is left registered as a resource for the
-  device. On device removal, this dangling pointer will be
-  used and an unrelated memory region could be released.
+See also Documentation/driver-model/devres.txt
 
-- if the requested size is equal to 0, krealloc() can also
-  just behave like kfree(). Here too, the old pointer is
-  kept associated with the device. On device removal, this
-  invalid pointer will be used and an unrelated memory
-  region could be released.
-
-For all these reasons, krealloc() must not be used on a
-pointer returned by devm_*() functions.
-
-Cc: Tejun Heo <tj@kernel.org>
-Cc: Pekka Enberg <penberg@cs.helsinki.fi>
+Cc: Joe Perches <joe@perches.com>
+Cc: Manish Badarkhe <badarkhe.manish@gmail.com>
+Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Eli Billauer <eli.billauer@gmail.com>
+Cc: Himangi Saraogi <himangi774@gmail.com>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Wolfram Sang <w.sang@pengutronix.de>
+Cc: Daniel Thompson <daniel.thompson@linaro.org>
 Acked-by: Julia Lawall <julia.lawall@lip6.fr>
 Signed-off-by: Yann Droneaud <ydroneaud@opteya.com>
 ---
- scripts/coccinelle/free/devm_free.cocci | 4 ++++
- 1 file changed, 4 insertions(+)
+ scripts/coccinelle/free/devm_free.cocci | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
 diff --git a/scripts/coccinelle/free/devm_free.cocci b/scripts/coccinelle/free/devm_free.cocci
-index 3794cd97494b..c990d2c7ee16 100644
+index 83c03adec1c5..3794cd97494b 100644
 --- a/scripts/coccinelle/free/devm_free.cocci
 +++ b/scripts/coccinelle/free/devm_free.cocci
-@@ -66,6 +66,10 @@ position p;
+@@ -29,8 +29,24 @@ expression x;
+ @@
+ 
+ (
++ x = devm_kmalloc(...)
++|
++ x = devm_kvasprintf(...)
++|
++ x = devm_kasprintf(...)
++|
+  x = devm_kzalloc(...)
+ |
++ x = devm_kmalloc_array(...)
++|
++ x = devm_kcalloc(...)
++|
++ x = devm_kstrdup(...)
++|
++ x = devm_kmemdup(...)
++|
++ x = devm_get_free_pages(...)
++|
+  x = devm_request_irq(...)
+ |
+  x = devm_ioremap(...)
+@@ -50,6 +66,10 @@ position p;
  |
  * kzfree at p(x)
  |
-+* __krealloc at p(x, ...)
++* free_pages at p(x, ...)
 +|
-+* krealloc at p(x, ...)
++* free_page at p(x)
 +|
- * free_pages at p(x, ...)
+ * free_irq at p(x)
  |
- * free_page at p(x)
+ * iounmap at p(x)
 -- 
 2.7.4
