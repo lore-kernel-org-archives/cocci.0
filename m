@@ -1,23 +1,33 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Mon, 23 May 2016 09:43:43 +0200
-Subject: [Cocci] [PATCH v2 3/3] coccinelle: add control flow
-	documentation
-In-Reply-To: <alpine.DEB.2.10.1605211749200.2869@hadrien>
-References: <1463699336-16151-1-git-send-email-mcgrof@kernel.org>
- <1463699336-16151-4-git-send-email-mcgrof@kernel.org>
- <alpine.DEB.2.10.1605211552370.2868@hadrien>
- <8873535d-e256-c396-eb8f-300a0f661515@users.sourceforge.net>
- <alpine.DEB.2.10.1605211749200.2869@hadrien>
-Message-ID: <d7e1f54e-b70a-4742-b8ab-2ddde7c879b5@users.sourceforge.net>
+Date: Mon, 23 May 2016 13:50:14 +0200
+Subject: [Cocci] Deletion of indication for "optional" syntax elements?
+In-Reply-To: <alpine.DEB.2.10.1605121818060.3062@hadrien>
+References: <20160511031419.GY3766@xsjsorenbubuntu>
+ <alpine.DEB.2.10.1605110738430.5606@hadrien>
+ <20160511055515.GA3766@xsjsorenbubuntu>
+ <alpine.DEB.2.10.1605110758230.5606@hadrien>
+ <20160511060438.GB3766@xsjsorenbubuntu>
+ <alpine.DEB.2.10.1605111148220.5036@hadrien>
+ <20160511184830.GG3766@xsjsorenbubuntu>
+ <66c62c8e-43cd-dbab-7a0a-8d884362a141@users.sourceforge.net>
+ <20160512055423.GH3766@xsjsorenbubuntu>
+ <alpine.DEB.2.10.1605120905380.3316@hadrien>
+ <20160512161637.GN3766@xsjsorenbubuntu>
+ <alpine.DEB.2.10.1605121818060.3062@hadrien>
+Message-ID: <f7deb8c8-4b1d-b589-7d0c-53cc2cfe91c7@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> I edited the text somewhat.  Questions like "Do you want to rephrase
-> this?" I don't really know what to do with.
+>> Looks to me then that the grammar documentation should not indicate
+>> the fn_ctype as optional for function prototypes
+>> (http://coccinelle.lip6.fr/docs/main_grammar006.html)?
+> Indeed.  I'll fix that.
 
-I find a commit with a subject like "adjust the control flow discussion
-a little" also interesting for this issue.
-https://github.com/coccinelle/coccinelle/commit/c182a2eed0310c2e0203c817b02d46bfbe5f1453
+Would you like to delete the specification "\opt" at a few places?
+https://github.com/coccinelle/coccinelle/blob/df648d123ac4dad16a855f0c5f3adf42ce602b29/docs/manual/cocci_syntax.tex#L1173
 
 Regards,
 Markus
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20160523/29deafa2/attachment.html>
