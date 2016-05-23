@@ -1,53 +1,59 @@
 From: ydroneaud@opteya.com (Yann Droneaud)
-Date: Mon, 23 May 2016 17:07:18 +0200
-Subject: [Cocci] [PATCH v2 0/3] coccinelle: catchup on memory allocation
-	functions
-Message-ID: <cover.1464013817.git.ydroneaud@opteya.com>
+Date: Mon, 23 May 2016 17:07:21 +0200
+Subject: [Cocci] [PATCH v2 3/3] coccinelle: catch krealloc() on devm_*()
+	allocated memory
+In-Reply-To: <cover.1464013817.git.ydroneaud@opteya.com>
+References: <cover.1464013817.git.ydroneaud@opteya.com>
+Message-ID: <9a230c4f8a38b6a029bec56b7a005d2e2cd7a324.1464013817.git.ydroneaud@opteya.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi,
+krealloc() must not be used against devm_*() allocated
+memory regions:
 
-Please find updated patches that remove coccicheck's
-blindness regarding the following functions:
-- kzfree()
-- krealloc()
-- __krealloc()
-- devm_kmalloc()
-- devm_kvasprintf()
-- devm_kasprintf()
-- devm_kmalloc_array()
-- devm_kcalloc()
-- devm_kstrdup()
-- devm_kmemdup()
-- devm_get_free_pages()
-- free_pages()
-- free_page()
+- if a bigger memory is to be allocated, krealloc() and
+  __krealloc() could return a different pointer than the
+  one given to them, creating a memory region which is not
+  managed, thus it will not be automatically released on
+  device removal.
 
-Changes since v1 [1]:
-- add kzfree() to ifnullfree.cocci
-- added acked-by
+- if a bigger memory is to be allocated, krealloc() could
+  kfree() the managed memory region which is passed to it.
+  The old pointer is left registered as a resource for the
+  device. On device removal, this dangling pointer will be
+  used and an unrelated memory region could be released.
 
- (note: v1 was a single patch update to v0)
+- if the requested size is equal to 0, krealloc() can also
+  just behave like kfree(). Here too, the old pointer is
+  kept associated with the device. On device removal, this
+  invalid pointer will be used and an unrelated memory
+  region could be released.
 
-Changes since v0 [2]:
-- don't use regular expression in kfree.cocci
+For all these reasons, krealloc() must not be used on a
+pointer returned by devm_*() functions.
 
-[1] http://lkml.kernel.org/r/1456150168-24028-1-git-send-email-ydroneaud at opteya.com
-[2] http://lkml.kernel.org/r/cover.1455638829.git.ydroneaud at opteya.com
+Cc: Tejun Heo <tj@kernel.org>
+Cc: Pekka Enberg <penberg@cs.helsinki.fi>
+Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+Signed-off-by: Yann Droneaud <ydroneaud@opteya.com>
+---
+ scripts/coccinelle/free/devm_free.cocci | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Regards.
-
-Yann Droneaud (3):
-  coccinelle: also catch kzfree() issues
-  coccinelle: recognize more devm_* memory allocation functions
-  coccinelle: catch krealloc() on devm_*() allocated memory
-
- scripts/coccinelle/free/devm_free.cocci  | 26 ++++++++++++++++++++++++++
- scripts/coccinelle/free/ifnullfree.cocci |  4 +++-
- scripts/coccinelle/free/kfree.cocci      | 18 +++++++++++++++---
- scripts/coccinelle/free/kfreeaddr.cocci  |  6 +++++-
- 4 files changed, 49 insertions(+), 5 deletions(-)
-
+diff --git a/scripts/coccinelle/free/devm_free.cocci b/scripts/coccinelle/free/devm_free.cocci
+index 3794cd97494b..c990d2c7ee16 100644
+--- a/scripts/coccinelle/free/devm_free.cocci
++++ b/scripts/coccinelle/free/devm_free.cocci
+@@ -66,6 +66,10 @@ position p;
+ |
+ * kzfree at p(x)
+ |
++* __krealloc at p(x, ...)
++|
++* krealloc at p(x, ...)
++|
+ * free_pages at p(x, ...)
+ |
+ * free_page at p(x)
 -- 
 2.7.4
