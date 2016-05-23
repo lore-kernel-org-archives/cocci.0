@@ -1,138 +1,47 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 23 May 2016 17:18:07 +0200 (CEST)
-Subject: [Cocci] [PATCH v2 1/3] coccinelle: also catch kzfree() issues
-In-Reply-To: <d3466c47b1c5bbf9a7c4cb69a78d392327748669.1464013817.git.ydroneaud@opteya.com>
-References: <cover.1464013817.git.ydroneaud@opteya.com>
- <d3466c47b1c5bbf9a7c4cb69a78d392327748669.1464013817.git.ydroneaud@opteya.com>
-Message-ID: <alpine.DEB.2.10.1605231717290.12010@hadrien>
+From: mcgrof@kernel.org (Luis R. Rodriguez)
+Date: Mon, 23 May 2016 18:37:22 +0200
+Subject: [Cocci] github update
+In-Reply-To: <alpine.DEB.2.02.1605222116490.2250@localhost6.localdomain6>
+References: <alpine.DEB.2.02.1605222116490.2250@localhost6.localdomain6>
+Message-ID: <20160523163721.GT11948@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On Sun, May 22, 2016 at 09:17:47PM +0200, Julia Lawall wrote:
+> A number of changes have been made to the github version of Coccinelle.  
+> See changes.txt.  A new release will be available shortly.
+
+I can't get it to compile yet with OpenSUSE.
+
+Without menhir:
+
+/home/mcgrof/devel/coccinelle/setup/fake-menhir.sh menhir --ocamlc "/usr/bin/ocamlc.opt" --ocamldep "/usr/bin/ocamldep" --table --base parser_cocci_menhir parser_cocci_menhir.mly
+error: the file parser_cocci_menhir.ml is needed, which requires preprocessing by menhir to obtain it from parser_cocci_menhir.mly. However, menhir is not enabled.
+
+With menhir installed:
+
+make[5]: Entering directory '/sda3/home/mcgrof/devel/coccinelle/tools/spgen'
 
 
-On Mon, 23 May 2016, Yann Droneaud wrote:
+	Compiling spgen in native code...
 
-> Since commit 3ef0e5ba4673 ('slab: introduce kzfree()'),
-> kfree() is no more the only function to be considered:
-> kzfree() should be recognized too.
->
-> In particular, kzfree() must not be called on memory
-> allocated through devm_*() functions.
->
-> Cc: Johannes Weiner <hannes@cmpxchg.org>
-> Signed-off-by: Yann Droneaud <ydroneaud@opteya.com>
 
-Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+make -C source all.opt
+make[6]: Entering directory '/sda3/home/mcgrof/devel/coccinelle/tools/spgen/source'
+/usr/bin/ocamlopt.opt -g -I ../../../commons -I ../../../commons/ocamlextra -I ../../../globals -I ../../../parsing_cocci -I ../../../parsing_c -I /home/mcgrof/devel/coccinelle/bundles/pcre/ -o spgen.opt str.cmxa unix.cmxa bigarray.cmxa nums.cmxa /home/mcgrof/devel/coccinelle/bundles/pcre//pcre.cmxa /usr/lib64/ocaml/dynlink.cmxa ../../../commons/commons.cmxa ../../../globals/globals.cmxa ../../../parsing_cocci/cocci_parser.cmxa ../../../parsing_c/parsing_c.cmxa spgen_lexer.ml globals.mli ast_tostring.mli detect_patch.mli meta_variable.mli snapshot.mli user_input.mli position_generator.mli disj_generator.mli rule_body.mli rule_header.mli context_rule.mli script_rule.mli file_transform.mli spgen_interactive.mli spgen_config.mli spgen.mli spgen_test.mli globals.ml ast_tostring.ml detect_patch.ml meta_variable.ml snapshot.ml user_input.ml position_generator.ml disj_generator.ml rule_body.ml rule_header.ml context_rule.ml script_rule.ml file_transform.ml spgen_interactive.ml spgen_config.ml spgen.ml spgen_test.ml main.ml
+^A/home/mcgrof/devel/coccinelle/bundles/pcre//pcre.a(pcre.o): In function `camlPcre__loop_1424':
+(.text+0xf47): undefined reference to `pcre_exec_stub'
+/home/mcgrof/devel/coccinelle/bundles/pcre//pcre.a(pcre.o): In function `camlPcre__loop_1475':
+(.text+0x1317): undefined reference to `pcre_exec_stub'
+/home/mcgrof/devel/coccinelle/bundles/pcre//pcre.a(pcre.o): In function `camlPcre__loop_1517':
+(.text+0x1667): undefined reference to `pcre_exec_stub'
+/home/mcgrof/devel/coccinelle/bundles/pcre//pcre.a(pcre.o): In function `camlPcre__loop_1683':
+(.text+0x1ba3): undefined reference to `pcre_exec_stub'
+/home/mcgrof/devel/coccinelle/bundles/pcre//pcre.a(pcre.o): In function `camlPcre__loop_1683':
+(.text+0x1ceb): undefined reference to `pcre_exec_stub'
+/home/mcgrof/devel/coccinelle/bundles/pcre//pcre.a(pcre.o):(.text+0x1e58): more undefined references to `pcre_exec_stub' follow
+/home/mcgrof/devel/coccinelle/bundles/pcre//pcre.a(pcre.o): In function `camlPcre__fun_1956':
+(.text+0x2a4d): undefined reference to `pcre_get_stringnumber_stub'
 
-> ---
->  scripts/coccinelle/free/devm_free.cocci  |  2 ++
->  scripts/coccinelle/free/ifnullfree.cocci |  4 +++-
->  scripts/coccinelle/free/kfree.cocci      | 18 +++++++++++++++---
->  scripts/coccinelle/free/kfreeaddr.cocci  |  6 +++++-
->  4 files changed, 25 insertions(+), 5 deletions(-)
->
-> diff --git a/scripts/coccinelle/free/devm_free.cocci b/scripts/coccinelle/free/devm_free.cocci
-> index 3d9349012bb3..83c03adec1c5 100644
-> --- a/scripts/coccinelle/free/devm_free.cocci
-> +++ b/scripts/coccinelle/free/devm_free.cocci
-> @@ -48,6 +48,8 @@ position p;
->  (
->  * kfree at p(x)
->  |
-> +* kzfree at p(x)
-> +|
->  * free_irq at p(x)
->  |
->  * iounmap at p(x)
-> diff --git a/scripts/coccinelle/free/ifnullfree.cocci b/scripts/coccinelle/free/ifnullfree.cocci
-> index 52bd235286fa..14a4cd98e83b 100644
-> --- a/scripts/coccinelle/free/ifnullfree.cocci
-> +++ b/scripts/coccinelle/free/ifnullfree.cocci
-> @@ -20,6 +20,8 @@ expression E;
->  (
->    kfree(E);
->  |
-> +  kzfree(E);
-> +|
->    debugfs_remove(E);
->  |
->    debugfs_remove_recursive(E);
-> @@ -39,7 +41,7 @@ position p;
->  @@
->
->  * if (E != NULL)
-> -*	\(kfree at p\|debugfs_remove at p\|debugfs_remove_recursive at p\|
-> +*	\(kfree at p\|kzfree at p\|debugfs_remove at p\|debugfs_remove_recursive at p\|
->  *         usb_free_urb at p\|kmem_cache_destroy at p\|mempool_destroy at p\|
->  *         dma_pool_destroy at p\)(E);
->
-> diff --git a/scripts/coccinelle/free/kfree.cocci b/scripts/coccinelle/free/kfree.cocci
-> index 577b78056990..ac438da4fd7b 100644
-> --- a/scripts/coccinelle/free/kfree.cocci
-> +++ b/scripts/coccinelle/free/kfree.cocci
-> @@ -20,7 +20,11 @@ expression E;
->  position p1;
->  @@
->
-> -kfree at p1(E)
-> +(
-> +* kfree at p1(E)
-> +|
-> +* kzfree at p1(E)
-> +)
->
->  @print expression@
->  constant char [] c;
-> @@ -60,7 +64,11 @@ position ok;
->  @@
->
->  while (1) { ...
-> -  kfree at ok(E)
-> +(
-> +* kfree at ok(E)
-> +|
-> +* kzfree at ok(E)
-> +)
->    ... when != break;
->        when != goto l;
->        when forall
-> @@ -74,7 +82,11 @@ statement S;
->  position free.p1!=loop.ok,p2!={print.p,sz.p};
->  @@
->
-> -kfree at p1(E,...)
-> +(
-> +* kfree at p1(E,...)
-> +|
-> +* kzfree at p1(E,...)
-> +)
->  ...
->  (
->   iter(...,subE,...) S // no use
-> diff --git a/scripts/coccinelle/free/kfreeaddr.cocci b/scripts/coccinelle/free/kfreeaddr.cocci
-> index ce8aacc314cb..d46063b1db8b 100644
-> --- a/scripts/coccinelle/free/kfreeaddr.cocci
-> +++ b/scripts/coccinelle/free/kfreeaddr.cocci
-> @@ -16,7 +16,11 @@ identifier f;
->  position p;
->  @@
->
-> +(
->  * kfree at p(&e->f)
-> +|
-> +* kzfree at p(&e->f)
-> +)
->
->  @script:python depends on org@
->  p << r.p;
-> @@ -28,5 +32,5 @@ cocci.print_main("kfree",p)
->  p << r.p;
->  @@
->
-> -msg = "ERROR: kfree of structure field"
-> +msg = "ERROR: invalid free of structure field"
->  coccilib.report.print_report(p[0],msg)
-> --
-> 2.7.4
->
->
+
+  Luis
