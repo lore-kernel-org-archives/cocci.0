@@ -1,76 +1,138 @@
-From: ydroneaud@opteya.com (Yann Droneaud)
-Date: Mon, 23 May 2016 17:07:20 +0200
-Subject: [Cocci] [PATCH v2 2/3] coccinelle: recognize more devm_* memory
-	allocation functions
-In-Reply-To: <cover.1464013817.git.ydroneaud@opteya.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Mon, 23 May 2016 17:18:07 +0200 (CEST)
+Subject: [Cocci] [PATCH v2 1/3] coccinelle: also catch kzfree() issues
+In-Reply-To: <d3466c47b1c5bbf9a7c4cb69a78d392327748669.1464013817.git.ydroneaud@opteya.com>
 References: <cover.1464013817.git.ydroneaud@opteya.com>
-Message-ID: <ac950d1d8fca04ecc903f97083cb539ba538e7c2.1464013817.git.ydroneaud@opteya.com>
+ <d3466c47b1c5bbf9a7c4cb69a78d392327748669.1464013817.git.ydroneaud@opteya.com>
+Message-ID: <alpine.DEB.2.10.1605231717290.12010@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Updates free/devm_free.cocci to recognize functions added by:
 
-- commit 64c862a839a8 ('devres: add kernel standard devm_k.alloc functions')
-- commit e31108cad3de ('devres: introduce API "devm_kstrdup"')
-- commit 3046365bb470 ('devres: introduce API "devm_kmemdup')
-- commit 43339bed7010 ('devres: Add devm_get_free_pages API')
-- commit 75f2a4ead5d5 ('devres: Add devm_kasprintf and devm_kvasprintf API')
 
-See also Documentation/driver-model/devres.txt
+On Mon, 23 May 2016, Yann Droneaud wrote:
 
-Cc: Joe Perches <joe@perches.com>
-Cc: Manish Badarkhe <badarkhe.manish@gmail.com>
-Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: Eli Billauer <eli.billauer@gmail.com>
-Cc: Himangi Saraogi <himangi774@gmail.com>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Wolfram Sang <w.sang@pengutronix.de>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>
+> Since commit 3ef0e5ba4673 ('slab: introduce kzfree()'),
+> kfree() is no more the only function to be considered:
+> kzfree() should be recognized too.
+>
+> In particular, kzfree() must not be called on memory
+> allocated through devm_*() functions.
+>
+> Cc: Johannes Weiner <hannes@cmpxchg.org>
+> Signed-off-by: Yann Droneaud <ydroneaud@opteya.com>
+
 Acked-by: Julia Lawall <julia.lawall@lip6.fr>
-Signed-off-by: Yann Droneaud <ydroneaud@opteya.com>
----
- scripts/coccinelle/free/devm_free.cocci | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
 
-diff --git a/scripts/coccinelle/free/devm_free.cocci b/scripts/coccinelle/free/devm_free.cocci
-index 83c03adec1c5..3794cd97494b 100644
---- a/scripts/coccinelle/free/devm_free.cocci
-+++ b/scripts/coccinelle/free/devm_free.cocci
-@@ -29,8 +29,24 @@ expression x;
- @@
- 
- (
-+ x = devm_kmalloc(...)
-+|
-+ x = devm_kvasprintf(...)
-+|
-+ x = devm_kasprintf(...)
-+|
-  x = devm_kzalloc(...)
- |
-+ x = devm_kmalloc_array(...)
-+|
-+ x = devm_kcalloc(...)
-+|
-+ x = devm_kstrdup(...)
-+|
-+ x = devm_kmemdup(...)
-+|
-+ x = devm_get_free_pages(...)
-+|
-  x = devm_request_irq(...)
- |
-  x = devm_ioremap(...)
-@@ -50,6 +66,10 @@ position p;
- |
- * kzfree at p(x)
- |
-+* free_pages at p(x, ...)
-+|
-+* free_page at p(x)
-+|
- * free_irq at p(x)
- |
- * iounmap at p(x)
--- 
-2.7.4
+> ---
+>  scripts/coccinelle/free/devm_free.cocci  |  2 ++
+>  scripts/coccinelle/free/ifnullfree.cocci |  4 +++-
+>  scripts/coccinelle/free/kfree.cocci      | 18 +++++++++++++++---
+>  scripts/coccinelle/free/kfreeaddr.cocci  |  6 +++++-
+>  4 files changed, 25 insertions(+), 5 deletions(-)
+>
+> diff --git a/scripts/coccinelle/free/devm_free.cocci b/scripts/coccinelle/free/devm_free.cocci
+> index 3d9349012bb3..83c03adec1c5 100644
+> --- a/scripts/coccinelle/free/devm_free.cocci
+> +++ b/scripts/coccinelle/free/devm_free.cocci
+> @@ -48,6 +48,8 @@ position p;
+>  (
+>  * kfree at p(x)
+>  |
+> +* kzfree at p(x)
+> +|
+>  * free_irq at p(x)
+>  |
+>  * iounmap at p(x)
+> diff --git a/scripts/coccinelle/free/ifnullfree.cocci b/scripts/coccinelle/free/ifnullfree.cocci
+> index 52bd235286fa..14a4cd98e83b 100644
+> --- a/scripts/coccinelle/free/ifnullfree.cocci
+> +++ b/scripts/coccinelle/free/ifnullfree.cocci
+> @@ -20,6 +20,8 @@ expression E;
+>  (
+>    kfree(E);
+>  |
+> +  kzfree(E);
+> +|
+>    debugfs_remove(E);
+>  |
+>    debugfs_remove_recursive(E);
+> @@ -39,7 +41,7 @@ position p;
+>  @@
+>
+>  * if (E != NULL)
+> -*	\(kfree at p\|debugfs_remove at p\|debugfs_remove_recursive at p\|
+> +*	\(kfree at p\|kzfree at p\|debugfs_remove at p\|debugfs_remove_recursive at p\|
+>  *         usb_free_urb at p\|kmem_cache_destroy at p\|mempool_destroy at p\|
+>  *         dma_pool_destroy at p\)(E);
+>
+> diff --git a/scripts/coccinelle/free/kfree.cocci b/scripts/coccinelle/free/kfree.cocci
+> index 577b78056990..ac438da4fd7b 100644
+> --- a/scripts/coccinelle/free/kfree.cocci
+> +++ b/scripts/coccinelle/free/kfree.cocci
+> @@ -20,7 +20,11 @@ expression E;
+>  position p1;
+>  @@
+>
+> -kfree at p1(E)
+> +(
+> +* kfree at p1(E)
+> +|
+> +* kzfree at p1(E)
+> +)
+>
+>  @print expression@
+>  constant char [] c;
+> @@ -60,7 +64,11 @@ position ok;
+>  @@
+>
+>  while (1) { ...
+> -  kfree at ok(E)
+> +(
+> +* kfree at ok(E)
+> +|
+> +* kzfree at ok(E)
+> +)
+>    ... when != break;
+>        when != goto l;
+>        when forall
+> @@ -74,7 +82,11 @@ statement S;
+>  position free.p1!=loop.ok,p2!={print.p,sz.p};
+>  @@
+>
+> -kfree at p1(E,...)
+> +(
+> +* kfree at p1(E,...)
+> +|
+> +* kzfree at p1(E,...)
+> +)
+>  ...
+>  (
+>   iter(...,subE,...) S // no use
+> diff --git a/scripts/coccinelle/free/kfreeaddr.cocci b/scripts/coccinelle/free/kfreeaddr.cocci
+> index ce8aacc314cb..d46063b1db8b 100644
+> --- a/scripts/coccinelle/free/kfreeaddr.cocci
+> +++ b/scripts/coccinelle/free/kfreeaddr.cocci
+> @@ -16,7 +16,11 @@ identifier f;
+>  position p;
+>  @@
+>
+> +(
+>  * kfree at p(&e->f)
+> +|
+> +* kzfree at p(&e->f)
+> +)
+>
+>  @script:python depends on org@
+>  p << r.p;
+> @@ -28,5 +32,5 @@ cocci.print_main("kfree",p)
+>  p << r.p;
+>  @@
+>
+> -msg = "ERROR: kfree of structure field"
+> +msg = "ERROR: invalid free of structure field"
+>  coccilib.report.print_report(p[0],msg)
+> --
+> 2.7.4
+>
+>
