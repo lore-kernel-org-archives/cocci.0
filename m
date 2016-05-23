@@ -1,5 +1,5 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Mon, 23 May 2016 14:52:58 +0200
+Date: Mon, 23 May 2016 15:15:14 +0200
 Subject: [Cocci] Deletion of indication for "optional" syntax elements?
 In-Reply-To: <alpine.DEB.2.10.1605231352590.2892@hadrien>
 References: <20160511031419.GY3766@xsjsorenbubuntu>
@@ -16,17 +16,16 @@ References: <20160511031419.GY3766@xsjsorenbubuntu>
  <alpine.DEB.2.10.1605121818060.3062@hadrien>
  <f7deb8c8-4b1d-b589-7d0c-53cc2cfe91c7@users.sourceforge.net>
  <alpine.DEB.2.10.1605231352590.2892@hadrien>
-Message-ID: <025c3336-490b-e523-e9fe-3212efc64400@users.sourceforge.net>
+Message-ID: <077744fe-fc4b-04f7-254d-585e3b2a7ec1@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> Would you like to delete the specification "\opt" at a few places?
->> https://github.com/coccinelle/coccinelle/blob/df648d123ac4dad16a855f0c5f3adf42ce602b29/docs/manual/cocci_syntax.tex#L1173
-> At what place do you have in mind?  The return type of a functin
-> definition really is optional.
+> At what place do you have in mind?
 
-Will it be sufficient to make the function return type a mandatory
-property for the syntax item "funproto"?
+Was an update for one place enough?
+
+more correct about requirements on function prototypes
+https://github.com/coccinelle/coccinelle/commit/51a2709600bc7e0051cabbebe0005ee61e235600
 
 Regards,
 Markus
