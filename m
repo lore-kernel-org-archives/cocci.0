@@ -1,7 +1,7 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 25 May 2016 09:18:11 +0200
+From: ohering@suse.de (Olaf Hering)
+Date: Tue, 24 May 2016 22:59:26 +0200
 Subject: [Cocci] Improvements for building the Coccinelle software
-In-Reply-To: <20160524205926.GA15029@suse.de>
+In-Reply-To: <81317386-8795-453e-713c-08911161c2b6@users.sourceforge.net>
 References: <alpine.DEB.2.02.1605232246310.2052@localhost6.localdomain6>
  <20160523211952.GY11948@wotan.suse.de>
  <alpine.DEB.2.02.1605232334130.2052@localhost6.localdomain6>
@@ -12,26 +12,19 @@ References: <alpine.DEB.2.02.1605232246310.2052@localhost6.localdomain6>
  <1361a24e-9dc5-db4f-d347-370db8d126dc@users.sourceforge.net>
  <20160524200828.GA7425@suse.de>
  <81317386-8795-453e-713c-08911161c2b6@users.sourceforge.net>
- <20160524205926.GA15029@suse.de>
-Message-ID: <1ad1bd94-7e35-e12e-c123-85c5700a659d@users.sourceforge.net>
+Message-ID: <20160524205926.GA15029@suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> The other usages of '[$]' (which seems to be some kind of escape) are fine.
+On Tue, May 24, SF Markus Elfring wrote:
 
-Thanks for such a clarification.
+> > What improvements do you have in mind?
+> 
+> Would you like to take another look at my previous bug reports and
+> corresponding update suggestions for the affected build scripts?
 
+The other usages of '[$]' (which seems to be some kind of escape) are
+fine. Its just the invocation of AC_COCCI_FINDTOOL with wrong arguments
+that needs fixing.
 
-> Its just the invocation of AC_COCCI_FINDTOOL with wrong arguments
-> that needs fixing.
-
-Will it be interesting to look at the circumstances under which this
-update candidate was found?
-
-I would appreciate if more corrections can be achieved for the build
-scripts at other places. I am curious on further progress in this
-software area.
-https://github.com/coccinelle/coccinelle/issues
-
-Regards,
-Markus
+Olaf
