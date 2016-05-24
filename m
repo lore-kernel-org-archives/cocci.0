@@ -1,89 +1,30 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 24 May 2016 10:39:01 +0200 (CEST)
-Subject: [Cocci] [PATCH v3] Coccinelle: noderef: Add new rules and
- correct the old rule
-In-Reply-To: <1464063557-5176-1-git-send-email-vaishali.thakkar@oracle.com>
-References: <1464063557-5176-1-git-send-email-vaishali.thakkar@oracle.com>
-Message-ID: <alpine.DEB.2.10.1605241038490.2997@hadrien>
+From: ohering@suse.de (Olaf Hering)
+Date: Tue, 24 May 2016 15:32:36 +0200
+Subject: [Cocci] github update
+In-Reply-To: <20160523214931.GA11948@wotan.suse.de>
+References: <alpine.DEB.2.02.1605222116490.2250@localhost6.localdomain6>
+ <20160523163721.GT11948@wotan.suse.de>
+ <alpine.DEB.2.02.1605232230510.2052@localhost6.localdomain6>
+ <CAB=NE6UA7+tMax4nGoznvGNwuD0VabuOP71zMzs8rmQS_9Ls9Q@mail.gmail.com>
+ <alpine.DEB.2.02.1605232246310.2052@localhost6.localdomain6>
+ <20160523211952.GY11948@wotan.suse.de>
+ <alpine.DEB.2.02.1605232334130.2052@localhost6.localdomain6>
+ <CAB=NE6Xt1iy2FtOq6DCvDnidh-r9Y+9KC1AFB=PccHVg4YXB1g@mail.gmail.com>
+ <alpine.DEB.2.02.1605232343420.2052@localhost6.localdomain6>
+ <20160523214931.GA11948@wotan.suse.de>
+Message-ID: <541922c4-84ae-cc7c-4baf-dbd7ace43961@suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+On 23.05.2016 23:49, Luis R. Rodriguez wrote:
+> On Mon, May 23, 2016 at 11:44:10PM +0200, Julia Lawall wrote:
+>> OK, thanks.  It looks like the relese notes for Coccinelle will have to
+>> discourage the use of 4.03...
+>
+> FWIW I was on ocaml-4.02 though. I'm now upgrading my system.
 
-On Tue, 24 May 2016, Vaishali Thakkar wrote:
+There is now a pullrq to fix a bug in configure.ac, and also a new pkg 
+named ocaml-parmap to replace the built-in copy. With this coccinelle 
+compiles for me.
 
-> Add new rules to detect the cases where sizeof is used in
-> function calls as a argument.
->
-> Also, for the patch mode third rule should behave same as
-> second rule with arguments reversed. So, change that as well.
->
-> Signed-off-by: Vaishali Thakkar <vaishali.thakkar@oracle.com>
-> ---
-> Changes since v2:
-> 	- Add rules for function calls. This will behave as
->           more general rules and covers cases which were
->           covered by the rule in previous versions of the patch
-> 	- Change subject and commit log accordingly.
-> Changes since v1:
-> 	- Declare i as an expression instead of identifier to
-> 	  cover more cases
-> ---
->  scripts/coccinelle/misc/noderef.cocci | 18 +++++++++++++++++-
->  1 file changed, 17 insertions(+), 1 deletion(-)
->
-> diff --git a/scripts/coccinelle/misc/noderef.cocci b/scripts/coccinelle/misc/noderef.cocci
-> index 80a831c..007f0de 100644
-> --- a/scripts/coccinelle/misc/noderef.cocci
-> +++ b/scripts/coccinelle/misc/noderef.cocci
-> @@ -16,6 +16,7 @@ virtual patch
->  @depends on patch@
->  expression *x;
->  expression f;
-> +expression i;
->  type T;
->  @@
->
-> @@ -30,15 +31,26 @@ f(...,(T)(x),...,sizeof(
->  + *x
->     ),...)
->  |
-> -f(...,sizeof(x),...,(T)(
-> +f(...,sizeof(
-> +- x
-> ++ *x
-> +   ),...,(T)(x),...)
-> +|
-> +f(...,(T)(x),...,i*sizeof(
->  - x
->  + *x
->     ),...)
-> +|
-> +f(...,i*sizeof(
-> +- x
-> ++ *x
-> +   ),...,(T)(x),...)
->  )
->
->  @r depends on !patch@
->  expression *x;
->  expression f;
-> +expression i;
->  position p;
->  type T;
->  @@
-> @@ -49,6 +61,10 @@ type T;
->  *f(...,(T)(x),...,sizeof at p(x),...)
->  |
->  *f(...,sizeof at p(x),...,(T)(x),...)
-> +|
-> +*f(...,(T)(x),...,i*sizeof at p(x),...)
-> +|
-> +*f(...,i*sizeof at p(x),...,(T)(x),...)
->  )
->
->  @script:python depends on org@
-> --
-> 2.1.4
->
->
+Olaf
