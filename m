@@ -1,10 +1,8 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 24 May 2016 22:23:30 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 25 May 2016 09:18:11 +0200
 Subject: [Cocci] Improvements for building the Coccinelle software
-In-Reply-To: <20160524200828.GA7425@suse.de>
-References: <alpine.DEB.2.02.1605232230510.2052@localhost6.localdomain6>
- <CAB=NE6UA7+tMax4nGoznvGNwuD0VabuOP71zMzs8rmQS_9Ls9Q@mail.gmail.com>
- <alpine.DEB.2.02.1605232246310.2052@localhost6.localdomain6>
+In-Reply-To: <20160524205926.GA15029@suse.de>
+References: <alpine.DEB.2.02.1605232246310.2052@localhost6.localdomain6>
  <20160523211952.GY11948@wotan.suse.de>
  <alpine.DEB.2.02.1605232334130.2052@localhost6.localdomain6>
  <CAB=NE6Xt1iy2FtOq6DCvDnidh-r9Y+9KC1AFB=PccHVg4YXB1g@mail.gmail.com>
@@ -13,51 +11,27 @@ References: <alpine.DEB.2.02.1605232230510.2052@localhost6.localdomain6>
  <541922c4-84ae-cc7c-4baf-dbd7ace43961@suse.de>
  <1361a24e-9dc5-db4f-d347-370db8d126dc@users.sourceforge.net>
  <20160524200828.GA7425@suse.de>
-Message-ID: <alpine.DEB.2.10.1605242221190.4826@hadrien>
+ <81317386-8795-453e-713c-08911161c2b6@users.sourceforge.net>
+ <20160524205926.GA15029@suse.de>
+Message-ID: <1ad1bd94-7e35-e12e-c123-85c5700a659d@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> The other usages of '[$]' (which seems to be some kind of escape) are fine.
+
+Thanks for such a clarification.
 
 
-On Tue, 24 May 2016, Olaf Hering wrote:
+> Its just the invocation of AC_COCCI_FINDTOOL with wrong arguments
+> that needs fixing.
 
-> On Tue, May 24, SF Markus Elfring wrote:
->
-> >
-> > > There is now a pullrq to fix a bug in configure.ac,
-> >
-> > I am curious when the script "setup/cocci.m4" will be updated.
-> > https://github.com/coccinelle/coccinelle/pull/70
->
-> When a new release is cut the release manager runs autogen.sh. In an
-> ideal world everyone runs autogen.sh because keeping
-> automake/autoconf/.. uptodate is cheap. The world failed to do that.
-> Thats why each and every pkg includes a configure script. Some store
-> them even in the SCM.
+Will it be interesting to look at the circumstances under which this
+update candidate was found?
 
-Sorry, but I'm not sure to understand what you are suggesting here (or
-if you are suggesting something).  In any case, the releases of Coccinelle
-should contain a configure script, to my recollection.  The github
-version does not.
+I would appreciate if more corrections can be achieved for the build
+scripts at other places. I am curious on further progress in this
+software area.
+https://github.com/coccinelle/coccinelle/issues
 
-thanks,
-julia
-
-> > Would you like to improve the involved build scripts any more?
-> > https://github.com/coccinelle/coccinelle/issues/42
->
-> What improvements do you have in mind?
->
-> > > and also a new pkg named ocaml-parmap to replace the built-in copy.
-> >
-> > How much do you care for software bundling?
->
-> If certain software has dependencies its not the task of that software
-> to provide them. So, drop the bundled stuff.
->
-> Olaf
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+Regards,
+Markus
