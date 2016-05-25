@@ -1,7 +1,7 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 25 May 2016 09:54:37 +0200
+From: ohering@suse.de (Olaf Hering)
+Date: Wed, 25 May 2016 10:02:07 +0200
 Subject: [Cocci] Improvements for building the Coccinelle software
-In-Reply-To: <206bb944-e03a-7ad4-ce46-c0c412e09ff6@suse.de>
+In-Reply-To: <6f448674-7488-dacd-b9cb-c4a855a2b577@users.sourceforge.net>
 References: <alpine.DEB.2.02.1605232246310.2052@localhost6.localdomain6>
  <20160523211952.GY11948@wotan.suse.de>
  <alpine.DEB.2.02.1605232334130.2052@localhost6.localdomain6>
@@ -15,19 +15,24 @@ References: <alpine.DEB.2.02.1605232246310.2052@localhost6.localdomain6>
  <20160524205926.GA15029@suse.de>
  <1ad1bd94-7e35-e12e-c123-85c5700a659d@users.sourceforge.net>
  <206bb944-e03a-7ad4-ce46-c0c412e09ff6@suse.de>
-Message-ID: <6f448674-7488-dacd-b9cb-c4a855a2b577@users.sourceforge.net>
+ <6f448674-7488-dacd-b9cb-c4a855a2b577@users.sourceforge.net>
+Message-ID: <0d327ebf-fe7e-f3a3-292d-75bd508d0b08@suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> Will it be interesting to look at the circumstances under which this
->> update candidate was found?
+On 25.05.2016 09:54, SF Markus Elfring wrote:
+>>> Will it be interesting to look at the circumstances under which this
+>>> update candidate was found?
+>>
+>> Just read the configure output?!
 >
-> Just read the configure output?!
+> Did any other software builder stumble also on such an open issues in
+> the years before?
 
-Did any other software builder stumble also on such an open issues in
-the years before?
+It just happend to work for them.
 
-How will the build scripts evolve further?
+> How will the build scripts evolve further?
 
-Regards,
-Markus
+We will continue to send pull requests as needed.
+
+Olaf
