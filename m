@@ -1,5 +1,5 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 26 May 2016 22:55:53 +0200 (CEST)
+Date: Fri, 27 May 2016 13:31:57 +0200 (CEST)
 Subject: [Cocci] new revision in github
 In-Reply-To: <20160526171202.GM11948@wotan.suse.de>
 References: <alpine.DEB.2.10.1605250948390.4766@hadrien>
@@ -8,7 +8,7 @@ References: <alpine.DEB.2.10.1605250948390.4766@hadrien>
  <CAB=NE6UBYU55LrG8E=VNWk8PJ2hOY0YAkKMiCozEgVNC_mGxgA@mail.gmail.com>
  <alpine.DEB.2.10.1605260708460.3561@hadrien>
  <20160526171202.GM11948@wotan.suse.de>
-Message-ID: <alpine.DEB.2.10.1605262255230.3118@hadrien>
+Message-ID: <alpine.DEB.2.10.1605271330570.3679@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -49,7 +49,6 @@ On Thu, 26 May 2016, Luis R. Rodriguez wrote:
 > OK so if on ocaml 4.1 ocaml-pcre is needed ? If so perhaps we can get
 > autoconf to stipulate this, otherwise this may be a recurring complaint.
 
-Hopefully the problem will simply be fixed.  I don't know if it is
-possible,
+This should be fixed, ie versions starting with 3.12 should be supported.
 
 julia
