@@ -1,5 +1,5 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 1 Jun 2016 17:54:47 +0200 (CEST)
+Date: Wed, 1 Jun 2016 18:07:31 +0200 (CEST)
 Subject: [Cocci] Linux scripts/coccinelle/locks/double_lock.cocci not
  working ?
 In-Reply-To: <CAGbDTvqSdgMoGePcSC-Hue0X7xkSDog+-ON9xb5pB=rCjRnKiA@mail.gmail.com>
@@ -12,7 +12,7 @@ References: <CAGbDTvoOPvqRYv9MeHst4Xp5oVGT-tRb9Mjnv3M5OhHh9rr+7Q@mail.gmail.com>
  <CAGbDTvo0QYoPFdAF30JSJqiY=+M312nQSy8Z8bCh+daLs7oo7A@mail.gmail.com>
  <alpine.DEB.2.10.1606011718180.2875@hadrien>
  <CAGbDTvqSdgMoGePcSC-Hue0X7xkSDog+-ON9xb5pB=rCjRnKiA@mail.gmail.com>
-Message-ID: <alpine.DEB.2.10.1606011754220.2875@hadrien>
+Message-ID: <alpine.DEB.2.10.1606011755460.2875@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -25,7 +25,14 @@ On Wed, 1 Jun 2016, Iago Abal wrote:
 > if not (List.is_empty virt) && List.is_empty !Flag.defined_virtual_rules
 > then <warning>
 
-OK, thanks for the suggestion.
+Actually, it's complex.  Eval_virt doesn't have all the information.  A
+common scenario is when you do iteration.  Then you can have some rules
+that depend on a virtual rule that is added in the iteration call.  But
+the iteration call is ocaml or python code.  The Coccinelle parser
+doesn't know what that code contains.
+
+It seems easier to just point the user to the fact that none of the
+virtual rules are defined, if a failure occurs.
 
 julia
 
