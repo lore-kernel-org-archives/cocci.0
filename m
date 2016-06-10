@@ -1,48 +1,32 @@
 From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Fri, 10 Jun 2016 13:42:09 -0700
-Subject: [Cocci] [PATCH 1/4] coccicheck: move spatch binary check up
-In-Reply-To: <1465591332-31113-1-git-send-email-mcgrof@kernel.org>
-References: <1465591332-31113-1-git-send-email-mcgrof@kernel.org>
-Message-ID: <1465591332-31113-2-git-send-email-mcgrof@kernel.org>
+Date: Fri, 10 Jun 2016 13:42:08 -0700
+Subject: [Cocci] [PATCH 0/4] scripts/coccicheck: add paramap and indexing
+	options
+Message-ID: <1465591332-31113-1-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-This has no functional changes. This is being done
-to enable us to later use spatch binary for some
-flag checking for certain features early on.
+coccicheck hasn't been updated for a while. The backports
+project has been using some features for a while now that
+we should be able to also take advantage of with coccicheck,
+the most important one is paramap support.
 
-Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
----
- scripts/coccicheck | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+glimpseindex stuff wasn't even building but today I decided
+to go tackle and fix that, the public open source release is
+is now working and you can optionally use that. Note that
+using git performs just as well, glimpseindex just shaves off
+a bit of time, however if since we can support it now we do it.
 
-diff --git a/scripts/coccicheck b/scripts/coccicheck
-index dd85a455b2ba..aa5e78fba270 100755
---- a/scripts/coccicheck
-+++ b/scripts/coccicheck
-@@ -7,6 +7,11 @@
- 
- SPATCH="`which ${SPATCH:=spatch}`"
- 
-+if [ ! -x "$SPATCH" ]; then
-+    echo 'spatch is part of the Coccinelle project and is available at http://coccinelle.lip6.fr/'
-+    exit 1
-+fi
-+
- trap kill_running SIGTERM SIGINT
- declare -a SPATCH_PID
- 
-@@ -51,11 +56,6 @@ if [ "$KBUILD_EXTMOD" != "" ] ; then
-     OPTIONS="--patch $srctree $OPTIONS"
- fi
- 
--if [ ! -x "$SPATCH" ]; then
--    echo 'spatch is part of the Coccinelle project and is available at http://coccinelle.lip6.fr/'
--    exit 1
--fi
--
- if [ "$MODE" = "" ] ; then
-     if [ "$ONLINE" = "0" ] ; then
- 	echo 'You have not explicitly specified the mode to use. Using default "report" mode.'
+Luis R. Rodriguez (4):
+  coccicheck: move spatch binary check up
+  coccicheck: enable paramap support
+  scripts: add glimpse.sh for indexing the kernel
+  coccicheck: add indexing enhancement options
+
+ scripts/coccicheck | 62 +++++++++++++++++++++++++++++++++++++++++++++++-------
+ scripts/glimpse.sh | 12 +++++++++++
+ 2 files changed, 66 insertions(+), 8 deletions(-)
+ create mode 100755 scripts/glimpse.sh
+
 -- 
 2.8.2
