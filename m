@@ -1,26 +1,28 @@
-From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Fri, 10 Jun 2016 23:49:00 +0200
+From: wsa@the-dreams.de (Wolfram Sang)
+Date: Fri, 10 Jun 2016 23:51:26 +0200
 Subject: [Cocci] [PATCH 4/4] coccicheck: add indexing enhancement options
-In-Reply-To: <20160610214357.GA1650@katana>
+In-Reply-To: <20160610214900.GH11948@wotan.suse.de>
 References: <1465591332-31113-1-git-send-email-mcgrof@kernel.org>
  <1465591332-31113-5-git-send-email-mcgrof@kernel.org>
  <alpine.DEB.2.02.1606102301090.2070@localhost6.localdomain6>
  <20160610211820.GG11948@wotan.suse.de>
  <alpine.DEB.2.02.1606102319480.2070@localhost6.localdomain6>
  <20160610214357.GA1650@katana>
-Message-ID: <20160610214900.GH11948@wotan.suse.de>
+ <20160610214900.GH11948@wotan.suse.de>
+Message-ID: <20160610215126.GB1650@katana>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, Jun 10, 2016 at 11:43:57PM +0200, Wolfram Sang wrote:
-> > > Well, slightly better.
-> > 
-> > No, it should be much better.  You would have to look at the standard 
-> 
-> I use id-utils regularly and it is indeed at least a magnitude better.
-> The indexing often pays off already with the first coccinelle run for
-> me. Highly recommended.
+> AFAICT coccinelle does not have integration support for id-utils though.
 
-AFAICT coccinelle does not have integration support for id-utils though.
+I used it just today ;) -- "--use-idutils ./ID"
 
-  Luis
+ID was generated with simple 'mkid -s'.
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 819 bytes
+Desc: not available
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20160610/7ed85c05/attachment.asc>
