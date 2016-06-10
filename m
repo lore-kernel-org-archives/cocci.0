@@ -1,32 +1,41 @@
 From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Fri, 10 Jun 2016 13:42:08 -0700
-Subject: [Cocci] [PATCH 0/4] scripts/coccicheck: add paramap and indexing
-	options
-Message-ID: <1465591332-31113-1-git-send-email-mcgrof@kernel.org>
+Date: Fri, 10 Jun 2016 13:42:11 -0700
+Subject: [Cocci] [PATCH 3/4] scripts: add glimpse.sh for indexing the kernel
+In-Reply-To: <1465591332-31113-1-git-send-email-mcgrof@kernel.org>
+References: <1465591332-31113-1-git-send-email-mcgrof@kernel.org>
+Message-ID: <1465591332-31113-4-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-coccicheck hasn't been updated for a while. The backports
-project has been using some features for a while now that
-we should be able to also take advantage of with coccicheck,
-the most important one is paramap support.
+Glimpse is a tool you can use to index the kernel. The tool
+was recently open sourced under the ISC license and can be
+obtained at:
 
-glimpseindex stuff wasn't even building but today I decided
-to go tackle and fix that, the public open source release is
-is now working and you can optionally use that. Note that
-using git performs just as well, glimpseindex just shaves off
-a bit of time, however if since we can support it now we do it.
+https://github.com/mcgrof/glimpse.git
 
-Luis R. Rodriguez (4):
-  coccicheck: move spatch binary check up
-  coccicheck: enable paramap support
-  scripts: add glimpse.sh for indexing the kernel
-  coccicheck: add indexing enhancement options
-
- scripts/coccicheck | 62 +++++++++++++++++++++++++++++++++++++++++++++++-------
- scripts/glimpse.sh | 12 +++++++++++
- 2 files changed, 66 insertions(+), 8 deletions(-)
+Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
+---
+ scripts/glimpse.sh | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
  create mode 100755 scripts/glimpse.sh
 
+diff --git a/scripts/glimpse.sh b/scripts/glimpse.sh
+new file mode 100755
+index 000000000000..5fd24e49f31b
+--- /dev/null
++++ b/scripts/glimpse.sh
+@@ -0,0 +1,12 @@
++#!/bin/bash
++
++DIR=$(dirname $(readlink -f $0))
++DIR="${DIR}/../"
++
++GLIMPSEINDEX="`which ${GLIMPSEINDEX:=glimpseindex}`"
++if [ ! -x "$GLIMPSEINDEX" ]; then
++	echo 'glimpseindex can be obtained at https://github.com/mcgrof/glimpse.git'
++	exit 1
++fi
++
++find $DIR/* -name "*.[ch]" | $GLIMPSEINDEX -o -H . -F
 -- 
 2.8.2
