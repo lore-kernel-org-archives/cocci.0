@@ -1,112 +1,97 @@
 From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Fri, 10 Jun 2016 13:42:12 -0700
-Subject: [Cocci] [PATCH 4/4] coccicheck: add indexing enhancement options
+Date: Fri, 10 Jun 2016 13:42:10 -0700
+Subject: [Cocci] [PATCH 2/4] coccicheck: enable paramap support
 In-Reply-To: <1465591332-31113-1-git-send-email-mcgrof@kernel.org>
 References: <1465591332-31113-1-git-send-email-mcgrof@kernel.org>
-Message-ID: <1465591332-31113-5-git-send-email-mcgrof@kernel.org>
+Message-ID: <1465591332-31113-3-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Enable indexing optimizations heuristics. Coccinelle has
-support to make use of its own enhanced "grep" mechanisms
-instead of using regular grep for searching code 'coccigrep',
-in practice though this seems to not perform better than
-regular grep however its expected to help with some use cases
-so we use that if you have no other indexing options in place
-available.
+Coccinelle has had paramap support since 1.0.2, this means
+it supports --jobs, enabling built-in multithreaded functionality,
+instead of needing one to script it out. Just look for --jobs
+in the help output to determine if this is supported.
 
-Since git has its own index, support for using 'git grep' has been
-added to Coccinelle, that should on average perform better than
-using the internal cocci grep, and regular grep. Lastly, Coccinelle
-has had support for glimpseindex for a long while, however the
-tool was previously closed source, its now open sourced, and
-provides the best performance, so support that if we can detect
-you have a glimpse index.
+Also enable the load balancing to be dynamic, so that if a
+thread finishes early we keep feeding it.
 
-These tests have been run on an 8 core system:
+If --jobs is not supported we fallback to the old mechanism.
+
+As a small example, prior to this change, on an 8-core system:
 
 Before:
 
 $ export COCCI=scripts/coccinelle/free/kfree.cocci
 $ time make coccicheck MODE=report
+...
 
-Before this patch with no indexing or anything:
+real    29m14.912s
+user    103m1.796s
+sys     0m4.464s
+
+After:
 
 real    16m22.435s
 user    128m30.060s
 sys     0m2.712s
 
-Using coccigrep (after this patch if you have no .git):
-
-real    16m27.650s
-user    128m47.904s
-sys     0m2.176s
-
-If you have .git and therefore use gitgrep:
-
-real    16m21.220s
-user    129m30.940s
-sys     0m2.060s
-
-And if you have a .glimpse_index:
-
-real    16m14.794s
-user    128m42.356s
-sys     0m1.880s
-
 Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
 ---
- scripts/coccicheck | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ scripts/coccicheck | 28 +++++++++++++++++++++++++---
+ 1 file changed, 25 insertions(+), 3 deletions(-)
 
 diff --git a/scripts/coccicheck b/scripts/coccicheck
-index eeb5fdc142ca..f31c9a152559 100755
+index aa5e78fba270..eeb5fdc142ca 100755
 --- a/scripts/coccicheck
 +++ b/scripts/coccicheck
-@@ -5,6 +5,8 @@
- # version 1.0.0-rc11.
- #
- 
-+DIR=$(dirname $(readlink -f $0))
-+DIR="${DIR}/../"
- SPATCH="`which ${SPATCH:=spatch}`"
- 
- if [ ! -x "$SPATCH" ]; then
-@@ -15,6 +17,20 @@ fi
- USE_JOBS="no"
- $SPATCH --help | grep "\-\-jobs" > /dev/null && USE_JOBS="yes"
- 
-+# 0. --use-glimpse currently outperforms all. Refer
-+#    to scripts/glimpse.sh for details.
-+# 1. Second best is --use-gitgrep, this is very comparable to --use-glimpse
-+# 2. Use --use-coccigrep if no indexing options are available and your
-+#    version of coccinelle supports it
-+USE_GLIMPSE="no"
-+$SPATCH --help | grep "\-\-use\-glimpse" > /dev/null && [ -f $DIR/.glimpse_index ] && USE_GLIMPSE="yes"
-+
-+USE_GITGREP="no"
-+$SPATCH --help | grep "\-\-use\-gitgrep" > /dev/null && [ -d $DIR/.git ] && USE_GITGREP="yes"
-+
-+USE_COCCIGREP="no"
-+$SPATCH --help | grep "\-\-use\-coccigrep" > /dev/null && USE_COCCIGREP="yes"
-+
- # The verbosity may be set by the environmental parameter V=
- # as for example with 'make V=1 coccicheck'
- 
-@@ -89,6 +105,14 @@ else
- 	OPTIONS="$OPTIONS --jobs $NPROC --chunksize 1"
+@@ -12,8 +12,8 @@ if [ ! -x "$SPATCH" ]; then
+     exit 1
  fi
  
-+if [ "$USE_GLIMPSE" = "yes" ]; then
-+	OPTIONS="$OPTIONS --use-glimpse"
-+elif [ "$USE_GITGREP" = "yes" ]; then
-+	OPTIONS="$OPTIONS --use-gitgrep"
-+elif [ "$USE_COCCIGREP" = "yes" ]; then
-+	OPTIONS="$OPTIONS --use-coccigrep"
+-trap kill_running SIGTERM SIGINT
+-declare -a SPATCH_PID
++USE_JOBS="no"
++$SPATCH --help | grep "\-\-jobs" > /dev/null && USE_JOBS="yes"
+ 
+ # The verbosity may be set by the environmental parameter V=
+ # as for example with 'make V=1 coccicheck'
+@@ -82,7 +82,21 @@ if [ "$ONLINE" = "0" ] ; then
+     echo ''
+ fi
+ 
+-run_cmd() {
++if [ "$USE_JOBS" = "no" ]; then
++	trap kill_running SIGTERM SIGINT
++	declare -a SPATCH_PID
++else
++	OPTIONS="$OPTIONS --jobs $NPROC --chunksize 1"
 +fi
 +
- run_cmd_paramap() {
++run_cmd_paramap() {
++	if [ $VERBOSE -ne 0 ] ; then
++		echo "Running ($NPROC in parallel): $@"
++	fi
++	$@
++}
++
++run_cmd_old() {
+ 	local i
  	if [ $VERBOSE -ne 0 ] ; then
  		echo "Running ($NPROC in parallel): $@"
+@@ -97,6 +111,14 @@ run_cmd() {
+ 	wait
+ }
+ 
++run_cmd() {
++	if [ "$USE_JOBS" = "yes" ]; then
++		run_cmd_paramap $@
++	else
++		run_cmd_old $@
++	fi
++}
++
+ kill_running() {
+ 	for i in $(seq 0 $(( NPROC - 1 )) ); do
+ 		if [ $VERBOSE -eq 2 ] ; then
 -- 
 2.8.2
