@@ -1,22 +1,48 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Thu, 9 Jun 2016 18:35:44 +0200
-Subject: [Cocci] [PATCH] docs/demos: add ++ transformation documentation
- and demos
-In-Reply-To: <alpine.DEB.2.10.1606091824200.3574@hadrien>
-References: <1465419046-24096-1-git-send-email-mcgrof@kernel.org>
- <18cc6dea-37f0-4073-dfe7-fd1be5603645@users.sourceforge.net>
- <alpine.DEB.2.10.1606091824200.3574@hadrien>
-Message-ID: <c2b7918f-831b-766e-cb7b-c6299a8cc8b7@users.sourceforge.net>
+From: mcgrof@kernel.org (Luis R. Rodriguez)
+Date: Fri, 10 Jun 2016 13:42:09 -0700
+Subject: [Cocci] [PATCH 1/4] coccicheck: move spatch binary check up
+In-Reply-To: <1465591332-31113-1-git-send-email-mcgrof@kernel.org>
+References: <1465591332-31113-1-git-send-email-mcgrof@kernel.org>
+Message-ID: <1465591332-31113-2-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->>> This perhaps is not the best demo for use of ++ but it
->>> should suffice.
->> Since which release of the Coccinelle software is this notation (double
->> plus) supported?
-> It's many years old.  As a random guess I would say 2010.
+This has no functional changes. This is being done
+to enable us to later use spatch binary for some
+flag checking for certain features early on.
 
-Is there any more functionality waiting for detailed descriptions?
+Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
+---
+ scripts/coccicheck | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-Regards,
-Markus
+diff --git a/scripts/coccicheck b/scripts/coccicheck
+index dd85a455b2ba..aa5e78fba270 100755
+--- a/scripts/coccicheck
++++ b/scripts/coccicheck
+@@ -7,6 +7,11 @@
+ 
+ SPATCH="`which ${SPATCH:=spatch}`"
+ 
++if [ ! -x "$SPATCH" ]; then
++    echo 'spatch is part of the Coccinelle project and is available at http://coccinelle.lip6.fr/'
++    exit 1
++fi
++
+ trap kill_running SIGTERM SIGINT
+ declare -a SPATCH_PID
+ 
+@@ -51,11 +56,6 @@ if [ "$KBUILD_EXTMOD" != "" ] ; then
+     OPTIONS="--patch $srctree $OPTIONS"
+ fi
+ 
+-if [ ! -x "$SPATCH" ]; then
+-    echo 'spatch is part of the Coccinelle project and is available at http://coccinelle.lip6.fr/'
+-    exit 1
+-fi
+-
+ if [ "$MODE" = "" ] ; then
+     if [ "$ONLINE" = "0" ] ; then
+ 	echo 'You have not explicitly specified the mode to use. Using default "report" mode.'
+-- 
+2.8.2
