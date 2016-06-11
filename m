@@ -1,30 +1,54 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sat, 11 Jun 2016 08:38:39 +0200
+From: mcgrof@kernel.org (Luis R. Rodriguez)
+Date: Fri, 10 Jun 2016 23:44:20 -0700
 Subject: [Cocci] Making conjunctions smaller
-In-Reply-To: <CAB=NE6V0etTQ+pAwGgsOQZc=z9wCDnJSCgPyRhCuN5DCp6Y+Bw@mail.gmail.com>
+In-Reply-To: <alpine.DEB.2.02.1606110709340.2114@localhost6.localdomain6>
 References: <CAB=NE6V0etTQ+pAwGgsOQZc=z9wCDnJSCgPyRhCuN5DCp6Y+Bw@mail.gmail.com>
-Message-ID: <505172b0-ca2d-d7c3-0b65-465c5374735a@users.sourceforge.net>
+ <alpine.DEB.2.02.1606110709340.2114@localhost6.localdomain6>
+Message-ID: <CAB=NE6WAFNAa-xQQ2VdpuA2eSC+x8JG61MZzaYm_ZDurmLqsQA@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> I can do this by depends on foo1 || foo2 || foo3|| foo4,
-> etc however since I have a lot of rules
+On Fri, Jun 10, 2016 at 10:12 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
+>
+>
+> On Fri, 10 Jun 2016, Luis R. Rodriguez wrote:
+>
+>> I have a series of changes, and I want to only make a subsequent
+>> change if and only if at least one of a series of previous declared
+>> rules were matched. I can do this by depends on foo1 || foo2 || foo3
+>> || foo4, etc however since I have a lot of rules I was hoping I could
+>> condense these into one. What would be the best way to do that?
+>>
+>> This is just to reduce a long list of conjunctions to a much simpler set.
+>
+> Disjunctions, I guess?
 
-How many condition elements have you got in mind for your use case?
+Heh yes sorry.
 
-Does the mentioned SmPL dependency specification become inconvenient (or
-challenging) occasionally?
+> I guess you could make a rule that is guaranteed to match for some
+> reason and put
+>
+> @combined depends on a || b || c || d || e@
+> identifier f;
+> @@
+>
+> f(...)
+>
+> Here I match any function call, because any file of interest probably
+> contains at least one.  But if possible it would be better to put a
+> pattern that matches less often, because Coccinelle really will be doing
+> the work of making these matches.
 
+I suspected this, I had used
 
-> I was hoping I could condense these into one.
+#include ...
 
-Would you like to construct dependencies by special scripts?
+as I think most files has this but I was concerned over the impact as
+you noted. A python way to add a virtual rule would have been another
+option but it seems only iteration supports that.
 
+> I think that the long list of ||s would be better.
 
-> This is just to reduce a long list of conjunctions to a much simpler set.
+OK, I'll do that.
 
-Are you eventually looking for the support of another metavariable type
-in the semantic patch language?
-
-Regards,
-Markus
+ Luis
