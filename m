@@ -1,9 +1,14 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 11 Jun 2016 07:12:50 +0200 (CEST)
-Subject: [Cocci] Making conjunctions smaller
-In-Reply-To: <CAB=NE6V0etTQ+pAwGgsOQZc=z9wCDnJSCgPyRhCuN5DCp6Y+Bw@mail.gmail.com>
-References: <CAB=NE6V0etTQ+pAwGgsOQZc=z9wCDnJSCgPyRhCuN5DCp6Y+Bw@mail.gmail.com>
-Message-ID: <alpine.DEB.2.02.1606110709340.2114@localhost6.localdomain6>
+Date: Sat, 11 Jun 2016 07:17:35 +0200 (CEST)
+Subject: [Cocci] [PATCH 4/4] coccicheck: add indexing enhancement options
+In-Reply-To: <20160610214900.GH11948@wotan.suse.de>
+References: <1465591332-31113-1-git-send-email-mcgrof@kernel.org>
+ <1465591332-31113-5-git-send-email-mcgrof@kernel.org>
+ <alpine.DEB.2.02.1606102301090.2070@localhost6.localdomain6>
+ <20160610211820.GG11948@wotan.suse.de>
+ <alpine.DEB.2.02.1606102319480.2070@localhost6.localdomain6>
+ <20160610214357.GA1650@katana> <20160610214900.GH11948@wotan.suse.de>
+Message-ID: <alpine.DEB.2.02.1606110717210.2114@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -11,30 +16,17 @@ List-Id: cocci@systeme.lip6.fr
 
 On Fri, 10 Jun 2016, Luis R. Rodriguez wrote:
 
-> I have a series of changes, and I want to only make a subsequent
-> change if and only if at least one of a series of previous declared
-> rules were matched. I can do this by depends on foo1 || foo2 || foo3
-> || foo4, etc however since I have a lot of rules I was hoping I could
-> condense these into one. What would be the best way to do that?
+> On Fri, Jun 10, 2016 at 11:43:57PM +0200, Wolfram Sang wrote:
+> > > > Well, slightly better.
+> > > 
+> > > No, it should be much better.  You would have to look at the standard 
+> > 
+> > I use id-utils regularly and it is indeed at least a magnitude better.
+> > The indexing often pays off already with the first coccinelle run for
+> > me. Highly recommended.
 > 
-> This is just to reduce a long list of conjunctions to a much simpler set.
+> AFAICT coccinelle does not have integration support for id-utils though.
 
-Disjunctions, I guess?
-
-I guess you could make a rule that is guaranteed to match for some 
-reason and put
-
-@combined depends on a || b || c || d || e@
-identifier f;
-@@
-
-f(...)
-
-Here I match any function call, because any file of interest probably 
-contains at least one.  But if possible it would be better to put a 
-pattern that matches less often, because Coccinelle really will be doing 
-the work of making these matches.
-
-I think that the long list of ||s would be better.
+Yes it does, for years.
 
 julia
