@@ -1,41 +1,39 @@
 From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Tue, 14 Jun 2016 15:10:13 -0700
-Subject: [Cocci] [PATCH 0/4] scripts: add basic python version library and
-	use it
-Message-ID: <1465942217-14452-1-git-send-email-mcgrof@kernel.org>
+Date: Tue, 14 Jun 2016 15:10:14 -0700
+Subject: [Cocci] [PATCH 1/4] coccicheck: propagate error and stop processing
+	after first error
+In-Reply-To: <1465942217-14452-1-git-send-email-mcgrof@kernel.org>
+References: <1465942217-14452-1-git-send-email-mcgrof@kernel.org>
+Message-ID: <1465942217-14452-2-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-This series depends on the last set of coccicheck enhancements which
-add parmap support and indexing heuristics.
+Propagate back in the shell Coccinelle's error. Also stop
+processing if an error has occured. This lets us handle some
+errors in coccinelle cocci files and if they bail out we should
+inspect the errors. This will be more useful later to help annotate
+coccinelle version dependency requirements.
 
-Coccinelle SmPL files may often require advanced grammar techniques not
-available in older versions of Coccinelle. We can use --parse-cocci and
-bail if a file does not parse, however this doesn't tell us anything about
-requirements. An alternative approach is to specifically do a check for
-a version of coccinelle.
+Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
+---
+ scripts/coccicheck | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Since checking for versions can be generic we can just write a python
-library to do these sorts of checks for us, this allows us to provide
-a generic kernel library for version checks for any binary. This adds
-that and then makes use of it as an example within a coccinelle SmPL
-file which require a later version of coccinelle.
-
-Luis R. Rodriguez (4):
-  coccicheck: propagate error and stop processing after first error
-  scripts: add reqs python library
-  coccicheck: enable use of the kernel's python library
-  scripts/coccinelle: require coccinelle >= 1.0.4 on
-    device_node_continue.cocci
-
- MAINTAINERS                                        |   1 +
- scripts/coccicheck                                 |   7 +
- .../iterators/device_node_continue.cocci           |  13 ++
- scripts/lib/__init__.py                            |   1 +
- scripts/lib/reqs.py                                | 211 +++++++++++++++++++++
- 5 files changed, 233 insertions(+)
- create mode 100644 scripts/lib/__init__.py
- create mode 100644 scripts/lib/reqs.py
-
+diff --git a/scripts/coccicheck b/scripts/coccicheck
+index 37db7ac1dfae..ba7301ab0a3d 100755
+--- a/scripts/coccicheck
++++ b/scripts/coccicheck
+@@ -215,6 +215,11 @@ run_cmd_parmap() {
+ 		echo "Running ($NPROC in parallel): $@"
+ 	fi
+ 	$@ 2> ${DIR}/coccicheck.$$.err
++	if [[ $? -ne 0 ]]; then
++		echo "coccicheck failed"
++		cat $${DIR}/coccicheck.$$.err
++		exit $?
++	fi
+ }
+ 
+ run_cmd_old() {
 -- 
 2.8.2
