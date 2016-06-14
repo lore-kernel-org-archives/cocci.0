@@ -1,42 +1,64 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 14 Jun 2016 15:08:46 +0200 (CEST)
-Subject: [Cocci] Help
-In-Reply-To: <1465909147.3712.11.camel@shyam-Lenovo-G50-70>
-References: <1465909147.3712.11.camel@shyam-Lenovo-G50-70>
-Message-ID: <alpine.DEB.2.10.1606141506570.2950@hadrien>
+From: mstefani@redhat.com (Michael Stefaniuc)
+Date: Tue, 14 Jun 2016 15:31:03 +0200
+Subject: [Cocci] Wrong Matching Order for Alternations
+Message-ID: <dd5e95c6-a5fc-8c93-3f2d-bff982184b33@redhat.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hello,
+
+I'm getting the wrong patch generated when using the below alternation:
+
+@@
+typedef RECT;
+RECT *r1;
+RECT *r2;
+expression size;
+@@
+(
+- !memcmp
++ EqualRect
+|
+- memcmp
++ !EqualRect
+)
+            ( r1, r2,
+-                     size
+            )
 
 
-On Tue, 14 Jun 2016, shyam saini wrote:
+On this code:
+BOOL foo(RECT *r1, RECT *r2)
+{
+    return !memcmp(r1, r2, sizeof(*r1));
+}
 
-> hi,
->
-> I'm Shyam, an Computer Science undergraduate student.
->
-> I'm trying to use coccinelle in linux kernel and for that I read many
->
-> articles and Now, I come to this point,
->
-> to use coccinelle we *.cocci  file containing rules
->
-> and we can run coccinelle test with this command
->
-> `spatch -sp-file AnyName.cocci --dir /path > patch`
->
-> The patch file stores the diff output.
->
-> So, my question is,  Can I change the kernel files, if I really want to
->
-> apply that cocinelle defined rules? Because above mentioned command only
->
-> shows the possible change. How can I turn that into a kernel patch.
+Will generate the wrong diff:
+-    return !memcmp(r1, r2, sizeof(*r1));
++    return !!EqualRect(r1, r2);
 
-patch -p1 < path_to_your_patch typically work.
 
-If you prefer to have Coccinelle make the change directly, you can use te
-command line argument --in-place.  In this case, Coccinelle will
-still produce the patch output, but it will also change the source files.
+--parse-cocci seems to show the correct pattern:
+(
+-!
+  >>> EqualRect
+-memcmp(r1, r2, -size)
+|
+-memcmp
+  >>> !EqualRect
+(r1, r2, -size)
+)
 
-julia
+
+If I remove the memcmp ==> !EqualRect alternative I get the correct
+patch generated:
+-    return !memcmp(r1, r2, sizeof(*r1));
++    return EqualRect(r1, r2);
+
+
+I know how to workaround it but I thought I'll mention it here. I am
+still on 1.0.4 but I don't remember to have seen anything in the 1.0.5
+release notes that would fix it.
+
+bye
+	michael
