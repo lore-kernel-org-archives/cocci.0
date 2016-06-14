@@ -1,43 +1,59 @@
 From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Tue, 14 Jun 2016 13:23:37 -0700
-Subject: [Cocci] [PATCH v3 3/6] scripts: add glimpse.sh for indexing the
-	kernel
+Date: Tue, 14 Jun 2016 13:23:39 -0700
+Subject: [Cocci] [PATCH v3 5/6] coccicheck: document how to pass extra
+	options to coccinelle
 In-Reply-To: <1465935820-14010-1-git-send-email-mcgrof@kernel.org>
 References: <20160614201923.GC11948@wotan.suse.de>
  <1465935820-14010-1-git-send-email-mcgrof@kernel.org>
-Message-ID: <1465935820-14010-4-git-send-email-mcgrof@kernel.org>
+Message-ID: <1465935820-14010-6-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Glimpse is a tool you can use to index the kernel. The tool
-was recently open sourced under the ISC license and can be
-obtained at:
+As an example show how to debug your coccinelle script.
+While at it, fix the case when --profile is passed, when
+--profile is used we need to ensure --very-quiet is not used.
 
-https://github.com/mcgrof/glimpse.git
+For instance one can use:
+
+$ export COCCI=scripts/coccinelle/misc/irqf_oneshot.cocci
+$ make coccicheck MODE=report SPFLAGS="--profile --show-trying" M=./drivers/mfd/arizona-irq.c
 
 Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
 ---
- scripts/glimpse.sh | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
- create mode 100755 scripts/glimpse.sh
+ scripts/coccicheck | 21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
 
-diff --git a/scripts/glimpse.sh b/scripts/glimpse.sh
-new file mode 100755
-index 000000000000..5fd24e49f31b
---- /dev/null
-+++ b/scripts/glimpse.sh
-@@ -0,0 +1,12 @@
-+#!/bin/bash
-+
-+DIR=$(dirname $(readlink -f $0))
-+DIR="${DIR}/../"
-+
-+GLIMPSEINDEX="`which ${GLIMPSEINDEX:=glimpseindex}`"
-+if [ ! -x "$GLIMPSEINDEX" ]; then
-+	echo 'glimpseindex can be obtained at https://github.com/mcgrof/glimpse.git'
-+	exit 1
+diff --git a/scripts/coccicheck b/scripts/coccicheck
+index 6d75fd8580a6..c6440138c6ea 100755
+--- a/scripts/coccicheck
++++ b/scripts/coccicheck
+@@ -106,7 +106,26 @@ else
+ 	NPROC="$J"
+ fi
+ 
+-FLAGS="$SPFLAGS --very-quiet"
++# You can use SPFLAGS to append extra arguments to coccicheck.
++# A good example is if you want to debug your cocci script, you can
++# for instance use the following:
++#
++# $ export COCCI=scripts/coccinelle/misc/irqf_oneshot.cocci
++# $ time make coccicheck MODE=report SPFLAGS="--profile --show-trying" M=./drivers/mfd/arizona-irq.c
++#
++# "--show-trying" should show you what rule is being processed as it goes, if
++# you have issues with a rule getting stuck you can then inspect the file:
++#
++# ${DIR}/coccicheck.$$.err
++#
++# which will have the profile output.
++#
++# --profile will not output if --very-quiet is used, so avoid it.
++if [[ $SPFLAGS  == *"--profile"* ]]; then
++	FLAGS="$SPFLAGS"
++else
++	FLAGS="$SPFLAGS --very-quiet"
 +fi
-+
-+find $DIR/* -name "*.[ch]" | $GLIMPSEINDEX -o -H . -F
+ 
+ # spatch only allows include directories with the syntax "-I include"
+ # while gcc also allows "-Iinclude" and "-include include"
 -- 
 2.8.2
