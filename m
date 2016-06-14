@@ -1,90 +1,127 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 14 Jun 2016 15:39:03 +0200 (CEST)
-Subject: [Cocci] Wrong Matching Order for Alternations
-In-Reply-To: <dd5e95c6-a5fc-8c93-3f2d-bff982184b33@redhat.com>
-References: <dd5e95c6-a5fc-8c93-3f2d-bff982184b33@redhat.com>
-Message-ID: <alpine.DEB.2.10.1606141536420.2950@hadrien>
+From: jeffm@suse.com (Jeff Mahoney)
+Date: Tue, 14 Jun 2016 12:12:55 -0400
+Subject: [Cocci] [BUG?] Missing closing bracket
+Message-ID: <74413eb7-b789-ed75-bf86-a44871b0f93b@suse.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hi all -
 
+I'm working on a project to transform the btrfs code into something more
+approachable by cleaning up some unnecessary code.  The specific issue
+I'm running into right now is that fs/btrfs/transaction.c gets stuck.
+After playing around with some matching rules last night, I believe I
+found a bug where Coccinelle is misinterpreting a closing bracket.  This
+is code originally from btrfs_commit_transaction_async, but I've pared
+it down to the minimum to reproduce the problem.
 
-On Tue, 14 Jun 2016, Michael Stefaniuc wrote:
+I had originally encountered this with v1.0.4 but have reproduced with
+v1.0.5+ (commit 8906ed7e4dda8b).  I'd appreciate any help you can give
+in sorting this out.
 
-> Hello,
->
-> I'm getting the wrong patch generated when using the below alternation:
->
-> @@
-> typedef RECT;
-> RECT *r1;
-> RECT *r2;
-> expression size;
-> @@
-> (
-> - !memcmp
-> + EqualRect
-> |
-> - memcmp
-> + !EqualRect
-> )
->             ( r1, r2,
-> -                     size
->             )
->
->
-> On this code:
-> BOOL foo(RECT *r1, RECT *r2)
-> {
->     return !memcmp(r1, r2, sizeof(*r1));
-> }
->
-> Will generate the wrong diff:
-> -    return !memcmp(r1, r2, sizeof(*r1));
-> +    return !!EqualRect(r1, r2);
+Here's the test code:
+------>8------
+int func(struct btrfs_trans_handle *trans, struct btrfs_root *root)
+{
+        if (!root) {
+                return err;
+        }
 
-It's a parsing issue.  Coccinelle is actually parsing each term that you
-put in the disjunction as an expression.  So your pattern is effectively
+        __sb_writers_release(root->fs_info->sb, SB_FREEZE_FS);
 
-(!memcmp) (...)
+        return 0;
+}
+------8<------
 
-The C code is parsed as:
+The rules are:
 
-! (memcmp(...))
+------>8------
+@root_fs_info@
+identifier func;
+identifier R;
+parameter list[npspre] pspre;
+parameter list[npspost] pspost;
+@@
+func(pspre, struct btrfs_root *R, pspost)
+{
+...
+R->fs_info
+...
+}
 
-So they don't match.  If you want to use a disjunction, you would have to
-put the argument list in each branch of the disjunction as well.
+@fs_info_helper@
+identifier root_fs_info.func;
+identifier root_fs_info.R;
+idexpression struct btrfs_fs_info *F;
+@@
+func(...)
+{
+* ... when != F = R->fs_info;
+}
+------<8------
 
-julia
+And the output:
 
->
->
-> --parse-cocci seems to show the correct pattern:
-> (
-> -!
->   >>> EqualRect
-> -memcmp(r1, r2, -size)
-> |
-> -memcmp
->   >>> !EqualRect
-> (r1, r2, -size)
-> )
->
->
-> If I remove the memcmp ==> !EqualRect alternative I get the correct
-> patch generated:
-> -    return !memcmp(r1, r2, sizeof(*r1));
-> +    return EqualRect(r1, r2);
->
->
-> I know how to workaround it but I thought I'll mention it here. I am
-> still on 1.0.4 but I don't remember to have seen anything in the 1.0.5
-> release notes that would fix it.
->
-> bye
-> 	michael
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+------>8------
+jeffm at starscream:/src/git/linux/linux-upstream> spatch --sp-file
+btrfs-cleanup3.cocci tmp.c
+init_defs_builtins: /usr/lib64/coccinelle/standard.h
+HANDLING: tmp.c
+diff =
+--- tmp.c
++++ /tmp/cocci-output-8357-3ffc6d-tmp.c
+@@ -1,9 +1,5 @@
+ int func(struct btrfs_trans_handle *trans, struct btrfs_root *root)
+ {
+-	if (!root) {
+-		return err;
+ 	}
+
+-	__sb_writers_release(root->fs_info->sb, SB_FREEZE_FS);
+-	return 0;
+ }
+------8<------
+
+... and we end up with:
+
+------>8------
+int func(struct btrfs_trans_handle *trans, struct btrfs_root *root)
+{
+        }
+
+}
+------<8------
+
+If I turn that match rule into:
+- ... when != F = R->fs_info;
+
+I get:
+--- tmp.c
++++ /tmp/cocci-output-8603-f3e3b9-tmp.c
+@@ -6,11 +6,5 @@ int btrfs_commit_transaction_async(struc
+ 				   struct btrfs_root *root,
+ 				   int wait_for_unblock)
+ {
+-	if (!root) {
+-		return err;
+-	}
+-
+-	__sb_writers_release(root->fs_info->sb, SB_FREEZE_FS);
+-
+-	return 0;
++}
+ }
+
+-Jeff
+
+-- 
+Jeff Mahoney
+SUSE Labs
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 881 bytes
+Desc: OpenPGP digital signature
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20160614/7190b375/attachment.asc>
