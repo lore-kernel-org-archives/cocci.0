@@ -1,100 +1,41 @@
 From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Wed, 15 Jun 2016 00:02:37 +0200
-Subject: [Cocci] [PATCH 4/4] coccicheck: add indexing enhancement options
-In-Reply-To: <alpine.DEB.2.02.1606142312400.2057@localhost6.localdomain6>
-References: <20160610211820.GG11948@wotan.suse.de>
- <alpine.DEB.2.02.1606102319480.2070@localhost6.localdomain6>
- <20160613193536.GQ11948@wotan.suse.de>
- <alpine.DEB.2.02.1606132149130.2066@localhost6.localdomain6>
- <20160613212847.GS11948@wotan.suse.de>
- <alpine.DEB.2.02.1606140719100.2059@localhost6.localdomain6>
- <20160614192731.GB11948@wotan.suse.de>
- <alpine.DEB.2.02.1606142246030.2057@localhost6.localdomain6>
- <20160614211043.GF11948@wotan.suse.de>
- <alpine.DEB.2.02.1606142312400.2057@localhost6.localdomain6>
-Message-ID: <20160614220237.GG11948@wotan.suse.de>
+Date: Tue, 14 Jun 2016 15:10:13 -0700
+Subject: [Cocci] [PATCH 0/4] scripts: add basic python version library and
+	use it
+Message-ID: <1465942217-14452-1-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, Jun 14, 2016 at 11:17:13PM +0200, Julia Lawall wrote:
-> 
-> 
-> On Tue, 14 Jun 2016, Luis R. Rodriguez wrote:
-> 
-> > On Tue, Jun 14, 2016 at 10:47:32PM +0200, Julia Lawall wrote:
-> > > 
-> > > 
-> > > On Tue, 14 Jun 2016, Luis R. Rodriguez wrote:
-> > > 
-> > > > On Tue, Jun 14, 2016 at 07:22:03AM +0200, Julia Lawall wrote:
-> > > > > 
-> > > > > 
-> > > > > On Mon, 13 Jun 2016, Luis R. Rodriguez wrote:
-> > > > > 
-> > > > > > On Mon, Jun 13, 2016 at 09:50:15PM +0200, Julia Lawall wrote:
-> > > > > > > 
-> > > > > > > 
-> > > > > > > On Mon, 13 Jun 2016, Luis R. Rodriguez wrote:
-> > > > > > > > 
-> > > > > > > > I'll redirect stderr to stdout by default when parmap support is used then.
-> > > > > > > 
-> > > > > > > Usually I put them in different files.
-> > > > > > 
-> > > > > > We can do that as well but I would only want to deal with parmap support 
-> > > > > > case. Any preference? How about .coccicheck.stderr.$PID where PID would 
-> > > > > > be the PID of the shell script?
-> > > > > 
-> > > > > I don't understand the connection with parmap.
-> > > > 
-> > > > When parmap support is not available the cocciscript will currently
-> > > > disregard stderr, output is provided as it comes to stdout from each
-> > > > thread I guess.
-> > > 
-> > > Deepa's recent patch to coccicheck made apparent that Coccicheck uses 
-> > > --very-quiet, so there is standard error.
-> > 
-> > OK I'm disegarding the redirect for non-parmap for now but we'd have to
-> > determine if we want to append or add one per PID... I rather leave that
-> > stuff as-is and encourage folks to upgrade coccinelle.
-> 
-> If coccicheck is using --very-quiet, there will not be much stderr of 
-> interest when using parmap either.
+This series depends on the last set of coccicheck enhancements which
+add parmap support and indexing heuristics.
 
-OK I don't follow. Does coccinelle only direct error to stderr when --very-quiet
-is used ? Or does using --very-quiet suppress stderr ?
+Coccinelle SmPL files may often require advanced grammar techniques not
+available in older versions of Coccinelle. We can use --parse-cocci and
+bail if a file does not parse, however this doesn't tell us anything about
+requirements. An alternative approach is to specifically do a check for
+a version of coccinelle.
 
-> I'm not sure to understan the issue about appending.  Appending what to 
-> what?
-> While Coccinelle is running, you have a directory with the same 
-> name as your semantic patch (or a directory name that you specify with 
-> --tmp-dir) that has separate files for each core's standard output and 
-> standard error.  At the end, when all the code has been treated, 
-> Coccinelle writes the successive stdouts to standard output, and the 
-> sucessive stderrs to standard error.
+Since checking for versions can be generic we can just write a python
+library to do these sorts of checks for us, this allows us to provide
+a generic kernel library for version checks for any binary. This adds
+that and then makes use of it as an example within a coccinelle SmPL
+file which require a later version of coccinelle.
 
-Ah I see. OK yeah never mind about appending.
+Luis R. Rodriguez (4):
+  coccicheck: propagate error and stop processing after first error
+  scripts: add reqs python library
+  coccicheck: enable use of the kernel's python library
+  scripts/coccinelle: require coccinelle >= 1.0.4 on
+    device_node_continue.cocci
 
-> > > > > Originally our use of parmap made output, specia files based on pids.  Maybe this 
-> > > > > is the default for parmap.  I found this completely unusable.  I guess one 
-> > > > > could look at the dates to see which file is the most recent one, but it 
-> > > > > seems tedious.  If you are putting the standard output in x.out, then put 
-> > > > > the standard error in x.err.
-> > > > 
-> > > > I'll use ${DIR}/coccicheck.$$.err for stderr.
-> > > 
-> > > What is ${DIR}? and what is $$?
-> > 
-> > When you run scripts/coccicheck we take the absolute directory
-> > of it and then go down one level of directory, so in this case it
-> > would be the base directory of the Linux kernel.
-> > 
-> > $$ is the PID of the bash script.
-> 
-> OK.  I still don't find PIDs useful, but I guess if we are talking about 
-> the entire output of coccicheck, there is not much else to do.  Normally, 
-> I don't want these files accumulating, and just write over the old ones.
+ MAINTAINERS                                        |   1 +
+ scripts/coccicheck                                 |   7 +
+ .../iterators/device_node_continue.cocci           |  13 ++
+ scripts/lib/__init__.py                            |   1 +
+ scripts/lib/reqs.py                                | 211 +++++++++++++++++++++
+ 5 files changed, 233 insertions(+)
+ create mode 100644 scripts/lib/__init__.py
+ create mode 100644 scripts/lib/reqs.py
 
-Which is why I would much prefer to instead just redirect in coccicheck
-case stderr to stdout from coccinelle. Is that preferred?
-
-  Luis
+-- 
+2.8.2
