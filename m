@@ -1,39 +1,30 @@
 From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Tue, 14 Jun 2016 15:10:14 -0700
-Subject: [Cocci] [PATCH 1/4] coccicheck: propagate error and stop processing
-	after first error
+Date: Tue, 14 Jun 2016 15:10:16 -0700
+Subject: [Cocci] [PATCH 3/4] coccicheck: enable use of the kernel's python
+	library
 In-Reply-To: <1465942217-14452-1-git-send-email-mcgrof@kernel.org>
 References: <1465942217-14452-1-git-send-email-mcgrof@kernel.org>
-Message-ID: <1465942217-14452-2-git-send-email-mcgrof@kernel.org>
+Message-ID: <1465942217-14452-4-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Propagate back in the shell Coccinelle's error. Also stop
-processing if an error has occured. This lets us handle some
-errors in coccinelle cocci files and if they bail out we should
-inspect the errors. This will be more useful later to help annotate
-coccinelle version dependency requirements.
-
 Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
 ---
- scripts/coccicheck | 5 +++++
- 1 file changed, 5 insertions(+)
+ scripts/coccicheck | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/scripts/coccicheck b/scripts/coccicheck
-index 37db7ac1dfae..ba7301ab0a3d 100755
+index ba7301ab0a3d..a4d91d649ad9 100755
 --- a/scripts/coccicheck
 +++ b/scripts/coccicheck
-@@ -215,6 +215,11 @@ run_cmd_parmap() {
- 		echo "Running ($NPROC in parallel): $@"
- 	fi
- 	$@ 2> ${DIR}/coccicheck.$$.err
-+	if [[ $? -ne 0 ]]; then
-+		echo "coccicheck failed"
-+		cat $${DIR}/coccicheck.$$.err
-+		exit $?
-+	fi
- }
+@@ -12,6 +12,8 @@
  
- run_cmd_old() {
+ DIR=$(dirname $(readlink -f $0))
+ DIR="${DIR}/../"
++export PYTHONPATH=${DIR}/scripts/
++
+ SPATCH="`which ${SPATCH:=spatch}`"
+ 
+ if [ ! -x "$SPATCH" ]; then
 -- 
 2.8.2
