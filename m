@@ -1,49 +1,28 @@
 From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Tue, 14 Jun 2016 13:23:35 -0700
-Subject: [Cocci] [PATCH v3 1/6] coccicheck: move spatch binary check up
-In-Reply-To: <1465935820-14010-1-git-send-email-mcgrof@kernel.org>
+Date: Tue, 14 Jun 2016 13:23:34 -0700
+Subject: [Cocci] [PATCH v3 0/6] coccicheck: extend with parmap and indexing
+	heuristics
+In-Reply-To: <20160614201923.GC11948@wotan.suse.de>
 References: <20160614201923.GC11948@wotan.suse.de>
- <1465935820-14010-1-git-send-email-mcgrof@kernel.org>
-Message-ID: <1465935820-14010-2-git-send-email-mcgrof@kernel.org>
+Message-ID: <1465935820-14010-1-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-This has no functional changes. This is being done
-to enable us to later use spatch binary for some
-flag checking for certain features early on.
+I fat fingered the v2 series and forgot the first patch, this just adds
+the first patch... sorry about that.
 
-Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
----
- scripts/coccicheck | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+Luis R. Rodriguez (6):
+  coccicheck: move spatch binary check up
+  coccicheck: enable parmap support
+  scripts: add glimpse.sh for indexing the kernel
+  coccicheck: add indexing enhancement options
+  coccicheck: document how to pass extra options to coccinelle
+  coccicheck: refer to coccicheck bottest wiki for documentation
 
-diff --git a/scripts/coccicheck b/scripts/coccicheck
-index dd85a455b2ba..aa5e78fba270 100755
---- a/scripts/coccicheck
-+++ b/scripts/coccicheck
-@@ -7,6 +7,11 @@
- 
- SPATCH="`which ${SPATCH:=spatch}`"
- 
-+if [ ! -x "$SPATCH" ]; then
-+    echo 'spatch is part of the Coccinelle project and is available at http://coccinelle.lip6.fr/'
-+    exit 1
-+fi
-+
- trap kill_running SIGTERM SIGINT
- declare -a SPATCH_PID
- 
-@@ -51,11 +56,6 @@ if [ "$KBUILD_EXTMOD" != "" ] ; then
-     OPTIONS="--patch $srctree $OPTIONS"
- fi
- 
--if [ ! -x "$SPATCH" ]; then
--    echo 'spatch is part of the Coccinelle project and is available at http://coccinelle.lip6.fr/'
--    exit 1
--fi
--
- if [ "$MODE" = "" ] ; then
-     if [ "$ONLINE" = "0" ] ; then
- 	echo 'You have not explicitly specified the mode to use. Using default "report" mode.'
+ scripts/coccicheck | 165 +++++++++++++++++++++++++++++++++++++++++++++++++----
+ scripts/glimpse.sh |  12 ++++
+ 2 files changed, 166 insertions(+), 11 deletions(-)
+ create mode 100755 scripts/glimpse.sh
+
 -- 
 2.8.2
