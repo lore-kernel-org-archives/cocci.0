@@ -1,107 +1,47 @@
 From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Tue, 14 Jun 2016 13:23:36 -0700
-Subject: [Cocci] [PATCH v3 2/6] coccicheck: enable parmap support
+Date: Tue, 14 Jun 2016 13:23:40 -0700
+Subject: [Cocci] [PATCH v3 6/6] coccicheck: refer to coccicheck bottest wiki
+	for documentation
 In-Reply-To: <1465935820-14010-1-git-send-email-mcgrof@kernel.org>
 References: <20160614201923.GC11948@wotan.suse.de>
  <1465935820-14010-1-git-send-email-mcgrof@kernel.org>
-Message-ID: <1465935820-14010-3-git-send-email-mcgrof@kernel.org>
+Message-ID: <1465935820-14010-7-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Coccinelle has had parmap support since 1.0.2, this means
-it supports --jobs, enabling built-in multithreaded functionality,
-instead of needing one to script it out. Just look for --jobs
-in the help output to determine if this is supported.
+Sprinkling *tons* of documentation on the script is not a good
+idea, instead refer to a wiki for further coccicheck documentation:
 
-Also enable the load balancing to be dynamic, so that if a
-thread finishes early we keep feeding it.
+https://bottest.wiki.kernel.org/coccicheck
 
-Note: now that we have all things handled for us, redirect stderr to
-stdout as well to capture any possible errors or warnings issued by
-coccinelle.
-
-If --jobs is not supported we fallback to the old mechanism.
-
-As a small example, prior to this change, on an 8-core system:
-
-Before:
-
-$ export COCCI=scripts/coccinelle/free/kfree.cocci
-$ time make coccicheck MODE=report
-...
-
-real    29m14.912s
-user    103m1.796s
-sys     0m4.464s
-
-After:
-
-real    16m22.435s
-user    128m30.060s
-sys     0m2.712s
-
-v2:
-
-o redirect coccinelle stderr to ${DIR}/coccicheck.$$.err
-o fix typo of paramap/parmap
+This page shall always refer to the linux-next iteration of
+scripts/coccicheck.
 
 Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
 ---
- scripts/coccicheck | 28 +++++++++++++++++++++++++---
- 1 file changed, 25 insertions(+), 3 deletions(-)
+ scripts/coccicheck | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
 diff --git a/scripts/coccicheck b/scripts/coccicheck
-index aa5e78fba270..02602381be59 100755
+index c6440138c6ea..37db7ac1dfae 100755
 --- a/scripts/coccicheck
 +++ b/scripts/coccicheck
-@@ -12,8 +12,8 @@ if [ ! -x "$SPATCH" ]; then
-     exit 1
- fi
+@@ -1,9 +1,14 @@
+ #!/bin/bash
+-
++# Linux kernel coccicheck
++#
++# For more detailed documentation refer to:
++#
++# https://bottest.wiki.kernel.org/coccicheck
++#
++# This documentation always refers to the linux-next version of the script.
+ #
+ # This script requires at least spatch
+ # version 1.0.0-rc11.
+-#
  
--trap kill_running SIGTERM SIGINT
--declare -a SPATCH_PID
-+USE_JOBS="no"
-+$SPATCH --help | grep "\-\-jobs" > /dev/null && USE_JOBS="yes"
- 
- # The verbosity may be set by the environmental parameter V=
- # as for example with 'make V=1 coccicheck'
-@@ -82,7 +82,21 @@ if [ "$ONLINE" = "0" ] ; then
-     echo ''
- fi
- 
--run_cmd() {
-+if [ "$USE_JOBS" = "no" ]; then
-+	trap kill_running SIGTERM SIGINT
-+	declare -a SPATCH_PID
-+else
-+	OPTIONS="$OPTIONS --jobs $NPROC --chunksize 1"
-+fi
-+
-+run_cmd_parmap() {
-+	if [ $VERBOSE -ne 0 ] ; then
-+		echo "Running ($NPROC in parallel): $@"
-+	fi
-+	$@ 2> ${DIR}/coccicheck.$$.err
-+}
-+
-+run_cmd_old() {
- 	local i
- 	if [ $VERBOSE -ne 0 ] ; then
- 		echo "Running ($NPROC in parallel): $@"
-@@ -97,6 +111,14 @@ run_cmd() {
- 	wait
- }
- 
-+run_cmd() {
-+	if [ "$USE_JOBS" = "yes" ]; then
-+		run_cmd_parmap $@
-+	else
-+		run_cmd_old $@
-+	fi
-+}
-+
- kill_running() {
- 	for i in $(seq 0 $(( NPROC - 1 )) ); do
- 		if [ $VERBOSE -eq 2 ] ; then
+ DIR=$(dirname $(readlink -f $0))
+ DIR="${DIR}/../"
 -- 
 2.8.2
