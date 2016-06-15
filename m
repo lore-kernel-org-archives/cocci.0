@@ -1,40 +1,148 @@
 From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Wed, 15 Jun 2016 20:43:06 +0200
-Subject: [Cocci] scripts: add glimpse.sh for indexing the kernel
-In-Reply-To: <70c633b7-4fb4-ca75-9589-612af6a2976c@users.sourceforge.net>
-References: <20160614201923.GC11948@wotan.suse.de>
- <1465935820-14010-1-git-send-email-mcgrof@kernel.org>
- <1465935820-14010-4-git-send-email-mcgrof@kernel.org>
- <trinity-8eae95d7-f827-44c4-b4d3-123561a053f8-1465986379121@3capp-webde-bap31>
- <20160615180000.GW11948@wotan.suse.de>
- <70c633b7-4fb4-ca75-9589-612af6a2976c@users.sourceforge.net>
-Message-ID: <20160615184306.GX11948@wotan.suse.de>
+Date: Wed, 15 Jun 2016 21:08:04 +0200
+Subject: [Cocci] [PATCH 4/4] scripts/coccinelle: require coccinelle >=
+ 1.0.4 on device_node_continue.cocci
+In-Reply-To: <alpine.DEB.2.10.1606151850210.2887@hadrien>
+References: <1465942217-14452-1-git-send-email-mcgrof@kernel.org>
+ <1465942217-14452-5-git-send-email-mcgrof@kernel.org>
+ <alpine.DEB.2.10.1606151042080.2887@hadrien>
+ <20160615154918.GN11948@wotan.suse.de>
+ <alpine.DEB.2.10.1606151753190.2887@hadrien>
+ <20160615160810.GR11948@wotan.suse.de>
+ <alpine.DEB.2.10.1606151809410.2887@hadrien>
+ <20160615164646.GT11948@wotan.suse.de>
+ <alpine.DEB.2.10.1606151850210.2887@hadrien>
+Message-ID: <20160615190804.GY11948@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, Jun 15, 2016 at 08:24:03PM +0200, SF Markus Elfring wrote:
-> > http://webglimpse.net/
-> > Its vaguely mentioned there. That's as good as it gets...
+On Wed, Jun 15, 2016 at 06:52:27PM +0200, Julia Lawall wrote:
 > 
-> How do you think about to insert the date "2014-09-26" into your commit
-> message?
-
-Sure.
-
-> >> https://github.com/gvelez17/glimpse/
-> > Sadly the original release didn't compile, I reported the issue in hopes it would
-> > be fixed. Nothing has happened since and I got tired of waiting so I forked
-> > and fixed it myself.
 > 
-> I am also curious on further improvements for this software.
-> How will corresponding constructive feedback evolve?
+> On Wed, 15 Jun 2016, Luis R. Rodriguez wrote:
+> 
+> > On Wed, Jun 15, 2016 at 06:11:57PM +0200, Julia Lawall wrote:
+> > >
+> > >
+> > > On Wed, 15 Jun 2016, Luis R. Rodriguez wrote:
+> > >
+> > > > On Wed, Jun 15, 2016 at 05:55:34PM +0200, Julia Lawall wrote:
+> > > > >
+> > > > >
+> > > > > On Wed, 15 Jun 2016, Luis R. Rodriguez wrote:
+> > > > >
+> > > > > > On Wed, Jun 15, 2016 at 10:43:30AM +0200, Julia Lawall wrote:
+> > > > > > > How about the following, since Coccinelle knows what its version is?
+> > > > > > > This could of course be implemented in python as well.
+> > > > > > >
+> > > > > > > julia
+> > > > > > >
+> > > > > > > diff --git a/docs/Coccilib.3cocci b/docs/Coccilib.3cocci
+> > > > > > > index 0e4fbb8..ca5b061 100644
+> > > > > > > --- a/docs/Coccilib.3cocci
+> > > > > > > +++ b/docs/Coccilib.3cocci
+> > > > > > > @@ -232,6 +232,15 @@ is the empty list if spatch is not currently working on any file (eg,
+> > > > > > >  in an initialize or finalize rule).
+> > > > > > >  .sp
+> > > > > > >
+> > > > > > > +.I val cocci_version
+> > > > > > > +:
+> > > > > > > +.B unit -> string
+> > > > > > > +.sp
+> > > > > > > +Returns the a string indicating the current version.  Note that if
+> > > > > > > +Coccinelle has been modified since a release, the version number will be
+> > > > > > > +postfixed with "-dirty".
+> > > > > > > +.sp
+> > > > > > > +
+> > > > > > >  .I val print_main
+> > > > > > >  :
+> > > > > > >  .B ?color:string -> string -> pos list -> unit
+> > > > > > > diff --git a/ocaml/coccilib.ml b/ocaml/coccilib.ml
+> > > > > > > index f60c6b2..2f352d8 100644
+> > > > > > > --- a/ocaml/coccilib.ml
+> > > > > > > +++ b/ocaml/coccilib.ml
+> > > > > > > @@ -168,6 +168,8 @@ let dir () = !Flag.dir
+> > > > > > >
+> > > > > > >  let files () = !Flag.currentfiles
+> > > > > > >
+> > > > > > > +let cocci_version () = Config.version
+> > > > > > > +
+> > > > > > >  (* ---------------------------------------------------------------------- *)
+> > > > > > >  (* org mode *)
+> > > > > > >
+> > > > > > >
+> > > > > >
+> > > > > > Anything to *only* get the version instead of a long list is nice, right now
+> > > > > > spatch --version spits out:
+> > > > > >
+> > > > > > spatch version 1.0.5 compiled with OCaml version 4.02.3
+> > > > > > Flags passed to the configure script: [none]
+> > > > > > Python scripting support: yes
+> > > > > > Syntax of regular expresssions: PCRE
+> > > > > >
+> > > > > > The Python library just parses the 3rd item at the top so it can extract
+> > > > > > the version. But surely if spatch --version-only was available we'd use
+> > > > > > that instead a well.
+> > > > > >
+> > > > > > Other than this though how can we require coccinelle version checks per
+> > > > > > SmPL file cleanly and also what should we do to make it backward compatible
+> > > > > > with older versions of coccinelle?
+> > > > >
+> > > > > I'm not sure that being backward compatible with older versions of
+> > > > > Coccinelle is worth adding new libraries to the Linux kernel, and adding
+> > > > > unpleasant python code to semantic patches.
+> > > >
+> > > > True. I'm more than happy to not have to add this crap.
+> > > >
+> > > > > The above ocaml code just produces eg 1.0.5 or 1.0.5-dirty.  I could drop
+> > > > > the -dirty at the coccilib level, if that seems desirable.
+> > > >
+> > > > This is when spatch --cocci_version is passed ?
+> > >
+> > > Perhaps it wasn't clear enough from the above nroff and ocaml code.  I
+> > > added a function Coccilib.version() that returns eg either 1.0.5 or
+> > > 1.0.5-dirty.  Such a function could be implemented for python as well.
+> > >
+> > > >
+> > > > Its still unclear how we can require in a clean way coccinelle version
+> > > > requirements in SmPL patches with this. Can you clarify?
+> > >
+> > > Test the string that it returns and exit.  Like you are doing, but no need
+> > > for adding new libraries to the kernel.
+> >
+> > Ah then that's indeed welcome, however another function would be best too:
+> >
+> > Coccilib.version_reqs() which lets us say what the requirement is and it
+> > would return true or false, false when the req is not met.
+> 
+> I'm not so fond of this.  It seems like a very specific use case.
 
-Beats me. As I see it no one cares over this software now, it would seem
-some folks have used it in proprietary crap and those versions are much
-better. To me what we can best do is see what we can take out of agrep,
-and port it to proper GNU grep, then see if git can also enable complex
-queries as Julia notes.
+Perhaps.
 
-Patches to those projects welcomed I'm sure.
+> I really think this should be managed by coccicheck, in the same way as
+> the options.
+
+OK if its up to coccicheck -- we'll need a solution there. I'd prefer to use a
+generic library like reqs there and just have the check for the maximum
+requirement there.
+
+Michal do you have any preference ?
+
+FWIW I had originally written the reqs library for for rel-html [0] which
+enables arbitrary projects to make a shiny HTLM5 release project based on a
+naked release page provided, the inferring of release needs some generic
+heuristics on release matching (in the future the simpler approach is
+to have a git tree have two PGP signatures, one for signed releases, and
+another for deprecating release, then an alternative smarter heuristic
+would be to only look for signed tags of currently supported releases),
+the Linux kernel's strategy on versioning computation seemed the way to go.
+I was surprised no standard library supported it properly. This library is
+also used on backports not only for coccinell requirements but for other
+generic binary requirements.
+
+We can bash it out.. however this seems like it could be generally useful
+for other tools we have in the kernel.
+
+[0] https://git.kernel.org/cgit/linux/kernel/git/mcgrof/rel-html.git/
 
   Luis
