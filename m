@@ -1,48 +1,34 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 15 Jun 2016 10:43:30 +0200 (CEST)
-Subject: [Cocci] [PATCH 4/4] scripts/coccinelle: require coccinelle >=
- 1.0.4 on device_node_continue.cocci
-In-Reply-To: <1465942217-14452-5-git-send-email-mcgrof@kernel.org>
-References: <1465942217-14452-1-git-send-email-mcgrof@kernel.org>
- <1465942217-14452-5-git-send-email-mcgrof@kernel.org>
-Message-ID: <alpine.DEB.2.10.1606151042080.2887@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 15 Jun 2016 12:26:19 +0200
+Subject: [Cocci] [PATCH v3 3/6] scripts: add glimpse.sh for indexing the
+ kernel
+In-Reply-To: <1465935820-14010-4-git-send-email-mcgrof@kernel.org>
+References: <20160614201923.GC11948@wotan.suse.de>
+ <1465935820-14010-1-git-send-email-mcgrof@kernel.org>,
+ <1465935820-14010-4-git-send-email-mcgrof@kernel.org>
+Message-ID: <trinity-8eae95d7-f827-44c4-b4d3-123561a053f8-1465986379121@3capp-webde-bap31>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-How about the following, since Coccinelle knows what its version is?
-This could of course be implemented in python as well.
+> Glimpse is a tool you can use to index the kernel.
+> The tool was recently open sourced under the ISC license
+> and can be obtained at:
 
-julia
+Do you find any official announcement for this software evolution?
 
-diff --git a/docs/Coccilib.3cocci b/docs/Coccilib.3cocci
-index 0e4fbb8..ca5b061 100644
---- a/docs/Coccilib.3cocci
-+++ b/docs/Coccilib.3cocci
-@@ -232,6 +232,15 @@ is the empty list if spatch is not currently working on any file (eg,
- in an initialize or finalize rule).
- .sp
+Is the wording "recent" really appropriate if you would eventually like to refer to a repository which was published in the year 2014?
+https://github.com/gvelez17/glimpse/
 
-+.I val cocci_version
-+:
-+.B unit -> string
-+.sp
-+Returns the a string indicating the current version.  Note that if
-+Coccinelle has been modified since a release, the version number will be
-+postfixed with "-dirty".
-+.sp
-+
- .I val print_main
- :
- .B ?color:string -> string -> pos list -> unit
-diff --git a/ocaml/coccilib.ml b/ocaml/coccilib.ml
-index f60c6b2..2f352d8 100644
---- a/ocaml/coccilib.ml
-+++ b/ocaml/coccilib.ml
-@@ -168,6 +168,8 @@ let dir () = !Flag.dir
 
- let files () = !Flag.currentfiles
+Is it nice to mention the script addition also directly in the commit message?
 
-+let cocci_version () = Config.version
-+
- (* ---------------------------------------------------------------------- *)
- (* org mode *)
+
+> +DIR=$(dirname $(readlink -f $0))
+> +DIR="${DIR}/../"
+
+I would prefer that these variable assignments will be merged into one.
+
++DIR="$(dirname $(readlink -f $0))/../"
+
+Regards,
+Markus
