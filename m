@@ -1,155 +1,108 @@
-From: jeffm@suse.com (Jeff Mahoney)
-Date: Wed, 15 Jun 2016 10:49:05 -0400
-Subject: [Cocci] [BUG?] Missing closing bracket
-In-Reply-To: <alpine.DEB.2.10.1606141815550.2950@hadrien>
-References: <74413eb7-b789-ed75-bf86-a44871b0f93b@suse.com>
- <alpine.DEB.2.10.1606141815550.2950@hadrien>
-Message-ID: <bc2338b8-6901-f47e-ab6a-b4f318bbe52e@suse.com>
+From: mcgrof@kernel.org (Luis R. Rodriguez)
+Date: Wed, 15 Jun 2016 17:36:37 +0200
+Subject: [Cocci] [PATCH 4/4] coccicheck: add indexing enhancement options
+In-Reply-To: <alpine.DEB.2.10.1606150937540.2887@hadrien>
+References: <20160613193536.GQ11948@wotan.suse.de>
+ <alpine.DEB.2.02.1606132149130.2066@localhost6.localdomain6>
+ <20160613212847.GS11948@wotan.suse.de>
+ <alpine.DEB.2.02.1606140719100.2059@localhost6.localdomain6>
+ <20160614192731.GB11948@wotan.suse.de>
+ <alpine.DEB.2.02.1606142246030.2057@localhost6.localdomain6>
+ <20160614211043.GF11948@wotan.suse.de>
+ <alpine.DEB.2.02.1606142312400.2057@localhost6.localdomain6>
+ <20160614220237.GG11948@wotan.suse.de>
+ <alpine.DEB.2.10.1606150937540.2887@hadrien>
+Message-ID: <20160615153637.GK11948@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 6/14/16 12:19 PM, Julia Lawall wrote:
-> On Tue, 14 Jun 2016, Jeff Mahoney wrote:
+On Wed, Jun 15, 2016 at 09:39:49AM +0200, Julia Lawall wrote:
 > 
->> Hi all -
->>
->> I'm working on a project to transform the btrfs code into something more
->> approachable by cleaning up some unnecessary code.  The specific issue
->> I'm running into right now is that fs/btrfs/transaction.c gets stuck.
->> After playing around with some matching rules last night, I believe I
->> found a bug where Coccinelle is misinterpreting a closing bracket.  This
->> is code originally from btrfs_commit_transaction_async, but I've pared
->> it down to the minimum to reproduce the problem.
->>
->> I had originally encountered this with v1.0.4 but have reproduced with
->> v1.0.5+ (commit 8906ed7e4dda8b).  I'd appreciate any help you can give
->> in sorting this out.
->>
->> Here's the test code:
->> ------>8------
->> int func(struct btrfs_trans_handle *trans, struct btrfs_root *root)
->> {
->>         if (!root) {
->>                 return err;
->>         }
->>
->>         __sb_writers_release(root->fs_info->sb, SB_FREEZE_FS);
->>
->>         return 0;
->> }
->> ------8<------
->>
->> The rules are:
->>
->> ------>8------
->> @root_fs_info@
->> identifier func;
->> identifier R;
->> parameter list[npspre] pspre;
->> parameter list[npspost] pspost;
->> @@
->> func(pspre, struct btrfs_root *R, pspost)
->> {
->> ...
->> R->fs_info
->> ...
->> }
->>
->> @fs_info_helper@
->> identifier root_fs_info.func;
->> identifier root_fs_info.R;
->> idexpression struct btrfs_fs_info *F;
->> @@
->> func(...)
->> {
->> * ... when != F = R->fs_info;
->> }
->> ------<8------
->>
->> And the output:
->>
->> ------>8------
->> jeffm at starscream:/src/git/linux/linux-upstream> spatch --sp-file
->> btrfs-cleanup3.cocci tmp.c
->> init_defs_builtins: /usr/lib64/coccinelle/standard.h
->> HANDLING: tmp.c
->> diff =
->> --- tmp.c
->> +++ /tmp/cocci-output-8357-3ffc6d-tmp.c
->> @@ -1,9 +1,5 @@
->>  int func(struct btrfs_trans_handle *trans, struct btrfs_root *root)
->>  {
->> -	if (!root) {
->> -		return err;
->>  	}
->>
->> -	__sb_writers_release(root->fs_info->sb, SB_FREEZE_FS);
->> -	return 0;
->>  }
->> ------8<------
->>
->> ... and we end up with:
->>
->> ------>8------
->> int func(struct btrfs_trans_handle *trans, struct btrfs_root *root)
->> {
->>         }
->>
->> }
->> ------<8------
->>
->> If I turn that match rule into:
->> - ... when != F = R->fs_info;
->>
->> I get:
->> --- tmp.c
->> +++ /tmp/cocci-output-8603-f3e3b9-tmp.c
->> @@ -6,11 +6,5 @@ int btrfs_commit_transaction_async(struc
->>  				   struct btrfs_root *root,
->>  				   int wait_for_unblock)
->>  {
->> -	if (!root) {
->> -		return err;
->> -	}
->> -
->> -	__sb_writers_release(root->fs_info->sb, SB_FREEZE_FS);
->> -
->> -	return 0;
->> +}
->>  }
 > 
-> Thanks for the report.  It is probably related to the return err somehow.
-> I will look into it.  A temporary solution might be obtained by doing the
-> following in the functions of interest:
+> On Wed, 15 Jun 2016, Luis R. Rodriguez wrote:
 > 
-> - return e;
-> + Return(e);
+> > On Tue, Jun 14, 2016 at 11:17:13PM +0200, Julia Lawall wrote:
+> > >
+> > >
+> > > On Tue, 14 Jun 2016, Luis R. Rodriguez wrote:
+> > >
+> > > > On Tue, Jun 14, 2016 at 10:47:32PM +0200, Julia Lawall wrote:
+> > > > >
+> > > > >
+> > > > > On Tue, 14 Jun 2016, Luis R. Rodriguez wrote:
+> > > > >
+> > > > > > On Tue, Jun 14, 2016 at 07:22:03AM +0200, Julia Lawall wrote:
+> > > > > > >
+> > > > > > >
+> > > > > > > On Mon, 13 Jun 2016, Luis R. Rodriguez wrote:
+> > > > > > >
+> > > > > > > > On Mon, Jun 13, 2016 at 09:50:15PM +0200, Julia Lawall wrote:
+> > > > > > > > >
+> > > > > > > > >
+> > > > > > > > > On Mon, 13 Jun 2016, Luis R. Rodriguez wrote:
+> > > > > > > > > >
+> > > > > > > > > > I'll redirect stderr to stdout by default when parmap support is used then.
+> > > > > > > > >
+> > > > > > > > > Usually I put them in different files.
+> > > > > > > >
+> > > > > > > > We can do that as well but I would only want to deal with parmap support
+> > > > > > > > case. Any preference? How about .coccicheck.stderr.$PID where PID would
+> > > > > > > > be the PID of the shell script?
+> > > > > > >
+> > > > > > > I don't understand the connection with parmap.
+> > > > > >
+> > > > > > When parmap support is not available the cocciscript will currently
+> > > > > > disregard stderr, output is provided as it comes to stdout from each
+> > > > > > thread I guess.
+> > > > >
+> > > > > Deepa's recent patch to coccicheck made apparent that Coccicheck uses
+> > > > > --very-quiet, so there is standard error.
+> > > >
+> > > > OK I'm disegarding the redirect for non-parmap for now but we'd have to
+> > > > determine if we want to append or add one per PID... I rather leave that
+> > > > stuff as-is and encourage folks to upgrade coccinelle.
+> > >
+> > > If coccicheck is using --very-quiet, there will not be much stderr of
+> > > interest when using parmap either.
+> >
+> > OK I don't follow. Does coccinelle only direct error to stderr when --very-quiet
+> > is used ? Or does using --very-quiet suppress stderr ?
 > 
-> But that might not be acceptable for your real application.
+> --very-quiet suppresses most administrative messages that go to stderr.
+> There are still actual errors.  Bu you don't see eg what file is being
+> currently processed.
 
-If it's an obvious transformation, I can reverse it later easily enough.
- That worked, it handles the brackets correctly now.
+OK thanks. I remove --very-quiet now if --profile is used within SPFLAGS, I'll extend
+this to also avoid --very-quiet if --show-trying is used. SPFLAGS is where you can
+specify extra options that the script doesn't specifically support.
 
-> By the way, you shouldn't actually apply the patch you get from a semantic
-> patch that has * in the leftmost column.  The resulting semantic patch is
-> only intended to be looked at, and to be used with emacs's diff mode (or
-> something similar).  But you get essentially the same result with - in the
-> leftmost column, so that isn't the problem here.
+> > > > > > > Originally our use of parmap made output, specia files based on pids.  Maybe this
+> > > > > > > is the default for parmap.  I found this completely unusable.  I guess one
+> > > > > > > could look at the dates to see which file is the most recent one, but it
+> > > > > > > seems tedious.  If you are putting the standard output in x.out, then put
+> > > > > > > the standard error in x.err.
+> > > > > >
+> > > > > > I'll use ${DIR}/coccicheck.$$.err for stderr.
+> > > > >
+> > > > > What is ${DIR}? and what is $$?
+> > > >
+> > > > When you run scripts/coccicheck we take the absolute directory
+> > > > of it and then go down one level of directory, so in this case it
+> > > > would be the base directory of the Linux kernel.
+> > > >
+> > > > $$ is the PID of the bash script.
+> > >
+> > > OK.  I still don't find PIDs useful, but I guess if we are talking about
+> > > the entire output of coccicheck, there is not much else to do.  Normally,
+> > > I don't want these files accumulating, and just write over the old ones.
+> >
+> > Which is why I would much prefer to instead just redirect in coccicheck
+> > case stderr to stdout from coccinelle. Is that preferred?
+> 
+> Then things will be merged in strange ways.
+> 
+> Why not just let the user decide what to do with these things?
 
-Yep.  I was using the match rule as a way to track down what it was
-doing without requiring it to modify the code.  The real ruleset uses
--/+ rules.
+Sure, what should be the default?
 
--Jeff
-
--- 
-Jeff Mahoney
-SUSE Labs
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 881 bytes
-Desc: OpenPGP digital signature
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20160615/8016d1c0/attachment.asc>
+  Luis
