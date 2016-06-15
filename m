@@ -1,21 +1,28 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 15 Jun 2016 13:20:19 +0200
-Subject: [Cocci] [PATCH v3 4/6] coccicheck: add indexing enhancement
- options
-In-Reply-To: <1465935820-14010-5-git-send-email-mcgrof@kernel.org>
-References: <20160614201923.GC11948@wotan.suse.de>
- <1465935820-14010-1-git-send-email-mcgrof@kernel.org>,
- <1465935820-14010-5-git-send-email-mcgrof@kernel.org>
-Message-ID: <trinity-93871e91-5a63-4aac-9026-bb2f97d8f384-1465989619464@3capp-webde-bap45>
+Date: Wed, 15 Jun 2016 14:01:37 +0200
+Subject: [Cocci] [PATCH 2/4] scripts: add reqs python library
+In-Reply-To: <1465942217-14452-3-git-send-email-mcgrof@kernel.org>
+References: <1465942217-14452-1-git-send-email-mcgrof@kernel.org>,
+ <1465942217-14452-3-git-send-email-mcgrof@kernel.org>
+Message-ID: <trinity-423abc00-b03e-4813-a090-da059bb5ee4e-1465992097699@3capp-webde-bap45>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> +DIR=$(dirname $(readlink -f $0))
-> +DIR="${DIR}/../"
+> +class Req:
 
-How do you think about to merge these variable assignments also into one?
+Will a longer identifier like "requirement" be more useful than the suggested abbreviation?
 
-+DIR="$(dirname $(readlink -f $0))/../"
+
+> +    "To be used for verifying binay package dependencies on Python code"
+
+Would you like to fix a typo here?
+
+... binary ...
+
+
+> +    def req_old_program(self, program, version_req):
+
+Does such a name selection need also further considerations?
 
 Regards,
 Markus
