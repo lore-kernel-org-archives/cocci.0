@@ -1,47 +1,24 @@
-From: mmarek@suse.com (Michal Marek)
-Date: Wed, 15 Jun 2016 21:11:45 +0200
-Subject: [Cocci] [PATCH 2/4] scripts: add reqs python library
-In-Reply-To: <20160615160224.GP11948@wotan.suse.de>
-References: <1465942217-14452-1-git-send-email-mcgrof@kernel.org>
- <1465942217-14452-3-git-send-email-mcgrof@kernel.org>
- <576108B3.30008@suse.com> <20160615160224.GP11948@wotan.suse.de>
-Message-ID: <5761A871.8000409@suse.com>
+From: mcgrof@kernel.org (Luis R. Rodriguez)
+Date: Wed, 15 Jun 2016 22:00:49 +0200
+Subject: [Cocci] [PATCH v3 4/6] coccicheck: add indexing enhancement
+ options
+In-Reply-To: <trinity-93871e91-5a63-4aac-9026-bb2f97d8f384-1465989619464@3capp-webde-bap45>
+References: <20160614201923.GC11948@wotan.suse.de>
+ <1465935820-14010-1-git-send-email-mcgrof@kernel.org>
+ <1465935820-14010-5-git-send-email-mcgrof@kernel.org>
+ <trinity-93871e91-5a63-4aac-9026-bb2f97d8f384-1465989619464@3capp-webde-bap45>
+Message-ID: <20160615200049.GZ11948@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Dne 15.6.2016 v 18:02 Luis R. Rodriguez napsal(a):
-> On Wed, Jun 15, 2016 at 09:50:11AM +0200, Michal Marek wrote:
->> On 2016-06-15 00:10, Luis R. Rodriguez wrote:
->>> +        weight = (int(rel_specs['VERSION'])    << 32) + \
->>> +                 (int(rel_specs['PATCHLEVEL']) << 16) + \
->>> +                 (sublevel   		       << 8 ) + \
->>> +                 (extra * 60) + (relmod * 2)
->>
->> This is going to silently break as soon as we have a version number with
->> e.g. a time stamp embedded. 
+On Wed, Jun 15, 2016 at 01:20:19PM +0200, SF Markus Elfring wrote:
+> > +DIR=$(dirname $(readlink -f $0))
+> > +DIR="${DIR}/../"
 > 
-> Well this is adhering to a linux_version_cmp type, surely we can adjust
-> it with alternatives. It just happens that with the common stuff this
-> suffices.
+> How do you think about to merge these variable assignments also into one?
 > 
-> Do you have a specific string in mind I can use to test against?
+> +DIR="$(dirname $(readlink -f $0))/../"
 
-You can have a look at the git history of scripts/ld-version.sh.
+Sure.
 
-
->> And there is actually no need to convert the
->> version string to an integer. You can convert them to arrays of
->> components and compare the components one by one.
-> 
-> You can, however weight is used to as a generic formula to determine
-> in one shot if you have a release >= than what is required. Its inspired
-> by how KERNEL_VERSION() is used:
-> 
-> #define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))
-
-Yes, the kernel interface provides comparisons using the preprocessor
-arithmetic, so it needs to convert the version strings to integers. But
-you are providing methods to compare the versions and what happens in
-these methods stays in these methods :).
-
-Michal
+  Luis
