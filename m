@@ -1,63 +1,60 @@
 From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Thu, 16 Jun 2016 15:31:28 -0700
-Subject: [Cocci] [PATCH v2 4/8] scripts: add glimpse.sh for indexing the
-	kernel
+Date: Thu, 16 Jun 2016 15:31:29 -0700
+Subject: [Cocci] [PATCH v2 5/8] coccicheck: replace --very-quiet with --quit
+	when debugging
 In-Reply-To: <1466116292-21843-1-git-send-email-mcgrof@kernel.org>
 References: <1466116292-21843-1-git-send-email-mcgrof@kernel.org>
-Message-ID: <1466116292-21843-5-git-send-email-mcgrof@kernel.org>
+Message-ID: <1466116292-21843-6-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Glimpse is a tool you can use to index the kernel. The tool
-was open sourced on 2014-09-26 [0] under the ISC license however
-the original release still [1] does not compile. A fix for this
-and a release that does compile is provided in a temporary
-tree [2].
+When debugging (using --profile or --show-trying) you want to
+avoid supressing output,  use --quiet instead. While at it, extend
+documentation for SPFLAGS use.
 
-v2 changesl:
-o simplify DIR in one line and add verbose release information
-  to commit log about the open sourcing of glimpse and its
-  current status.
-o add index files to .gitignore
+For instance one can use:
 
-[0] http://webglimpse.net/
-[1] https://github.com/gvelez17/glimpse/
-[2] https://github.com/mcgrof/glimpse.git
+$ export COCCI=scripts/coccinelle/misc/irqf_oneshot.cocci
+$ make coccicheck DEBUG_FILE="poo.err" MODE=report SPFLAGS="--profile --show-trying" M=./drivers/mfd/arizona-irq.c
+
+v2: use egrep instead of the *"=--option"* check, this doesn't work for
+    disjunctions.
 
 Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
 ---
- .gitignore         |  3 +++
- scripts/glimpse.sh | 11 +++++++++++
- 2 files changed, 14 insertions(+)
- create mode 100755 scripts/glimpse.sh
+ scripts/coccicheck | 20 +++++++++++++++++++-
+ 1 file changed, 19 insertions(+), 1 deletion(-)
 
-diff --git a/.gitignore b/.gitignore
-index 2be25f771bd8..e6b40a6f3a7a 100644
---- a/.gitignore
-+++ b/.gitignore
-@@ -113,3 +113,6 @@ all.config
+diff --git a/scripts/coccicheck b/scripts/coccicheck
+index 30f5a531ad34..f3a7d9fe9bc9 100755
+--- a/scripts/coccicheck
++++ b/scripts/coccicheck
+@@ -159,7 +159,25 @@ else
+ 	NPROC="$J"
+ fi
  
- # Kdevelop4
- *.kdev4
-+
-+# Glimpse
-+.glimpse_*
-diff --git a/scripts/glimpse.sh b/scripts/glimpse.sh
-new file mode 100755
-index 000000000000..2e866228a88f
---- /dev/null
-+++ b/scripts/glimpse.sh
-@@ -0,0 +1,11 @@
-+#!/bin/bash
-+
-+DIR="$(dirname $(readlink -f $0))/.."
-+
-+GLIMPSEINDEX="`which ${GLIMPSEINDEX:=glimpseindex}`"
-+if [ ! -x "$GLIMPSEINDEX" ]; then
-+	echo 'glimpseindex can be obtained at https://github.com/mcgrof/glimpse.git'
-+	exit 1
+-FLAGS="$SPFLAGS --very-quiet"
++# You can use SPFLAGS to append extra arguments to coccicheck.
++# A good example is if you want to debug your cocci script, you can
++# for instance use the following:
++#
++# $ export COCCI=scripts/coccinelle/misc/irqf_oneshot.cocci
++# $ time make coccicheck MODE=report DEBUG_FILE="all.err" SPFLAGS="--profile --show-trying" M=./drivers/mfd/arizona-irq.c
++#
++# "--show-trying" should show you what rule is being processed as it goes to
++# stdout, you do not need a debug file for that. The profile output will be
++# be sent to stdout, if you provide a DEBUG_FILE the profiling data can be
++# inspected there.
++#
++# --profile will not output if --very-quiet is used, so avoid it.
++echo $SPFLAGS | egrep -e "--profile|--show-trying" 2>&1 > /dev/null
++if [ $? -eq 0 ]; then
++	FLAGS="--quiet $SPFLAGS"
++else
++	FLAGS="--very-quiet $SPFLAGS"
 +fi
-+
-+find $DIR/* -name "*.[ch]" | $GLIMPSEINDEX -o -H . -F
+ 
+ # spatch only allows include directories with the syntax "-I include"
+ # while gcc also allows "-Iinclude" and "-include include"
 -- 
 2.8.2
