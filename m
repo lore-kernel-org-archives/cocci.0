@@ -1,49 +1,48 @@
 From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Thu, 16 Jun 2016 15:31:24 -0700
-Subject: [Cocci] [PATCH v2 0/8] coccicheck: modernize
-Message-ID: <1466116292-21843-1-git-send-email-mcgrof@kernel.org>
+Date: Thu, 16 Jun 2016 15:31:25 -0700
+Subject: [Cocci] [PATCH v2 1/8] coccicheck: move spatch binary check up
+In-Reply-To: <1466116292-21843-1-git-send-email-mcgrof@kernel.org>
+References: <1466116292-21843-1-git-send-email-mcgrof@kernel.org>
+Message-ID: <1466116292-21843-2-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-This series gives coccicheck some love by modernizing it
-to catch up to some features implemented in Coccinelle, of
-most importance is parmap support and some indexing
-enhancements. This should help speed things up considerably,
-for me this now runs twice as fast in some situations.
+This has no functional changes. This is being done
+to enable us to later use spatch binary for some
+flag checking for certain features early on.
 
-This also takes advantage of the open sourcing of Glimpse,
-thanks to the university of Arizona for doing and to Udi Manber
-for helping push that out.
+Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
+---
+ scripts/coccicheck | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-Since Coccinelle is ever evolving this also now allows developer
-to require specific Coccinelle versions on top of the SmPL patches.
-
-This is part of a larger series, all of which you can find here:
-
-https://git.kernel.org/cgit/linux/kernel/git/mcgrof/linux-next.git/log/?h=20160616-sysdata-v2
-
-Since further development is done on top of this we may need to coordinate
-with another maintainer for how these go in. The coccicheck changes will be
-important to help speed up some of the new Coccinelle API checks and
-transformations implemented in later series on the request firmware API.
-
-Luis R. Rodriguez (8):
-  coccicheck: move spatch binary check up
-  coccicheck: enable parmap support
-  coccicheck: add indexing enhancement options
-  scripts: add glimpse.sh for indexing the kernel
-  coccicheck: replace --very-quiet with --quit when debugging
-  coccicheck: add support for requring a coccinelle version
-  coccicheck: refer to coccicheck bottest wiki for documentation
-  scripts/coccinelle: require coccinelle >= 1.0.4 on
-    device_node_continue.cocci
-
- .gitignore                                         |   3 +
- scripts/coccicheck                                 | 242 ++++++++++++++++++++-
- .../iterators/device_node_continue.cocci           |   3 +
- scripts/glimpse.sh                                 |  11 +
- 4 files changed, 248 insertions(+), 11 deletions(-)
- create mode 100755 scripts/glimpse.sh
-
+diff --git a/scripts/coccicheck b/scripts/coccicheck
+index dd85a455b2ba..aa5e78fba270 100755
+--- a/scripts/coccicheck
++++ b/scripts/coccicheck
+@@ -7,6 +7,11 @@
+ 
+ SPATCH="`which ${SPATCH:=spatch}`"
+ 
++if [ ! -x "$SPATCH" ]; then
++    echo 'spatch is part of the Coccinelle project and is available at http://coccinelle.lip6.fr/'
++    exit 1
++fi
++
+ trap kill_running SIGTERM SIGINT
+ declare -a SPATCH_PID
+ 
+@@ -51,11 +56,6 @@ if [ "$KBUILD_EXTMOD" != "" ] ; then
+     OPTIONS="--patch $srctree $OPTIONS"
+ fi
+ 
+-if [ ! -x "$SPATCH" ]; then
+-    echo 'spatch is part of the Coccinelle project and is available at http://coccinelle.lip6.fr/'
+-    exit 1
+-fi
+-
+ if [ "$MODE" = "" ] ; then
+     if [ "$ONLINE" = "0" ] ; then
+ 	echo 'You have not explicitly specified the mode to use. Using default "report" mode.'
 -- 
 2.8.2
