@@ -1,61 +1,49 @@
 From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Thu, 16 Jun 2016 22:56:16 +0200
-Subject: [Cocci] [RFC] firmware: annotate thou shalt not request fw on
- init or probe
-In-Reply-To: <alpine.DEB.2.02.1509030753140.2037@localhost6.localdomain6>
-References: <1440811107-861-1-git-send-email-mcgrof@do-not-panic.com>
- <alpine.DEB.2.02.1508291812350.2057@localhost6.localdomain6>
- <20150903013533.GO8051@wotan.suse.de>
- <alpine.DEB.2.02.1509030753140.2037@localhost6.localdomain6>
-Message-ID: <20160616205616.GB11948@wotan.suse.de>
+Date: Thu, 16 Jun 2016 15:31:24 -0700
+Subject: [Cocci] [PATCH v2 0/8] coccicheck: modernize
+Message-ID: <1466116292-21843-1-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, Sep 03, 2015 at 07:56:33AM +0200, Julia Lawall wrote:
-> 
-> 
-> On Thu, 3 Sep 2015, Luis R. Rodriguez wrote:
-> 
-> > On Sat, Aug 29, 2015 at 06:18:20PM +0200, Julia Lawall wrote:
-> > > > +@ defines_module_init exists @
-> > > > +declarer name module_init;
-> > > > +identifier init;
-> > > > +@@
-> > > > +
-> > > > +module_init(init);
-> > > > +
-> > > > +@ has_probe depends on defines_module_init @
-> > > > +identifier drv_calls, drv_probe;
-> > > > +type bus_driver;
-> > > > +identifier probe_op =~ "(probe)";
-> > > > +@@
-> > > > +
-> > > > +bus_driver drv_calls = {
-> > > > +	.probe_op = drv_probe,
-> > > > +};
-> > > 
-> > > I'm not sure that this is enough.  For example, there is the macro
-> > > platform_driver_probe that initializes probe fields.  There is likewise
-> > > module_platform_driver, which is a top-level declaration that encapsulates
-> > > the module_init and the definition of the module_init function, which in
-> > > turn calls platform_driver_probe.  There is also module_platform_driver,
-> > > which encapsulates the module_init, but not the initialization of the probe
-> > > field.  Are you concerned with any of these cases?
-> > 
-> > Yes, and also it would seem this would only capture simple one level of
-> > routine indirection, for instance if probe called bar() and it was within
-> > bar() that the driver code called a fw request call, that would not be picked
-> > up, correct?
-> 
-> By default, Coccinelle is not interprocedural.  You can encode that in the 
-> script, though.
-> 
-> Probably the most convenient approach would be to start with the the call, 
-> and then work backward to the entry point.  I have code to do this, if and 
-> when it turns out to be useful.
+This series gives coccicheck some love by modernizing it
+to catch up to some features implemented in Coccinelle, of
+most importance is parmap support and some indexing
+enhancements. This should help speed things up considerably,
+for me this now runs twice as fast in some situations.
 
-FYI folks, thanks to Coccinelle 1.0.5 this is now easily possible with
-Python integration, a follow up patch will be submitted that uses this
-mechanism to do a proper full search on the kernel.
+This also takes advantage of the open sourcing of Glimpse,
+thanks to the university of Arizona for doing and to Udi Manber
+for helping push that out.
 
-  Luis
+Since Coccinelle is ever evolving this also now allows developer
+to require specific Coccinelle versions on top of the SmPL patches.
+
+This is part of a larger series, all of which you can find here:
+
+https://git.kernel.org/cgit/linux/kernel/git/mcgrof/linux-next.git/log/?h=20160616-sysdata-v2
+
+Since further development is done on top of this we may need to coordinate
+with another maintainer for how these go in. The coccicheck changes will be
+important to help speed up some of the new Coccinelle API checks and
+transformations implemented in later series on the request firmware API.
+
+Luis R. Rodriguez (8):
+  coccicheck: move spatch binary check up
+  coccicheck: enable parmap support
+  coccicheck: add indexing enhancement options
+  scripts: add glimpse.sh for indexing the kernel
+  coccicheck: replace --very-quiet with --quit when debugging
+  coccicheck: add support for requring a coccinelle version
+  coccicheck: refer to coccicheck bottest wiki for documentation
+  scripts/coccinelle: require coccinelle >= 1.0.4 on
+    device_node_continue.cocci
+
+ .gitignore                                         |   3 +
+ scripts/coccicheck                                 | 242 ++++++++++++++++++++-
+ .../iterators/device_node_continue.cocci           |   3 +
+ scripts/glimpse.sh                                 |  11 +
+ 4 files changed, 248 insertions(+), 11 deletions(-)
+ create mode 100755 scripts/glimpse.sh
+
+-- 
+2.8.2
