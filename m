@@ -1,59 +1,38 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 17 Jun 2016 17:28:58 +0200 (CEST)
-Subject: [Cocci] Parallel building on high number of threads failing
-In-Reply-To: <CAB=NE6Wi-QSR=PwGbhLGbycLqYVm6P_EMV3H+b=u=n1Ya2ZthA@mail.gmail.com>
-References: <CAB=NE6Wi-QSR=PwGbhLGbycLqYVm6P_EMV3H+b=u=n1Ya2ZthA@mail.gmail.com>
-Message-ID: <alpine.DEB.2.10.1606171728110.3164@hadrien>
+From: mcgrof@kernel.org (Luis R. Rodriguez)
+Date: Fri, 17 Jun 2016 17:10:52 +0200
+Subject: [Cocci] [PATCH v2 4/8] scripts: add glimpse.sh for indexing the
+	kernel
+In-Reply-To: <alpine.DEB.2.10.1606171129200.3164@hadrien>
+References: <1466116292-21843-1-git-send-email-mcgrof@kernel.org>
+ <1466116292-21843-5-git-send-email-mcgrof@kernel.org>
+ <alpine.DEB.2.10.1606171129200.3164@hadrien>
+Message-ID: <20160617151052.GN11948@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, 17 Jun 2016, Luis R. Rodriguez wrote:
+On Fri, Jun 17, 2016 at 11:44:26AM +0200, Julia Lawall wrote:
+> I'm not sure that this is worth it.  It adds a dependency on a tool that
+> seems not to be well maintained.  In terms of Coccinelle, I'm not sure
+> that it gives a big benefit.
+> 
+> Attached is a graph showing the file selection time for Coccinelle for a
+> selection of fairly complex semantic patches.  Coccigrep is just a
+> line-by-line regexp search implemented in ocaml, gitgrep uses git grep.
+> In most cases, glimpse is clearly faster.
+> 
+> On the other hand, it seems that glimpse often selects more files.
+> Sometimes a few more, eg 16 vs 14, and sometimes quite a lot more, eg 538
+> vs 236.  I suspect that this is because glimpse considers _ to be a space,
+> and thus it can have many false positives.  There are, however, a few
+> cases where glimpse also selects fewer files.
+> 
+> The file processing time (ie parsing the file, searching for, matches of
+> the semantic patch in the file, and performing the transformation) is
+> normally much higher than the file selection time.
+> 
+> So it seems that git grep is currently a better option for the kernel.
 
-> Building coccinelle on a 4 core system using 4 threads works well, on
-> a 32-core system however it fails. Building serially works well on the
-> system. After autogen, configure, and then make -j 32 I get:
+Great, thanks, consider this patch dropped, do we want the heuristics
+for the cache index in place though or should I drop that as well ?
 
-Perhaps this can be looked into, but I don't think there is a strong goa
-of making this work.
-
-julia
-
->
-> make[6]: Entering directory '/home/mcgrof/coccinelle/bundles/pycaml'
-> /usr/bin/ocamlopt.opt -I chemoelectric-pycaml-8614105 -cclib
-> -lpycaml_stubs -ccopt -I/usr/include/python2.7 -ccopt
-> -I/usr/include/x86_64-linux-gnu/python2.7 -cclib -lpython2.7 -c
-> chemoelectric-pycaml-8614105/pycaml.ml -o
-> chemoelectric-pycaml-8614105/pycaml.cmx
-> make[6]: *** No rule to make target
-> 'chemoelectric-pycaml-8614105/pycaml.a', needed by
-> 'all-opt-build-targets'.  Stop.
-> make[6]: *** Waiting for unfinished jobs....
-> make[6]: Leaving directory '/home/mcgrof/coccinelle/bundles/pycaml'
-> ../Makefile.bundles:33: recipe for target 'all.opt' failed
-> make[5]: *** [all.opt] Error 2
-> make[5]: Leaving directory '/home/mcgrof/coccinelle/bundles/pycaml'
-> Makefile:186: recipe for target
-> '/home/mcgrof/coccinelle/bundles/pycaml/.opt' failed
-> make[4]: *** [/home/mcgrof/coccinelle/bundles/pycaml/.opt] Error 2
-> make[4]: Leaving directory '/home/mcgrof/coccinelle'
-> Makefile:180: recipe for target 'subdirs.opt' failed
-> make[3]: *** [subdirs.opt] Error 1
-> make[3]: Leaving directory '/home/mcgrof/coccinelle'
-> Makefile:163: recipe for target 'opt-compil' failed
-> make[2]: *** [opt-compil] Error 2
-> make[2]: Leaving directory '/home/mcgrof/coccinelle'
-> Makefile:143: recipe for target 'all-release' failed
-> make[1]: *** [all-release] Error 2
-> make[1]: Leaving directory '/home/mcgrof/coccinelle'
-> Makefile:121: recipe for target 'all' failed
-> make: *** [all] Error 2
->
-> So it seems there's a race against chemoelectric-pycaml-8614105/pycaml.a
->
->   Luis
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+  Luis
