@@ -1,58 +1,52 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 17 Jun 2016 17:29:49 +0200 (CEST)
-Subject: [Cocci] [PATCH v2 3/8] coccicheck: add indexing enhancement
-	options
-In-Reply-To: <20160617151229.GO11948@wotan.suse.de>
+Date: Fri, 17 Jun 2016 17:35:26 +0200 (CEST)
+Subject: [Cocci] [PATCH v2 4/8] scripts: add glimpse.sh for indexing the
+	kernel
+In-Reply-To: <20160617151052.GN11948@wotan.suse.de>
 References: <1466116292-21843-1-git-send-email-mcgrof@kernel.org>
- <1466116292-21843-4-git-send-email-mcgrof@kernel.org>
- <alpine.DEB.2.10.1606171146360.3164@hadrien>
- <20160617151229.GO11948@wotan.suse.de>
-Message-ID: <alpine.DEB.2.10.1606171729370.3164@hadrien>
+ <1466116292-21843-5-git-send-email-mcgrof@kernel.org>
+ <alpine.DEB.2.10.1606171129200.3164@hadrien>
+ <20160617151052.GN11948@wotan.suse.de>
+Message-ID: <alpine.DEB.2.10.1606171732480.3164@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 On Fri, 17 Jun 2016, Luis R. Rodriguez wrote:
 
-> On Fri, Jun 17, 2016 at 11:47:25AM +0200, Julia Lawall wrote:
+> On Fri, Jun 17, 2016 at 11:44:26AM +0200, Julia Lawall wrote:
+> > I'm not sure that this is worth it.  It adds a dependency on a tool that
+> > seems not to be well maintained.  In terms of Coccinelle, I'm not sure
+> > that it gives a big benefit.
 > >
+> > Attached is a graph showing the file selection time for Coccinelle for a
+> > selection of fairly complex semantic patches.  Coccigrep is just a
+> > line-by-line regexp search implemented in ocaml, gitgrep uses git grep.
+> > In most cases, glimpse is clearly faster.
 > >
-> > On Thu, 16 Jun 2016, Luis R. Rodriguez wrote:
+> > On the other hand, it seems that glimpse often selects more files.
+> > Sometimes a few more, eg 16 vs 14, and sometimes quite a lot more, eg 538
+> > vs 236.  I suspect that this is because glimpse considers _ to be a space,
+> > and thus it can have many false positives.  There are, however, a few
+> > cases where glimpse also selects fewer files.
 > >
-> > > Coccinelle has support to make use of its own enhanced "grep"
-> > > mechanisms instead of using regular grep for searching code,
-> > > it calls this 'coccigrep'. In lack of any indexing optimization
-> > > information it uses --use-coccigrep by default.
-> > >
-> > > This patch enable indexing optimizations heuristics so that coccigrep
-> > > can automatically detect what indexing options are available and use
-> > > them accordinly without any user input.
-> > >
-> > > Since git has its own index, support for using 'git grep' has been
-> > > added to Coccinelle, that should on average perform better than
-> > > using the internal coccigrep. Coccinelle has had idutils support
-> > > as well for a while now, you however need to refer to the index
-> > > file. We support detecting two idutils index files by default,
-> > > ID and .id-utils.index, assuming you ran either of:
-> > >
-> > >  # What you might have done:
-> > > mkid -s
-> > >  # as in coccinelle scripts/idutils_index.sh
-> > > mkid -i C --output .id-utils.index *
-> > >
-> > > Lastly, Coccinelle has had support for glimpseindex for a long while,
-> > > however the glimpseindex tool, the agrep library were previously closed
-> > > source, its all now open sourced, and provides the best performance, so
-> > > support that if we can detect you have a glimpse index.
-> > >
-> > > You can always override the index as follows:
-> > >
-> > > $ make coccicheck V=1 MODE=report COCCI_INDEX="--use-idutils ID"
+> > The file processing time (ie parsing the file, searching for, matches of
+> > the semantic patch in the file, and performing the transformation) is
+> > normally much higher than the file selection time.
 > >
-> > Why not just have a generic COCCI_ARGS argument?
+> > So it seems that git grep is currently a better option for the kernel.
 >
-> Actually SPFLAGS exists already so we can just document to
-> override using that. Will fix.
+> Great, thanks, consider this patch dropped, do we want the heuristics
+> for the cache index in place though or should I drop that as well ?
 
-That seems like a good solution.
+I assume you mean this patch:
+
+[PATCH v2 3/8] coccicheck: add indexing enhancement options
+
+I think it should be dropped.  It adds complexity and git grep works
+pretty well.  If people want to use something else, they can use SPARGS,
+or a .cocciconfig file, eg:
+
+[spatch]
+options = --use-glimpse
 
 julia
