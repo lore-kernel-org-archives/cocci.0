@@ -1,100 +1,110 @@
 From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Mon, 20 Jun 2016 14:54:07 -0700
-Subject: [Cocci] [PATCH v2 2/3] docs/manual/cocci_syntax.tex: extend with
-	python iteration
+Date: Mon, 20 Jun 2016 14:54:08 -0700
+Subject: [Cocci] [PATCH v2 3/3] docs: document .cocciconfig
 In-Reply-To: <1466459648-17477-1-git-send-email-mcgrof@kernel.org>
 References: <1466459648-17477-1-git-send-email-mcgrof@kernel.org>
-Message-ID: <1466459648-17477-3-git-send-email-mcgrof@kernel.org>
+Message-ID: <1466459648-17477-4-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Add documentation and example to manual and man page.
+
 Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
 ---
- docs/manual/cocci_syntax.tex | 51 ++++++++++++++++++++++++++++++++++----------
- 1 file changed, 40 insertions(+), 11 deletions(-)
+ docs/manual/cocci_syntax.tex | 23 +++++++++++++++++++++++
+ docs/spatch.1.in             | 32 +++++++++++++++++++++++++++++++-
+ 2 files changed, 54 insertions(+), 1 deletion(-)
 
 diff --git a/docs/manual/cocci_syntax.tex b/docs/manual/cocci_syntax.tex
-index 49602ef1d732..5adfc95b0ce1 100644
+index 5adfc95b0ce1..dc7aa17712af 100644
 --- a/docs/manual/cocci_syntax.tex
 +++ b/docs/manual/cocci_syntax.tex
-@@ -1698,9 +1698,12 @@ of every token.
- \section{Iteration}
+@@ -1782,6 +1782,29 @@ When using ocaml scripting a hash table is used for the same purposes.
+ Coccinelle itself provides no support for this and as such addressing
+ this with scripting is necessary.
  
- It is possible to iterate Coccinelle, giving the subsequent iterations a
--different set of virtual rules or virtual identifier bindings.  And example
--is found in {\tt demos/iteration.cocci}.  The example shown there is as
--follows:
-+different set of virtual rules or virtual identifier bindings.  Coccinelle
-+currently supports iteration with both ocaml and python scripting. An
-+example with ocaml is fond in {\tt demos/iteration.cocci}, a python
-+exmaple is found in {\tt demos/python\_iteration.cocci}.
++\section{.cocciconfig support}
 +
-+The ocaml scripting iteration example starts as follows.
- 
- \begin{quote}
- \begin{verbatim}
-@@ -1724,6 +1727,29 @@ with Not_found ->
- \end{verbatim}
- \end{quote}
- 
-+The respective python scripting iteration example starts as follows:
++Coccinelle supports enabling custom options to be preferred when running
++spatch.  This is supported through the search of .cocciconfig files in each of
++the following directories, later lines extend and may override earlier ones:
++
++\begin{itemize}
++	\item Your current user's home directory is processed first
++	\item Your directory from which spatch is called is processed next
++	\item The directory provided with the --dir option is processed last, if used
++\end{itemize}
++
++Newlines, even with \, are not tolerated in attribute values. An example
++follows:
 +
 +\begin{quote}
 +\begin{verbatim}
-+virtual after_start
-+
-+ at initialize:python@
-+@@
-+
-+seen = set()
-+
-+def add_if_not_present (source, f, file):
-+    if (f, file) not in seen:
-+        seen.add((f, file))
-+        it = Iteration()
-+        if file != None:
-+            it.set_files([file])
-+        it.add_virtual_rule(after_start)
-+        it.add_virtual_identifier(err_ptr_function, f)
-+        it.register()
++[spatch]
++	options = --jobs 4
++	options = --show-trying
 +\end{verbatim}
 +\end{quote}
 +
- The virtual rule {\tt after\_start} is used to distinguish between the
- first iteration (in which it is not considered to have matched) and all
- others.  This is done by not mentioning {\tt after\_start} in the command
-@@ -1734,11 +1760,12 @@ The main code for performing the iteration is found in the function {\tt
- {\tt register}.  {\tt New iteration} creates a structure representing the
- new iteration.  {\tt set\_files} sets the list of files to be considered on
- the new iteration.  If this function is not called, the new iteration
--treats the same files as the current iteration.  {\tt add\_virtual\_rule A}
--has the same effect as putting {\tt -D a} on the command line.  Note that
--the first letter of the rule name is capitalized, although this is not done
--elsewhere.  {\tt add\_virtual\_identifier X v} has the same effect as
--putting {\tt -D x=v} on the command line.  Note again the case change.
-+treats the same files as the current iteration.  {\tt add\_virtual\_rule a}
-+has the same effect as putting {\tt -D a} on the command line.  If
-+using ocaml scripting instead of python scripting the first letter of the rule
-+name is capitalized, although this is not done elsewhere.
-+{\tt add\_virtual\_identifier x v} has the same effect as putting {\tt -D x=v}
-+on the command line.  Again, when using ocaml scripting there is a case change.
- {\tt extend\_virtual\_identifiers()} (not shown) preserves all virtual
- identifiers of the current iteration that are not overridden by calls to
- {\tt add\_virtual\_identifier}.  Finally, the call to {\tt register} queues
-@@ -1749,9 +1776,11 @@ Modification is not allowed when using iteration.  Thus, it is required to
- use the {\tt --no-show-diff}, unless the semantic patch contains {\tt *}s
- (a semantic match rather than a semantic patch).
- 
--The remainder of the code above uses a hash table to ensure that the same
--information is not enqueued more than once.  Coccinelle itself provides no
--support for this.
-+When using python scripting a tuple is used throughout the rest of the
-+code to ensure that the same information is not enqueued more than once.
-+When using ocaml scripting a hash table is used for the same purposes.
-+Coccinelle itself provides no support for this and as such addressing
-+this with scripting is necessary.
- 
  %%% Local Variables:
  %%% mode: LaTeX
+ %%% TeX-master: "main_grammar"
+diff --git a/docs/spatch.1.in b/docs/spatch.1.in
+index dae38952e88c..121048b1ea0b 100644
+--- a/docs/spatch.1.in
++++ b/docs/spatch.1.in
+@@ -55,7 +55,8 @@ and at the \fBscripts/coccinelle\fP directory of the Linux Kernel source
+ code.
+ 
+ .SH OPTIONS
+-Here is a summary of the most commonly used options:
++Here is a summary of the most commonly used options (also
++see the "Configuration Mechanism" section below):
+ 
+ .TP
+ .B \-\-sp\-file \fI<file>\fP
+@@ -566,6 +567,31 @@ It's for the other (internal) uses of the spatch program.
+ \fB\-\-compare\-c\fR
+ <file1> <file2>
+ 
++.SH CONFIGURATION MECHANISM
++
++Coccinelle uses a simple text format to store customizations into
++\.cocciconfig files, that can be per project, user, or target. The order
++in which the configuration file is processed is as follows, the
++later lines always extend and may override earlier ones:
++
++  o Your current user's home directory is processed first
++  o Your directory from which spatch is called is processed next
++  o The directory provided with the --dir option is processed last, if used
++
++Such a configuration file may look like this:
++
++.if n \{\
++.RS 4
++.\}
++.nf
++[spatch]
++	options = --jobs 4
++	options = --show-trying
++.fi
++.if n \{\
++.RE
++.\}
++
+ .SH FILES
+ .I @SHAREDIR@/standard.iso
+ .RS
+@@ -574,6 +600,10 @@ This file contains the default set of isomorphisms.
+ .I @SHAREDIR@/standard.h
+ .RS
+ This file contains the default set of macro hints.
++.RE
++.I .cocciconfig
++.RS
++This file contains the custom set of spatch options.
+ 
+ .SH ENVIRONMENT
+ .IP COCCINELLE_HOME
 -- 
 2.8.2
