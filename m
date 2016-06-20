@@ -1,40 +1,34 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 20 Jun 2016 22:21:34 +0200 (CEST)
-Subject: [Cocci] [PATCH v2 1/3] coccinelle: also catch kzfree() issues
-In-Reply-To: <5767EE79.5090402@suse.com>
-References: <cover.1464013817.git.ydroneaud@opteya.com>
- <d3466c47b1c5bbf9a7c4cb69a78d392327748669.1464013817.git.ydroneaud@opteya.com>
- <alpine.DEB.2.10.1605231717290.12010@hadrien> <5767EE79.5090402@suse.com>
-Message-ID: <alpine.DEB.2.02.1606202220520.2067@localhost6.localdomain6>
+From: mcgrof@kernel.org (Luis R. Rodriguez)
+Date: Mon, 20 Jun 2016 14:54:05 -0700
+Subject: [Cocci] [PATCH v2 0/3] coccinelle: expand docs
+Message-ID: <1466459648-17477-1-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+This v2 modifies the ++ demo and documentation to something
+a bit more safe for its use, and while at it decided to extend
+the iteration documentation and document support for .cocciconfig.
 
+Luis R. Rodriguez (3):
+  docs/demos: add a few ++ documentation and demos
+  docs/manual/cocci_syntax.tex: extend with python iteration
+  docs: document .cocciconfig
 
-On Mon, 20 Jun 2016, Michal Marek wrote:
+ demos/plusplus1.c            |   4 +
+ demos/plusplus1.cocci        |  17 +++++
+ demos/plusplus1.res          |   5 ++
+ demos/plusplus2.c            |   7 ++
+ demos/plusplus2.cocci        |  26 +++++++
+ demos/plusplus2.res          |  10 +++
+ docs/manual/cocci_syntax.tex | 169 ++++++++++++++++++++++++++++++++++++++++---
+ docs/spatch.1.in             |  32 +++++++-
+ 8 files changed, 258 insertions(+), 12 deletions(-)
+ create mode 100644 demos/plusplus1.c
+ create mode 100644 demos/plusplus1.cocci
+ create mode 100644 demos/plusplus1.res
+ create mode 100644 demos/plusplus2.c
+ create mode 100644 demos/plusplus2.cocci
+ create mode 100644 demos/plusplus2.res
 
-> On 2016-05-23 17:18, Julia Lawall wrote:
-> > 
-> > 
-> > On Mon, 23 May 2016, Yann Droneaud wrote:
-> > 
-> >> Since commit 3ef0e5ba4673 ('slab: introduce kzfree()'),
-> >> kfree() is no more the only function to be considered:
-> >> kzfree() should be recognized too.
-> >>
-> >> In particular, kzfree() must not be called on memory
-> >> allocated through devm_*() functions.
-> >>
-> >> Cc: Johannes Weiner <hannes@cmpxchg.org>
-> >> Signed-off-by: Yann Droneaud <ydroneaud@opteya.com>
-> > 
-> > Acked-by: Julia Lawall <julia.lawall@lip6.fr>
-> 
-> Hi Julia,
-> 
-> does your ACK apply to the other two patches as well?
-
-Sorry, I seem to have missed the other two.  I have reviewed them now, and 
-the ack applies to all three.  Thanks for checking on it.
-
-julia
+-- 
+2.8.2
