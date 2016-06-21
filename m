@@ -1,64 +1,63 @@
 From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Tue, 21 Jun 2016 12:21:29 -0700
-Subject: [Cocci] [PATCH v3 4/8] coccicheck: replace --very-quiet with --quit
-	when debugging
+Date: Tue, 21 Jun 2016 12:21:30 -0700
+Subject: [Cocci] [PATCH v3 5/8] scripts: add Linux .cocciconfig for
+	coccinelle
 In-Reply-To: <1466536893-23355-1-git-send-email-mcgrof@kernel.org>
 References: <1466536893-23355-1-git-send-email-mcgrof@kernel.org>
-Message-ID: <1466536893-23355-5-git-send-email-mcgrof@kernel.org>
+Message-ID: <1466536893-23355-6-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-When debugging (using --profile or --show-trying) you want to
-avoid supressing output,  use --quiet instead. While at it, extend
-documentation for SPFLAGS use.
+Help Coccinelle when used against Linux with a set of sensible defaults
+options for Linux. This hints to coccinelle git can be used for 'git grep'
+queries over coccigrep. A timeout of 200 seconds should suffice for now.
 
-For instance one can use:
+If you use idutils you can override for 'make coccicheck' by using the
+SPFLAGS option as follows:
 
-$ export COCCI=scripts/coccinelle/misc/irqf_oneshot.cocci
-$ make coccicheck DEBUG_FILE="poo.err" MODE=report SPFLAGS="--profile --show-trying" M=./drivers/mfd/arizona-irq.c
+First build the index, for example:
+mkid -s
 
-v3: rebased, resolve conflicts
-v2: use egrep instead of the *"=--option"* check, this doesn't work for
-    disjunctions.
+Pick the cocci file you wnat to work with:
+export COCCI=scripts/coccinelle/misc/irqf_oneshot.cocci
+
+Then run coccicheck:
+$ make coccicheck V=1 MODE=report SPFLAGS="--use-idutils ID"
+
+Coccinelle supports reading .cocciconfig from different directories,
+the later one overriding the previous reads in the following order:
+
+ o Your current user's home directory is processed first
+ o Your directory from which spatch is called is processed next
+ o The directory provided with the --dir option is processed last, if used
 
 Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
 ---
- scripts/coccicheck | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ .cocciconfig | 3 +++
+ .gitignore   | 1 +
+ 2 files changed, 4 insertions(+)
+ create mode 100644 .cocciconfig
 
-diff --git a/scripts/coccicheck b/scripts/coccicheck
-index a77f0f246405..998d764636e0 100755
---- a/scripts/coccicheck
-+++ b/scripts/coccicheck
-@@ -32,6 +32,29 @@ fi
+diff --git a/.cocciconfig b/.cocciconfig
+new file mode 100644
+index 000000000000..43967c6b2015
+--- /dev/null
++++ b/.cocciconfig
+@@ -0,0 +1,3 @@
++[spatch]
++	options = --timeout 200
++	options = --use-gitgrep
+diff --git a/.gitignore b/.gitignore
+index 2be25f771bd8..c2ed4ecb0acd 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -67,6 +67,7 @@ Module.symvers
+ #
+ !.gitignore
+ !.mailmap
++!.cocciconfig
  
- FLAGS="--very-quiet"
- 
-+# You can use SPFLAGS to append extra arguments to coccicheck or override any
-+# heuristics done in this file as Coccinelle accepts the last options when
-+# options conflict.
-+#
-+# A good example for use of SPFLAGS is if you want to debug your cocci script,
-+# you can for instance use the following:
-+#
-+# $ export COCCI=scripts/coccinelle/misc/irqf_oneshot.cocci
-+# $ make coccicheck MODE=report DEBUG_FILE="all.err" SPFLAGS="--profile --show-trying" M=./drivers/mfd/arizona-irq.c
-+#
-+# "--show-trying" should show you what rule is being processed as it goes to
-+# stdout, you do not need a debug file for that. The profile output will be
-+# be sent to stdout, if you provide a DEBUG_FILE the profiling data can be
-+# inspected there.
-+#
-+# --profile will not output if --very-quiet is used, so avoid it.
-+echo $SPFLAGS | egrep -e "--profile|--show-trying" 2>&1 > /dev/null
-+if [ $? -eq 0 ]; then
-+	FLAGS="--quiet"
-+else
-+	FLAGS="--very-quiet"
-+fi
-+
- # spatch only allows include directories with the syntax "-I include"
- # while gcc also allows "-Iinclude" and "-include include"
- COCCIINCLUDE=${LINUXINCLUDE//-I/-I }
+ #
+ # Generated include files
 -- 
 2.8.2
