@@ -1,156 +1,24 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 21 Jun 2016 22:17:38 +0200 (CEST)
-Subject: [Cocci] [PATCH v3 3/8] coccicheck: enable parmap support
-In-Reply-To: <1466536893-23355-4-git-send-email-mcgrof@kernel.org>
-References: <1466536893-23355-1-git-send-email-mcgrof@kernel.org>
- <1466536893-23355-4-git-send-email-mcgrof@kernel.org>
-Message-ID: <alpine.DEB.2.02.1606212217060.2040@localhost6.localdomain6>
+From: mcgrof@kernel.org (Luis R. Rodriguez)
+Date: Tue, 21 Jun 2016 22:38:38 +0200
+Subject: [Cocci] bundles/pycaml/: force pycaml preparation to be done
+ serially
+In-Reply-To: <b130cdc7-d1f0-ab61-b17b-89959e108e10@users.sourceforge.net>
+References: <1466186657-25309-1-git-send-email-mcgrof@kernel.org>
+ <alpine.DEB.2.10.1606172009220.3164@hadrien>
+ <20160617184724.GW11948@wotan.suse.de>
+ <20160617223327.GX11948@wotan.suse.de>
+ <7d8c0732-59ba-a49d-4834-48f1dc0285f7@users.sourceforge.net>
+ <20160620221839.GL25646@wotan.suse.de>
+ <a273d1e4-143d-9850-940b-8f1ccf8c7fa6@users.sourceforge.net>
+ <CAB=NE6VhQ-4c6U740w6q+yCghBQMp0ces8f3B=wnq18hQLptrw@mail.gmail.com>
+ <b130cdc7-d1f0-ab61-b17b-89959e108e10@users.sourceforge.net>
+Message-ID: <20160621203838.GT25646@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On Tue, Jun 21, 2016 at 07:54:42PM +0200, SF Markus Elfring wrote:
+> I suggest therefore to consider additional possibilities.
 
+Patches welcomed.
 
-On Tue, 21 Jun 2016, Luis R. Rodriguez wrote:
-
-> Coccinelle has had parmap support since 1.0.2, this means
-> it supports --jobs, enabling built-in multithreaded functionality,
-> instead of needing one to script it out. Just look for --jobs
-> in the help output to determine if this is supported.
-> 
-> Also enable the load balancing to be dynamic, so that if a
-> thread finishes early we keep feeding it.
-> 
-> Note: now that we have all things handled for us, redirect stderr to
-> stdout as well to capture any possible errors or warnings issued by
-> coccinelle.
-> 
-> If --jobs is not supported we fallback to the old mechanism.
-> This also now accepts DEBUG_FILE= to specify where you want
-> stderr to be redirected to, by default we redirect stderr to
-> /dev/null.
-
-Why do you want to do something different for standard error in the parmap 
-and nonparmap case?
-
-julia
-
-
-> Also since while at it propagate back into the shell script any
-> coccinelle error code. When used in serialized mode where all cocci
-> files are run this also stops processing if an error has occured.
-> This lets us handle some errors in coccinelle cocci files and if
-> they bail out we should inspect the errors. This will be more
-> useful later to help annotate coccinelle version dependency
-> requirements. This will let you run only SmPL files that your
-> system supports.
-> 
-> As a small example, prior to this change, on an 8-core system:
-> 
-> Before:
-> 
-> $ export COCCI=scripts/coccinelle/free/kfree.cocci
-> $ time make coccicheck MODE=report DEBUG_FILE=cocci.err
-> ...
-> 
-> real    29m14.912s
-> user    103m1.796s
-> sys     0m4.464s
-> 
-> After:
-> 
-> real    16m22.435s
-> user    128m30.060s
-> sys     0m2.712s
-> 
-> v3:
-> 
-> o move USE_JOBS to avoid being overriden
-> 
-> v2:
-> 
-> o redirect coccinelle stderr to /dev/null by default and
->   only if DEBUG_FILE is used do we pass it to a file
-> o fix typo of paramap/parmap
-> 
-> Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
-> ---
->  scripts/coccicheck | 41 ++++++++++++++++++++++++++++++++++++++---
->  1 file changed, 38 insertions(+), 3 deletions(-)
-> 
-> diff --git a/scripts/coccicheck b/scripts/coccicheck
-> index 5319fae910b4..a77f0f246405 100755
-> --- a/scripts/coccicheck
-> +++ b/scripts/coccicheck
-> @@ -12,8 +12,8 @@ if [ ! -x "$SPATCH" ]; then
->      exit 1
->  fi
->  
-> -trap kill_running SIGTERM SIGINT
-> -declare -a SPATCH_PID
-> +USE_JOBS="no"
-> +$SPATCH --help | grep "\-\-jobs" > /dev/null && USE_JOBS="yes"
->  
->  # The verbosity may be set by the environmental parameter V=
->  # as for example with 'make V=1 coccicheck'
-> @@ -56,6 +56,14 @@ if [ "$KBUILD_EXTMOD" != "" ] ; then
->      OPTIONS="--patch $srctree $OPTIONS"
->  fi
->  
-> +# You can override by using SPFLAGS
-> +if [ "$USE_JOBS" = "no" ]; then
-> +	trap kill_running SIGTERM SIGINT
-> +	declare -a SPATCH_PID
-> +else
-> +	OPTIONS="$OPTIONS --jobs $NPROC --chunksize 1"
-> +fi
-> +
->  if [ "$MODE" = "" ] ; then
->      if [ "$ONLINE" = "0" ] ; then
->  	echo 'You have not explicitly specified the mode to use. Using default "report" mode.'
-> @@ -82,7 +90,26 @@ if [ "$ONLINE" = "0" ] ; then
->      echo ''
->  fi
->  
-> -run_cmd() {
-> +run_cmd_parmap() {
-> +	if [ $VERBOSE -ne 0 ] ; then
-> +		echo "Running ($NPROC in parallel): $@"
-> +	fi
-> +	if [ "$DEBUG_FILE" != "/dev/null" -a "$DEBUG_FILE" != "" ]; then
-> +		if [ -f $DEBUG_FILE ]; then
-> +			echo "Debug file $DEBUG_FILE exists, bailing"
-> +			exit
-> +		fi
-> +	else
-> +		DEBUG_FILE="/dev/null"
-> +	fi
-> +	$@ 2>$DEBUG_FILE
-> +	if [[ $? -ne 0 ]]; then
-> +		echo "coccicheck failed"
-> +		exit $?
-> +	fi
-> +}
-> +
-> +run_cmd_old() {
->  	local i
->  	if [ $VERBOSE -ne 0 ] ; then
->  		echo "Running ($NPROC in parallel): $@"
-> @@ -97,6 +124,14 @@ run_cmd() {
->  	wait
->  }
->  
-> +run_cmd() {
-> +	if [ "$USE_JOBS" = "yes" ]; then
-> +		run_cmd_parmap $@
-> +	else
-> +		run_cmd_old $@
-> +	fi
-> +}
-> +
->  kill_running() {
->  	for i in $(seq 0 $(( NPROC - 1 )) ); do
->  		if [ $VERBOSE -eq 2 ] ; then
-> -- 
-> 2.8.2
-> 
-> 
+  Luis
