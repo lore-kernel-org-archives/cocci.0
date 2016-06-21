@@ -1,9 +1,10 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 21 Jun 2016 22:13:31 +0200 (CEST)
-Subject: [Cocci] [PATCH v3 0/8] coccicheck: modernize
-In-Reply-To: <1466536893-23355-1-git-send-email-mcgrof@kernel.org>
+Date: Tue, 21 Jun 2016 22:17:38 +0200 (CEST)
+Subject: [Cocci] [PATCH v3 3/8] coccicheck: enable parmap support
+In-Reply-To: <1466536893-23355-4-git-send-email-mcgrof@kernel.org>
 References: <1466536893-23355-1-git-send-email-mcgrof@kernel.org>
-Message-ID: <alpine.DEB.2.02.1606212211210.2040@localhost6.localdomain6>
+ <1466536893-23355-4-git-send-email-mcgrof@kernel.org>
+Message-ID: <alpine.DEB.2.02.1606212217060.2040@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -11,54 +12,144 @@ List-Id: cocci@systeme.lip6.fr
 
 On Tue, 21 Jun 2016, Luis R. Rodriguez wrote:
 
-> This v3 series addresses the feedback from the last v2 series
-> on the coccicheck enhancements [0], namely:
+> Coccinelle has had parmap support since 1.0.2, this means
+> it supports --jobs, enabling built-in multithreaded functionality,
+> instead of needing one to script it out. Just look for --jobs
+> in the help output to determine if this is supported.
 > 
-> o it drops the indexing heuristics in favor for a .cocciconfig use
-> o drops glimpse support as its simply not well maintained, recommends
->   idutils instead.
-> o adds a Linux .cocciconfig -- the assumption is you'd run spatch when
->   you're at the top level of the kernel. This has not only the side effect
->   of picking up .cocciconfig, but also that the coccicheck use of the
->   make variables passed on are assumed to be correct given the base
->   directory as the current directory.
+> Also enable the load balancing to be dynamic, so that if a
+> thread finishes early we keep feeding it.
+> 
+> Note: now that we have all things handled for us, redirect stderr to
+> stdout as well to capture any possible errors or warnings issued by
+> coccinelle.
+> 
+> If --jobs is not supported we fallback to the old mechanism.
+> This also now accepts DEBUG_FILE= to specify where you want
+> stderr to be redirected to, by default we redirect stderr to
+> /dev/null.
 
-I don't understand this point.  Coccinelle picks up the .cocciconfig, if 
-any, of the directory on which you want to work, not of the current one.
+Why do you want to do something different for standard error in the parmap 
+and nonparmap case?
 
 julia
 
-> o makes SPFLAGS more useful by ensuring it is always at the end of options
-> o rebases on top of Deepa Dinamani's patch
->   "coccicheck: Allow for overriding spatch flags", under the assumption this
->   is already merged. I don't see it on linux-next but I do think Michal
->   has merged already onto his tree. This is also rebased on to linux-next
->   next-20160621
+
+> Also since while at it propagate back into the shell script any
+> coccinelle error code. When used in serialized mode where all cocci
+> files are run this also stops processing if an error has occured.
+> This lets us handle some errors in coccinelle cocci files and if
+> they bail out we should inspect the errors. This will be more
+> useful later to help annotate coccinelle version dependency
+> requirements. This will let you run only SmPL files that your
+> system supports.
 > 
-> These changes are also visible on kernel.org, on a branch based on linux-next
-> next-20160621 with Deepa's commit merged first.
+> As a small example, prior to this change, on an 8-core system:
 > 
-> [0] http://lkml.kernel.org/r/1466116292-21843-1-git-send-email-mcgrof at kernel.org
-> [1] https://git.kernel.org/cgit/linux/kernel/git/mcgrof/linux-next.git/log/?h=20160621-cocciconfig-v3
+> Before:
 > 
-> Luis R. Rodriguez (8):
->   coccicheck: move spatch binary check up
->   coccicheck: make SPFLAGS more useful
->   coccicheck: enable parmap support
->   coccicheck: replace --very-quiet with --quit when debugging
->   scripts: add Linux .cocciconfig for coccinelle
->   coccicheck: add support for requring a coccinelle version
->   coccicheck: refer to coccicheck bottest wiki for documentation
->   scripts/coccinelle: require coccinelle >= 1.0.4 on
->     device_node_continue.cocci
+> $ export COCCI=scripts/coccinelle/free/kfree.cocci
+> $ time make coccicheck MODE=report DEBUG_FILE=cocci.err
+> ...
 > 
->  .cocciconfig                                       |  3 +
->  .gitignore                                         |  1 +
->  scripts/coccicheck                                 | 98 ++++++++++++++++++++--
->  .../iterators/device_node_continue.cocci           |  3 +
->  4 files changed, 96 insertions(+), 9 deletions(-)
->  create mode 100644 .cocciconfig
+> real    29m14.912s
+> user    103m1.796s
+> sys     0m4.464s
 > 
+> After:
+> 
+> real    16m22.435s
+> user    128m30.060s
+> sys     0m2.712s
+> 
+> v3:
+> 
+> o move USE_JOBS to avoid being overriden
+> 
+> v2:
+> 
+> o redirect coccinelle stderr to /dev/null by default and
+>   only if DEBUG_FILE is used do we pass it to a file
+> o fix typo of paramap/parmap
+> 
+> Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
+> ---
+>  scripts/coccicheck | 41 ++++++++++++++++++++++++++++++++++++++---
+>  1 file changed, 38 insertions(+), 3 deletions(-)
+> 
+> diff --git a/scripts/coccicheck b/scripts/coccicheck
+> index 5319fae910b4..a77f0f246405 100755
+> --- a/scripts/coccicheck
+> +++ b/scripts/coccicheck
+> @@ -12,8 +12,8 @@ if [ ! -x "$SPATCH" ]; then
+>      exit 1
+>  fi
+>  
+> -trap kill_running SIGTERM SIGINT
+> -declare -a SPATCH_PID
+> +USE_JOBS="no"
+> +$SPATCH --help | grep "\-\-jobs" > /dev/null && USE_JOBS="yes"
+>  
+>  # The verbosity may be set by the environmental parameter V=
+>  # as for example with 'make V=1 coccicheck'
+> @@ -56,6 +56,14 @@ if [ "$KBUILD_EXTMOD" != "" ] ; then
+>      OPTIONS="--patch $srctree $OPTIONS"
+>  fi
+>  
+> +# You can override by using SPFLAGS
+> +if [ "$USE_JOBS" = "no" ]; then
+> +	trap kill_running SIGTERM SIGINT
+> +	declare -a SPATCH_PID
+> +else
+> +	OPTIONS="$OPTIONS --jobs $NPROC --chunksize 1"
+> +fi
+> +
+>  if [ "$MODE" = "" ] ; then
+>      if [ "$ONLINE" = "0" ] ; then
+>  	echo 'You have not explicitly specified the mode to use. Using default "report" mode.'
+> @@ -82,7 +90,26 @@ if [ "$ONLINE" = "0" ] ; then
+>      echo ''
+>  fi
+>  
+> -run_cmd() {
+> +run_cmd_parmap() {
+> +	if [ $VERBOSE -ne 0 ] ; then
+> +		echo "Running ($NPROC in parallel): $@"
+> +	fi
+> +	if [ "$DEBUG_FILE" != "/dev/null" -a "$DEBUG_FILE" != "" ]; then
+> +		if [ -f $DEBUG_FILE ]; then
+> +			echo "Debug file $DEBUG_FILE exists, bailing"
+> +			exit
+> +		fi
+> +	else
+> +		DEBUG_FILE="/dev/null"
+> +	fi
+> +	$@ 2>$DEBUG_FILE
+> +	if [[ $? -ne 0 ]]; then
+> +		echo "coccicheck failed"
+> +		exit $?
+> +	fi
+> +}
+> +
+> +run_cmd_old() {
+>  	local i
+>  	if [ $VERBOSE -ne 0 ] ; then
+>  		echo "Running ($NPROC in parallel): $@"
+> @@ -97,6 +124,14 @@ run_cmd() {
+>  	wait
+>  }
+>  
+> +run_cmd() {
+> +	if [ "$USE_JOBS" = "yes" ]; then
+> +		run_cmd_parmap $@
+> +	else
+> +		run_cmd_old $@
+> +	fi
+> +}
+> +
+>  kill_running() {
+>  	for i in $(seq 0 $(( NPROC - 1 )) ); do
+>  		if [ $VERBOSE -eq 2 ] ; then
 > -- 
 > 2.8.2
 > 
