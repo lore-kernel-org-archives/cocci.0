@@ -1,108 +1,56 @@
 From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Wed, 22 Jun 2016 00:14:54 +0200
-Subject: [Cocci] [PATCH v3 3/8] coccicheck: enable parmap support
-In-Reply-To: <alpine.DEB.2.02.1606212342040.2040@localhost6.localdomain6>
+Date: Wed, 22 Jun 2016 01:38:51 +0200
+Subject: [Cocci] [PATCH v3 5/8] scripts: add Linux .cocciconfig for
+	coccinelle
+In-Reply-To: <alpine.DEB.2.02.1606212311560.2040@localhost6.localdomain6>
 References: <1466536893-23355-1-git-send-email-mcgrof@kernel.org>
- <1466536893-23355-4-git-send-email-mcgrof@kernel.org>
- <alpine.DEB.2.02.1606212217060.2040@localhost6.localdomain6>
- <20160621203958.GU25646@wotan.suse.de>
- <alpine.DEB.2.02.1606212241380.2040@localhost6.localdomain6>
- <a8871bc9-866c-4690-0806-6165680cc45d@imag.fr>
- <20160621212839.GZ25646@wotan.suse.de>
- <alpine.DEB.2.02.1606212331160.2040@localhost6.localdomain6>
- <20160621213906.GC25646@wotan.suse.de>
- <alpine.DEB.2.02.1606212342040.2040@localhost6.localdomain6>
-Message-ID: <20160621221454.GF25646@wotan.suse.de>
+ <1466536893-23355-6-git-send-email-mcgrof@kernel.org>
+ <3617d9eb-7f8e-a230-a78e-a5126abcbc2f@imag.fr>
+ <alpine.DEB.2.02.1606212311560.2040@localhost6.localdomain6>
+Message-ID: <20160621233851.GJ25646@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, Jun 21, 2016 at 11:44:09PM +0200, Julia Lawall wrote:
+On Tue, Jun 21, 2016 at 11:12:54PM +0200, Julia Lawall wrote:
+> On Tue, 21 Jun 2016, Nicolas Palix (LIG) wrote:
 > 
+> > Le 21/06/16 ? 21:21, Luis R. Rodriguez a ?crit :
+> > > Help Coccinelle when used against Linux with a set of sensible defaults
+> > > options for Linux. This hints to coccinelle git can be used for 'git grep'
+> > > queries over coccigrep. A timeout of 200 seconds should suffice for now.
+> > > 
+> > > If you use idutils you can override for 'make coccicheck' by using the
+> > > SPFLAGS option as follows:
+> > > 
+> > > First build the index, for example:
+> > > mkid -s
+> > > 
+> > > Pick the cocci file you wnat to work with:
+> > > export COCCI=scripts/coccinelle/misc/irqf_oneshot.cocci
+> > > 
+> > > Then run coccicheck:
+> > > $ make coccicheck V=1 MODE=report SPFLAGS="--use-idutils ID"
+> > > 
+> > > Coccinelle supports reading .cocciconfig from different directories,
+> > > the later one overriding the previous reads in the following order:
+> > > 
+> > >  o Your current user's home directory is processed first
+> > >  o Your directory from which spatch is called is processed next
+> > >  o The directory provided with the --dir option is processed last, if used
+> > > 
+> > > Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
+> > Acked-by: Nicolas Palix <nicolas.palix@imag.fr>
 > 
-> On Tue, 21 Jun 2016, Luis R. Rodriguez wrote:
-> 
-> > On Tue, Jun 21, 2016 at 11:32:11PM +0200, Julia Lawall wrote:
-> > > 
-> > > 
-> > > On Tue, 21 Jun 2016, Luis R. Rodriguez wrote:
-> > > 
-> > > > On Tue, Jun 21, 2016 at 11:00:53PM +0200, Nicolas Palix (LIG) wrote:
-> > > > > Hi,
-> > > > > 
-> > > > > Le 21/06/16 ? 22:43, Julia Lawall a ?crit :
-> > > > > >
-> > > > > >
-> > > > > >On Tue, 21 Jun 2016, Luis R. Rodriguez wrote:
-> > > > > >
-> > > > > >>On Tue, Jun 21, 2016 at 10:17:38PM +0200, Julia Lawall wrote:
-> > > > > >>>
-> > > > > >>>
-> > > > > >>>On Tue, 21 Jun 2016, Luis R. Rodriguez wrote:
-> > > > > >>>
-> > > > > >>>>Coccinelle has had parmap support since 1.0.2, this means
-> > > > > >>>>it supports --jobs, enabling built-in multithreaded functionality,
-> > > > > >>>>instead of needing one to script it out. Just look for --jobs
-> > > > > >>>>in the help output to determine if this is supported.
-> > > > > >>>>
-> > > > > >>>>Also enable the load balancing to be dynamic, so that if a
-> > > > > >>>>thread finishes early we keep feeding it.
-> > > > > >>>>
-> > > > > >>>>Note: now that we have all things handled for us, redirect stderr to
-> > > > > >>>>stdout as well to capture any possible errors or warnings issued by
-> > > > > >>>>coccinelle.
-> > > > > >>>>
-> > > > > >>>>If --jobs is not supported we fallback to the old mechanism.
-> > > > > >>>>This also now accepts DEBUG_FILE= to specify where you want
-> > > > > >>>>stderr to be redirected to, by default we redirect stderr to
-> > > > > >>>>/dev/null.
-> > > > > >>>
-> > > > > >>>Why do you want to do something different for standard error in the parmap
-> > > > > >>>and nonparmap case?
-> > > > > >>
-> > > > > >>We should just deprecate non-parmap later.
-> > > > > >
-> > > > > >that's not really getting at the point.  I like the DEBUG_FILE= solution.
-> > > > > >I don't like merging stderr and stdout.  So you've put what to my mind is
-> > > > > >the good solution only in the deprecated case (to my understanding of
-> > > > > >the commit message).
-> > > > > 
-> > > > > I agree. You're not just "enabling parmap support". You're
-> > > > > also changing how messages to stderr are handled.
-> > > > > Maybe add the DEBUG_FILE mechanism in a separate patch for both
-> > > > > modes (parmap and non-parmap).
-> > > > 
-> > > > I'd prefer to just rip out non-parmap support and bump coccinelle
-> > > > requiremetns to at least 1.0.3, thoughts?
-> > > 
-> > > There are already too many changes in this patch series.
-> > > 
-> > > Also, I don't know what the 0-day people would find convenient.
-> > 
-> > I'd really prefer to not deal with supporting DEBUG_FILE  for non-parmap
-> > case due to the way parallelism is supported there, it uses wait(1) to
-> > wait on the shell, and for spawning this nasty thing:
-> > 
-> > eval "$@ --max $NPROC --index $i &"
-> > 
-> > Specially since we are likely to be able to deprecate this sooner
-> > rather than later I see little point in adding DEBUG_FILE into this
-> > mess.
-> 
-> Sorry, I didn't realize there was parallelism without parmap. 
+> Hmm, I can see at least some advantages to encouraging people to do it the 
+> Coccinelle way, with the Coccinelle script rather than mkid directly.  
+> Then, if we need some other features specific to Coccinelle, we can just 
+> add them.
 
-Yea :( so is the change OK as-is then, only I need to update the commit log?
+I can simply document that if users are used to using their own
+target output file, and if they wanted it to be used by coccinelle
+simply symlinking .id-utils.index to it would enable coccinelle
+to pick it up by default.
 
-> My thought 
-> was that if someone is running Coccinelle on only one core, then why force 
-> them to use parmap.
-
-Oh but that's different feedback. Sure, but why should that be an issue ?
-It would seem that coccinelle would just do the right thing with -j 1 used.
-
-> Coccinelle could of course be updated to not use 
-> parmap when the number of cores is 1.
-
-:) Single CPU systems are probably odd bests these days, either way I can
-update the script to avoid parmap if number of cpus is 1 since I'm respinning.
+If that is done, would the new .cocciconfig not override though?
 
   Luis
