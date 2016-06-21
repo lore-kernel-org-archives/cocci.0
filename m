@@ -1,59 +1,23 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 21 Jun 2016 13:17:35 +0200 (CEST)
-Subject: [Cocci] [PATCH v2 1/3] coccinelle: also catch kzfree() issues
-In-Reply-To: <1466507681.30939.14.camel@opteya.com>
-References: <cover.1464013817.git.ydroneaud@opteya.com>
- <d3466c47b1c5bbf9a7c4cb69a78d392327748669.1464013817.git.ydroneaud@opteya.com>
- <alpine.DEB.2.10.1605231717290.12010@hadrien> <5767EE79.5090402@suse.com>
- <alpine.DEB.2.02.1606202220520.2067@localhost6.localdomain6>
- <57690C52.7080207@suse.com> <1466507681.30939.14.camel@opteya.com>
-Message-ID: <alpine.DEB.2.10.1606211316530.2882@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Tue, 21 Jun 2016 18:22:57 +0200
+Subject: [Cocci] bundles/pycaml/: force pycaml preparation to be done
+	serially
+In-Reply-To: <20160620221839.GL25646@wotan.suse.de>
+References: <1466186657-25309-1-git-send-email-mcgrof@kernel.org>
+ <alpine.DEB.2.10.1606172009220.3164@hadrien>
+ <20160617184724.GW11948@wotan.suse.de> <20160617223327.GX11948@wotan.suse.de>
+ <7d8c0732-59ba-a49d-4834-48f1dc0285f7@users.sourceforge.net>
+ <20160620221839.GL25646@wotan.suse.de>
+Message-ID: <a273d1e4-143d-9850-940b-8f1ccf8c7fa6@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> ?, the only consistent fix seems to be to use
+> .NOTPARALLEL on all bundles.
 
+How do you think about a bit more fine-tuning for this setting?
 
-On Tue, 21 Jun 2016, Yann Droneaud wrote:
+Would you really like to switch parallelisation off for the affected make scripts completely?
 
-> Hi,
->
-> Le mardi 21 juin 2016 ? 11:43 +0200, Michal Marek a ?crit?:
-> > Dne 20.6.2016 v 22:21 Julia Lawall napsal(a):
-> > > On Mon, 20 Jun 2016, Michal Marek wrote:
-> > > On 2016-05-23 17:18, Julia Lawall wrote:
-> > > > > On Mon, 23 May 2016, Yann Droneaud wrote:
-> > > > >
-> > > > > > Since commit 3ef0e5ba4673 ('slab: introduce kzfree()'),
-> > > > > > kfree() is no more the only function to be considered:
-> > > > > > kzfree() should be recognized too.
-> > > > > >
-> > > > > > In particular, kzfree() must not be called on memory
-> > > > > > allocated through devm_*() functions.
-> > > > > >
-> > > > > > Cc: Johannes Weiner <hannes@cmpxchg.org>
-> > > > > > Signed-off-by: Yann Droneaud <ydroneaud@opteya.com>
-> > > > >
-> > > > > Acked-by: Julia Lawall <julia.lawall@lip6.fr>
-> > > >
-> > > > Hi Julia,
-> > > >
-> > > > does your ACK apply to the other two patches as well?
-> > >
-> > > Sorry, I seem to have missed the other two.??I have reviewed them
-> > > now, and the ack applies to all three.??Thanks for checking on it.
-> >
->
-> Back in February, those two other patches were already Acked-by:
->
-> http://lkml.kernel.org/r/alpine.DEB.2.10.1602161818100.2685 at hadrien
-> http://lkml.kernel.org/r/alpine.DEB.2.10.1602161819340.2685 at hadrien
->
-> I've (re)sent them with added Acked-by:, and thought it would not
-> require further Acked-by:.
->
-> Anyway, this one was new and required proper review. Thanks a lot.
-
-Thanks for the reminder.  Since they are comitted now, things are going in
-the right direction.
-
-julia
+Regards,
+Markus
