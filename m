@@ -1,21 +1,44 @@
-From: mcgrof@kenrel.org (Luis R. Rodriguez)
-Date: Tue, 21 Jun 2016 00:18:39 +0200
-Subject: [Cocci] [PATCH] bundles/pycaml/: force pycaml preparation to be
- done serially
-In-Reply-To: <7d8c0732-59ba-a49d-4834-48f1dc0285f7@users.sourceforge.net>
-References: <1466186657-25309-1-git-send-email-mcgrof@kernel.org>
- <alpine.DEB.2.10.1606172009220.3164@hadrien>
- <20160617184724.GW11948@wotan.suse.de>
- <20160617223327.GX11948@wotan.suse.de>
- <7d8c0732-59ba-a49d-4834-48f1dc0285f7@users.sourceforge.net>
-Message-ID: <20160620221839.GL25646@wotan.suse.de>
+From: mmarek@suse.com (Michal Marek)
+Date: Tue, 21 Jun 2016 11:43:46 +0200
+Subject: [Cocci] [PATCH v2 1/3] coccinelle: also catch kzfree() issues
+In-Reply-To: <alpine.DEB.2.02.1606202220520.2067@localhost6.localdomain6>
+References: <cover.1464013817.git.ydroneaud@opteya.com>
+ <d3466c47b1c5bbf9a7c4cb69a78d392327748669.1464013817.git.ydroneaud@opteya.com>
+ <alpine.DEB.2.10.1605231717290.12010@hadrien> <5767EE79.5090402@suse.com>
+ <alpine.DEB.2.02.1606202220520.2067@localhost6.localdomain6>
+Message-ID: <57690C52.7080207@suse.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sat, Jun 18, 2016 at 09:12:16AM +0200, SF Markus Elfring wrote:
-> > +.ONESHELL:
+Dne 20.6.2016 v 22:21 Julia Lawall napsal(a):
+> 
+> 
+> On Mon, 20 Jun 2016, Michal Marek wrote:
+> 
+>> On 2016-05-23 17:18, Julia Lawall wrote:
+>>>
+>>>
+>>> On Mon, 23 May 2016, Yann Droneaud wrote:
+>>>
+>>>> Since commit 3ef0e5ba4673 ('slab: introduce kzfree()'),
+>>>> kfree() is no more the only function to be considered:
+>>>> kzfree() should be recognized too.
+>>>>
+>>>> In particular, kzfree() must not be called on memory
+>>>> allocated through devm_*() functions.
+>>>>
+>>>> Cc: Johannes Weiner <hannes@cmpxchg.org>
+>>>> Signed-off-by: Yann Droneaud <ydroneaud@opteya.com>
+>>>
+>>> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+>>
+>> Hi Julia,
+>>
+>> does your ACK apply to the other two patches as well?
+> 
+> Sorry, I seem to have missed the other two.  I have reviewed them now, and 
+> the ack applies to all three.  Thanks for checking on it.
 
-This ended causing some loop on some system, the only consistent
-fix seems to be to use .NOTPARALLEL on all bundles.
+Np. Applied to kbuild.git#misc now.
 
-  Luis
+Michal
