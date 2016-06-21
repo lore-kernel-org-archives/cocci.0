@@ -1,68 +1,71 @@
 From: Nicolas.Palix@imag.fr (Nicolas Palix (LIG))
-Date: Tue, 21 Jun 2016 23:07:51 +0200
-Subject: [Cocci] [PATCH v3 5/8] scripts: add Linux .cocciconfig for
-	coccinelle
-In-Reply-To: <1466536893-23355-6-git-send-email-mcgrof@kernel.org>
+Date: Tue, 21 Jun 2016 23:11:39 +0200
+Subject: [Cocci] [PATCH v3 6/8] coccicheck: add support for requring a
+ coccinelle version
+In-Reply-To: <1466536893-23355-7-git-send-email-mcgrof@kernel.org>
 References: <1466536893-23355-1-git-send-email-mcgrof@kernel.org>
- <1466536893-23355-6-git-send-email-mcgrof@kernel.org>
-Message-ID: <3617d9eb-7f8e-a230-a78e-a5126abcbc2f@imag.fr>
+ <1466536893-23355-7-git-send-email-mcgrof@kernel.org>
+Message-ID: <eb46a0e8-8495-6f58-e51d-d5ab76993de0@imag.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 Le 21/06/16 ? 21:21, Luis R. Rodriguez a ?crit :
-> Help Coccinelle when used against Linux with a set of sensible defaults
-> options for Linux. This hints to coccinelle git can be used for 'git grep'
-> queries over coccigrep. A timeout of 200 seconds should suffice for now.
+> Enable Coccinelle SmPL patches to require a specific version of
+> Coccinelle. In the event that the version does not match we just
+> inform the user, if the user asked to go through all SmPL patches
+> we just inform them of the need for a new version of coccinelle for
+> the SmPL patch and continue on with the rest.
 >
-> If you use idutils you can override for 'make coccicheck' by using the
-> SPFLAGS option as follows:
->
-> First build the index, for example:
-> mkid -s
->
-> Pick the cocci file you wnat to work with:
-> export COCCI=scripts/coccinelle/misc/irqf_oneshot.cocci
->
-> Then run coccicheck:
-> $ make coccicheck V=1 MODE=report SPFLAGS="--use-idutils ID"
->
-> Coccinelle supports reading .cocciconfig from different directories,
-> the later one overriding the previous reads in the following order:
->
->  o Your current user's home directory is processed first
->  o Your directory from which spatch is called is processed next
->  o The directory provided with the --dir option is processed last, if used
+> This uses the simple kernel scripts/ld-version.sh to create a weight
+> on the version provided by spatch. The -dirty attribute is ignored if
+> supplied, the benefit of scripts/ld-version.sh is it has a long history
+> and well tested.
 >
 > Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
 Acked-by: Nicolas Palix <nicolas.palix@imag.fr>
-
 > ---
->  .cocciconfig | 3 +++
->  .gitignore   | 1 +
->  2 files changed, 4 insertions(+)
->  create mode 100644 .cocciconfig
+>  scripts/coccicheck | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
 >
-> diff --git a/.cocciconfig b/.cocciconfig
-> new file mode 100644
-> index 000000000000..43967c6b2015
-> --- /dev/null
-> +++ b/.cocciconfig
-> @@ -0,0 +1,3 @@
-> +[spatch]
-> +	options = --timeout 200
-> +	options = --use-gitgrep
-> diff --git a/.gitignore b/.gitignore
-> index 2be25f771bd8..c2ed4ecb0acd 100644
-> --- a/.gitignore
-> +++ b/.gitignore
-> @@ -67,6 +67,7 @@ Module.symvers
+> diff --git a/scripts/coccicheck b/scripts/coccicheck
+> index 998d764636e0..01b6716ea931 100755
+> --- a/scripts/coccicheck
+> +++ b/scripts/coccicheck
+> @@ -5,6 +5,7 @@
+>  # version 1.0.0-rc11.
 >  #
->  !.gitignore
->  !.mailmap
-> +!.cocciconfig
 >
+> +DIR="$(dirname $(readlink -f $0))/.."
+>  SPATCH="`which ${SPATCH:=spatch}`"
+>
+>  if [ ! -x "$SPATCH" ]; then
+> @@ -12,6 +13,9 @@ if [ ! -x "$SPATCH" ]; then
+>      exit 1
+>  fi
+>
+> +SPATCH_VERSION=$($SPATCH --version | head -1 | awk '{print $3}')
+> +SPATCH_VERSION_NUM=$(echo $SPATCH_VERSION | ${DIR}/scripts/ld-version.sh)
+> +
+>  USE_JOBS="no"
+>  $SPATCH --help | grep "\-\-jobs" > /dev/null && USE_JOBS="yes"
+>
+> @@ -171,6 +175,16 @@ coccinelle () {
+>      COCCI="$1"
+>
+>      OPT=`grep "Option" $COCCI | cut -d':' -f2`
+> +    REQ=`grep "Requires" $COCCI | cut -d':' -f2 | sed "s| ||"`
+> +    REQ_NUM=$(echo $REQ | ${DIR}/scripts/ld-version.sh)
+> +    if [ "$REQ_NUM" != "0" ] ; then
+> +	    if [ "$SPATCH_VERSION_NUM" -lt "$REQ_NUM" ] ; then
+> +		    echo "Skipping coccinele SmPL patch: $COCCI"
+> +		    echo "You have coccinelle:           $SPATCH_VERSION"
+> +		    echo "This SmPL patch requires:      $REQ"
+> +		    return
+> +	    fi
+> +    fi
+>
+>  #   The option '--parse-cocci' can be used to syntactically check the SmPL files.
 >  #
->  # Generated include files
 >
 
 
@@ -76,4 +79,4 @@ Name: smime.p7s
 Type: application/pkcs7-signature
 Size: 2959 bytes
 Desc: Signature cryptographique S/MIME
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20160621/8676a03d/attachment-0001.p7s>
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20160621/73dfb5e6/attachment-0001.p7s>
