@@ -1,11 +1,12 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 21 Jun 2016 22:36:53 +0200 (CEST)
-Subject: [Cocci] [PATCH v3 8/8] scripts/coccinelle: require coccinelle
- >= 1.0.4 on device_node_continue.cocci
-In-Reply-To: <1466536893-23355-9-git-send-email-mcgrof@kernel.org>
+Date: Tue, 21 Jun 2016 22:43:04 +0200 (CEST)
+Subject: [Cocci] [PATCH v3 3/8] coccicheck: enable parmap support
+In-Reply-To: <20160621203958.GU25646@wotan.suse.de>
 References: <1466536893-23355-1-git-send-email-mcgrof@kernel.org>
- <1466536893-23355-9-git-send-email-mcgrof@kernel.org>
-Message-ID: <alpine.DEB.2.02.1606212236260.2040@localhost6.localdomain6>
+ <1466536893-23355-4-git-send-email-mcgrof@kernel.org>
+ <alpine.DEB.2.02.1606212217060.2040@localhost6.localdomain6>
+ <20160621203958.GU25646@wotan.suse.de>
+Message-ID: <alpine.DEB.2.02.1606212241380.2040@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -13,35 +14,36 @@ List-Id: cocci@systeme.lip6.fr
 
 On Tue, 21 Jun 2016, Luis R. Rodriguez wrote:
 
-> Make use of the new Requires: tag to be able to specify coccinelle binary
-> version requirements. The cocci file device_node_continue.cocci requires at
-> least coccinelle 1.0.4.
+> On Tue, Jun 21, 2016 at 10:17:38PM +0200, Julia Lawall wrote:
+> > 
+> > 
+> > On Tue, 21 Jun 2016, Luis R. Rodriguez wrote:
+> > 
+> > > Coccinelle has had parmap support since 1.0.2, this means
+> > > it supports --jobs, enabling built-in multithreaded functionality,
+> > > instead of needing one to script it out. Just look for --jobs
+> > > in the help output to determine if this is supported.
+> > > 
+> > > Also enable the load balancing to be dynamic, so that if a
+> > > thread finishes early we keep feeding it.
+> > > 
+> > > Note: now that we have all things handled for us, redirect stderr to
+> > > stdout as well to capture any possible errors or warnings issued by
+> > > coccinelle.
+> > > 
+> > > If --jobs is not supported we fallback to the old mechanism.
+> > > This also now accepts DEBUG_FILE= to specify where you want
+> > > stderr to be redirected to, by default we redirect stderr to
+> > > /dev/null.
+> > 
+> > Why do you want to do something different for standard error in the parmap 
+> > and nonparmap case?
 > 
-> Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
+> We should just deprecate non-parmap later.
 
-Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+that's not really getting at the point.  I like the DEBUG_FILE= solution.  
+I don't like merging stderr and stdout.  So you've put what to my mind is 
+the good solution only in the deprecated case (to my understanding of 
+the commit message).
 
-> ---
->  scripts/coccinelle/iterators/device_node_continue.cocci | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/scripts/coccinelle/iterators/device_node_continue.cocci b/scripts/coccinelle/iterators/device_node_continue.cocci
-> index 38ab744a4037..a36c16db171b 100644
-> --- a/scripts/coccinelle/iterators/device_node_continue.cocci
-> +++ b/scripts/coccinelle/iterators/device_node_continue.cocci
-> @@ -5,8 +5,11 @@
->  // Copyright: (C) 2015 Julia Lawall, Inria. GPLv2.
->  // URL: http://coccinelle.lip6.fr/
->  // Options: --no-includes --include-headers
-> +// Requires: 1.0.4
->  // Keywords: for_each_child_of_node, etc.
->  
-> +// This uses a conjunction, which requires at least coccinelle >= 1.0.4
-> +
->  virtual patch
->  virtual context
->  virtual org
-> -- 
-> 2.8.2
-> 
-> 
+julia
