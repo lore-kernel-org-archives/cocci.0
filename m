@@ -1,56 +1,53 @@
 From: Nicolas.Palix@imag.fr (Nicolas Palix (LIG))
-Date: Tue, 21 Jun 2016 23:14:27 +0200
-Subject: [Cocci] [PATCH v3 7/8] coccicheck: refer to coccicheck bottest
- wiki for documentation
-In-Reply-To: <1466536893-23355-8-git-send-email-mcgrof@kernel.org>
+Date: Tue, 21 Jun 2016 23:17:57 +0200
+Subject: [Cocci] [PATCH v3 8/8] scripts/coccinelle: require coccinelle
+ >= 1.0.4 on device_node_continue.cocci
+In-Reply-To: <alpine.DEB.2.02.1606212236260.2040@localhost6.localdomain6>
 References: <1466536893-23355-1-git-send-email-mcgrof@kernel.org>
- <1466536893-23355-8-git-send-email-mcgrof@kernel.org>
-Message-ID: <9db10e04-779a-1bae-0ffe-2d43e5f46d2e@imag.fr>
+ <1466536893-23355-9-git-send-email-mcgrof@kernel.org>
+ <alpine.DEB.2.02.1606212236260.2040@localhost6.localdomain6>
+Message-ID: <766f8094-837e-2463-c71b-314edb1ac1ca@imag.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi,
-
-Le 21/06/16 ? 21:21, Luis R. Rodriguez a ?crit :
-> Sprinkling *tons* of documentation on the script is not a good
-> idea, instead refer to a wiki for further coccicheck documentation:
+Le 21/06/16 ? 22:36, Julia Lawall a ?crit :
 >
-> https://bottest.wiki.kernel.org/coccicheck
 >
-> This page shall always refer to the linux-next iteration of
-> scripts/coccicheck.
-
-Can you say a word about Documentation/coccinelle.txt too ?
-And update it according to the script changes.
-
+> On Tue, 21 Jun 2016, Luis R. Rodriguez wrote:
 >
-> Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
-> ---
->  scripts/coccicheck | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
+>> Make use of the new Requires: tag to be able to specify coccinelle binary
+>> version requirements. The cocci file device_node_continue.cocci requires at
+>> least coccinelle 1.0.4.
+>>
+>> Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
 >
-> diff --git a/scripts/coccicheck b/scripts/coccicheck
-> index 01b6716ea931..adbcbbd1aad6 100755
-> --- a/scripts/coccicheck
-> +++ b/scripts/coccicheck
-> @@ -1,9 +1,14 @@
->  #!/bin/bash
-> -
-> +# Linux kernel coccicheck
-> +#
-> +# For more detailed documentation refer to:
-> +#
-> +# https://bottest.wiki.kernel.org/coccicheck
-> +#
-> +# This documentation always refers to the linux-next version of the script.
->  #
->  # This script requires at least spatch
->  # version 1.0.0-rc11.
-> -#
+> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+Acked-by: Nicolas Palix <nicolas.palix@imag.fr>
 >
->  DIR="$(dirname $(readlink -f $0))/.."
->  SPATCH="`which ${SPATCH:=spatch}`"
->
+>> ---
+>>  scripts/coccinelle/iterators/device_node_continue.cocci | 3 +++
+>>  1 file changed, 3 insertions(+)
+>>
+>> diff --git a/scripts/coccinelle/iterators/device_node_continue.cocci b/scripts/coccinelle/iterators/device_node_continue.cocci
+>> index 38ab744a4037..a36c16db171b 100644
+>> --- a/scripts/coccinelle/iterators/device_node_continue.cocci
+>> +++ b/scripts/coccinelle/iterators/device_node_continue.cocci
+>> @@ -5,8 +5,11 @@
+>>  // Copyright: (C) 2015 Julia Lawall, Inria. GPLv2.
+>>  // URL: http://coccinelle.lip6.fr/
+>>  // Options: --no-includes --include-headers
+>> +// Requires: 1.0.4
+>>  // Keywords: for_each_child_of_node, etc.
+>>
+>> +// This uses a conjunction, which requires at least coccinelle >= 1.0.4
+>> +
+>>  virtual patch
+>>  virtual context
+>>  virtual org
+>> --
+>> 2.8.2
+>>
+>>
 
 
 -- 
@@ -63,4 +60,4 @@ Name: smime.p7s
 Type: application/pkcs7-signature
 Size: 2959 bytes
 Desc: Signature cryptographique S/MIME
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20160621/2878cc64/attachment.p7s>
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20160621/a483a8b2/attachment.p7s>
