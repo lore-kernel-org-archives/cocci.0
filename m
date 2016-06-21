@@ -1,76 +1,66 @@
-From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Tue, 21 Jun 2016 23:27:33 +0200
-Subject: [Cocci] [PATCH v3 3/8] coccicheck: enable parmap support
-In-Reply-To: <alpine.DEB.2.02.1606212308580.2040@localhost6.localdomain6>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Tue, 21 Jun 2016 23:30:03 +0200 (CEST)
+Subject: [Cocci] [PATCH v3 0/8] coccicheck: modernize
+In-Reply-To: <20160621212112.GX25646@wotan.suse.de>
 References: <1466536893-23355-1-git-send-email-mcgrof@kernel.org>
- <1466536893-23355-4-git-send-email-mcgrof@kernel.org>
- <alpine.DEB.2.02.1606212217060.2040@localhost6.localdomain6>
- <20160621203958.GU25646@wotan.suse.de>
- <alpine.DEB.2.02.1606212241380.2040@localhost6.localdomain6>
- <20160621205441.GW25646@wotan.suse.de>
- <alpine.DEB.2.02.1606212308580.2040@localhost6.localdomain6>
-Message-ID: <20160621212733.GY25646@wotan.suse.de>
+ <alpine.DEB.2.02.1606212211210.2040@localhost6.localdomain6>
+ <20160621205100.GV25646@wotan.suse.de>
+ <alpine.DEB.2.02.1606212252570.2040@localhost6.localdomain6>
+ <20160621212112.GX25646@wotan.suse.de>
+Message-ID: <alpine.DEB.2.02.1606212328460.2040@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, Jun 21, 2016 at 11:10:00PM +0200, Julia Lawall wrote:
-> 
-> 
-> On Tue, 21 Jun 2016, Luis R. Rodriguez wrote:
-> 
-> > On Tue, Jun 21, 2016 at 10:43:04PM +0200, Julia Lawall wrote:
+
+
+On Tue, 21 Jun 2016, Luis R. Rodriguez wrote:
+
+> On Tue, Jun 21, 2016 at 11:02:49PM +0200, Julia Lawall wrote:
+> > On Tue, 21 Jun 2016, Luis R. Rodriguez wrote:
+> > > That is sanitized as follows:
 > > > 
-> > > 
-> > > On Tue, 21 Jun 2016, Luis R. Rodriguez wrote:
-> > > 
-> > > > On Tue, Jun 21, 2016 at 10:17:38PM +0200, Julia Lawall wrote:
-> > > > > 
-> > > > > 
-> > > > > On Tue, 21 Jun 2016, Luis R. Rodriguez wrote:
-> > > > > 
-> > > > > > Coccinelle has had parmap support since 1.0.2, this means
-> > > > > > it supports --jobs, enabling built-in multithreaded functionality,
-> > > > > > instead of needing one to script it out. Just look for --jobs
-> > > > > > in the help output to determine if this is supported.
-> > > > > > 
-> > > > > > Also enable the load balancing to be dynamic, so that if a
-> > > > > > thread finishes early we keep feeding it.
-> > > > > > 
-> > > > > > Note: now that we have all things handled for us, redirect stderr to
-> > > > > > stdout as well to capture any possible errors or warnings issued by
-> > > > > > coccinelle.
-> > > > > > 
-> > > > > > If --jobs is not supported we fallback to the old mechanism.
-> > > > > > This also now accepts DEBUG_FILE= to specify where you want
-> > > > > > stderr to be redirected to, by default we redirect stderr to
-> > > > > > /dev/null.
-> > > > > 
-> > > > > Why do you want to do something different for standard error in the parmap 
-> > > > > and nonparmap case?
-> > > > 
-> > > > We should just deprecate non-parmap later.
-> > > 
-> > > that's not really getting at the point.  I like the DEBUG_FILE= solution.  
-> > > I don't like merging stderr and stdout.  So you've put what to my mind is 
-> > > the good solution only in the deprecated case (to my understanding of 
-> > > the commit message).
+> > > # spatch only allows include directories with the syntax "-I include"           
+> > > # while gcc also allows "-Iinclude" and "-include include"                      
+> > > COCCIINCLUDE=${LINUXINCLUDE//-I/-I }                                            
+> > > COCCIINCLUDE=${COCCIINCLUDE// -include/ --include} 
 > > 
-> > stderr is not being merged to stdout though. By default stderr goes to /dev/null
-> > and if you want it you specify a DEBUG_FILE.
+> > I don't get the second case.  Is it to replace -include by --include?  
+> > Coccinelle actually supports both, although it doesn't advertise that.  
 > 
-> Above it says:
+> Oh neat, yeah. So a follow up patch later can be to remove that second line?
+> If so as of what version of coccinelle?
+
+Forever.  Single - has always been supported.  Double - was added at some 
+point.
+
+> > Also, in LINUXINCLUDE, what is the meaning of -include?  For Coccinelle, 
+> > it is not the same as -I.  It is for files that should be included that 
+> > are not in the set of includes seen by whatever is the specified include 
+> > strategy (--all-includes, etc).  The argument is a specific file name, not 
+> > a directory.  It is a way of eg not bothering with --recursive-includes 
+> > when there is one or a few key header files that each file will need.
 > 
-> Note: now that we have all things handled for us, redirect stderr to 
-> stdout as well to capture any possible errors or warnings issued by 
-> coccinelle.
+> Its used to force to include a single file, it is a file.
 
-Ah crap, sorry I left that in the commit log message by mistake.
+OK, close enough then.
 
-> If DEBUG_FILE is an option for the parmap case, it should be mentioned 
-> there too.
+> > > So the point is to annotate that the .cocconfig is picked up first due
+> > > to the fact make is used and its issued from the top level makefile
+> > > and starts from the top level. The fact that --dir is used is important
+> > > but secondary to its introduction as well.
+> > 
+> > OK, the original text seemed to me to imply that running from the kernel 
+> > directory was essential to getting the kernels .cocciconfig,
+> 
+> And what I meant to imply was that since coccicheck uses the kernel
+> makefiles it would kick off from kernel proper.
+> 
+> > so I wanted  to point out that this is not the case.
+> 
+> I should have elaborated with all these details, its perhaps best to be
+> explicit about this so I can respin with a clearer commit log.
 
-Indeed, its as described instead, stderr goes to /dev/null by default
-unless DEBUG_FILE is specified, if it is specified then stderr goes
-to DEBUG_FILE.
+Thanks.  People may come across this message, and it could be good for it 
+to be as helpful as possible.
 
-  Luis
+julia
