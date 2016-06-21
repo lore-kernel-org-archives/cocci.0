@@ -1,39 +1,63 @@
-From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Tue, 21 Jun 2016 22:39:58 +0200
-Subject: [Cocci] [PATCH v3 3/8] coccicheck: enable parmap support
-In-Reply-To: <alpine.DEB.2.02.1606212217060.2040@localhost6.localdomain6>
+From: Nicolas.Palix@imag.fr (Nicolas Palix (LIG))
+Date: Tue, 21 Jun 2016 22:34:30 +0200
+Subject: [Cocci] [PATCH v3 1/8] coccicheck: move spatch binary check up
+In-Reply-To: <1466536893-23355-2-git-send-email-mcgrof@kernel.org>
 References: <1466536893-23355-1-git-send-email-mcgrof@kernel.org>
- <1466536893-23355-4-git-send-email-mcgrof@kernel.org>
- <alpine.DEB.2.02.1606212217060.2040@localhost6.localdomain6>
-Message-ID: <20160621203958.GU25646@wotan.suse.de>
+ <1466536893-23355-2-git-send-email-mcgrof@kernel.org>
+Message-ID: <43395d84-b94f-1d12-bfd5-8924996d7110@imag.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, Jun 21, 2016 at 10:17:38PM +0200, Julia Lawall wrote:
-> 
-> 
-> On Tue, 21 Jun 2016, Luis R. Rodriguez wrote:
-> 
-> > Coccinelle has had parmap support since 1.0.2, this means
-> > it supports --jobs, enabling built-in multithreaded functionality,
-> > instead of needing one to script it out. Just look for --jobs
-> > in the help output to determine if this is supported.
-> > 
-> > Also enable the load balancing to be dynamic, so that if a
-> > thread finishes early we keep feeding it.
-> > 
-> > Note: now that we have all things handled for us, redirect stderr to
-> > stdout as well to capture any possible errors or warnings issued by
-> > coccinelle.
-> > 
-> > If --jobs is not supported we fallback to the old mechanism.
-> > This also now accepts DEBUG_FILE= to specify where you want
-> > stderr to be redirected to, by default we redirect stderr to
-> > /dev/null.
-> 
-> Why do you want to do something different for standard error in the parmap 
-> and nonparmap case?
+Le 21/06/16 ? 21:21, Luis R. Rodriguez a ?crit :
+> This has no functional changes. This is being done
+> to enable us to later use spatch binary for some
+> flag checking for certain features early on.
+>
+> Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
+Acked-by: Nicolas Palix <nicolas.palix@imag.fr>
+> ---
+>  scripts/coccicheck | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+>
+> diff --git a/scripts/coccicheck b/scripts/coccicheck
+> index f6627863fdc3..f137b04dfdd3 100755
+> --- a/scripts/coccicheck
+> +++ b/scripts/coccicheck
+> @@ -7,6 +7,11 @@
+>
+>  SPATCH="`which ${SPATCH:=spatch}`"
+>
+> +if [ ! -x "$SPATCH" ]; then
+> +    echo 'spatch is part of the Coccinelle project and is available at http://coccinelle.lip6.fr/'
+> +    exit 1
+> +fi
+> +
+>  trap kill_running SIGTERM SIGINT
+>  declare -a SPATCH_PID
+>
+> @@ -51,11 +56,6 @@ if [ "$KBUILD_EXTMOD" != "" ] ; then
+>      OPTIONS="--patch $srctree $OPTIONS"
+>  fi
+>
+> -if [ ! -x "$SPATCH" ]; then
+> -    echo 'spatch is part of the Coccinelle project and is available at http://coccinelle.lip6.fr/'
+> -    exit 1
+> -fi
+> -
+>  if [ "$MODE" = "" ] ; then
+>      if [ "$ONLINE" = "0" ] ; then
+>  	echo 'You have not explicitly specified the mode to use. Using default "report" mode.'
+>
 
-We should just deprecate non-parmap later.
 
-  Luis
+-- 
+Nicolas Palix
+http://lig-membres.imag.fr/palix/
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: smime.p7s
+Type: application/pkcs7-signature
+Size: 2959 bytes
+Desc: Signature cryptographique S/MIME
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20160621/8728d288/attachment.p7s>
