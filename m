@@ -1,63 +1,76 @@
-From: Nicolas.Palix@imag.fr (Nicolas Palix (LIG))
-Date: Tue, 21 Jun 2016 23:17:57 +0200
-Subject: [Cocci] [PATCH v3 8/8] scripts/coccinelle: require coccinelle
- >= 1.0.4 on device_node_continue.cocci
-In-Reply-To: <alpine.DEB.2.02.1606212236260.2040@localhost6.localdomain6>
+From: mcgrof@kernel.org (Luis R. Rodriguez)
+Date: Tue, 21 Jun 2016 23:27:33 +0200
+Subject: [Cocci] [PATCH v3 3/8] coccicheck: enable parmap support
+In-Reply-To: <alpine.DEB.2.02.1606212308580.2040@localhost6.localdomain6>
 References: <1466536893-23355-1-git-send-email-mcgrof@kernel.org>
- <1466536893-23355-9-git-send-email-mcgrof@kernel.org>
- <alpine.DEB.2.02.1606212236260.2040@localhost6.localdomain6>
-Message-ID: <766f8094-837e-2463-c71b-314edb1ac1ca@imag.fr>
+ <1466536893-23355-4-git-send-email-mcgrof@kernel.org>
+ <alpine.DEB.2.02.1606212217060.2040@localhost6.localdomain6>
+ <20160621203958.GU25646@wotan.suse.de>
+ <alpine.DEB.2.02.1606212241380.2040@localhost6.localdomain6>
+ <20160621205441.GW25646@wotan.suse.de>
+ <alpine.DEB.2.02.1606212308580.2040@localhost6.localdomain6>
+Message-ID: <20160621212733.GY25646@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Le 21/06/16 ? 22:36, Julia Lawall a ?crit :
->
->
+On Tue, Jun 21, 2016 at 11:10:00PM +0200, Julia Lawall wrote:
+> 
+> 
 > On Tue, 21 Jun 2016, Luis R. Rodriguez wrote:
->
->> Make use of the new Requires: tag to be able to specify coccinelle binary
->> version requirements. The cocci file device_node_continue.cocci requires at
->> least coccinelle 1.0.4.
->>
->> Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
->
-> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
-Acked-by: Nicolas Palix <nicolas.palix@imag.fr>
->
->> ---
->>  scripts/coccinelle/iterators/device_node_continue.cocci | 3 +++
->>  1 file changed, 3 insertions(+)
->>
->> diff --git a/scripts/coccinelle/iterators/device_node_continue.cocci b/scripts/coccinelle/iterators/device_node_continue.cocci
->> index 38ab744a4037..a36c16db171b 100644
->> --- a/scripts/coccinelle/iterators/device_node_continue.cocci
->> +++ b/scripts/coccinelle/iterators/device_node_continue.cocci
->> @@ -5,8 +5,11 @@
->>  // Copyright: (C) 2015 Julia Lawall, Inria. GPLv2.
->>  // URL: http://coccinelle.lip6.fr/
->>  // Options: --no-includes --include-headers
->> +// Requires: 1.0.4
->>  // Keywords: for_each_child_of_node, etc.
->>
->> +// This uses a conjunction, which requires at least coccinelle >= 1.0.4
->> +
->>  virtual patch
->>  virtual context
->>  virtual org
->> --
->> 2.8.2
->>
->>
+> 
+> > On Tue, Jun 21, 2016 at 10:43:04PM +0200, Julia Lawall wrote:
+> > > 
+> > > 
+> > > On Tue, 21 Jun 2016, Luis R. Rodriguez wrote:
+> > > 
+> > > > On Tue, Jun 21, 2016 at 10:17:38PM +0200, Julia Lawall wrote:
+> > > > > 
+> > > > > 
+> > > > > On Tue, 21 Jun 2016, Luis R. Rodriguez wrote:
+> > > > > 
+> > > > > > Coccinelle has had parmap support since 1.0.2, this means
+> > > > > > it supports --jobs, enabling built-in multithreaded functionality,
+> > > > > > instead of needing one to script it out. Just look for --jobs
+> > > > > > in the help output to determine if this is supported.
+> > > > > > 
+> > > > > > Also enable the load balancing to be dynamic, so that if a
+> > > > > > thread finishes early we keep feeding it.
+> > > > > > 
+> > > > > > Note: now that we have all things handled for us, redirect stderr to
+> > > > > > stdout as well to capture any possible errors or warnings issued by
+> > > > > > coccinelle.
+> > > > > > 
+> > > > > > If --jobs is not supported we fallback to the old mechanism.
+> > > > > > This also now accepts DEBUG_FILE= to specify where you want
+> > > > > > stderr to be redirected to, by default we redirect stderr to
+> > > > > > /dev/null.
+> > > > > 
+> > > > > Why do you want to do something different for standard error in the parmap 
+> > > > > and nonparmap case?
+> > > > 
+> > > > We should just deprecate non-parmap later.
+> > > 
+> > > that's not really getting at the point.  I like the DEBUG_FILE= solution.  
+> > > I don't like merging stderr and stdout.  So you've put what to my mind is 
+> > > the good solution only in the deprecated case (to my understanding of 
+> > > the commit message).
+> > 
+> > stderr is not being merged to stdout though. By default stderr goes to /dev/null
+> > and if you want it you specify a DEBUG_FILE.
+> 
+> Above it says:
+> 
+> Note: now that we have all things handled for us, redirect stderr to 
+> stdout as well to capture any possible errors or warnings issued by 
+> coccinelle.
 
+Ah crap, sorry I left that in the commit log message by mistake.
 
--- 
-Nicolas Palix
-http://lig-membres.imag.fr/palix/
+> If DEBUG_FILE is an option for the parmap case, it should be mentioned 
+> there too.
 
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: smime.p7s
-Type: application/pkcs7-signature
-Size: 2959 bytes
-Desc: Signature cryptographique S/MIME
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20160621/a483a8b2/attachment.p7s>
+Indeed, its as described instead, stderr goes to /dev/null by default
+unless DEBUG_FILE is specified, if it is specified then stderr goes
+to DEBUG_FILE.
+
+  Luis
