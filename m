@@ -1,47 +1,30 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 21 Jun 2016 19:47:30 +0200
-Subject: [Cocci] [PATCH v2 1/3] docs/demos: add a few ++ documentation
- and demos
-In-Reply-To: <1466459648-17477-2-git-send-email-mcgrof@kernel.org>
-References: <1466459648-17477-1-git-send-email-mcgrof@kernel.org>
- <1466459648-17477-2-git-send-email-mcgrof@kernel.org>
-Message-ID: <19333678-f008-fc1d-d201-834e312ec031@users.sourceforge.net>
+Date: Tue, 21 Jun 2016 19:54:42 +0200
+Subject: [Cocci] bundles/pycaml/: force pycaml preparation to be done
+ serially
+In-Reply-To: <CAB=NE6VhQ-4c6U740w6q+yCghBQMp0ces8f3B=wnq18hQLptrw@mail.gmail.com>
+References: <1466186657-25309-1-git-send-email-mcgrof@kernel.org>
+ <alpine.DEB.2.10.1606172009220.3164@hadrien>
+ <20160617184724.GW11948@wotan.suse.de> <20160617223327.GX11948@wotan.suse.de>
+ <7d8c0732-59ba-a49d-4834-48f1dc0285f7@users.sourceforge.net>
+ <20160620221839.GL25646@wotan.suse.de>
+ <a273d1e4-143d-9850-940b-8f1ccf8c7fa6@users.sourceforge.net>
+ <CAB=NE6VhQ-4c6U740w6q+yCghBQMp0ces8f3B=wnq18hQLptrw@mail.gmail.com>
+Message-ID: <b130cdc7-d1f0-ab61-b17b-89959e108e10@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> +Coccinelle allows for transformations to enable modifying C code using
+> Building should work, period.
 
-Can the word "for" be omitted here?
-
-
-> +You may run into the situation where grammar you specificy for
-
-Did you overlook to fix a typo here once more?
-
-? specify ?
+I would appreciate this also.
 
 
-> +in code, in such cases Coccinelle cannot gaurantee order when making
+> The disabling of parallel building here is just for the prepare target.
 
-? guarantee ?
-
-
-> +additions. If you are sure that order does not matter you can use the
-
-Have you got other preferences (than me) for the usage of commas?
-
-
-> +may add things out of order. This may be for intance rather safe in
-
-? instance ?
-
-
-> +precise order of the where each float is placed is however not gauranteed
-
-? guaranteed
-
-
-How do you think about to improve spell checking for such update suggestions?
+I have got the understanding from the make documentation
+that the discussed setting does not work in the way
+you seem to expect here.
+I suggest therefore to consider additional possibilities.
 
 Regards,
 Markus
