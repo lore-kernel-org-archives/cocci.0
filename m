@@ -1,26 +1,48 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 21 Jun 2016 20:26:35 +0200
-Subject: [Cocci] [PATCH v2 2/3] docs/manual/cocci_syntax.tex: extend
- with python iteration
-In-Reply-To: <1466459648-17477-3-git-send-email-mcgrof@kernel.org>
-References: <1466459648-17477-1-git-send-email-mcgrof@kernel.org>
- <1466459648-17477-3-git-send-email-mcgrof@kernel.org>
-Message-ID: <f67fd207-4345-3b43-26d4-1524bb644650@users.sourceforge.net>
+From: mcgrof@kernel.org (Luis R. Rodriguez)
+Date: Tue, 21 Jun 2016 12:21:26 -0700
+Subject: [Cocci] [PATCH v3 1/8] coccicheck: move spatch binary check up
+In-Reply-To: <1466536893-23355-1-git-send-email-mcgrof@kernel.org>
+References: <1466536893-23355-1-git-send-email-mcgrof@kernel.org>
+Message-ID: <1466536893-23355-2-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
+This has no functional changes. This is being done
+to enable us to later use spatch binary for some
+flag checking for certain features early on.
 
-Would a short commit message be nice here?
+Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
+---
+ scripts/coccicheck | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-
-> +example with ocaml is fond in {\tt demos/iteration.cocci}, a python
-
-* How do you think about the programming language name "OCaml"?
-
-* Another typo correction:
-
-  ? found ?
-
-Regards,
-Markus
+diff --git a/scripts/coccicheck b/scripts/coccicheck
+index f6627863fdc3..f137b04dfdd3 100755
+--- a/scripts/coccicheck
++++ b/scripts/coccicheck
+@@ -7,6 +7,11 @@
+ 
+ SPATCH="`which ${SPATCH:=spatch}`"
+ 
++if [ ! -x "$SPATCH" ]; then
++    echo 'spatch is part of the Coccinelle project and is available at http://coccinelle.lip6.fr/'
++    exit 1
++fi
++
+ trap kill_running SIGTERM SIGINT
+ declare -a SPATCH_PID
+ 
+@@ -51,11 +56,6 @@ if [ "$KBUILD_EXTMOD" != "" ] ; then
+     OPTIONS="--patch $srctree $OPTIONS"
+ fi
+ 
+-if [ ! -x "$SPATCH" ]; then
+-    echo 'spatch is part of the Coccinelle project and is available at http://coccinelle.lip6.fr/'
+-    exit 1
+-fi
+-
+ if [ "$MODE" = "" ] ; then
+     if [ "$ONLINE" = "0" ] ; then
+ 	echo 'You have not explicitly specified the mode to use. Using default "report" mode.'
+-- 
+2.8.2
