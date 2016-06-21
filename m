@@ -1,63 +1,31 @@
-From: Nicolas.Palix@imag.fr (Nicolas Palix (LIG))
-Date: Tue, 21 Jun 2016 22:34:30 +0200
-Subject: [Cocci] [PATCH v3 1/8] coccicheck: move spatch binary check up
-In-Reply-To: <1466536893-23355-2-git-send-email-mcgrof@kernel.org>
-References: <1466536893-23355-1-git-send-email-mcgrof@kernel.org>
- <1466536893-23355-2-git-send-email-mcgrof@kernel.org>
-Message-ID: <43395d84-b94f-1d12-bfd5-8924996d7110@imag.fr>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Tue, 21 Jun 2016 22:46:52 +0200
+Subject: [Cocci] bundles/pycaml/: force pycaml preparation to be done
+ serially
+In-Reply-To: <20160621203838.GT25646@wotan.suse.de>
+References: <1466186657-25309-1-git-send-email-mcgrof@kernel.org>
+ <alpine.DEB.2.10.1606172009220.3164@hadrien>
+ <20160617184724.GW11948@wotan.suse.de> <20160617223327.GX11948@wotan.suse.de>
+ <7d8c0732-59ba-a49d-4834-48f1dc0285f7@users.sourceforge.net>
+ <20160620221839.GL25646@wotan.suse.de>
+ <a273d1e4-143d-9850-940b-8f1ccf8c7fa6@users.sourceforge.net>
+ <CAB=NE6VhQ-4c6U740w6q+yCghBQMp0ces8f3B=wnq18hQLptrw@mail.gmail.com>
+ <b130cdc7-d1f0-ab61-b17b-89959e108e10@users.sourceforge.net>
+ <20160621203838.GT25646@wotan.suse.de>
+Message-ID: <7a457259-d8e8-45b2-89c8-b18195e5f1f7@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Le 21/06/16 ? 21:21, Luis R. Rodriguez a ?crit :
-> This has no functional changes. This is being done
-> to enable us to later use spatch binary for some
-> flag checking for certain features early on.
->
-> Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
-Acked-by: Nicolas Palix <nicolas.palix@imag.fr>
-> ---
->  scripts/coccicheck | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
->
-> diff --git a/scripts/coccicheck b/scripts/coccicheck
-> index f6627863fdc3..f137b04dfdd3 100755
-> --- a/scripts/coccicheck
-> +++ b/scripts/coccicheck
-> @@ -7,6 +7,11 @@
->
->  SPATCH="`which ${SPATCH:=spatch}`"
->
-> +if [ ! -x "$SPATCH" ]; then
-> +    echo 'spatch is part of the Coccinelle project and is available at http://coccinelle.lip6.fr/'
-> +    exit 1
-> +fi
-> +
->  trap kill_running SIGTERM SIGINT
->  declare -a SPATCH_PID
->
-> @@ -51,11 +56,6 @@ if [ "$KBUILD_EXTMOD" != "" ] ; then
->      OPTIONS="--patch $srctree $OPTIONS"
->  fi
->
-> -if [ ! -x "$SPATCH" ]; then
-> -    echo 'spatch is part of the Coccinelle project and is available at http://coccinelle.lip6.fr/'
-> -    exit 1
-> -fi
-> -
->  if [ "$MODE" = "" ] ; then
->      if [ "$ONLINE" = "0" ] ; then
->  	echo 'You have not explicitly specified the mode to use. Using default "report" mode.'
->
+> Patches welcomed.
+
+Where do you want to switch parallelisation off exactly?
+
+1. Whole make script
+
+or
+
+2. Treat only a specific preparation target specially.
 
 
--- 
-Nicolas Palix
-http://lig-membres.imag.fr/palix/
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: smime.p7s
-Type: application/pkcs7-signature
-Size: 2959 bytes
-Desc: Signature cryptographique S/MIME
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20160621/8728d288/attachment.p7s>
+Regards,
+Markus
