@@ -1,30 +1,31 @@
-From: afd@ti.com (Andrew F. Davis)
-Date: Thu, 23 Jun 2016 14:22:13 -0500
-Subject: [Cocci] [PATCH] Coccinelle: Add misc/boolconv.cocci
-In-Reply-To: <1466709177.1847.19.camel@perches.com>
-References: <20160623185352.25818-1-afd@ti.com>
- <1466709177.1847.19.camel@perches.com>
-Message-ID: <576C36E5.9030909@ti.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Wed, 22 Jun 2016 21:47:21 +0200 (CEST)
+Subject: [Cocci] [PATCH v3 3/8] coccicheck: enable parmap support
+In-Reply-To: <20160622151024.GR25646@wotan.suse.de>
+References: <alpine.DEB.2.02.1606212217060.2040@localhost6.localdomain6>
+ <20160621203958.GU25646@wotan.suse.de>
+ <alpine.DEB.2.02.1606212241380.2040@localhost6.localdomain6>
+ <a8871bc9-866c-4690-0806-6165680cc45d@imag.fr>
+ <20160621212839.GZ25646@wotan.suse.de>
+ <alpine.DEB.2.02.1606212331160.2040@localhost6.localdomain6>
+ <20160621213906.GC25646@wotan.suse.de>
+ <alpine.DEB.2.02.1606212342040.2040@localhost6.localdomain6>
+ <20160621221454.GF25646@wotan.suse.de>
+ <alpine.DEB.2.02.1606220718550.2082@localhost6.localdomain6>
+ <20160622151024.GR25646@wotan.suse.de>
+Message-ID: <alpine.DEB.2.02.1606222146240.2076@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 06/23/2016 02:12 PM, Joe Perches wrote:
-> On Thu, 2016-06-23 at 13:53 -0500, Andrew F. Davis wrote:
->> Add a script to check for unneeded conversions to bool.
+> > Actually, it would be probably good to raise the default chunksize a bit 
+> > for the latter reason.  It would depend on which files get assigned to 
+> > which chunks though how much benefit it might have.
 > 
-> this could also be extended for bool functions that:
-> 
-> 	return !!expression;
-> and
-> 	return expression != 0;
-> 
+> What value do you have in mind? Or should we leave this as a separate future
+> change?
 
-Agreed, it's in the works, I was going to post this current set with
-some patches to the kernel that is detects, then add additional checks
-and their kernel fixes incrementally.
+It's not urgent.  Experiments would have to be done to find a good 
+tradeoff.  If the value is too large, there is the risk of a load 
+imbalance at the end.
 
-For the second suggestion I think we could have additions to
-boolinit.cocci that include the results of comparison/logical operations.
-
-Thanks,
-Andrew
+julia
