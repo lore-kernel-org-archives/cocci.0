@@ -1,122 +1,113 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 22 Jun 2016 12:09:34 +0200 (CEST)
-Subject: [Cocci] [PATCH v2 3/3] docs: document .cocciconfig
-In-Reply-To: <1466459648-17477-4-git-send-email-mcgrof@kernel.org>
-References: <1466459648-17477-1-git-send-email-mcgrof@kernel.org>
- <1466459648-17477-4-git-send-email-mcgrof@kernel.org>
-Message-ID: <alpine.DEB.2.10.1606221209270.3065@hadrien>
+From: afd@ti.com (Andrew F. Davis)
+Date: Thu, 23 Jun 2016 13:53:52 -0500
+Subject: [Cocci] [PATCH] Coccinelle: Add misc/boolconv.cocci
+Message-ID: <20160623185352.25818-1-afd@ti.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, 20 Jun 2016, Luis R. Rodriguez wrote:
+Add a script to check for unneeded conversions to bool.
 
-> Add documentation and example to manual and man page.
->
-> Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
+Signed-off-by: Andrew F. Davis <afd@ti.com>
+---
+ scripts/coccinelle/misc/boolconv.cocci | 90 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 90 insertions(+)
+ create mode 100644 scripts/coccinelle/misc/boolconv.cocci
 
-Applied.
-
-> ---
->  docs/manual/cocci_syntax.tex | 23 +++++++++++++++++++++++
->  docs/spatch.1.in             | 32 +++++++++++++++++++++++++++++++-
->  2 files changed, 54 insertions(+), 1 deletion(-)
->
-> diff --git a/docs/manual/cocci_syntax.tex b/docs/manual/cocci_syntax.tex
-> index 5adfc95b0ce1..dc7aa17712af 100644
-> --- a/docs/manual/cocci_syntax.tex
-> +++ b/docs/manual/cocci_syntax.tex
-> @@ -1782,6 +1782,29 @@ When using ocaml scripting a hash table is used for the same purposes.
->  Coccinelle itself provides no support for this and as such addressing
->  this with scripting is necessary.
->
-> +\section{.cocciconfig support}
-> +
-> +Coccinelle supports enabling custom options to be preferred when running
-> +spatch.  This is supported through the search of .cocciconfig files in each of
-> +the following directories, later lines extend and may override earlier ones:
-> +
-> +\begin{itemize}
-> +	\item Your current user's home directory is processed first
-> +	\item Your directory from which spatch is called is processed next
-> +	\item The directory provided with the --dir option is processed last, if used
-> +\end{itemize}
-> +
-> +Newlines, even with \, are not tolerated in attribute values. An example
-> +follows:
-> +
-> +\begin{quote}
-> +\begin{verbatim}
-> +[spatch]
-> +	options = --jobs 4
-> +	options = --show-trying
-> +\end{verbatim}
-> +\end{quote}
-> +
->  %%% Local Variables:
->  %%% mode: LaTeX
->  %%% TeX-master: "main_grammar"
-> diff --git a/docs/spatch.1.in b/docs/spatch.1.in
-> index dae38952e88c..121048b1ea0b 100644
-> --- a/docs/spatch.1.in
-> +++ b/docs/spatch.1.in
-> @@ -55,7 +55,8 @@ and at the \fBscripts/coccinelle\fP directory of the Linux Kernel source
->  code.
->
->  .SH OPTIONS
-> -Here is a summary of the most commonly used options:
-> +Here is a summary of the most commonly used options (also
-> +see the "Configuration Mechanism" section below):
->
->  .TP
->  .B \-\-sp\-file \fI<file>\fP
-> @@ -566,6 +567,31 @@ It's for the other (internal) uses of the spatch program.
->  \fB\-\-compare\-c\fR
->  <file1> <file2>
->
-> +.SH CONFIGURATION MECHANISM
-> +
-> +Coccinelle uses a simple text format to store customizations into
-> +\.cocciconfig files, that can be per project, user, or target. The order
-> +in which the configuration file is processed is as follows, the
-> +later lines always extend and may override earlier ones:
-> +
-> +  o Your current user's home directory is processed first
-> +  o Your directory from which spatch is called is processed next
-> +  o The directory provided with the --dir option is processed last, if used
-> +
-> +Such a configuration file may look like this:
-> +
-> +.if n \{\
-> +.RS 4
-> +.\}
-> +.nf
-> +[spatch]
-> +	options = --jobs 4
-> +	options = --show-trying
-> +.fi
-> +.if n \{\
-> +.RE
-> +.\}
-> +
->  .SH FILES
->  .I @SHAREDIR@/standard.iso
->  .RS
-> @@ -574,6 +600,10 @@ This file contains the default set of isomorphisms.
->  .I @SHAREDIR@/standard.h
->  .RS
->  This file contains the default set of macro hints.
-> +.RE
-> +.I .cocciconfig
-> +.RS
-> +This file contains the custom set of spatch options.
->
->  .SH ENVIRONMENT
->  .IP COCCINELLE_HOME
-> --
-> 2.8.2
->
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+diff --git a/scripts/coccinelle/misc/boolconv.cocci b/scripts/coccinelle/misc/boolconv.cocci
+new file mode 100644
+index 0000000..33c464d
+--- /dev/null
++++ b/scripts/coccinelle/misc/boolconv.cocci
+@@ -0,0 +1,90 @@
++/// Remove unneeded conversion to bool
++///
++//# Relational and logical operators evaluate to bool,
++//# explicit conversion is overly verbose and unneeded.
++//
++// Copyright: (C) 2016 Andrew F. Davis <afd@ti.com> GPLv2.
++
++virtual patch
++virtual context
++virtual org
++virtual report
++
++//----------------------------------------------------------
++//  For patch mode
++//----------------------------------------------------------
++
++ at depends on patch@
++expression A, B;
++symbol true, false;
++@@
++
++(
++  A == B
++|
++  A != B
++|
++  A > B
++|
++  A < B
++|
++  A >= B
++|
++  A <= B
++|
++  A && B
++|
++  A || B
++)
++- ? true : false
++
++//----------------------------------------------------------
++//  For context mode
++//----------------------------------------------------------
++
++@r depends on !patch@
++expression A, B;
++symbol true, false;
++position p;
++@@
++
++(
++  A == B
++|
++  A != B
++|
++  A > B
++|
++  A < B
++|
++  A >= B
++|
++  A <= B
++|
++  A && B
++|
++  A || B
++)
++* ? true : false at p
++
++//----------------------------------------------------------
++//  For org mode
++//----------------------------------------------------------
++
++ at script:python depends on r&&org@
++p << r.p;
++@@
++
++msg = "WARNING: conversion to bool not needed here"
++coccilib.org.print_todo(p[0], msg)
++
++//----------------------------------------------------------
++//  For report mode
++//----------------------------------------------------------
++
++@script:python depends on r&&report@
++p << r.p;
++@@
++
++msg = "WARNING: conversion to bool not needed here"
++coccilib.report.print_report(p[0], msg)
+-- 
+2.9.0
