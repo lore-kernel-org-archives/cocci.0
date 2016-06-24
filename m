@@ -1,60 +1,51 @@
-From: Nicolas.Palix@imag.fr (Nicolas Palix (LIG))
-Date: Wed, 22 Jun 2016 22:39:43 +0200
-Subject: [Cocci] [PATCH v3 2/8] coccicheck: make SPFLAGS more useful
-In-Reply-To: <1466536893-23355-3-git-send-email-mcgrof@kernel.org>
-References: <1466536893-23355-1-git-send-email-mcgrof@kernel.org>
- <1466536893-23355-3-git-send-email-mcgrof@kernel.org>
-Message-ID: <b3f046f9-d450-70c2-8577-9766126ea556@imag.fr>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Fri, 24 Jun 2016 08:18:33 +0200 (CEST)
+Subject: [Cocci] Matching stack addresses passed to a function?
+In-Reply-To: <CALCETrVprCY9uRtm4EAtx9DYupJWg_exJRrpZWj=6Ja7rmFLhw@mail.gmail.com>
+References: <CALCETrVprCY9uRtm4EAtx9DYupJWg_exJRrpZWj=6Ja7rmFLhw@mail.gmail.com>
+Message-ID: <alpine.DEB.2.02.1606240818000.2008@localhost6.localdomain6>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Le 21/06/16 ? 21:21, Luis R. Rodriguez a ?crit :
-> SPFLAGS is set early, it means that any heuristics done on
-> coccicheck cannot be overridden currently. Move SPFLAGS
-> after OPTIONS and set this at the end. This lets you override
-> any heuristics as coccinelle treats conflicts by only listening
-> to the last option that makes sense.
->
-> Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
-Acked-by: Nicolas Palix <nicolas.palix@imag.fr>
-> ---
->  scripts/coccicheck | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
->
-> diff --git a/scripts/coccicheck b/scripts/coccicheck
-> index f137b04dfdd3..5319fae910b4 100755
-> --- a/scripts/coccicheck
-> +++ b/scripts/coccicheck
-> @@ -30,7 +30,7 @@ else
->  	NPROC="$J"
->  fi
->
-> -FLAGS="--very-quiet $SPFLAGS"
-> +FLAGS="--very-quiet"
->
->  # spatch only allows include directories with the syntax "-I include"
->  # while gcc also allows "-Iinclude" and "-include include"
-> @@ -106,6 +106,9 @@ kill_running() {
->  	done
->  }
->
-> +# You can override heuristics with SPFLAGS, these must always go last
-> +OPTIONS="$OPTIONS $SPFLAGS"
-> +
->  coccinelle () {
->      COCCI="$1"
->
->
+On Thu, 23 Jun 2016, Andy Lutomirski wrote:
+
+> Hi all-
+> 
+> I'm trying to see if I've found all sg_init_one misuses.  Is there a
+> way to write a rule that will match obvious code paths that pass a
+> stack address into sg_init_one?  Basically, I want to match:
+> 
+> int foo;
+> sg_init_one(..., &foo, ...);
+> 
+> and:
+> 
+> int foo[10];
+> sg_init_one(..., foo, ...);
+> 
+> but not:
+> 
+> void whatever(void *ptr, ...)
+> {
+>   sg_init_one(..., ptr, ...);
+> }
+> 
+> Is there some way to write a metavariable that refers to a value on
+> the stack?  Or can I somehow cleanly match an actual declaration
+> followed by a use of the declared variable?
+
+local idexpression x; is a local variable or function parameter
+global idexpression x; is something else.
+
+julia
 
 
--- 
-Nicolas Palix
-http://lig-membres.imag.fr/palix/
 
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: smime.p7s
-Type: application/pkcs7-signature
-Size: 2959 bytes
-Desc: Signature cryptographique S/MIME
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20160622/91b0f297/attachment-0001.p7s>
+> 
+> Thanks,
+> Andy
+> _______________________________________________
+> Cocci mailing list
+> Cocci at systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
+> 
