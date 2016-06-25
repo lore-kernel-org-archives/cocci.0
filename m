@@ -1,17 +1,28 @@
-From: joe@perches.com (Joe Perches)
-Date: Thu, 23 Jun 2016 12:12:57 -0700
-Subject: [Cocci] [PATCH] Coccinelle: Add misc/boolconv.cocci
-In-Reply-To: <20160623185352.25818-1-afd@ti.com>
-References: <20160623185352.25818-1-afd@ti.com>
-Message-ID: <1466709177.1847.19.camel@perches.com>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sat, 25 Jun 2016 14:54:46 +0200
+Subject: [Cocci] [PATCH v3] bundles/pycaml/: use .NOTPARALLEL on bundles
+In-Reply-To: <1466461206-6960-1-git-send-email-mcgrof@kernel.org>
+References: <1466461206-6960-1-git-send-email-mcgrof@kernel.org>
+Message-ID: <f1af02e0-02ae-98be-5e79-b0b6dcf3e08c@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 2016-06-23 at 13:53 -0500, Andrew F. Davis wrote:
-> Add a script to check for unneeded conversions to bool.
+>  bundles/menhirLib/Makefile | 1 +
+>  bundles/parmap/Makefile    | 1 +
+>  bundles/pcre/Makefile      | 1 +
+>  bundles/pycaml/Makefile    | 1 +
 
-this could also be extended for bool functions that:
+How do you think about to omit the key word "pycaml" from the commit subject
+when four software areas are affected here?
 
-	return !!expression;
-and
-	return expression != 0;
+
+> +.NOTPARALLEL: .prepare
+
+Would you like to leave the prerequisite specification empty?
+https://www.gnu.org/software/make/manual/html_node/Special-Targets.html
+
+
+Will an other design approach be better for these make scripts?
+
+Regards,
+Markus
