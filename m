@@ -1,181 +1,179 @@
 From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Wed, 29 Jun 2016 15:10:23 -0700
-Subject: [Cocci] [RFC v4 6/9] scripts: add Linux .cocciconfig for coccinelle
+Date: Wed, 29 Jun 2016 15:10:20 -0700
+Subject: [Cocci] [RFC v4 3/9] coccicheck: enable parmap support
 In-Reply-To: <1467238226-10822-1-git-send-email-mcgrof@kernel.org>
 References: <1467238226-10822-1-git-send-email-mcgrof@kernel.org>
-Message-ID: <1467238226-10822-7-git-send-email-mcgrof@kernel.org>
+Message-ID: <1467238226-10822-4-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Coccinelle supports reading .cocciconfig, the order of precedence for
-variables for .coccoconfig is as follows:
+Coccinelle has had parmap support since 1.0.2, this means
+it supports --jobs, enabling built-in multithreaded functionality,
+instead of needing one to script it out. Just look for --jobs
+in the help output to determine if this is supported and use it
+only if your number of processors detected is > 1.
 
- o Your current user's home directory is processed first
- o Your directory from which spatch is called is processed next
- o The directory provided with the --dir option is processed last, if used
+If parmap is enabled also enable the load balancing to be dynamic, so
+that if a thread finishes early we keep feeding it.
 
-Since coccicheck runs through make, it naturally runs from the kernel
-proper dir, as such the second rule above would be implied for picking up a
-.cocciconfig when using 'make coccicheck'.
+stderr is currently sent to /dev/null, addressing a way to capture
+that will be addressed next.
 
-'make coccicheck' also supports using M= targets, and you can also avoid
-supplying any target, in the later case its assumed you want to target
-the entire kernel. coccicheck has:
+If --jobs is not supported we fallback to the old mechanism.
+We expect to deprecate the old mechanism as soon as we can get
+confirmation all users are ready.
 
-    if [ "$KBUILD_EXTMOD" = "" ] ; then
-        OPTIONS="--dir $srctree $COCCIINCLUDE"
-    else
-        OPTIONS="--dir $KBUILD_EXTMOD $COCCIINCLUDE"
-    fi
+While at it propagate back into the shell script any coccinelle error
+code. When used in serialized mode where all cocci files are run this
+also stops processing if an error has occured. This lets us handle some
+errors in coccinelle cocci files and if they bail out we should inspect
+the errors. This will be more useful later to help annotate coccinelle
+version dependency requirements. This will let you run only SmPL files
+that your system supports.
 
-For both cases --dir is used, as such following the third rule the target
-also can have its own .cocciconfig file, since make is used for it, its the
-same file when no M=path is passed.
+Extend Documentation/coccinelle.txt as well.
 
-If using spatch manually just keep the above order logic in mind when
-making changes, if you need to override any settings use SPFLAGS.
+As a small example, prior to this change, on an 8-core system:
 
-We help Coccinelle when used against Linux with a set of sensible defaults
-options for Linux with our own Linux .cocciconfig. This hints to coccinelle
-git can be used for 'git grep' queries over coccigrep. A timeout of 200
-seconds should suffice for now.
+Before:
 
-To confirm what options will be used by Coccinelle run:
-
-  spatch --print-options-only
-
-The options picked up by .cocciconfig can ony be verified with the
-above, by default Coccinelle does not paste these the spawned command
-line run for an spatch instance.
-
-Coccinelle also has support for idutils and this helps, if you use it,
-however its use is obviously optional. Upstream coccinelle has a
-script scripts/idutils_index.sh in its repository, it assumes you
-do:
-
-  mkid -i C --output .id-utils.index
-
-Coccinelle searches for the index in the directory on which it is working
+$ export COCCI=scripts/coccinelle/free/kfree.cocci
+$ time make coccicheck MODE=report
 ...
 
-If you use idutils you can override for 'make coccicheck' by using the
-SPFLAGS option as follows:
+real    29m14.912s
+user    103m1.796s
+sys     0m4.464s
 
-First build the index, for example:
-mkid -s
+After:
 
-Pick the cocci file you wnat to work with:
-export COCCI=scripts/coccinelle/misc/irqf_oneshot.cocci
-
-Then run coccicheck:
-$ make coccicheck V=1 MODE=report SPFLAGS="--use-idutils ID"
-
-Coccinelle supports reading .cocciconfig from different directories,
-the later one overriding the previous reads in the following order:
-
- o Your current user's home directory is processed first
- o Your directory from which spatch is called is processed next
- o The directory provided with the --dir option is processed last, if used
+real    16m22.435s
+user    128m30.060s
+sys     0m2.712s
 
 v4:
 
-o Refer to using --print-options-only for testing what options are
-  picked up by .cocciconfig reading.
+o expand Documentation/coccinelle.txt to reflect parmap support info
+o update commit log to reflect what we actually do now with stderr
+o split out DEBUG_FILE use into another patch
+o detect number of CPUs and if its 1 then skip parmap support,
+  note that if you still support parmap, but have 1 CPU you will
+  also go through the new branches, so the old complex multithreaded process
+  is skipped as well.
 
-o Expand commit log considerably explaining *why* .cocconfig from
-  two precedence rules are used when using coccicheck, and how to
-  properly override these if needed.
+v3:
 
-o Expand Documentation/coccinelle.txt
+o move USE_JOBS to avoid being overriden
 
-v3: Expand commit log a bit more
+v2:
+
+o redirect coccinelle stderr to /dev/null by default and
+  only if DEBUG_FILE is used do we pass it to a file
+o fix typo of paramap/parmap
 
 Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
 ---
- .cocciconfig                 |  3 +++
- .gitignore                   |  1 +
- Documentation/coccinelle.txt | 47 ++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 51 insertions(+)
- create mode 100644 .cocciconfig
+ Documentation/coccinelle.txt | 15 +++++++++++++++
+ scripts/coccicheck           | 35 ++++++++++++++++++++++++++++++++---
+ 2 files changed, 47 insertions(+), 3 deletions(-)
 
-diff --git a/.cocciconfig b/.cocciconfig
-new file mode 100644
-index 000000000000..43967c6b2015
---- /dev/null
-+++ b/.cocciconfig
-@@ -0,0 +1,3 @@
-+[spatch]
-+	options = --timeout 200
-+	options = --use-gitgrep
-diff --git a/.gitignore b/.gitignore
-index 2be25f771bd8..c2ed4ecb0acd 100644
---- a/.gitignore
-+++ b/.gitignore
-@@ -67,6 +67,7 @@ Module.symvers
- #
- !.gitignore
- !.mailmap
-+!.cocciconfig
- 
- #
- # Generated include files
 diff --git a/Documentation/coccinelle.txt b/Documentation/coccinelle.txt
-index 4f5b2287a2b1..a425b1f1df99 100644
+index bb9632c20cfb..64daaf18874b 100644
 --- a/Documentation/coccinelle.txt
 +++ b/Documentation/coccinelle.txt
-@@ -189,6 +189,53 @@ work.
+@@ -94,11 +94,26 @@ To enable verbose messages set the V= variable, for example:
  
- DEBUG_FILE support is only supported when using coccinelle >= 1.2.
+    make coccicheck MODE=report V=1
  
-+ .cocciconfig support
-+~~~~~~~~~~~~~~~~~~~~~~
++ Coccinelle parallelization
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 +
-+Coccinelle supports reading .cocciconfig for default Coccinelle options that
-+should be used every time spatch is spawned, the order of precedence for
-+variables for .coccoconfig is as follows:
-+
-+  o Your current user's home directory is processed first
-+  o Your directory from which spatch is called is processed next
-+  o The directory provided with the --dir option is processed last, if used
-+
-+Since coccicheck runs through make, it naturally runs from the kernel
-+proper dir, as such the second rule above would be implied for picking up a
-+.cocciconfig when using 'make coccicheck'.
-+
-+'make coccicheck' also supports using M= targets, and you can also avoid
-+supplying any target, in the later case its assumed you want to target
-+the entire kernel. coccicheck has:
-+
-+    if [ "$KBUILD_EXTMOD" = "" ] ; then
-+        OPTIONS="--dir $srctree $COCCIINCLUDE"
-+    else
-+        OPTIONS="--dir $KBUILD_EXTMOD $COCCIINCLUDE"
-+    fi
-+
-+For both cases --dir is used, as such following the third rule the target
-+also can have its own .cocciconfig file, since make is used for it, its the
-+same file when no M=path is passed.
-+
-+If using spatch manually just keep the above order logic in mind when
-+making changes, if you need to override any settings use SPFLAGS.
-+
-+To verify what options are taking effect run:
-+
-+  spatch --print-options-only
-+
-+The options picked up by .cocciconfig can only be verified with the
-+above, by default Coccinelle does not paste these the spawned command
-+line run for an spatch instance.
-+
-+Take note that when there are conflicting options Coccinelle takes
-+precedence for the last options passed. Linux supplies its own .cocciconfig
-+with a suitable set of defaults, this includes using its internal
-+'--use-gitgrep' for using 'git grep' when identifying what code to
-+look for, for processing. Refer to the "Additional flags" section below
-+to learn how to override default .cocciconfig supplied by Linux.
-+
-  Additional flags
- ~~~~~~~~~~~~~~~~~~
+ By default, coccicheck tries to run as parallel as possible. To change
+ the parallelism, set the J= variable. For example, to run across 4 CPUs:
  
+    make coccicheck MODE=report J=4
+ 
++As of Coccinelle 1.0.2 Coccinelle uses Ocaml parmap for parallelization,
++if support for this is detected you will benefit from parmap parallelization.
++
++When parmap is enabled coccicheck will enable dynamic load balancing by using
++'--chunksize 1' argument, this ensures we keep feeding threads with work
++one by one, so that we avoid the situation where most work gets done by only
++a few threads. With dynamic load balancing, if a thread finishes early we keep
++feeding it more work.
++
++When parmap is enabled, if an error occurs in Coccinelle, this error
++value is propagated back, the return value of the 'make coccicheck'
++captures this return value.
+ 
+  Using Coccinelle with a single semantic patch
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+diff --git a/scripts/coccicheck b/scripts/coccicheck
+index 5319fae910b4..4b65a0fd50a1 100755
+--- a/scripts/coccicheck
++++ b/scripts/coccicheck
+@@ -12,8 +12,8 @@ if [ ! -x "$SPATCH" ]; then
+     exit 1
+ fi
+ 
+-trap kill_running SIGTERM SIGINT
+-declare -a SPATCH_PID
++USE_JOBS="no"
++$SPATCH --help | grep "\-\-jobs" > /dev/null && USE_JOBS="yes"
+ 
+ # The verbosity may be set by the environmental parameter V=
+ # as for example with 'make V=1 coccicheck'
+@@ -56,6 +56,16 @@ if [ "$KBUILD_EXTMOD" != "" ] ; then
+     OPTIONS="--patch $srctree $OPTIONS"
+ fi
+ 
++# You can override by using SPFLAGS
++if [ "$USE_JOBS" = "no" ]; then
++	trap kill_running SIGTERM SIGINT
++	declare -a SPATCH_PID
++elif [ "$NPROC" != "1" ]; then
++	# Using 0 should work as well, refer to _SC_NPROCESSORS_ONLN use on
++	# https://github.com/rdicosmo/parmap/blob/master/setcore_stubs.c
++	OPTIONS="$OPTIONS --jobs $NPROC --chunksize 1"
++fi
++
+ if [ "$MODE" = "" ] ; then
+     if [ "$ONLINE" = "0" ] ; then
+ 	echo 'You have not explicitly specified the mode to use. Using default "report" mode.'
+@@ -82,7 +92,18 @@ if [ "$ONLINE" = "0" ] ; then
+     echo ''
+ fi
+ 
+-run_cmd() {
++run_cmd_parmap() {
++	if [ $VERBOSE -ne 0 ] ; then
++		echo "Running ($NPROC in parallel): $@"
++	fi
++	$@ 2>/dev/null
++	if [[ $? -ne 0 ]]; then
++		echo "coccicheck failed"
++		exit $?
++	fi
++}
++
++run_cmd_old() {
+ 	local i
+ 	if [ $VERBOSE -ne 0 ] ; then
+ 		echo "Running ($NPROC in parallel): $@"
+@@ -97,6 +118,14 @@ run_cmd() {
+ 	wait
+ }
+ 
++run_cmd() {
++	if [ "$USE_JOBS" = "yes" ]; then
++		run_cmd_parmap $@
++	else
++		run_cmd_old $@
++	fi
++}
++
+ kill_running() {
+ 	for i in $(seq 0 $(( NPROC - 1 )) ); do
+ 		if [ $VERBOSE -eq 2 ] ; then
 -- 
 2.8.4
