@@ -1,49 +1,65 @@
 From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Wed, 29 Jun 2016 15:14:51 -0700
-Subject: [Cocci] [PATCH v4 1/9] coccicheck: move spatch binary check up
+Date: Wed, 29 Jun 2016 15:14:52 -0700
+Subject: [Cocci] [PATCH v4 2/9] coccicheck: make SPFLAGS more useful
 In-Reply-To: <1467238499-10889-1-git-send-email-mcgrof@kernel.org>
 References: <1467238499-10889-1-git-send-email-mcgrof@kernel.org>
-Message-ID: <1467238499-10889-2-git-send-email-mcgrof@kernel.org>
+Message-ID: <1467238499-10889-3-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-This has no functional changes. This is being done
-to enable us to later use spatch binary for some
-flag checking for certain features early on.
+SPFLAGS is set early, it means that any heuristics done on
+coccicheck cannot be overridden currently. Move SPFLAGS
+after OPTIONS and set this at the end. This lets you override
+any heuristics as coccinelle treats conflicts by only listening
+to the last option that makes sense.
+
+v3: this patch was added in the v3 series
+v4: Update Documentation/coccinelle.txt explaining how
+    SPFLAGS works as well.
 
 Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
 Acked-by: Nicolas Palix <nicolas.palix@imag.fr>
 ---
- scripts/coccicheck | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ Documentation/coccinelle.txt | 3 ++-
+ scripts/coccicheck           | 5 ++++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
 
+diff --git a/Documentation/coccinelle.txt b/Documentation/coccinelle.txt
+index 7f773d51fdd9..bb9632c20cfb 100644
+--- a/Documentation/coccinelle.txt
++++ b/Documentation/coccinelle.txt
+@@ -146,7 +146,8 @@ MODE variable explained above.
+ ~~~~~~~~~~~~~~~~~~
+ 
+ Additional flags can be passed to spatch through the SPFLAGS
+-variable.
++variable. This works as Coccinelle respects the last flags
++given to it when options are in conflict.
+ 
+     make SPFLAGS=--use-glimpse coccicheck
+     make SPFLAGS=--use-idutils coccicheck
 diff --git a/scripts/coccicheck b/scripts/coccicheck
-index f6627863fdc3..f137b04dfdd3 100755
+index f137b04dfdd3..5319fae910b4 100755
 --- a/scripts/coccicheck
 +++ b/scripts/coccicheck
-@@ -7,6 +7,11 @@
- 
- SPATCH="`which ${SPATCH:=spatch}`"
- 
-+if [ ! -x "$SPATCH" ]; then
-+    echo 'spatch is part of the Coccinelle project and is available at http://coccinelle.lip6.fr/'
-+    exit 1
-+fi
-+
- trap kill_running SIGTERM SIGINT
- declare -a SPATCH_PID
- 
-@@ -51,11 +56,6 @@ if [ "$KBUILD_EXTMOD" != "" ] ; then
-     OPTIONS="--patch $srctree $OPTIONS"
+@@ -30,7 +30,7 @@ else
+ 	NPROC="$J"
  fi
  
--if [ ! -x "$SPATCH" ]; then
--    echo 'spatch is part of the Coccinelle project and is available at http://coccinelle.lip6.fr/'
--    exit 1
--fi
--
- if [ "$MODE" = "" ] ; then
-     if [ "$ONLINE" = "0" ] ; then
- 	echo 'You have not explicitly specified the mode to use. Using default "report" mode.'
+-FLAGS="--very-quiet $SPFLAGS"
++FLAGS="--very-quiet"
+ 
+ # spatch only allows include directories with the syntax "-I include"
+ # while gcc also allows "-Iinclude" and "-include include"
+@@ -106,6 +106,9 @@ kill_running() {
+ 	done
+ }
+ 
++# You can override heuristics with SPFLAGS, these must always go last
++OPTIONS="$OPTIONS $SPFLAGS"
++
+ coccinelle () {
+     COCCI="$1"
+ 
 -- 
 2.8.4
