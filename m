@@ -1,90 +1,180 @@
 From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Wed, 29 Jun 2016 15:14:55 -0700
-Subject: [Cocci] [PATCH v4 5/9] coccicheck: replace --very-quiet with
-	--quiet when debugging
+Date: Wed, 29 Jun 2016 15:14:53 -0700
+Subject: [Cocci] [PATCH v4 3/9] coccicheck: enable parmap support
 In-Reply-To: <1467238499-10889-1-git-send-email-mcgrof@kernel.org>
 References: <1467238499-10889-1-git-send-email-mcgrof@kernel.org>
-Message-ID: <1467238499-10889-6-git-send-email-mcgrof@kernel.org>
+Message-ID: <1467238499-10889-4-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-When debugging (using --profile or --show-trying) you want to
-avoid supressing output,  use --quiet instead. While at it, extend
-documentation for SPFLAGS use.
+Coccinelle has had parmap support since 1.0.2, this means
+it supports --jobs, enabling built-in multithreaded functionality,
+instead of needing one to script it out. Just look for --jobs
+in the help output to determine if this is supported and use it
+only if your number of processors detected is > 1.
 
-For instance one can use:
+If parmap is enabled also enable the load balancing to be dynamic, so
+that if a thread finishes early we keep feeding it.
 
-$ export COCCI=scripts/coccinelle/misc/irqf_oneshot.cocci
-$ make coccicheck DEBUG_FILE="poo.err" MODE=report SPFLAGS="--profile --show-trying" M=./drivers/mfd/arizona-irq.c
+stderr is currently sent to /dev/null, addressing a way to capture
+that will be addressed next.
 
-Expand Documentation/coccinelle.txt as well.
+If --jobs is not supported we fallback to the old mechanism.
+We expect to deprecate the old mechanism as soon as we can get
+confirmation all users are ready.
 
-v4: expand Documentation/coccinelle.txt
-v3: rebased, resolve conflicts, expand Documentation/coccinelle.txt
-v2: use egrep instead of the *"=--option"* check, this doesn't work for
-    disjunctions.
+While at it propagate back into the shell script any coccinelle error
+code. When used in serialized mode where all cocci files are run this
+also stops processing if an error has occured. This lets us handle some
+errors in coccinelle cocci files and if they bail out we should inspect
+the errors. This will be more useful later to help annotate coccinelle
+version dependency requirements. This will let you run only SmPL files
+that your system supports.
+
+Extend Documentation/coccinelle.txt as well.
+
+As a small example, prior to this change, on an 8-core system:
+
+Before:
+
+$ export COCCI=scripts/coccinelle/free/kfree.cocci
+$ time make coccicheck MODE=report
+...
+
+real    29m14.912s
+user    103m1.796s
+sys     0m4.464s
+
+After:
+
+real    16m22.435s
+user    128m30.060s
+sys     0m2.712s
+
+v4:
+
+o expand Documentation/coccinelle.txt to reflect parmap support info
+o update commit log to reflect what we actually do now with stderr
+o split out DEBUG_FILE use into another patch
+o detect number of CPUs and if its 1 then skip parmap support,
+  note that if you still support parmap, but have 1 CPU you will
+  also go through the new branches, so the old complex multithreaded process
+  is skipped as well.
+
+v3:
+
+o move USE_JOBS to avoid being overriden
+
+v2:
+
+o redirect coccinelle stderr to /dev/null by default and
+  only if DEBUG_FILE is used do we pass it to a file
+o fix typo of paramap/parmap
 
 Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
-Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+Acked-by: Nicolas Palix <nicolas.palix@imag.fr>
 ---
- Documentation/coccinelle.txt | 12 ++++++++++++
- scripts/coccicheck           | 21 +++++++++++++++++++++
- 2 files changed, 33 insertions(+)
+ Documentation/coccinelle.txt | 15 +++++++++++++++
+ scripts/coccicheck           | 35 ++++++++++++++++++++++++++++++++---
+ 2 files changed, 47 insertions(+), 3 deletions(-)
 
 diff --git a/Documentation/coccinelle.txt b/Documentation/coccinelle.txt
-index 2516c5ef1691..66e822f8caee 100644
+index bb9632c20cfb..64daaf18874b 100644
 --- a/Documentation/coccinelle.txt
 +++ b/Documentation/coccinelle.txt
-@@ -175,6 +175,18 @@ instance:
-     make coccicheck COCCI=scripts/coccinelle/free/kfree.cocci MODE=report DEBUG_FILE=cocci.err
-     cat cocci.err
+@@ -94,11 +94,26 @@ To enable verbose messages set the V= variable, for example:
  
-+You can use SPFLAGS to add debugging flags, for instance you may want to
-+add both --profile --show-trying to SPFLAGS when debugging. For instance
-+you may want to use:
-+
-+    rm -f err.log
-+    export COCCI=scripts/coccinelle/misc/irqf_oneshot.cocci
-+    make coccicheck DEBUG_FILE="err.log" MODE=report SPFLAGS="--profile --show-trying" M=./drivers/mfd/arizona-irq.c
-+
-+err.log will now have the profiling information, while stdout will
-+provide some progress information as Coccinelle moves forward with
-+work.
-+
- DEBUG_FILE support is only supported when using coccinelle >= 1.2.
+    make coccicheck MODE=report V=1
  
-  Additional flags
++ Coccinelle parallelization
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++
+ By default, coccicheck tries to run as parallel as possible. To change
+ the parallelism, set the J= variable. For example, to run across 4 CPUs:
+ 
+    make coccicheck MODE=report J=4
+ 
++As of Coccinelle 1.0.2 Coccinelle uses Ocaml parmap for parallelization,
++if support for this is detected you will benefit from parmap parallelization.
++
++When parmap is enabled coccicheck will enable dynamic load balancing by using
++'--chunksize 1' argument, this ensures we keep feeding threads with work
++one by one, so that we avoid the situation where most work gets done by only
++a few threads. With dynamic load balancing, if a thread finishes early we keep
++feeding it more work.
++
++When parmap is enabled, if an error occurs in Coccinelle, this error
++value is propagated back, the return value of the 'make coccicheck'
++captures this return value.
+ 
+  Using Coccinelle with a single semantic patch
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 diff --git a/scripts/coccicheck b/scripts/coccicheck
-index 3f0bb3f0fddc..081ba5bff79c 100755
+index 5319fae910b4..4b65a0fd50a1 100755
 --- a/scripts/coccicheck
 +++ b/scripts/coccicheck
-@@ -32,6 +32,27 @@ fi
+@@ -12,8 +12,8 @@ if [ ! -x "$SPATCH" ]; then
+     exit 1
+ fi
  
- FLAGS="--very-quiet"
+-trap kill_running SIGTERM SIGINT
+-declare -a SPATCH_PID
++USE_JOBS="no"
++$SPATCH --help | grep "\-\-jobs" > /dev/null && USE_JOBS="yes"
  
-+# You can use SPFLAGS to append extra arguments to coccicheck or override any
-+# heuristics done in this file as Coccinelle accepts the last options when
-+# options conflict.
-+#
-+# A good example for use of SPFLAGS is if you want to debug your cocci script,
-+# you can for instance use the following:
-+#
-+# $ export COCCI=scripts/coccinelle/misc/irqf_oneshot.cocci
-+# $ make coccicheck MODE=report DEBUG_FILE="all.err" SPFLAGS="--profile --show-trying" M=./drivers/mfd/arizona-irq.c
-+#
-+# "--show-trying" should show you what rule is being processed as it goes to
-+# stdout, you do not need a debug file for that. The profile output will be
-+# be sent to stdout, if you provide a DEBUG_FILE the profiling data can be
-+# inspected there.
-+#
-+# --profile will not output if --very-quiet is used, so avoid it.
-+echo $SPFLAGS | egrep -e "--profile|--show-trying" 2>&1 > /dev/null
-+if [ $? -eq 0 ]; then
-+	FLAGS="--quiet"
+ # The verbosity may be set by the environmental parameter V=
+ # as for example with 'make V=1 coccicheck'
+@@ -56,6 +56,16 @@ if [ "$KBUILD_EXTMOD" != "" ] ; then
+     OPTIONS="--patch $srctree $OPTIONS"
+ fi
+ 
++# You can override by using SPFLAGS
++if [ "$USE_JOBS" = "no" ]; then
++	trap kill_running SIGTERM SIGINT
++	declare -a SPATCH_PID
++elif [ "$NPROC" != "1" ]; then
++	# Using 0 should work as well, refer to _SC_NPROCESSORS_ONLN use on
++	# https://github.com/rdicosmo/parmap/blob/master/setcore_stubs.c
++	OPTIONS="$OPTIONS --jobs $NPROC --chunksize 1"
 +fi
 +
- # spatch only allows include directories with the syntax "-I include"
- # while gcc also allows "-Iinclude" and "-include include"
- COCCIINCLUDE=${LINUXINCLUDE//-I/-I }
+ if [ "$MODE" = "" ] ; then
+     if [ "$ONLINE" = "0" ] ; then
+ 	echo 'You have not explicitly specified the mode to use. Using default "report" mode.'
+@@ -82,7 +92,18 @@ if [ "$ONLINE" = "0" ] ; then
+     echo ''
+ fi
+ 
+-run_cmd() {
++run_cmd_parmap() {
++	if [ $VERBOSE -ne 0 ] ; then
++		echo "Running ($NPROC in parallel): $@"
++	fi
++	$@ 2>/dev/null
++	if [[ $? -ne 0 ]]; then
++		echo "coccicheck failed"
++		exit $?
++	fi
++}
++
++run_cmd_old() {
+ 	local i
+ 	if [ $VERBOSE -ne 0 ] ; then
+ 		echo "Running ($NPROC in parallel): $@"
+@@ -97,6 +118,14 @@ run_cmd() {
+ 	wait
+ }
+ 
++run_cmd() {
++	if [ "$USE_JOBS" = "yes" ]; then
++		run_cmd_parmap $@
++	else
++		run_cmd_old $@
++	fi
++}
++
+ kill_running() {
+ 	for i in $(seq 0 $(( NPROC - 1 )) ); do
+ 		if [ $VERBOSE -eq 2 ] ; then
 -- 
 2.8.4
