@@ -1,98 +1,59 @@
-From: Frederic.LEROY@b-com.com (=?iso-8859-1?Q?Fr=E9d=E9ric_LEROY_=28ext=29?=)
-Date: Wed, 6 Jul 2016 13:54:41 +0000
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Wed, 6 Jul 2016 18:23:02 +0200 (CEST)
 Subject: [Cocci] Adding missing parameter to function if missing
-Message-ID: <bda6f254dbe94ad28468d5de4b6c3a17@vprd-opci0018.b-com.local>
+In-Reply-To: <bda6f254dbe94ad28468d5de4b6c3a17@vprd-opci0018.b-com.local>
+References: <bda6f254dbe94ad28468d5de4b6c3a17@vprd-opci0018.b-com.local>
+Message-ID: <alpine.DEB.2.10.1607061819400.3168@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi, 
+> @ test depends on !fn_with_user@
+> identifier fn_with_user.fn;
+> parameter list pl;
+> expression E;
+> @@
+>
+> fn(
+> + my_type *foo,
+> pl) {
+> <+...
+> bar(foo, E);
+> ...+>
+> }
 
-I am new to coccinelle and I have trouble to use it.
-What I want to do is add a missing parameter to a function call (bar)
-and add this parameter to the function prototype calling it if missing.
+This rule is contradictory.  You say that the rule fn_with_user should not
+have matched, but you want to match the identifier fn_with_user.fn.
+Instead, you should match fn first, then have one rule that matches the
+case you don't want, and then finally the case that you do want:
 
-Example : 
-
-f1(void *arg) {
-	bar(anything);
-}
-
-f2(my_type foo, void *arg) {
-	bar(anything);
-}
-
-=> 
-
-f1(my_type foo, void *arg) {
-	bar (foo, anything);
-}
-
-f2(my_type foo, void *arg) {
-	bar (foo, anything);
-}
-
-I tried several ways to do it without success. If I add a negative depends on rule, it won't work.
-
-Here is the c test file :
-
---------8<--------8<--------8<--------8<--------8<
-static void f1(void *args) {
-    bar(anything);
-}
-
-static void f2(my_type *foo, void *args) {
-    bar(anything);
-}
-
-static void f3(my_type *foo, void *args) {
-}
-
-static void f4(void *args) {
-}
-
-static void f5(void *args) {
-    int b;
-    bar(anything);
-    b = 5;
-    bar(anything);
-}
-
-static void f6(my_type *foo, void *args) {
-    int b;
-    bar(anything);
-    b = 5;
-    bar(anything);
-}
---------8<--------8<--------8<--------8<--------8<
-
-And here my spatch:
-
---------8<--------8<--------8<--------8<--------8<
-@@
-expression E;
+@barfn@
+identifier fn;
 @@
 
-- bar(E);
-+ bar(foo, E);
+fn(...) {
+<+...
+bar(...);
+...+>
+}
 
 @fn_with_user@
-identifier fn, foo;
+identifier barfn.fn, foo;
 typedef my_type;
 parameter list pl;
-expression E; 
+expression E;
 @@
 
 fn(my_type *foo, pl) {
-<+... 
+<+...
 bar(foo, E);
-...+> 
+...+>
 }
 
 @ test depends on !fn_with_user@
-identifier fn_with_user.fn;
+identifier barfn.fn;
 parameter list pl;
 expression E;
-@@    
+@@
 
 fn(
 + my_type *foo,
@@ -101,10 +62,10 @@ pl) {
 bar(foo, E);
 ...+>
 }
---------8<--------8<--------8<--------8<--------8<
 
-Could you help me ?
+When you match barfn, you create an environment for each possible value of
+fn.  This is then passed through the next two rules, where it records
+whether the rule fn_with_user matches.  There is a separate environment for
+each match of barfn.
 
-Sincerely,
-
-Fr?d?ric Leroy
+julia
