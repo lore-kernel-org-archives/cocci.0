@@ -1,71 +1,76 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 6 Jul 2016 18:23:02 +0200 (CEST)
-Subject: [Cocci] Adding missing parameter to function if missing
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 6 Jul 2016 18:50:42 +0200
+Subject: [Cocci] Adding parameter to function if missing
 In-Reply-To: <bda6f254dbe94ad28468d5de4b6c3a17@vprd-opci0018.b-com.local>
 References: <bda6f254dbe94ad28468d5de4b6c3a17@vprd-opci0018.b-com.local>
-Message-ID: <alpine.DEB.2.10.1607061819400.3168@hadrien>
+Message-ID: <4a1dcd24-efeb-902c-f239-d620850b4dbe@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> I am new to coccinelle and I have trouble to use it.
+
+Which software versions do you try out here?
+
+
+> What I want to do is add a missing parameter to a function call (bar)
+
+This is usual.
+
+
+> and add this parameter to the function prototype calling it if missing.
+
+I imagine that there are further software development challenges to consider
+for such a source code transformation in header files.
+
+
+> I tried several ways to do it without success. If I add a negative depends on rule, it won't work.
+
+Do you get an error message?
+
+
+> @fn_with_user@
+> identifier fn, foo;
+> typedef my_type;
+
+How do you think about the SmPL specification "type my_type;" here?
+
+
+> parameter list pl;
+> expression E; 
+> @@
+> 
+> fn(my_type *foo, pl) {
+> <+... 
+> bar(foo, E);
+> ...+> 
+> }
+> 
 > @ test depends on !fn_with_user@
 > identifier fn_with_user.fn;
+
+Will it make sense to add the SmPL specification "type fn_with_user.my_type;" here?
+
+
 > parameter list pl;
 > expression E;
-> @@
->
+> @@    
+> 
 > fn(
 > + my_type *foo,
 > pl) {
 > <+...
 > bar(foo, E);
-> ...+>
-> }
 
-This rule is contradictory.  You say that the rule fn_with_user should not
-have matched, but you want to match the identifier fn_with_user.fn.
-Instead, you should match fn first, then have one rule that matches the
-case you don't want, and then finally the case that you do want:
+Would you like to merge this place with your first SmPL rule?
 
-@barfn@
-identifier fn;
-@@
+ bar(
++    foo,
+     E);
 
-fn(...) {
-<+...
-bar(...);
-...+>
-}
 
-@fn_with_user@
-identifier barfn.fn, foo;
-typedef my_type;
-parameter list pl;
-expression E;
-@@
+> Could you help me ?
 
-fn(my_type *foo, pl) {
-<+...
-bar(foo, E);
-...+>
-}
+I hope so.
 
-@ test depends on !fn_with_user@
-identifier barfn.fn;
-parameter list pl;
-expression E;
-@@
-
-fn(
-+ my_type *foo,
-pl) {
-<+...
-bar(foo, E);
-...+>
-}
-
-When you match barfn, you create an environment for each possible value of
-fn.  This is then passed through the next two rules, where it records
-whether the rule fn_with_user matches.  There is a separate environment for
-each match of barfn.
-
-julia
+Regards,
+Markus
