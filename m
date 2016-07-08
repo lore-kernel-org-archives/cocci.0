@@ -1,28 +1,72 @@
 From: Frederic.LEROY@b-com.com (=?iso-8859-1?Q?Fr=E9d=E9ric_LEROY_=28ext=29?=)
-Date: Fri, 8 Jul 2016 10:46:13 +0000
-Subject: [Cocci] Adding parameter to function if missing
-In-Reply-To: <66d3ac21-174b-dbf1-7c92-6b1f4f691968@users.sourceforge.net>
-References: <bda6f254dbe94ad28468d5de4b6c3a17@vprd-opci0018.b-com.local>
- <alpine.DEB.2.10.1607061819400.3168@hadrien>
- <924f7230d5074b14b8658f65e00de85a@vprd-opci0018.b-com.local>
- <66d3ac21-174b-dbf1-7c92-6b1f4f691968@users.sourceforge.net>
-Message-ID: <801e0c53524347c78fd073229958a730@vprd-opci0018.b-com.local>
+Date: Fri, 8 Jul 2016 10:50:50 +0000
+Subject: [Cocci] Add a parameter to function
+Message-ID: <f2e0fa46cc354563ae8bfd52fc5f35fa@vprd-opci0018.b-com.local>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi Markus 
+Hello,
 
-> > I was confusing between the type name 'my_type' and type value
-> 'my_type'.
-> [...]
-> > But I don't know how to link 'my_type' value to type T ...
-> > I am sure that I am missing something obvious there :(
-> 
-> Is the functionality around "virtual" in the semantic patch language relevant
-> here?
-> http://coccinelle.lip6.fr/docs/main_grammar001.html
+I made a test case, I try to add a parameter S to a function :
+--------8<----------------8<----------------8<--------
+void a();                                          
+void z(void);                                      
+void b(int i);                                     
+void c(int i, char c);                             
+                                                   
+                                                   
+void a() {                                         
+    int b=5;                                       
+}                                                  
+                                                   
+void z(void) {                                     
+    int b=5;                                       
+}                                                  
+                                                   
+                                                   
+void b(int i) {                                    
+    int b = 5 + i;                                 
+}                                                  
+                                                   
+void c(int i, char c) {                            
+    int b = i + c;                                 
+}       
+--------8<----------------8<----------------8<--------
 
-This is exactly what I missed
-Thanks Markus !
+The problem I have is when I have a void or empty declaration.
+The only way I found is to rely rule dependencies :
+
+--------8<----------------8<----------------8<--------
+@ rule1 @
+identifier fn;
+parameter list pl;
+@@
+
+- fn(void)
++ fn(int s)
+{ ... }
+
+@ rule2 @
+identifier fn;
+parameter list pl;
+@@
+
+- fn()
++ fn(int s)
+{ ... }
+
+@ depends on !(rule1 || rule2) @
+identifier fn;
+parameter list pl;
+@@
+
+- fn(pl)
++ fn(int s, pl)
+{ ... }
+--------8<----------------8<----------------8<--------
+
+Is there a better way to achieve this ?
+
+Kind regards,
 
 Fr?d?ric
