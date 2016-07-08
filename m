@@ -1,45 +1,35 @@
-From: Thierry.Martinez@inria.fr (Thierry Martinez)
-Date: Fri, 08 Jul 2016 00:53:56 +0300
-Subject: [Cocci] Checking build dependencies for "pyml"
-In-Reply-To: <64de7df6-acd6-7ddf-efc7-b4055203211c@users.sourceforge.net>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Fri, 8 Jul 2016 07:21:27 +0200
+Subject: [Cocci] Checking build dependencies for "pyml" (and Menhir)
+In-Reply-To: <ow4h9c1qfm3.fsf@mbp-thierry.rsr.lip6.fr>
 References: <64de7df6-acd6-7ddf-efc7-b4055203211c@users.sourceforge.net>
-Message-ID: <ow4h9c1qfm3.fsf@mbp-thierry.rsr.lip6.fr>
+ <ow4h9c1qfm3.fsf@mbp-thierry.rsr.lip6.fr>
+Message-ID: <adef0045-4d3b-8e8c-9f5d-bf00de66c722@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hello, Markus.
+>> make[2]: *** @MAKE_pyml@: No such file or directory.  Stop.
+> 
+> Thank you for the report. Does this error continue to happen if you
+> delete the subdirectory autom4te.cache/ and then execute ./autogen,
+> ./configure, etc.?
 
-Markus:
-> make[2]: *** @MAKE_pyml@: No such file or directory.  Stop.
+Did a configuration script become outdated?
+-rwxr-xr-x 1 elfring users 524178 Mar 15 15:30 configure
 
-Thank you for the report. Does this error continue to happen if you
-delete the subdirectory autom4te.cache/ and then execute ./autogen,
-./configure, etc.?
 
--- 
-Thierry.
+It seems that the desired software build can be continued after another update.
 
-SF Markus Elfring (2016/07/07, 23:40 MSK)?:
-> Hello,
->
-> I have tried to generate the current software also on my openSUSE Tumbleweed system.
->
->
-> elfring at Sonne:~/Projekte/Coccinelle/20160205> ./configure --enable-release --enable-ocaml && LANG=C make
-> ?
-> make[2]: *** @MAKE_pyml@: No such file or directory.  Stop.
-> ?
->
->
-> Unfortunately, I stumble on an error message.
->
-> How is the development status after the commit "Fixed: Bundles compilation
-> and pyml update" on 2016-06-26?
-> https://github.com/coccinelle/coccinelle/commit/62f2df8c7d35967a1eca4dcd487d59a9918dd5aa
->
-> Regards,
-> Markus
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
+elfring at Sonne:~/Projekte/Coccinelle/20160205> ./autogen && ./configure && LANG=C make
+?
+/usr/bin/ocamlc.opt -unsafe -I ../commons -I ../commons/ocamlextra -I ../globals -I /home/elfring/Projekte/Coccinelle/20160205/bundles/menhirLib/ -c parser_cocci_menhir.mli
+File "parser_cocci_menhir.mli", line 262, characters 10-56:
+Error: Unbound module MenhirLib.IncrementalEngine
+make[6]: *** [Makefile:89: parser_cocci_menhir.cmi] Error 2
+?
+
+
+How should such a build dependency be resolved?
+
+Regards,
+Markus
