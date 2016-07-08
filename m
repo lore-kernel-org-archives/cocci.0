@@ -1,34 +1,46 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 8 Jul 2016 13:32:49 +0200
-Subject: [Cocci] Checking build dependencies for "Menhir"
-In-Reply-To: <ow4furkqwl3.fsf@mbp-thierry.rsr.lip6.fr>
+From: Thierry.Martinez@inria.fr (Thierry Martinez)
+Date: Fri, 08 Jul 2016 15:09:44 +0300
+Subject: [Cocci] Checking build dependencies for "pyml"
+In-Reply-To: <trinity-c1709963-6464-4a3e-b6e2-61f43e2a05b2-1467976469248@3capp-webde-bs29>
 References: <64de7df6-acd6-7ddf-efc7-b4055203211c@users.sourceforge.net>
  <ow4h9c1qfm3.fsf@mbp-thierry.rsr.lip6.fr>
- <adef0045-4d3b-8e8c-9f5d-bf00de66c722@users.sourceforge.net>,
+ <adef0045-4d3b-8e8c-9f5d-bf00de66c722@users.sourceforge.net>
  <ow4furkqwl3.fsf@mbp-thierry.rsr.lip6.fr>
-Message-ID: <trinity-8ac09448-d240-4749-abb6-a492eca97242-1467977569565@3capp-webde-bs29>
+ <trinity-c1709963-6464-4a3e-b6e2-61f43e2a05b2-1467976469248@3capp-webde-bs29>
+Message-ID: <ow4d1moqqk7.fsf@mbp-thierry.rsr.lip6.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> > /usr/bin/ocamlc.opt -unsafe -I ../commons -I ../commons/ocamlextra -I ../globals -I /home/elfring/Projekte/Coccinelle/20160205/bundles/menhirLib/ -c parser_cocci_menhir.mli
-> > File "parser_cocci_menhir.mli", line 262, characters 10-56:
-> > Error: Unbound module MenhirLib.IncrementalEngine
-> 
-> Your parser_cocci_menhir.{ml,mli} have been generated with a version of
-> Menhir more recent than the one that is bundled by Coccinelle.
+Markus:
+> Has such a software evolution got any influence on the Python application
+> programming interface by the semantic patch language?
 
-Thanks for your explanation.
+The same ./spatch executable can now be run in a Python 2 and Python 3
+environment (before, with Pycaml, Coccinelle had to be compiled in a
+Python 2 environment to work with Python 2, and to be compiled in a
+Python 3 environment to work with Python 3).
 
-Is the bundled Menhir version currently required for a working Coccinelle software?
+Python error handling is better as well, and the Python interface is now
+only initialized when needed.
 
+> Will the mapping (and corresponding data type conversion) will need
+> another look for integer values in this use case?
 
-> You can just safely remove parsing_cocci/parser_cocci_menhir.{ml,mli}
-> files (or just run make distclean) and try to run make again.
+The mapping is unchanged. But the better error handling should help to
+debug scripts.
 
-I imagine that there are further challenges to consider for the safe
-dependency resolution of involved libraries.
-* Which releases can be picked up and finally used from special directories?
-* Will any more fine-tuning be needed for corresponding directory selection?
+-- 
+Thierry.
 
-Regards,
-Markus
+SF Markus Elfring (2016/07/08, 14:14 MSK)?:
+>> Yes, the configure.ac script has been changed to handle the change from
+>> Pycaml to Py.ml.
+>
+> Has such a software evolution got any influence on the Python application
+> programming interface by the semantic patch language?
+>
+> Will the mapping (and corresponding data type conversion) will need
+> another look for integer values in this use case?
+>
+> Regards,
+> Markus
