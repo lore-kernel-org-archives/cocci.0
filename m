@@ -1,52 +1,24 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 8 Jul 2016 14:17:41 +0200
-Subject: [Cocci] Add a parameter to function
-In-Reply-To: <f2e0fa46cc354563ae8bfd52fc5f35fa@vprd-opci0018.b-com.local>
-References: <f2e0fa46cc354563ae8bfd52fc5f35fa@vprd-opci0018.b-com.local>
-Message-ID: <trinity-da8ddaac-446c-47fa-bf7d-3d93029e9604-1467980261400@3capp-webde-bs29>
+Date: Fri, 8 Jul 2016 14:32:58 +0200
+Subject: [Cocci] Checking build dependencies for "pyml"
+In-Reply-To: <ow4d1moqqk7.fsf@mbp-thierry.rsr.lip6.fr>
+References: <64de7df6-acd6-7ddf-efc7-b4055203211c@users.sourceforge.net>
+ <ow4h9c1qfm3.fsf@mbp-thierry.rsr.lip6.fr>
+ <adef0045-4d3b-8e8c-9f5d-bf00de66c722@users.sourceforge.net>
+ <ow4furkqwl3.fsf@mbp-thierry.rsr.lip6.fr>
+ <trinity-c1709963-6464-4a3e-b6e2-61f43e2a05b2-1467976469248@3capp-webde-bs29>,
+ <ow4d1moqqk7.fsf@mbp-thierry.rsr.lip6.fr>
+Message-ID: <trinity-1c1aa9a2-9e8b-4fa2-922a-55be143de5f3-1467981178738@3capp-webde-bs29>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> The problem I have is when I have a void or empty declaration.
+> > Will the mapping (and corresponding data type conversion) will need
+> > another look for integer values in this use case?
+> 
+> The mapping is unchanged.
 
-Do you wonder about the need to distinguish three cases
-for your source code transformation?
-
-
-> Is there a better way to achieve this ?
-
-How do you think about a bit of fine-tuning like the following?
-
-
-@replace_void_parameter@
-identifier fn;
-@@
- fn(
--   void
-+   int s
-   )
- { ... }
-
-@single_parameter_addition@
-identifier fn;
-@@
- fn(
-+   int s
-   )
- { ... }
-
-@more_parameters
- depends on !(replace_void_parameter || single_parameter_addition)@
-identifier fn;
-parameter list pl;
-@@
- fn(
-+   int s,
-    pl)
- { ... }
-
-
-Are you looking for an approach which might be more convenient and fast?
+How do you think about to achieve that integers will be preserved
+(without conversion to strings) here?
 
 Regards,
 Markus
