@@ -1,5 +1,5 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 8 Jul 2016 17:45:32 +0200
+Date: Fri, 8 Jul 2016 19:02:12 +0200
 Subject: [Cocci] Checking build dependencies for "Menhir"
 In-Reply-To: <ow4bn28qpyb.fsf@mbp-thierry.rsr.lip6.fr>
 References: <64de7df6-acd6-7ddf-efc7-b4055203211c@users.sourceforge.net>
@@ -8,29 +8,22 @@ References: <64de7df6-acd6-7ddf-efc7-b4055203211c@users.sourceforge.net>
  <ow4furkqwl3.fsf@mbp-thierry.rsr.lip6.fr>
  <trinity-8ac09448-d240-4749-abb6-a492eca97242-1467977569565@3capp-webde-bs29>
  <ow4bn28qpyb.fsf@mbp-thierry.rsr.lip6.fr>
-Message-ID: <aa006358-4fd2-fdd5-d4bc-ba3073379d23@users.sourceforge.net>
+Message-ID: <a3ee1a3d-e547-d336-ac51-8f9dd77fc35d@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> Is the bundled Menhir version currently required for a working
->> Coccinelle software?
-> 
 > No, you can use a more recent version of Menhir if you want.
 
-?
-checking for menhir... /usr/local/bin/menhir
-configure: system menhir will be used
-?
-File "parser_cocci_menhir.mli", line 262, characters 10-56:
-Error: Unbound module MenhirLib.IncrementalEngine
-make[6]: *** [Makefile:89: parser_cocci_menhir.cmi] Error 2
-?
+The following command succeeds.
+
+elfring at Sonne:~/Projekte/Coccinelle/20160205/parsing_cocci> /usr/bin/ocamlc.opt -unsafe -I ../commons -I ../commons/ocamlextra -I ../globals -I /usr/local/share/menhir -c parser_cocci_menhir.mli
 
 
-A command like "make distclean" does not help so far.
-
-Will there any more checks and settings be needed to get the desired
-build working together with the software "OCaml 4.03.0-1.1"?
+Now I wonder why the directory "bundles" was passed for the corresponding
+include parameter after the "system tool" was selected by the
+configuration script.
+How should this detail be fixed?
+https://github.com/coccinelle/coccinelle/blob/25c0b3278dff5e1ec4928724ff29ce977acc256b/configure.ac#L177
 
 Regards,
 Markus
