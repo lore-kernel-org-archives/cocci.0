@@ -1,49 +1,26 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 17 Jul 2016 08:18:36 +0200 (CEST)
-Subject: [Cocci] [bug-cocci][PATCH 1/2] Fixed: typo in pycocci.1
-In-Reply-To: <20160716222536.29172-1-standby24x7@gmail.com>
-References: <20160716222536.29172-1-standby24x7@gmail.com>
-Message-ID: <alpine.DEB.2.10.1607170817320.3253@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sun, 17 Jul 2016 08:48:51 +0200
+Subject: [Cocci] Support for more programming languages?
+In-Reply-To: <009C7972-C7EB-4B7F-ABC5-A1C0C1CA5797@mac.com>
+References: <009C7972-C7EB-4B7F-ABC5-A1C0C1CA5797@mac.com>
+Message-ID: <76bf1017-d629-d44a-5493-0dcccbbfa65b@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Thank you for your contributions.  Could you resend with a Signed-off-by:
-as described at the end of the file readme.txt in the Coccinelle source
-code tree?
+> The main problem is that firefox is written in a variety of programming languages.
 
-thanks,
-julia
+https://www.quora.com/What-programming-languages-are-web-browsers-like-Google-Chrome-Opera-and-Mozilla-Firefox-written-in
 
-On Sun, 17 Jul 2016, Masanari Iida wrote:
 
-> This patch fix 3 typos found in docs/pycocci.1
-> ---
->  docs/pycocci.1 | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/docs/pycocci.1 b/docs/pycocci.1
-> index 8d94d23aae0c..46d500f56a9a 100644
-> --- a/docs/pycocci.1
-> +++ b/docs/pycocci.1
-> @@ -81,7 +81,7 @@ can typically display differences better.
->  default given that at least for Linux kernel development some C files tend to
->  include headers in paths only specified by a target's Makefile through
->  utilities such as subdir-ccflags or ccflags-y making it difficult to ensure
-> -all required header files are read by Coccinelle. We are agressive with
-> +all required header files are read by Coccinelle. We are aggressive with
->  headers search and inclusion.
->
->  A default timeout of 120 seconds is used by default. Not using a timeout
-> @@ -188,7 +188,7 @@ used to apply the <SmPL-patch.cocci> ("pycocci-smpl-8-random-chars"). \fBpycocci
->  display name of the newly created branches and finally provide the
->  output of \fBgit diff --stat <pycocci-patch-8-random-chars>..<pycocci-smpl-8-random-chars>\fP. You should see
->  no changes, and therefore a \fBperfect SmPL patch equivalence\fP, when the diffstat
-> -on the ouput shows no changes. The way to interpet a positive diffstat is that
-> +on the output shows no changes. The way to interpret a positive diffstat is that
->  the <SmPL-patch.cocci> is introducing more changes than the patch series. The
->  way to interpret a negative diffstat is that the <SmPL-patch.cocci> is lacking
->  some changes in place on the patch series. \fBpycocci\fP will use \fBgit rev-parse --toplevel\fP
-> --
-> 2.9.2.277.g2949358
->
->
+> How hard would it be to retarget Coccinelle to those languages?
+
+The Coccinelle software is concentrating on source code transformations
+for the programming language "C" so far.
+For which languages do you look for improvements finally?
+
+* How would you like to improve tools for context-dependant languages like "C++"?
+
+* How ambitious are you to support further software development around such areas?
+
+Regards,
+Markus
