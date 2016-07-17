@@ -1,50 +1,52 @@
-From: standby24x7@gmail.com (Masanari Iida)
-Date: Sun, 17 Jul 2016 17:29:22 +0900
-Subject: [Cocci] [PATCH 3/4] [bug-cocci] Fixed: typo in cocci_syntax.tex
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sun, 17 Jul 2016 10:40:27 +0200 (CEST)
+Subject: [Cocci] [PATCH 1/4] [bug-cocci] Fixed: typo in pycocci.1
 In-Reply-To: <20160717082923.1771-1-standby24x7@gmail.com>
 References: <alpine.DEB.2.10.1607170817320.3253@hadrien>
  <20160717082923.1771-1-standby24x7@gmail.com>
-Message-ID: <20160717082923.1771-3-standby24x7@gmail.com>
+Message-ID: <alpine.DEB.2.10.1607171040070.3253@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-This patch fix 3 spelling typos found in docs/manual/cocci_syntax.tex
 
-Signed-off-by: Masanari Iida <standby24x7@gmail.com>
----
- docs/manual/cocci_syntax.tex | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/docs/manual/cocci_syntax.tex b/docs/manual/cocci_syntax.tex
-index 230b8552031c..d0c9b492acb1 100644
---- a/docs/manual/cocci_syntax.tex
-+++ b/docs/manual/cocci_syntax.tex
-@@ -17,7 +17,7 @@ possible C-language constants.
- 
- A square bracket that is surrounded by spaces in the description of a term
- should appear explicitly in the term, as in an array reference.  On the
--other hand, square brackets that surround some other term indicat that the
-+other hand, square brackets that surround some other term indicate that the
- presence of that term is optional.
- 
- %
-@@ -654,7 +654,7 @@ foo()
- \end{tabular}
- \end{center}
- 
--Alternatively, the following inidcates that foo() is allowed but optional.
-+Alternatively, the following indicates that foo() is allowed but optional.
- This case is typically most useful when all occurrences, if any, of foo()
- prior to c() should be transformed.
- 
-@@ -1062,7 +1062,7 @@ last matching include that is not under an ifdef in the file.
- 
- Each element of a disjunction must be a proper term like an expression, a
- statement, an identifier or a declaration. The constraint on a conjunction
--is similiar.  Thus, the rule on the left below is not a syntactically
-+is similar.  Thus, the rule on the left below is not a syntactically
- correct SmPL rule. One may use the rule on the right instead.
- 
- \begin{center}
--- 
-2.9.2.277.g2949358
+On Sun, 17 Jul 2016, Masanari Iida wrote:
+
+> This patch fix 3 typos found in docs/pycocci.1
+>
+> Signed-off-by: Masanari Iida <standby24x7@gmail.com>
+
+Patches 1-4 committed, thanks for your help.
+
+julia
+
+> ---
+>  docs/pycocci.1 | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/docs/pycocci.1 b/docs/pycocci.1
+> index 8d94d23aae0c..46d500f56a9a 100644
+> --- a/docs/pycocci.1
+> +++ b/docs/pycocci.1
+> @@ -81,7 +81,7 @@ can typically display differences better.
+>  default given that at least for Linux kernel development some C files tend to
+>  include headers in paths only specified by a target's Makefile through
+>  utilities such as subdir-ccflags or ccflags-y making it difficult to ensure
+> -all required header files are read by Coccinelle. We are agressive with
+> +all required header files are read by Coccinelle. We are aggressive with
+>  headers search and inclusion.
+>
+>  A default timeout of 120 seconds is used by default. Not using a timeout
+> @@ -188,7 +188,7 @@ used to apply the <SmPL-patch.cocci> ("pycocci-smpl-8-random-chars"). \fBpycocci
+>  display name of the newly created branches and finally provide the
+>  output of \fBgit diff --stat <pycocci-patch-8-random-chars>..<pycocci-smpl-8-random-chars>\fP. You should see
+>  no changes, and therefore a \fBperfect SmPL patch equivalence\fP, when the diffstat
+> -on the ouput shows no changes. The way to interpet a positive diffstat is that
+> +on the output shows no changes. The way to interpret a positive diffstat is that
+>  the <SmPL-patch.cocci> is introducing more changes than the patch series. The
+>  way to interpret a negative diffstat is that the <SmPL-patch.cocci> is lacking
+>  some changes in place on the patch series. \fBpycocci\fP will use \fBgit rev-parse --toplevel\fP
+> --
+> 2.9.2.277.g2949358
+>
+>
