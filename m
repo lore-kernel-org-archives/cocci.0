@@ -1,26 +1,18 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 17 Jul 2016 08:48:51 +0200
-Subject: [Cocci] Support for more programming languages?
+Date: Sun, 17 Jul 2016 09:14:43 +0200
+Subject: [Cocci] Transformations for Firefox source files
 In-Reply-To: <009C7972-C7EB-4B7F-ABC5-A1C0C1CA5797@mac.com>
 References: <009C7972-C7EB-4B7F-ABC5-A1C0C1CA5797@mac.com>
-Message-ID: <76bf1017-d629-d44a-5493-0dcccbbfa65b@users.sourceforge.net>
+Message-ID: <d03d92ec-2cbd-8c31-3cdc-c1982425b684@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> The main problem is that firefox is written in a variety of programming languages.
+> So my question is whether you guys think Coccinelle would be useful to me
+> in comprehending and doing MASS transformations of the firefox source?
 
-https://www.quora.com/What-programming-languages-are-web-browsers-like-Google-Chrome-Opera-and-Mozilla-Firefox-written-in
+For which kind of source code transformations are you especially interested in?
 
-
-> How hard would it be to retarget Coccinelle to those languages?
-
-The Coccinelle software is concentrating on source code transformations
-for the programming language "C" so far.
-For which languages do you look for improvements finally?
-
-* How would you like to improve tools for context-dependant languages like "C++"?
-
-* How ambitious are you to support further software development around such areas?
+With which search patterns would you like to achieve further software improvements?
 
 Regards,
 Markus
