@@ -1,18 +1,32 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 17 Jul 2016 09:14:43 +0200
-Subject: [Cocci] Transformations for Firefox source files
-In-Reply-To: <009C7972-C7EB-4B7F-ABC5-A1C0C1CA5797@mac.com>
-References: <009C7972-C7EB-4B7F-ABC5-A1C0C1CA5797@mac.com>
-Message-ID: <d03d92ec-2cbd-8c31-3cdc-c1982425b684@users.sourceforge.net>
+From: standby24x7@gmail.com (Masanari Iida)
+Date: Sun, 17 Jul 2016 17:29:21 +0900
+Subject: [Cocci] [PATCH 2/4] [bug-cocci] Fixed : typo in spatch.1.in
+In-Reply-To: <20160717082923.1771-1-standby24x7@gmail.com>
+References: <alpine.DEB.2.10.1607170817320.3253@hadrien>
+ <20160717082923.1771-1-standby24x7@gmail.com>
+Message-ID: <20160717082923.1771-2-standby24x7@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> So my question is whether you guys think Coccinelle would be useful to me
-> in comprehending and doing MASS transformations of the firefox source?
+This patch fix a spelling typo in docs/spatch.1.in
 
-For which kind of source code transformations are you especially interested in?
+Signed-off-by: Masanari Iida <standby24x7@gmail.com>
+---
+ docs/spatch.1.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-With which search patterns would you like to achieve further software improvements?
-
-Regards,
-Markus
+diff --git a/docs/spatch.1.in b/docs/spatch.1.in
+index dccf6fca4b51..9e72eb1e7821 100644
+--- a/docs/spatch.1.in
++++ b/docs/spatch.1.in
+@@ -404,7 +404,7 @@ convert ifdef to if (experimental)
+ \fB\-\-noadd\-typedef\-root\fR
+ .TP
+ \fB\-\-disallow\-nested\-exps\fR
+-disallow an expresion pattern from matching a term and its subterm
++disallow an expression pattern from matching a term and its subterm
+ .HP
+ \fB\-\-disable\-worth\-trying\-opt\fR
+ .HP
+-- 
+2.9.2.277.g2949358
