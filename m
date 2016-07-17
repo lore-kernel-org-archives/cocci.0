@@ -1,52 +1,96 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 17 Jul 2016 10:40:27 +0200 (CEST)
-Subject: [Cocci] [PATCH 1/4] [bug-cocci] Fixed: typo in pycocci.1
-In-Reply-To: <20160717082923.1771-1-standby24x7@gmail.com>
-References: <alpine.DEB.2.10.1607170817320.3253@hadrien>
- <20160717082923.1771-1-standby24x7@gmail.com>
-Message-ID: <alpine.DEB.2.10.1607171040070.3253@hadrien>
+From: wagle@mac.com (Perry Wagle)
+Date: Sun, 17 Jul 2016 15:44:23 -0700
+Subject: [Cocci] Coccinelle vs Firefox
+In-Reply-To: <alpine.DEB.2.10.1607170737330.3253@hadrien>
+References: <009C7972-C7EB-4B7F-ABC5-A1C0C1CA5797@mac.com>
+ <alpine.DEB.2.10.1607170737330.3253@hadrien>
+Message-ID: <46E0A0AB-6D78-485E-8CEA-2F7639BF12AC@mac.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+If you took coccinelle and somehow retargeted it to ocaml, which I believe it?s implemented in, could you then turn around and use that version to automate excising/abstracting the AST out, and maybe automating the addition of a new/different AST?  In principle, I mean.  In practice, I can think of a few possible problems, but bootstrapping it might help.
+
+This is the sort of transformation I?m looking to do, and, in any case, I want to do things to ocaml itself (and hence coq).
+
+PS.  John Viega convinced me in 2001 (personal conversation) that trying to write your own C++ grammar was a PITA, and mostly futile to get perfect.  Since then, I?ve had the stance that using the compiler itself to do the parse was the way to go, but found that GCC was purposely designed not to allow you to do this.  The then new LLVM seemed the way to go, and now its finally matured.  What?s your take on using the compiler?s AST?  I did see a paper recently fly by about using approximation methods instead of full parsing with a compiler, but I can?t find it in my notes right now.  Anyone recognize what I?m talking about?
 
 
-On Sun, 17 Jul 2016, Masanari Iida wrote:
 
-> This patch fix 3 typos found in docs/pycocci.1
->
-> Signed-off-by: Masanari Iida <standby24x7@gmail.com>
-
-Patches 1-4 committed, thanks for your help.
-
-julia
-
-> ---
->  docs/pycocci.1 | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/docs/pycocci.1 b/docs/pycocci.1
-> index 8d94d23aae0c..46d500f56a9a 100644
-> --- a/docs/pycocci.1
-> +++ b/docs/pycocci.1
-> @@ -81,7 +81,7 @@ can typically display differences better.
->  default given that at least for Linux kernel development some C files tend to
->  include headers in paths only specified by a target's Makefile through
->  utilities such as subdir-ccflags or ccflags-y making it difficult to ensure
-> -all required header files are read by Coccinelle. We are agressive with
-> +all required header files are read by Coccinelle. We are aggressive with
->  headers search and inclusion.
->
->  A default timeout of 120 seconds is used by default. Not using a timeout
-> @@ -188,7 +188,7 @@ used to apply the <SmPL-patch.cocci> ("pycocci-smpl-8-random-chars"). \fBpycocci
->  display name of the newly created branches and finally provide the
->  output of \fBgit diff --stat <pycocci-patch-8-random-chars>..<pycocci-smpl-8-random-chars>\fP. You should see
->  no changes, and therefore a \fBperfect SmPL patch equivalence\fP, when the diffstat
-> -on the ouput shows no changes. The way to interpet a positive diffstat is that
-> +on the output shows no changes. The way to interpret a positive diffstat is that
->  the <SmPL-patch.cocci> is introducing more changes than the patch series. The
->  way to interpret a negative diffstat is that the <SmPL-patch.cocci> is lacking
->  some changes in place on the patch series. \fBpycocci\fP will use \fBgit rev-parse --toplevel\fP
-> --
-> 2.9.2.277.g2949358
->
->
+> On Jul 16, 2016, at 10:47 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
+> 
+> 
+> 
+> On Sat, 16 Jul 2016, Perry Wagle wrote:
+> 
+>> Hi ?
+>> 
+>> I need to comprehend the huge Firefox source, excise the bookmark
+>> subsystem, turn it into an extension, hack on the extension to bring
+>> back the functionality I need, and drop in the new extension.  Then, I
+>> just need to replace the whole thing with something far more advanced
+>> than the toy they want to turn it into.
+>> 
+>> My workflow depends on bookmark tags working thus and so, and I
+>> anticipate that this yak shaving expedition will take me a year (since I
+>> want to develop tools to do it for me, instead of brute forcing it,
+>> which my ag?d brain doesn?t handle any more for programs of this size).
+>> One of those tools involves my bookmark tags thing, so its a
+>> bootstrapping thing too (fun!).
+>> 
+>> So my question is whether you guys think Coccinelle would be useful to
+>> me in comprehending and doing MASS transformations of the firefox
+>> source?  I get the impression from lightly skimming that you concentrate
+>> on what I would describe as point fixes, which doesn?t seem the same.
+>> But this couldn?t be it all, else you wouldn?t be interested?
+>> 
+>> The main problem is that firefox is written in a variety of programming
+>> languages.  How hard would it be to retarget Coccinelle to those
+>> languages?  And how useful for finding excision point for removing the
+>> existing bookmarks subsystem might it be?
+> 
+> Coccinelle was originally designed for doing collateral evolutions.  Ie,
+> an interface changes, so how to automate the updating of the users of the
+> interface.  But it relies on the user to know what needs to be done.
+> There has been a little work on inferring changes from examples (spdiff,
+> http://www.diku.dk/~jespera/ <http://www.diku.dk/~jespera/>), but this tends to run "forever" on complex
+> cases, and anyway the user still needs to know what to do to make the
+> examples in the first place.
+> 
+> Coccinelle makes some effort to maintain type information, so it can be
+> useful for things like finding out where is the function in the probe
+> field of the platform_driver structure actually called.
+> 
+> If you want to know how a pair of functions is used together, then
+> Coccinelle could be useful in searching for such uses.  This could be
+> useful for counting how often a function is used when a lock is or is not
+> held, to decide whether locking is needed.
+> 
+> But I don't think that Coccinelle would be useful as the main tool in a
+> code understanding project.  It is more useful when you know what you want
+> to do, but don't want to go through and do it everywhere by hand.
+> 
+> Coccinelle only works for C, and the part of C++ code that looks pretty
+> much like C.  The implementation is based on an AST that is specific to C,
+> so retargeting it for java, python, javascript, ruby, perl, whatever would
+> probably require quite a bit of work.
+> 
+> julia
+> 
+>> At this point, I?m just trying to determine what order to do things in,
+>> and where learning Coccinelle fits in, if at all.
+>> 
+>> Is this enough information for you all to give me an idea, from 20,000
+>> feet, of whether Coccinelle makes sense for me or not?  If not, I?ll
+>> return in a week with more details.
+>> 
+>> Thanks!
+>> 
+>> ? Perry
+>> 
+>> _______________________________________________
+>> Cocci mailing list
+>> Cocci at systeme.lip6.fr <mailto:Cocci@systeme.lip6.fr>
+>> https://systeme.lip6.fr/mailman/listinfo/cocci <https://systeme.lip6.fr/mailman/listinfo/cocci>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20160717/be24781c/attachment-0001.html>
