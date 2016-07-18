@@ -1,35 +1,26 @@
 From: wagle@mac.com (Perry Wagle)
-Date: Sun, 17 Jul 2016 17:43:50 -0700
-Subject: [Cocci] Support for more programming languages?
-In-Reply-To: <76bf1017-d629-d44a-5493-0dcccbbfa65b@users.sourceforge.net>
+Date: Sun, 17 Jul 2016 17:50:58 -0700
+Subject: [Cocci] Transformations for Firefox source files
+In-Reply-To: <d03d92ec-2cbd-8c31-3cdc-c1982425b684@users.sourceforge.net>
 References: <009C7972-C7EB-4B7F-ABC5-A1C0C1CA5797@mac.com>
- <76bf1017-d629-d44a-5493-0dcccbbfa65b@users.sourceforge.net>
-Message-ID: <469DA7F6-6AC1-4040-AB2A-6A1DF1CDDF9D@mac.com>
+ <d03d92ec-2cbd-8c31-3cdc-c1982425b684@users.sourceforge.net>
+Message-ID: <80E0E659-6BED-4A87-AEF6-DE5775583B12@mac.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 
-> On Jul 16, 2016, at 11:48 PM, SF Markus Elfring <elfring@users.sourceforge.net> wrote:
+> On Jul 17, 2016, at 12:14 AM, SF Markus Elfring <elfring@users.sourceforge.net> wrote:
 > 
->> The main problem is that firefox is written in a variety of programming languages.
+>> So my question is whether you guys think Coccinelle would be useful to me
+>> in comprehending and doing MASS transformations of the firefox source?
 > 
-> https://www.quora.com/What-programming-languages-are-web-browsers-like-Google-Chrome-Opera-and-Mozilla-Firefox-written-in
-> 
-> 
->> How hard would it be to retarget Coccinelle to those languages?
-> 
-> The Coccinelle software is concentrating on source code transformations
-> for the programming language "C" so far.
-> For which languages do you look for improvements finally?
-> 
-> * How would you like to improve tools for context-dependant languages like "C++??
+> For which kind of source code transformations are you especially interested in?
 
-Well, to use a general term, I want to comprehend LLVM and GCC for various reasons.  LLVM has been C++ from the beginning, and GCC is being rewritten in C++, though maybe with enough of a C flavor to be amenable to Coccinelle.
+With Firefox, it the excision of the bookmarks subsystem from a current (moving target) source tree and replacing it with my own.  I might want to turn it into an extension first, and to turn my extension into a subsystem.
 
-> * How ambitious are you to support further software development around such areas?
+> With which search patterns would you like to achieve further software improvements?
 
-Julia was underwhelmed, but I?m still looking for a use for Coccinelle just in case.  See my response to her response. 
-
+I don?t know yet.  Depends on what I can do.  II?m just skimmed some of the documentation, checking to see if I should dive in.
 
 > Regards,
 > Markus
