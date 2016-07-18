@@ -1,26 +1,20 @@
 From: wagle@mac.com (Perry Wagle)
-Date: Sun, 17 Jul 2016 17:50:58 -0700
-Subject: [Cocci] Transformations for Firefox source files
-In-Reply-To: <d03d92ec-2cbd-8c31-3cdc-c1982425b684@users.sourceforge.net>
+Date: Sun, 17 Jul 2016 19:05:38 -0700
+Subject: [Cocci] Coccinelle vs Firefox
+In-Reply-To: <46E0A0AB-6D78-485E-8CEA-2F7639BF12AC@mac.com>
 References: <009C7972-C7EB-4B7F-ABC5-A1C0C1CA5797@mac.com>
- <d03d92ec-2cbd-8c31-3cdc-c1982425b684@users.sourceforge.net>
-Message-ID: <80E0E659-6BED-4A87-AEF6-DE5775583B12@mac.com>
+ <alpine.DEB.2.10.1607170737330.3253@hadrien>
+ <46E0A0AB-6D78-485E-8CEA-2F7639BF12AC@mac.com>
+Message-ID: <A5FA011A-FE4B-427A-BA10-DF4742E6A75F@mac.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 
-> On Jul 17, 2016, at 12:14 AM, SF Markus Elfring <elfring@users.sourceforge.net> wrote:
+> On Jul 17, 2016, at 3:44 PM, Perry Wagle <wagle@mac.com> wrote:
 > 
->> So my question is whether you guys think Coccinelle would be useful to me
->> in comprehending and doing MASS transformations of the firefox source?
-> 
-> For which kind of source code transformations are you especially interested in?
+> PS.  ...  I did see a paper recently fly by about using approximation methods instead of full parsing with a compiler, but I can?t find it in my notes right now.  Anyone recognize what I?m talking about?
 
-With Firefox, it the excision of the bookmarks subsystem from a current (moving target) source tree and replacing it with my own.  I might want to turn it into an extension first, and to turn my extension into a subsystem.
-
-> With which search patterns would you like to achieve further software improvements?
-
-I don?t know yet.  Depends on what I can do.  II?m just skimmed some of the documentation, checking to see if I should dive in.
-
-> Regards,
-> Markus
+Found it: How to Build Static Checking Systems Using Orders of Magnitude?Less Code <http://dl.acm.org/citation.cfm?id=2872364> at ASPLOS?16.  See some reactions (now that I waited for them) at: Lambda the Ultimate <http://lambda-the-ultimate.org/node/5348>.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20160717/4ffde529/attachment.html>
