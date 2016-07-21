@@ -1,8 +1,8 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 21 Jul 2016 23:05:00 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Thu, 21 Jul 2016 23:15:36 +0200
 Subject: [Cocci] Better explanation for the usage of
  expression/parameter lists with SmPL?
-In-Reply-To: <0f3f6122-a67c-fc8d-1384-267308b4c2d0@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.10.1607212303590.3326@hadrien>
 References: <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net>
@@ -18,45 +18,18 @@ References: <530DD06F.4090703@users.sourceforge.net>
  <95f4ee32-f5dc-6c0e-7ed1-5a62dfcd8648@users.sourceforge.net>
  <alpine.DEB.2.10.1607212246050.3326@hadrien>
  <0f3f6122-a67c-fc8d-1384-267308b4c2d0@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1607212303590.3326@hadrien>
+ <alpine.DEB.2.10.1607212303590.3326@hadrien>
+Message-ID: <9a281e19-e006-5f67-9445-9f739bdb0153@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> int f(int x, int y)  <---- parameter list
+> {
+>    g(1, 2, 3, 4, 5): <---- expression list
+> }
 
+I'm sorry if I were confused too much about these places for a moment.
+Thanks for your quick help.
 
-On Thu, 21 Jul 2016, SF Markus Elfring wrote:
-
-> >>> A parameter list is something that comes after the name of a function in
-> >>> the function header.  Something like int x, int y, in foo (int x, int y) {
-> >>> ... }.  Probably you want an expression list.
-> >>
-> >> * How do you call the list usually that is used for the definition before
-> >>   the function body?
-> >
-> > parameter list
->
-> It seems that we have got the same understanding here.
->
->
-> >> * Did I get inappropriate expectations from a description around a "parameter-list-declarator"?
-> >>   http://en.cppreference.com/w/c/language/function_definition
-> >
-> > Apparently.
->
-> I am surprised by this feedback.
->
->
-> > parameter-list - either the single keyword void or a comma-separated list
-> > of parameters, which may end with an ellipsis parameter
->
-> How does this description fit to the term "expression list" in the
-> semantic patch language?
-
-Not at all.
-
-int f(int x, int y)  <---- parameter list
-{
-   g(1, 2, 3, 4, 5): <---- expression list
-}
-
-julia
+Regards,
+Markus
