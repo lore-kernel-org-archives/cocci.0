@@ -1,8 +1,8 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 21 Jul 2016 22:00:11 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Thu, 21 Jul 2016 22:40:19 +0200
 Subject: [Cocci] Changing return value determination in if statements
  with SmPL
-In-Reply-To: <6f2ca140-9384-bc3f-9d20-2433b808d566@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.10.1607212159150.3326@hadrien>
 References: <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net>
@@ -14,54 +14,64 @@ References: <530DD06F.4090703@users.sourceforge.net>
  <b221aadb-2af7-8d0f-ce8e-99b1efa31edd@users.sourceforge.net>
  <20160721163714.GB1616@katana>
  <6f2ca140-9384-bc3f-9d20-2433b808d566@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1607212159150.3326@hadrien>
+ <alpine.DEB.2.10.1607212159150.3326@hadrien>
+Message-ID: <95f4ee32-f5dc-6c0e-7ed1-5a62dfcd8648@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> A parameter list is something that comes after the name of a function in
+> the function header.  Something like int x, int y, in foo (int x, int y) {
+> ... }.  Probably you want an expression list.
+
+* How do you call the list usually that is used for the definition before
+  the function body?
+
+* Did I get inappropriate expectations from a description around a "parameter-list-declarator"?
+  http://en.cppreference.com/w/c/language/function_definition
+
+* The following SmPL script variant seems to work better.
 
 
-On Thu, 21 Jul 2016, SF Markus Elfring wrote:
+@checking_function_calls_directly@
+identifier checker, retval, work;
+expression list el;
+statement is, es;
+type rt;
+@@
+ rt checker(...)
+ {
+  <+...
+-retval = work(el);
+ if (
+-    retval
++    work(el)
+    )
+    is
+ else
+    es
+  ...+>
+ }
 
-> Hello,
->
-> I am trying the software combination "spatch version 1.0.5-00058-g36edc2b-dirty
-> compiled with OCaml version 4.03.0" out a bit more with the following approach.
->
->
-> @checking_function_calls_directly@
-> identifier checker, retval, work;
-> parameter list pl;
-> statement is, es;
-> type rt;
-> @@
->  rt checker(...)
->  {
->   ...
-> -retval = work(pl);
->  if (
-> -    retval
-> +    work(pl)
->     )
->     is
->  else
->     es
->   ...
->  }
->
->
-> elfring at Sonne:~/Projekte/Coccinelle/janitor> spatch.opt -sp-file checking_function_calls_directly1.cocci ~/Projekte/Linux/next-patched/drivers/staging/ks7010/ks7010_sdio.c
-> init_defs_builtins: /usr/local/lib64/coccinelle/standard.h
-> minus: parse error:
->   File "checking_function_calls_directly1.cocci", line 10, column 15, charpos = 151
->   around = 'pl',
->   whole content = -retval = work(pl);
->
->
->
-> Do I overlook anything in my SmPL script?
 
-A parameter list is something that comes after the name of a function in
-the function header.  Something like int x, int y, in foo (int x, int y) {
-... }.  Probably you want an expression list.
+elfring at Sonne:~/Projekte/Coccinelle/janitor> spatch.opt -sp-file checking_function_calls_directly2.cocci ~/Projekte/Linux/next-patched/drivers/staging/ks7010/ks7010_sdio.c
+init_defs_builtins: /usr/local/lib64/coccinelle/standard.h
+HANDLING: /home/elfring/Projekte/Linux/next-patched/drivers/staging/ks7010/ks7010_sdio.c
+diff = 
+--- /home/elfring/Projekte/Linux/next-patched/drivers/staging/ks7010/ks7010_sdio.c
++++ /tmp/cocci-output-1578-3a5e93-ks7010_sdio.c
+@@ -99,9 +99,7 @@ void ks_wlan_hw_sleep_doze_request(struc
+ 
+ 	if (atomic_read(&priv->sleepstatus.status) == 0) {
+ 		rw_data = GCR_B_DOZE;
+-		retval =
+-		    ks7010_sdio_write(priv, GCR_B, &rw_data, sizeof(rw_data));
+-		if (retval) {
++		if (ks7010_sdio_write(priv, GCR_B, &rw_data, sizeof(rw_data))) {
+ 			DPRINTK(1, " error : GCR_B=%02X\n", rw_data);
+ 			goto out;
+ 		}
+?
 
-julia
+
+Regards,
+Markus
