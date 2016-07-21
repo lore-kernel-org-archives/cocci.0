@@ -1,8 +1,8 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Thu, 21 Jul 2016 21:00:41 +0200
-Subject: [Cocci] Changing return value determination in if statements with
-	SmPL
-In-Reply-To: <20160721163714.GB1616@katana>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Thu, 21 Jul 2016 22:00:11 +0200 (CEST)
+Subject: [Cocci] Changing return value determination in if statements
+ with SmPL
+In-Reply-To: <6f2ca140-9384-bc3f-9d20-2433b808d566@users.sourceforge.net>
 References: <530DD06F.4090703@users.sourceforge.net>
  <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
  <5317A59D.4@users.sourceforge.net>
@@ -13,47 +13,55 @@ References: <530DD06F.4090703@users.sourceforge.net>
  <20160721062726.GC1664@katana>
  <b221aadb-2af7-8d0f-ce8e-99b1efa31edd@users.sourceforge.net>
  <20160721163714.GB1616@katana>
-Message-ID: <6f2ca140-9384-bc3f-9d20-2433b808d566@users.sourceforge.net>
+ <6f2ca140-9384-bc3f-9d20-2433b808d566@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.10.1607212159150.3326@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hello,
-
-I am trying the software combination "spatch version 1.0.5-00058-g36edc2b-dirty
-compiled with OCaml version 4.03.0" out a bit more with the following approach.
 
 
-@checking_function_calls_directly@
-identifier checker, retval, work;
-parameter list pl;
-statement is, es;
-type rt;
-@@
- rt checker(...)
- {
-  ...
--retval = work(pl);
- if (
--    retval
-+    work(pl)
-    )
-    is
- else
-    es
-  ...
- }
+On Thu, 21 Jul 2016, SF Markus Elfring wrote:
 
+> Hello,
+>
+> I am trying the software combination "spatch version 1.0.5-00058-g36edc2b-dirty
+> compiled with OCaml version 4.03.0" out a bit more with the following approach.
+>
+>
+> @checking_function_calls_directly@
+> identifier checker, retval, work;
+> parameter list pl;
+> statement is, es;
+> type rt;
+> @@
+>  rt checker(...)
+>  {
+>   ...
+> -retval = work(pl);
+>  if (
+> -    retval
+> +    work(pl)
+>     )
+>     is
+>  else
+>     es
+>   ...
+>  }
+>
+>
+> elfring at Sonne:~/Projekte/Coccinelle/janitor> spatch.opt -sp-file checking_function_calls_directly1.cocci ~/Projekte/Linux/next-patched/drivers/staging/ks7010/ks7010_sdio.c
+> init_defs_builtins: /usr/local/lib64/coccinelle/standard.h
+> minus: parse error:
+>   File "checking_function_calls_directly1.cocci", line 10, column 15, charpos = 151
+>   around = 'pl',
+>   whole content = -retval = work(pl);
+>
+>
+>
+> Do I overlook anything in my SmPL script?
 
-elfring at Sonne:~/Projekte/Coccinelle/janitor> spatch.opt -sp-file checking_function_calls_directly1.cocci ~/Projekte/Linux/next-patched/drivers/staging/ks7010/ks7010_sdio.c
-init_defs_builtins: /usr/local/lib64/coccinelle/standard.h
-minus: parse error: 
-  File "checking_function_calls_directly1.cocci", line 10, column 15, charpos = 151
-  around = 'pl',
-  whole content = -retval = work(pl);
+A parameter list is something that comes after the name of a function in
+the function header.  Something like int x, int y, in foo (int x, int y) {
+... }.  Probably you want an expression list.
 
-
-
-Do I overlook anything in my SmPL script?
-
-Regards,
-Markus
+julia
