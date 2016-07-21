@@ -1,44 +1,59 @@
-From: rjones@redhat.com (Richard W.M. Jones)
-Date: Tue, 19 Jul 2016 11:13:55 +0100
-Subject: [Cocci] version 1.0.4 released
-In-Reply-To: <alpine.DEB.2.10.1607191206540.2930@hadrien>
-References: <alpine.DEB.2.02.1510262151580.2079@localhost6.localdomain6>
- <20151027101421.GA14273@redhat.com>
- <20151027102517.GA3871@pl-59055.rocqadm.inria.fr>
- <20151027115733.GB14273@redhat.com>
- <20151027123748.GA27349@pl-59055.rocqadm.inria.fr>
- <alpine.DEB.2.02.1510282304240.2054@localhost6.localdomain6>
- <20160719100538.GA16888@redhat.com>
- <alpine.DEB.2.10.1607191206540.2930@hadrien>
-Message-ID: <20160719101355.GE16797@redhat.com>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Thu, 21 Jul 2016 21:00:41 +0200
+Subject: [Cocci] Changing return value determination in if statements with
+	SmPL
+In-Reply-To: <20160721163714.GB1616@katana>
+References: <530DD06F.4090703@users.sourceforge.net>
+ <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
+ <5317A59D.4@users.sourceforge.net>
+ <66bd684a-98f1-0ec4-aa95-1a966d7c4e90@users.sourceforge.net>
+ <6a8f4258-188e-36f6-28fa-1626c29cf361@users.sourceforge.net>
+ <alpine.DEB.2.10.1607172056220.3177@hadrien> <20160720155333.GE1688@katana>
+ <b249584b-47b8-ffd9-432e-986d69260ff1@users.sourceforge.net>
+ <20160721062726.GC1664@katana>
+ <b221aadb-2af7-8d0f-ce8e-99b1efa31edd@users.sourceforge.net>
+ <20160721163714.GB1616@katana>
+Message-ID: <6f2ca140-9384-bc3f-9d20-2433b808d566@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, Jul 19, 2016 at 12:07:42PM +0200, Julia Lawall wrote:
-> 
-> 
-> On Tue, 19 Jul 2016, Richard W.M. Jones wrote:
-> 
-> > On Wed, Oct 28, 2015 at 11:06:34PM +0100, Julia Lawall wrote:
-> > > Version 1.0.4 is released.  This removes the make of spgen when making
-> > > spatch, removes the pre-generated menhir file when menhir is available,
-> > > and adds the ability to reason about the lengths of statement lists.
-> >
-> > This problem has reoccured in 1.0.5.  The generated files must
-> > be removed first, if compiling with external menhir.
-> 
-> OK.  I think this problem has been fixed, but we need to make a new
-> release.  Maybe you should just wait for 1.0.6, if it is causing a
-> problem.  Thanks for the report.
+Hello,
 
-It's no problem - I have added a workaround in the RPM build.
+I am trying the software combination "spatch version 1.0.5-00058-g36edc2b-dirty
+compiled with OCaml version 4.03.0" out a bit more with the following approach.
 
-I was just noting that the workaround was necessary.
 
-Rich.
+@checking_function_calls_directly@
+identifier checker, retval, work;
+parameter list pl;
+statement is, es;
+type rt;
+@@
+ rt checker(...)
+ {
+  ...
+-retval = work(pl);
+ if (
+-    retval
++    work(pl)
+    )
+    is
+ else
+    es
+  ...
+ }
 
--- 
-Richard Jones, Virtualization Group, Red Hat http://people.redhat.com/~rjones
-Read my programming and virtualization blog: http://rwmj.wordpress.com
-virt-builder quickly builds VMs from scratch
-http://libguestfs.org/virt-builder.1.html
+
+elfring at Sonne:~/Projekte/Coccinelle/janitor> spatch.opt -sp-file checking_function_calls_directly1.cocci ~/Projekte/Linux/next-patched/drivers/staging/ks7010/ks7010_sdio.c
+init_defs_builtins: /usr/local/lib64/coccinelle/standard.h
+minus: parse error: 
+  File "checking_function_calls_directly1.cocci", line 10, column 15, charpos = 151
+  around = 'pl',
+  whole content = -retval = work(pl);
+
+
+
+Do I overlook anything in my SmPL script?
+
+Regards,
+Markus
