@@ -1,27 +1,39 @@
-From: mmarek@suse.com (Michal Marek)
-Date: Thu, 28 Jul 2016 13:23:07 +0200
-Subject: [Cocci] [PATCH v2] Coccinelle: Script to replace allocate and
- memset with zalloc functions
-In-Reply-To: <20160728082944.GA25524@amitoj-Inspiron-3542>
-References: <20160728082944.GA25524@amitoj-Inspiron-3542>
-Message-ID: <5799EB1B.3030203@suse.com>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Thu, 28 Jul 2016 14:34:23 +0200
+Subject: [Cocci] Determination of statement list lengths with SmPL
+In-Reply-To: <alpine.DEB.2.10.1607281034470.2896@hadrien>
+References: <alpine.DEB.2.02.1510262151580.2079@localhost6.localdomain6>
+ <20151027101421.GA14273@redhat.com>
+ <20151027102517.GA3871@pl-59055.rocqadm.inria.fr>
+ <20151027115733.GB14273@redhat.com>
+ <20151027123748.GA27349@pl-59055.rocqadm.inria.fr>
+ <alpine.DEB.2.02.1510282304240.2054@localhost6.localdomain6>
+ <8e56fe29-5518-0155-42ac-06ab06b3b958@users.sourceforge.net>
+ <alpine.DEB.2.10.1607281034470.2896@hadrien>
+Message-ID: <c119d954-aca8-0238-72ac-0d86ceaafdb4@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 2016-07-28 10:29, Amitoj Kaur Chawla wrote:
-> This script finds instances of allocate and memset which can be
-> replaced with a direct call to zalloc equivalent of a function.
-> 
-> Signed-off-by: Amitoj Kaur Chawla <amitoj1606@gmail.com>
-> ---
-> Changes in v2:
->         -Modified commit message and subject
+> I believe that it is already possible.
 
-There is still memcpy in the comment here:
+Should the following approach work together with the semantic patch language?
 
 
-> +/// Prefer zalloc functions instead of using allocate and memcpy.
+@lengths@
+statement list [if_count] is;
+statement list [else_count] es;
+@@
+ if (...)
+    is
+ else
+    es
 
-:)
+@script:python display@
+if_n << lengths.if_count;
+else_n << lengths.else_count;
+@@
+print("{0}|{1}".format(if_n, else_n))
 
-Michal
+
+Regards,
+Markus
