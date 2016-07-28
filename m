@@ -1,7 +1,7 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 28 Jul 2016 18:26:36 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Thu, 28 Jul 2016 18:52:39 +0200
 Subject: [Cocci] Determination of statement list lengths with SmPL
-In-Reply-To: <d6b212a1-c6c8-339a-466c-1fa763e6f549@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.10.1607281826150.2896@hadrien>
 References: <alpine.DEB.2.02.1510262151580.2079@localhost6.localdomain6>
  <20151027101421.GA14273@redhat.com>
  <20151027102517.GA3871@pl-59055.rocqadm.inria.fr>
@@ -17,44 +17,17 @@ References: <alpine.DEB.2.02.1510262151580.2079@localhost6.localdomain6>
  <b185152d-1896-20e3-3c76-4e971610bf18@users.sourceforge.net>
  <alpine.DEB.2.10.1607281629580.2896@hadrien>
  <d6b212a1-c6c8-339a-466c-1fa763e6f549@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1607281826150.2896@hadrien>
+ <alpine.DEB.2.10.1607281826150.2896@hadrien>
+Message-ID: <21d49839-743a-0943-2cc3-42f22ad501ce@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> As far as I can see, the only branch available on github is master.
 
+The current software (together with the commit 69ba50121a5c80ae91bba16210bd8b281ab8595e
+from 2016-07-17) seems to work better also for my small SmPL Python script.
 
-On Thu, 28 Jul 2016, SF Markus Elfring wrote:
+Thanks for your improvements.
 
-> >>>> Cannot resolve PyUnicodeUCS2_AsEncodedString.
->
-> I can circumvent this error message also by changing
-> the scripting language.
->
->
-> @lengths@
-> statement list [if_count] isl;
-> statement list [else_count] esl;
-> @@
->  if (...)
->     { isl }
->  else
->     { esl }
->
-> @script:ocaml display@
-> if_n << lengths.if_count;
-> else_n << lengths.else_count;
-> @@
-> Printf.printf "%u|%u\n" if_n else_n
->
->
-> >> Should I try any other data type conversion out for my small
-> >> SmPL script example?
-> >
-> > Please try pulling from github again and restart with make distclean.
->
-> In which development branch did you publish any further commits
-> for me to try out?
-
-As far as I can see, the only branch available on github is master.
-
-julia
+Regards,
+Markus
