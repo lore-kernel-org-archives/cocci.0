@@ -1,34 +1,27 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Thu, 28 Jul 2016 10:42:24 +0200
-Subject: [Cocci] Determination of statement list lengths with SmPL
-In-Reply-To: <alpine.DEB.2.10.1607281034470.2896@hadrien>
-References: <alpine.DEB.2.02.1510262151580.2079@localhost6.localdomain6>
- <20151027101421.GA14273@redhat.com>
- <20151027102517.GA3871@pl-59055.rocqadm.inria.fr>
- <20151027115733.GB14273@redhat.com>
- <20151027123748.GA27349@pl-59055.rocqadm.inria.fr>
- <alpine.DEB.2.02.1510282304240.2054@localhost6.localdomain6>
- <8e56fe29-5518-0155-42ac-06ab06b3b958@users.sourceforge.net>
- <alpine.DEB.2.10.1607281034470.2896@hadrien>
-Message-ID: <5a8fbd14-828f-d52a-66b7-15f260878a74@users.sourceforge.net>
+From: mmarek@suse.com (Michal Marek)
+Date: Thu, 28 Jul 2016 13:23:07 +0200
+Subject: [Cocci] [PATCH v2] Coccinelle: Script to replace allocate and
+ memset with zalloc functions
+In-Reply-To: <20160728082944.GA25524@amitoj-Inspiron-3542>
+References: <20160728082944.GA25524@amitoj-Inspiron-3542>
+Message-ID: <5799EB1B.3030203@suse.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> Would it make sense to extend the support for statement lists
->> in a way which is similar to the other list types in the semantic
->> patch language?
+On 2016-07-28 10:29, Amitoj Kaur Chawla wrote:
+> This script finds instances of allocate and memset which can be
+> replaced with a direct call to zalloc equivalent of a function.
 > 
-> I believe that it is already possible.
+> Signed-off-by: Amitoj Kaur Chawla <amitoj1606@gmail.com>
+> ---
+> Changes in v2:
+>         -Modified commit message and subject
 
-Do I miss the corresponding description only in the documentation then?
-
-"?
-metadecl 	  ::=
-?
-|	statement list [ id ] ids ;
-|	statement list [ const ] ids ;
-?"
+There is still memcpy in the comment here:
 
 
-Regards,
-Markus
+> +/// Prefer zalloc functions instead of using allocate and memcpy.
+
+:)
+
+Michal
