@@ -1,7 +1,7 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Thu, 28 Jul 2016 18:52:39 +0200
+Date: Thu, 28 Jul 2016 20:18:07 +0200
 Subject: [Cocci] Determination of statement list lengths with SmPL
-In-Reply-To: <alpine.DEB.2.10.1607281826150.2896@hadrien>
+In-Reply-To: <alpine.DEB.2.10.1607281459000.2896@hadrien>
 References: <alpine.DEB.2.02.1510262151580.2079@localhost6.localdomain6>
  <20151027101421.GA14273@redhat.com>
  <20151027102517.GA3871@pl-59055.rocqadm.inria.fr>
@@ -14,20 +14,28 @@ References: <alpine.DEB.2.02.1510262151580.2079@localhost6.localdomain6>
  <alpine.DEB.2.10.1607281437340.2896@hadrien>
  <71f33211-934e-f30d-aaf5-a290a9ba0dc8@users.sourceforge.net>
  <alpine.DEB.2.10.1607281459000.2896@hadrien>
- <b185152d-1896-20e3-3c76-4e971610bf18@users.sourceforge.net>
- <alpine.DEB.2.10.1607281629580.2896@hadrien>
- <d6b212a1-c6c8-339a-466c-1fa763e6f549@users.sourceforge.net>
- <alpine.DEB.2.10.1607281826150.2896@hadrien>
-Message-ID: <21d49839-743a-0943-2cc3-42f22ad501ce@users.sourceforge.net>
+Message-ID: <3ebc06a1-4cc8-0809-009f-2c05a427db99@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> As far as I can see, the only branch available on github is master.
+>> Cannot resolve PyUnicodeUCS2_AsEncodedString.
 
-The current software (together with the commit 69ba50121a5c80ae91bba16210bd8b281ab8595e
-from 2016-07-17) seems to work better also for my small SmPL Python script.
+Was this issue be fixed by the commit "Updated py.ml for UCS4 support"
+(fdbafd49c0f2b9267229b105beb870cfc2bd0d06 from 2016-07-16)?
 
-Thanks for your improvements.
+
+>> Can the number of "steps" that were stored by a metavariable of the
+>> type "statement" also be determined anyhow?
+> 
+> No idea what you mean by steps.  A statement metavariable only matches a
+> single statement.
+
+* Are "C statements" mapped to entries in a statement list metavariable
+  by the semantic patch language?
+  How do you think about to drill down from a single compound statement
+  to several subitems?
+
+* Will it matter if curly brackets are occasionally missing?
 
 Regards,
 Markus
