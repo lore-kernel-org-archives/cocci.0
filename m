@@ -1,7 +1,7 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Thu, 28 Jul 2016 20:18:07 +0200
-Subject: [Cocci] Determination of statement list lengths with SmPL
-In-Reply-To: <alpine.DEB.2.10.1607281459000.2896@hadrien>
+Date: Fri, 29 Jul 2016 13:03:22 +0200
+Subject: [Cocci] Exclusion of else branches from if statements with SmPL
+In-Reply-To: <alpine.DEB.2.10.1607281437340.2896@hadrien>
 References: <alpine.DEB.2.02.1510262151580.2079@localhost6.localdomain6>
  <20151027101421.GA14273@redhat.com>
  <20151027102517.GA3871@pl-59055.rocqadm.inria.fr>
@@ -12,30 +12,26 @@ References: <alpine.DEB.2.02.1510262151580.2079@localhost6.localdomain6>
  <alpine.DEB.2.10.1607281034470.2896@hadrien>
  <c119d954-aca8-0238-72ac-0d86ceaafdb4@users.sourceforge.net>
  <alpine.DEB.2.10.1607281437340.2896@hadrien>
- <71f33211-934e-f30d-aaf5-a290a9ba0dc8@users.sourceforge.net>
- <alpine.DEB.2.10.1607281459000.2896@hadrien>
-Message-ID: <3ebc06a1-4cc8-0809-009f-2c05a427db99@users.sourceforge.net>
+Message-ID: <569d298b-b344-0b4d-6105-e12cd4093402@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> Cannot resolve PyUnicodeUCS2_AsEncodedString.
+> Did you try it?  I think you would need braces around is and es.
 
-Was this issue be fixed by the commit "Updated py.ml for UCS4 support"
-(fdbafd49c0f2b9267229b105beb870cfc2bd0d06 from 2016-07-16)?
+The software combination "spatch version 1.0.5-00075-g69ba501 compiled
+with OCaml version 4.03.0" is working to some degree as expected with
+the following tiny SmPL script.
 
 
->> Can the number of "steps" that were stored by a metavariable of the
->> type "statement" also be determined anyhow?
-> 
-> No idea what you mean by steps.  A statement metavariable only matches a
-> single statement.
+@single_entry@
+statement list [1] isl;
+@@
+*if (...) { isl }
 
-* Are "C statements" mapped to entries in a statement list metavariable
-  by the semantic patch language?
-  How do you think about to drill down from a single compound statement
-  to several subitems?
 
-* Will it matter if curly brackets are occasionally missing?
+This source code search approach finds also if statements which have got
+an else branch. Which techniques would you like to recommend to exclude
+this case here?
 
 Regards,
 Markus
