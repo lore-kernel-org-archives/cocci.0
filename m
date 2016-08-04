@@ -1,13 +1,9 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 3 Aug 2016 17:31:03 +0200 (CEST)
-Subject: [Cocci] CocciBoF
-Message-ID: <alpine.DEB.2.10.1608031729140.2991@hadrien>
+From: klammerj@a1.net (Johann Klammer)
+Date: Thu, 04 Aug 2016 18:30:15 +0200
+Subject: [Cocci] Q: stdint format specifiers
+Message-ID: <57A36D97.9070402@a1.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-There will be a BoF on Coccinelle at Linuxcon Europe on October 4 in
-Berlin:
-
-http://events.linuxfoundation.org/events/linuxcon-europe
-
-julia
+Does anyone have a coccinelle script to fixup *printf format specifiers to 
+those pesky PRI*** ones? I could not find one on coccinellery <http://coccinellery.org/>.
