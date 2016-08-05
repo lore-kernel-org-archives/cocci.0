@@ -1,76 +1,54 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 4 Aug 2016 23:11:34 +0200 (CEST)
-Subject: [Cocci] Q: stdint format specifiers
-In-Reply-To: <57A3ABD9.3090308@a1.net>
-References: <57A36D97.9070402@a1.net>
- <alpine.DEB.2.10.1608041833290.7967@hadrien> <57A37175.7070801@a1.net>
- <alpine.DEB.2.10.1608041854360.7967@hadrien> <57A3ABD9.3090308@a1.net>
-Message-ID: <alpine.DEB.2.10.1608042306470.3488@hadrien>
+From: joe.hershberger@gmail.com (Joe Hershberger)
+Date: Fri, 5 Aug 2016 15:38:52 -0500
+Subject: [Cocci] Bad formatting when changing function prototypes
+Message-ID: <CANr=Z=bpk1DKiXODccy8Ru0QkP8EX0_v6BfVA2PvsOZ9gpiVXw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 4 Aug 2016, Johann Klammer wrote:
+Hi,
 
-> Mkay...
->
-> I tried.
-> > @r@
-> > {int8_t,int16_t,int32_t,int64_t,
-> > uint8_t,uint16_t,uint32_t,uint64_t} x;
-> > type T;
-> > T y;
-> > expression list[n] es;
-> > constant char[] c;
-> > identifier f;
-> > position p;
-> > @@
-> >
-> > f(...,c at p,es,x at y,...)
-> >
-> > @script:python s@
-> > T << r.T;  // the type of the argument of interest
-> > c << r.c;  // the format string
-> > n << r.n;  // the offset of the argument of interest, counted from 0
-> > c2;
-> > @@
-> fails with:
->
-> > ~/projects/FPGA/src/fpgatools/libs$ spatch --sp-file ../pri.sp ./*.c
-> > init_defs_builtins: /usr/lib/coccinelle/standard.h
-> > 5 11
-> > Fatal error: exception Failure("meta: parse error: \n = File \"../pri.sp\", line 2, column 1,  charpos = 5\n    around = 'int8_t', whole content = {int8_t,int16_t,int32_t,int64_t,\n")
+I'm trying to use spatch to convert from one API to another across
+many files and I'm running into a problem.
 
-Add typedef int8_t,int16_t,int32_t,int64_t,etc; before the definition of
-x.
+I don't know if I'm not configuring a setting properly or if it might be a bug.
 
-> looking at the main_grammar.pdf reveals that the typedefs are resolved....
+Here's what I'm seeing... function prototypes or definitions that are
+near or over the 80 char limit end up with poor formatting.
 
-I'm not sure to understand what you mean by "resolved".  If Coccinelle can
-see the typedef definition, then it will keep track of both the typedef
-name and the underlying type name.  But by default, Coccinelle only picks
-up on header files that are in the same directory as the .c file and
-header files in the include path that have the same name as the .c file.
-To get more, you need to give the option --all-includes (all explicitly
-mentioned header files) or --recursive-includes (also header files that
-are included by other header files).  But both of these options are likely
-to cost a lot in performance.  So if you are ok with the type names as
-they are written in the code, you are better off.  If you want to be sure
-that Coccinelle won't find a definition of a typdef in an include file,
-you can use --no-includes.
+https://patchwork.ozlabs.org/patch/605756/
 
-But note that include files also may contain structure type definitions,
-which may also be useful.
+Eg:
 
-julia
+-static int bfin_miiphy_read(const char *devname, uchar addr, uchar
+reg, ushort *val)
++static int bfin_miiphy_read(struct mii_dev *bus, int addr, int devad, int reg
++       )
 
-> Is there a way to match the original typename?
-> If someone actually wrote long int, the lX is perfectly fine.
-> if it's one of the stdints it'll change on different subarchs, so it needs the PRI*.
->
->
->
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+-static int bfin_miiphy_write(const char *devname, uchar addr, uchar
+reg, ushort val)
++static int bfin_miiphy_write(struct mii_dev *bus, int addr, int devad,
++                            int reg, u16 val
++       )
+
+-static int davinci_mii_phy_read(const char *devname, unsigned char
+addr, unsigned char reg, unsigned short *value)
++static int davinci_mii_phy_read(struct mii_dev *bus, int addr, int devad,
++       int reg
++       )
+
+The worst part is that it moves the close paren to the next line.
+
+Also, I'm not sure how it decides how much indentation to use if it
+truly needs an extra line for parameters. Ideally the indentation of
+the next line of parameters would match the open paren position. It
+seems to do that in some cases and not in other cases. I'm not sure
+what affects it.
+
+I had started back when 1.0.4 was the most recent, and I just now
+tested with both 1.0.5 and master. All behave identically.
+
+Does anyone have an idea what I can do to affect this behavior or does
+it require a code change?
+
+Thanks,
+-Joe
