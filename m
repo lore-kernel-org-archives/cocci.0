@@ -1,81 +1,72 @@
-From: joe.hershberger@gmail.com (Joe Hershberger)
-Date: Fri, 5 Aug 2016 16:28:51 -0500
-Subject: [Cocci] Bad formatting when changing function prototypes
-In-Reply-To: <alpine.DEB.2.10.1608052249480.3315@hadrien>
-References: <CANr=Z=bpk1DKiXODccy8Ru0QkP8EX0_v6BfVA2PvsOZ9gpiVXw@mail.gmail.com>
- <alpine.DEB.2.10.1608052249480.3315@hadrien>
-Message-ID: <CANr=Z=Zeg_fO7m9uDzK1HgV3i0QuQNt5dppr+mggRZ1sjXE8Bw@mail.gmail.com>
+From: amitoj1606@gmail.com (Amitoj Kaur Chawla)
+Date: Sat, 6 Aug 2016 10:45:48 +0530
+Subject: [Cocci] [PATCH v3] Coccinelle: Script to replace NULL test with
+ IS_ERR test for devm_ioremap_resource
+Message-ID: <20160806051548.GA30731@amitoj-Inspiron-3542>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi Julia,
+This script detects cases which have incorrect error handling for
+devm_ioremap_resource function, employing a NULL test instead of an
+IS_ERR() test.
 
-On Fri, Aug 5, 2016 at 3:52 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
-> On Fri, 5 Aug 2016, Joe Hershberger wrote:
->
->> Hi,
->>
->> I'm trying to use spatch to convert from one API to another across
->> many files and I'm running into a problem.
->>
->> I don't know if I'm not configuring a setting properly or if it might be a bug.
->>
->> Here's what I'm seeing... function prototypes or definitions that are
->> near or over the 80 char limit end up with poor formatting.
->>
->> https://patchwork.ozlabs.org/patch/605756/
->>
->> Eg:
->>
->> -static int bfin_miiphy_read(const char *devname, uchar addr, uchar
->> reg, ushort *val)
->> +static int bfin_miiphy_read(struct mii_dev *bus, int addr, int devad, int reg
->> +       )
->>
->> -static int bfin_miiphy_write(const char *devname, uchar addr, uchar
->> reg, ushort val)
->> +static int bfin_miiphy_write(struct mii_dev *bus, int addr, int devad,
->> +                            int reg, u16 val
->> +       )
->>
->> -static int davinci_mii_phy_read(const char *devname, unsigned char
->> addr, unsigned char reg, unsigned short *value)
->> +static int davinci_mii_phy_read(struct mii_dev *bus, int addr, int devad,
->> +       int reg
->> +       )
->>
->> The worst part is that it moves the close paren to the next line.
->>
->> Also, I'm not sure how it decides how much indentation to use if it
->> truly needs an extra line for parameters. Ideally the indentation of
->> the next line of parameters would match the open paren position. It
->> seems to do that in some cases and not in other cases. I'm not sure
->> what affects it.
->>
->> I had started back when 1.0.4 was the most recent, and I just now
->> tested with both 1.0.5 and master. All behave identically.
->>
->> Does anyone have an idea what I can do to affect this behavior or does
->> it require a code change?
->
-> Could you send a semantic patch that causes the problem?
+Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+Signed-off-by: Amitoj Kaur Chawla <amitoj1606@gmail.com>
+---
+Changes in v2:
+        -Changed script to correct error handling instead of just
+         detecting cases of incorrect error handling
+Changes in v3:
+        -Reverted to original script in v1 to ensure no error in
+         modifying inconsistent paths.
 
-Here is the patch that I'm using.  https://patchwork.ozlabs.org/patch/605758/
+ .../null/devm_ioremap_resource_test.cocci          | 38 ++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
+ create mode 100644 scripts/coccinelle/null/devm_ioremap_resource_test.cocci
 
-It is intended to apply to http://git.denx.de/?p=u-boot.git;a=summary
-
-I've been executing spatch using this command line within the U-Boot
-source tree:
-
-spatch --in-place --sp-file scripts/coccinelle/net/mdio_register.cocci .
-
-> For function calls, there is an effort to stay within 80 characters, and
-> to put the extra lines just after the (.  I would have to look into why it
-> is not doing this for function declarations.  I don't think there is
-> anything you can do on your side.
-
-OK, good to know. If there is anything I can do to make it easier to
-reproduce, please let me know.
-
-Thanks,
--Joe
+diff --git a/scripts/coccinelle/null/devm_ioremap_resource_test.cocci b/scripts/coccinelle/null/devm_ioremap_resource_test.cocci
+new file mode 100644
+index 0000000..734dbd3
+--- /dev/null
++++ b/scripts/coccinelle/null/devm_ioremap_resource_test.cocci
+@@ -0,0 +1,38 @@
++/// Correct error handling for devm_ioremap_resource
++///
++// Confidence: High
++// Copyright: (C) 2016 Amitoj Kaur Chawla
++// Keywords: devm,devm_ioremap_resource
++
++virtual context
++virtual org
++virtual report
++
++// ----------------------------------------------------------------------------
++
++ at err depends on context || org || report@
++statement S;
++expression e;
++position j0;
++@@
++
++  e = devm_ioremap_resource(...);
++* if (!e at j0) S
++// ----------------------------------------------------------------------------
++
++ at script:python err_org depends on org@
++j0 << err.j0;
++@@
++
++msg = "Incorrect error handling."
++coccilib.org.print_todo(j0[0], msg)
++
++// ----------------------------------------------------------------------------
++
++@script:python err_report depends on report@
++j0 << err.j0;
++@@
++
++msg = "Incorrect error handling."
++coccilib.report.print_report(j0[0], msg)
++
+-- 
+1.9.1
