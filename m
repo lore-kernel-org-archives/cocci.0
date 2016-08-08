@@ -1,29 +1,44 @@
-From: klammerj@a1.net (Johann Klammer)
-Date: Mon, 08 Aug 2016 12:48:12 +0200
-Subject: [Cocci] [Solved] Q: stdint format specifiers
-In-Reply-To: <alpine.DEB.2.10.1608080744490.3335@hadrien>
-References: <57A36D97.9070402@a1.net>
- <alpine.DEB.2.10.1608041833290.7967@hadrien> <57A37175.7070801@a1.net>
- <alpine.DEB.2.10.1608041854360.7967@hadrien> <57A3ABD9.3090308@a1.net>
- <alpine.DEB.2.10.1608042306470.3488@hadrien> <57A7B7AF.208@a1.net>
- <alpine.DEB.2.10.1608080744490.3335@hadrien>
-Message-ID: <57A8636C.4040003@a1.net>
+From: joe.hershberger@gmail.com (Joe Hershberger)
+Date: Mon, 8 Aug 2016 10:53:55 -0500
+Subject: [Cocci] Bad formatting when changing function prototypes
+In-Reply-To: <alpine.DEB.2.10.1608061236490.3433@hadrien>
+References: <CANr=Z=bpk1DKiXODccy8Ru0QkP8EX0_v6BfVA2PvsOZ9gpiVXw@mail.gmail.com>
+ <alpine.DEB.2.10.1608052249480.3315@hadrien>
+ <CANr=Z=Zeg_fO7m9uDzK1HgV3i0QuQNt5dppr+mggRZ1sjXE8Bw@mail.gmail.com>
+ <alpine.DEB.2.10.1608061236490.3433@hadrien>
+Message-ID: <CANr=Z=beMS-iN57j9z=kFvfTWV6fmwvddeSLfhppAfKAWPxd3A@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 08/08/2016 07:46 AM, Julia Lawall wrote:
-> On Mon, 8 Aug 2016, Johann Klammer wrote:
-> 
->> //kinda works now ..kinda
-> 
-> It does rather lack elegance...
-> 
-> Does your software always use print variants for printing?  If there are
-> some wrappers, you could see what happens without the constraint on f.
-> 
-> julia
-> 
-No, and I had to change that pattern a few times.
-the thing is that scanf variants use different macros. 
-and I can't really see what except for the func name 
-would prevent me from matching those. 
+Hi Julia,
+
+On Sat, Aug 6, 2016 at 5:39 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
+> The problem should be fixed.  It's a little bit curious that you put
+> newlines in the semantic patch that you don't want to see in the code.  In
+> some cases, Coccinelle takes those newlines as hints for how to format the
+> resulting code.
+
+Ah, I didn't realize that there was any connection. I probably would
+have been more likely to make that connection if all variables were on
+separate lines (like my patch - done only for readability). That's
+good to know.
+
+> But now for parameter lists (and argument lists) it will
+> never put a newline before the final ).
+
+Great, thanks.
+
+> The fix is available in github.  If you have any problem in compiling,
+> with respect to python, do make distclean; ./autogen; ./configure before
+> doing make.
+
+Building worked fine, but the autotools errantly decided to built for
+PCRE support even though I didn't have it installed. I think that's
+new broken behavior since the 1.0.5 release
+
+> Thanks for the report.
+
+Thanks for fixing it!
+
+Cheers,
+-Joe
