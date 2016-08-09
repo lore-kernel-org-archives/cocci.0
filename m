@@ -1,61 +1,26 @@
-From: Thierry.Martinez@inria.fr (Thierry Martinez)
-Date: Tue, 09 Aug 2016 15:32:58 +0200
+From: joe.hershberger@gmail.com (Joe Hershberger)
+Date: Tue, 9 Aug 2016 10:22:58 -0500
 Subject: [Cocci] Bad formatting when changing function prototypes
-In-Reply-To: <CANr=Z=beMS-iN57j9z=kFvfTWV6fmwvddeSLfhppAfKAWPxd3A@mail.gmail.com>
+In-Reply-To: <ow4a8gmkqyd.fsf@mbp-thierry.rsr.lip6.fr>
 References: <CANr=Z=bpk1DKiXODccy8Ru0QkP8EX0_v6BfVA2PvsOZ9gpiVXw@mail.gmail.com>
  <alpine.DEB.2.10.1608052249480.3315@hadrien>
  <CANr=Z=Zeg_fO7m9uDzK1HgV3i0QuQNt5dppr+mggRZ1sjXE8Bw@mail.gmail.com>
  <alpine.DEB.2.10.1608061236490.3433@hadrien>
  <CANr=Z=beMS-iN57j9z=kFvfTWV6fmwvddeSLfhppAfKAWPxd3A@mail.gmail.com>
-Message-ID: <ow4a8gmkqyd.fsf@mbp-thierry.rsr.lip6.fr>
+ <ow4a8gmkqyd.fsf@mbp-thierry.rsr.lip6.fr>
+Message-ID: <CANr=Z=Z-Zm=mAayyzbBbb8q2_+n9t4=0-RocgOUcpkFir202pQ@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Joe Hershberger:
-> Building worked fine, but the autotools errantly decided to built for
-> PCRE support even though I didn't have it installed. I think that's
-> new broken behavior since the 1.0.5 release
+On Tue, Aug 9, 2016 at 8:32 AM, Thierry Martinez
+<Thierry.Martinez@inria.fr> wrote:
+> Joe Hershberger:
+>> Building worked fine, but the autotools errantly decided to built for
+>> PCRE support even though I didn't have it installed. I think that's
+>> new broken behavior since the 1.0.5 release
+>
+> This should be fixed by the commit 99f1de0 on GitHub.
 
-This should be fixed by the commit 99f1de0 on GitHub.
+Thanks!
 
-Thanks for the report.
--- 
-Thierry.
-
-Joe Hershberger (2016/08/08, 17:53 CEST)?:
-> Hi Julia,
->
-> On Sat, Aug 6, 2016 at 5:39 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
->> The problem should be fixed.  It's a little bit curious that you put
->> newlines in the semantic patch that you don't want to see in the code.  In
->> some cases, Coccinelle takes those newlines as hints for how to format the
->> resulting code.
->
-> Ah, I didn't realize that there was any connection. I probably would
-> have been more likely to make that connection if all variables were on
-> separate lines (like my patch - done only for readability). That's
-> good to know.
->
->> But now for parameter lists (and argument lists) it will
->> never put a newline before the final ).
->
-> Great, thanks.
->
->> The fix is available in github.  If you have any problem in compiling,
->> with respect to python, do make distclean; ./autogen; ./configure before
->> doing make.
->
-> Building worked fine, but the autotools errantly decided to built for
-> PCRE support even though I didn't have it installed. I think that's
-> new broken behavior since the 1.0.5 release
->
->> Thanks for the report.
->
-> Thanks for fixing it!
->
-> Cheers,
-> -Joe
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
+-Joe
