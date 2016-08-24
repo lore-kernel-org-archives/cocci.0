@@ -1,173 +1,283 @@
-From: hofrat@osadl.org (Nicholas Mc Guire)
-Date: Mon, 22 Aug 2016 19:12:32 +0200
-Subject: [Cocci] [PATCH V3] coccinelle: flag HZ dependent constants being
-	passed for jiffies
-Message-ID: <1471885952-26048-1-git-send-email-hofrat@osadl.org>
+From: mcgrof@kernel.org (mcgrof at kernel.org)
+Date: Tue, 23 Aug 2016 17:45:04 -0700
+Subject: [Cocci] [PATCH v3 2/5] firmware: annotate thou shalt not request fw
+	on init or probe
+In-Reply-To: <1471999507-913-1-git-send-email-mcgrof@kernel.org>
+References: <1466117661-22075-1-git-send-email-mcgrof@kernel.org>
+ <1471999507-913-1-git-send-email-mcgrof@kernel.org>
+Message-ID: <1471999507-913-3-git-send-email-mcgrof@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-A large set of calls in the kernel takes jiffies as an argument - passing
-in a constant makes the timeout HZ dependent which is wrong in all cases
-found by this spatch and probably is wrong for any call that expects
-jiffies with the exception of passing in 1 (minimum delay).
+From: "Luis R. Rodriguez" <mcgrof@kernel.org>
 
-Checking for constants only yields many false positives so they are
-filtered for digits only. A numeric value of 1 is though commonly in use
-for "shortest possible delay" so those cases are treated as false
-positives as well and not reported.
+Thou shalt not make firmware calls early on init or probe.
 
-Signed-off-by: Nicholas Mc Guire <hofrat@osadl.org>
+systemd already ripped support out for the usermode helper
+a while ago, there are still users that require the usermode helper,
+however systemd's use of the usermode helper exacerbated a long
+lasting issue of the fact that we have many drivers that load
+firmware on init or probe. Independent of the usermode helper
+loading firmware on init or probe is a bad idea for a few reasons.
+
+When the firmware is read directly from the filesystem by the kernel,
+if the driver is built-in to the kernel the firmware may not yet be
+available, for such uses one could use initramfs and stuff the firmware
+inside, or one also use CONFIG_EXTRA_FIRMWARE; however not all distributions
+use this, as such generally one cannot count on this. There is another
+corner cases to consider, since we are accessing the firmware directly folks
+cannot expect new found firmware on a filesystem after we switch off from
+an initramfs with pivot_root().
+
+Supporting such situations is possible today but fixing it for good is
+really complex due to the large amount of variablity in the boot up
+process.
+
+Instead just document the expectations properly and add a grammar rule to
+enable folks to check / validate / police if drivers are using the request
+firmware API early on init or probe.
+
+The SmPL rule used to check for the probe routine is loose and is
+currently defined through a regexp, that can easily be extended to any
+other known bus probe routine names. It also uses the new Python
+iteration support which allows us to backtrack from a request_firmware*()
+call back to a possible probe or init, iteratively. Without iteration
+we would only be able to get reports for callers who directly use the
+request_firmware*() API on the initial probe or init routine.
+
+There are 4 offenders at this time:
+
+mcgrof at ergon ~/linux-next (git::20160609)$ export COCCI=scripts/coccinelle/api/request_firmware.cocci
+mcgrof at ergon ~/linux-next (git::20160609)$ make coccicheck MODE=report
+
+drivers/fmc/fmc-fakedev.c: ERROR: driver call request firmware call on its init routine on line 321.
+drivers/fmc/fmc-write-eeprom.c: ERROR: driver call request firmware call on its probe routine on line 136.
+drivers/tty/serial/rp2.c: ERROR: driver call request firmware call on its probe routine on line 796.
+drivers/tty/serial/ucc_uart.c: ERROR: driver call request firmware call on its probe routine on line 1246.
+
+I checked and verified all these are valid reports. This list also matches
+the same list as in 20150805, so we have fortunately not gotten worse.
+Let's keep it that way and also fix these drivers.
+
+v2: changes from v1 [0]:
+
+o This now supports iteration, this extends our coverage on the report
+
+o Update documentation and commit log to accept the fate of not being
+  able to remove the usermode helper.
+
+[0] https://lkml.kernel.org/r/1440811107-861-1-git-send-email-mcgrof at do-not-panic.com
+
+Cc: Alessandro Rubini <rubini@gnudd.com>
+Cc: Kevin Cernekee <cernekee@gmail.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Mimi Zohar <zohar@linux.vnet.ibm.com>
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Ming Lei <ming.lei@canonical.com>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Julia Lawall <Julia.Lawall@lip6.fr>
+Cc: Gilles Muller <Gilles.Muller@lip6.fr>
+Cc: Nicolas Palix <nicolas.palix@imag.fr>
+Cc: Thierry Martinez <martinez@nsup.org>
+Cc: Michal Marek <mmarek@suse.com>
+Cc: cocci at systeme.lip6.fr
+Cc: Alessandro Rubini <rubini@gnudd.com>
+Cc: Kevin Cernekee <cernekee@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial at vger.kernel.org
+Cc: linux-doc at vger.kernel.org
+Cc: linux-serial at vger.kernel.org
+Cc: linuxppc-dev at lists.ozlabs.org
+Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
 ---
+ Documentation/firmware_class/README                |  20 ++++
+ drivers/base/Kconfig                               |   2 +-
+ .../request_firmware-avoid-init-probe-init.cocci   | 130 +++++++++++++++++++++
+ 3 files changed, 151 insertions(+), 1 deletion(-)
+ create mode 100644 scripts/coccinelle/api/request_firmware-avoid-init-probe-init.cocci
 
-V2: fixed up the documentation
-
-V3: change constant C; to constant int C; as suggested by Julia Lawall
-
-Note that 2 jiffies also is quite popular - not clear why and it will be 
-reported - it might be necessary to filter that out as false positive as 
-well. Strict mode shows all used constants and it seems that quite a few
-of them actually would need to be converted as well - but currently no
-obvious way (other than manually) to check such constants.
-
-This patch was tested with coccinelle version 1.0.5
-
-patch is against linux-next (localversion-next is next-20160822)
-
- scripts/coccinelle/api/timeout_HZ_dependent.cocci | 126 ++++++++++++++++++++++
- 1 file changed, 126 insertions(+)
- create mode 100644 scripts/coccinelle/api/timeout_HZ_dependent.cocci
-
-diff --git a/scripts/coccinelle/api/timeout_HZ_dependent.cocci b/scripts/coccinelle/api/timeout_HZ_dependent.cocci
+diff --git a/Documentation/firmware_class/README b/Documentation/firmware_class/README
+index cafdca8b3b15..056d1cb9d365 100644
+--- a/Documentation/firmware_class/README
++++ b/Documentation/firmware_class/README
+@@ -93,6 +93,26 @@
+    user contexts to request firmware asynchronously, but can't be called
+    in atomic contexts.
+ 
++Requirements:
++=============
++
++You should avoid at all costs requesting firmware on both init and probe paths
++of your device driver. Reason for this is the complexity needed to ensure a
++firmware will be available for a driver early in boot through different
++build configurations. Consider built-in drivers needing firmware early, or
++consider a driver assuming it will only get firmware after pivot_root().
++
++Drivers that really need firmware early should use stuff the firmware in
++initramfs or consider using CONFIG_EXTRA_FIRMWARE. Using initramfs is much
++more portable to more distributions as not all distributions wish to enable
++CONFIG_EXTRA_FIRMWARE. Should a driver require the firmware being built-in
++it should depend on CONFIG_EXTRA_FIRMWARE. There is no current annotation for
++requiring a firmware on initramfs.
++
++If you're a maintainer you can help police this with:
++
++$ export COCCI=scripts/coccinelle/api/request_firmware-avoid-init-probe-init.cocci
++$ make coccicheck MODE=report
+ 
+  about in-kernel persistence:
+  ---------------------------
+diff --git a/drivers/base/Kconfig b/drivers/base/Kconfig
+index 98504ec99c7d..12b4f5551501 100644
+--- a/drivers/base/Kconfig
++++ b/drivers/base/Kconfig
+@@ -152,7 +152,7 @@ config FW_LOADER_USER_HELPER
+ 	bool
+ 
+ config FW_LOADER_USER_HELPER_FALLBACK
+-	bool "Fallback user-helper invocation for firmware loading"
++	bool "Fallback user-helper invocation for firmware loading (avoid)"
+ 	depends on FW_LOADER
+ 	select FW_LOADER_USER_HELPER
+ 	help
+diff --git a/scripts/coccinelle/api/request_firmware-avoid-init-probe-init.cocci b/scripts/coccinelle/api/request_firmware-avoid-init-probe-init.cocci
 new file mode 100644
-index 0000000..f0fbf2c
+index 000000000000..cf180c59e042
 --- /dev/null
-+++ b/scripts/coccinelle/api/timeout_HZ_dependent.cocci
-@@ -0,0 +1,126 @@
-+/// Check for hard-coded numeric timeout values which are thus HZ dependent
-+//# Only report findings if the value is digits and != 1 as hard-coded
-+//# 1 seems to be in use for short delays.
-+//#
-+//# For kernel API that expects jiffies to be passed in a hard-coded value
-+//# makes the effective timeout dependent on the compile-time HZ setting
-+//# which is wrong in most (all?) cases. Any timeout should be passed
-+//# through msecs_to_jiffies() or usecs_to_jiffies() to make the timeout
-+//# values HZ independent.
-+//#
-+//# No patch mode for this, as converting the value from C to
-+//# msecs_to_jiffies(C) could be changing the effective timeout by more
-+//# than a factor of 10 so this always needs manual inspection. Most notably
-+//# code that pre-dates variable HZ (prior to 2.4 kernel series) had HZ=100
-+//# so a constant of 10 should be converted to 100ms for any old driver.
-+//#
-+//# In some cases C-constants are passed in that are not converted to
-+//# jiffies, to locate these cases run in MODE=strict in which case these
-+//# will also be reported except if HZ is passed. Note though many are
-+//# likely to be false positives !
++++ b/scripts/coccinelle/api/request_firmware-avoid-init-probe-init.cocci
+@@ -0,0 +1,130 @@
++///
++/// Thou shalt not request firmware on init or probe
++///
++// Confidence: High
++// Copyright: (C) 2016 Luis R. Rodriguez <mcgrof@kernel.org>
++// Copyright: (C) 2015 Julia Lawall, Inria/LIP6.
 +//
-+// Confidence: Medium
-+// Copyright: (C) 2015 Nicholas Mc Guire <hofrat@osadl.org>, OSADL, GPL v2
-+// URL: http://coccinelle.lip6.fr
-+// Options: --no-includes --include-headers
++// GPLv2.
++// URL: http://coccinelle.lip6.fr/
++// Options: --no-includes --include-headers --no-show-diff
++// Requires: 1.0.5
++//
++// Coccinelle 1.0.5 is required given that this uses the shiny new
++// python iteration feature.
 +
-+virtual org
 +virtual report
-+virtual strict
-+virtual patch
++virtual after_start
 +
-+ at cc depends on !patch && (org || report || strict)@
-+constant int C;
++// -------------------------------------------------------------------------
++
++ at initialize:python@
++@@
++
++seen = set()
++
++def add_if_not_present(f, file, starter_var):
++    if (f, file, starter_var) not in seen:
++        seen.add((f, file, starter_var))
++        it = Iteration()
++        if file != None:
++            it.set_files([file])
++    it.add_virtual_rule(after_start)
++    it.add_virtual_rule(report)
++    it.add_virtual_identifier(fn, f)
++    it.add_virtual_identifier(starter, starter_var)
++    it.register()
++
++reported = set()
++
++def print_err(str, file, line):
++    if (file, line) not in reported:
++        reported.add((file, line))
++	print "%s: ERROR: driver call request firmware call on its %s routine on line %d." % (file, str, line)
++
++@ defines_module_init@
++declarer name module_init;
++identifier init;
++@@
++
++module_init(init);
++
++@ has_probe depends on defines_module_init@
++identifier drv_calls, drv_probe;
++type bus_driver;
++identifier probe_op =~ "(probe)";
++@@
++
++bus_driver drv_calls = {
++	.probe_op = drv_probe,
++};
++
++ at hascall depends on !after_start && defines_module_init@
 +position p;
 +@@
 +
 +(
-+schedule_timeout at p(C)
++request_firmware at p(...)
 +|
-+schedule_timeout_interruptible at p(C)
++request_firmware_nowait at p(...)
 +|
-+schedule_timeout_killable at p(C)
-+|
-+schedule_timeout_uninterruptible at p(C)
-+|
-+mod_timer(...,C)
-+|
-+mod_timer_pinned(...,C)
-+|
-+mod_timer_pending(...,C)
-+|
-+apply_slack(...,C)
-+|
-+queue_delayed_work(...,C)
-+|
-+mod_delayed_work(...,C)
-+|
-+schedule_delayed_work_on(...,C)
-+|
-+schedule_delayed_work(...,C)
-+|
-+schedule_timeout(C)
-+|
-+schedule_timeout_interruptible(C)
-+|
-+schedule_timeout_killable(C)
-+|
-+schedule_timeout_uninterruptibl(C)
-+|
-+wait_event_timeout(...,C)
-+|
-+wait_event_interruptible_timeout(...,C)
-+|
-+wait_event_uninterruptible_timeout(...,C)
-+|
-+wait_event_interruptible_lock_irq_timeout(...,C)
-+|
-+wait_on_bit_timeout(...,C)
-+|
-+wait_for_completion_timeout(...,C)
-+|
-+wait_for_completion_io_timeout(...,C)
-+|
-+wait_for_completion_interruptible_timeout(...,C)
-+|
-+wait_for_completion_killable_timeout(...,C)
++request_firmware_direct at p(...)
 +)
 +
-+ at script:python depends on org@
-+p << cc.p;
-+timeout << cc.C;
++ at script:python@
++init << defines_module_init.init;
++p << hascall.p;
 +@@
 +
-+# schedule_timeout(1) for a "short" delay is not really HZ dependent
-+# as it always would be converted to 1 by msecs_to_jiffies as well
-+# so count this as false positive
-+if str.isdigit(timeout):
-+   if (int(timeout) != 1):
-+      msg = "WARNING: timeout is HZ dependent"
-+      coccilib.org.print_safe_todo(p[0], msg)
++if p[0].current_element == init:
++    print_err("init", p[0].file, int(p[0].line))
++    cocci.include_match(False)
 +
-+ at script:python depends on report@
-+p << cc.p;
-+timeout << cc.C;
++ at script:python@
++drv_probe << has_probe.drv_probe;
++p << hascall.p;
 +@@
 +
-+if str.isdigit(timeout):
-+   if (int(timeout) != 1):
-+      msg = "WARNING: timeout (%s) seems HZ dependent" % (timeout)
-+      coccilib.report.print_report(p[0], msg)
++if p[0].current_element == drv_probe:
++    print_err("probe", p[0].file, int(p[0].line))
++    cocci.include_match(False)
 +
-+@script:python depends on strict@
-+p << cc.p;
-+timeout << cc.C;
++ at script:python@
++p << hascall.p;
 +@@
 +
-+# "strict" mode prints the cases that use C-constants != HZ
-+# as well as the numeric constants != 1. This will deliver a false
-+# positives if the C-constant is already in jiffies !
-+if str.isdigit(timeout):
-+   if (int(timeout) != 1):
-+      msg = "WARNING: timeout %s is HZ dependent" % (timeout)
-+      coccilib.report.print_report(p[0], msg)
-+elif (timeout != "HZ"):
-+   msg = "INFO: timeout %s may be HZ dependent" % (timeout)
-+   coccilib.report.print_report(p[0], msg)
++add_if_not_present(p[0].current_element, p[0].file, p[0].line)
++
++ at hasrecall depends on after_start@
++position p;
++identifier virtual.fn;
++@@
++
++fn at p(...)
++
++ at script:python@
++init << defines_module_init.init;
++p << hasrecall.p;
++starter << virtual.starter;
++@@
++
++if p[0].current_element == init:
++    print_err("init", p[0].file, int(starter))
++    cocci.include_match(False)
++
++ at script:python@
++drv_probe << has_probe.drv_probe;
++p << hasrecall.p;
++starter << virtual.starter;
++@@
++
++if p[0].current_element == drv_probe:
++    print_err("probe", p[0].file, int(starter))
++    cocci.include_match(False)
++
++@script:python@
++p << hasrecall.p;
++starter << virtual.starter;
++@@
++
++add_if_not_present(p[0].current_element, p[0].file, starter)
 -- 
-2.1.4
+2.9.2
