@@ -1,120 +1,141 @@
-From: mcgrof@kernel.org (Luis R. Rodriguez)
-Date: Wed, 24 Aug 2016 22:39:01 +0200
+From: daniel.vetter@ffwll.ch (Daniel Vetter)
+Date: Thu, 25 Aug 2016 13:05:44 +0200
 Subject: [Cocci] [PATCH v2 2/5] firmware: annotate thou shalt not
  request fw on init or probe
-In-Reply-To: <CAKMK7uGAacZ5Lc1n5CiCVKgKWMS-H3S=8muD-LO+wQjpGnOdJw@mail.gmail.com>
+In-Reply-To: <20160824203901.GT3296@wotan.suse.de>
 References: <1466117661-22075-1-git-send-email-mcgrof@kernel.org>
  <1466117661-22075-3-git-send-email-mcgrof@kernel.org>
  <CAKMK7uGAacZ5Lc1n5CiCVKgKWMS-H3S=8muD-LO+wQjpGnOdJw@mail.gmail.com>
-Message-ID: <20160824203901.GT3296@wotan.suse.de>
+ <20160824203901.GT3296@wotan.suse.de>
+Message-ID: <CAKMK7uEJtEr91SM6V3hZzwMyzTVXJanMtPcWM81RFH_Xyq9KVQ@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, Aug 24, 2016 at 08:55:55AM +0200, Daniel Vetter wrote:
-> On Fri, Jun 17, 2016 at 12:54 AM, Luis R. Rodriguez <mcgrof@kernel.org> wrote:
-> > Thou shalt not make firmware calls early on init or probe.
+On Wed, Aug 24, 2016 at 10:39 PM, Luis R. Rodriguez <mcgrof@kernel.org> wrote:
+> On Wed, Aug 24, 2016 at 08:55:55AM +0200, Daniel Vetter wrote:
+>> On Fri, Jun 17, 2016 at 12:54 AM, Luis R. Rodriguez <mcgrof@kernel.org> wrote:
+>> > Thou shalt not make firmware calls early on init or probe.
+>
+> <-- snip -->
+>
+>> > There are 4 offenders at this time:
+>> >
+>> > mcgrof at ergon ~/linux-next (git::20160609)$ export COCCI=scripts/coccinelle/api/request_firmware.cocci
+>> > mcgrof at ergon ~/linux-next (git::20160609)$ make coccicheck MODE=report
+>> >
+>> > drivers/fmc/fmc-fakedev.c: ERROR: driver call request firmware call on its init routine on line 321.
+>> > drivers/fmc/fmc-write-eeprom.c: ERROR: driver call request firmware call on its probe routine on line 136.
+>> > drivers/tty/serial/rp2.c: ERROR: driver call request firmware call on its probe routine on line 796.
+>> > drivers/tty/serial/ucc_uart.c: ERROR: driver call request firmware call on its probe routine on line 1246.
+>>
+>> Plus all gpu drivers which need firmware. And yes we must load them at
+>> probe
+>
+> Do you have an upstream driver in mind that does this ? Is it on device
+> drier module probe or a DRM subsystem specific probe call of some sort ?
 
-<-- snip -->
+i915 is the one I care about for obvious reasons ;-) It's all from the
+pci device probe function, but nested really deeply.
 
-> > There are 4 offenders at this time:
-> >
-> > mcgrof at ergon ~/linux-next (git::20160609)$ export COCCI=scripts/coccinelle/api/request_firmware.cocci
-> > mcgrof at ergon ~/linux-next (git::20160609)$ make coccicheck MODE=report
-> >
-> > drivers/fmc/fmc-fakedev.c: ERROR: driver call request firmware call on its init routine on line 321.
-> > drivers/fmc/fmc-write-eeprom.c: ERROR: driver call request firmware call on its probe routine on line 136.
-> > drivers/tty/serial/rp2.c: ERROR: driver call request firmware call on its probe routine on line 796.
-> > drivers/tty/serial/ucc_uart.c: ERROR: driver call request firmware call on its probe routine on line 1246.
-> 
-> Plus all gpu drivers which need firmware. And yes we must load them at
-> probe
+>> because people are generally pissed when they boot their machine
+>> and the screen goes black. On top of that a lot of people want their
+>> gpu drivers to be built-in, but can't ship the firmware blobs in the
+>> kernel image because gpl. Yep, there's a bit a contradiction there ...
+>
+> Can they use initramfs for this ?
 
-Do you have an upstream driver in mind that does this ? Is it on device
-drier module probe or a DRM subsystem specific probe call of some sort ?
+Apparently that's also uncool with the embedded folks. Tbh I don't
+know exactly why. Also I thought initramfs is available only after
+built-in drivers have finished loading, but maybe that changed.
 
-> because people are generally pissed when they boot their machine
-> and the screen goes black. On top of that a lot of people want their
-> gpu drivers to be built-in, but can't ship the firmware blobs in the
-> kernel image because gpl. Yep, there's a bit a contradiction there ...
+> Also just curious -- as with other subsystems, is it possible to load
+> a generic driver first, say vesa, and then a more enhanced one later ?
+> I am not saying this is ideal or am I suggesting this, I'd just like
+> to know the feasibility of this.
 
-Can they use initramfs for this ?
+Some users want a fully running gfx stack 2s after power-on. There's
+not even enough time to load an uefi or vga driver first. i915
+directly initializes the gpu from power-on state on those.
 
-Also just curious -- as with other subsystems, is it possible to load
-a generic driver first, say vesa, and then a more enhanced one later ?
-I am not saying this is ideal or am I suggesting this, I'd just like
-to know the feasibility of this.
+>> I think what would work is loading the different subsystems of the
+>> driver in parallel (we already do that largely)
+>
+> Init level stuff is actually pretty synchronous, and in fact both
+> init and probe are called serially. There are a few subsystems which
+> have been doing things a bit differently, but these are exceptions.
+>
+> When you say we already do this largely, can you describe a bit more
+> precisely what you mean ?
 
-> I think what would work is loading the different subsystems of the
-> driver in parallel (we already do that largely)
+Oh, this isn't subsystems as in linux device/driver model, but
+different parts within the driver. We fire up a bunch of struct work
+to get various bits done asynchronously.
 
-Init level stuff is actually pretty synchronous, and in fact both
-init and probe are called serially. There are a few subsystems which
-have been doing things a bit differently, but these are exceptions.
+>>, and then if one
+>> firmware blob isn't there yet simply stall that async worker until it
+>> shows up.
+>
+> Is this an existing framework or do you mean if we add something
+> generic to do this async loading of subsystems ?
 
-When you say we already do this largely, can you describe a bit more
-precisely what you mean ?
+normal workers, and flush_work and friends to sync up. We have some
+really fancy ideas for essentially async init tasks that can declare
+their depencies systemd-unit file style, but that's only in the
+prototype stage. We need this (eventually) since handling the ordering
+correctly is getting unwieldy. But again just struct work launched
+from the main pci probe function.
 
->, and then if one
-> firmware blob isn't there yet simply stall that async worker until it
-> shows up.
+>> But the answers I've gotten thus far from request_firmware()
+>> folks (well at least Greg) is don't do that ...
+>
+> Well in this patch set I'm adding myself as a MAINTAINER and I've
+> been extending the firmware API recently to help with a few new
+> features I want, I've been wanting to hear more feedback from
+> other's needs and I had actually not gotten much -- except
+> only recently with the usermode helper and reasons why some
+> folks thought they could not use direct firmware loading from
+> the fs. I'm keen to hear or more use cases and needs specially if
+> they have to do with improving boot time and asynchronous boot.
+>
+>> Is that problem still somewhere on the radar?
+>
+> Not mine.
+>
+>> Atm there's various
+>> wait_for_rootfs hacks out there floating in vendor/product trees.
+>
+> This one I've heard about recently, and I suggested two possible
+> solutions, with a preference to a simply notification of when
+> rootfs is available from userspace.
+>
+>> "Avoid at all costs" sounds like upstream prefers to not care about
+>> android/cros in those case (yes I know most arm socs don't need
+>> firmware, which would make it a problem fo just be a subset of all
+>> devices).
+>
+> In my days of dealing with Android I learned most folks did not frankly
+> care too much about upstream-first model. That means things were reactive.
+> That's a business mind set and that's fine. However for upstream we want
+> what is best and to discuss. I haven't seen proposals so, so long as
+> we just hear of "hacks" that some folks do in vendor/product trees,
+> what can we do ?
 
-Is this an existing framework or do you mean if we add something
-generic to do this async loading of subsystems ?
+One of the proposals which would have worked for us died a while back:
 
-> But the answers I've gotten thus far from request_firmware()
-> folks (well at least Greg) is don't do that ...
+https://lkml.org/lkml/2014/6/15/47
 
-Well in this patch set I'm adding myself as a MAINTAINER and I've
-been extending the firmware API recently to help with a few new
-features I want, I've been wanting to hear more feedback from
-other's needs and I had actually not gotten much -- except
-only recently with the usermode helper and reasons why some
-folks thought they could not use direct firmware loading from
-the fs. I'm keen to hear or more use cases and needs specially if
-they have to do with improving boot time and asynchronous boot.
+That's essentially what I'd like to have.
 
-> Is that problem still somewhere on the radar? 
+[cut discussion about async probe]
 
-Not mine.
+> So .. I agree, let's avoid the hacks. Patches welcomed.
 
-> Atm there's various
-> wait_for_rootfs hacks out there floating in vendor/product trees.
-
-This one I've heard about recently, and I suggested two possible
-solutions, with a preference to a simply notification of when
-rootfs is available from userspace.
-
-> "Avoid at all costs" sounds like upstream prefers to not care about
-> android/cros in those case (yes I know most arm socs don't need
-> firmware, which would make it a problem fo just be a subset of all
-> devices).
-
-In my days of dealing with Android I learned most folks did not frankly
-care too much about upstream-first model. That means things were reactive.
-That's a business mind set and that's fine. However for upstream we want
-what is best and to discuss. I haven't seen proposals so, so long as
-we just hear of "hacks" that some folks do in vendor/product trees,
-what can we do ?
-
-In so far as async probe is concerned -- that is now upstream.
-
-http://www.do-not-panic.com/2015/12/linux-asynchronous-probe.html
-
-In so far as modules are concerned -- this should work without issue now, and
-if there is an issue its very likely a bug in the subsystem.  As I noted in the
-post, built-in support requires more love. A simple option for you to test this
-is to test the two debug patches at the end there and boot. Alternatively inits
-can just peg the async request for all modules. Should be an easy change, just
-hadn't had a change to do it yet. Maybe its time.
-
-I'm also trying to make more async functionality possible early in boot with
-dependencies annotated somehow, and have a bit of work to help with this (refer
-to recent linker tables patches) already which may even be possible to used to
-facelift our old kernel init levels -- but as I've studied this I've also
-observed others working on very similar problems, nothing is quite taking a
-large picture of this and trying to generalize this. Its why I proposed it as a
-topic for KS.
-
-So .. I agree, let's avoid the hacks. Patches welcomed.
-
-  Luis
+Hm, this is a definite change of tack - back when I discussed this
+with Greg about 2 ks ago it sounded like "don't do this". The only
+thing we need is some way to wait for rootfs before we do the
+request_firmware. Everything else we handle already in the kernel.
+-Daniel
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
++41 (0) 79 365 57 48 - http://blog.ffwll.ch
