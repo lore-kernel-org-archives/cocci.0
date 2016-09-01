@@ -1,47 +1,43 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Thu, 1 Sep 2016 11:57:00 +0200
-Subject: [Cocci] Querying Git commits with Prequel
-In-Reply-To: <alpine.DEB.2.10.1609010956130.3568@hadrien>
-References: <alpine.DEB.2.10.1608291736460.2984@hadrien>
- <2ab7c81b-852a-b090-6ea6-54906d7bab30@users.sourceforge.net>
- <alpine.DEB.2.10.1609010857120.3086@hadrien>
- <41926033-b326-ea09-8d02-39ff7f898cad@users.sourceforge.net>
- <alpine.DEB.2.10.1609010956130.3568@hadrien>
-Message-ID: <b75f798b-9461-d29b-95af-628b24608cf9@users.sourceforge.net>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Thu, 1 Sep 2016 17:36:21 +0100 (IST)
+Subject: [Cocci] [PATCH] coccicheck: Correct pointer to documentation in
+ coccicheck
+In-Reply-To: <1472741315-13326-1-git-send-email-andreas.platschek@opentech.at>
+References: <1472741315-13326-1-git-send-email-andreas.platschek@opentech.at>
+Message-ID: <alpine.DEB.2.10.1609011735140.3030@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> I guess, to the extent that any programming language grammar is context free.
-> Why does it matter?
+On Thu, 1 Sep 2016, Andreas Platschek wrote:
 
-Did your research interest grow also for development challenges around
-programming languages like "C++" (and their usage in commits)?
+> Since Documentation/coccinelle.txt was moved to
+> Documentation/dev-tools/coccinelle.rst, this should also be corrected in the
+> coccicheck script.
+>
+> Signed-off-by: Andreas Platschek <andreas.platschek@opentech.at>
 
+Acked-by: Julia Lawall <julia.lawall@lip6.fr>
 
->>>> 6. How interesting will discussions become around the used hardware
->>>>    that is mentioned in the chapter "7 Evaluation" and the corresponding
->>>>    software performance?
->>>
->>> Not sure what there is to discuss.
->>
->> Examples:
->> * Number of processor cores
-> 
-> 1.  As is specified in the paper.
+Thanks for noticing the issue!
 
-I noticed this fact already.
-
-Will any more software researchers look if they can also afford the mentioned
-computation resources so that they will evaluate the shown results a bit more?
-
-
-> I tried github, but the indices don't fit due to github file size
-> limitations.  Since I ignore all of the features of github other than the
-> basic git features, I don't care.  I believe that gforge has a bug
-> tracker, but I would have to figure out how to enable it.
-
-I am curious if more contributors would appreciate further improvements
-around such project management interfaces.
-
-Regards,
-Markus
+> ---
+>  scripts/coccicheck | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/scripts/coccicheck b/scripts/coccicheck
+> index c92c1528..ec487b8 100755
+> --- a/scripts/coccicheck
+> +++ b/scripts/coccicheck
+> @@ -1,7 +1,7 @@
+>  #!/bin/bash
+>  # Linux kernel coccicheck
+>  #
+> -# Read Documentation/coccinelle.txt
+> +# Read Documentation/dev-tools/coccinelle.rst
+>  #
+>  # This script requires at least spatch
+>  # version 1.0.0-rc11.
+> --
+> 2.1.4
+>
+>
