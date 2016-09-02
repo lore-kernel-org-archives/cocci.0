@@ -1,32 +1,55 @@
-From: andreas.platschek@opentech.at (Andreas Platschek)
-Date: Thu,  1 Sep 2016 14:48:35 +0000
-Subject: [Cocci] [PATCH] coccicheck: Correct pointer to documentation in
-	coccicheck
-Message-ID: <1472741315-13326-1-git-send-email-andreas.platschek@opentech.at>
+From: dhiru.kholia@gmail.com (Dhiru Kholia)
+Date: Fri, 2 Sep 2016 12:42:54 +0530
+Subject: [Cocci] Detecting undefined behavior with Coccinelle
+Message-ID: <CANO7a6yAgHjcJc2R2fNyn8Pgto=qs-5+kUTZ2Etan0ODhqLSrQ@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Since Documentation/coccinelle.txt was moved to
-Documentation/dev-tools/coccinelle.rst, this should also be corrected in the
-coccicheck script.
+Hi,
 
-Signed-off-by: Andreas Platschek <andreas.platschek@opentech.at>
----
- scripts/coccicheck | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+When the following program is compiled with GCC 6 compiler running on
+Fedora 24 with "-O2" flag, the overflow check (rowstride / channels !=
+width) gets eliminated presumably due to undefined behavior.
 
-diff --git a/scripts/coccicheck b/scripts/coccicheck
-index c92c1528..ec487b8 100755
---- a/scripts/coccicheck
-+++ b/scripts/coccicheck
-@@ -1,7 +1,7 @@
- #!/bin/bash
- # Linux kernel coccicheck
- #
--# Read Documentation/coccinelle.txt
-+# Read Documentation/dev-tools/coccinelle.rst
- #
- # This script requires at least spatch
- # version 1.0.0-rc11.
--- 
-2.1.4
+// gcc -c -O2 too-much-optimization.c
+//
+// objdump -d too-much-optimization.o
+
+#include <stdio.h>
+#include <stdlib.h>
+
+void *gdk_pixbuf_new_reduced(int has_alpha, int width, int height)
+{
+  void *buf = NULL;
+  int channels;
+  int rowstride;
+
+  if (width < 0)
+    return NULL;
+  if (height < 0)
+    return 0;
+
+  channels = has_alpha ? 4 : 3;
+  rowstride = width * channels;
+  if (rowstride / channels != width) /* overflow check */
+    return NULL;
+
+  buf = calloc(height, rowstride);
+  if (!buf)
+    return NULL;
+
+  return buf;
+}
+
+This code is present in the gdk-pixbuf software package. The
+elimination of this overflow check leads to memory corruption problems
+later on in the gdk-pixbuf library.
+
+Is it possible to detect such code patterns (multiplication operation
+followed by division to check for overflow) which invoke undefined
+behavior using Coccinelle?
+
+I have not written Coccinelle scripts before. Any help would be great.
+
+Thanks,
+Dhiru
