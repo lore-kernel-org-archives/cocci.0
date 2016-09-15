@@ -1,36 +1,49 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 14 Sep 2016 16:16:19 +0200 (CEST)
+From: waldemar.rymarkiewicz@gmail.com (Waldemar Rymarkiewicz)
+Date: Thu, 15 Sep 2016 07:57:42 +0200
 Subject: [Cocci] Match #define in cocci
-In-Reply-To: <CAHKzcEN9fcOk1HCar=u+htx=o61xF61VmbO9PeYPBaedTQYDcg@mail.gmail.com>
+In-Reply-To: <alpine.DEB.2.10.1609141615560.3033@hadrien>
 References: <CAHKzcEN9fcOk1HCar=u+htx=o61xF61VmbO9PeYPBaedTQYDcg@mail.gmail.com>
-Message-ID: <alpine.DEB.2.10.1609141615560.3033@hadrien>
+ <alpine.DEB.2.10.1609141615560.3033@hadrien>
+Message-ID: <CAHKzcEMih-YHeaaa6hp1-Hf3PUY7GDdqG90wL6zZwuMjaQv=-g@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+>
+> Could you send the exact semantic patch that you tried?  Coccinelle should
+> allos parsing #defines.
+
+Simply
+
+@@
+@@
+-#define pr_fmt(fmt) KBUILD_MODNAME
+
+works, but
+
+@@
+@@
+-#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+fails  with
+
+Fatal error: exception Failure("minus: parse error: \n = File
+\"patches/1021-pr_fmt_undef.cocci\", line 4, column 38,  charpos =
+59\n    around = '\"', whole content = #define pr_fmt(fmt)
+KBUILD_MODNAME \": \" fmt\n")
+
+but even if I want to match just
+
+@@
+@@
+-#define pr_fmt(fmt) KBUILD_MODNAME  fmt
+
+it also fails with
+
+Fatal error: exception Failure("minus: parse error: \n = File
+\"patches/1021-pr_fmt_undef.cocci\", line 4, column 0,  charpos = 21\n
+   around = '#define pr_fmt(', whole content = #define pr_fmt(fmt)
+KBUILD_MODNAME fmt\n")
 
 
-On Wed, 14 Sep 2016, Waldemar Rymarkiewicz wrote:
-
-> Hi,
->
-> I'm new to cocci and try to understand how all this things work. I
-> have a problem with matching a #define  in a patch.
->
-> I wan to match local definition
->
->    #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
->
-> and  add #undef  it first. The output should be like this
->
->    #undef  pr_fmt
->    #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
->
-> I tried many approaches but seems like parser have a problem with
-> parsing #defines.
->
-> Is that possible to achieve  what I expect in cocci ?
-
-Could you send the exact semantic patch that you tried?  Coccinelle should
-allos parsing #defines.
-
-julia
+Thanks,
+/Waldek
