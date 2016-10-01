@@ -1,16 +1,21 @@
 From: mmarek@suse.com (Michal Marek)
-Date: Sat, 1 Oct 2016 23:03:56 +0200
-Subject: [Cocci] [PATCH] Coccinelle: limit memdup_user transformation to
- GFP_KERNEL case
-In-Reply-To: <1474472919-12867-1-git-send-email-Julia.Lawall@lip6.fr>
-References: <1474472919-12867-1-git-send-email-Julia.Lawall@lip6.fr>
-Message-ID: <57F024BC.30606@suse.com>
+Date: Sat, 1 Oct 2016 23:04:07 +0200
+Subject: [Cocci] [PATCH] Coccinelle: pm_runtime: ensure relevance of
+ pm_runtime reports
+In-Reply-To: <1474532935-22506-1-git-send-email-Julia.Lawall@lip6.fr>
+References: <1474532935-22506-1-git-send-email-Julia.Lawall@lip6.fr>
+Message-ID: <57F024C7.7050503@suse.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Dne 21.9.2016 v 17:48 Julia Lawall napsal(a):
-> Memdup_user encapsulates a memory allocation with the flag GFP_KERNEL, so
-> only allow this flag in the original code.
+Dne 22.9.2016 v 10:28 Julia Lawall napsal(a):
+> pm_runtime.cocci starts with one rule that searches for a variety of
+> functions calls, followed by various rules that report errors.  Previously,
+> the only connection between the first rule and the rest was to check that
+> the first rule had matched somewhere.  Change the rules to propagate a
+> position from the first rule to the others, to make sure that the sites
+> reported on are the same as the sites that were identified as having the
+> relevant functions.
 > 
 > Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
