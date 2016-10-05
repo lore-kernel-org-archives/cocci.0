@@ -1,25 +1,51 @@
-From: mmarek@suse.com (Michal Marek)
-Date: Sat, 1 Oct 2016 23:04:07 +0200
-Subject: [Cocci] [PATCH] Coccinelle: pm_runtime: ensure relevance of
- pm_runtime reports
-In-Reply-To: <1474532935-22506-1-git-send-email-Julia.Lawall@lip6.fr>
-References: <1474532935-22506-1-git-send-email-Julia.Lawall@lip6.fr>
-Message-ID: <57F024C7.7050503@suse.com>
+From: Nikolaus@rath.org (Nikolaus Rath)
+Date: Tue, 04 Oct 2016 20:27:56 -0700
+Subject: [Cocci] Replacing one (specific!) type with another
+Message-ID: <87r37vzd8j.fsf@vostro.rath.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Dne 22.9.2016 v 10:28 Julia Lawall napsal(a):
-> pm_runtime.cocci starts with one rule that searches for a variety of
-> functions calls, followed by various rules that report errors.  Previously,
-> the only connection between the first rule and the rest was to check that
-> the first rule had matched somewhere.  Change the rules to propagate a
-> position from the first rule to the others, to make sure that the sites
-> reported on are the same as the sites that were identified as having the
-> relevant functions.
-> 
-> Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+Hello,
 
-Applied to kbuild.git#misc.
+In a set of C files, I would like to replace each instance of one type
+(struct fasel_foo) with another type (struct fasel_bar). For instance,
 
-Thanks,
-Michal
+char* fasel_foo_print(struct fasel_foo *ptr) {
+    // ...
+   return "this struct fasel_foo string should not change";
+}
+
+should become
+
+char* fasel_foo_print(struct fasel_bar *ptr) {
+    // ...
+   return "this struct fasel_foo string should not change";
+}
+
+
+Based on the LWN articles that I've read, this seems like the perfect
+use-case for coccinelle. However, somehow I'm struggling to write a
+patch for this. All the documentation that I could get my hands on seems
+to describe more abstract changes that require the use of variables -
+but as far as I can tell, I need something much simpler:
+
+@@
+"struct fasel_foo must be a type name!"
+@@
+- struct fasel_foo
++ struct fasel_bar
+
+
+...if only I knew what to put between the @@.
+
+Can someone point me in the right direction?
+
+
+Best,
+-Nikolaus
+
+-- 
+GPG encrypted emails preferred. Key id: 0xD113FCAC3C4E599F
+Fingerprint: ED31 791B 2C5C 1613 AF38 8B8A D113 FCAC 3C4E 599F
+
+             ?Time flies like an arrow, fruit flies like a Banana.?
