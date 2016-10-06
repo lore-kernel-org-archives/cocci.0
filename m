@@ -1,66 +1,59 @@
-From: Nikolaus@rath.org (Nikolaus Rath)
-Date: Wed, 05 Oct 2016 15:38:07 -0700
-Subject: [Cocci] Replacing one (specific!) type with another
-In-Reply-To: <alpine.DEB.2.10.1610052158110.3130@hadrien> (Julia Lawall's
- message of "Wed, 5 Oct 2016 22:02:21 +0200 (CEST)")
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Thu, 6 Oct 2016 07:42:50 +0200
+Subject: [Cocci] Replacing one variable name with another
+In-Reply-To: <878tu2ctnm.fsf@thinkpad.rath.org>
 References: <87r37vzd8j.fsf@vostro.rath.org>
  <alpine.DEB.2.10.1610050744460.3061@hadrien>
  <87shsa7p71.fsf@thinkpad.rath.org>
- <alpine.DEB.2.10.1610052158110.3130@hadrien>
-Message-ID: <8760p6ctgw.fsf@thinkpad.rath.org>
+ <f49b95f0-071f-7c36-55cc-8dd02921e211@users.sourceforge.net>
+ <878tu2ctnm.fsf@thinkpad.rath.org>
+Message-ID: <ff8ef53c-e67f-eec7-212b-3e4e729fcce5@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Oct 05 2016, Julia Lawall <julia.lawall@lip6.fr> wrote:
->> 1. What would I need to do if I don't want to replace a struct but
->>    something typedef'd? (my_type *ptr --> new_type *ptr).
->
-> Coccinelle needs to know that the thing is a typedef.  So this time, you
-> can start your rule with
->
-> @@
-> typedef my_type;
-> typedef new_type;
-> @@
+>> @name_replacement@
+>> @@
+>>  my_type *
+>> -ptr
+>> +pointer
+>>  ;
+> 
+> I could try it, but I'm actually more interested in understanding how
+> this works (I already solved my primariy problem).
 
-Makes sense, thanks!
-
->> 2. ..and how would I go about if instead of the type, I want to replace
->>    a variable name? (my_type *ptr --> my_type *pointer).
->
-> I'm not completely sure what the issue is here.  Do you specifically want
-> to convert ptr to pointer?  Is the type important?  To make exactly what
-> you have written, you could put:
->
-> @@
-> typedef my_type;
-> idexpression mytype * p1;
-> @@
->
-> - ptr at p1
-> + pointer
->
-> This checks for the word ptr, and also checks that it is an identifier of
-> the right type.  I haven't tested it, so let me know if there is any
-> problem.
-
-Well, I don't have an actual use-case anymore. My problem is solved, I'm
-just curious what else I could do with Coccinelle to do :-).
-
-Somehow I'm having a really hard time grasping the fundamentals. The
-first two examples make sense - I could adapt them for similar
-situations. But then, I still have absolutely no idea how I would come
-up with the third example, or how to adapt it. What does "idexpression"
-mean? What does "ptr at p1" mean? Is this documented anywhere? 
-
-I'd hate to waste your time asking tons of such trivial questions on the
-mailing list, but I just can't find any helpful documentation at all...
+Thanks for your interest.
 
 
-Best,
--Nikolaus
--- 
-GPG encrypted emails preferred. Key id: 0xD113FCAC3C4E599F
-Fingerprint: ED31 791B 2C5C 1613 AF38 8B8A D113 FCAC 3C4E 599F
+> Could you explain this script a bit more?
 
-             ?Time flies like an arrow, fruit flies like a Banana.?
+Yes, of course.
+
+It shows the general structure of a simple script for the semantic patch language.
+
+Outline:
+* Block for definition of SmPL metavariables
+* Specification of C source code fragments (together with desired changes)
+
+
+> What exactly does "@name_replacement@" mean?
+
+Such a SmPL rule can specify a name for it. Which identifier would you
+choose there according to your naming preferences?
+http://coccinelle.lip6.fr/docs/main_grammar002.html
+
+
+> Does it the interpretation of "my_type *" further down?
+
+No. - I tend to use a title there which is descriptive somewhat.
+
+
+>> How will your software development experiments evolve for the desired
+>> application of the semantic patch language?
+> 
+> Aeh, sorry, I don't understand the question.
+
+Do you plan to try any more SmPL scripts out?
+How do you think about to share further experiences?
+
+Regards,
+Markus
