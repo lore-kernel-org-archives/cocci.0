@@ -1,26 +1,19 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 7 Oct 2016 07:50:25 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Fri, 7 Oct 2016 08:00:04 +0200
 Subject: [Cocci] scripts/coccicheck: Update for a comment?
-In-Reply-To: <ea62a1ea-c566-65a0-e2fd-2ee96839cf48@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.10.1610070749420.3074@hadrien>
 References: <ea62a1ea-c566-65a0-e2fd-2ee96839cf48@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1610070749420.3074@hadrien>
+ <alpine.DEB.2.10.1610070749420.3074@hadrien>
+Message-ID: <76a6d8fa-03b9-5589-2885-fa62933dd391@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+>> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git/tree/scripts/coccicheck?id=c802e87fbe2d4dd58982d01b3c39bc5a781223aa#n4
+> 
+> How about submitting a patch to fix the problem?
 
+I would appreciate to become a bit more sure about the current storage location
+which should be referenced in this file.
 
-On Fri, 7 Oct 2016, SF Markus Elfring wrote:
-
-> Hello,
->
-> Information from a commit like "docs: sphinxify coccinelle.txt and add it
-> to dev-tools" caught also my software development attention.
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/Documentation/coccinelle.txt?id=4b9033a33494ec9154d63e706e9e47f7eb3fd59e
->
-> Did an other information from a comment become outdated in the script "coccicheck"
-> because of such changes for the documentation format?
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git/tree/scripts/coccicheck?id=c802e87fbe2d4dd58982d01b3c39bc5a781223aa#n4
-
-How about submitting a patch to fix the problem?
-
-julia
+Regards,
+Markus
