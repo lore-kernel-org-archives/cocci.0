@@ -1,75 +1,19 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 6 Oct 2016 22:35:45 +0200 (CEST)
-Subject: [Cocci] spatch: dealing with macro calls in structures
-In-Reply-To: <CA+BoTQm9L8vK3Daj+rbWWMVC3dVki9jicdmnHFvp1mjr-=_3=Q@mail.gmail.com>
-References: <CA+BoTQm9L8vK3Daj+rbWWMVC3dVki9jicdmnHFvp1mjr-=_3=Q@mail.gmail.com>
-Message-ID: <alpine.DEB.2.10.1610062234020.5301@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Fri, 7 Oct 2016 07:47:20 +0200
+Subject: [Cocci] scripts/coccicheck: Update for a comment?
+Message-ID: <ea62a1ea-c566-65a0-e2fd-2ee96839cf48@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hello,
 
+Information from a commit like "docs: sphinxify coccinelle.txt and add it
+to dev-tools" caught also my software development attention.
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/Documentation/coccinelle.txt?id=4b9033a33494ec9154d63e706e9e47f7eb3fd59e
 
-On Thu, 6 Oct 2016, Michal Kazior wrote:
+Did an other information from a comment become outdated in the script "coccicheck"
+because of such changes for the documentation format?
+https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git/tree/scripts/coccicheck?id=c802e87fbe2d4dd58982d01b3c39bc5a781223aa#n4
 
-> Hi,
->
-> I've been struggling to get spatch to parse the following code properly:
->
-> struct foo {
->         int hello;
->         BAR(int) world;
-> };
->
-> int bar(int wut) {
->         BAR(int) world;
->         return 0;
-> }
->
-> My cocci is:
->
-> @@ @@
-> * struct foo { ... };
->
-> @@ @@
-> * int bar(...) { ... }
->
-> If I specify -macro_file which includes:
->
-> #define BAR(x)
->
-> With v1.0.6 I only get:
->
-> -int bar(int wut) {
-> -       BAR(int) world;
-> -       return 0;
-> -}
->
-> (i.e. "struct foo" is not recognized)
->
-> v1.0.4 gives me nothing.
->
-> If I specify -macro_file which includes:
->
-> #define BAR(x) x
->
-> I get nothing from both 1.0.4 and 1.0.6 except a complaint "try to
-> delete an expanded token: int".
->
-> Is this expected/known?
-
-Yes.  Unfortunately you cannot transform macro expanded code.  I think
-that this issue is that it would be hard to know what to do if the code
-was partially deleted.  It could be nice to allow completely deleting it,
-but probably the information about whether that is the case is not
-avalable.
-
-julia
-
->
->
-> Micha?
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+Regards,
+Markus
