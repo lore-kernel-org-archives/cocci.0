@@ -1,42 +1,46 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 7 Oct 2016 09:19:28 +0200
-Subject: [Cocci] scripts/coccicheck: Update for a comment?
-In-Reply-To: <alpine.DEB.2.10.1610070824490.3074@hadrien>
+Date: Fri, 7 Oct 2016 14:22:49 +0200
+Subject: [Cocci] docs: Fixing "sphinxify coccinelle.txt"?
+In-Reply-To: <alpine.DEB.2.10.1610070749420.3074@hadrien>
 References: <ea62a1ea-c566-65a0-e2fd-2ee96839cf48@users.sourceforge.net>
  <alpine.DEB.2.10.1610070749420.3074@hadrien>
- <76a6d8fa-03b9-5589-2885-fa62933dd391@users.sourceforge.net>
- <alpine.DEB.2.10.1610070803550.3074@hadrien>
- <8d36952c-1dbb-bb26-ee57-3e1540c042c0@users.sourceforge.net>
- <alpine.DEB.2.10.1610070824490.3074@hadrien>
-Message-ID: <1e8a03cb-2ae0-c8e3-7910-97ad05903709@users.sourceforge.net>
+Message-ID: <b17b77b4-9604-59c0-7808-09463a6a83f5@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Either you send the patch, or I will send the patch, when I have time,
-> with no credit to you.
+>> Information from a commit like "docs: sphinxify coccinelle.txt and add it
+>> to dev-tools" caught also my software development attention.
+>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/Documentation/coccinelle.txt?id=4b9033a33494ec9154d63e706e9e47f7eb3fd59e
+>>
+>> Did an other information from a comment become outdated in the script "coccicheck"
+>> because of such changes for the documentation format?
+>> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git/tree/scripts/coccicheck?id=c802e87fbe2d4dd58982d01b3c39bc5a781223aa#n4
+> 
+> How about submitting a patch to fix the problem?
 
-I am curious when "the time" will be appropriate.
+Is the published commit (from 2016-08-08 / 2016-08-18) generally questionable
+as I see it by the interface "cgit" at the moment?
+
+* Does this one contain only the deletion of the file "Documentation/coccinelle.txt"?
+
+* How should the result from the mentioned action "add it to dev-tools"
+  look like finally?
+
+* How could the acknowledgements happen for a software transformation
+  which seems to be incomplete there?
 
 
-> I'm not an expert on all of the future plans for the documentation,
+I find another data display also interesting and more promising.
+https://patchwork.kernel.org/patch/9269973/
 
-I assumed that you know a bit more about the corresponding software evolution
-than me.
+* Should this patch about the desired file format conversion become available
+  also by the other known interfaces?
 
+* Would it have been nicer to include a corresponding update for the file
+  "scripts/coccicheck" there, too?
 
-> The only think I know is where the file is now, and that the file
-> is perfectly readable in its rst format, and thus it seems
-> quite all right to reference it.
+* Do we need to clarify the distribution of the correct version any further?
 
-I can agree to such an information in principle.
-
-
-> If the situation change in the future, we can have another patch
-> in the future.
-
-I would appreciate another clarification:
-Do I overlook any commit for the discussed source file anyhow?
-https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git/log/dev-tools/coccinelle.rst
 
 Regards,
 Markus
