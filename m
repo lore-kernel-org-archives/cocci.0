@@ -1,37 +1,97 @@
-From: christophe.leroy@c-s.fr (Christophe LEROY)
-Date: Wed, 12 Oct 2016 11:57:41 +0200
-Subject: [Cocci] Error: This expression has type t but an expression was
- expected of type, string option option
-Message-ID: <4a34076e-3fd3-33ea-0ff8-b18e0bc39439@c-s.fr>
+From: hofrat@osadl.org (Nicholas Mc Guire)
+Date: Sat,  8 Oct 2016 17:51:45 +0200
+Subject: [Cocci] [PATCH] Coccinelle: flag conditions with no effect
+Message-ID: <1475941905-8835-1-git-send-email-hofrat@osadl.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi
+Report code constructs where the if and else branch are functionally
+identical. In cases where this is intended it really should be 
+documented - most reported cases probably are bugs.
 
-I'm trying to compile coccinelle on a CentOS 6 system, and I'm facing 
-the following compilation error.
+Signed-off-by: Nicholas Mc Guire <hofrat@osadl.org>
+---
 
-I have the following version of ocaml: ocaml-3.12.0-21.el6.i686
+Tested with spatch version 1.0.5
 
-What can be done to solve this issue ?
+As of 4.8.0 this reports about 90 cases of which the majority looks like
+they would at least need additional comments.
 
-/usr/bin/ocamlc.opt -unsafe -I pyml-current -custom -cclib -lpyml_stubs 
--c pyml-current/py.ml -o pyml-current/py.cmo
-File "pyml-current/py.ml", line 500, characters 11-15:
-Error: This expression has type t but an expression was expected of type
-          string option option
-make[6]: *** [pyml-current/py.cmo] Erreur 2
-make[6]: quittant le r?pertoire ? /root/coccinelle-1.0.6/bundles/pyml ?
-make[5]: *** [all.opt] Erreur 2
-make[5]: quittant le r?pertoire ? /root/coccinelle-1.0.6/bundles/pyml ?
-make[4]: *** [/root/coccinelle-1.0.6/bundles/pyml/.opt] Erreur 2
-make[4]: quittant le r?pertoire ? /root/coccinelle-1.0.6 ?
-make[3]: *** [subdirs.opt] Erreur 1
-make[3]: quittant le r?pertoire ? /root/coccinelle-1.0.6 ?
-make[2]: *** [opt-compil] Erreur 2
-make[2]: quittant le r?pertoire ? /root/coccinelle-1.0.6 ?
-make[1]: *** [all-release] Erreur 2
-make[1]: quittant le r?pertoire ? /root/coccinelle-1.0.6 ?
-make: *** [all] Erreur 2
+Patch is against 4.8.0 (localversion-next is -next-20161006)
 
-Christophe
+ scripts/coccinelle/misc/cond_no_effect.cocci | 64 ++++++++++++++++++++++++++++
+ 1 file changed, 64 insertions(+)
+ create mode 100644 scripts/coccinelle/misc/cond_no_effect.cocci
+
+diff --git a/scripts/coccinelle/misc/cond_no_effect.cocci b/scripts/coccinelle/misc/cond_no_effect.cocci
+new file mode 100644
+index 0000000..006ef65
+--- /dev/null
++++ b/scripts/coccinelle/misc/cond_no_effect.cocci
+@@ -0,0 +1,64 @@
++///Find conditions where if and else branch are functionally
++// identical.
++//
++// There can be false positives in cases where the positional
++// information is used (as with lockdep) or where the identity
++// is a placeholder for not yet handled cases.
++// Unfortunately there also seems to be a tendency to use
++// the last if else/else as a "default behavior" - which some
++// might consider a legitimate coding pattern. From discussion
++// on kernelnewbies though it seems that this is not really an
++// accepted pattern and if at all it would need to be commented
++//
++// In the Linux kernel it does not seem to actually report
++// false positives except for those that were documented as
++// being intentional.
++// the two known cases are:
++//   arch/sh/kernel/traps_64.c:read_opcode()
++//        } else if ((pc & 1) == 0) {
++//              /* SHcompact */
++//              /* TODO : provide handling for this.  We don't really support
++//                 user-mode SHcompact yet, and for a kernel fault, this would
++//                 have to come from a module built for SHcompact.  */
++//              return -EFAULT;
++//      } else {
++//              /* misaligned */
++//              return -EFAULT;
++//      }
++//   fs/kernfs/file.c:kernfs_fop_open()
++//       * Both paths of the branch look the same.  They're supposed to
++//       * look that way and give @of->mutex different static lockdep keys.
++//       */
++//      if (has_mmap)
++//              mutex_init(&of->mutex);
++//      else
++//              mutex_init(&of->mutex);
++//
++// All other cases look like bugs or at least lack of documentation
++//
++// Confidence: Moderate
++// Copyright: (C) 2016 Nicholas Mc Guire, OSADL.  GPLv2.
++// Comments:
++// Options: --no-includes --include-headers
++
++virtual org
++virtual report
++
++ at cond@
++statement S1;
++position p;
++@@
++
++* if at p (...) S1 else S1
++
++ at script:python depends on org@
++p << cond.p;
++@@
++
++cocci.print_main("WARNING: possible condition with no effect (if == else)",p)
++
++@script:python depends on report@
++p << cond.p;
++@@
++
++coccilib.report.print_report(p[0],"WARNING: possible condition with no effect (if == else)")
+-- 
+2.1.4
