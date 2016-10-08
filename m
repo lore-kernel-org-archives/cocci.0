@@ -1,57 +1,69 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 7 Oct 2016 20:30:48 +0200 (CEST)
-Subject: [Cocci] [PATCH] scripts/coccicheck: Update reference for the
- corresponding documentation
-In-Reply-To: <8ecdc02a-1a22-951f-f3ac-2389dfbae02a@users.sourceforge.net>
-References: <ea62a1ea-c566-65a0-e2fd-2ee96839cf48@users.sourceforge.net>
- <alpine.DEB.2.10.1610070749420.3074@hadrien>
- <76a6d8fa-03b9-5589-2885-fa62933dd391@users.sourceforge.net>
- <alpine.DEB.2.10.1610070803550.3074@hadrien>
- <8d36952c-1dbb-bb26-ee57-3e1540c042c0@users.sourceforge.net>
- <alpine.DEB.2.10.1610070824490.3074@hadrien>
- <8ecdc02a-1a22-951f-f3ac-2389dfbae02a@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1610072030300.3289@hadrien>
+From: Nikolaus@rath.org (Nikolaus Rath)
+Date: Fri, 07 Oct 2016 20:16:19 -0700
+Subject: [Cocci] Replacing one (specific!) type with another
+In-Reply-To: <alpine.DEB.2.10.1610060750180.3179@hadrien> (Julia Lawall's
+ message of "Thu, 6 Oct 2016 07:55:14 +0200 (CEST)")
+References: <87r37vzd8j.fsf@vostro.rath.org>
+ <alpine.DEB.2.10.1610050744460.3061@hadrien>
+ <87shsa7p71.fsf@thinkpad.rath.org>
+ <alpine.DEB.2.10.1610052158110.3130@hadrien>
+ <8760p6ctgw.fsf@thinkpad.rath.org>
+ <alpine.DEB.2.10.1610060750180.3179@hadrien>
+Message-ID: <878ttzjzss.fsf@vostro.rath.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On Oct 06 2016, Julia Lawall <julia.lawall@lip6.fr> wrote:
+>> Somehow I'm having a really hard time grasping the fundamentals. The
+>> first two examples make sense - I could adapt them for similar
+>> situations. But then, I still have absolutely no idea how I would come
+>> up with the third example, or how to adapt it. What does "idexpression"
+>> mean? What does "ptr at p1" mean? Is this documented anywhere?
+>
+> idexpression is an expression that is resricted to be an identifier.  It
+> allows you to put a type on an expression that has the form of an
+> identifier.  You can also say identifier x;  But that is just a name.  It
+> has no type.  It could be an expression, a field name, a parameter name,
+> etc.
+
+Hm. Based on your last two sentences I'd conclude that 'idexpression'
+matches variable names for variables of a specific type. But that
+doesn't seem to be what you describe in your first two sentences. Could
+you explain what you meant iwth "expression that has the form of an
+identifier"?
+
+To me, an identifier is something that's written literally into the
+source code and cannot be meaningfully taken apart, e.g. a function
+name, variable name, or the member of a struct. An expression, on the
+other hand, is something that can be meaningfully split into
+sub-components. Is that also how you use these terms?
+
+> @ connects patterns that match the same term.  So match a term against the
+> explicit name ptr and also match it against an identifier expression that
+> has a particular type.  This is not exactly a beginner example.
+
+Okay, I'll just ignore that for now.
+
+>> I'd hate to waste your time asking tons of such trivial questions on the
+>> mailing list, but I just can't find any helpful documentation at all...
+>
+> If you look on the web page in the papers and slides section, at the top
+> there are several tutorials and overview talks, some with video.
+
+I think I looked at everything that is not a video. But none of it
+mentioned that you can put an arbitrary name between the @@ or explained
+what the different metavariable types (idexpression, expression, etc)
+are.
+
+Anyway, enough whining. Coccinelle seems like a really useful tool, even
+if I'm having an impedance mismatch with its documentation.
 
 
-On Fri, 7 Oct 2016, SF Markus Elfring wrote:
+Best,
+-Niko
 
-> From: Markus Elfring <elfring@users.sourceforge.net>
-> Date: Fri, 7 Oct 2016 16:06:15 +0200
->
-> Use the current name (in a comment at the beginning of this script) for
-> the file which was converted to the documentation format "reStructuredText"
-> in August 2016.
->
-> Fixes: 4b9033a33494ec9154d63e706e9e47f7eb3fd59e ("docs: sphinxify coccinelle.txt and add it to dev-tools")
-> Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+-- 
+GPG encrypted emails preferred. Key id: 0xD113FCAC3C4E599F
+Fingerprint: ED31 791B 2C5C 1613 AF38 8B8A D113 FCAC 3C4E 599F
 
-Acked-by: Julia Lawall <julia.lawall@lip6.fr>
-
-> ---
->  scripts/coccicheck | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/scripts/coccicheck b/scripts/coccicheck
-> index c92c1528..ec487b8 100755
-> --- a/scripts/coccicheck
-> +++ b/scripts/coccicheck
-> @@ -1,7 +1,7 @@
->  #!/bin/bash
->  # Linux kernel coccicheck
->  #
-> -# Read Documentation/coccinelle.txt
-> +# Read Documentation/dev-tools/coccinelle.rst
->  #
->  # This script requires at least spatch
->  # version 1.0.0-rc11.
-> --
-> 2.10.1
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe kernel-janitors" in
-> the body of a message to majordomo at vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+             ?Time flies like an arrow, fruit flies like a Banana.?
