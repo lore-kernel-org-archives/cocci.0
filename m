@@ -1,40 +1,141 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 9 Oct 2016 08:32:19 +0200
-Subject: [Cocci] Replacing one (specific!) type with another
-In-Reply-To: <87shs6y3hq.fsf@vostro.rath.org>
+Date: Sun, 9 Oct 2016 09:49:52 +0200
+Subject: [Cocci] Usage of "expressions" and "identifiers" with SmPL
+In-Reply-To: <87zimey49q.fsf@vostro.rath.org>
 References: <87r37vzd8j.fsf@vostro.rath.org>
  <alpine.DEB.2.10.1610050744460.3061@hadrien>
  <87shsa7p71.fsf@thinkpad.rath.org>
  <alpine.DEB.2.10.1610052158110.3130@hadrien>
  <8760p6ctgw.fsf@thinkpad.rath.org>
  <alpine.DEB.2.10.1610060750180.3179@hadrien> <878ttzjzss.fsf@vostro.rath.org>
- <alpine.DEB.2.10.1610080743040.3176@hadrien> <87shs6y3hq.fsf@vostro.rath.org>
-Message-ID: <7cf0dddc-90e4-9d77-c171-009877c6ae62@users.sourceforge.net>
+ <20a829ad-af8d-ee46-8e61-8ba06098c1f5@users.sourceforge.net>
+ <alpine.DEB.2.10.1610080850470.7750@hadrien>
+ <1f88759f-f167-fcea-5c93-b8e13d7a858b@users.sourceforge.net>
+ <alpine.DEB.2.10.1610080954130.7750@hadrien>
+ <4faf71af-49b2-237a-edac-d8841de28cba@users.sourceforge.net>
+ <alpine.DEB.2.10.1610081029050.7750@hadrien>
+ <3bbf1a67-5fae-7d34-d39c-b3820082441d@users.sourceforge.net>
+ <87zimey49q.fsf@vostro.rath.org>
+Message-ID: <83aae471-2eda-6ae0-9340-8e39bd214542@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> The name is illustrated in Advanced SmPL:
->> http://coccinelle.lip6.fr/papers/cocciwk4_talk2.pdf
+>>> Someone who has to read so much text and in the end has no information
+>>> about the question he was asking will not likely get a good impression
+>>> about the software he is trying to use.
+>>
+>> A beginner should usually read some text for the desired learning experience.
+>> Can it be that you worry a bit too much about the potential for
+>> bad impressions around your software?
 > 
-> Call me stupid, but I just went through it again and I still don't see
-> it. There are lots of examples with "@ ..stuff..@" (the first on slide
-> 4), but as far as I can tell it never explains what this means.
+> Sorry to be the bringer of bad news, but Julia is spot on.
 
-How do you find information from a corresponding syntax description
-for the semantic patch language?
+Thanks for your interesting feedback.
 
-Metavariables for transformations
-http://coccinelle.lip6.fr/docs/main_grammar002.html
+It seems to indicate also special details about your learning approach.
 
 
-> Actually, the frequent occurence of @script:python@ makes me think that
-> this actually has semantic signficance and is much more than a label
-> that I can choose for my own convenience...?
+> The only effect your emails had on me was a big "WTF!?".
 
-Did you read another published document already?
+All of them (including the provided small SmPL script examples on 2016-10-05)?
 
-Metavariables for scripts
-http://coccinelle.lip6.fr/docs/main_grammar003.html
+
+Do you care for the consequences around the usage of embedded (programming)
+languages within the semantic patch language as "a host"?
+Can such a distinction be useful also for you?
+
+
+> Had Julia not responded to my messages at almost the same time,
+
+Here software support is very nice, isn't it?
+
+
+> I would have left this list and Coccinelle for good.
+
+I wonder that you would really run away so quickly just because
+a few alternative description approaches became a bit longer.
+
+
+>> Would you like to start another marketing project?
+> 
+> What's the point of all these random questions that you bring up in
+> response to every sentence?
+
+Did you inspect any items from the GitHub issue tracker?
+
+
+> Do you think they are helpful?
+
+I hope so.
+
+
+>> I find that this mailing list gets only low message traffic so far.
+> 
+> Do you think others share this impression?
+
+Yes. - I guess so. (I do not know concrete numbers for my view.)
+
+
+> Do you think this is a good thing or a bad thing?
+
+It might be easier to get started than in other areas you could get
+involved in depending on your desire.
+
+I hope that the varying topic mixture is interesting enough as another
+valuable information source.
+
+
+> How do you think will this situation evolve?
+
+I imagine that the Coccinelle software will be improved in various directions.
+I hope that the attractiveness of the provided tools will increase accordingly.
+Will such an evolution mean more users with a higher message exchange rate
+at various places?
+
+
+>> So I would imagine that most well-intended discussion contributions could
+>> be useful. Is the mixture of presented topics reasonable?
+> 
+> What do you mean with discussion contributions?
+
+Did I (and the other contributors) publish any messages on this mailing list
+before that could fit to your way of looking for helpful information already?
+
+
+> Do you think that asking if the topic is reasonable is equivalent to asking
+> if the specific contributions are reasonable?
+
+No. - Would you like to discuss this aspect any further?
+
+
+>> We came along different views around the usage of "expressions"
+>> in previous discussions, didn't we?
+> 
+> Whom do you mean with "we"?
+
+I guess that it could be primarily interpreted as Julia and me.
+
+
+> Is it important in this context?
+
+I find the software development history somewhat relevant also in this use case.
+
+
+>> You repeated the explanation "An expression is something that has a value."
+>> which is reasonable to some degree. I would like to know then:
+>> Which "value" is provided by the software construct "idexpression"
+>> in the semantic patch language?
+> 
+> Do you think you will be able to find out the answer to this question?
+
+I could get some information from reading OCaml source code in principle.
+But I would prefer an other clarification approach.
+
+
+> How could we best assist you in that?
+
+Which possibilities have you got in mind at the moment?
+Are you really interested in improving your "assistance" in significant ways?
 
 Regards,
 Markus
