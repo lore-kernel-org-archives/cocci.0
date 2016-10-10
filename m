@@ -1,140 +1,89 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 10 Oct 2016 23:33:21 +0200 (CEST)
+From: Nikolaus@rath.org (Nikolaus Rath)
+Date: Mon, 10 Oct 2016 16:00:24 -0700
 Subject: [Cocci] Replacing one (specific!) type with another
-In-Reply-To: <87k2dfq4i8.fsf@vostro.rath.org>
+In-Reply-To: <alpine.DEB.2.10.1610102329470.3438@hadrien> (Julia Lawall's
+ message of "Mon, 10 Oct 2016 23:33:21 +0200 (CEST)")
 References: <87r37vzd8j.fsf@vostro.rath.org>
  <alpine.DEB.2.10.1610050744460.3061@hadrien>
  <87shsa7p71.fsf@thinkpad.rath.org>
- <alpine.DEB.2.10.1610052158110.3130@hadrien> <8760p3jwr3.fsf@vostro.rath.org>
+ <alpine.DEB.2.10.1610052158110.3130@hadrien>
+ <8760p3jwr3.fsf@vostro.rath.org>
  <alpine.DEB.2.10.1610080727090.3176@hadrien>
- <87ponay35u.fsf@vostro.rath.org> <alpine.DEB.2.10.1610082317180.3373@hadrien>
- <87wphhz1x5.fsf@vostro.rath.org> <alpine.DEB.2.10.1610100653510.3148@hadrien>
+ <87ponay35u.fsf@vostro.rath.org>
+ <alpine.DEB.2.10.1610082317180.3373@hadrien>
+ <87wphhz1x5.fsf@vostro.rath.org>
+ <alpine.DEB.2.10.1610100653510.3148@hadrien>
  <877f9gqjsn.fsf@vostro.rath.org> <87shs4oxeh.fsf@vostro.rath.org>
  <alpine.DEB.2.10.1610102144590.3438@hadrien>
  <87k2dfq4i8.fsf@vostro.rath.org>
-Message-ID: <alpine.DEB.2.10.1610102329470.3438@hadrien>
+ <alpine.DEB.2.10.1610102329470.3438@hadrien>
+Message-ID: <87h98jq06v.fsf@vostro.rath.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On Oct 10 2016, Julia Lawall <julia.lawall@lip6.fr> wrote:
+>> Ok, we're getting there. I've removed the second 'symbol' line, and
+>> (permanently) updated to 1.0.6. However, now it seems to simply run
+>> forever:
+>>
+>> $ ../coccinelle-1.0.6/spatch.opt --sp-file
+>> ~/in-progress/libfuse/se-rename.cocci --in-place lib/ include/ test/
+>> example/ util/
+>> init_defs_builtins: /home/nikratio/tmp/coccinelle-1.0.6/standard.h
+>> warning: patch output can only be created when only one
+>> directory is specified or when the -patch flag is used
+>> HANDLING: lib/fuse.c
+>> (ONCE) Expected tokens fuse_session f
+>> Skipping:lib/fuse_opt.c
+>> HANDLING: lib/helper.c
+>> Skipping:lib/mount_bsd.c
+>> Skipping:lib/fuse_loop_mt.c
+>> Skipping:lib/fuse_loop.c
+>> HANDLING: lib/cuse_lowlevel.c
+>> diff =
+>> [...]
+>> HANDLING: lib/fuse_lowlevel.c
+>>
+>> At this point it has been hanging for about 15 minutes now, steady
+>> eating CPU time.
+>>
+>> Is it supposed to take that long? The fuse_lowlevel.c file is 74k with
+>> 2465 lines of code.
+>
+> You can use --show-trying to see what function it is getting stuck on.  If
+> the function has a lot of ifs and loops, it may indeed take a long
+> time.  ... follows possible paths in the execution graph and a sequence of
+> ifs makes the number of paths grow exponentially.
+>
+> A solution is to add a timeout, eg --timeout 120 (120 seconds).  You will
+> need to check a file on which there is a timeout manually.
+>
+> Tracing paths around loops is not really relevant in your case, so you can
+> also safely use the option --no-loops, which will avoid taking the back
+> edges.
+ 
+I tried doing both, but it still gets stuck:
+
+init_defs_builtins: /home/nikratio/tmp/coccinelle-1.0.6/standard.h
+HANDLING: lib/fuse_lowlevel.c
+-----------------------------------------------------------------------
+rule starting on line 1 = 
+-----------------------------------------------------------------------
+[...]
+-----------------------------------------------------------------------
+rule starting on line 13 = 
+-----------------------------------------------------------------------
+[...]
+   trying function: do_init: fuse_lowlevel.c:1812
 
 
-On Mon, 10 Oct 2016, Nikolaus Rath wrote:
+The do_init() function doesn't seem all that terrible to me though:
+https://github.com/libfuse/libfuse/blob/58273972f0b20/lib/fuse_lowlevel.c#L1812
 
-> On Oct 10 2016, Julia Lawall <julia.lawall@lip6.fr> wrote:
-> >> I claimed success too early. There are still the following cases left:
-> >>
-> >>
-> >> static void do_destroy(fuse_req_t req, fuse_ino_t nodeid, const void *inarg)
-> >> {
-> >> 	struct fuse_session *f = req->se;
-> >> [....]
-> >>
-> >> I tried to adapt the rules myself as follows:
-> >>
-> >> @@
-> >> symbol f, se;
-> >> @@
-> >> struct fuse_session *
-> >> -f
-> >> +se
-> >> ;
-> >> <...
-> >> -f
-> >> +se
-> >> ...>
-> >>
-> >> @@
-> >> symbol f, se;
-> >> expression expr;
-> >> @@
-> >> struct fuse_session *
-> >> -f
-> >> +se
-> >> = expr;
-> >> <...
-> >> -f
-> >> +se
-> >> ...>
-> >>
-> >>
-> >> @@
-> >> identifier fn;
-> >> @@
-> >> fn(...,struct fuse_session *
-> >> -f
-> >> +se
-> >> ,...) { <...
-> >> -f
-> >> +se
-> >> ...> }
-> >>
-> >>
-> >> But this gives an error:
-> >>
-> >>
-> >> Fatal error: exception Failure("meta: parse error:
-> >>  = File "se-rename.cocci", line 14, column 7,  charpos = 79
-> >>     around = 'f', whole content = symbol f, se;
-> >> ")
-> >>
-> >>
-> >> What am I doing wrong?
-> >
-> > What version of Coccinelle are you using?  Before 1.0.6, it was not
-> > possible to declare something to be a symbol more than once.  In any case,
-> > once it is declared as a symbol, it is always a symbol.
->
-> Ok, we're getting there. I've removed the second 'symbol' line, and
-> (permanently) updated to 1.0.6. However, now it seems to simply run
-> forever:
->
-> $ ../coccinelle-1.0.6/spatch.opt --sp-file ~/in-progress/libfuse/se-rename.cocci --in-place lib/ include/ test/ example/ util/
-> init_defs_builtins: /home/nikratio/tmp/coccinelle-1.0.6/standard.h
-> warning: patch output can only be created when only one
-> directory is specified or when the -patch flag is used
-> HANDLING: lib/fuse.c
-> (ONCE) Expected tokens fuse_session f
-> Skipping:lib/fuse_opt.c
-> HANDLING: lib/helper.c
-> Skipping:lib/mount_bsd.c
-> Skipping:lib/fuse_loop_mt.c
-> Skipping:lib/fuse_loop.c
-> HANDLING: lib/cuse_lowlevel.c
-> diff =
-> [...]
-> HANDLING: lib/fuse_lowlevel.c
->
-> At this point it has been hanging for about 15 minutes now, steady
-> eating CPU time.
->
-> Is it supposed to take that long? The fuse_lowlevel.c file is 74k with
-> 2465 lines of code.
+Best,
+-Nikolaus
+-- 
+GPG encrypted emails preferred. Key id: 0xD113FCAC3C4E599F
+Fingerprint: ED31 791B 2C5C 1613 AF38 8B8A D113 FCAC 3C4E 599F
 
-You can use --show-trying to see what function it is getting stuck on.  If
-the function has a lot of ifs and loops, it may indeed take a long
-time.  ... follows possible paths in the execution graph and a sequence of
-ifs makes the number of paths grow exponentially.
-
-A solution is to add a timeout, eg --timeout 120 (120 seconds).  You will
-need to check a file on which there is a timeout manually.
-
-Tracing paths around loops is not really relevant in your case, so you can
-also safely use the option --no-loops, which will avoid taking the back
-edges.
-
-julia
-
->
-> Best,
-> -Nikolaus
->
-> --
-> GPG encrypted emails preferred. Key id: 0xD113FCAC3C4E599F
-> Fingerprint: ED31 791B 2C5C 1613 AF38 8B8A D113 FCAC 3C4E 599F
->
->              ?Time flies like an arrow, fruit flies like a Banana.?
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+             ?Time flies like an arrow, fruit flies like a Banana.?
