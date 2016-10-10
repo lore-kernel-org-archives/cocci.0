@@ -1,5 +1,5 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 10 Oct 2016 06:49:43 +0200 (CEST)
+Date: Mon, 10 Oct 2016 06:54:37 +0200 (CEST)
 Subject: [Cocci] Replacing one (specific!) type with another
 In-Reply-To: <87wphhz1x5.fsf@vostro.rath.org>
 References: <87r37vzd8j.fsf@vostro.rath.org>
@@ -9,7 +9,7 @@ References: <87r37vzd8j.fsf@vostro.rath.org>
  <alpine.DEB.2.10.1610080727090.3176@hadrien>
  <87ponay35u.fsf@vostro.rath.org> <alpine.DEB.2.10.1610082317180.3373@hadrien>
  <87wphhz1x5.fsf@vostro.rath.org>
-Message-ID: <alpine.DEB.2.10.1610100649020.3148@hadrien>
+Message-ID: <alpine.DEB.2.10.1610100653510.3148@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -40,6 +40,18 @@ On Sun, 9 Oct 2016, Nikolaus Rath wrote:
 > >> > @@
 > >> >
 > >> > fn(...,struct fuse_session *f,...) { <...
+
+Oops, the first line should be:
+
+fn(...,struct fuse_session *
+-f
++se
+  ,...) { <...
+
+The rule works fine even when f is the first argument.
+
+julia
+
 > >> > -f
 > >> > +se
 > >> > ...> }
@@ -73,12 +85,21 @@ On Sun, 9 Oct 2016, Nikolaus Rath wrote:
 > I used 1.0.0-rc22 (from Debian stable). However, I just downloaded the
 > pre-compiled version from http://coccinelle.lip6.fr/download.php and it
 > gives the same result.
-
-OK, any rc is quite old.
-
+>
 > In case you want to try yourself: the sources that I'm running this on
 > are available at https://github.com/libfuse/libfuse.
-
-Thanks, I'll check on it.
-
-julia
+>
+>
+> Best,
+> -Nikolaus
+>
+> --
+> GPG encrypted emails preferred. Key id: 0xD113FCAC3C4E599F
+> Fingerprint: ED31 791B 2C5C 1613 AF38 8B8A D113 FCAC 3C4E 599F
+>
+>              ?Time flies like an arrow, fruit flies like a Banana.?
+> _______________________________________________
+> Cocci mailing list
+> Cocci at systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
+>
