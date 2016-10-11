@@ -1,89 +1,37 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 11 Oct 2016 08:51:39 +0200 (CEST)
-Subject: [Cocci] Replacing one (specific!) type with another
-In-Reply-To: <87h98jq06v.fsf@vostro.rath.org>
-References: <87r37vzd8j.fsf@vostro.rath.org>
- <alpine.DEB.2.10.1610050744460.3061@hadrien>
- <87shsa7p71.fsf@thinkpad.rath.org>
- <alpine.DEB.2.10.1610052158110.3130@hadrien> <8760p3jwr3.fsf@vostro.rath.org>
- <alpine.DEB.2.10.1610080727090.3176@hadrien>
- <87ponay35u.fsf@vostro.rath.org> <alpine.DEB.2.10.1610082317180.3373@hadrien>
- <87wphhz1x5.fsf@vostro.rath.org> <alpine.DEB.2.10.1610100653510.3148@hadrien>
- <877f9gqjsn.fsf@vostro.rath.org> <87shs4oxeh.fsf@vostro.rath.org>
- <alpine.DEB.2.10.1610102144590.3438@hadrien>
- <87k2dfq4i8.fsf@vostro.rath.org> <alpine.DEB.2.10.1610102329470.3438@hadrien>
- <87h98jq06v.fsf@vostro.rath.org>
-Message-ID: <alpine.DEB.2.10.1610110848320.3322@hadrien>
+From: mmarek@suse.com (Michal Marek)
+Date: Tue, 11 Oct 2016 09:52:51 +0200
+Subject: [Cocci] [PATCH] scripts/coccicheck: Update reference for the
+ corresponding documentation
+In-Reply-To: <alpine.DEB.2.10.1610072030300.3289@hadrien>
+References: <ea62a1ea-c566-65a0-e2fd-2ee96839cf48@users.sourceforge.net>
+ <alpine.DEB.2.10.1610070749420.3074@hadrien>
+ <76a6d8fa-03b9-5589-2885-fa62933dd391@users.sourceforge.net>
+ <alpine.DEB.2.10.1610070803550.3074@hadrien>
+ <8d36952c-1dbb-bb26-ee57-3e1540c042c0@users.sourceforge.net>
+ <alpine.DEB.2.10.1610070824490.3074@hadrien>
+ <8ecdc02a-1a22-951f-f3ac-2389dfbae02a@users.sourceforge.net>
+ <alpine.DEB.2.10.1610072030300.3289@hadrien>
+Message-ID: <20161011075251.GA16035@sepie.suse.cz>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-
-
-On Mon, 10 Oct 2016, Nikolaus Rath wrote:
-
-> On Oct 10 2016, Julia Lawall <julia.lawall@lip6.fr> wrote:
-> >> Ok, we're getting there. I've removed the second 'symbol' line, and
-> >> (permanently) updated to 1.0.6. However, now it seems to simply run
-> >> forever:
-> >>
-> >> $ ../coccinelle-1.0.6/spatch.opt --sp-file
-> >> ~/in-progress/libfuse/se-rename.cocci --in-place lib/ include/ test/
-> >> example/ util/
-> >> init_defs_builtins: /home/nikratio/tmp/coccinelle-1.0.6/standard.h
-> >> warning: patch output can only be created when only one
-> >> directory is specified or when the -patch flag is used
-> >> HANDLING: lib/fuse.c
-> >> (ONCE) Expected tokens fuse_session f
-> >> Skipping:lib/fuse_opt.c
-> >> HANDLING: lib/helper.c
-> >> Skipping:lib/mount_bsd.c
-> >> Skipping:lib/fuse_loop_mt.c
-> >> Skipping:lib/fuse_loop.c
-> >> HANDLING: lib/cuse_lowlevel.c
-> >> diff =
-> >> [...]
-> >> HANDLING: lib/fuse_lowlevel.c
-> >>
-> >> At this point it has been hanging for about 15 minutes now, steady
-> >> eating CPU time.
-> >>
-> >> Is it supposed to take that long? The fuse_lowlevel.c file is 74k with
-> >> 2465 lines of code.
+On Fri, Oct 07, 2016 at 08:30:48PM +0200, Julia Lawall wrote:
+> 
+> 
+> On Fri, 7 Oct 2016, SF Markus Elfring wrote:
+> 
+> > From: Markus Elfring <elfring@users.sourceforge.net>
+> > Date: Fri, 7 Oct 2016 16:06:15 +0200
 > >
-> > You can use --show-trying to see what function it is getting stuck on.  If
-> > the function has a lot of ifs and loops, it may indeed take a long
-> > time.  ... follows possible paths in the execution graph and a sequence of
-> > ifs makes the number of paths grow exponentially.
+> > Use the current name (in a comment at the beginning of this script) for
+> > the file which was converted to the documentation format "reStructuredText"
+> > in August 2016.
 > >
-> > A solution is to add a timeout, eg --timeout 120 (120 seconds).  You will
-> > need to check a file on which there is a timeout manually.
-> >
-> > Tracing paths around loops is not really relevant in your case, so you can
-> > also safely use the option --no-loops, which will avoid taking the back
-> > edges.
->
-> I tried doing both, but it still gets stuck:
->
-> init_defs_builtins: /home/nikratio/tmp/coccinelle-1.0.6/standard.h
-> HANDLING: lib/fuse_lowlevel.c
-> -----------------------------------------------------------------------
-> rule starting on line 1 =
-> -----------------------------------------------------------------------
-> [...]
-> -----------------------------------------------------------------------
-> rule starting on line 13 =
-> -----------------------------------------------------------------------
-> [...]
->    trying function: do_init: fuse_lowlevel.c:1812
->
->
-> The do_init() function doesn't seem all that terrible to me though:
-> https://github.com/libfuse/libfuse/blob/58273972f0b20/lib/fuse_lowlevel.c#L1812
+> > Fixes: 4b9033a33494ec9154d63e706e9e47f7eb3fd59e ("docs: sphinxify coccinelle.txt and add it to dev-tools")
+> > Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+> 
+> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
 
-Yes it does.  Look at lines 1852-1877.  There are 2^13 execution paths
-there, and there is another such stack of ifs later in the function.
+Applied to kbuild.git#misc, thanks.
 
-So you did add a timeout and it is still getting stuck?  Try a very short
-timeout just to see what happens.
-
-julia
+Michal
