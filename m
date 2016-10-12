@@ -1,38 +1,37 @@
-From: mstefani@redhat.com (Michael Stefaniuc)
-Date: Tue, 11 Oct 2016 13:52:19 +0200
-Subject: [Cocci] Regression in Python Support
-Message-ID: <57FCD273.9070607@redhat.com>
+From: christophe.leroy@c-s.fr (Christophe LEROY)
+Date: Wed, 12 Oct 2016 11:57:41 +0200
+Subject: [Cocci] Error: This expression has type t but an expression was
+ expected of type, string option option
+Message-ID: <4a34076e-3fd3-33ea-0ff8-b18e0bc39439@c-s.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hello Thierry,
+Hi
 
-I've run into a regression in coccinelle 1.0.6 for the python support:
-I am getting this error on Fedora 24:
-Python error: /usr/lib64/python2.7/lib-dynload/_collectionsmodule.so:
-undefined symbol: PyObject_SetItem
+I'm trying to compile coccinelle on a CentOS 6 system, and I'm facing 
+the following compilation error.
 
-On Fedora 23 I get a similar error but for a different symbol.
+I have the following version of ocaml: ocaml-3.12.0-21.el6.i686
 
-The error is strange as I expected it to use python3 as I use:
-./configure --with-python=/usr/bin/python3
+What can be done to solve this issue ?
 
-That works just fine in coccinelle-1.0.5. I've bisected it to:
-# first bad commit: [62f2df8c7d35967a1eca4dcd487d59a9918dd5aa] Fixed:
-Bundles compilation and pyml update
-commit 62f2df8c7d35967a1eca4dcd487d59a9918dd5aa
-Author: Thierry Martinez <martinez@nsup.org>
-Date:   Sun Jun 26 20:22:59 2016 +0200
+/usr/bin/ocamlc.opt -unsafe -I pyml-current -custom -cclib -lpyml_stubs 
+-c pyml-current/py.ml -o pyml-current/py.cmo
+File "pyml-current/py.ml", line 500, characters 11-15:
+Error: This expression has type t but an expression was expected of type
+          string option option
+make[6]: *** [pyml-current/py.cmo] Erreur 2
+make[6]: quittant le r?pertoire ? /root/coccinelle-1.0.6/bundles/pyml ?
+make[5]: *** [all.opt] Erreur 2
+make[5]: quittant le r?pertoire ? /root/coccinelle-1.0.6/bundles/pyml ?
+make[4]: *** [/root/coccinelle-1.0.6/bundles/pyml/.opt] Erreur 2
+make[4]: quittant le r?pertoire ? /root/coccinelle-1.0.6 ?
+make[3]: *** [subdirs.opt] Erreur 1
+make[3]: quittant le r?pertoire ? /root/coccinelle-1.0.6 ?
+make[2]: *** [opt-compil] Erreur 2
+make[2]: quittant le r?pertoire ? /root/coccinelle-1.0.6 ?
+make[1]: *** [all-release] Erreur 2
+make[1]: quittant le r?pertoire ? /root/coccinelle-1.0.6 ?
+make: *** [all] Erreur 2
 
-    Fixed: Bundles compilation and pyml update
-
-    - %.cmx: %.cmo dependency (with .ml files that do not have .mli,
-      compiling the .ml into .cmo or into .cmx both write to the same .cmi
-      file, so that cannot be done concurrently)
-    - untarred pyml distribution to ease updates
-    - Python exception catched in pycocci interface
-
-
-thanks
-bye
-	michael
+Christophe
