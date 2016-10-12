@@ -1,10 +1,10 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 12 Oct 2016 12:25:21 +0200 (CEST)
+Date: Wed, 12 Oct 2016 14:49:20 +0200 (CEST)
 Subject: [Cocci] Error: This expression has type t but an expression was
  expected of type, string option option
 In-Reply-To: <4a34076e-3fd3-33ea-0ff8-b18e0bc39439@c-s.fr>
 References: <4a34076e-3fd3-33ea-0ff8-b18e0bc39439@c-s.fr>
-Message-ID: <alpine.DEB.2.10.1610121223520.2927@hadrien>
+Message-ID: <alpine.DEB.2.10.1610121448500.2927@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -19,13 +19,11 @@ On Wed, 12 Oct 2016, Christophe LEROY wrote:
 >
 > I have the following version of ocaml: ocaml-3.12.0-21.el6.i686
 
-Unforuntately, Coccinelle no longer supports OCaml 3.12 which is quite
-old.  Perhaps you can install opam and thus obtain a more recent version
-of OCaml independent of CentOS?
+Apparently 3.12 is still supported.  The error will be fixed shortly.
 
-thanks,
+Thanks for the report.
+
 julia
-
 
 >
 > What can be done to solve this issue ?
