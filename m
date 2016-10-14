@@ -1,29 +1,53 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 14 Oct 2016 11:04:27 +0200 (CEST)
-Subject: [Cocci] Replacing calls of general functions by more specific
- ones with SmPL
-In-Reply-To: <2d2a0414-0e23-790b-e99c-0220ffda2b35@users.sourceforge.net>
-References: <8c2c37de-baee-8282-b5cc-ad6eea3bb66f@users.sourceforge.net>
- <alpine.DEB.2.10.1610141019550.3002@hadrien>
- <2d2a0414-0e23-790b-e99c-0220ffda2b35@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1610141101550.3272@hadrien>
+From: lars@metafoo.de (Lars-Peter Clausen)
+Date: Fri, 14 Oct 2016 10:51:26 +0200
+Subject: [Cocci] [PATCH] Coccinelle: misc: Improve the script for more
+ accurate results
+In-Reply-To: <57FFBDE0.6000705@oracle.com>
+References: <1476354490-25635-1-git-send-email-vaishali.thakkar@oracle.com>
+ <alpine.DEB.2.10.1610131814180.3674@hadrien> <57FFBDE0.6000705@oracle.com>
+Message-ID: <66694ba2-9108-b400-e412-d9927f593e16@metafoo.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> > coccinelle/demos/first.cocci may be helpful.
->
-> I have got the impression that this small SmPL script demonstrates the usage
-> of the mentioned function from your software library only for a simple position variable.
-> I do not see the way so far how desired data could be extracted from a function
-> (or expression?) parameter. Would you like to make the introspection options a bit
-> clearer for the SmPL interface?
+On 10/13/2016 07:01 PM, Vaishali Thakkar wrote:
+> 
+> 
+> On Thursday 13 October 2016 09:45 PM, Julia Lawall wrote:
+>>
+>>
+>> On Thu, 13 Oct 2016, Vaishali Thakkar wrote:
+>>
+>>> Currently because of the left associativity of the operators,
+>>> pattern IRQF_ONESHOT | flags does not match with the pattern
+>>> when we have more than one flag after the disjunction. This
+>>> eventually results in giving false positives by the script.
+>>> The patch eliminates these FPs by improving the rule.
+>>>
+>>> Also, add a new rule to eliminate the false positives given by
+>>> the new line issue.
+>>>
+>>> Misc:
+>>>
+>>> 1. Add support for the context, org and report mode in the case
+>>>    of devm_request_threaded_irq
+>>> 2. To be consistent with other scripts, change the confidence
+>>>    level to 'Moderate'
+>>
+>> I'm getting a lot more reports for context mode than for patch mode, eg
+>> for sound/pcmcia/vx/vxpocket.c.  Is this normal?
+> 
+> This seems to be because of the ... in '*request_threaded_irq at p(...)'.
+> Usually I think we should have same rules for the patch  and context mode.
+> But the original code does not do that. So, I was not sure if that was
+> intentional or not.
+> [just in case, person wants to check all cases of these functions using
+> context mode]
 
-You can inherit and test properties of anything you like in python or
-ocaml code.  If you inherit some kind of metavariable other than a
-position variable, the term will be represented as a string.  But that
-should be fine for detecting eg if a string has only one character.  If it
-has multiple characters, you can do the include match false call, so that
-in the last rule when yu inherit again the metavariable containing th
-string, it won't be seen.
+To be honest, I don't remember if it was intentional or not. But looking at
+it now, I'd say context mode should use the same pattern as the report mode.
+The way it is right now context mode certainly generates a fair amount of
+false positives.
 
-julia
+As for your patch I'd say split this into multiple patches, one patch to add
+the missing devm_ variants to the context and report mode and one patch to
+improve the matching, since these are two independent changes.
