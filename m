@@ -1,30 +1,39 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 15 Oct 2016 09:33:50 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sat, 15 Oct 2016 10:22:47 +0200
 Subject: [Cocci] Replacing calls of general functions by more specific
  ones with SmPL
-In-Reply-To: <db49dd34-98f8-c9ff-c05b-015d16d71e68@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.10.1610141101550.3272@hadrien>
 References: <8c2c37de-baee-8282-b5cc-ad6eea3bb66f@users.sourceforge.net>
  <alpine.DEB.2.10.1610141019550.3002@hadrien>
- <db49dd34-98f8-c9ff-c05b-015d16d71e68@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1610150933070.9280@hadrien>
+ <2d2a0414-0e23-790b-e99c-0220ffda2b35@users.sourceforge.net>
+ <alpine.DEB.2.10.1610141101550.3272@hadrien>
+Message-ID: <3c66ad10-02bf-84a0-4ba3-56a5f74dd643@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+>> I do not see the way so far how desired data could be extracted from a function
+>> (or expression?) parameter. Would you like to make the introspection options a bit
+>> clearer for the SmPL interface?
+> 
+> You can inherit and test properties of anything you like in python or ocaml code.
+
+I have got an SmPL approach working.
 
 
-On Sat, 15 Oct 2016, SF Markus Elfring wrote:
+> If you inherit some kind of metavariable other than a position variable,
+> the term will be represented as a string.
 
-> > The simplest would be to use python or ocaml code to make the checks that
-> > are needed.  You can use cocci.include_match(False) in python or
-> > Coccilib.include_match false in ocaml when your test detects that
-> > something is not suitable.
->
-> Will it occasionally matter then to distinguish better if a specific source code
-> fragment or a complete source file should be excluded from an analysis run
-> on demand?
+This software design aspect might look sufficient for a basic variant of the discussed
+source code search pattern.
 
-I have no idea what you mean by this.  But since I know very little about
-this printing problem in general, I doubt that I can give an answer.  Try
-it and see what requirements turn up.
 
-julia
+> But that should be fine for detecting eg if a string has only one character.
+
+I have got a few concerns for further software development considerations.
+How do you think about to support also an advanced interface by which it could be
+determined if a preprocessor symbol would correspond to such a desired character
+(instead of fiddling with regular expressions within a rule for the embedded programming
+language script)?
+
+Regards,
+Markus
