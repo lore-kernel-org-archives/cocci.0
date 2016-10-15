@@ -1,43 +1,31 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sat, 15 Oct 2016 13:10:11 +0200
+Date: Sat, 15 Oct 2016 13:21:24 +0200
 Subject: [Cocci] Replacing calls of general functions by more specific
  ones with SmPL
-In-Reply-To: <alpine.DEB.2.20.1610150933070.9280@hadrien>
+In-Reply-To: <alpine.DEB.2.20.1610151029570.9280@hadrien>
 References: <8c2c37de-baee-8282-b5cc-ad6eea3bb66f@users.sourceforge.net>
  <alpine.DEB.2.10.1610141019550.3002@hadrien>
- <db49dd34-98f8-c9ff-c05b-015d16d71e68@users.sourceforge.net>
- <alpine.DEB.2.20.1610150933070.9280@hadrien>
-Message-ID: <41b96392-5808-cd4c-8dd5-761c628bdbab@users.sourceforge.net>
+ <2d2a0414-0e23-790b-e99c-0220ffda2b35@users.sourceforge.net>
+ <alpine.DEB.2.10.1610141101550.3272@hadrien>
+ <3c66ad10-02bf-84a0-4ba3-56a5f74dd643@users.sourceforge.net>
+ <alpine.DEB.2.20.1610151029570.9280@hadrien>
+Message-ID: <6696e3bf-e399-dfd9-a692-364d7c5db196@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> Will it occasionally matter then to distinguish better if a specific source code
->> fragment or a complete source file should be excluded from an analysis run
->> on demand?
+>> I have got a few concerns for further software development considerations.
+>> How do you think about to support also an advanced interface by which it could be
+>> determined if a preprocessor symbol would correspond to such a desired character
+>> (instead of fiddling with regular expressions within a rule for the embedded programming
+>> language script)?
 > 
-> I have no idea what you mean by this.
+> What C code are you concerned about exactly?
 
-I assume that there are more chances.
-
-I am just unsure around the application of a function call like
-"cocci.include_match(False)" so far.
-
-
-> But since I know very little about this printing problem in general,
-
-It is not a "problem". - Is it just the beginning for another software development
-challenge (or adventure)?
-
-
-> I doubt that I can give an answer.
-
-I imagine that we can exchange some ideas to improve the affected software
-situation further, can't we?
-
-
-> Try it and see what requirements turn up.
-
-Which items will be picked up for further clarification?
+I guess that this "story" affects some general aspects. After I got a better understanding
+of related software dependencies, I begin to think also about further possibilities to
+make such a source code search pattern safer and more efficient.
+How much would you like to increase the support for data processing around macros
+with your software?
 
 Regards,
 Markus
