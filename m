@@ -1,29 +1,60 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 16 Oct 2016 19:45:58 +0200
-Subject: [Cocci] Replacing calls of general functions by more specific
- ones with SmPL
-In-Reply-To: <alpine.DEB.2.10.1610141543580.3238@hadrien>
-References: <8c2c37de-baee-8282-b5cc-ad6eea3bb66f@users.sourceforge.net>
- <alpine.DEB.2.10.1610141019550.3002@hadrien>
- <2d2a0414-0e23-790b-e99c-0220ffda2b35@users.sourceforge.net>
- <alpine.DEB.2.10.1610141101550.3272@hadrien>
- <27a3d843-2380-eef6-85c9-f60158eba5b6@users.sourceforge.net>
- <alpine.DEB.2.10.1610141536060.3238@hadrien>
- <466f5c96-0577-7a8d-e0e1-576889491864@users.sourceforge.net>
- <alpine.DEB.2.10.1610141543580.3238@hadrien>
-Message-ID: <71b28c8b-06b4-02c6-a2e0-0880b95636b8@users.sourceforge.net>
+From: vaishali.thakkar@oracle.com (Vaishali Thakkar)
+Date: Sun, 16 Oct 2016 22:37:18 +0530
+Subject: [Cocci] [PATCH v2 3/3] Coccinelle: misc: Add support for devm
+	variant in all modes
+In-Reply-To: <cover.1476635073.git.vaishali.thakkar@oracle.com>
+References: <cover.1476635073.git.vaishali.thakkar@oracle.com>
+Message-ID: <5ed1989baa292520d4ed674580ced775a1ec2707.1476635073.git.vaishali.thakkar@oracle.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> Have you heard about that any other Linux developers dare to think about
->> further collateral software evolution around a function like "seq_printf"?
->>
->> How interesting can it become to take also the POSIX variants into account?
-> 
-> Same answer as above :)  I have no idea.
+Add missing support for the devm_request_threaded_irq in
+the rules of context, report and org modes.
 
-Do you eventually know any source code search databases which could be queried
-for function names with the suffix "_printf" (or similar wordings)?
+Misc:
+----
+To be consistent with other scripts, change confidence level
+of the script to 'Moderate'.
 
-Regards,
-Markus
+Signed-off-by: Vaishali Thakkar <vaishali.thakkar@oracle.com>
+---
+ scripts/coccinelle/misc/irqf_oneshot.cocci | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/scripts/coccinelle/misc/irqf_oneshot.cocci b/scripts/coccinelle/misc/irqf_oneshot.cocci
+index 03b748d..f6c93fd 100644
+--- a/scripts/coccinelle/misc/irqf_oneshot.cocci
++++ b/scripts/coccinelle/misc/irqf_oneshot.cocci
+@@ -5,7 +5,7 @@
+ /// So pass the IRQF_ONESHOT flag in this case.
+ ///
+ //
+-// Confidence: Good
++// Confidence: Moderate
+ // Comments:
+ // Options: --no-includes
+ 
+@@ -89,13 +89,21 @@ devm_request_threaded_irq at p(dev, irq, NULL, thread_fn,
+ @depends on context@
+ position p != {r1.p,r2.p};
+ @@
++(
+ *request_threaded_irq at p(irq, NULL, ...)
++|
++*devm_request_threaded_irq at p(dev, irq, NULL, ...)
++)
+ 
+ @match depends on report || org@
+ expression irq;
+ position p != {r1.p,r2.p};
+ @@
++(
+ request_threaded_irq at p(irq, NULL, ...)
++|
++devm_request_threaded_irq at p(dev, irq, NULL, ...)
++)
+ 
+ @script:python depends on org@
+ p << match.p;
+-- 
+2.1.4
