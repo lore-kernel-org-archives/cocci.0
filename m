@@ -1,34 +1,33 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 15 Oct 2016 14:55:29 +0200 (CEST)
-Subject: [Cocci] Replacing calls of general functions by more specific
- ones with SmPL
-In-Reply-To: <9392a1d4-d78e-4818-beda-60becc817f58@users.sourceforge.net>
-References: <8c2c37de-baee-8282-b5cc-ad6eea3bb66f@users.sourceforge.net>
- <alpine.DEB.2.10.1610141019550.3002@hadrien>
- <2d2a0414-0e23-790b-e99c-0220ffda2b35@users.sourceforge.net>
- <alpine.DEB.2.10.1610141101550.3272@hadrien>
- <3c66ad10-02bf-84a0-4ba3-56a5f74dd643@users.sourceforge.net>
- <alpine.DEB.2.20.1610151029570.9280@hadrien>
- <6696e3bf-e399-dfd9-a692-364d7c5db196@users.sourceforge.net>
- <alpine.DEB.2.20.1610151443060.9280@hadrien>
- <9392a1d4-d78e-4818-beda-60becc817f58@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1610151454320.9280@hadrien>
+From: vaishali.thakkar@oracle.com (Vaishali Thakkar)
+Date: Sun, 16 Oct 2016 22:40:00 +0530
+Subject: [Cocci] [PATCH v2 2/3] Coccinelle: misc: Improve the result given
+	by context mode
+In-Reply-To: <cover.1476635073.git.vaishali.thakkar@oracle.com>
+References: <cover.1476635073.git.vaishali.thakkar@oracle.com>
+Message-ID: <d17e17aaa53f8e127d4c075945278c27ade2b328.1476635073.git.vaishali.thakkar@oracle.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+To eliminate false positives given by the context mode, add
+necessary arguments for the function request_threaded_irq.
 
+Signed-off-by: Vaishali Thakkar <vaishali.thakkar@oracle.com>
+---
+ scripts/coccinelle/misc/irqf_oneshot.cocci | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Sat, 15 Oct 2016, SF Markus Elfring wrote:
-
-> >> How much would you like to increase the support for data processing around macros
-> >> with your software?
-> >
-> > Ther are no particular plans in this direction.
->
-> How does this kind of feedback fit to an information like ?Add identifier list metavariables
-> for #define parameter lists? from the recent software release?
-
-That was done already, so it's not a plan.  Furthermore, it was not
-planned for, the need arose.  Need, not hypothetical need.
-
-julia
+diff --git a/scripts/coccinelle/misc/irqf_oneshot.cocci b/scripts/coccinelle/misc/irqf_oneshot.cocci
+index b538d08..03b748d 100644
+--- a/scripts/coccinelle/misc/irqf_oneshot.cocci
++++ b/scripts/coccinelle/misc/irqf_oneshot.cocci
+@@ -89,7 +89,7 @@ devm_request_threaded_irq at p(dev, irq, NULL, thread_fn,
+ @depends on context@
+ position p != {r1.p,r2.p};
+ @@
+-*request_threaded_irq at p(...)
++*request_threaded_irq at p(irq, NULL, ...)
+ 
+ @match depends on report || org@
+ expression irq;
+-- 
+2.1.4
