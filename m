@@ -1,100 +1,29 @@
-From: vaishali.thakkar@oracle.com (Vaishali Thakkar)
-Date: Sun, 16 Oct 2016 22:39:49 +0530
-Subject: [Cocci] [PATCH v2 1/3] Coccinelle: misc: Improve the matching of
-	rules
-In-Reply-To: <cover.1476635073.git.vaishali.thakkar@oracle.com>
-References: <cover.1476635073.git.vaishali.thakkar@oracle.com>
-Message-ID: <99f1a531ecff22247dfcbfc3c680d806f8e44822.1476635073.git.vaishali.thakkar@oracle.com>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sun, 16 Oct 2016 19:45:58 +0200
+Subject: [Cocci] Replacing calls of general functions by more specific
+ ones with SmPL
+In-Reply-To: <alpine.DEB.2.10.1610141543580.3238@hadrien>
+References: <8c2c37de-baee-8282-b5cc-ad6eea3bb66f@users.sourceforge.net>
+ <alpine.DEB.2.10.1610141019550.3002@hadrien>
+ <2d2a0414-0e23-790b-e99c-0220ffda2b35@users.sourceforge.net>
+ <alpine.DEB.2.10.1610141101550.3272@hadrien>
+ <27a3d843-2380-eef6-85c9-f60158eba5b6@users.sourceforge.net>
+ <alpine.DEB.2.10.1610141536060.3238@hadrien>
+ <466f5c96-0577-7a8d-e0e1-576889491864@users.sourceforge.net>
+ <alpine.DEB.2.10.1610141543580.3238@hadrien>
+Message-ID: <71b28c8b-06b4-02c6-a2e0-0880b95636b8@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Currently because of the left associativity of the operators, pattern
-IRQF_ONESHOT | flags does not match with the pattern when we have more
-than one flag after the disjunction. This eventually results in giving
-false positives by the script. This patch eliminates these FPs by
-improving the rule.
+>> Have you heard about that any other Linux developers dare to think about
+>> further collateral software evolution around a function like "seq_printf"?
+>>
+>> How interesting can it become to take also the POSIX variants into account?
+> 
+> Same answer as above :)  I have no idea.
 
-Signed-off-by: Vaishali Thakkar <vaishali.thakkar@oracle.com>
----
- scripts/coccinelle/misc/irqf_oneshot.cocci | 30 ++++++++++++++++++++++++------
- 1 file changed, 24 insertions(+), 6 deletions(-)
+Do you eventually know any source code search databases which could be queried
+for function names with the suffix "_printf" (or similar wordings)?
 
-diff --git a/scripts/coccinelle/misc/irqf_oneshot.cocci b/scripts/coccinelle/misc/irqf_oneshot.cocci
-index b421150..b538d08 100644
---- a/scripts/coccinelle/misc/irqf_oneshot.cocci
-+++ b/scripts/coccinelle/misc/irqf_oneshot.cocci
-@@ -18,13 +18,12 @@ virtual report
- expression dev;
- expression irq;
- expression thread_fn;
--expression flags;
- position p;
- @@
- (
- request_threaded_irq at p(irq, NULL, thread_fn,
- (
--flags | IRQF_ONESHOT
-+IRQF_ONESHOT | ...
- |
- IRQF_ONESHOT
- )
-@@ -32,20 +31,39 @@ IRQF_ONESHOT
- |
- devm_request_threaded_irq at p(dev, irq, NULL, thread_fn,
- (
--flags | IRQF_ONESHOT
-+IRQF_ONESHOT | ...
- |
- IRQF_ONESHOT
- )
- , ...)
- )
- 
-- at depends on patch@
-+ at r2@
- expression dev;
- expression irq;
- expression thread_fn;
- expression flags;
-+expression ret;
- position p != r1.p;
- @@
-+flags = IRQF_ONESHOT | ...;
-+(
-+ret = request_threaded_irq at p(irq, NULL, thread_fn, flags, ...);
-+|
-+ret = devm_request_threaded_irq at p(dev, irq, NULL, thread_fn, flags, ...);
-+|
-+return request_threaded_irq at p(irq, NULL, thread_fn, flags, ...);
-+|
-+return devm_request_threaded_irq at p(dev, irq, NULL, thread_fn, flags, ...);
-+)
-+
-+ at depends on patch@
-+expression dev;
-+expression irq;
-+expression thread_fn;
-+expression flags;
-+position p != {r1.p,r2.p};
-+@@
- (
- request_threaded_irq at p(irq, NULL, thread_fn,
- (
-@@ -69,13 +87,13 @@ devm_request_threaded_irq at p(dev, irq, NULL, thread_fn,
- )
- 
- @depends on context@
--position p != r1.p;
-+position p != {r1.p,r2.p};
- @@
- *request_threaded_irq at p(...)
- 
- @match depends on report || org@
- expression irq;
--position p != r1.p;
-+position p != {r1.p,r2.p};
- @@
- request_threaded_irq at p(irq, NULL, ...)
- 
--- 
-2.1.4
+Regards,
+Markus
