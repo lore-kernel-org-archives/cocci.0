@@ -1,133 +1,109 @@
-From: afd@ti.com (Andrew F. Davis)
-Date: Mon, 17 Oct 2016 16:08:26 -0500
-Subject: [Cocci] [PATCH v2] Coccinelle: Add misc/boolconv.cocci
-In-Reply-To: <alpine.DEB.2.20.1610172254330.2186@hadrien>
-References: <20161017165224.17093-1-afd@ti.com>
- <alpine.DEB.2.20.1610172254330.2186@hadrien>
-Message-ID: <01267522-ce8d-9fe8-2ec3-e466f24b8492@ti.com>
+From: junjie.mao@enight.me (Junjie Mao)
+Date: Tue, 18 Oct 2016 10:52:23 +0800
+Subject: [Cocci] Problems in translating collateral evolutions to SmPL
+Message-ID: <87h98a1i8o.fsf@enight.me>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 10/17/2016 03:54 PM, Julia Lawall wrote:
-> On Mon, 17 Oct 2016, Andrew F. Davis wrote:
-> 
->> Add a script to check for unneeded conversions to bool.
-> 
-> What changed since the previous version?
-> 
+Hi all,
 
-Nothing, just a resend, forgot to label it as such.
+I'm recently collecting collateral evolutions in Linux, inferring the
+patterns in these patches and generate semantic patches for maintainers
+of out-of-tree modules. During the work I am not sure how to express the
+following cases in SmPL.
 
-Andrew
+1. add a reader for a structure field
 
-> julia
-> 
-> 
->>
->> Signed-off-by: Andrew F. Davis <afd@ti.com>
->> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
->> ---
->>  scripts/coccinelle/misc/boolconv.cocci | 90 ++++++++++++++++++++++++++++++++++
->>  1 file changed, 90 insertions(+)
->>  create mode 100644 scripts/coccinelle/misc/boolconv.cocci
->>
->> diff --git a/scripts/coccinelle/misc/boolconv.cocci b/scripts/coccinelle/misc/boolconv.cocci
->> new file mode 100644
->> index 0000000..33c464d
->> --- /dev/null
->> +++ b/scripts/coccinelle/misc/boolconv.cocci
->> @@ -0,0 +1,90 @@
->> +/// Remove unneeded conversion to bool
->> +///
->> +//# Relational and logical operators evaluate to bool,
->> +//# explicit conversion is overly verbose and unneeded.
->> +//
->> +// Copyright: (C) 2016 Andrew F. Davis <afd@ti.com> GPLv2.
->> +
->> +virtual patch
->> +virtual context
->> +virtual org
->> +virtual report
->> +
->> +//----------------------------------------------------------
->> +//  For patch mode
->> +//----------------------------------------------------------
->> +
->> + at depends on patch@
->> +expression A, B;
->> +symbol true, false;
->> +@@
->> +
->> +(
->> +  A == B
->> +|
->> +  A != B
->> +|
->> +  A > B
->> +|
->> +  A < B
->> +|
->> +  A >= B
->> +|
->> +  A <= B
->> +|
->> +  A && B
->> +|
->> +  A || B
->> +)
->> +- ? true : false
->> +
->> +//----------------------------------------------------------
->> +//  For context mode
->> +//----------------------------------------------------------
->> +
->> + at r depends on !patch@
->> +expression A, B;
->> +symbol true, false;
->> +position p;
->> +@@
->> +
->> +(
->> +  A == B
->> +|
->> +  A != B
->> +|
->> +  A > B
->> +|
->> +  A < B
->> +|
->> +  A >= B
->> +|
->> +  A <= B
->> +|
->> +  A && B
->> +|
->> +  A || B
->> +)
->> +* ? true : false at p
->> +
->> +//----------------------------------------------------------
->> +//  For org mode
->> +//----------------------------------------------------------
->> +
->> + at script:python depends on r&&org@
->> +p << r.p;
->> +@@
->> +
->> +msg = "WARNING: conversion to bool not needed here"
->> +coccilib.org.print_todo(p[0], msg)
->> +
->> +//----------------------------------------------------------
->> +//  For report mode
->> +//----------------------------------------------------------
->> +
->> + at script:python depends on r&&report@
->> +p << r.p;
->> +@@
->> +
->> +msg = "WARNING: conversion to bool not needed here"
->> +coccilib.report.print_report(p[0], msg)
->> --
->> 2.10.1
->>
->>
+    For example, in the following code
+
+     1   int foo(struct device* dev, int mask) {
+     2       int old_flags = dev->flags;
+     3       dev->flags &= mask;
+     4       return (dev->flags == old_flags);
+     5   }
+
+    'dev->flags' need to be replaced by 'dev_flags(dev)' where
+    dev_flags(dev) is a function returning 'dev->flags'. The following
+    semantic patch:
+
+     @@
+     struct device *dev;
+     @@
+     -dev->flags
+     +dev_flags(dev)
+
+    will rewrites all occurences of 'dev->flags', including the one on
+    line 3, which makes the program incorrect. How can I avoid touching
+    line 3 while updating line 2 and line 4 using spatch?
+
+    Related commits:
+    - https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=2f064f3485cd29633ad1b3cfb00cc519509a3d72
+    - https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=4d0e965732db6f7cce78e6b8f5d3073249004c3a
+
+2. rewriting part of a branch condition
+
+     int foo(int i, int j) {
+         if (i > 3 && i < 10 && j > 5 && j < 8)
+             return i;
+         return j;
+     }
+
+    If a commit replaces (i < 10 && j > 5) with (i < 8) (the order of
+    comparisons and logical operators are fixed), how can I express this
+    pattern in SmPL?
+
+    I have tried the following, but it does not work.
+
+     @@
+     identifier foo, i, j;
+     @@
+      foo(int i, int j) {
+          <...
+     -    i < 10 && j > 5
+     +    i < 8
+          ...>
+      }
+
+    Related commit:
+    - https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=dc3f4198eac14e52a98dfc79cd84b45e280f59cd
+
+3. add a statement right after local variable declarations
+
+    In the following function,
+
+     int foo(int i) {
+         int j,k,l;
+
+         j = baz(i);
+         ...
+     }
+
+    How can I add the statement 'bar(i);' before 'j = baz(i)' but after
+    the local variable declarations?
+
+    Related commit:
+    - https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=54efd50bfd873e2dbf784e0b21a8027ba4299a3e
+
+4. change callback prototypes
+
+    Assume a driver defines a global structure initialized with
+    callbacks:
+
+     1   int foo(int i, int j) { ... }
+     2   int bar(int i, int j) { ... }
+     3
+     4   struct netdev_ops ops = {
+     5       .foo = foo,
+     6   };
+
+    and a commit requires the prototype of the callback being changed to
+    foo(int i, int j, intk), how can I achieve that without touching
+    bar() using spatch?
+
+    Related commit:
+    - https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=88e72717c2de4181d8a6de1b04315953ad2bebdf
+    - https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=dece16353ef47d8d33f5302bc158072a9d65e26f
+
+--
+Best Regards
+Junjie Mao
