@@ -1,74 +1,65 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 18 Oct 2016 19:01:01 +0200 (CEST)
-Subject: [Cocci] [PATCH v2 0/3] Coccinelle: misc: Improve the script for
- more accurate results
-In-Reply-To: <58065376.5020406@oracle.com>
-References: <cover.1476635073.git.vaishali.thakkar@oracle.com>
- <alpine.DEB.2.10.1610181833560.2950@hadrien> <58065376.5020406@oracle.com>
-Message-ID: <alpine.DEB.2.10.1610181859590.2950@hadrien>
+From: Thierry.Martinez@inria.fr (Thierry Martinez)
+Date: Tue, 18 Oct 2016 18:54:45 +0200
+Subject: [Cocci] Regression in Python Support
+In-Reply-To: <57FCD273.9070607@redhat.com>
+References: <57FCD273.9070607@redhat.com>
+Message-ID: <ow4d1ixwqay.fsf@inria.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hello, Michael.
 
+This should now be fixed in trunk. Thank you for the report.
 
-On Tue, 18 Oct 2016, Vaishali Thakkar wrote:
+The support of --with-python had been dropped since the Python version
+was determined during run-time since 1.0.5 (even if it had not been
+properly documented, sorry for that). The option --with-python is now
+restored in trunk to specify the name of the default Python
+interpreter. The interpreter can also be changed by passing the option
+--python in the command line of spatch.
 
+Note that it is still possible that Fedora 23 and 24 are shipped with
+Python versions that have not been tested yet. If such a similar error
+is still raised with trunk, would you give me the output of
+"python3 --version"?
+
+Thank you again for the report.
+-- 
+Thierry.
+
+Michael Stefaniuc (2016/10/11, 13:52 CEST)?:
+> Hello Thierry,
+>
+> I've run into a regression in coccinelle 1.0.6 for the python support:
+> I am getting this error on Fedora 24:
+> Python error: /usr/lib64/python2.7/lib-dynload/_collectionsmodule.so:
+> undefined symbol: PyObject_SetItem
+>
+> On Fedora 23 I get a similar error but for a different symbol.
+>
+> The error is strange as I expected it to use python3 as I use:
+> ./configure --with-python=/usr/bin/python3
+>
+> That works just fine in coccinelle-1.0.5. I've bisected it to:
+> # first bad commit: [62f2df8c7d35967a1eca4dcd487d59a9918dd5aa] Fixed:
+> Bundles compilation and pyml update
+> commit 62f2df8c7d35967a1eca4dcd487d59a9918dd5aa
+> Author: Thierry Martinez <martinez@nsup.org>
+> Date:   Sun Jun 26 20:22:59 2016 +0200
+>
+>     Fixed: Bundles compilation and pyml update
+>
+>     - %.cmx: %.cmo dependency (with .ml files that do not have .mli,
+>       compiling the .ml into .cmo or into .cmx both write to the same .cmi
+>       file, so that cannot be done concurrently)
+>     - untarred pyml distribution to ease updates
+>     - Python exception catched in pycocci interface
 >
 >
-> On Tuesday 18 October 2016 10:04 PM, Julia Lawall wrote:
-> > I get the following in patch mode that I don't get in context mode:
->
-> Hi,
->
-> Are you getting same number of devm cases in your report for the context
-> and patch mode? [except this case]
-
-The only devm case I get in context mode is:
-
-diff -u -p /var/linuxes/linux-next/drivers/acpi/evged.c
-/tmp/nothing/drivers/ac\
-pi/evged.c
---- /var/linuxes/linux-next/drivers/acpi/evged.c
-+++ /tmp/nothing/drivers/acpi/evged.c
-@@ -116,8 +116,6 @@ static acpi_status acpi_ged_request_inte
-        if (r.flags & IORESOURCE_IRQ_SHAREABLE)
-                irqflags |= IRQF_SHARED;
-
--       if (devm_request_threaded_irq(dev, irq, NULL, acpi_ged_irq_handler,
--                                     irqflags, "ACPI:Ged", event)) {
-                dev_err(dev, "failed to setup event handler for irq %u\n", irq);
-                return AE_ERROR;
-        }
-
-This one has the property that the first argument is an identifier.  The
-other cases seem to have a & expression.  There are around 20 of them.
-
-julia
-
-
-
->
->
-> > diff -u -p a/drivers/power/supply/tps65090-charger.c
-> > b/drivers/power/supply/tps\
-> > 65090-charger.c
-> > --- a/drivers/power/supply/tps65090-charger.c
-> > +++ b/drivers/power/supply/tps65090-charger.c
-> > @@ -311,7 +311,8 @@ static int tps65090_charger_probe(struct
-> >
-> > 	if (irq != -ENXIO) {
-> > 		ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
-> > -                       tps65090_charger_isr, 0, "tps65090-charger", cdata);
-> > +                       tps65090_charger_isr, IRQF_ONESHOT,
-> > +                       "tps65090-charger", cdata);
-> > 		if (ret) {
-> >                         dev_err(cdata->dev,
-> > 				"Unable to register irq %d err %d\n", irq,
-> >
-> >
-> > julia
-> >
->
-> --
-> Vaishali
->
+> thanks
+> bye
+> 	michael
+> _______________________________________________
+> Cocci mailing list
+> Cocci at systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
