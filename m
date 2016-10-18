@@ -1,100 +1,98 @@
-From: vaishali.thakkar@oracle.com (Vaishali Thakkar)
-Date: Tue, 18 Oct 2016 23:05:48 +0530
-Subject: [Cocci] [PATCH v2 3/3] Coccinelle: misc: Add support for devm
- variant in all modes
-In-Reply-To: <alpine.DEB.2.10.1610181909540.2950@hadrien>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Tue, 18 Oct 2016 20:05:40 +0200 (CEST)
+Subject: [Cocci] [PATCH v2 0/3] Coccinelle: misc: Improve the script for
+ more accurate results
+In-Reply-To: <580657CB.3000200@oracle.com>
 References: <cover.1476635073.git.vaishali.thakkar@oracle.com>
- <5ed1989baa292520d4ed674580ced775a1ec2707.1476635073.git.vaishali.thakkar@oracle.com>
- <58065660.2080609@oracle.com> <alpine.DEB.2.10.1610181909540.2950@hadrien>
-Message-ID: <58065D74.7010405@oracle.com>
+ <alpine.DEB.2.10.1610181833560.2950@hadrien> <58065376.5020406@oracle.com>
+ <alpine.DEB.2.10.1610181859590.2950@hadrien> <580657CB.3000200@oracle.com>
+Message-ID: <alpine.DEB.2.10.1610182005190.2950@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 
 
-On Tuesday 18 October 2016 10:40 PM, Julia Lawall wrote:
-> 
-> 
-> On Tue, 18 Oct 2016, Vaishali Thakkar wrote:
-> 
->>
->>
->> On Sunday 16 October 2016 10:37 PM, Vaishali Thakkar wrote:
->>> Add missing support for the devm_request_threaded_irq in
->>> the rules of context, report and org modes.
->>>
->>> Misc:
->>> ----
->>> To be consistent with other scripts, change confidence level
->>> of the script to 'Moderate'.
->>>
->>> Signed-off-by: Vaishali Thakkar <vaishali.thakkar@oracle.com>
->>> ---
->>>  scripts/coccinelle/misc/irqf_oneshot.cocci | 10 +++++++++-
->>>  1 file changed, 9 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/scripts/coccinelle/misc/irqf_oneshot.cocci b/scripts/coccinelle/misc/irqf_oneshot.cocci
->>> index 03b748d..f6c93fd 100644
->>> --- a/scripts/coccinelle/misc/irqf_oneshot.cocci
->>> +++ b/scripts/coccinelle/misc/irqf_oneshot.cocci
->>> @@ -5,7 +5,7 @@
->>>  /// So pass the IRQF_ONESHOT flag in this case.
->>>  ///
->>>  //
->>> -// Confidence: Good
->>> +// Confidence: Moderate
->>>  // Comments:
->>>  // Options: --no-includes
->>>
->>> @@ -89,13 +89,21 @@ devm_request_threaded_irq at p(dev, irq, NULL, thread_fn,
->>>  @depends on context@
->>>  position p != {r1.p,r2.p};
->>>  @@
->>> +(
->>>  *request_threaded_irq at p(irq, NULL, ...)
->>> +|
->>> +*devm_request_threaded_irq at p(dev, irq, NULL, ...)
->>> +)
->>>
->>>  @match depends on report || org@
->>>  expression irq;
->>>  position p != {r1.p,r2.p};
->>>  @@
->>> +(
->>>  request_threaded_irq at p(irq, NULL, ...)
->>> +|
->>> +devm_request_threaded_irq at p(dev, irq, NULL, ...)
->>> +)
->>
->> Oh, my bad here. :(
->>
->> Forgot the initialization of meta variables for the
->> arguments.
->>
->> But I am wondering why coccicheck didn't fail here.
->> Isn't it suppose to give parsing errors? Or it doesn't
->> do that?
-> 
-> It just give a warning, which I guess make coccicheck hides.  It is
-> allowed to require an argument to be named dev, although it is nicer if
-> one declares it with symbol in that case.
+On Tue, 18 Oct 2016, Vaishali Thakkar wrote:
 
-Ah, ok. The results were based on the names 'irq, dev etc', not on the
-assumption for metavariables.
- 
-> julia
-> 
->>
->> In any case, I am sorry for this. I'll send the revised
->> version of the patches.
->>
->>>  @script:python depends on org@
->>>  p << match.p;
->>>
->>
->> --
->> Vaishali
->>
+>
+>
+> On Tuesday 18 October 2016 10:31 PM, Julia Lawall wrote:
+> >
+> >
+> > On Tue, 18 Oct 2016, Vaishali Thakkar wrote:
+> >
+> >>
+> >>
+> >> On Tuesday 18 October 2016 10:04 PM, Julia Lawall wrote:
+> >>> I get the following in patch mode that I don't get in context mode:
+> >>
+> >> Hi,
+> >>
+> >> Are you getting same number of devm cases in your report for the context
+> >> and patch mode? [except this case]
+> >
+> > The only devm case I get in context mode is:
+> >
+> > diff -u -p /var/linuxes/linux-next/drivers/acpi/evged.c
+> > /tmp/nothing/drivers/ac\
+> > pi/evged.c
+> > --- /var/linuxes/linux-next/drivers/acpi/evged.c
+> > +++ /tmp/nothing/drivers/acpi/evged.c
+> > @@ -116,8 +116,6 @@ static acpi_status acpi_ged_request_inte
+> >         if (r.flags & IORESOURCE_IRQ_SHAREABLE)
+> >                 irqflags |= IRQF_SHARED;
+> >
+> > -       if (devm_request_threaded_irq(dev, irq, NULL, acpi_ged_irq_handler,
+> > -                                     irqflags, "ACPI:Ged", event)) {
+> >                 dev_err(dev, "failed to setup event handler for irq %u\n", irq);
+> >                 return AE_ERROR;
+> >         }
+> >
+> > This one has the property that the first argument is an identifier.  The
+> > other cases seem to have a & expression.  There are around 20 of them.
+>
+> Although I got the issue with the patches, I am wondering why even context mode
+> gave result for the identifiers even though they are not initialized? Does that
+> mean it automatically assumes the type of meta variables even though they are not
+> initialized? I think spatch gives warnings for such cases. But I am not sure about
+> the coccicheck.
 
--- 
-Vaishali
+I think that there are a few cases where the names are the ones you chose.
+
+julia
+
+
+>
+> > julia
+> >
+> >
+> >
+> >>
+> >>
+> >>> diff -u -p a/drivers/power/supply/tps65090-charger.c
+> >>> b/drivers/power/supply/tps\
+> >>> 65090-charger.c
+> >>> --- a/drivers/power/supply/tps65090-charger.c
+> >>> +++ b/drivers/power/supply/tps65090-charger.c
+> >>> @@ -311,7 +311,8 @@ static int tps65090_charger_probe(struct
+> >>>
+> >>> 	if (irq != -ENXIO) {
+> >>> 		ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
+> >>> -                       tps65090_charger_isr, 0, "tps65090-charger", cdata);
+> >>> +                       tps65090_charger_isr, IRQF_ONESHOT,
+> >>> +                       "tps65090-charger", cdata);
+> >>> 		if (ret) {
+> >>>                         dev_err(cdata->dev,
+> >>> 				"Unable to register irq %d err %d\n", irq,
+> >>>
+> >>>
+> >>> julia
+> >>>
+> >>
+> >> --
+> >> Vaishali
+> >>
+>
+> --
+> Vaishali
+>
