@@ -1,35 +1,32 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 18 Oct 2016 22:42:21 +0200 (CEST)
-Subject: [Cocci] Regression in Python Support
-In-Reply-To: <e44a320e-ac7a-1111-1502-c1a91d1750ca@redhat.com>
-References: <57FCD273.9070607@redhat.com> <ow4d1ixwqay.fsf@inria.fr>
- <e44a320e-ac7a-1111-1502-c1a91d1750ca@redhat.com>
-Message-ID: <alpine.DEB.2.20.1610182242030.2247@hadrien>
+From: vaishali.thakkar@oracle.com (Vaishali Thakkar)
+Date: Mon, 24 Oct 2016 17:54:42 +0530
+Subject: [Cocci] [PATCH v3 0/3] Coccinelle: misc: Improve the script for
+	more accurate results
+Message-ID: <cover.1477293469.git.vaishali.thakkar@oracle.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Few changes to improve the results given by the irqf_oneshot.cocci:
 
+- Change in the matching rules to eliminate false postives in the
+  patch mode
+- Change in the context mode to eliminate false postives in the
+  context mode
+- Support for the missing devm_request_threaded_irq in context, report
+  and org mode
 
-On Tue, 18 Oct 2016, Michael Stefaniuc wrote:
+Changes since v2:
+	- Add missing initialization of metavariables
+Changes since v1:
+	- Split patch in to the patchset
 
-> Thanks Thierry!
->
-> On 10/18/2016 06:54 PM, Thierry Martinez wrote:
-> > This should now be fixed in trunk. Thank you for the report.
-> >
-> > The support of --with-python had been dropped since the Python version
-> > was determined during run-time since 1.0.5 (even if it had not been
-> > properly documented, sorry for that). The option --with-python is now
-> > restored in trunk to specify the name of the default Python
-> > interpreter. The interpreter can also be changed by passing the option
-> > --python in the command line of spatch.
-> >
-> > Note that it is still possible that Fedora 23 and 24 are shipped with
-> > Python versions that have not been tested yet. If such a similar error
-> > is still raised with trunk, would you give me the output of
-> > "python3 --version"?
-> Coccinelle works now again with python3 on both F23 and F24.
+Vaishali Thakkar (3):
+  Coccinelle: misc: Improve the matching of rules
+  Coccinelle: misc: Improve the result given by context mode
+  Coccinelle: misc: Add support for devm variant in all modes
 
-Great :)  Thanks for checking on it.
+ scripts/coccinelle/misc/irqf_oneshot.cocci | 45 ++++++++++++++++++++++++------
+ 1 file changed, 37 insertions(+), 8 deletions(-)
 
-julia
+-- 
+2.1.4
