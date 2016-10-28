@@ -1,105 +1,126 @@
-From: vaishali.thakkar@oracle.com (Vaishali Thakkar)
-Date: Mon, 24 Oct 2016 17:49:59 +0530
-Subject: [Cocci] [PATCH v3 1/3] Coccinelle: misc: Improve the matching of
-	rules
-In-Reply-To: <cover.1477293469.git.vaishali.thakkar@oracle.com>
-References: <cover.1477293469.git.vaishali.thakkar@oracle.com>
-Message-ID: <53a9e7344bd2fe5756c245ab0e1646976c1e0fbd.1477293469.git.vaishali.thakkar@oracle.com>
+From: mylesgw@google.com (Myles Watson)
+Date: Fri, 28 Oct 2016 15:52:23 -0700
+Subject: [Cocci] Newbie questions: Missing comments, attribute parsing
+Message-ID: <CAFO6UKWH418v7BZsYarycrv-BvFdxLuZZgJzX78-kReMQgvo2w@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Currently because of the left associativity of the operators, pattern
-IRQF_ONESHOT | flags does not match with the pattern when we have more
-than one flag after the disjunction. This eventually results in giving
-false positives by the script. This patch eliminates these FPs by
-improving the rule.
+1. Missing comments:
 
-Signed-off-by: Vaishali Thakkar <vaishali.thakkar@oracle.com>
----
-Changes since v2:
-	- No change in this patch
-Changes since v1:
-	- Splitted patch in the patchset
----
- scripts/coccinelle/misc/irqf_oneshot.cocci | 30 ++++++++++++++++++++++++------
- 1 file changed, 24 insertions(+), 6 deletions(-)
+I was using this cocci file to remove uses of the UNUSED macro, and noticed
+that it also removes comments around the macro.
 
-diff --git a/scripts/coccinelle/misc/irqf_oneshot.cocci b/scripts/coccinelle/misc/irqf_oneshot.cocci
-index b421150..a8537fb 100644
---- a/scripts/coccinelle/misc/irqf_oneshot.cocci
-+++ b/scripts/coccinelle/misc/irqf_oneshot.cocci
-@@ -18,13 +18,12 @@ virtual report
- expression dev;
- expression irq;
- expression thread_fn;
--expression flags;
- position p;
- @@
- (
- request_threaded_irq at p(irq, NULL, thread_fn,
- (
--flags | IRQF_ONESHOT
-+IRQF_ONESHOT | ...
- |
- IRQF_ONESHOT
- )
-@@ -32,20 +31,39 @@ IRQF_ONESHOT
- |
- devm_request_threaded_irq at p(dev, irq, NULL, thread_fn,
- (
--flags | IRQF_ONESHOT
-+IRQF_ONESHOT | ...
- |
- IRQF_ONESHOT
- )
- , ...)
- )
- 
-- at depends on patch@
-+ at r2@
- expression dev;
- expression irq;
- expression thread_fn;
- expression flags;
-+expression ret;
- position p != r1.p;
- @@
-+flags = IRQF_ONESHOT | ...;
-+(
-+ret = request_threaded_irq at p(irq, NULL, thread_fn, flags, ...);
-+|
-+ret = devm_request_threaded_irq at p(dev, irq, NULL, thread_fn, flags, ...);
-+|
-+return request_threaded_irq at p(irq, NULL, thread_fn, flags, ...);
-+|
-+return devm_request_threaded_irq at p(dev, irq, NULL, thread_fn, flags, ...);
-+)
-+
-+ at depends on patch@
-+expression dev;
-+expression irq;
-+expression thread_fn;
-+expression flags;
-+position p != {r1.p,r2.p};
-+@@
- (
- request_threaded_irq at p(irq, NULL, thread_fn,
- (
-@@ -69,13 +87,13 @@ devm_request_threaded_irq at p(dev, irq, NULL, thread_fn,
- )
- 
- @depends on context@
--position p != r1.p;
-+position p != {r1.p,r2.p};
- @@
- *request_threaded_irq at p(...)
- 
- @match depends on report || org@
- expression irq;
--position p != r1.p;
-+position p != {r1.p,r2.p};
- @@
- request_threaded_irq at p(irq, NULL, ...)
- 
--- 
-2.1.4
+2. Attribute parsing:
+I know that GETRIDOFTHISCOMMA, is a hack, but I couldn't figure out how to
+add UNUSED_ATTR to the declaration.
+
+Thanks,
+Myles
+
+output:
+$ spatch --version
+spatch version 1.0.0-rc19 with Python support and with PCRE support
+
+...
+
+with isos from: /usr/share/coccinelle/standard.iso
+-----------------------------------------------------------------------
+@r1@
+identifier arg;
+identifier fn;
+type t;
+parameter list[n] P;
+@@
+
+fn(P, t arg) { ...
+ UNUSED(arg);
+ ...
+ }
+
+@depends on r1@
+identifier r1.arg;
+identifier r1.fn;
+type r1.t;
+parameter list[r1.n] r1.P;
+typedef UNUSED_ATTR;
+@@
+
+fn(P,
+- t arg
++ UNUSED_ATTR GETRIDOFTHISCOMMA, t arg
+ ) { ...
+-UNUSED(arg);
+ ...
+ }
+
+
+HANDLING: test.c
+-----------------------------------------------------------------------
+let's go
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+r1 =
+-----------------------------------------------------------------------
+dependencies for rule r1 satisfied:
+binding in = []
+binding relevant in = []
+     transformation info is empty
+     binding out = [r1.fn --> id SomeFunc;r1.P --> <<paramlist>>;r1.n --> 0;
+                   r1.t --> int;r1.arg --> id foo]
+-----------------------------------------------------------------------
+rule starting on line 13 =
+-----------------------------------------------------------------------
+dependencies for rule rule starting on line 13 satisfied:
+r1 satisfied
+binding in = [r1.P --> <<paramlist>>;r1.arg --> id foo;r1.fn --> id
+SomeFunc;
+             r1.n --> 0;r1.t --> int]
+binding relevant in = [r1.P --> <<paramlist>>;r1.arg --> id foo;
+                      r1.fn --> id SomeFunc;r1.n --> 0;r1.t --> int]
+     transformation info returned:
+          transform state: 1
+               with rule_elem: r1:fn(r1:P-r1:t
+                                       >>> UNUSED_ATTR GETRIDOFTHISCOMMA,
+                                           r1:t r1:arg
+                                      -r1:arg)
+               with binding: [r1.P --> <<paramlist>>;r1.arg --> id foo;
+                             r1.fn --> id SomeFunc;r1.n --> 0;r1.t --> int]
+          transform state: 6
+               with rule_elem: -UNUSED-(-r1:arg-)-;
+               with binding: [r1.P --> <<paramlist>>;r1.arg --> id foo;
+                             r1.fn --> id SomeFunc;r1.n --> 0;r1.t --> int]
+     binding out = []
+     transform one node: 6
+     transform one node: 1
+*5: ERASING_COMMENTS: /* to be implemented */*
+-----------------------------------------------------------------------
+proto for rule starting on line 13 =
+-----------------------------------------------------------------------
+dependencies for rule proto for rule starting on line 13 satisfied:
+rule starting on line 13 satisfied
+binding in = [r1.P --> <<paramlist>>;r1.arg --> id foo;r1.fn --> id
+SomeFunc;
+             r1.n --> 0;r1.t --> int]
+binding relevant in = [r1.P --> <<paramlist>>;r1.arg --> id foo;
+                      r1.fn --> id SomeFunc;r1.n --> 0;r1.t --> int]
+-----------------------------------------------------------------------
+Finished
+-----------------------------------------------------------------------
+diff =
+--- test.c
++++ /tmp/cocci-output-7586-ec1ff0-test.c
+@@ -1,8 +1,5 @@
+-bool SomeFunc(int foo)
++bool SomeFunc(UNUSED_ATTR GETRIDOFTHISCOMMA, int foo)
+ {
+-    UNUSED(foo);
+-
+*-    /* to be implemented */*
+     return true;
+ }
+
+Check duplication for 1 files
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20161028/d977d6f3/attachment.html>
