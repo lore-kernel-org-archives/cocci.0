@@ -1,172 +1,91 @@
-From: mylesgw@google.com (Myles Watson)
-Date: Mon, 31 Oct 2016 08:38:57 -0700
-Subject: [Cocci] Newbie questions: Missing comments, attribute parsing
-In-Reply-To: <alpine.DEB.2.20.1610290748210.1978@hadrien>
-References: <CAFO6UKWH418v7BZsYarycrv-BvFdxLuZZgJzX78-kReMQgvo2w@mail.gmail.com>
- <alpine.DEB.2.20.1610290748210.1978@hadrien>
-Message-ID: <CAFO6UKV4X39PiJxvw=4X8xpBxYi+QACZ3AOEbfSouPhsKXe7iw@mail.gmail.com>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Tue, 1 Nov 2016 21:30:11 +0100
+Subject: [Cocci] [PATCH v2 1/3] Coccinelle: misc: Improve the matching
+ of rules
+In-Reply-To: <99f1a531ecff22247dfcbfc3c680d806f8e44822.1476635073.git.vaishali.thakkar@oracle.com>
+References: <99f1a531ecff22247dfcbfc3c680d806f8e44822.1476635073.git.vaishali.thakkar@oracle.com>
+Message-ID: <36383906-21db-3c4f-3920-6eb9e462ad41@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, Oct 28, 2016 at 10:51 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
+Dear Vaishali,
 
->
->
-> On Fri, 28 Oct 2016, Myles Watson wrote:
->
-> > 1. Missing comments:
-> >
-> > I was using this cocci file to remove uses of the UNUSED macro, and
-> noticed
-> > that it also removes comments around the macro.
-> >
-> > 2. Attribute parsing:
-> > I know that GETRIDOFTHISCOMMA, is a hack, but I couldn't figure out how
-> to
-> > add UNUSED_ATTR to the declaration.
->
-> Thanks for the report.  The comment should not be removed.  It should only
-> be removing comments inside code that is completely removed.  Perhaps
-> comments before removed code too, but not after.  I will look into this.
->
+You sent an update suggestion for the source file ?scripts/coccinelle/misc/irqf_oneshot.cocci?
+on 2016-10-16.
 
-Thanks for the quick response!
+It contained a patch hunk like the following.
 
 
->
-> Nothing is supported for adding new attributes either, but it could be.  I
-> will also look into this.
->
-> Your Coccinelle is quite out of date as well.  To get the fixes, you'll
-> need to install the github version.
->
+@@ -32,20 +31,39 @@ IRQF_ONESHOT
+ |
+ devm_request_threaded_irq at p(dev, irq, NULL, thread_fn,
+ (
+-flags | IRQF_ONESHOT
++IRQF_ONESHOT | ...
+ |
+ IRQF_ONESHOT
+ )
+ , ...)
+ )
+ 
+- at depends on patch@
++ at r2@
+ expression dev;
+ expression irq;
+ expression thread_fn;
+ expression flags;
++expression ret;
+ position p != r1.p;
+ @@
++flags = IRQF_ONESHOT | ...;
++(
++ret = request_threaded_irq at p(irq, NULL, thread_fn, flags, ...);
++|
++ret = devm_request_threaded_irq at p(dev, irq, NULL, thread_fn, flags, ...);
++|
++return request_threaded_irq at p(irq, NULL, thread_fn, flags, ...);
++|
++return devm_request_threaded_irq at p(dev, irq, NULL, thread_fn, flags, ...);
++)
++
++ at depends on patch@
++expression dev;
++expression irq;
++expression thread_fn;
++expression flags;
++position p != {r1.p,r2.p};
++@@
+ (
+ request_threaded_irq at p(irq, NULL, thread_fn,
+ (
 
-Sounds good.
 
-Thanks,
-Myles
+I have got a few ideas here.
+
+1. Would you like to reduce the repetition of the SmPL key word ?expression??
+
+2. How do you think about a bit more fine-tuning for the shown SmPL disjunction
+   as follows?
 
 
->
-> julia
->
-> >
-> > Thanks,
-> > Myles
-> >
-> > output:
-> > $ spatch --version
-> > spatch version 1.0.0-rc19 with Python support and with PCRE support
-> >
-> > ...
-> >
-> > with isos from: /usr/share/coccinelle/standard.iso
-> > -----------------------------------------------------------------------
-> > @r1@
-> > identifier arg;
-> > identifier fn;
-> > type t;
-> > parameter list[n] P;
-> > @@
-> >
-> > fn(P, t arg) { ...
-> >  UNUSED(arg);
-> >  ...
-> >  }
-> >
-> > @depends on r1@
-> > identifier r1.arg;
-> > identifier r1.fn;
-> > type r1.t;
-> > parameter list[r1.n] r1.P;
-> > typedef UNUSED_ATTR;
-> > @@
-> >
-> > fn(P,
-> > - t arg
-> > + UNUSED_ATTR GETRIDOFTHISCOMMA, t arg
-> >  ) { ...
-> > -UNUSED(arg);
-> >  ...
-> >  }
-> >
-> >
-> > HANDLING: test.c
-> > -----------------------------------------------------------------------
-> > let's go
-> > -----------------------------------------------------------------------
-> > -----------------------------------------------------------------------
-> > -----------------------------------------------------------------------
-> > r1 =
-> > -----------------------------------------------------------------------
-> > dependencies for rule r1 satisfied:
-> > binding in = []
-> > binding relevant in = []
-> >      transformation info is empty
-> >      binding out = [r1.fn --> id SomeFunc;r1.P --> <<paramlist>>;r1.n
-> --> 0;
-> >                    r1.t --> int;r1.arg --> id foo]
-> > -----------------------------------------------------------------------
-> > rule starting on line 13 =
-> > -----------------------------------------------------------------------
-> > dependencies for rule rule starting on line 13 satisfied:
-> > r1 satisfied
-> > binding in = [r1.P --> <<paramlist>>;r1.arg --> id foo;r1.fn --> id
-> > SomeFunc;
-> >              r1.n --> 0;r1.t --> int]
-> > binding relevant in = [r1.P --> <<paramlist>>;r1.arg --> id foo;
-> >                       r1.fn --> id SomeFunc;r1.n --> 0;r1.t --> int]
-> >      transformation info returned:
-> >           transform state: 1
-> >                with rule_elem: r1:fn(r1:P-r1:t
-> >                                        >>> UNUSED_ATTR GETRIDOFTHISCOMMA,
-> >                                            r1:t r1:arg
-> >                                       -r1:arg)
-> >                with binding: [r1.P --> <<paramlist>>;r1.arg --> id foo;
-> >                              r1.fn --> id SomeFunc;r1.n --> 0;r1.t -->
-> int]
-> >           transform state: 6
-> >                with rule_elem: -UNUSED-(-r1:arg-)-;
-> >                with binding: [r1.P --> <<paramlist>>;r1.arg --> id foo;
-> >                              r1.fn --> id SomeFunc;r1.n --> 0;r1.t -->
-> int]
-> >      binding out = []
-> >      transform one node: 6
-> >      transform one node: 1
-> > 5: ERASING_COMMENTS: /* to be implemented */
-> > -----------------------------------------------------------------------
-> > proto for rule starting on line 13 =
-> > -----------------------------------------------------------------------
-> > dependencies for rule proto for rule starting on line 13 satisfied:
-> > rule starting on line 13 satisfied
-> > binding in = [r1.P --> <<paramlist>>;r1.arg --> id foo;r1.fn --> id
-> > SomeFunc;
-> >              r1.n --> 0;r1.t --> int]
-> > binding relevant in = [r1.P --> <<paramlist>>;r1.arg --> id foo;
-> >                       r1.fn --> id SomeFunc;r1.n --> 0;r1.t --> int]
-> > -----------------------------------------------------------------------
-> > Finished
-> > -----------------------------------------------------------------------
-> > diff =
-> > --- test.c
-> > +++ /tmp/cocci-output-7586-ec1ff0-test.c
-> > @@ -1,8 +1,5 @@
-> > -bool SomeFunc(int foo)
-> > +bool SomeFunc(UNUSED_ATTR GETRIDOFTHISCOMMA, int foo)
-> >  {
-> > -    UNUSED(foo);
-> > -
-> > -    /* to be implemented */
-> >      return true;
-> >  }
-> >
-> > Check duplication for 1 files
-> >
-> >
-> >
-> >
-> >
->
--------------- next part --------------
-An HTML attachment was scrubbed...
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20161031/2d094ac8/attachment.html>
++(
++ ret =
++(
++       request_threaded_irq at p(irq, NULL, thread_fn, flags, ...)
++|
++       devm_request_threaded_irq at p(dev, irq, NULL, thread_fn, flags, ...)
++)
++ ;
++|
++ return
++(
++        request_threaded_irq at p(irq, NULL, thread_fn, flags, ...)
++|
++        devm_request_threaded_irq at p(dev, irq, NULL, thread_fn, flags, ...)
++)
++ ;
++)
+
+
+Regards,
+Markus
