@@ -1,58 +1,54 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 1 Nov 2016 21:50:16 +0100 (CET)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Tue, 1 Nov 2016 22:02:15 +0100
 Subject: [Cocci] [PATCH v2 1/3] Coccinelle: misc: Improve the matching
  of rules
-In-Reply-To: <c98f4533-1beb-d3f9-e5b1-6bac2d93b761@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.10.1611012147510.6300@hadrien>
 References: <99f1a531ecff22247dfcbfc3c680d806f8e44822.1476635073.git.vaishali.thakkar@oracle.com>
  <36383906-21db-3c4f-3920-6eb9e462ad41@users.sourceforge.net>
  <alpine.DEB.2.10.1611012134320.6300@hadrien>
  <c98f4533-1beb-d3f9-e5b1-6bac2d93b761@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1611012147510.6300@hadrien>
+ <alpine.DEB.2.10.1611012147510.6300@hadrien>
+Message-ID: <37d8039b-23c9-c7de-10eb-eb0e77b84418@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> Sorry, I thought it was the original code, and didn't realize that it was
+> the suggestion..
+> 
+> But I don't think that the suggestion improves readability in any way.
+
+I hoped that my SmPL script variant could influence the execution characteristics
+in positive ways.
 
 
-On Tue, 1 Nov 2016, SF Markus Elfring wrote:
+> Coccinelle disjunctions also float up to the statement level anyway,
 
-> > What do you mean by "a bit more fine-tuning"?  If you have a concrete
-> > suggestion, then make it.  But don't make work for other people to guess
-> > what you might mean.
->
-> I hoped that the SmPL source code below would explain my update suggestion
-> in a sufficient way to use two smaller SmPL disjunctions.
-
-Sorry, I thought it was the original code, and didn't realize that it was
-the suggestion..
-
-But I don't think that the suggestion improves readability in any way.
-Coccinelle disjunctions also float up to the statement level anyway, so
-the semantic patch that is actually applied to the code is the same in
-either case.
-
-julia
+I do not really understand this information at the moment.
 
 
->
->
-> >> +(
-> >> + ret =
-> >> +(
-> >> +       request_threaded_irq at p(irq, NULL, thread_fn, flags, ...)
-> >> +|
-> >> +       devm_request_threaded_irq at p(dev, irq, NULL, thread_fn, flags, ...)
-> >> +)
-> >> + ;
-> >> +|
-> >> + return
-> >> +(
-> >> +        request_threaded_irq at p(irq, NULL, thread_fn, flags, ...)
-> >> +|
-> >> +        devm_request_threaded_irq at p(dev, irq, NULL, thread_fn, flags, ...)
-> >> +)
-> >> + ;
-> >> +)
->
-> Regards,
-> Markus
->
+> so the semantic patch that is actually applied to the code is the same in
+> either case.
+
+I assumed that the reduced code repetition could result in a desired effect.
+
+
+>>>> +(
+>>>> + ret =
+>>>> +(
+>>>> +       request_threaded_irq at p(irq, NULL, thread_fn, flags, ...)
+>>>> +|
+>>>> +       devm_request_threaded_irq at p(dev, irq, NULL, thread_fn, flags, ...)
+>>>> +)
+>>>> + ;
+>>>> +|
+>>>> + return
+>>>> +(
+>>>> +        request_threaded_irq at p(irq, NULL, thread_fn, flags, ...)
+>>>> +|
+>>>> +        devm_request_threaded_irq at p(dev, irq, NULL, thread_fn, flags, ...)
+>>>> +)
+>>>> + ;
+>>>> +)
+
+Regards,
+Markus
