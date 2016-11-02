@@ -1,24 +1,77 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 1 Nov 2016 22:27:28 +0100
-Subject: [Cocci] Coccinelle: misc: Improve the matching of rules
-In-Reply-To: <alpine.DEB.2.10.1611012206200.6300@hadrien>
-References: <99f1a531ecff22247dfcbfc3c680d806f8e44822.1476635073.git.vaishali.thakkar@oracle.com>
- <36383906-21db-3c4f-3920-6eb9e462ad41@users.sourceforge.net>
- <alpine.DEB.2.10.1611012134320.6300@hadrien>
- <c98f4533-1beb-d3f9-e5b1-6bac2d93b761@users.sourceforge.net>
- <alpine.DEB.2.10.1611012147510.6300@hadrien>
- <37d8039b-23c9-c7de-10eb-eb0e77b84418@users.sourceforge.net>
- <alpine.DEB.2.10.1611012206200.6300@hadrien>
-Message-ID: <63ea5b64-f8bd-1701-7b4d-eb19ac005a05@users.sourceforge.net>
+From: daniel.lezcano@linaro.org (Daniel Lezcano)
+Date: Wed, 2 Nov 2016 22:09:50 +0100
+Subject: [Cocci] Adding argument to a function
+Message-ID: <20161102210950.GA1770@mai>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> I assumed that the reduced code repetition could result in a desired effect.
-> 
-> Incorrect on all points.
+Hi all,
 
-I wonder then why the Coccinelle software would not benefit from the
-specification of common parts in two similar SmPL disjunctions.
+I'm very new to coccinelle, so sorry if the question is irrelevant or was already asked.
 
-Regards,
-Markus
+I'm trying to add a new argument to a function which has a couple of callbacks.
+
+The original function is:
+
+static inline int cpuhp_setup_state(enum cpuhp_state state,
+				    int (*startup)(unsigned int cpu),
+				    int (*teardown)(unsigned int cpu));
+
+I would like to pass a private pointer when setting the state and then pass
+this pointer to the 'startup' / 'teardown' callbacks where there signature will be
+different and all call sites must change their callbacks signature also.
+
+I tried to first add the new argument to the function, in order to have:
+
+static inline int cpuhp_setup_state(enum cpuhp_state state,
+				    int (*startup)(unsigned int cpu),
+				    int (*teardown)(unsigned int cpu),
+				    void *data);
+
+... with the rule:
+
+@rule@
+identifier cpuhp_setup_state;
+identifier state, name, startup, teardown, data;
+@@
+
+static inline int cpuhp_setup_state(enum cpuhp_state state,
+                                    const char *name,
+                                    int (*startup)(unsigned int cpu),
+                                    int (*teardown)(unsigned int cpu),
+				    void *data)
+{
+	...
+}
+
+@@
+identifier rule.cpuhp_setup_state;
+expression E1, E2, E3, E4;
+@@
+
+cpuhp_setup_state(E1, E2, E3, E4
++                 , NULL
+		 )
+
+But the parsing gives:
+
+...
+
+cpuhp_setup_state(E1, E2, E3, E4
+                    >>> , NULL
+                  )
+
+
+grep tokens
+cpuhp_state || cpu
+No query
+warning: line 8: should cpu be a metavariable?
+warning: line 9: should cpu be a metavariable?
+
+And I don't have the expected result, well actually I have no output.
+
+Can someone give me some hints or help to implement this change ?
+
+Thanks in advance
+
+  -- Daniel
