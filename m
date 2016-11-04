@@ -1,48 +1,26 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 3 Nov 2016 20:26:00 +0100 (CET)
+From: waldemar.rymarkiewicz@gmail.com (Waldemar Rymarkiewicz)
+Date: Fri, 4 Nov 2016 15:32:34 +0100
 Subject: [Cocci] Manipulate identifier like a string ?
-In-Reply-To: <CAHKzcENGfx+Q9fUQ_47waCMaJ6nC88Uip7uuF1nZ7=kPdEkUpQ@mail.gmail.com>
+In-Reply-To: <alpine.DEB.2.20.1611032025050.2433@hadrien>
 References: <CAHKzcENGfx+Q9fUQ_47waCMaJ6nC88Uip7uuF1nZ7=kPdEkUpQ@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1611032025050.2433@hadrien>
+ <alpine.DEB.2.20.1611032025050.2433@hadrien>
+Message-ID: <CAHKzcEPk-m_S2tq5BJ76esttpnPcR2baEWG8eDThgVrXyz-FbA@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-
-
-On Thu, 3 Nov 2016, Waldemar Rymarkiewicz wrote:
-
-> Hi,
+On 3 November 2016 at 20:26, Julia Lawall <julia.lawall@lip6.fr> wrote:
 >
-> Wondering if there is a quick solution in cocci to replace a suffix in
-> a group of identifiers?
->
-> I need something like this
->
-> @@
-> identifier  id  =~ "^XXX_.*";       // say it matches XXX_foo and XXX_bar
-> fresh identifier xx =  "YYY" ##  id[3:]      // where id[:3]  takes
-> string starting at position 3
->
-> @@
-> -id
-> +xx
->
->
-> or is that possible to manipulate identifier in python  and pas it
-> back to cocci ?
 
-Yes, the latter is the solution.  Look at demos/pythontococci.cocci.
-Write back if anything is not clear.
-
-julia
-
+Hi Julia,
 
 >
 >
-> Thanks,
-> /Waldek
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
+> Yes, the latter is the solution.  Look at demos/pythontococci.cocci.
+> Write back if anything is not clear.
+
+Works like a charm. Many thanks all is clear.
+
+/Waldek
+
 >
+> julia
