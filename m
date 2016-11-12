@@ -1,110 +1,79 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 7 Nov 2016 17:56:48 +0100 (CET)
-Subject: [Cocci] positional variable problem
-In-Reply-To: <20161107124432.GA18221@osadl.at>
-References: <20161107112719.GA17686@osadl.at>
- <alpine.DEB.2.20.1611071302060.1976@hadrien>
- <20161107124432.GA18221@osadl.at>
-Message-ID: <alpine.DEB.2.10.1611071756210.3128@hadrien>
+Date: Sat, 12 Nov 2016 18:59:55 +0100 (CET)
+Subject: [Cocci] [PATCH v3 3/3] Coccinelle: misc: Add support for devm
+ variant in all modes
+In-Reply-To: <66e8233a1bb85a93ea70815dbc3416c2cc9edd5c.1477293469.git.vaishali.thakkar@oracle.com>
+References: <cover.1477293469.git.vaishali.thakkar@oracle.com>
+ <66e8233a1bb85a93ea70815dbc3416c2cc9edd5c.1477293469.git.vaishali.thakkar@oracle.com>
+Message-ID: <alpine.DEB.2.20.1611121859400.2011@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On Mon, 24 Oct 2016, Vaishali Thakkar wrote:
 
-
-On Mon, 7 Nov 2016, Nicholas Mc Guire wrote:
-
-> On Mon, Nov 07, 2016 at 01:14:12PM +0100, Julia Lawall wrote:
-> >
-> >
-> > On Mon, 7 Nov 2016, Nicholas Mc Guire wrote:
-> >
-> > >
-> > > Hi !
-> > >
-> > > On LKML Philippe Reynes posted an API update for ethtools API for
-> > > the pcnet32 care, basically to replace deprecated {get|set}_settings
-> > > by the new API calls {get|set}_link_ksettings.
-> > > see: http://lkml.org/lkml/2016/11/6/2
-> > >
-> > > So the scanner for this is simple:
-> > >
-> > > <snip>
-> > > @find exists@
-> > > identifier oldapi,cmd,dev;
-> > > position p;
-> > > expression E;
-> > > @@
-> > >
-> > > *static int oldapi at p(struct net_device *dev, struct ethtool_cmd *cmd)
-> > > {
-> > > <+...
-> > > *mii_ethtool_gset(&E, cmd);
-> > > ...+>
-> > > }
-> > >
-> > > @script:python@
-> > > p << find.p;
-> > > @@
-> > >
-> > > msg = "old ethtool API in use."
-> > > coccilib.report.print_report(p[0], msg)
-> > > <snip>
-> > >
-> > >  The problem was in the API update - as the get and set basically have the
-> > > same prototype so the find function seems to trigger in both - the
-> > > "solution" is a bit brute force regex in the "mod" rule - which I
-> > > basicall think should not be needed.
-> >
-> > I'm not completely following this...  Would it work to start with the
-> > ethtool_ops structure?  Then you could see what entry point functions need
+> Add missing support for the devm_request_threaded_irq in
+> the rules of context, report and org modes.
 >
-> The problem with that was that one can not tell from the ops if its
-> the old API or the new API - so I thought it is simpler to scan
-> for the old api prototypes and use the *gset/*sset functions as
-> check.
-
-I had the impression that it was clear from the structure, because the
-field names are different.
-
-julia
-
-
+> Misc:
+> ----
+> To be consistent with other scripts, change confidence level
+> of the script to 'Moderate'.
 >
-> > to be updated?  It would be good to also have a rule afterwards that looks
-> > for other calls to mii_ethtool_gset and mii_ethtool_sset to be sure that
-> > you haven't missed anything.  Is the issue is that you don't want to
-> > modify some call to eg mii_ethtool_gset that may be in the definition of
-> > mii_ethtool_get_link_ksettings itself?  In that case, you can do soemthing
-> > like the following:
-> >
-> > @exists@
-> > identifier f != {function_to_ignore};
-> > @@
-> >
-> > f(...) {
-> > <+...
-> > *function_to_warn_about(...)
-> > ...+> }
-> >
-> > Another approach that would be more efficient is to use the new ability to
-> > attach scripts to metavariables.  This is illustrated in
-> > tests/python_poscon.cocci.
-> >
-> > @@
-> > position p : script:python() { p[0].current_element != "function_to_ignore" };
-> > @@
-> >
-> > function_to_warn_about at p(...)
-> >
-> > Let me know if I've missed understanding the issue completely.
-> >
-> nop - I?ve just managed to ignore the available capabiliteis
-> and come up with a complicated (and as you point out possibly
-> incomplete) solution. Notably the positional scripts sounds
-> like a simple way to resolve this in a cleaner way.
+> Signed-off-by: Vaishali Thakkar <vaishali.thakkar@oracle.com>
+
+Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+
+
+> ---
+> Changes since v2:
+> 	- Add missing initialization of metavariables
+> Changes since v1:
+> 	- Split patch in to the patchset
+> ---
+>  scripts/coccinelle/misc/irqf_oneshot.cocci | 12 +++++++++++-
+>  1 file changed, 11 insertions(+), 1 deletion(-)
 >
-> will try to unrole it from the ops side.
+> diff --git a/scripts/coccinelle/misc/irqf_oneshot.cocci b/scripts/coccinelle/misc/irqf_oneshot.cocci
+> index e53372e..ca78125 100644
+> --- a/scripts/coccinelle/misc/irqf_oneshot.cocci
+> +++ b/scripts/coccinelle/misc/irqf_oneshot.cocci
+> @@ -5,7 +5,7 @@
+>  /// So pass the IRQF_ONESHOT flag in this case.
+>  ///
+>  //
+> -// Confidence: Good
+> +// Confidence: Moderate
+>  // Comments:
+>  // Options: --no-includes
 >
-> thx!
-> hofrat
+> @@ -87,16 +87,26 @@ devm_request_threaded_irq at p(dev, irq, NULL, thread_fn,
+>  )
+>
+>  @depends on context@
+> +expression dev;
+>  expression irq;
+>  position p != {r1.p,r2.p};
+>  @@
+> +(
+>  *request_threaded_irq at p(irq, NULL, ...)
+> +|
+> +*devm_request_threaded_irq at p(dev, irq, NULL, ...)
+> +)
+>
+>  @match depends on report || org@
+> +expression dev;
+>  expression irq;
+>  position p != {r1.p,r2.p};
+>  @@
+> +(
+>  request_threaded_irq at p(irq, NULL, ...)
+> +|
+> +devm_request_threaded_irq at p(dev, irq, NULL, ...)
+> +)
+>
+>  @script:python depends on org@
+>  p << match.p;
+> --
+> 2.1.4
+>
 >
