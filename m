@@ -1,146 +1,61 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 12 Nov 2016 19:06:08 +0100 (CET)
-Subject: [Cocci] [PATCH v3 1/3] Coccinelle: misc: Improve the matching
-	of rules
-In-Reply-To: <53a9e7344bd2fe5756c245ab0e1646976c1e0fbd.1477293469.git.vaishali.thakkar@oracle.com>
-References: <cover.1477293469.git.vaishali.thakkar@oracle.com>
- <53a9e7344bd2fe5756c245ab0e1646976c1e0fbd.1477293469.git.vaishali.thakkar@oracle.com>
-Message-ID: <alpine.DEB.2.20.1611121901440.2011@hadrien>
+From: elena.reshetova@intel.com (Reshetova, Elena)
+Date: Tue, 15 Nov 2016 11:13:35 +0000
+Subject: [Cocci] Help in interpreting results
+Message-ID: <2236FBA76BA1254E88B949DDB74E612B41C009A9@IRSMSX102.ger.corp.intel.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Good day,
 
+I am very new to coccinelle, and therefore my question is rather basic, but unfortunately I wasn't able to find the info online.
+I have a very simple cocci rule:
 
-On Mon, 24 Oct 2016, Vaishali Thakkar wrote:
+------------------------------
 
-> Currently because of the left associativity of the operators, pattern
-> IRQF_ONESHOT | flags does not match with the pattern when we have more
-> than one flag after the disjunction. This eventually results in giving
-> false positives by the script. This patch eliminates these FPs by
-> improving the rule.
->
-> Signed-off-by: Vaishali Thakkar <vaishali.thakkar@oracle.com>
-> ---
-> Changes since v2:
-> 	- No change in this patch
-> Changes since v1:
-> 	- Splitted patch in the patchset
-> ---
->  scripts/coccinelle/misc/irqf_oneshot.cocci | 30 ++++++++++++++++++++++++------
->  1 file changed, 24 insertions(+), 6 deletions(-)
->
-> diff --git a/scripts/coccinelle/misc/irqf_oneshot.cocci b/scripts/coccinelle/misc/irqf_oneshot.cocci
-> index b421150..a8537fb 100644
-> --- a/scripts/coccinelle/misc/irqf_oneshot.cocci
-> +++ b/scripts/coccinelle/misc/irqf_oneshot.cocci
-> @@ -18,13 +18,12 @@ virtual report
->  expression dev;
->  expression irq;
->  expression thread_fn;
-> -expression flags;
->  position p;
->  @@
->  (
->  request_threaded_irq at p(irq, NULL, thread_fn,
->  (
-> -flags | IRQF_ONESHOT
-> +IRQF_ONESHOT | ...
->  |
->  IRQF_ONESHOT
->  )
-> @@ -32,20 +31,39 @@ IRQF_ONESHOT
->  |
->  devm_request_threaded_irq at p(dev, irq, NULL, thread_fn,
->  (
-> -flags | IRQF_ONESHOT
-> +IRQF_ONESHOT | ...
->  |
->  IRQF_ONESHOT
->  )
->  , ...)
->  )
->
-> - at depends on patch@
-> + at r2@
->  expression dev;
->  expression irq;
->  expression thread_fn;
->  expression flags;
-> +expression ret;
->  position p != r1.p;
->  @@
-> +flags = IRQF_ONESHOT | ...;
-> +(
-> +ret = request_threaded_irq at p(irq, NULL, thread_fn, flags, ...);
-> +|
-> +ret = devm_request_threaded_irq at p(dev, irq, NULL, thread_fn, flags, ...);
-> +|
-> +return request_threaded_irq at p(irq, NULL, thread_fn, flags, ...);
-> +|
-> +return devm_request_threaded_irq at p(dev, irq, NULL, thread_fn, flags, ...);
-> +)
+@r exists@
+identifier a;
+identifier x;
+position p1, p2;
+@@
 
-This rule needs some improvement.
+atomic_dec_and_test(&a->x)@p1
+...
+kfree(a)@p2;
 
-flags = IRQF_ONESHOT | ...;
+@script:python@
+p1 << r.p1;
+p2 << r.p2;
+@@
 
-should be replaced by:
+print "* file: %s atomic_dec_and_test %s before kfree %s" % (p1[0].file,p1[0].line,p2[0].line)
 
-(
-flags = IRQF_ONESHOT | ...
-|
-flags |= IRQF_ONESHOT | ...
-)
-... when != flags = e
+--------------------------------
 
-where e should be a new expression metavariable.  This effects a number of
-changes.  1) Dropping the ; after the assignment allows an isomorphism to
-trigger that allows it to match a variable declaration as well, 2)
-IRQF_ONESHOT can be added after the original initialization by a |=, 3)
-there can be some instructions between the initialization of flags and the
-use.
+I just want to find all occurrences of atomic_dec_and_test(), which are somewhere later in the code flow (maybe called using some intermediate function, such as kfree_rcu() or others) followed by kfree() on the same pointer.
 
-Afterwards, the big disjunction with the irq calls is too specific.
-In particular, these calls can also occur in an if test.  The disjunction
-should be replaced by the following:
+When this rule is applied to Linux kernel tree, it results in 80 of such occurrences found. However, the output is a bit confusing. For example:
 
-(
-request_threaded_irq at p(irq, NULL, thread_fn, flags, ...)
-|
-devm_request_threaded_irq at p(dev, irq, NULL, thread_fn, flags, ...)
-)
+...
+Skipping:./linux-stable/kernel/rcu/srcu.c
+Skipping:./linux-stable/kernel/rcu/rcuperf.c
+Skipping:./linux-stable/kernel/rcu/waketorture.c
+HANDLING: ./linux-stable/kernel/rcu/rcutorture.c
+Skipping:./linux-stable/kernel/rcu/update.c
+Skipping:./linux-stable/kernel/rcu/tree.c
+Skipping:./linux-stable/kernel/panic.c
+Skipping:./linux-stable/kernel/utsname.c
+Skipping:./linux-stable/kernel/cgroup_freezer.c
+HANDLING: ./linux-stable/kernel/workqueue.c
+HANDLING: ./linux-stable/kernel/cgroup.c
+....
 
-julia
+I understand that "Skipping" means that the pattern was not found in that .c file. But what does "HANDLING" actually mean?
+There are 330 of such "HANDLING" happen with above rule and when I manually check some of them, for example linux-stable/kernel/cgroup.c, it is actually the correct case that I want to be found, and it seems to be "HANDLED", but not reported.
 
+I am a bit confused on what is happening. Any help is greatly appreciated!
 
-> +
-> + at depends on patch@
-> +expression dev;
-> +expression irq;
-> +expression thread_fn;
-> +expression flags;
-> +position p != {r1.p,r2.p};
-> +@@
->  (
->  request_threaded_irq at p(irq, NULL, thread_fn,
->  (
-> @@ -69,13 +87,13 @@ devm_request_threaded_irq at p(dev, irq, NULL, thread_fn,
->  )
->
->  @depends on context@
-> -position p != r1.p;
-> +position p != {r1.p,r2.p};
->  @@
->  *request_threaded_irq at p(...)
->
->  @match depends on report || org@
->  expression irq;
-> -position p != r1.p;
-> +position p != {r1.p,r2.p};
->  @@
->  request_threaded_irq at p(irq, NULL, ...)
->
-> --
-> 2.1.4
->
->
+Best Regards,
+Elena.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20161115/a861f8c3/attachment.html>
