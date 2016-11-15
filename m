@@ -1,26 +1,28 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 15 Nov 2016 23:01:03 +0100 (CET)
-Subject: [Cocci] SmPL script construction with included files
-In-Reply-To: <a129fee0-aa3f-2bf6-dffe-d201c5e25622@users.sourceforge.net>
-References: <3c65eb92-8be0-be42-bf8e-893f3853df12@users.sourceforge.net>
- <alpine.DEB.2.20.1611152248150.2060@hadrien>
- <a129fee0-aa3f-2bf6-dffe-d201c5e25622@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1611152300360.2060@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Tue, 15 Nov 2016 23:03:14 +0100
+Subject: [Cocci] SmPL script construction with several initialisation
+ parts
+In-Reply-To: <alpine.DEB.2.20.1611152250050.2060@hadrien>
+References: <4633253e-3d59-edef-5778-b6f235fb9340@users.sourceforge.net>
+ <alpine.DEB.2.20.1611152250050.2060@hadrien>
+Message-ID: <10be3d5f-35ff-2a0e-2e51-b4c96b8ca20c@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+>> Can such initialisation code be constructed by the specification of several
+>> script parts there?
+> 
+> I don't understand the question.
+
+I suggest to consider corresponding design consequences again.
 
 
-On Tue, 15 Nov 2016, SF Markus Elfring wrote:
+> If the script language supports includes, then you can put includes in the script code.
 
-> >> * Can SmPL rules be constructed from smaller parts by it?
-> >
-> > I don't understand what it would mean for syntax to or not to matter.
->
-> I am curious if the included data need to be usable also alone in the
-> SmPL sense.
+I imagine that it will be occasionally nicer to avoid the indirect inclusion
+of another file there.
+When will it be more consistent to construct an initialisation script
+by your host programming language?
 
-I think that if you have multiple includes, later includes can refer to
-rules in earlier includes.
-
-julia
+Regards,
+Markus
