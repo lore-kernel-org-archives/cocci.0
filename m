@@ -1,27 +1,26 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 15 Nov 2016 22:50:34 +0100 (CET)
-Subject: [Cocci] SmPL script construction with several initialisation
- parts
-In-Reply-To: <4633253e-3d59-edef-5778-b6f235fb9340@users.sourceforge.net>
-References: <4633253e-3d59-edef-5778-b6f235fb9340@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1611152250050.2060@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Tue, 15 Nov 2016 22:56:19 +0100
+Subject: [Cocci] SmPL script construction with included files
+In-Reply-To: <alpine.DEB.2.20.1611152248150.2060@hadrien>
+References: <3c65eb92-8be0-be42-bf8e-893f3853df12@users.sourceforge.net>
+ <alpine.DEB.2.20.1611152248150.2060@hadrien>
+Message-ID: <a129fee0-aa3f-2bf6-dffe-d201c5e25622@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+>> * Can SmPL rules be constructed from smaller parts by it?
+> 
+> I don't understand what it would mean for syntax to or not to matter.
+
+I am curious if the included data need to be usable also alone in the
+SmPL sense.
 
 
-On Tue, 15 Nov 2016, SF Markus Elfring wrote:
+> The main issue seems to be that the includes can only appear before the normal
+> SmPL rules.
 
-> Hello,
->
-> The semantic patch language supports also extra data processing by
-> initialisation scripts.
-> http://coccinelle.lip6.fr/docs/main_grammar003.html
->
-> Can such initialisation code be constructed by the specification of several
-> script parts there?
+I would appreciate if the SmPL include statement could be used at more
+script places.
 
-I don't understand the question.  If the script language supports
-includes, then you can put includes in the script code.
-
-julia
+Regards,
+Markus
