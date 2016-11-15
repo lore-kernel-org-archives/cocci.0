@@ -1,42 +1,18 @@
-From: bruce.w.allan@intel.com (Allan, Bruce W)
-Date: Tue, 15 Nov 2016 19:44:16 +0000
-Subject: [Cocci] transforming list types and functions/macros
-Message-ID: <804857E1F29AAC47BF68C404FC60A18490FE2E8D@ORSMSX105.amr.corp.intel.com>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Tue, 15 Nov 2016 20:45:11 +0100
+Subject: [Cocci] SmPL script construction with included files
+Message-ID: <3c65eb92-8be0-be42-bf8e-893f3853df12@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-I'm trying to transform uses of list types and functions/macros to hash-list equivalents in an out-of-tree Linux kernel module, have been able to do some transforms but have not found a solution for others and am hoping someone on this list could help.  The ones I still need help with are transforming all declarations similar to 'struct list_entry x' to 'struct hlist_node x' and all calls to list iterator macros such as 'list_for_each_entry(...) {' to 'hlist_for_each_entry(...) {'.  So, with the following:
+Hello,
 
-struct foo_struct {
-                struct list_entry list;
-                ...
-};
+The semantic patch language supports also the inclusion of external files.
+http://coccinelle.lip6.fr/docs/main_grammar001.html
 
-void foo()
-{
-                struct foo_struct *pos;
-                ...
-                list_for_each_entry(pos, &list_head, list) {
-                                ...
-                }
+* Does syntax matter for this SmPL statement?
 
-What SmPL script would transform the above to:
+* Can SmPL rules be constructed from smaller parts by it?
 
-struct foo_struct {
-                struct hlist_node list;
-                ...
-};
-
-void foo()
-{
-                struct foo_struct *pos;
-                ...
-                hlist_for_each_entry(pos, &list_head, list) {
-                                ...
-                }
-
-Thanks in advance for any help,
-Bruce.
--------------- next part --------------
-An HTML attachment was scrubbed...
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20161115/a396f578/attachment-0001.html>
+Regards,
+Markus
