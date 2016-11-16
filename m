@@ -1,7 +1,7 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 16 Nov 2016 15:15:45 +0100 (CET)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 16 Nov 2016 15:30:23 +0100
 Subject: [Cocci] SmPL script construction with included files
-In-Reply-To: <69c3643e-10b4-007a-f847-d0098f298e16@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.10.1611161514250.3153@hadrien>
 References: <3c65eb92-8be0-be42-bf8e-893f3853df12@users.sourceforge.net>
  <alpine.DEB.2.20.1611152248150.2060@hadrien>
  <32639cf9-b644-0230-02a6-88d66925340e@users.sourceforge.net>
@@ -9,19 +9,23 @@ References: <3c65eb92-8be0-be42-bf8e-893f3853df12@users.sourceforge.net>
  <6810eb15-839c-8aa5-6485-401d43ba1246@users.sourceforge.net>
  <alpine.DEB.2.10.1611161350550.3153@hadrien>
  <69c3643e-10b4-007a-f847-d0098f298e16@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1611161514250.3153@hadrien>
+ <alpine.DEB.2.10.1611161514250.3153@hadrien>
+Message-ID: <c602b832-7f8c-cf18-6b13-35167b5cb152@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> I am thinking about an other use case a bit more where I have got a few
-> SmPL script templates which are working to some degree. If I would like
-> to use also the functionality ?Script constraints on meta-variables?
-> (instead of a big regular expression) for a function name selection on
-> demand there, I am going to recombine existing pieces by a corresponding
-> make script as a kind of preprocessing step.
+>
+> The idea with the script constraints on metavariables feature is that the
+> script code there should only contain a function call.  The actual
+> function definition should be elsewhere; probably in an initialize rule.
 
-The idea with the script constraints on metavariables feature is that the
-script code there should only contain a function call.  The actual
-function definition should be elsewhere; probably in an initialize rule.
+This information can be reasonable to some degree.
 
-julia
+How will the software situation evolve if each script constraint will
+need another bit of initialisation code?
+Can it become an interesting software development challenge then if the
+constraint specification approach should be switchable for a few of them
+by a corresponding make script?
+
+Regards,
+Markus
