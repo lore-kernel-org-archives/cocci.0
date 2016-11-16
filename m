@@ -1,19 +1,16 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 16 Nov 2016 11:07:51 +0100 (CET)
+From: elena.reshetova@intel.com (Reshetova, Elena)
+Date: Wed, 16 Nov 2016 10:32:53 +0000
 Subject: [Cocci] Help in interpreting results
-In-Reply-To: <2236FBA76BA1254E88B949DDB74E612B41C0E608@IRSMSX102.ger.corp.intel.com>
+In-Reply-To: <alpine.DEB.2.10.1611161106200.3153@hadrien>
 References: <2236FBA76BA1254E88B949DDB74E612B41C009A9@IRSMSX102.ger.corp.intel.com>
  <alpine.DEB.2.10.1611151215240.3153@hadrien>
  <2236FBA76BA1254E88B949DDB74E612B41C00A21@IRSMSX102.ger.corp.intel.com>
  <alpine.DEB.2.10.1611151335540.3153@hadrien>
  <2236FBA76BA1254E88B949DDB74E612B41C0E608@IRSMSX102.ger.corp.intel.com>
-Message-ID: <alpine.DEB.2.10.1611161106200.3153@hadrien>
+ <alpine.DEB.2.10.1611161106200.3153@hadrien>
+Message-ID: <2236FBA76BA1254E88B949DDB74E612B41C106A1@IRSMSX102.ger.corp.intel.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
-
-
-
-On Wed, 16 Nov 2016, Reshetova, Elena wrote:
 
 > >You may want to run coccinelle/scripts/idutils_index.sh in your code base.
 > >Then if you use the argument --use-idutils it will select the relevant files up front from the index and be even more >efficient.  Skipping means that it essentialy did a grep and didn't find anything.  If the argument after --use-idutils does >not begin with -, it will think that it is the name of the index.  The easiest is to just put --use-idutils last.
@@ -28,13 +25,28 @@ On Wed, 16 Nov 2016, Reshetova, Elena wrote:
 > identifier fname1 =~ ".*$free.*$";
 > identifier fname2 =~ ".*$kfree_.*$";
 
-I'm not very good at regular expressions, but I thought that $ meant end
-of string.  So can it work to have $ before free/kfree?  Also, without the
-first $, I'm not sure to understand the difference between fname1 and
-fname2.  It looks like anything matched by fname2 would also be matched by
-fname1.
+>I'm not very good at regular expressions, but I thought that $ meant end of string.  So can it work to have $ before free/kfree?  Also, without the first $, I'm not sure to understand the difference between fname1 and fname2.  It looks like >anything matched by fname2 would also be matched by fname1.
 
-julia
+Yes, you are right, my memory of regular expression failed here. However, what confused me also here is that I had an explicit kfree match alternative: 
+
+(
+  kfree at p2(a);
+|
+  fname1 at p2(a | (a, ...));
+|
+fname2 at p2(a | (a, ...));
+)
+
+Which didn't result in findings when it was called using some intermediate function. For this piece of code:
+
+ >     if (atomic_long_dec_and_test(&chunk->refs))
+>         free_chunk(chunk);
+
+Where free_chunk  calls it turn kfree(chunk).
+
+I got it working now with just one unified identifier, but I would like to understand better how coccinelle works in the above case to not make same mistakes in future. 
+
+>julia
 
 > @@
 >
@@ -61,12 +73,12 @@ julia
 > p2 << r1.p2;
 > @@
 >
-> print "* file: %s atomic_dec_and_test variation %s before kfree variation %s" % (p1[0].file,p1[0].line,p2[0].line)
+> print "* file: %s atomic_dec_and_test variation %s before kfree 
+> variation %s" % (p1[0].file,p1[0].line,p2[0].line)
 >
 > However, it doesn't catch even some simple cases like for example /linux-stable/kernel/audit_tree.c:
 > starting from line 109:
-> static void free_chunk(struct audit_chunk *chunk)
-> {
+> static void free_chunk(struct audit_chunk *chunk) {
 >     int i;
 >
 >     for (i = 0; i < chunk->count; i++) {
@@ -76,8 +88,7 @@ julia
 >     kfree(chunk);
 > }
 >
-> void audit_put_chunk(struct audit_chunk *chunk)
-> {
+> void audit_put_chunk(struct audit_chunk *chunk) {
 >     if (atomic_long_dec_and_test(&chunk->refs))
 >         free_chunk(chunk);
 > }
@@ -87,8 +98,7 @@ julia
 > Another case:
 >
 > line 97:
-> static inline void put_tree(struct audit_tree *tree)
-> {
+> static inline void put_tree(struct audit_tree *tree) {
 >     if (atomic_dec_and_test(&tree->count))
 >         kfree_rcu(tree, head);
 > }
