@@ -1,34 +1,87 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 15 Nov 2016 23:06:03 +0100 (CET)
-Subject: [Cocci] SmPL script construction with several initialisation
- parts
-In-Reply-To: <10be3d5f-35ff-2a0e-2e51-b4c96b8ca20c@users.sourceforge.net>
-References: <4633253e-3d59-edef-5778-b6f235fb9340@users.sourceforge.net>
- <alpine.DEB.2.20.1611152250050.2060@hadrien>
- <10be3d5f-35ff-2a0e-2e51-b4c96b8ca20c@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1611152305520.2060@hadrien>
+From: elena.reshetova@intel.com (Reshetova, Elena)
+Date: Wed, 16 Nov 2016 09:36:56 +0000
+Subject: [Cocci] Help in interpreting results
+In-Reply-To: <alpine.DEB.2.10.1611151335540.3153@hadrien>
+References: <2236FBA76BA1254E88B949DDB74E612B41C009A9@IRSMSX102.ger.corp.intel.com>
+ <alpine.DEB.2.10.1611151215240.3153@hadrien>
+ <2236FBA76BA1254E88B949DDB74E612B41C00A21@IRSMSX102.ger.corp.intel.com>
+ <alpine.DEB.2.10.1611151335540.3153@hadrien>
+Message-ID: <2236FBA76BA1254E88B949DDB74E612B41C0E608@IRSMSX102.ger.corp.intel.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+>You may want to run coccinelle/scripts/idutils_index.sh in your code base.
+>Then if you use the argument --use-idutils it will select the relevant files up front from the index and be even more >efficient.  Skipping means that it essentialy did a grep and didn't find anything.  If the argument after --use-idutils does >not begin with -, it will think that it is the name of the index.  The easiest is to just put --use-idutils last.
 
+Thank you for the suggestion! I will try this out. However, I seem to have a different problem that the rule doesn't behave as I would think it should and enabling debug doesn't tell terribly much.
 
-On Tue, 15 Nov 2016, SF Markus Elfring wrote:
+My rule is now this:
 
-> >> Can such initialisation code be constructed by the specification of several
-> >> script parts there?
-> >
-> > I don't understand the question.
->
-> I suggest to consider corresponding design consequences again.
->
->
-> > If the script language supports includes, then you can put includes in the script code.
->
-> I imagine that it will be occasionally nicer to avoid the indirect inclusion
-> of another file there.
-> When will it be more consistent to construct an initialisation script
-> by your host programming language?
+@r1 exists@
+identifier a, x;
+position p1, p2;
+identifier fname1 =~ ".*$free.*$";
+identifier fname2 =~ ".*$kfree_.*$";
+@@
 
-No idea what you mean.
+(
+ atomic_dec_and_test at p1(&a->x)
+|
+ atomic_long_dec_and_test at p1(&a->x)
+|
+ atomic64_dec_and_test at p1(&a->x)
+|
+ local_dec_and_test at p1(&a->x)
+)
+...
+(
+ kfree at p2(a);
+|
+ fname1 at p2(a | (a, ...));
+|
+ fname2 at p2(a | (a, ...));
+)
 
-julia
+@script:python@
+p1 << r1.p1;
+p2 << r1.p2;
+@@
+
+print "* file: %s atomic_dec_and_test variation %s before kfree variation %s" % (p1[0].file,p1[0].line,p2[0].line)
+
+However, it doesn't catch even some simple cases like for example /linux-stable/kernel/audit_tree.c:
+starting from line 109:
+static void free_chunk(struct audit_chunk *chunk)
+{
+    int i;
+
+    for (i = 0; i < chunk->count; i++) {
+        if (chunk->owners[i].owner)
+            put_tree(chunk->owners[i].owner);
+    }
+    kfree(chunk);
+}
+
+void audit_put_chunk(struct audit_chunk *chunk)
+{
+    if (atomic_long_dec_and_test(&chunk->refs))
+        free_chunk(chunk);
+}
+
+The above case is a clear kfree() call after atomic_long_dec_and_test() just via intermediate function free_chunk(). Why is it not detected?
+
+Another case:
+
+line 97:
+static inline void put_tree(struct audit_tree *tree)
+{
+    if (atomic_dec_and_test(&tree->count))
+        kfree_rcu(tree, head);
+}
+
+This should have been caught by fname2 at p2(a | (a, ...)) rule, but it isn't also.
+
+I have a feeling of doing smth basic wrongly...
+
+Best Regards,
+Elena.
