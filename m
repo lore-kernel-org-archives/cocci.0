@@ -1,43 +1,26 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 16 Nov 2016 13:53:48 +0100 (CET)
-Subject: [Cocci] SmPL script construction with included files
-In-Reply-To: <6810eb15-839c-8aa5-6485-401d43ba1246@users.sourceforge.net>
-References: <3c65eb92-8be0-be42-bf8e-893f3853df12@users.sourceforge.net>
- <alpine.DEB.2.20.1611152248150.2060@hadrien>
- <32639cf9-b644-0230-02a6-88d66925340e@users.sourceforge.net>
- <alpine.DEB.2.10.1611161152570.3153@hadrien>
- <6810eb15-839c-8aa5-6485-401d43ba1246@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1611161350550.3153@hadrien>
+Date: Wed, 16 Nov 2016 13:55:13 +0100 (CET)
+Subject: [Cocci] Coccinelle-related engineer, PhD and postdoc positions
+Message-ID: <alpine.DEB.2.10.1611161354010.3153@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, 16 Nov 2016, SF Markus Elfring wrote:
+A PhD (3 years) and a postdoc position (15 months) are available at
+Inria/LIP6 in Paris in the Whisper team in the context of the joint ANR/NRF
+project "ITrans: Automatic inference of software transformation rules for
+automatically back and forward porting legacy infrastructure software".
+The PhD and postdoc positions will focus specifically on the problem of
+automating the back porting and forward porting of Linux device drivers,
+building on the previous work in the Whisper team on the program
+transformation tool Coccinelle.
 
-> > In a script rule, the metavariable declarations are interpreted by Coccinelle,
-> > not the scripting language, so an include would not be allowed there.
->
-> This detail was clear for me in principle.
->
->
-> > Script rules also don't have constraints on metavariables anyway,
->
-> Can other SmPL rule types specify constraints in the code form of a
-> regular expression or a programming language script?
+The PhD position is expected to start on March 1, 2017.  The starting date
+for the postdoc position is flexible.
 
-At the moment, the specification of constraints is not very uniform across
-the different metavariable types.  We are working on improving this.
+More information aboout the project, the background required, and the
+application procedure is available at
+https://pages.lip6.fr/Julia.Lawall/phd_itrans.pdf
 
-> > so I'm not sure what you are asking about.
->
-> I am looking for ways to avoid source code duplication by inclusion of
-> other files.
-> Would it make sense to allow the use of an include statement within the
-> SmPL variable definition block of a rule?
-
-I have the impression that what you want would be adequately implemented
-by a virtual identifier that could be tested in the code or by a virtual
-rule.  For example, the semantic patches in the Linux kernel provide
-alternate implementations depending on whether one uses the arguments -D
-patch, -D context, etc.
-
-julia
+ITrans is a joint project with Singapore Management University.  Please
+contact David LO <davidlo@smu.edu.sg> for information aboout related
+positions (research engineer and postdoc) available in Singapore.
