@@ -1,89 +1,113 @@
-From: arend.vanspriel@broadcom.com (Arend Van Spriel)
-Date: Thu, 17 Nov 2016 21:36:13 +0100
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Thu, 17 Nov 2016 23:48:42 +0100 (CET)
 Subject: [Cocci] Fwd: Fwd: Re: min/max mtu field in struct net_device
-In-Reply-To: <3a964780-2513-624f-6a2a-ae507398b0a8@broadcom.com>
+In-Reply-To: <2c575398-b566-6529-4f30-10e8e0c8fcba@broadcom.com>
 References: <3a964780-2513-624f-6a2a-ae507398b0a8@broadcom.com>
-Message-ID: <2c575398-b566-6529-4f30-10e8e0c8fcba@broadcom.com>
+ <2c575398-b566-6529-4f30-10e8e0c8fcba@broadcom.com>
+Message-ID: <alpine.DEB.2.20.1611172300070.2001@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Not seen a response on the backports mailing list so subscribed to the
-cocci mailing list and reposting it.
-
-Attached is a script I want to use to backport drivers. However, the
-second (unnamed) rule matches for each occurence of 'struct
-net_device_ops'. Is there a way to disable a rule after a desired amount
-of matches (in my case once)?
-
-Regards,
-Arend
-
--------- Forwarded Message --------
-Subject: Fwd: Re: min/max mtu field in struct net_device
-Date: Tue, 15 Nov 2016 09:36:50 +0100
-From: Arend Van Spriel <arend.vanspriel@broadcom.com>
-To: Julia Lawall <Julia.Lawall@lip6.fr>
-CC: backports at vger.kernel.org <backports@vger.kernel.org>
-
-Hi Julia,
-
-Would you have any ideas on how to solve the problem below. The problem
-occurs with source files that have more than one struct net_device_ops
-defined, which is the case for net/mac80211/iface.c for one. Obviously I
-want the callback definition to be added only once.
-
-Regards,
-Arend
-
--------- Forwarded Message --------
-Subject: Re: min/max mtu field in struct net_device
-Date: Mon, 14 Nov 2016 11:46:01 +0100
-From: Arend Van Spriel <arend.vanspriel@broadcom.com>
-To: Johannes Berg <johannes@sipsolutions.net>, backports at vger.kernel.org
-<backports@vger.kernel.org>
-
-On 14-11-2016 10:30, Johannes Berg wrote:
-> On Mon, 2016-11-14 at 09:49 +0100, Arend Van Spriel wrote:
->> Just wondering. Does anyone have any ideas on how to backport the two
->> patches below. The struct net_device now holds mtu range which
->> network subsystem checks. For a number of drivers and mac80211 it
->> means they no longer have .ndo_change_mtu callback. My guess is that
->> we need patches in backport of some sort to tackle this.
-> 
-> Yeah, I kinda saw this coming. Since in almost all cases using the new
-> min/max the ndo_change_mtu was actually removed, perhaps we can come up
-> with a way to spatch it back in?
-
-Me too. This is what I got so far, but the callback is generated twice
-for net/mac80211/iface.c for obvious reasons (data and monitor ops).
-These are my first baby steps with spatch so not sure how to solve it.
-
-Gr. AvS
 
 
--------------- next part --------------
-@r1@
-expression ndev, e1, e2;
+On Thu, 17 Nov 2016, Arend Van Spriel wrote:
+
+> Not seen a response on the backports mailing list so subscribed to the
+> cocci mailing list and reposting it.
+
+Sorry to have missed seeing it.
+
+>
+> Attached is a script I want to use to backport drivers. However, the
+> second (unnamed) rule matches for each occurence of 'struct
+> net_device_ops'. Is there a way to disable a rule after a desired amount
+> of matches (in my case once)?
+
+Here is a somewhat clunky solution:
+
+@initialize:python@
+@@
+
+first_ops = 0
+
+@r@
+identifier OPS;
+position p;
+@@
+
+struct net_device_ops OPS at p = { ... };
+
+@script:python depends on r@
+@@
+
+first_ops = 0
+
+@script:python@
+p << r.p;
+@@
+
+ln = int(p[0].line)
+if first_ops == 0 or ln < first_ops:
+  first_ops = ln
+
+@script:python@
+p << r.p;
+@@
+
+ln = int(p[0].line)
+if not(first_ops == ln):
+  cocci.include_match(False)
+
+@r1 exists@
+expression ndevexp, e1, e2;
 identifier func;
 @@
 func(...) {
-	<...
-- 	ndev->min_mtu = e1;
-- 	ndev->max_mtu = e2;
-	...>
+          <+...
+-         ndevexp->min_mtu = e1;
+-         ndevexp->max_mtu = e2;
+          ...+>
 }
-@@
-expression r1.e1, r1.e2;
-identifier OPS;
+
+@r2@
+expression r1.e1,r1.e2;
+identifier r.OPS;
 @@
 + static int __change_mtu(struct net_device *ndev, int new_mtu)
 + {
-+	if (new_mtu < e1 || new_mtu > e2)
-+ 		return -EINVAL;
-+	ndev->mtu = new_mtu;
++ if (new_mtu < e1 || new_mtu > e2)
++             return -EINVAL;
++             ndev->mtu = new_mtu;
 + }
 +
 struct net_device_ops OPS = {
-+ 	.ndo_change_mtu = __change_mtu,
-	...
+       ...
 };
+
+@depends on r2@
+identifier OPS;
+@@
+
+struct net_device_ops OPS = {
++      .ndo_change_mtu = __change_mtu,
+       ...
+};
+
+-------------------------
+
+Basically, the idea is to find the line number of the start of each
+net_device_ops structure.  The first script:python rule initializes
+first_ops for the current file.  The second one passes through the
+position information for each net_device_ops structure and finds the
+smallest line number.  The third python rule discards all matches that
+don't have the name of the structure on the collected smallest line.  Rule
+r1 then matches the two assignments, rule r2 puts the new function on top
+of the earliest detected structure (determined by the inherited value of
+OPS), and then the last rule added the field to the structure.
+
+I noticed that there is a problem though when the structure is define
+within a function.  Then the added function goes in that structure too.
+The affected file is: drivers/tty/n_gsm.c.  Maybe you odn't want o
+backport that one?
+
+julia
