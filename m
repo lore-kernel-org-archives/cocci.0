@@ -1,6 +1,7 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 16 Nov 2016 15:30:23 +0100
-Subject: [Cocci] SmPL script construction with included files
+Date: Thu, 17 Nov 2016 08:50:12 +0100
+Subject: [Cocci] Further developments around function callbacks for SmPL
+ metavariables?
 In-Reply-To: <alpine.DEB.2.10.1611161514250.3153@hadrien>
 References: <3c65eb92-8be0-be42-bf8e-893f3853df12@users.sourceforge.net>
  <alpine.DEB.2.20.1611152248150.2060@hadrien>
@@ -10,22 +11,24 @@ References: <3c65eb92-8be0-be42-bf8e-893f3853df12@users.sourceforge.net>
  <alpine.DEB.2.10.1611161350550.3153@hadrien>
  <69c3643e-10b4-007a-f847-d0098f298e16@users.sourceforge.net>
  <alpine.DEB.2.10.1611161514250.3153@hadrien>
-Message-ID: <c602b832-7f8c-cf18-6b13-35167b5cb152@users.sourceforge.net>
+Message-ID: <f7af5d71-eaa9-dda1-33a1-bd00d9e1b75c@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->
 > The idea with the script constraints on metavariables feature is that the
-> script code there should only contain a function call.  The actual
-> function definition should be elsewhere; probably in an initialize rule.
+> script code there should only contain a function call.
 
-This information can be reasonable to some degree.
+I would like to add another view to this software evolution for
+further considerations.
+The purpose of such a function call can be interpreted in different ways,
+can't it?
 
-How will the software situation evolve if each script constraint will
-need another bit of initialisation code?
-Can it become an interesting software development challenge then if the
-constraint specification approach should be switchable for a few of them
-by a corresponding make script?
+1. I get the impression from the word ?constraint? that something should
+   be restricted. Does this aspect mean that the functionality is finally
+   mapped to a predicate?
+
+2. Can it be also used as a data generator or content provider for any other
+   non-boolean value?
 
 Regards,
 Markus
