@@ -1,7 +1,7 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 18 Nov 2016 18:43:08 +0100 (CET)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Fri, 18 Nov 2016 19:00:04 +0100
 Subject: [Cocci] Inclusion of script constraints in SmPL
-In-Reply-To: <b90e8f82-aa00-0a11-1e38-53d8c4dfd9fd@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.10.1611181842240.2963@hadrien>
 References: <3c65eb92-8be0-be42-bf8e-893f3853df12@users.sourceforge.net>
  <alpine.DEB.2.20.1611152248150.2060@hadrien>
  <32639cf9-b644-0230-02a6-88d66925340e@users.sourceforge.net>
@@ -11,26 +11,23 @@ References: <3c65eb92-8be0-be42-bf8e-893f3853df12@users.sourceforge.net>
  <69c3643e-10b4-007a-f847-d0098f298e16@users.sourceforge.net>
  <alpine.DEB.2.10.1611161514250.3153@hadrien>
  <b90e8f82-aa00-0a11-1e38-53d8c4dfd9fd@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.10.1611181842240.2963@hadrien>
+ <alpine.DEB.2.10.1611181842240.2963@hadrien>
+Message-ID: <5da250c3-e80f-8842-7e85-481cdf6a6259@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+>> * Would such an inclusion approach trigger special requirements on the
+>>   position for corresponding initialisation code?
+> 
+> The constraint specification should be a single function call.
+
+Does the script constraint syntax allow more programming language code there?
 
 
-On Fri, 18 Nov 2016, SF Markus Elfring wrote:
+> You can set up your @initialize:python@ code to import whatever you want.
 
-> > The idea with the script constraints on metavariables feature is that the
-> > script code there should only contain a function call.  The actual
-> > function definition should be elsewhere; probably in an initialize rule.
->
-> * Did you consider the use case already when such a constraint specification
->   would be included from an external file as a component or together
->   with a rule selection for the semantic patch language?
->
-> * Would such an inclusion approach trigger special requirements on the
->   position for corresponding initialisation code?
+I would prefer to keep initialisation code for the implementation of the
+predicate function closely together with the call of the included metavariable.
 
-The constraint specification should be a single function call.  You can
-set up your @initialize:python@ code to import whatever you want.
-
-julia
+Regards,
+Markus
