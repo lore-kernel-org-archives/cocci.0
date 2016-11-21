@@ -1,59 +1,45 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 19 Nov 2016 13:52:34 +0100 (CET)
-Subject: [Cocci] Fwd: Fwd: Re: min/max mtu field in struct net_device
-In-Reply-To: <51cfe03d-bcb0-d403-a435-56a0bdba943f@broadcom.com>
-References: <3a964780-2513-624f-6a2a-ae507398b0a8@broadcom.com>
- <2c575398-b566-6529-4f30-10e8e0c8fcba@broadcom.com>
- <alpine.DEB.2.20.1611172300070.2001@hadrien>
- <1fe56a70-5747-7ab6-ae81-bde587401906@broadcom.com>
- <51cfe03d-bcb0-d403-a435-56a0bdba943f@broadcom.com>
-Message-ID: <alpine.DEB.2.20.1611191352160.1925@hadrien>
+From: soren.brinkmann@xilinx.com (=?utf-8?B?U8O2cmVu?= Brinkmann)
+Date: Mon, 21 Nov 2016 15:40:29 -0800
+Subject: [Cocci] semantic patch to replace 'ASSERT'
+Message-ID: <20161121234029.wper5znya2zjm2xd@xsjsorenbubuntu.xilinx.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hi,
 
+I am working with a code base that defines a custom macro 'ASSERT' that
+compared to the usual c 'assert' interprets the condition the other way
+around. Hence, I wanted to "fix" this and get the definition of ASSERT
+in line with assert.h and came up with:
 
-On Sat, 19 Nov 2016, Arend van Spriel wrote:
+/* Invert condition in ASSERT */
+@ rule1 @
+expression E;
+@@
+ 	ASSERT (
+-	E
++	!(E)
+	, ...)
 
-> On 18-11-16 10:01, Arend van Spriel wrote:
-> > On 17-11-16 23:48, Julia Lawall wrote:
-> >>
-> >>
-> >> On Thu, 17 Nov 2016, Arend Van Spriel wrote:
-> >>
-> >>> Not seen a response on the backports mailing list so subscribed to the
-> >>> cocci mailing list and reposting it.
-> >>
-> >> Sorry to have missed seeing it.
-> >
-> > No problem.
-> >
-> >>>
-> >>> Attached is a script I want to use to backport drivers. However, the
-> >>> second (unnamed) rule matches for each occurence of 'struct
-> >>> net_device_ops'. Is there a way to disable a rule after a desired amount
-> >>> of matches (in my case once)?
-> >>
-> >> Here is a somewhat clunky solution:
-> >>
->
-> [...]
->
-> >> struct net_device_ops OPS = {
-> >> +      .ndo_change_mtu = __change_mtu,
-> >>        ...
-> >> };
-> >>
-> >> -------------------------
-> >
-> > Big thanks. Have not tried it yet, but do you want me to add your
-> > Signed-off-by given that you mostly solved the problem.
->
-> Hi Julia,
->
-> It works so let me know if you want me to add the Signed-off-by giving
-> you proper credit when I submit it as patch to the backports project.
+But that didn't seem to work, though, some experiments with slight
+variations do. Eventually, I ended up 'git grepping' the coccinelle
+sources and found some code that seems to introduce special handling for
+some macros/identifiers. I changed coccinelle like this:
+diff --git a/standard.h b/standard.h
+index 612cd54bc9d6..c9190222d3bf 100644
+--- a/standard.h
++++ b/standard.h
+@@ -635,7 +635,6 @@ do {                                                                        \
+ 
+ 
+ 
+-#define ASSERT(x) MACROSTATEMENT
+ #define IRDA_ASSERT(x) MACROSTATEMENT
+ 
+ #define CHECK_NULL(x) MACROSTATEMENT
 
-Yes, you can add the Signed-off-by.  Thanks.
+and my patch started to work. I have no idea what other side effects that
+change might have, but overall, I kind of find the behavior that breaks
+on certain identifiers rather wrong.
 
-julia
+	S?ren
