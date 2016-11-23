@@ -1,36 +1,112 @@
 From: vaishali.thakkar@oracle.com (Vaishali Thakkar)
-Date: Wed, 23 Nov 2016 14:12:58 +0530
-Subject: [Cocci] [PATCH v4 0/3] Coccinelle: misc: Improve the script for
-	more accurate results
-Message-ID: <cover.1479885093.git.vaishali.thakkar@oracle.com>
+Date: Wed, 23 Nov 2016 14:16:39 +0530
+Subject: [Cocci] [PATCH v4 1/3] Coccinelle: misc: Improve the matching of
+	rules
+In-Reply-To: <cover.1479885093.git.vaishali.thakkar@oracle.com>
+References: <cover.1479885093.git.vaishali.thakkar@oracle.com>
+Message-ID: <fdf1ae6e2353f99827ced75e56de699282d8892e.1479885093.git.vaishali.thakkar@oracle.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Few changes to improve the results given by the irqf_oneshot.cocci:
+Currently because of the left associativity of the operators, pattern
+IRQF_ONESHOT | flags does not match with the pattern when we have more
+than one flag after the disjunction. This eventually results in giving
+false positives by the script. This patch eliminates these FPs by
+improving the rule.
 
-- Change in the matching rules to eliminate false postives in the
-  patch mode
-- Change in the context mode to eliminate false postives in the
-  context mode
-- Support for the missing devm_request_threaded_irq in context, report
-  and org mode
-
+Signed-off-by: Vaishali Thakkar <vaishali.thakkar@oracle.com>
+---
 Changes since v3:
 	- Few more changes in the script to avoid some
           possible false positives
-        - Moved initialization of all expressions in a single line 
+	- Moved initialization of all expressions in a single line
 Changes since v2:
-	- Add missing initialization of metavariables
+	- No change in this patch
 Changes since v1:
-	- Split patch in to the patchset
+	- Splitted patch in the patchset
+---
+ scripts/coccinelle/misc/irqf_oneshot.cocci | 36 +++++++++++++++++++-----------
+ 1 file changed, 23 insertions(+), 13 deletions(-)
 
-Vaishali Thakkar (3):
-  Coccinelle: misc: Improve the matching of rules
-  Coccinelle: misc: Improve the result given by context mode
-  Coccinelle: misc: Add support for devm variant in all modes
-
- scripts/coccinelle/misc/irqf_oneshot.cocci | 52 +++++++++++++++++++++---------
- 1 file changed, 36 insertions(+), 16 deletions(-)
-
+diff --git a/scripts/coccinelle/misc/irqf_oneshot.cocci b/scripts/coccinelle/misc/irqf_oneshot.cocci
+index b421150..bd3e140 100644
+--- a/scripts/coccinelle/misc/irqf_oneshot.cocci
++++ b/scripts/coccinelle/misc/irqf_oneshot.cocci
+@@ -15,16 +15,13 @@ virtual org
+ virtual report
+ 
+ @r1@
+-expression dev;
+-expression irq;
+-expression thread_fn;
+-expression flags;
++expression dev, irq, thread_fn;
+ position p;
+ @@
+ (
+ request_threaded_irq at p(irq, NULL, thread_fn,
+ (
+-flags | IRQF_ONESHOT
++IRQF_ONESHOT | ...
+ |
+ IRQF_ONESHOT
+ )
+@@ -32,21 +29,34 @@ IRQF_ONESHOT
+ |
+ devm_request_threaded_irq at p(dev, irq, NULL, thread_fn,
+ (
+-flags | IRQF_ONESHOT
++IRQF_ONESHOT | ...
+ |
+ IRQF_ONESHOT
+ )
+ , ...)
+ )
+ 
+- at depends on patch@
+-expression dev;
+-expression irq;
+-expression thread_fn;
+-expression flags;
++ at r2@
++expression dev, irq, thread_fn, flags, e;
+ position p != r1.p;
+ @@
+ (
++flags = IRQF_ONESHOT | ...
++|
++flags |= IRQF_ONESHOT | ...
++)
++... when != flags = e
++(
++request_threaded_irq at p(irq, NULL, thread_fn, flags, ...);
++|
++devm_request_threaded_irq at p(dev, irq, NULL, thread_fn, flags, ...);
++)
++
++ at depends on patch@
++expression dev, irq, thread_fn, flags;
++position p != {r1.p,r2.p};
++@@
++(
+ request_threaded_irq at p(irq, NULL, thread_fn,
+ (
+ -0
+@@ -69,13 +79,13 @@ devm_request_threaded_irq at p(dev, irq, NULL, thread_fn,
+ )
+ 
+ @depends on context@
+-position p != r1.p;
++position p != {r1.p,r2.p};
+ @@
+ *request_threaded_irq at p(...)
+ 
+ @match depends on report || org@
+ expression irq;
+-position p != r1.p;
++position p != {r1.p,r2.p};
+ @@
+ request_threaded_irq at p(irq, NULL, ...)
+ 
 -- 
 2.1.4
