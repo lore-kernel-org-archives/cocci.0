@@ -1,74 +1,45 @@
-From: vaishali.thakkar@oracle.com (Vaishali Thakkar)
-Date: Wed, 23 Nov 2016 14:16:42 +0530
-Subject: [Cocci] [PATCH v4 3/3] Coccinelle: misc: Add support for devm
-	variant in all modes
-In-Reply-To: <cover.1479885093.git.vaishali.thakkar@oracle.com>
-References: <cover.1479885093.git.vaishali.thakkar@oracle.com>
-Message-ID: <a93ba910143703b4ffb45359f95699dfc5e57ffe.1479885093.git.vaishali.thakkar@oracle.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sun, 27 Nov 2016 22:01:34 +0100 (CET)
+Subject: [Cocci] Negated Positions and Modifications
+In-Reply-To: <93d3068e-44a6-c80a-ecb3-6290d985a559@redhat.com>
+References: <6772dc00-a196-b6db-097e-f4be53ff7d87@redhat.com>
+ <alpine.DEB.2.10.1611221430450.31331@hadrien>
+ <93d3068e-44a6-c80a-ecb3-6290d985a559@redhat.com>
+Message-ID: <alpine.DEB.2.20.1611272159200.2019@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Add missing support for the devm_request_threaded_irq in
-the rules of context, report and org modes.
+> @@
+> {r1.T, r2.T} obj;
+> @@
+>
+> That only matches when both r1.T and r2.T are defined. That kinda feels
+> odd but probably is easier to implement as all inherited variables need
+> to be bound. I have quiet a few duplicated rules across multiple scripts
+> due to that.
 
-Misc:
-----
-To be consistent with other scripts, change confidence level
-of the script to 'Moderate'.
+This problem is fixed by the following patch.  Will appear in github
+shortly, but not immediately.
 
-Signed-off-by: Vaishali Thakkar <vaishali.thakkar@oracle.com>
-Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+julia
+
 ---
-Changes since v3:
-	- No changes in this patch
-Changes since v2:
-	- Add missing initialization of metavariables
-Changes since v1:
-	- Split patch in to the patchset
----
- scripts/coccinelle/misc/irqf_oneshot.cocci | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/scripts/coccinelle/misc/irqf_oneshot.cocci b/scripts/coccinelle/misc/irqf_oneshot.cocci
-index cec3672..58c2578 100644
---- a/scripts/coccinelle/misc/irqf_oneshot.cocci
-+++ b/scripts/coccinelle/misc/irqf_oneshot.cocci
-@@ -5,7 +5,7 @@
- /// So pass the IRQF_ONESHOT flag in this case.
- ///
- //
--// Confidence: Good
-+// Confidence: Moderate
- // Comments:
- // Options: --no-includes
- 
-@@ -79,16 +79,25 @@ devm_request_threaded_irq at p(dev, irq, NULL, thread_fn,
- )
- 
- @depends on context@
--expression irq;
-+expression dev, irq;
- position p != {r1.p,r2.p};
- @@
-+(
- *request_threaded_irq at p(irq, NULL, ...)
-+|
-+*devm_request_threaded_irq at p(dev, irq, NULL, ...)
-+)
-+
- 
- @match depends on report || org@
--expression irq;
-+expression dev, irq;
- position p != {r1.p,r2.p};
- @@
-+(
- request_threaded_irq at p(irq, NULL, ...)
-+|
-+devm_request_threaded_irq at p(dev, irq, NULL, ...)
-+)
- 
- @script:python depends on org@
- p << match.p;
--- 
-2.1.4
+diff --git a/parsing_cocci/free_vars.ml b/parsing_cocci/free_vars.ml
+index 6eea167..9dfcf1f 100644
+--- a/parsing_cocci/free_vars.ml
++++ b/parsing_cocci/free_vars.ml
+@@ -86,7 +86,12 @@ let collect_refs include_constraints =
+     bind (k e)
+       (match Ast.unwrap e with
+ 	Ast.MetaExpr(name,constraints,_,Some type_list,_,_) ->
+-	  let types = List.fold_left type_collect option_default type_list in
++	  let types =
++	    (* problem: if there are multiple types, then none in particular
++	       is needed *)
++	    if include_constraints || List.length type_list = 1
++	    then List.fold_left type_collect option_default type_list
++	    else [] in
+ 	  let extra =
+ 	    if include_constraints
+ 	    then
