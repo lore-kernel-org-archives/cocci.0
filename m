@@ -1,41 +1,71 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 29 Nov 2016 22:49:53 +0100 (CET)
-Subject: [Cocci] Negated Positions and Modifications
-In-Reply-To: <alpine.DEB.2.20.1611272159200.2019@hadrien>
-References: <6772dc00-a196-b6db-097e-f4be53ff7d87@redhat.com>
- <alpine.DEB.2.10.1611221430450.31331@hadrien>
- <93d3068e-44a6-c80a-ecb3-6290d985a559@redhat.com>
- <alpine.DEB.2.20.1611272159200.2019@hadrien>
-Message-ID: <alpine.DEB.2.20.1611292248140.2016@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Fri, 2 Dec 2016 11:00:20 +0100
+Subject: [Cocci] Finding missing return value checks for some function calls
+	with SmPL
+Message-ID: <99797688-d8b2-5001-dd92-26f98e3a4901@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hello,
+
+I would like to try another search pattern out with the semantic patch language
+from the software ?Coccinelle 1.0.6-00022-g862f5b29 (OCaml 4.03)?.
 
 
-On Sun, 27 Nov 2016, Julia Lawall wrote:
+SmPL script example:
 
-> > @@
-> > {r1.T, r2.T} obj;
-> > @@
-> >
-> > That only matches when both r1.T and r2.T are defined. That kinda feels
-> > odd but probably is easier to implement as all inherited variables need
-> > to be bound. I have quiet a few duplicated rules across multiple scripts
-> > due to that.
->
-> This problem is fixed by the following patch.  Will appear in github
-> shortly, but not immediately.
-
-The change is now available in the github version.  It is also now
-possible, thanks to Thierry, to put negated constraints on type variables,
-as illustrated by the following semantic patch
-(tests/type_constraints.cocci):
-
+@find_too_late_checking@
+expression ex1, ex2;
+identifier action1 =~ "^(?x)
+(?:
+   kzalloc
+|  kmalloc_array
+)$",
+           action2 =~ "^(?x)
+(?:
+   kzalloc
+|  kmalloc_array
+)$",
+           work;
+type return_type;
 @@
-type T != { int, char };
-identifier x;
-@@
--   T x;
-+   T *x;
+ return_type work(...)
+ {
+ ... when any
+*ex1 = action1(...);
+ ex2 = action2(...);
+ ... when any
+ }
 
-julia
+
+Source code example:
+
+static void __init cpg_mstp_clocks_init(struct device_node *np)
+{
+	struct mstp_clock_group *group;
+	const char *idxname;
+	struct clk **clks;
+	unsigned int i;
+
+	group = kzalloc(sizeof(*group), GFP_KERNEL);
+	clks = kmalloc(MSTP_MAX_CLOCKS * sizeof(*clks), GFP_KERNEL);
+	if (group == NULL || clks == NULL) {
+		kfree(group);
+		kfree(clks);
+		pr_err("%s: failed to allocate group\n", __func__);
+		return;
+	}
+}
+
+
+elfring at Sonne:~/Projekte/Coccinelle/janitor> spatch.opt show_too_late_checking2.cocci ../Probe/clk-mstp-excerpt1.c
+init_defs_builtins: /usr/local/lib64/coccinelle/standard.h
+HANDLING: ../Probe/clk-mstp-excerpt1.c
+
+
+Now I wonder why the first assignment is not marked together with the function call
+for further considerations by my source code analysis approach so far.
+I would appreciate your advices.
+
+Regards,
+Markus
