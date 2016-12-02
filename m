@@ -1,5 +1,5 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 2 Dec 2016 16:06:32 +0100
+Date: Fri, 2 Dec 2016 21:48:02 +0100
 Subject: [Cocci] Comparing SmPL script constraints with direct regular
  expression interface
 In-Reply-To: <alpine.DEB.2.10.1612021526560.3056@hadrien>
@@ -10,104 +10,93 @@ References: <99797688-d8b2-5001-dd92-26f98e3a4901@users.sourceforge.net>
  <alpine.DEB.2.10.1612021456580.3056@hadrien>
  <8e4a9ea0-9bb4-740e-a3d7-a434eb7cdcb6@users.sourceforge.net>
  <alpine.DEB.2.10.1612021526560.3056@hadrien>
-Message-ID: <d4721682-6a48-f4c8-b32a-a68f2b298dc5@users.sourceforge.net>
+Message-ID: <ed5866d1-5f07-ec95-34a4-8a6f08327920@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> Do you find the documentation complete for this functionality at the moment?
-> 
-> No idea.
+> Why not just define a python function that you can call in a script to do
+> your big regexp for you?
 
-How can we achieve a better common understanding on this aspect for example?
+Would any more developers and reviewers like to extend a source code analysis
+approach with a regular expression (or other data structure) like the following?
 
+SmPL script example:
 
->> I imagine a need for advanced configuration possibilities around ?regexp? engines.
-> 
-> You imagine many things.
+@initialize:python@
+@@
+import re
+compiled = re.compile("""^
+(?:
+   k(?:
+       [cmz]alloc
+    |  (?:m(?:
+              alloc_array
+           |  em(?:
+                   _cache_alloc(?:_node)?
+                |  dup
+                )
+           )
+       |  zalloc_node
+       )
+    |  str(?:
+             dup(?:_const)?
+          |  ndup
+          )
+    )
+|  of_find_matching_node
+# Alternation placeholder
+)$""", re.VERBOSE)
 
-Yes, of course.   ;-)
+def is_selected(id):
+    match = compiled.search(id)
+    if match:
+        return True
+    else:
+        return False
 
-
-> Changes will only happen when there is a concrete need.
-
-I came along some development needs also together with software experiments
-around SmPL scripts.
-How do your needs look different over time?
-
-
->> Is the current approach the official one already?
-> 
-> Yes.
-
-Thanks for this information.
-
-
->>> Perhaps the constraint scrpt syntax could be generalized to allow more
->>> in practice than function calls.
->>
->> Which software development concerns can hinder progress in the way
->> I imagine so far?
-> 
-> Lack of time.
-> 
->>
->>> That might happen some day, but it is an extremely low priority.
->>
->> I am curious if the involved dependencies can be clarified further.
-> 
-> I doubt there are any dependencies.
-
-Our software development capacity is limited as usual.
-Will future software research activities improve the situation a bit more?
-
-
->> https://github.com/coccinelle/coccinelle/blob/cbc751b30d9e02390d60ebed643c8e4a3fa0bb2b/tests/idcon_ocaml.cocci
-> 
-> In the test case the braces are around a function call, not a function name.
-
-This detail is also clear for me to some degree.
-
-
-> No idea what could be relevant or irrelevant about it.
-
-I got further ideas for this software area after a delay.
-
-
-> That is the syntax that has been implemented.
-
-I wonder still why such a variant was chosen.
-
-
-> It may change when someone when someone motivated enough to work on the
-> implementation writes the code to make the change and tests the result.
-
-My motivation could eventually increase if the understanding of the
-corresponding OCaml source code could become better somehow besides
-other factors.
+@find_too_late_checking@
+expression assign1, assign2, ex1, ex2;
+identifier action1: script:python() { is_selected(action1) },
+           action2: script:python() { is_selected(action2) },
+           work;
+statement is, es;
+type return_type;
+@@
+ return_type work(...)
+ {
+ ... when any
+*ex1 = action1(...);
+ ex2 = action2(...);
+ ... when any
+     when != (ex1 = assign1)
+     when != (ex2 = assign2)
+ if (
+*      \( !(ex1) \| (ex1) == NULL \)
+    || \( !(ex2) \| (ex2) == NULL \)
+    || ...)
+    is
+ else
+    es
+ ... when any
+ }
 
 
-> It won't change just because someone finds it conceptually inelegant
-> and sends lots of emails about it.
+elfring at Sonne:~/Projekte/Coccinelle/janitor> spatch.opt show_too_late_checking-python-20161202.cocci ../Probe/clk-mstp-excerpt1.c
+?
+diff = 
+--- ../Probe/clk-mstp-excerpt1.c
++++ /tmp/cocci-output-20769-f189ac-clk-mstp-excerpt1.c
+@@ -5,9 +5,7 @@ static void __init cpg_mstp_clocks_init(
+ 	struct clk **clks;
+ 	unsigned int i;
+ 
+-	group = kzalloc(sizeof(*group), GFP_KERNEL);
+ 	clks = kmalloc(MSTP_MAX_CLOCKS * sizeof(*clks), GFP_KERNEL);
+-	if (group == NULL || clks == NULL) {
+ 		kfree(group);
+ 		kfree(clks);
+ 		pr_err("%s: failed to allocate group\n", __func__);
 
-So there is some usual change resistance. I dare to provide intensive feedback
-in the hope that details can be uncovered which can support more progress.
-
-
-> It's actually strange that you want to define regexps in other places,
-
-This detail is just another aspect for the involved software evolution.
-
-
-> but you don't want to define scripts in other places.
-
-I got also further ideas around the placement of script fragments.
-
-
-> Why not just define a python function that you can call in a script
-> to do your big regexp for you?
-
-This approach can only work safely if script constraints will be completely
-documented in the manual (besides one test case in OCaml and Python).
 
 Regards,
 Markus
