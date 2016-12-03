@@ -1,33 +1,31 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 3 Dec 2016 18:46:56 +0100 (CET)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sat, 3 Dec 2016 18:58:39 +0100
 Subject: [Cocci] Excluding specific assignment combinations with SmPL
-In-Reply-To: <2453a7f0-492b-d945-8a2a-072822c49095@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.20.1612031846280.1978@hadrien>
 References: <1d21bbab-755e-b7e6-9efd-fde3c084096e@users.sourceforge.net>
  <alpine.DEB.2.20.1612031412090.2285@hadrien>
  <2453a7f0-492b-d945-8a2a-072822c49095@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1612031846280.1978@hadrien>
+ <alpine.DEB.2.20.1612031846280.1978@hadrien>
+Message-ID: <af9d55f5-3e00-e9bc-cfc9-5808641bb882@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> Why don't you think about it on your own and write back if you
+> don't figure anything out.
+
+I am still looking for ways to make a small SmPL specification like the following
+a bit safer.
+
+@find_?@
+expression ex1, ex2, value;
+identifier action =~ ?;
+@@
+*ex1 = action(...);
+ ex2 = value;
 
 
-On Sat, 3 Dec 2016, SF Markus Elfring wrote:
+I am unsure if such a source code search approach should eventually be split
+into more SmPL processing steps.
 
-> > Normally, if you want to prevent something, the easiest thing is to match
-> > it first, and then set up the pattern for what you want so that the latter
-> > matches only if the former did not match.
->
-> Is my use case a bit more special so that other approaches would be needed?
-
-No idea.  Why don't you think about it on your own and write back if you
-don't figure anything out.
-
-julia
-
->
-> Would another constraint make sense to prevent an unwanted match with the
-> expression in the second statement?
->
-> Regards,
-> Markus
->
+Regards,
+Markus
