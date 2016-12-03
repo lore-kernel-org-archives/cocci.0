@@ -1,64 +1,21 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 3 Dec 2016 14:14:21 +0100 (CET)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sat, 3 Dec 2016 18:43:15 +0100
 Subject: [Cocci] Excluding specific assignment combinations with SmPL
-In-Reply-To: <1d21bbab-755e-b7e6-9efd-fde3c084096e@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.20.1612031412090.2285@hadrien>
 References: <1d21bbab-755e-b7e6-9efd-fde3c084096e@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1612031412090.2285@hadrien>
+ <alpine.DEB.2.20.1612031412090.2285@hadrien>
+Message-ID: <2453a7f0-492b-d945-8a2a-072822c49095@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> Normally, if you want to prevent something, the easiest thing is to match
+> it first, and then set up the pattern for what you want so that the latter
+> matches only if the former did not match.
 
+Is my use case a bit more special so that other approaches would be needed?
 
-On Sat, 3 Dec 2016, SF Markus Elfring wrote:
+Would another constraint make sense to prevent an unwanted match with the
+expression in the second statement?
 
-> Hello,
->
-> I am experimenting with another source code search pattern. This approach
-> pointed a place like the following out for further considerations.
->
-> ?
-> 	ice->akm = kcalloc(?);
-> 	ak = ice->akm;
-> ?
->
->
-> My evolving SmPL script used also two separate metavariables with the
-> type ?expression? so that the value and target should be distinguished
-> for assignment statements. Now I would like to exclude cases where the target
-> is directly used again for the value specification as in the small example above.
->
-> How should be checked with the means of the semantic patch language that
-> the same expression is not used in subsequent lines?
-
-Normally, if you want to prevent something, the easiest thing is to match
-it first, and then set up the pattern for what you want so that the latter
-matches only if the former did not match.  For example, if you want to
-match an identifier other than xxx, you can say:
-
-@@
-identifier a;
-@@
-
-(
-xxx
-|
-* a
-)
-
-Or
-
-@bad@
-position p;
-symbol xxx;
-@@
-
-xxx at p
-
-@@
-identifier a;
-position p != bad.p;
-@@
-
-a at p
-
-julia
+Regards,
+Markus
