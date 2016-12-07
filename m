@@ -1,54 +1,97 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 6 Dec 2016 11:15:23 +0100
-Subject: [Cocci] Finding missing return value checks for some function
- calls with SmPL
-In-Reply-To: <alpine.DEB.2.20.1612031900150.1978@hadrien>
-References: <1d21bbab-755e-b7e6-9efd-fde3c084096e@users.sourceforge.net>
- <alpine.DEB.2.20.1612031412090.2285@hadrien>
- <2453a7f0-492b-d945-8a2a-072822c49095@users.sourceforge.net>
- <alpine.DEB.2.20.1612031846280.1978@hadrien>
- <af9d55f5-3e00-e9bc-cfc9-5808641bb882@users.sourceforge.net>
- <alpine.DEB.2.20.1612031900150.1978@hadrien>
-Message-ID: <b3c8d6ee-a0ab-2d43-4ae2-9376027f7a7b@users.sourceforge.net>
+From: mstefani@redhat.com (Michael Stefaniuc)
+Date: Wed, 7 Dec 2016 13:19:58 +0200
+Subject: [Cocci] Comparing SmPL script constraints with direct regular
+ expression interface
+In-Reply-To: <ed5866d1-5f07-ec95-34a4-8a6f08327920@users.sourceforge.net>
+References: <99797688-d8b2-5001-dd92-26f98e3a4901@users.sourceforge.net>
+ <19d8e848-da35-10af-6773-deab88137852@users.sourceforge.net>
+ <alpine.DEB.2.10.1612021441470.3056@hadrien>
+ <55445a2c-87c9-3794-4dee-5a006b6d1029@users.sourceforge.net>
+ <alpine.DEB.2.10.1612021456580.3056@hadrien>
+ <8e4a9ea0-9bb4-740e-a3d7-a434eb7cdcb6@users.sourceforge.net>
+ <alpine.DEB.2.10.1612021526560.3056@hadrien>
+ <ed5866d1-5f07-ec95-34a4-8a6f08327920@users.sourceforge.net>
+Message-ID: <b4aa95fc-30c9-121a-d806-e0818e98f4a4@redhat.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> @find_?@
->> expression ex1, ex2, value;
->> identifier action =~ ?;
->> @@
->> *ex1 = action(...);
->>  ex2 = value;
->>
->>
->> I am unsure if such a source code search approach should eventually be split
->> into more SmPL processing steps.
+On 12/02/2016 10:48 PM, SF Markus Elfring wrote:
+>> Why not just define a python function that you can call in a script to do
+>> your big regexp for you?
 > 
-> (
-> ex1 = action(...);
-> ex2 = <+...ex1...+>;
-> |
-> *ex1 = action(...);
->  ex2 = value;
-> )
+> Would any more developers and reviewers like to extend a source code analysis
+> approach with a regular expression (or other data structure) like the following?
+Why would you want to use that?
+Just use the regexp directly, e.g.
+identifier action1 = "regexp";
+I'm using big regexp'es that way. Yes, I do find the perl style compact
+regexp easier to read.
+
+And for more specialized stuff I'm passing the identifier through a
+python rule for further filtering.
+
+
+bye
+	michael
+
 > 
-> is perhaps what you are looking for.
-
-We discussed further possibilities around advanced usage of SmPL constraints a bit.
-The software evolution is unclear in this direction and might be too limited
-at the moment.
-
-But the shown SmPL disjunction could also work with the Coccinelle software
-for a while. It has got run time characteristics where I got a few concerns.
-
-The asterisk functionality is used there so that source code places
-can be marked as update candidates. Unfortunately, it seems that the software
-development challenge can be too big for the specification of a generic
-change approach.
-
-Is such a small source code search pattern good enough in principle to be
-integrated into the evolving script collection for checking of various source files
-(including from Linux)?
-
-Regards,
-Markus
+> SmPL script example:
+> 
+> @initialize:python@
+> @@
+> import re
+> compiled = re.compile("""^
+> (?:
+>    k(?:
+>        [cmz]alloc
+>     |  (?:m(?:
+>               alloc_array
+>            |  em(?:
+>                    _cache_alloc(?:_node)?
+>                 |  dup
+>                 )
+>            )
+>        |  zalloc_node
+>        )
+>     |  str(?:
+>              dup(?:_const)?
+>           |  ndup
+>           )
+>     )
+> |  of_find_matching_node
+> # Alternation placeholder
+> )$""", re.VERBOSE)
+> 
+> def is_selected(id):
+>     match = compiled.search(id)
+>     if match:
+>         return True
+>     else:
+>         return False
+> 
+> @find_too_late_checking@
+> expression assign1, assign2, ex1, ex2;
+> identifier action1: script:python() { is_selected(action1) },
+>            action2: script:python() { is_selected(action2) },
+>            work;
+> statement is, es;
+> type return_type;
+> @@
+>  return_type work(...)
+>  {
+>  ... when any
+> *ex1 = action1(...);
+>  ex2 = action2(...);
+>  ... when any
+>      when != (ex1 = assign1)
+>      when != (ex2 = assign2)
+>  if (
+> *      \( !(ex1) \| (ex1) == NULL \)
+>     || \( !(ex2) \| (ex2) == NULL \)
+>     || ...)
+>     is
+>  else
+>     es
+>  ... when any
+>  }
+> 
