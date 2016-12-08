@@ -1,97 +1,62 @@
 From: mstefani@redhat.com (Michael Stefaniuc)
-Date: Wed, 7 Dec 2016 13:19:58 +0200
-Subject: [Cocci] Comparing SmPL script constraints with direct regular
- expression interface
-In-Reply-To: <ed5866d1-5f07-ec95-34a4-8a6f08327920@users.sourceforge.net>
-References: <99797688-d8b2-5001-dd92-26f98e3a4901@users.sourceforge.net>
- <19d8e848-da35-10af-6773-deab88137852@users.sourceforge.net>
- <alpine.DEB.2.10.1612021441470.3056@hadrien>
- <55445a2c-87c9-3794-4dee-5a006b6d1029@users.sourceforge.net>
- <alpine.DEB.2.10.1612021456580.3056@hadrien>
- <8e4a9ea0-9bb4-740e-a3d7-a434eb7cdcb6@users.sourceforge.net>
- <alpine.DEB.2.10.1612021526560.3056@hadrien>
- <ed5866d1-5f07-ec95-34a4-8a6f08327920@users.sourceforge.net>
-Message-ID: <b4aa95fc-30c9-121a-d806-e0818e98f4a4@redhat.com>
+Date: Thu, 8 Dec 2016 15:18:21 +0200
+Subject: [Cocci] Negated Positions and Modifications
+In-Reply-To: <alpine.DEB.2.20.1611292248140.2016@hadrien>
+References: <6772dc00-a196-b6db-097e-f4be53ff7d87@redhat.com>
+ <alpine.DEB.2.10.1611221430450.31331@hadrien>
+ <93d3068e-44a6-c80a-ecb3-6290d985a559@redhat.com>
+ <alpine.DEB.2.20.1611272159200.2019@hadrien>
+ <alpine.DEB.2.20.1611292248140.2016@hadrien>
+Message-ID: <8338824e-3099-6e7b-f9a1-431f829f3c00@redhat.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 12/02/2016 10:48 PM, SF Markus Elfring wrote:
->> Why not just define a python function that you can call in a script to do
->> your big regexp for you?
+On 11/29/2016 11:49 PM, Julia Lawall wrote:
 > 
-> Would any more developers and reviewers like to extend a source code analysis
-> approach with a regular expression (or other data structure) like the following?
-Why would you want to use that?
-Just use the regexp directly, e.g.
-identifier action1 = "regexp";
-I'm using big regexp'es that way. Yes, I do find the perl style compact
-regexp easier to read.
+> 
+> On Sun, 27 Nov 2016, Julia Lawall wrote:
+> 
+>>> @@
+>>> {r1.T, r2.T} obj;
+>>> @@
+>>>
+>>> That only matches when both r1.T and r2.T are defined. That kinda feels
+>>> odd but probably is easier to implement as all inherited variables need
+>>> to be bound. I have quiet a few duplicated rules across multiple scripts
+>>> due to that.
+>>
+>> This problem is fixed by the following patch.  Will appear in github
+>> shortly, but not immediately.
+> 
+> The change is now available in the github version.  It is also now
+Thanks Julia, I have tested the change and it seems to work.
 
-And for more specialized stuff I'm passing the identifier through a
-python rule for further filtering.
+> possible, thanks to Thierry, to put negated constraints on type variables,
+Is there a way to have the positive constraint variant too?
+That doesn't seem that useful for static types like int and char but can
+avoid rule duplication when the type is inherited from 2 or more rules
+that don't match at the same time. E.g.:
+@@
+type T = {r1.T, r2.T};
+@@
+ T *foo =
+-          xyz
++          abc
+ ;
 
+Now in my specific case I'm getting the error:
+meta: semantic error: incompatible inheritance declaration T
 
+> as illustrated by the following semantic patch
+> (tests/type_constraints.cocci):
+> 
+> @@
+> type T != { int, char };
+> identifier x;
+> @@
+> -   T x;
+> +   T *x;
+
+thanks
 bye
 	michael
-
-> 
-> SmPL script example:
-> 
-> @initialize:python@
-> @@
-> import re
-> compiled = re.compile("""^
-> (?:
->    k(?:
->        [cmz]alloc
->     |  (?:m(?:
->               alloc_array
->            |  em(?:
->                    _cache_alloc(?:_node)?
->                 |  dup
->                 )
->            )
->        |  zalloc_node
->        )
->     |  str(?:
->              dup(?:_const)?
->           |  ndup
->           )
->     )
-> |  of_find_matching_node
-> # Alternation placeholder
-> )$""", re.VERBOSE)
-> 
-> def is_selected(id):
->     match = compiled.search(id)
->     if match:
->         return True
->     else:
->         return False
-> 
-> @find_too_late_checking@
-> expression assign1, assign2, ex1, ex2;
-> identifier action1: script:python() { is_selected(action1) },
->            action2: script:python() { is_selected(action2) },
->            work;
-> statement is, es;
-> type return_type;
-> @@
->  return_type work(...)
->  {
->  ... when any
-> *ex1 = action1(...);
->  ex2 = action2(...);
->  ... when any
->      when != (ex1 = assign1)
->      when != (ex2 = assign2)
->  if (
-> *      \( !(ex1) \| (ex1) == NULL \)
->     || \( !(ex2) \| (ex2) == NULL \)
->     || ...)
->     is
->  else
->     es
->  ... when any
->  }
-> 
