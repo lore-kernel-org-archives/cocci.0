@@ -1,18 +1,37 @@
 From: mmarek@suse.com (Michal Marek)
-Date: Sat, 10 Dec 2016 23:49:43 +0100
-Subject: [Cocci] [PATCH v2] Coccinelle: Add misc/boolconv.cocci
-In-Reply-To: <20161017165224.17093-1-afd@ti.com>
-References: <20161017165224.17093-1-afd@ti.com>
-Message-ID: <20161210224942.GA26709@sepie.suse.cz>
+Date: Sun, 11 Dec 2016 12:08:47 +0100
+Subject: [Cocci] [PATCH v4 0/3] Coccinelle: misc: Improve the script for
+ more accurate results
+In-Reply-To: <cover.1479885093.git.vaishali.thakkar@oracle.com>
+References: <cover.1479885093.git.vaishali.thakkar@oracle.com>
+Message-ID: <20161211110847.GC30135@sepie.suse.cz>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, Oct 17, 2016 at 11:52:24AM -0500, Andrew F. Davis wrote:
-> Add a script to check for unneeded conversions to bool.
+On Wed, Nov 23, 2016 at 02:12:58PM +0530, Vaishali Thakkar wrote:
+> Few changes to improve the results given by the irqf_oneshot.cocci:
 > 
-> Signed-off-by: Andrew F. Davis <afd@ti.com>
-> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+> - Change in the matching rules to eliminate false postives in the
+>   patch mode
+> - Change in the context mode to eliminate false postives in the
+>   context mode
+> - Support for the missing devm_request_threaded_irq in context, report
+>   and org mode
+> 
+> Changes since v3:
+> 	- Few more changes in the script to avoid some
+>           possible false positives
+>         - Moved initialization of all expressions in a single line 
+> Changes since v2:
+> 	- Add missing initialization of metavariables
+> Changes since v1:
+> 	- Split patch in to the patchset
+> 
+> Vaishali Thakkar (3):
+>   Coccinelle: misc: Improve the matching of rules
+>   Coccinelle: misc: Improve the result given by context mode
+>   Coccinelle: misc: Add support for devm variant in all modes
 
-Applied to kbuild.git#misc, thanks.
+Applied to kbuild.git#misc.
 
 Michal
