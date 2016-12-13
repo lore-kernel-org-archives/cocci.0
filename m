@@ -1,37 +1,85 @@
-From: mmarek@suse.com (Michal Marek)
-Date: Sun, 11 Dec 2016 12:08:47 +0100
-Subject: [Cocci] [PATCH v4 0/3] Coccinelle: misc: Improve the script for
- more accurate results
-In-Reply-To: <cover.1479885093.git.vaishali.thakkar@oracle.com>
-References: <cover.1479885093.git.vaishali.thakkar@oracle.com>
-Message-ID: <20161211110847.GC30135@sepie.suse.cz>
+From: hofrat@osadl.org (Nicholas Mc Guire)
+Date: Tue, 13 Dec 2016 11:23:20 +0100
+Subject: [Cocci] [PATCH] Coccinelle: uslee_range: ensure delta not zero
+Message-ID: <1481624600-29057-1-git-send-email-hofrat@osadl.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, Nov 23, 2016 at 02:12:58PM +0530, Vaishali Thakkar wrote:
-> Few changes to improve the results given by the irqf_oneshot.cocci:
-> 
-> - Change in the matching rules to eliminate false postives in the
->   patch mode
-> - Change in the context mode to eliminate false postives in the
->   context mode
-> - Support for the missing devm_request_threaded_irq in context, report
->   and org mode
-> 
-> Changes since v3:
-> 	- Few more changes in the script to avoid some
->           possible false positives
->         - Moved initialization of all expressions in a single line 
-> Changes since v2:
-> 	- Add missing initialization of metavariables
-> Changes since v1:
-> 	- Split patch in to the patchset
-> 
-> Vaishali Thakkar (3):
->   Coccinelle: misc: Improve the matching of rules
->   Coccinelle: misc: Improve the result given by context mode
->   Coccinelle: misc: Add support for devm variant in all modes
+usleep_range() min==max makes little sense at last for non-RT, so issue
+a warning if delta is 0.
 
-Applied to kbuild.git#misc.
+Signed-off-by: Nicholas Mc Guire <hofrat@osadl.org>
+---
 
-Michal
+As of 4.9.0 this finds about 20 cases - all of which look like the 
+should be passing a range.
+
+Patch is against 4.9.0 (localversion-next is next-20161213)
+
+ scripts/coccinelle/api/bad_usleep_range.cocci | 55 +++++++++++++++++++++++++++
+ 1 file changed, 55 insertions(+)
+ create mode 100644 scripts/coccinelle/api/bad_usleep_range.cocci
+
+diff --git a/scripts/coccinelle/api/bad_usleep_range.cocci b/scripts/coccinelle/api/bad_usleep_range.cocci
+new file mode 100644
+index 0000000..7e05f3e
+--- /dev/null
++++ b/scripts/coccinelle/api/bad_usleep_range.cocci
+@@ -0,0 +1,55 @@
++/// bad uslee_range - warn if min == max
++//
++//The problem is that usleep_range is calculating the delay by
++//      exp = ktime_add_us(ktime_get(), min)
++//      delta = (u64)(max - min) * NSEC_PER_USEC
++//so delta is set to 0 if min==max
++//and then calls
++//      schedule_hrtimeout_range(exp, 0,...)
++//effectively this means that the clock subsystem has no room to
++//optimize. usleep_range() is in non-atomic context so a 0 range
++//makes very little sense as the task can be preempted anyway so
++//there is no guarantee that the 0 range would be adding much
++//precision - it just removes optimization potential, so it probably
++//never really makes sense for any non-RT systems.
++//
++//see: Documentation/timers/timers-howto.txt and
++//Link: http://lkml.org/lkml/2016/11/29/54 for some notes on
++//      when mdelay might not be a suitable replacement
++//
++// Confidence: Moderate
++// Copyright: (C) 2016 Nicholas Mc Guire, OSADL.  GPLv2.
++// Comments:
++// Options: --no-includes --include-headers
++
++virtual org
++virtual report
++
++ at nullrange@
++expression E;
++constant C;
++position p;
++@@
++
++<+...
++(
++  usleep_range at p(C,C)
++|
++  usleep_range@p(E,E)
++)
++...+>
++
++
++ at script:python depends on org@
++p << nullrange.p;
++range << nullrange.C;
++@@
++
++cocci.print_main("WARNING: inefficient usleep_range with range 0 (min==max)",p)
++
++@script:python depends on report@
++p << nullrange.p;
++@@
++
++coccilib.report.print_report(p[0],"WARNING: inefficient usleep_range with range 0 (min==max)")
++
+-- 
+2.1.4
