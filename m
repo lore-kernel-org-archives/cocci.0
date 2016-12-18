@@ -1,43 +1,32 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 18 Dec 2016 11:04:05 +0100 (CET)
-Subject: [Cocci] Replace typedef INT with int
-In-Reply-To: <CAJ3s=NBYpz_61j5aGOgVU8mzto9jrDUZcROvdALtqUak3d25sQ@mail.gmail.com>
-References: <CAJ3s=NAfRwWN5=F0nf+DsHSDv7dVLw9wrJaSUsL1FPs1ZexucA@mail.gmail.com>
- <alpine.DEB.2.20.1612180921360.2048@hadrien>
- <CAJ3s=NBYpz_61j5aGOgVU8mzto9jrDUZcROvdALtqUak3d25sQ@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1612181103460.2048@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sun, 18 Dec 2016 15:37:59 +0100
+Subject: [Cocci] Checking incidence for SmPL initialisation rules after
+ parallel script execution
+Message-ID: <da6cd1b6-17a0-d5e9-3ba6-7565cc80ce39@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hello,
+
+I noticed some software development progress for an issue like ?SmPL constraints
+are broken for type metavariables.?.
+https://github.com/coccinelle/coccinelle/issues/32
 
 
-On Sun, 18 Dec 2016, Kishan Sandeep wrote:
+Now I am checking further test results from a command like the following
+for the software combination ?Coccinelle 1.0.6-00033-g23cca0a2 (OCaml 4.03.0)?.
 
-> Thanks Julia for the reply. facing error while running with spatch.
->
-> $ cat test.cocci
-> @@
-> typedef INT;
-> @@
->
-> - INT
-> + int
->
-> @@
-> @@
->
-> - typedef int INT;
->
-> Facing below error when run with - spatch --sp-file? test.cocci file.c
->
-> init_defs_builtins: /usr/share/coccinelle/standard.h
-> Fatal error: exception Failure("minus: parse error:
-> ?= File "test.cocci", line 11, column 14,? charpos = 54
-> ??? around = 'INT', whole content = - typedef int INT;
-> ")
->
-> please help me to resolve this.
+spatch.opt -timeout 23 -j 4 --chunksize 1 -sp-file ~/Projekte/Coccinelle/janitor/list_non-void_and_non-static_functions2.cocci -dir ~/geladen/Freeware/Quellen/NetBSD/7.0.2 > ~/Projekte/Bau/NetBSD/Coccinelle/functions1/API2.txt 2> ~/Projekte/Bau/NetBSD/Coccinelle/functions1/API2-errors.txt
 
-Just try switching the order of the rules.
 
-julia
+This script contains also a SmPL rule ?initialize:python? which should output
+a header line (usually once?).
+
+elfring at Sonne:~/Projekte/Coccinelle/janitor> ack 'function|"data type"|"source file"|line|column' ~/Projekte/Bau/NetBSD/Coccinelle/functions1/API2.txt | wc -l
+2022
+
+
+Is it really appropriate that this header appears so often in the shown output file?
+
+Regards,
+Markus
