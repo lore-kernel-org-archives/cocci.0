@@ -1,24 +1,38 @@
-From: sandeepkishan108@gmail.com (Kishan Sandeep)
-Date: Sun, 18 Dec 2016 13:48:27 +0530
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sun, 18 Dec 2016 09:22:10 +0100 (CET)
 Subject: [Cocci] Replace typedef INT with int
-Message-ID: <CAJ3s=NAfRwWN5=F0nf+DsHSDv7dVLw9wrJaSUsL1FPs1ZexucA@mail.gmail.com>
+In-Reply-To: <CAJ3s=NAfRwWN5=F0nf+DsHSDv7dVLw9wrJaSUsL1FPs1ZexucA@mail.gmail.com>
+References: <CAJ3s=NAfRwWN5=F0nf+DsHSDv7dVLw9wrJaSUsL1FPs1ZexucA@mail.gmail.com>
+Message-ID: <alpine.DEB.2.20.1612180921360.2048@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi,
 
 
-Please help me to write cocci script here -
+On Sun, 18 Dec 2016, Kishan Sandeep wrote:
 
-I have below typedef -
+> Hi,
+>
+>
+> Please help me to write cocci script here -
+>
+> I have below typedef -
+>
+> typedef int INT;
+>
+> INT is used so-many files in the code. Now i want to remove this typedef and
+> want to replace with int.
 
-typedef int INT;
+@@
+typedef INT;
+@@
 
-INT is used so-many files in the code. Now i want to remove this typedef
-and want to replace with int.
+- INT
++ int
 
-Thanks,
-Sandeep.
--------------- next part --------------
-An HTML attachment was scrubbed...
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20161218/cbf5d24d/attachment.html>
+@@
+@@
+
+- typedef int INT;
+
+julia
