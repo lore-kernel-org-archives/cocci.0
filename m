@@ -1,29 +1,30 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Mon, 19 Dec 2016 18:06:35 +0100
-Subject: [Cocci] Improved filtering for a big function collection with
- SmPL?
-In-Reply-To: <alpine.DEB.2.20.1612191748480.18389@hadrien>
-References: <7cbfd2a7-fd79-da43-bc87-833ed26217b1@users.sourceforge.net>
- <alpine.DEB.2.20.1612191748480.18389@hadrien>
-Message-ID: <3091421f-cb7e-b92c-ede1-73a9fd54e538@users.sourceforge.net>
+Date: Tue, 20 Dec 2016 20:45:26 +0100
+Subject: [Cocci] =?utf-8?q?=E2=80=A6_adding_missing_NULL_checks?=
+In-Reply-To: <20161216215537.p3ymxl3t6526af3i@fbsd-laptop>
+References: <20161216215537.p3ymxl3t6526af3i@fbsd-laptop>
+Message-ID: <ea7eadf2-080e-a0c1-5b86-c678e7d74484@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Why were you looking for such functions in the first place?
+>> need to put another copy of that at the end of the rule with  ? in front
+>> of it.  So that it stops when it comes to that again.
+>
+> And now it's working just fine.
 
-These functions provide various return values. I am curious on how often
-the returned values will actually be checked and used (or not).
+I became also curious on how the discussed source code transformation can
+really work. I imagine that there are still some software development challenges
+left over for further considerations.
 
+* A filter criterium like ?T = strdup(...);? was specified.
+  How do you think about to use a SmPL disjunction (or an advanced SmPL constraint
+  on a metavariable with the type ?identifier? instead)?
 
-> If you want non-static non-void functions and you find them,
-> then what is the issue?
+* Can the function call ?pkg_emit_errno? become a bit more generic by passing
+  a string from previously matched data?
 
-NetBSD contains a lot of components from various software. I tried to get
-an impression from the size of the corresponding function collection.
-
-The mentioned concrete size will show further software development challenges
-if meaningful source code transformations should be performed with such data,
-won't it?
+* Would you like to check any more cases so that the technology ?data flow analysis?
+  will be also needed here?
 
 Regards,
 Markus
