@@ -1,30 +1,24 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 20 Dec 2016 20:45:26 +0100
-Subject: [Cocci] =?utf-8?q?=E2=80=A6_adding_missing_NULL_checks?=
-In-Reply-To: <20161216215537.p3ymxl3t6526af3i@fbsd-laptop>
-References: <20161216215537.p3ymxl3t6526af3i@fbsd-laptop>
-Message-ID: <ea7eadf2-080e-a0c1-5b86-c678e7d74484@users.sourceforge.net>
+From: linux@roeck-us.net (Guenter Roeck)
+Date: Tue, 20 Dec 2016 19:28:48 -0800
+Subject: [Cocci] Converting DEVICE_ATTR to DEVICE_ATTR_{RO, RW,
+ WO} and changing function names at the same time
+Message-ID: <0bcce41c-88ce-09a0-2ddd-5ba2e406d482@roeck-us.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> need to put another copy of that at the end of the rule with  ? in front
->> of it.  So that it stops when it comes to that again.
->
-> And now it's working just fine.
+Hi Julia,
 
-I became also curious on how the discussed source code transformation can
-really work. I imagine that there are still some software development challenges
-left over for further considerations.
+I noticed your patch series to change DEVICE_ATTR() to DEVICE_ATTR_{RW,RO,WO}().
+In hwmon, we have a lot of candidates for this change, but unfortunately the
+function names do not typically match the _show/_store name convention.
 
-* A filter criterium like ?T = strdup(...);? was specified.
-  How do you think about to use a SmPL disjunction (or an advanced SmPL constraint
-  on a metavariable with the type ?identifier? instead)?
+Is there a way to tell coccinelle to change the function names to match this
+convention ?
 
-* Can the function call ?pkg_emit_errno? become a bit more generic by passing
-  a string from previously matched data?
+Background is that I want to change SENSOR_DEVICE_ATTR() and SENSOR_DEVICE_ATTR_2()
+as well (after introducing _{RO,RW,WO} variants), but there the function names are
+even more non-standard. The ability to change function names would help a lot for
+automating this change.
 
-* Would you like to check any more cases so that the technology ?data flow analysis?
-  will be also needed here?
-
-Regards,
-Markus
+Thanks,
+Guenter
