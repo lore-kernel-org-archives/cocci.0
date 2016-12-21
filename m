@@ -1,10 +1,10 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 21 Dec 2016 08:30:17 +0100 (CET)
+Date: Wed, 21 Dec 2016 14:07:38 +0100 (CET)
 Subject: [Cocci] Converting DEVICE_ATTR to DEVICE_ATTR_{RO, RW,
  WO} and changing function names at the same time
 In-Reply-To: <0bcce41c-88ce-09a0-2ddd-5ba2e406d482@roeck-us.net>
 References: <0bcce41c-88ce-09a0-2ddd-5ba2e406d482@roeck-us.net>
-Message-ID: <alpine.DEB.2.20.1612210824400.2083@hadrien>
+Message-ID: <alpine.DEB.2.20.1612211406220.3084@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -30,8 +30,12 @@ On Tue, 20 Dec 2016, Guenter Roeck wrote:
 > for
 > automating this change.
 
-Names can always be constructed with python or ocaml script code.  Looking
-quickly at the code, I see some occurrences of eg set_ and get_, for
-example.  This should be possible to handle.  I will look into it.
+Do you have any thoughts about what should happen in a case like the
+following:
+
+static DEVICE_ATTR(fan1_input, S_IRUGO, show_rpm, NULL);
+static DEVICE_ATTR(fan1_target, S_IRUGO | S_IWUSR, show_rpm, set_rpm);
+
+show_rpm needs to have two different names.
 
 julia
