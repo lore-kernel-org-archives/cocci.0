@@ -1,37 +1,37 @@
-From: thomas.adam22@gmail.com (Thomas Adam)
-Date: Fri, 16 Dec 2016 18:37:07 +0000
-Subject: [Cocci] malloc/calloc/strup adding missing NULL checks
-In-Reply-To: <alpine.DEB.2.10.1612161929450.3239@hadrien>
-References: <20161216113410.4vauxw4u2f364l7v@fbsd-laptop>
- <alpine.DEB.2.10.1612161242300.3566@hadrien>
- <20161216131350.5xc6awlrv2yu5xso@fbsd-laptop>
- <alpine.DEB.2.10.1612161453460.6500@hadrien>
- <20161216141242.3tisfzykz5zxcdtu@fbsd-laptop>
- <alpine.DEB.2.10.1612161531110.6500@hadrien>
- <20161216144645.h3tl5m3f5333zif2@fbsd-laptop>
- <alpine.DEB.2.10.1612161549220.6500@hadrien>
- <20161216170814.netw7heh2bdyvmm5@fbsd-laptop>
- <alpine.DEB.2.10.1612161929450.3239@hadrien>
-Message-ID: <20161216183705.madw4mpsfqmkvmky@fbsd-laptop>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Wed, 21 Dec 2016 08:30:17 +0100 (CET)
+Subject: [Cocci] Converting DEVICE_ATTR to DEVICE_ATTR_{RO, RW,
+ WO} and changing function names at the same time
+In-Reply-To: <0bcce41c-88ce-09a0-2ddd-5ba2e406d482@roeck-us.net>
+References: <0bcce41c-88ce-09a0-2ddd-5ba2e406d482@roeck-us.net>
+Message-ID: <alpine.DEB.2.20.1612210824400.2083@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, Dec 16, 2016 at 07:30:46PM +0100, Julia Lawall wrote:
-> The file I got had only pkg_vset, with some comments and includes
-> beforehand.  Perhaps you sent the wrong one.
 
-Sorry, I meant pkg_vset() -- there's too many moving parts!  I'm sending the
-entire .c file so that you might better place it in context with the debug
-file I attached in my previous email.  Needless to say, despite my
-chopping/changing this file, it's still not working.
 
-Thanks for your continued help, Julia.
+On Tue, 20 Dec 2016, Guenter Roeck wrote:
 
-Thomas
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: pkg.c
-Type: text/x-csrc
-Size: 48447 bytes
-Desc: not available
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20161216/ea78f5b8/attachment-0001.bin>
+> Hi Julia,
+>
+> I noticed your patch series to change DEVICE_ATTR() to
+> DEVICE_ATTR_{RW,RO,WO}().
+> In hwmon, we have a lot of candidates for this change, but unfortunately the
+> function names do not typically match the _show/_store name convention.
+>
+> Is there a way to tell coccinelle to change the function names to match this
+> convention ?
+>
+> Background is that I want to change SENSOR_DEVICE_ATTR() and
+> SENSOR_DEVICE_ATTR_2()
+> as well (after introducing _{RO,RW,WO} variants), but there the function names
+> are
+> even more non-standard. The ability to change function names would help a lot
+> for
+> automating this change.
+
+Names can always be constructed with python or ocaml script code.  Looking
+quickly at the code, I see some occurrences of eg set_ and get_, for
+example.  This should be possible to handle.  I will look into it.
+
+julia
