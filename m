@@ -1,31 +1,34 @@
-From: keescook@chromium.org (Kees Cook)
-Date: Tue, 10 Jan 2017 11:27:58 -0800
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Tue, 10 Jan 2017 20:30:29 +0100 (CET)
 Subject: [Cocci] [RFC] coccicheck: add a test for repeat memory fetches
 In-Reply-To: <CAGXu5j+Nk9r7K=FJe4v5b8mX_Fn411JMGks2sueyOFS2aTo1Ow@mail.gmail.com>
 References: <20170109231323.GA89642@beast>
  <alpine.DEB.2.20.1701101927070.1981@hadrien>
  <CAGXu5j+Nk9r7K=FJe4v5b8mX_Fn411JMGks2sueyOFS2aTo1Ow@mail.gmail.com>
-Message-ID: <CAGXu5jJinjK9CigN2TFggtpGPEnLsGmXOxKySWoFaoxioin-jQ@mail.gmail.com>
+Message-ID: <alpine.DEB.2.20.1701102028300.1981@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, Jan 10, 2017 at 11:23 AM, Kees Cook <keescook@chromium.org> wrote:
+
+
+On Tue, 10 Jan 2017, Kees Cook wrote:
+
 > On Tue, Jan 10, 2017 at 10:28 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
->>> +./drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c:2159
->>> +./drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c:2257
->>> +./drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c:2302
->>> +./drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c:2342
->>> +./drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c:2365
->>> +./drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c:2406
->>> +./drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c:2439
->>> +./drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c:2491
->>
->> Do you want the above results?  They have the form:
->>
->> if (copy_from_user(&t, useraddr, sizeof(t)))
->>
->> My reasoning was that there could be no problem here, because the size is
->> the size of the destination structure.  It doesn't depend on user level data.
+> >> +./drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c:2159
+> >> +./drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c:2257
+> >> +./drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c:2302
+> >> +./drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c:2342
+> >> +./drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c:2365
+> >> +./drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c:2406
+> >> +./drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c:2439
+> >> +./drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c:2491
+> >
+> > Do you want the above results?  They have the form:
+> >
+> > if (copy_from_user(&t, useraddr, sizeof(t)))
+> >
+> > My reasoning was that there could be no problem here, because the size is
+> > the size of the destination structure.  It doesn't depend on user level data.
 >
 > They're likely false positives, but it does follow the pattern of
 > reading the same userspace location twice:
@@ -54,10 +57,29 @@ On Tue, Jan 10, 2017 at 11:23 AM, Kees Cook <keescook@chromium.org> wrote:
 >                         return -EFAULT;
 >                 t.cmd = cmd;
 
-Errr, no. Think-o. Should be "if (t.cmd != cmd) { freak out }"...
+OK, I'm fine with putting them all back.
 
--Kees
+For another issue, what about code like the following:
 
--- 
-Kees Cook
-Nexus Security
+        if (copy_from_user(&u_cmd, arg, sizeof(u_cmd)))
+                return -EFAULT;
+
+        if ((u_cmd.outsize > EC_MAX_MSG_BYTES) ||
+	    (u_cmd.insize > EC_MAX_MSG_BYTES))
+		return -EINVAL;
+
+        s_cmd = kmalloc(sizeof(*s_cmd) + max(u_cmd.outsize, u_cmd.insize),
+                        GFP_KERNEL);
+        if (!s_cmd)
+                return -ENOMEM;
+
+        if (copy_from_user(s_cmd, arg, sizeof(*s_cmd) + u_cmd.outsize)) {
+		ret = -EFAULT;
+                goto exit;
+        }
+
+It doesn't actually test sizeof(*s_cmd) + u_cmd.outsize, but it does test
+u_cmd.outsize > EC_MAX_MSG_BYTES, and presumably that test accounts for
+the extra sizeof(*s_cmd) value.
+
+julia
