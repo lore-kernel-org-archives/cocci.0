@@ -1,76 +1,62 @@
-From: wpengfeinudt@gmail.com (Pengfei Wang)
-Date: Wed, 11 Jan 2017 21:44:00 +0800
-Subject: [Cocci] [PATCH] coccicheck: add a test for repeat copy_from_user
-In-Reply-To: <alpine.DEB.2.20.1701110708030.2396@hadrien>
-References: <20160426222442.GA8104@www.outflux.net>
- <alpine.DEB.2.20.1612271916250.2001@hadrien>
- <d0289ec5-3ce2-f119-6876-e19dc1a5ccde@oracle.com>
- <05AE3A59-EF48-4FFF-A028-0204B2E56DEB@gmail.com>
- <4ba1f717-9ad8-687b-e31c-64e5f2ffcab1@oracle.com>
- <19545870-5238-4BEB-AF1E-741BA97A6AA2@gmail.com>
- <152a02a9-3a82-af69-0eac-8014494e76ec@oracle.com>
- <76D088EA-3C7E-4766-A237-3FA1F0767C1A@gmail.com>
- <alpine.DEB.2.20.1701110708030.2396@hadrien>
-Message-ID: <09D4B047-4E54-4A3B-9EDB-B1F5E87A660B@gmail.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Fri, 13 Jan 2017 11:59:22 +0100 (CET)
+Subject: [Cocci] Coccinelle problems
+In-Reply-To: <d03925e4-f9a0-533c-02b3-b12d3f8236de@roeck-us.net>
+References: <d03925e4-f9a0-533c-02b3-b12d3f8236de@roeck-us.net>
+Message-ID: <alpine.DEB.2.20.1701131157290.2055@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 
-> ? 2017?1?11????2:12?Julia Lawall <julia.lawall@lip6.fr> ???
-> 
-> I looked at the get_user part of the original script.  It looks like most
-> of the complexity is to deal with the possibility of the src location
-> being expressed in two different ways between the two calls.  
 
-Yes, in addition to pointer alias and the ?field-whole? double-fetch type 
-as we mentioned previously, we also need to take into consideration of 
-the explicit data type conversion of the src pointer, such as:
-get_user(dst, src)
-?
-get_user(dst, (int*)src)
+On Thu, 12 Jan 2017, Guenter Roeck wrote:
 
-Also the embedded computation at the argument position, such as 
-get_user(dst, ++src) , get_user(dst, align(src)), or get_user(dst, src[i]),
-which could cause false positives. Loops also cause false positives.
+> Hi Julia,
+>
+> I have a couple of new problems with coccinelle.
+>
+> First, please have a look at the attached testc.c and test.cocci.
+> Running test.cocci on testc.c results in a hang. The problems seems
+> to be related to the number of (to-be-folded) labels.
 
+Here is a more efficient version.  I put an exists in the first rule - you
+just care if there exists a path to the double label, but don't care if
+all paths lead to the double label.  In the second rule, I changed <+...
+...+> to <... ...>, because there is no need to check if there is at least
+one match.  You just want to perform the change if the opportunity arises.
 
-> Even if this
-> happens in practice only for get_user, it would seem that it could happen
-> for copy_from_user as well.  So I think we could just throw both get_user
-> and copy_from_user into the same rule?
-> 
-Agreed.
+julia
 
-> I'm also not sure to understand why there are cases for things like
-> 
-> get_user(exp1, src->f1)
-> ...
-> get_user(exp2,src)
-> 
-> Can this happen?  The types seem wrong.
-I think it is unreasonable. It doesn?t work in practice. It exists in my script 
-because I combined different situations with disjunction but forgot to remove 
-the infeasible ones. Please remove it. A practical one should be:
-get_user(exp1, src->f1)
-?
-copy_from_user(exp2, src ,size)
+virtual patch
 
-> Likewise, I see the need to take into account a second argument of src++,
-> but not the need to take into account a second argument of src+4.  Either
-> there is src+4 in both calls or the addresses involved are just different.
+@unneeded_label exists@
+identifier fn;
+position p1;
+identifier l1,l2;
+@@
 
-src++ or src+4 are used when handling long messages byte by byte or word 
-by word by means of a loop. I paid attention to these because they cause 
-false positives as src pointers have changed for the double fetches. I remember 
-both of these two situations when examining the source code but I cannot 
-guarantee the src+4 situation exists as I don?t have an example in hand now. I suggest 
-we focus on the src++ for now. If src+4 cause any false positives, we?ll add it, too.
+fn(...) {
+<+...
+l1:@p1
+l2:
+...+> }
 
-Regards
-Pengfei
+@fold_label@
+identifier unneeded_label.fn;
+identifier l,l1,l2;
+position p != unneeded_label.p1;
+position any p1;
+statement S;
+@@
 
-> 
-> Perhaps I'm missing something, though.
-> 
-> julia
-> 
+fn(...) {
+<...
+- goto l1;
++ goto l2;
+  ...
+-l1:
+ <... when != S
+ l:@p1
+ ...>
+ l2:@p
+...> }
