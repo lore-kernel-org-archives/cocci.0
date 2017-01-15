@@ -1,49 +1,110 @@
 From: guenter@roeck-us.net (Guenter Roeck)
-Date: Sat, 14 Jan 2017 03:42:46 -0800
-Subject: [Cocci] Coccinelle problems
-In-Reply-To: <alpine.DEB.2.20.1701131600300.2041@hadrien>
-References: <d03925e4-f9a0-533c-02b3-b12d3f8236de@roeck-us.net>
- <alpine.DEB.2.20.1701131521480.2041@hadrien>
- <7874d064-1889-3301-d4f0-18c37e37234b@roeck-us.net>
- <alpine.DEB.2.20.1701131600300.2041@hadrien>
-Message-ID: <0401d8b1-f571-a668-04b3-ef3a74094461@roeck-us.net>
+Date: Sun, 15 Jan 2017 08:29:03 -0800
+Subject: [Cocci] More coccinelle problems
+Message-ID: <5c27cf78-f9b2-8306-4009-1e284ac8ee5c@roeck-us.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 01/13/2017 07:01 AM, Julia Lawall wrote:
->> @m1 exists@
->> identifier initfn;
->> identifier pdev;
->> type ptype.T;
->> position p;
->> @@
->>
->> initfn at p(T *pdev, ...) {
->>    ...
->>    &pdev->dev
->>    ... when any
->>    &pdev->dev
->>    ... when any
->> }
-> This is twice in a single execution path.  Twice anywhere could be done as
-> follows:
->
-> @@
-> position p;
-> @@
->
-> initfn at p(T *pdev, ...) {
->    <...
->    &pdev at p->dev
->    ...>
-> }
->
-> Then just inherit p into a python rule and find the number of elements in
-> the array.
->
-Yes, of course you are right. That finds another 10+ files to transform
-in drivers/input alone.
+Hi Julia,
 
-Thanks again!
+I got another script which hangs for me. It actually works on almost all files,
+but hangs in drivers/input/keyboard/gpio_keys_polled.c. The hang does not happen
+if I remove the 'reformat' rule.
+
+In case you wonder, the idea is to reformat the code if another rule touched
+function parameters. I stripped the context to make the problem easier to
+reproduce.
+
+If you have an idea what might cause the hang, please let me know.
+
+Thanks,
 
 Guenter
+
+
+-------------- next part --------------
+virtual patch
+
+@initialize:python@
+@@
+
+f = open('coccinelle.log', 'a')
+
+@probe@
+identifier p, probefn;
+declarer name module_platform_driver_probe;
+@@
+(
+  module_platform_driver_probe(p, probefn);
+|
+  struct platform_driver p = {
+    .probe = probefn,
+  };
+|
+  struct i2c_driver p = {
+    .probe = probefn,
+  };
+|
+  struct spi_driver p = {
+    .probe = probefn,
+  };
+)
+
+// Get type of device.
+// Using it ensures that we don't touch any other data structure
+// which might have a '->dev' object.
+
+@ptype depends on probe@
+type T;
+identifier probe.probefn;
+identifier pdev;
+@@
+probefn(T *pdev, ...) { ... }
+
+@e depends on probe exists@
+identifier initfn;
+identifier d;
+identifier pdev;
+type ptype.T;
+position p;
+@@
+
+initfn at p(T *pdev, ...) {
+  <+...
+  struct device *d = &pdev->dev;
+  ...+>
+}
+
+// formatting cleanup
+
+@c@
+identifier e.initfn;
+identifier fn;
+position e.p;
+position p1;
+identifier e.d;
+@@
+initfn at p(...) {
+<...
+  fn@p1(d, ...)
+...>
+}
+
+@script:python depends on c@
+p << c.p1;
+@@
+
+i=0
+while i < len(p):
+    print "%s:%s" % (p[i].file, p[i].line)
+    i = i + 1
+
+@reformat@
+identifier fn;
+position c.p1;
+expression list EL;
+@@
+<+...
+- fn@p1(EL)
++ fn(EL)
+...+>
