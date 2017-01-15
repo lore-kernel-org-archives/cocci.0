@@ -1,103 +1,32 @@
-From: guenter@roeck-us.net (Guenter Roeck)
-Date: Sun, 15 Jan 2017 08:29:03 -0800
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sun, 15 Jan 2017 17:47:14 +0100 (CET)
 Subject: [Cocci] More coccinelle problems
-Message-ID: <5c27cf78-f9b2-8306-4009-1e284ac8ee5c@roeck-us.net>
+In-Reply-To: <5c27cf78-f9b2-8306-4009-1e284ac8ee5c@roeck-us.net>
+References: <5c27cf78-f9b2-8306-4009-1e284ac8ee5c@roeck-us.net>
+Message-ID: <alpine.DEB.2.20.1701151731560.3751@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi Julia,
-
-I got another script which hangs for me. It actually works on almost all files,
-but hangs in drivers/input/keyboard/gpio_keys_polled.c. The hang does not happen
-if I remove the 'reformat' rule.
-
-In case you wonder, the idea is to reformat the code if another rule touched
-function parameters. I stripped the context to make the problem easier to
-reproduce.
-
-If you have an idea what might cause the hang, please let me know.
-
-Thanks,
-
-Guenter
 
 
--------------- next part --------------
-virtual patch
+On Sun, 15 Jan 2017, Guenter Roeck wrote:
 
-@initialize:python@
-@@
+> Hi Julia,
+>
+> I got another script which hangs for me. It actually works on almost all
+> files,
+> but hangs in drivers/input/keyboard/gpio_keys_polled.c. The hang does not
+> happen
+> if I remove the 'reformat' rule.
+>
+> In case you wonder, the idea is to reformat the code if another rule touched
+> function parameters. I stripped the context to make the problem easier to
+> reproduce.
+>
+> If you have an idea what might cause the hang, please let me know.
 
-f = open('coccinelle.log', 'a')
-
-@probe@
-identifier p, probefn;
-declarer name module_platform_driver_probe;
-@@
-(
-  module_platform_driver_probe(p, probefn);
-|
-  struct platform_driver p = {
-    .probe = probefn,
-  };
-|
-  struct i2c_driver p = {
-    .probe = probefn,
-  };
-|
-  struct spi_driver p = {
-    .probe = probefn,
-  };
-)
-
-// Get type of device.
-// Using it ensures that we don't touch any other data structure
-// which might have a '->dev' object.
-
-@ptype depends on probe@
-type T;
-identifier probe.probefn;
-identifier pdev;
-@@
-probefn(T *pdev, ...) { ... }
-
-@e depends on probe exists@
-identifier initfn;
-identifier d;
-identifier pdev;
-type ptype.T;
-position p;
-@@
-
-initfn at p(T *pdev, ...) {
-  <+...
-  struct device *d = &pdev->dev;
-  ...+>
-}
-
-// formatting cleanup
-
-@c@
-identifier e.initfn;
-identifier fn;
-position e.p;
-position p1;
-identifier e.d;
-@@
-initfn at p(...) {
-<...
-  fn@p1(d, ...)
-...>
-}
-
-@script:python depends on c@
-p << c.p1;
-@@
-
-i=0
-while i < len(p):
-    print "%s:%s" % (p[i].file, p[i].line)
-    i = i + 1
+I haven't tested it yet, but I believe that the <+... ...+> is never
+useful outermost, in a rule like the following:
 
 @reformat@
 identifier fn;
@@ -108,3 +37,22 @@ expression list EL;
 - fn@p1(EL)
 + fn(EL)
 ...+>
+
+The typical use of <+... P ...+> is when you are between point A and point
+B, and you want to be sure that there is at least one match of P between
+them.  Nothing depends on reformat, so you don't actually care if there
+are any occurrences at all.  If there are, they will get changed and if
+there aren't then nothing will happen.  So it should be:
+
+@reformat@
+identifier fn;
+position c.p1;
+expression list EL;
+@@
+
+- fn at p1(EL)
++ fn(EL)
+
+Does this remove the point of the example?
+
+julia
