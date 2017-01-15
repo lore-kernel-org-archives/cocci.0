@@ -1,9 +1,9 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 15 Jan 2017 17:47:14 +0100 (CET)
+Date: Sun, 15 Jan 2017 18:30:35 +0100 (CET)
 Subject: [Cocci] More coccinelle problems
 In-Reply-To: <5c27cf78-f9b2-8306-4009-1e284ac8ee5c@roeck-us.net>
 References: <5c27cf78-f9b2-8306-4009-1e284ac8ee5c@roeck-us.net>
-Message-ID: <alpine.DEB.2.20.1701151731560.3751@hadrien>
+Message-ID: <alpine.DEB.2.20.1701151817060.3751@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -25,34 +25,21 @@ On Sun, 15 Jan 2017, Guenter Roeck wrote:
 >
 > If you have an idea what might cause the hang, please let me know.
 
-I haven't tested it yet, but I believe that the <+... ...+> is never
-useful outermost, in a rule like the following:
+Dropping the <+... ...+>, I don't get the hang any more, but I get a
+number of already tagged token errors.  This is due to nested calls.  It
+formats eg the inner one, and then when it goes to work on the outer one,
+the token has already been modified.  All but one of them is solved by
+putting identifier fn != dev_name;
 
-@reformat@
-identifier fn;
-position c.p1;
-expression list EL;
-@@
-<+...
-- fn@p1(EL)
-+ fn(EL)
-...+>
+The remaining one is due to the collowing code in
+drivers/input/misc/rotary_encoder.c
 
-The typical use of <+... P ...+> is when you are between point A and point
-B, and you want to be sure that there is at least one match of P between
-them.  Nothing depends on reformat, so you don't actually care if there
-are any occurrences at all.  If there are, they will get changed and if
-there aren't then nothing will happen.  So it should be:
+       device_init_wakeup(dev,
+                           device_property_read_bool(dev, "wakeup-source"));
 
-@reformat@
-identifier fn;
-position c.p1;
-expression list EL;
-@@
-
-- fn at p1(EL)
-+ fn(EL)
-
-Does this remove the point of the example?
+Actually, this code already has dev, not &pdev->dev, so there should be no
+need to reformat it.  It could help to put the two transformations in one
+rule, so that you only reformat in functions where the transformation has
+been performed.
 
 julia
