@@ -1,49 +1,38 @@
-From: guenter@roeck-us.net (Guenter Roeck)
-Date: Sun, 15 Jan 2017 11:28:59 -0800
-Subject: [Cocci] More coccinelle problems
-In-Reply-To: <alpine.DEB.2.20.1701151900320.3751@hadrien>
-References: <5c27cf78-f9b2-8306-4009-1e284ac8ee5c@roeck-us.net>
- <alpine.DEB.2.20.1701151817060.3751@hadrien>
- <c0a0b0eb-4573-1dea-385d-85daf02b7d8f@roeck-us.net>
- <alpine.DEB.2.20.1701151900320.3751@hadrien>
-Message-ID: <98e50bcf-b844-6141-c1be-dd50a3f62338@roeck-us.net>
+From: rminnich@gmail.com (ron minnich)
+Date: Mon, 16 Jan 2017 04:44:39 +0000
+Subject: [Cocci] rework a function to move parameters around ....
+Message-ID: <CAP6exYJV8O6siwkwin4B+_R=PSOR9HthOfGe0DJsqXaPrN44yg@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 01/15/2017 10:03 AM, Julia Lawall wrote:
->> I originally didn't want to do that because the actual transformation catches
->> both
->>
->>      fn(&pdev->dev, ...) -> fn(dev, ...)
->> and
->>      x = &pdev->dev -> x = &dev
->>
->> but it turns out that was easy to solve.
->>
->> initfn at p(T *pdev, ...) {
->>    ...
->>    struct device *d = &pdev->dev;
->> <...
->> (
->> - fn(&pdev->dev, es)
->> + fn(d, es)
->> |
->> - &pdev->dev
->> + d
->> |
->> - pdev->dev.i
->> + dev->i
->> )
->> ...> }
-> I think that this is not quite perfect.  It will only reformat when
-> &pdev->dev is the in the first argument, and if &pdev->dev is the first
-> argument, then it won't transform occurrences of &pdev->dev in other
-> arguments.  I was thinking to just do the transformation as before, and
-I noticed. I "solved" that by running the script twice ;-).
-> then have a separate reformat rule, but the reformat rule should depend on
-> the rule that does the transformation.  If the transformation doesn't
-> happen, there is no need for reformatting.
-Let me try.
+I have a function like this (in coreboot)
+void lb_add_serial(struct lb_serial *new_serial, void *data)
+{
+struct lb_header *header = (struct lb_header *)data;
+struct lb_serial *serial;
 
-Thanks,
-Guenter
+serial = (struct lb_serial *)lb_new_record(header);
+serial->tag = LB_TAG_SERIAL;
+serial->size = sizeof(*serial);
+serial->type = new_serial->type;
+...
+}
+
+This is just one example.
+
+I'd like to do the following:
+Get the name of the variable assigned to serial->size (call it S)
+Get the name of the variable assigned to serial->type (call it T)
+Change the code as follows:
+serial = (struct lb_serial *)lb_new_record(header, T, S);
+remove the lines where they as assigned to struct.
+make sure that the call to lb_new_record is moved after the size is
+computed (i.e. after the assignments above).
+
+This exceeds my spatch foo by a fair amount; I'm fooling around with it but
+wonder if you all have some pointers.
+
+Thanks
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20170116/c875f102/attachment-0001.html>
