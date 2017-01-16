@@ -1,55 +1,107 @@
-From: rminnich@gmail.com (ron minnich)
-Date: Mon, 16 Jan 2017 06:26:27 +0000
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Mon, 16 Jan 2017 07:31:08 +0100 (CET)
 Subject: [Cocci] rework a function to move parameters around ....
-In-Reply-To: <alpine.DEB.2.20.1701160718350.1947@hadrien>
+In-Reply-To: <CAP6exY+oh2PAxaYvSHbkXTBAfLPpTsb4tXXPG-5TRQQ54Nw1Ag@mail.gmail.com>
 References: <CAP6exYJV8O6siwkwin4B+_R=PSOR9HthOfGe0DJsqXaPrN44yg@mail.gmail.com>
  <alpine.DEB.2.20.1701160718350.1947@hadrien>
-Message-ID: <CAP6exY+oh2PAxaYvSHbkXTBAfLPpTsb4tXXPG-5TRQQ54Nw1Ag@mail.gmail.com>
+ <CAP6exY+oh2PAxaYvSHbkXTBAfLPpTsb4tXXPG-5TRQQ54Nw1Ag@mail.gmail.com>
+Message-ID: <alpine.DEB.2.20.1701160730430.1947@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-yes, it will.
+This is not tested.
+
+---
+
+// both field initializations after the original call
+
+@@
+struct lb_header *header;
+expression e1,e2,e3,sz,ty,serial;
+@@
+
+- serial = (struct lb_serial *)lb_new_record(header);
+... when != serial = e1
+- serial->size = sz;
+... when != serial = e2
+    when != serial->size = e3
+- serial->type = ty;
++ serial = (struct lb_serial *)lb_new_record(header, sz, ty);
+
+@@
+struct lb_header *header;
+expression e1,e2,e3,sz,ty,serial;
+@@
+
+- serial = (struct lb_serial *)lb_new_record(header);
+... when != serial = e1
+- serial->type = ty;
+... when != serial = e2
+    when != serial->type = e3
+- serial->size = sz;
++ serial = (struct lb_serial *)lb_new_record(header, sz, ty);
+
+// both field initializations before the original call
+
+@@
+struct lb_header *header;
+expression e1,e2,e3,e4,e5,sz,ty,serial;
+@@
+
+- serial->type = ty;
+... when != serial = e1
+    when != serial->type = e2
+- serial->size = sz;
+... when != serial = e3
+    when != serial->type = e4
+    when != serial->size = e5
+  serial = (struct lb_serial *)lb_new_record(header
++ , sz, ty
+  );
+
+@@
+struct lb_header *header;
+expression e1,e2,e3,e4,e5,sz,ty,serial;
+@@
+
+- serial->size = sz;
+... when != serial = e1
+    when != serial->size = e2
+- serial->type = ty;
+... when != serial = e3
+    when != serial->size = e4
+    when != serial->type = e5
+  serial = (struct lb_serial *)lb_new_record(header
++ , sz, ty
+  );
+
+// field initializations around the original call
+
+@@
+struct lb_header *header;
+expression e1,e2,e3,e4,sz,ty,serial;
+@@
+
+- serial->size = sz;
+... when != serial = e1
+    when != serial->size = e2
+- serial = (struct lb_serial *)lb_new_record(header);
+... when != serial = e3
+    when != serial->size = e4
+- serial->type = ty;
++ serial = (struct lb_serial *)lb_new_record(header, sz, ty);
 
 
-On Sun, Jan 15, 2017 at 10:19 PM Julia Lawall <julia.lawall@lip6.fr> wrote:
+@@
+struct lb_header *header;
+expression e1,e2,e3,e4,sz,ty,serial;
+@@
 
->
->
-> On Mon, 16 Jan 2017, ron minnich wrote:
->
-> > I have a function like this (in coreboot)void lb_add_serial(struct
-> lb_serial
-> > *new_serial, void *data)
-> > {
-> > struct lb_header *header = (struct lb_header *)data;
-> > struct lb_serial *serial;
-> >
-> > serial = (struct lb_serial *)lb_new_record(header);
-> > serial->tag = LB_TAG_SERIAL;
-> > serial->size = sizeof(*serial);
-> > serial->type = new_serial->type;
-> > ...
-> > }
-> >
-> > This is just one example.
-> >
-> > I'd like to do the following:
-> > Get the name of the variable assigned to serial->size (call it S)
-> > Get the name of the variable assigned to serial->type (call it T)
-> > Change the code as follows:
-> > serial = (struct lb_serial *)lb_new_record(header, T, S);
-> > remove the lines where they as assigned to struct.
-> > make sure that the call to lb_new_record is moved after the size is
-> computed
-> > (i.e. after the assignments above).
-> >
-> > This exceeds my spatch foo by a fair amount; I'm fooling around with it
-> but
-> > wonder if you all have some pointers.
->
-> Will the cast always be there?
->
-> julia
--------------- next part --------------
-An HTML attachment was scrubbed...
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20170116/3f904c53/attachment.html>
+- serial->type = ty;
+... when != serial = e1
+    when != serial->type = e2
+- serial = (struct lb_serial *)lb_new_record(header);
+... when != serial = e3
+    when != serial->type = e4
+- serial->size = sz;
++ serial = (struct lb_serial *)lb_new_record(header, sz, ty);
