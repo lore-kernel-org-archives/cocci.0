@@ -1,70 +1,78 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 26 Jan 2017 16:57:58 +0100 (CET)
-Subject: [Cocci] modifying initializers with spatch?
-In-Reply-To: <1485445951.14760.16.camel@sipsolutions.net>
-References: <1485433691.14760.1.camel@sipsolutions.net>
- <alpine.DEB.2.20.1701261415040.3109@hadrien>
- <1485437521.14760.5.camel@sipsolutions.net>
- <alpine.DEB.2.20.1701261518560.3109@hadrien>
- <1485440882.14760.8.camel@sipsolutions.net>
- <alpine.DEB.2.20.1701261644140.3109@hadrien>
- <1485445951.14760.16.camel@sipsolutions.net>
-Message-ID: <alpine.DEB.2.20.1701261655450.3109@hadrien>
+From: kumar.gala@linaro.org (Kumar Gala)
+Date: Thu, 26 Jan 2017 10:03:49 -0600
+Subject: [Cocci] Help with include coccinelle & include paths?
+In-Reply-To: <alpine.DEB.2.20.1701261639480.3109@hadrien>
+References: <BBB6D7E1-F6F1-4FE4-80D6-8BD4C6F36026@linaro.org>
+ <alpine.DEB.2.20.1701261613120.3109@hadrien>
+ <9A687977-7C03-4E3B-A47F-C127E110F80A@linaro.org>
+ <alpine.DEB.2.20.1701261639480.3109@hadrien>
+Message-ID: <81B28E87-09C8-40DB-9379-ECB9104301D5@linaro.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 
+> On Jan 26, 2017, at 9:42 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
+> 
+> 
+> 
+> On Thu, 26 Jan 2017, Kumar Gala wrote:
+> 
+>> 
+>>> On Jan 26, 2017, at 9:19 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
+>>> 
+>>> 
+>>> 
+>>> On Thu, 26 Jan 2017, Kumar Gala wrote:
+>>> 
+>>>> Hi,
+>>>> 
+>>>> I?m looking at using coccinelle with the Zephyr project:
+>>>> 
+>>>> https://www.zephyrproject.org/
+>>>> https://gerrit.zephyrproject.org/r/gitweb?p=zephyr.git;a=summary
+>>>> 
+>>>> We utilize Kconfig & Kbuild from linux kernel.  However, I?m trying to figure out how to deal with our includes.  I?ve played around with the various options to spatch, but either get a StackOverflow --recursive-includes or not getting all cases figured out since typedef & #defines aren?t getting parsed fully.
+>>>> 
+>>>> Wondering what are best practices or things to try here.  I?m also not clear on what the messages one gets when enable some of the debug options like --verbose-parsing --type-error-msg.
+>>> 
+>>> If you just want the includes for parsing and type inference, but not for
+>>> transformation, it may help to use --include-headers-for-types.  I'm a bit
+>>> surprised about the stack overflow, though.  Maybe there is just some
+>>> header file that is badly structured in some way.
+>>> 
+>>> Includes won't help you much with #defines.  Coccinelle doesn't normally
+>>> take them into account even when the definition is available.  If there
+>>> are some non-Linux like macros in your code that reak parsing, you will
+>>> need to update standard.h.  What you can do is run:
+>>> 
+>>> spatch --parse-c mysoftware
+>>> 
+>>> and then it will parse all the files in mysoftware and make a list of the
+>>> tokens that most commonly cause errors.  It is usully sufficient to add a
+>>> few definitions to standard.h to resolve most of the problems.
+>>> 
+>>> Coccinelle parses one top-evel unit (function etc) at a time.  When you
+>>> use --verbose-parsing, it will print out the units that have parsing
+>>> problems.  It puts BAD on the line with the error, and bad on the lines
+>>> that are skipped due to the error.  When there are errors, Coccinelle does
+>>> try up to 4 times to parse the code, with each time being a bit more
+>>> relaxed.  So something can fail and then ultimately succeed.
+>>> 
+>>> I'll run parse-c on the above git link and see if any major issues emerge.
+>>> 
+>>> julia
+>> 
+>> When I tried parse-c I get the stack overflow (tired ulimit -s 50000 as well):
+>> 
+>> [galak at atx zephyr]$ spatch --macro-file-builtins $ZEPHYR_BASE/zephyr-std.h --parse-c $ZEPHYR_BASE
+>> init_defs_builtins: /mnt/nvme/zephyr/zephyr-std.h
+>> checking stack size (do ulimit -s 50000 if problem)
+>> Fatal error: exception Stack overflow
+> 
+> ulimit -s unlimited should make it work
+> 
+> julia
 
-On Thu, 26 Jan 2017, Johannes Berg wrote:
+thanks
 
->
-> > The problem is that Coccinelle lets you put fewer field initializers
-> > than
-> > are actually available.??The reasoning is that they are optional for
-> > fields, and the user doesn't really know how many will be present in
-> > each
-> > case.??{} is the degenerate case where none are mentioned.??But that
-> > should not apply to your case, 1) because you are removing the
-> > braces, and
-> > 2) because you aren't doing field initializations anyway.??I'll have
-> > to look into it.
->
-> Ok, thanks.
->
-> I actually had a separate thought, that I could perhaps do something
-> like
->
->
-> {
-> ... when != { ... }
-> T x = {
-> -  .field = E,
-> };
-> ... when != S
->     when any
-> ++  x.field = E;
->
->
-> To get rid of all the initializers, but (as I'm still on the phone) I
-> haven't tried it yet :)
->
-> Btw, how was the ++ supposed to work? I had to run this more than once
-> to actually make it catch multiple instances of = {0}. Also, in the
-> case above, even if it works, the order of initializations might be
-> inverted if I run the spatch multiple times, so not sure I should do
-> that.
-
-Put a when any above the T x = line.
-
-On the other hand, ++ makes no guarantee about the order in which things
-are generated.
-
-To ensure the order, put the when any above the T x line, and drop the one
-below and run multiple times.  Then each run will work on the last one and
-put it first, so they will come out in order.
-
-julia
-
->
-> johannes
->
+- k
