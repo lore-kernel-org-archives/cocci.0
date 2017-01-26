@@ -1,74 +1,19 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 26 Jan 2017 15:20:46 +0100 (CET)
-Subject: [Cocci] modifying initializers with spatch?
-In-Reply-To: <1485437521.14760.5.camel@sipsolutions.net>
-References: <1485433691.14760.1.camel@sipsolutions.net>
- <alpine.DEB.2.20.1701261415040.3109@hadrien>
- <1485437521.14760.5.camel@sipsolutions.net>
-Message-ID: <alpine.DEB.2.20.1701261518560.3109@hadrien>
+From: kumar.gala@linaro.org (Kumar Gala)
+Date: Thu, 26 Jan 2017 08:32:04 -0600
+Subject: [Cocci] Help with include coccinelle & include paths?
+Message-ID: <BBB6D7E1-F6F1-4FE4-80D6-8BD4C6F36026@linaro.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hi,
 
+I?m looking at using coccinelle with the Zephyr project:
 
-On Thu, 26 Jan 2017, Johannes Berg wrote:
+https://www.zephyrproject.org/
+https://gerrit.zephyrproject.org/r/gitweb?p=zephyr.git;a=summary
 
->
-> > > @@
-> > > identifier x;
-> > > type t;
-> > > @@
-> > > ?t x
-> > > - ={}
-> > > ?;
-> >
-> > I'm not sure what you are trying to do here.??Remove only the empty
-> > ones?
->
-> I actually tried something more like
->
-> @@
-> @@
-> identifier x;
-> type t;
-> @@
->  t x
-> - ={}
->  ;
-> +memset(&x, 0, sizeof(x));
->
-> but that didn't really work either :)
->
-> > > I've also not managed to add any memset(&x, 0, sizeof(x)); in the
-> > > same
-> > > patch, especially since it should go after all other declarations.
-> >
-> > Here you would want something like:
-> >
-> > f(...) {
-> > ? when != S
-> > + memset(...);
-> > ? S1
-> > ? ...
-> > }
-> >
-> > S and S1 should be statements.??If there could be multiple memsets at
-> > the beginning of a single function, use ++ instead of +.
->
-> Ok, so I should combine with the previous one before - do I need the
-> f(...) or are just the braces enough? This could be in a nested block,
-> after all.
+We utilize Kconfig & Kbuild from linux kernel.  However, I?m trying to figure out how to deal with our includes.  I?ve played around with the various options to spatch, but either get a StackOverflow --recursive-includes or not getting all cases figured out since typedef & #defines aren?t getting parsed fully.
 
-Try for the braces.  Maybe something like
+Wondering what are best practices or things to try here.  I?m also not clear on what the messages one gets when enable some of the debug options like --verbose-parsing --type-error-msg.
 
-{
-  ... when != { ... }
-  T x
--     = {0}
-  ;
-  ... when != S
-      when any
-++ memset(...)
-   S1
-   ... when any
-}
+- k
