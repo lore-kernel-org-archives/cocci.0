@@ -1,57 +1,24 @@
-From: johannes@sipsolutions.net (Johannes Berg)
-Date: Thu, 26 Jan 2017 14:32:01 +0100
-Subject: [Cocci] modifying initializers with spatch?
-In-Reply-To: <alpine.DEB.2.20.1701261415040.3109@hadrien>
-References: <1485433691.14760.1.camel@sipsolutions.net>
- <alpine.DEB.2.20.1701261415040.3109@hadrien>
-Message-ID: <1485437521.14760.5.camel@sipsolutions.net>
+From: kumar.gala@linaro.org (Kumar Gala)
+Date: Thu, 26 Jan 2017 07:45:31 -0600
+Subject: [Cocci] some questions related to output formatting
+Message-ID: <FAB49815-C2ED-4463-94A6-A766A21C6F9B@linaro.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+1. Is there a way to adjust the 80 char line break limit?
+2. When I?m using a python script that parses a token that crosses multiple lines for some reason the output gets merged onto a single line:
 
-> > @@
-> > identifier x;
-> > type t;
-> > @@
-> > ?t x
-> > - ={}
-> > ?;
-> 
-> I'm not sure what you are trying to do here.??Remove only the empty
-> ones?
+-                       printk(" Min latency from hw interrupt up to 'C' int. "
+-                              "handler:"
+-                              " %d tcs = %d nsec\n",
++                       printk(" Min latency from hw interrupt up to 'C' int. " "handler:" " %lu tcs = %lu nsec\n?,
 
-I actually tried something more like
+Is there something I should be doing special?
 
-@@
-@@
-identifier x;
-type t;
-@@
- t x
-- ={}
- ;
-+memset(&x, 0, sizeof(x));
+I?m using a modified version of Johann?s script for adjusting printf formatters:
 
-but that didn't really work either :)
+https://systeme.lip6.fr/pipermail/cocci/2016-August/003533.html
 
-> > I've also not managed to add any memset(&x, 0, sizeof(x)); in the
-> > same
-> > patch, especially since it should go after all other declarations.
-> 
-> Here you would want something like:
-> 
-> f(...) {
-> ? when != S
-> + memset(...);
-> ? S1
-> ? ...
-> }
-> 
-> S and S1 should be statements.??If there could be multiple memsets at
-> the beginning of a single function, use ++ instead of +.
+Thanks
 
-Ok, so I should combine with the previous one before - do I need the
-f(...) or are just the braces enough? This could be in a nested block,
-after all.
-
-johannes
+- k
