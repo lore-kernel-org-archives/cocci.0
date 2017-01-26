@@ -1,28 +1,32 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 26 Jan 2017 16:31:59 +0100 (CET)
+Date: Thu, 26 Jan 2017 16:37:59 +0100 (CET)
 Subject: [Cocci] some questions related to output formatting
 In-Reply-To: <EC57B573-1942-4118-A86D-9177BA76DFE3@linaro.org>
 References: <FAB49815-C2ED-4463-94A6-A766A21C6F9B@linaro.org>
  <alpine.DEB.2.20.1701261516370.3109@hadrien>
  <EC57B573-1942-4118-A86D-9177BA76DFE3@linaro.org>
-Message-ID: <alpine.DEB.2.20.1701261627420.3109@hadrien>
+Message-ID: <alpine.DEB.2.20.1701261637330.3109@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-For parsing Zephyr, the main issue seems to be the __IO annotation.  You
-can take the existing standard.h, copy it to eg zephyr.h and add
 
-#define __IO
 
-then when you run Coccinelle, put --macro-file-builtins zephyr.h
+On Thu, 26 Jan 2017, Kumar Gala wrote:
 
-You should also be able to put at the root of the zephyr directory a file
-.cocciconfig
+>
+> > On Jan 26, 2017, at 8:18 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
+> >
+> >
+> >
+> > On Thu, 26 Jan 2017, Kumar Gala wrote:
+> >
+> >> 1. Is there a way to adjust the 80 char line break limit?
+> >
+> > Currently, it's a non-modifiable configuration variable.  I can add a flag
+> > for it.
+>
+> That would be useful.
 
-[spatch]
-options = --macro-file-builtins zephyr.h
-
-Or rather the complete path for zephyr.h.  Then this file will always be
-used when you run Coccinelle on code in the zephyr directory.
+You can pull this from github.  --max-width n
 
 julia
