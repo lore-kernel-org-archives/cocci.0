@@ -1,75 +1,29 @@
-From: kumar.gala@linaro.org (Kumar Gala)
-Date: Thu, 26 Jan 2017 10:14:11 -0600
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Thu, 26 Jan 2017 20:17:00 +0100 (CET)
 Subject: [Cocci] Help with include coccinelle & include paths?
-In-Reply-To: <alpine.DEB.2.20.1701261613120.3109@hadrien>
+In-Reply-To: <C37E98C9-25E1-4E62-BA80-145CC8483C79@linaro.org>
 References: <BBB6D7E1-F6F1-4FE4-80D6-8BD4C6F36026@linaro.org>
  <alpine.DEB.2.20.1701261613120.3109@hadrien>
-Message-ID: <C37E98C9-25E1-4E62-BA80-145CC8483C79@linaro.org>
+ <C37E98C9-25E1-4E62-BA80-145CC8483C79@linaro.org>
+Message-ID: <alpine.DEB.2.20.1701262014580.2032@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> So this I?m trying to use a modified version of Johann?s script to convert printf formatters that are passed a {u}int32_t to use ?%l{d,x,u,?}?.  My version of the script is attached.  I?m trying to figure out why some typedef / structs are being processed/figured out.
+>
+> I do:
+> ~/git/coccinelle/spatch.opt --sp-file ./pri.sp --macro-file-builtins $ZEPHYR_BASE/zephyr-std.h tests/legacy/kernel/test_mail/src/
+>
+> I?d expect to match line 206/207 of tests/legacy/kernel/test_mail/src/mail.c, where MSTmsg is of type ?struct k_msg? and k_msg is defined in include/legacy.h.  Where the size field is a uint32_t.
+>
+> So trying to figure out why the struct is getting resolved and match.
 
-> On Jan 26, 2017, at 9:19 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
-> 
-> 
-> 
-> On Thu, 26 Jan 2017, Kumar Gala wrote:
-> 
->> Hi,
->> 
->> I?m looking at using coccinelle with the Zephyr project:
->> 
->> https://www.zephyrproject.org/
->> https://gerrit.zephyrproject.org/r/gitweb?p=zephyr.git;a=summary
->> 
->> We utilize Kconfig & Kbuild from linux kernel.  However, I?m trying to figure out how to deal with our includes.  I?ve played around with the various options to spatch, but either get a StackOverflow --recursive-includes or not getting all cases figured out since typedef & #defines aren?t getting parsed fully.
->> 
->> Wondering what are best practices or things to try here.  I?m also not clear on what the messages one gets when enable some of the debug options like --verbose-parsing --type-error-msg.
-> 
-> If you just want the includes for parsing and type inference, but not for
-> transformation, it may help to use --include-headers-for-types.  I'm a bit
-> surprised about the stack overflow, though.  Maybe there is just some
-> header file that is badly structured in some way.
-> 
-> Includes won't help you much with #defines.  Coccinelle doesn't normally
-> take them into account even when the definition is available.  If there
-> are some non-Linux like macros in your code that reak parsing, you will
-> need to update standard.h.  What you can do is run:
-> 
-> spatch --parse-c mysoftware
-> 
-> and then it will parse all the files in mysoftware and make a list of the
-> tokens that most commonly cause errors.  It is usully sufficient to add a
-> few definitions to standard.h to resolve most of the problems.
-> 
-> Coccinelle parses one top-evel unit (function etc) at a time.  When you
-> use --verbose-parsing, it will print out the units that have parsing
-> problems.  It puts BAD on the line with the error, and bad on the lines
-> that are skipped due to the error.  When there are errors, Coccinelle does
-> try up to 4 times to parse the code, with each time being a bit more
-> relaxed.  So something can fail and then ultimately succeed.
-> 
-> I'll run parse-c on the above git link and see if any major issues emerge.
-> 
-> julia
+I'm not completely sure from your message whether it is working or not.
+If you give the options --recursive-includes -I $ZEPHYR_BASE/include
+then I think it should work.
 
-So this I?m trying to use a modified version of Johann?s script to convert printf formatters that are passed a {u}int32_t to use ?%l{d,x,u,?}?.  My version of the script is attached.  I?m trying to figure out why some typedef / structs are being processed/figured out.
+If you give the name of a directory, Coccinelle will add dir/include to
+the include path.  But since you are working on a subdirectory, you don't
+benefit from that.
 
-I do:
-~/git/coccinelle/spatch.opt --sp-file ./pri.sp --macro-file-builtins $ZEPHYR_BASE/zephyr-std.h tests/legacy/kernel/test_mail/src/
-
-I?d expect to match line 206/207 of tests/legacy/kernel/test_mail/src/mail.c, where MSTmsg is of type ?struct k_msg? and k_msg is defined in include/legacy.h.  Where the size field is a uint32_t.
-
-So trying to figure out why the struct is getting resolved and match.
-
-Thanks for all the help!!!
-
-- k
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: pri.sp
-Type: application/octet-stream
-Size: 4317 bytes
-Desc: not available
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20170126/71ccbae5/attachment.obj>
+julia
