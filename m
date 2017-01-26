@@ -1,70 +1,45 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 26 Jan 2017 16:42:40 +0100 (CET)
-Subject: [Cocci] Help with include coccinelle & include paths?
-In-Reply-To: <9A687977-7C03-4E3B-A47F-C127E110F80A@linaro.org>
-References: <BBB6D7E1-F6F1-4FE4-80D6-8BD4C6F36026@linaro.org>
- <alpine.DEB.2.20.1701261613120.3109@hadrien>
- <9A687977-7C03-4E3B-A47F-C127E110F80A@linaro.org>
-Message-ID: <alpine.DEB.2.20.1701261639480.3109@hadrien>
+Date: Thu, 26 Jan 2017 16:47:02 +0100 (CET)
+Subject: [Cocci] modifying initializers with spatch?
+In-Reply-To: <1485440882.14760.8.camel@sipsolutions.net>
+References: <1485433691.14760.1.camel@sipsolutions.net>
+ <alpine.DEB.2.20.1701261415040.3109@hadrien>
+ <1485437521.14760.5.camel@sipsolutions.net>
+ <alpine.DEB.2.20.1701261518560.3109@hadrien>
+ <1485440882.14760.8.camel@sipsolutions.net>
+Message-ID: <alpine.DEB.2.20.1701261644140.3109@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 
 
-On Thu, 26 Jan 2017, Kumar Gala wrote:
+On Thu, 26 Jan 2017, Johannes Berg wrote:
 
+> > Try for the braces.??Maybe something like
+> >
+> > {
+> > ? ... when != { ... }
+> > ? T x
+> > -?????= {0}
+> > ? ;
+> > ? ... when != S
+> > ??????when any
+> > ++ memset(...)
+> > ???S1
+> > ???... when any
+> > }
 >
-> > On Jan 26, 2017, at 9:19 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
-> >
-> >
-> >
-> > On Thu, 26 Jan 2017, Kumar Gala wrote:
-> >
-> >> Hi,
-> >>
-> >> I?m looking at using coccinelle with the Zephyr project:
-> >>
-> >> https://www.zephyrproject.org/
-> >> https://gerrit.zephyrproject.org/r/gitweb?p=zephyr.git;a=summary
-> >>
-> >> We utilize Kconfig & Kbuild from linux kernel.  However, I?m trying to figure out how to deal with our includes.  I?ve played around with the various options to spatch, but either get a StackOverflow --recursive-includes or not getting all cases figured out since typedef & #defines aren?t getting parsed fully.
-> >>
-> >> Wondering what are best practices or things to try here.  I?m also not clear on what the messages one gets when enable some of the debug options like --verbose-parsing --type-error-msg.
-> >
-> > If you just want the includes for parsing and type inference, but not for
-> > transformation, it may help to use --include-headers-for-types.  I'm a bit
-> > surprised about the stack overflow, though.  Maybe there is just some
-> > header file that is badly structured in some way.
-> >
-> > Includes won't help you much with #defines.  Coccinelle doesn't normally
-> > take them into account even when the definition is available.  If there
-> > are some non-Linux like macros in your code that reak parsing, you will
-> > need to update standard.h.  What you can do is run:
-> >
-> > spatch --parse-c mysoftware
-> >
-> > and then it will parse all the files in mysoftware and make a list of the
-> > tokens that most commonly cause errors.  It is usully sufficient to add a
-> > few definitions to standard.h to resolve most of the problems.
-> >
-> > Coccinelle parses one top-evel unit (function etc) at a time.  When you
-> > use --verbose-parsing, it will print out the units that have parsing
-> > problems.  It puts BAD on the line with the error, and bad on the lines
-> > that are skipped due to the error.  When there are errors, Coccinelle does
-> > try up to 4 times to parse the code, with each time being a bit more
-> > relaxed.  So something can fail and then ultimately succeed.
-> >
-> > I'll run parse-c on the above git link and see if any major issues emerge.
-> >
-> > julia
+> Yep, thanks! (I'm on the phone, and didn't get a chance to try yet)
 >
-> When I tried parse-c I get the stack overflow (tired ulimit -s 50000 as well):
->
-> [galak at atx zephyr]$ spatch --macro-file-builtins $ZEPHYR_BASE/zephyr-std.h --parse-c $ZEPHYR_BASE
-> init_defs_builtins: /mnt/nvme/zephyr/zephyr-std.h
-> checking stack size (do ulimit -s 50000 if problem)
-> Fatal error: exception Stack overflow
+> That works for anything that's actually "= {0}" today, but for I can't
+> even match "= {}" properly, it seems?
 
-ulimit -s unlimited should make it work
+The problem is that Coccinelle lets you put fewer field initializers than
+are actually available.  The reasoning is that they are optional for
+fields, and the user doesn't really know how many will be present in each
+case.  {} is the degenerate case where none are mentioned.  But that
+should not apply to your case, 1) because you are removing the braces, and
+2) because you aren't doing field initializations anyway.  I'll have to
+look into it.
 
 julia
