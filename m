@@ -1,58 +1,74 @@
-From: kumar.gala@linaro.org (Kumar Gala)
-Date: Thu, 26 Jan 2017 08:29:11 -0600
-Subject: [Cocci] some questions related to output formatting
-In-Reply-To: <alpine.DEB.2.20.1701261516370.3109@hadrien>
-References: <FAB49815-C2ED-4463-94A6-A766A21C6F9B@linaro.org>
- <alpine.DEB.2.20.1701261516370.3109@hadrien>
-Message-ID: <EC57B573-1942-4118-A86D-9177BA76DFE3@linaro.org>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Thu, 26 Jan 2017 15:20:46 +0100 (CET)
+Subject: [Cocci] modifying initializers with spatch?
+In-Reply-To: <1485437521.14760.5.camel@sipsolutions.net>
+References: <1485433691.14760.1.camel@sipsolutions.net>
+ <alpine.DEB.2.20.1701261415040.3109@hadrien>
+ <1485437521.14760.5.camel@sipsolutions.net>
+Message-ID: <alpine.DEB.2.20.1701261518560.3109@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 
-> On Jan 26, 2017, at 8:18 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
-> 
-> 
-> 
-> On Thu, 26 Jan 2017, Kumar Gala wrote:
-> 
->> 1. Is there a way to adjust the 80 char line break limit?
-> 
-> Currently, it's a non-modifiable configuration variable.  I can add a flag
-> for it.
 
-That would be useful.
+On Thu, 26 Jan 2017, Johannes Berg wrote:
 
->> 2. When I?m using a python script that parses a token that crosses multiple lines for some reason the output gets merged onto a single line:
->> 
->> -                       printk(" Min latency from hw interrupt up to 'C' int. "
->> -                              "handler:"
->> -                              " %d tcs = %d nsec\n",
->> +                       printk(" Min latency from hw interrupt up to 'C' int. " "handler:" " %lu tcs = %lu nsec\n?,
->> 
->> Is there something I should be doing special?
-> 
-> I think that it would be difficult to do anything about this.  The string
-> passes through python and gets modified, and then gets dumped back into
-> the code in the end.  At that point, Coccinelle just sees it as one atomic
-> unit.  Does the issue come up a lot?
+>
+> > > @@
+> > > identifier x;
+> > > type t;
+> > > @@
+> > > ?t x
+> > > - ={}
+> > > ?;
+> >
+> > I'm not sure what you are trying to do here.??Remove only the empty
+> > ones?
+>
+> I actually tried something more like
+>
+> @@
+> @@
+> identifier x;
+> type t;
+> @@
+>  t x
+> - ={}
+>  ;
+> +memset(&x, 0, sizeof(x));
+>
+> but that didn't really work either :)
+>
+> > > I've also not managed to add any memset(&x, 0, sizeof(x)); in the
+> > > same
+> > > patch, especially since it should go after all other declarations.
+> >
+> > Here you would want something like:
+> >
+> > f(...) {
+> > ? when != S
+> > + memset(...);
+> > ? S1
+> > ? ...
+> > }
+> >
+> > S and S1 should be statements.??If there could be multiple memsets at
+> > the beginning of a single function, use ++ instead of +.
+>
+> Ok, so I should combine with the previous one before - do I need the
+> f(...) or are just the braces enough? This could be in a nested block,
+> after all.
 
-A fair amount for the code base I?m working on (Zephyr - https://www.zephyrproject.org).  What?s interesting is this seems to bypass the line length check/breaking.
+Try for the braces.  Maybe something like
 
-- kumar
-
-> 
-> julia
-> 
->> I?m using a modified version of Johann?s script for adjusting printf formatters:
->> 
->> https://systeme.lip6.fr/pipermail/cocci/2016-August/003533.html
->> 
->> Thanks
->> 
->> - k
->> 
->> 
->> _______________________________________________
->> Cocci mailing list
->> Cocci at systeme.lip6.fr
->> https://systeme.lip6.fr/mailman/listinfo/cocci
+{
+  ... when != { ... }
+  T x
+-     = {0}
+  ;
+  ... when != S
+      when any
+++ memset(...)
+   S1
+   ... when any
+}
