@@ -1,7 +1,7 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 26 Jan 2017 21:54:22 +0100 (CET)
+From: kumar.gala@linaro.org (Kumar Gala)
+Date: Thu, 26 Jan 2017 15:23:19 -0600
 Subject: [Cocci] Help with include coccinelle & include paths?
-In-Reply-To: <6FBEB071-6A44-4A39-9C40-5E28CC402196@linaro.org>
+In-Reply-To: <alpine.DEB.2.20.1701262149330.2032@hadrien>
 References: <BBB6D7E1-F6F1-4FE4-80D6-8BD4C6F36026@linaro.org>
  <alpine.DEB.2.20.1701261613120.3109@hadrien>
  <C37E98C9-25E1-4E62-BA80-145CC8483C79@linaro.org>
@@ -12,41 +12,47 @@ References: <BBB6D7E1-F6F1-4FE4-80D6-8BD4C6F36026@linaro.org>
  <BD76D02F-FBF3-4F69-9C5B-8C2976D7DFFA@linaro.org>
  <alpine.DEB.2.20.1701262118460.2032@hadrien>
  <6FBEB071-6A44-4A39-9C40-5E28CC402196@linaro.org>
-Message-ID: <alpine.DEB.2.20.1701262149330.2032@hadrien>
+ <alpine.DEB.2.20.1701262149330.2032@hadrien>
+Message-ID: <B9E36D1D-3FEC-4C98-819F-5A95BFD754B0@linaro.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 
+> On Jan 26, 2017, at 2:54 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
+> 
+> 
+> 
+> On Thu, 26 Jan 2017, Kumar Gala wrote:
+> 
+>> 
+>>> On Jan 26, 2017, at 2:19 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
+>>> 
+>>>> Not sure if there?s some debug info I can dump that would be helpful.
+>>> 
+>>> --debug --show-trying
+>>> 
+>>> thanks,
+>>> julia
+>> 
+>> For the FILE case:
+>> ~/git/coccinelle/spatch.opt --sp-file ./pri.sp --macro-file-builtins $ZEPHYR_BASE/zephyr-std.h --recursive-includes -I $ZEPHYR_BASE/include tests/legacy/kernel/test_mail/src/mail.^C--debug --show-trying 2> file.good.log 1> file.good.out
+>> 
+>> For the DIR case:
+>> 
+>> ~/git/coccinelle/spatch.opt --sp-file ./pri.sp --macro-file-builtins $ZEPHYR_BASE/zephyr-std.h --recursive-includes -I $ZEPHYR_BASE/include tests/legacy/kernel/test_mail/src/ --debug --show-trying 2> dir.bad.log 1>dir.bad.out
+>> 
+>> Not sure if these logs show something useful.
+> 
+> We aren't processing the files in the same order.  Your .log file in the
+> dir case shows main.c and the mail.c, while mine has mail.c and then
+> main.c.  I would guess that it is learning something from the parsing of
+> main.c that is throwing it off in the parsing of mail.c.
+> 
+> Could you add --verbose-parsing somewhere after --debug in the above
+> command lines and merge standard output and standard error into a single
+> file?
+> 
+> thanks,
+> julia
 
-On Thu, 26 Jan 2017, Kumar Gala wrote:
-
->
-> > On Jan 26, 2017, at 2:19 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
-> >
-> >> Not sure if there?s some debug info I can dump that would be helpful.
-> >
-> > --debug --show-trying
-> >
-> > thanks,
-> > julia
->
-> For the FILE case:
-> ~/git/coccinelle/spatch.opt --sp-file ./pri.sp --macro-file-builtins $ZEPHYR_BASE/zephyr-std.h --recursive-includes -I $ZEPHYR_BASE/include tests/legacy/kernel/test_mail/src/mail.^C--debug --show-trying 2> file.good.log 1> file.good.out
->
-> For the DIR case:
->
-> ~/git/coccinelle/spatch.opt --sp-file ./pri.sp --macro-file-builtins $ZEPHYR_BASE/zephyr-std.h --recursive-includes -I $ZEPHYR_BASE/include tests/legacy/kernel/test_mail/src/ --debug --show-trying 2> dir.bad.log 1>dir.bad.out
->
-> Not sure if these logs show something useful.
-
-We aren't processing the files in the same order.  Your .log file in the
-dir case shows main.c and the mail.c, while mine has mail.c and then
-main.c.  I would guess that it is learning something from the parsing of
-main.c that is throwing it off in the parsing of mail.c.
-
-Could you add --verbose-parsing somewhere after --debug in the above
-command lines and merge standard output and standard error into a single
-file?
-
-thanks,
-julia
+ ~/git/coccinelle/spatch.opt --sp-file ./pri.sp --macro-file-builtins $ZEPHYR_BASE/zephyr-std.h --recursive-includes -I $ZEPHYR_BASE/include tests/legacy/kernel/test_mail/src/ --debug --show-trying --verbose-parsing &> dir.log
