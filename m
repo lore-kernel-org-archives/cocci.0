@@ -1,7 +1,7 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 27 Jan 2017 23:09:50 +0100 (CET)
+From: johannes@sipsolutions.net (Johannes Berg)
+Date: Fri, 27 Jan 2017 23:23:21 +0100
 Subject: [Cocci] modifying initializers with spatch?
-In-Reply-To: <1485554630.14579.6.camel@sipsolutions.net>
+In-Reply-To: <alpine.DEB.2.20.1701272309260.3612@hadrien>
 References: <1485433691.14760.1.camel@sipsolutions.net>
  <alpine.DEB.2.20.1701261415040.3109@hadrien>
  <1485437521.14760.5.camel@sipsolutions.net>
@@ -13,62 +13,44 @@ References: <1485433691.14760.1.camel@sipsolutions.net>
  <1485553437.14579.4.camel@sipsolutions.net>
  <alpine.DEB.2.20.1701272250210.2830@hadrien>
  <1485554630.14579.6.camel@sipsolutions.net>
-Message-ID: <alpine.DEB.2.20.1701272309260.3612@hadrien>
+ <alpine.DEB.2.20.1701272309260.3612@hadrien>
+Message-ID: <1485555801.14579.8.camel@sipsolutions.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On Fri, 2017-01-27 at 23:09 +0100, Julia Lawall wrote:
+> 
+> Ok, sounds good.??Let me know if you encounter further problems.
 
+You jinxed it ;-)
+Now with the git version.
 
-On Fri, 27 Jan 2017, Johannes Berg wrote:
+struct foo v = {
+	.nested = {
+		.x = 7,
+		.y = 8,
+	},
+};
 
-> On Fri, 2017-01-27 at 22:52 +0100, Julia Lawall wrote:
->
-> > > @@
-> > > type T;
-> > > expression E;
-> > > statement S1, S2;
-> > > identifier x;
-> > > identifier f;
-> > > @@
-> > > ?{
-> > > ... when != { ... }
-> > > ????when any
-> > > ?T x = {
-> > > -??.f = E,
-> > > ?};
-> > > ... when != S1
-> > > + x.f = E;
-> > > ?S2
-> > > ?...
-> > > ?}
->
-> > Yeah, it doesn't work.??There is no way to get the fields out of the
-> > structure one at a time.??So ++ seems like the only option.??
->
-> Right. Like I said, I don't think it matters much for me right now. I
-> also found that most of these are actually in the part of the code that
-> I can change and don't really need to touch at build time, although
-> it'd be nice to be able to write the code in the more canonical C99
-> style and still do it at build time.
->
-> > The suggested
-> > organization would work for when there is more than one structure
-> > definition in the function, but doesn't help for multiple fields
-> > within a
-> > structure.
->
-> Right, it easily works for multiple structures, and it does even seem
-> to keep the order of variables, even if it doesn't keep the order of
-> the fields within each variable (but sorts them alphabetically instead,
-> apparently)
->
-> The git version should now actually be sufficient for me, since you
-> said it will no longer remove braces from "= { 1, 2, 3}", and I'm
-> moving all the initializers anyway like indicated above, and
-> translating "={0}" to "={}" as well. I'll need to build & try it, but
-> if it fails on some obscure cases and removes the braces anyway the
-> compile will fail so I'm not really worried :)
+still broke, because of course my initializer replacement rule didn't
+actually find it, and then the bug hit and removed the {} anyway even
+though they weren't empty :)
 
-Ok, sounds good.  Let me know if you encounter further problems.
+Similarly,
 
-julia
+char * foo[] = {
+	[1] = "name1",
+	[2] = "name2",
+};
+
+was butchered quite a bit :)
+
+The latter case - though not with strings - actually does seem to be
+present in the code I care about, but I can probably just replace it
+manually first.
+
+Interestingly, this whole exercise is obviously not even a good idea
+for static variables - need to see if I can exclude those somehow,
+first naive attempts didn't work :)
+
+johannes
