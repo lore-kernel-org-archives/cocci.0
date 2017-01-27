@@ -1,34 +1,39 @@
 From: johannes@sipsolutions.net (Johannes Berg)
-Date: Sat, 28 Jan 2017 00:02:16 +0100
-Subject: [Cocci] modifying initializers with spatch?
-In-Reply-To: <alpine.DEB.2.20.1701272309260.3612@hadrien>
-References: <1485433691.14760.1.camel@sipsolutions.net>
- <alpine.DEB.2.20.1701261415040.3109@hadrien>
- <1485437521.14760.5.camel@sipsolutions.net>
- <alpine.DEB.2.20.1701261518560.3109@hadrien>
- <1485440882.14760.8.camel@sipsolutions.net>
- <alpine.DEB.2.20.1701261644140.3109@hadrien>
- <1485445951.14760.16.camel@sipsolutions.net>
- <alpine.DEB.2.20.1701261655450.3109@hadrien>
- <1485553437.14579.4.camel@sipsolutions.net>
- <alpine.DEB.2.20.1701272250210.2830@hadrien>
- <1485554630.14579.6.camel@sipsolutions.net>
- <alpine.DEB.2.20.1701272309260.3612@hadrien>
-Message-ID: <1485558136.14579.14.camel@sipsolutions.net>
+Date: Sat, 28 Jan 2017 00:10:06 +0100
+Subject: [Cocci] position confusion?
+Message-ID: <1485558606.14579.15.camel@sipsolutions.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, 2017-01-27 at 23:09 +0100, Julia Lawall wrote:
-> 
-> Ok, sounds good.??Let me know if you encounter further problems.
+This is nonsense, but I don't see why it shouldn't parse:
 
-I've now ended up with the following overall:
-https://p.sipsolutions.net/15e6265ea961d9a6.txt
+@a@
+type T;
+identifier x;
+position p;
+@@
+T x at p = { };
 
-Interestingly, that takes minutes to run on this file:
-https://w1.fi/cgit/hostap/tree/wpa_supplicant/dbus/dbus_new_handlers_p2p.c
+@b@
+type T;
+identifier x;
+position p;
+@@
+T x at p = { };
 
-Not that it matters much to me, but I can't really explain it, all
-other files I found finish quickly.
+@@
+position p != a.p;
+position q != b.p;
+type T;
+identifier x;
+@@
+*T x at q = {};
+
+->
+148 149
+Fatal error: exception Failure("meta: parse error: \n = File \"/tmp/test.spatch\", line 17, column 16,??charpos = 148\n????around = 'p', whole content = position q != b.p;\n")
+
+
+if I replace 'p' by 'q' in @b@, it works fine?
 
 johannes
