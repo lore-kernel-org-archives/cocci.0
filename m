@@ -1,50 +1,35 @@
-From: johannes@sipsolutions.net (Johannes Berg)
-Date: Fri, 27 Jan 2017 17:13:04 +0100
-Subject: [Cocci] modifying initializers with spatch?
-In-Reply-To: <alpine.DEB.2.20.1701271408210.3117@hadrien>
-References: <1485433691.14760.1.camel@sipsolutions.net>
- <alpine.DEB.2.20.1701261415040.3109@hadrien>
- <1485437521.14760.5.camel@sipsolutions.net>
- <alpine.DEB.2.20.1701261518560.3109@hadrien>
- <1485440882.14760.8.camel@sipsolutions.net>
- <alpine.DEB.2.20.1701261644140.3109@hadrien>
- <1485445951.14760.16.camel@sipsolutions.net>
- <alpine.DEB.2.20.1701270807230.1935@hadrien>
- <1485507305.5851.1.camel@sipsolutions.net>
- <alpine.DEB.2.20.1701271408210.3117@hadrien>
-Message-ID: <1485533584.14579.1.camel@sipsolutions.net>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Fri, 27 Jan 2017 18:30:36 +0100 (CET)
+Subject: [Cocci] Help with include coccinelle & include paths?
+In-Reply-To: <199ADD09-0E16-4483-A391-7929C25C8731@linaro.org>
+References: <BBB6D7E1-F6F1-4FE4-80D6-8BD4C6F36026@linaro.org>
+ <alpine.DEB.2.20.1701261613120.3109@hadrien>
+ <C37E98C9-25E1-4E62-BA80-145CC8483C79@linaro.org>
+ <alpine.DEB.2.20.1701262014580.2032@hadrien>
+ <BEC46CAB-77E1-4237-B5A0-C9E84BF192DA@linaro.org>
+ <alpine.DEB.2.20.1701262055170.2032@hadrien>
+ <BB7CE4F7-355C-4CC3-818A-03C47112E293@linaro.org>
+ <BD76D02F-FBF3-4F69-9C5B-8C2976D7DFFA@linaro.org>
+ <alpine.DEB.2.20.1701262118460.2032@hadrien>
+ <6FBEB071-6A44-4A39-9C40-5E28CC402196@linaro.org>
+ <alpine.DEB.2.20.1701262149330.2032@hadrien>
+ <5A897B79-A0C3-44D5-9FB8-3D0DFBB5A3B1@linaro.org>
+ <alpine.DEB.2.20.1701262236200.2032@hadrien>
+ <199ADD09-0E16-4483-A391-7929C25C8731@linaro.org>
+Message-ID: <alpine.DEB.2.20.1701271828190.3025@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, 2017-01-27 at 14:11 +0100, Julia Lawall wrote:
+I have undone a rather nice optimization to get the header files to be
+reprocessed each time they are included by a .c file.  The problem is that
+parsing a header file has some side effects, eg finding about typedefs,
+etc.  Unfortunately, we were caching only the AST of the header file, but
+not either the ASTs of the header files it includes or the effects that
+parsing the header files could have.
 
-> > Out of curiosity: will it require some form of "..." to match
-> > something inside now?
-> 
-> No.
+Now I have undone the optimization, and hopefully it will work better,
+although more slowly.
 
-Ok.
+Available on github.
 
-> It considers that the rule writer has no knowledge or control of the
-> field names that are provided or the order in which they appear, so
-> you can specify any subset of them.??You only need ... when you want
-> to add a new one at the beginning or at the end of the
-> structure.??The ... lets you specify beginning or end.
-
-Interesting. I thought I needed the ... at the end, but that may have
-been a case of "let's see if I need both - doesn't work - remove one -
-ok works now" :)
-
-> I want to allow you to remove the {} only when all of the field
-> initializations are also removed.??Some work though is required.
-
-That'd make sense.
-
-I'm very grateful for this. I'm dealing with an awful compiler that
-emits stupid code for C99 initializers, so I'm thinking of using what
-we were discussing here to remove them all at build time. I'm going to
-be travelling (again) next week, but will give it a try later.
-
-Thanks a lot!
-
-johannes
+julia
