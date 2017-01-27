@@ -1,7 +1,7 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 27 Jan 2017 18:30:36 +0100 (CET)
+From: kumar.gala@linaro.org (Kumar Gala)
+Date: Fri, 27 Jan 2017 12:39:14 -0600
 Subject: [Cocci] Help with include coccinelle & include paths?
-In-Reply-To: <199ADD09-0E16-4483-A391-7929C25C8731@linaro.org>
+In-Reply-To: <alpine.DEB.2.20.1701271828190.3025@hadrien>
 References: <BBB6D7E1-F6F1-4FE4-80D6-8BD4C6F36026@linaro.org>
  <alpine.DEB.2.20.1701261613120.3109@hadrien>
  <C37E98C9-25E1-4E62-BA80-145CC8483C79@linaro.org>
@@ -16,20 +16,33 @@ References: <BBB6D7E1-F6F1-4FE4-80D6-8BD4C6F36026@linaro.org>
  <5A897B79-A0C3-44D5-9FB8-3D0DFBB5A3B1@linaro.org>
  <alpine.DEB.2.20.1701262236200.2032@hadrien>
  <199ADD09-0E16-4483-A391-7929C25C8731@linaro.org>
-Message-ID: <alpine.DEB.2.20.1701271828190.3025@hadrien>
+ <alpine.DEB.2.20.1701271828190.3025@hadrien>
+Message-ID: <FA28196E-7814-4786-814D-B46D2DEE91EE@linaro.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-I have undone a rather nice optimization to get the header files to be
-reprocessed each time they are included by a .c file.  The problem is that
-parsing a header file has some side effects, eg finding about typedefs,
-etc.  Unfortunately, we were caching only the AST of the header file, but
-not either the ASTs of the header files it includes or the effects that
-parsing the header files could have.
 
-Now I have undone the optimization, and hopefully it will work better,
-although more slowly.
+> On Jan 27, 2017, at 11:30 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
+> 
+> I have undone a rather nice optimization to get the header files to be
+> reprocessed each time they are included by a .c file.  The problem is that
+> parsing a header file has some side effects, eg finding about typedefs,
+> etc.  Unfortunately, we were caching only the AST of the header file, but
+> not either the ASTs of the header files it includes or the effects that
+> parsing the header files could have.
+> 
+> Now I have undone the optimization, and hopefully it will work better,
+> although more slowly.
+> 
+> Available on github.
+> 
+> julia
 
-Available on github.
+Thanks, that seems to help a lot.
 
-julia
+I was wondering what the following message means, the bit about the header file:
+
+HANDLING: tests/bluetooth/test_bluetooth/src/bluetooth.c
+a header file was modified: bluetooth.h
+
+- k
