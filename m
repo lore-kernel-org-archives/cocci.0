@@ -1,36 +1,56 @@
-From: johannes@sipsolutions.net (Johannes Berg)
-Date: Sat, 28 Jan 2017 00:20:04 +0100
-Subject: [Cocci] modifying initializers with spatch?
-In-Reply-To: <1485558136.14579.14.camel@sipsolutions.net>
-References: <1485433691.14760.1.camel@sipsolutions.net>
- <alpine.DEB.2.20.1701261415040.3109@hadrien>
- <1485437521.14760.5.camel@sipsolutions.net>
- <alpine.DEB.2.20.1701261518560.3109@hadrien>
- <1485440882.14760.8.camel@sipsolutions.net>
- <alpine.DEB.2.20.1701261644140.3109@hadrien>
- <1485445951.14760.16.camel@sipsolutions.net>
- <alpine.DEB.2.20.1701261655450.3109@hadrien>
- <1485553437.14579.4.camel@sipsolutions.net>
- <alpine.DEB.2.20.1701272250210.2830@hadrien>
- <1485554630.14579.6.camel@sipsolutions.net>
- <alpine.DEB.2.20.1701272309260.3612@hadrien>
- <1485558136.14579.14.camel@sipsolutions.net>
-Message-ID: <1485559204.14579.16.camel@sipsolutions.net>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sat, 28 Jan 2017 07:37:37 +0100 (CET)
+Subject: [Cocci] position confusion?
+In-Reply-To: <1485558606.14579.15.camel@sipsolutions.net>
+References: <1485558606.14579.15.camel@sipsolutions.net>
+Message-ID: <alpine.DEB.2.20.1701280736450.2822@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sat, 2017-01-28 at 00:02 +0100, Johannes Berg wrote:
-> On Fri, 2017-01-27 at 23:09 +0100, Julia Lawall wrote:
-> > 
-> > Ok, sounds good.??Let me know if you encounter further problems.
-> 
-> I've now ended up with the following overall:
-> https://p.sipsolutions.net/15e6265ea961d9a6.txt
-> 
-> Interestingly, that takes minutes to run on this file:
-> https://w1.fi/cgit/hostap/tree/wpa_supplicant/dbus/dbus_new_handlers_
-> p2p.c
 
-Well, it's been 20 minutes - I'm giving up :)
 
-johannes
+On Sat, 28 Jan 2017, Johannes Berg wrote:
+
+> This is nonsense, but I don't see why it shouldn't parse:
+>
+> @a@
+> type T;
+> identifier x;
+> position p;
+> @@
+> T x at p = { };
+>
+> @b@
+> type T;
+> identifier x;
+> position p;
+> @@
+> T x at p = { };
+>
+> @@
+> position p != a.p;
+> position q != b.p;
+> type T;
+> identifier x;
+> @@
+> *T x at q = {};
+>
+> ->
+> 148 149
+> Fatal error: exception Failure("meta: parse error: \n = File \"/tmp/test.spatch\", line 17, column 16,??charpos = 148\n????around = 'p', whole content = position q != b.p;\n")
+>
+>
+> if I replace 'p' by 'q' in @b@, it works fine?
+
+Yes.  It's stupid, but the declaration of p on the line position p != a.p;
+somehow takes over the name p.  To fix someday.
+
+julia
+
+>
+> johannes
+> _______________________________________________
+> Cocci mailing list
+> Cocci at systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
+>
