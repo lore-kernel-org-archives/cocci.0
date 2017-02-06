@@ -1,47 +1,72 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 2 Feb 2017 00:06:28 +0100 (CET)
-Subject: [Cocci] Hunt for array users of roc_dointvec()
-In-Reply-To: <CAB=NE6W5Booei9rqkMZLs+jpUzfh7m+rF3xFROUaZnSQ2Xu5bA@mail.gmail.com>
-References: <20170201203531.GI24047@wotan.suse.de>
- <alpine.DEB.2.20.1702012259050.2021@hadrien>
- <20170201220507.GK24047@wotan.suse.de>
- <alpine.DEB.2.20.1702012313470.2021@hadrien>
- <20170201223133.GL24047@wotan.suse.de>
- <alpine.DEB.2.20.1702012334030.2021@hadrien>
- <CAB=NE6W5Booei9rqkMZLs+jpUzfh7m+rF3xFROUaZnSQ2Xu5bA@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1702020003310.2021@hadrien>
+From: johannes@sipsolutions.net (Johannes Berg)
+Date: Mon, 06 Feb 2017 12:35:02 +0100
+Subject: [Cocci] matching a modified identifier?
+Message-ID: <1486380902.5430.1.camel@sipsolutions.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> > Do you require that there is exactly one element in the arrays?
->
-> Well my eventual hunt is for all array users. So I'm starting off by
-> first looking for all simple setups with non-array cases, and then
-> giving context for those that are not singular. So eventually I will
-> write a rule that will show the entries which do not have
->
-> (
-> maxelen = sizeof(int),
-> |
-> maxlen =  sizeof(unsigned int).,
-> )
->
-> I figure this list should be small enough to inspect with one's eyeballs then.
+Hi,
 
-These arrays seem to need something to mark the end.  So you need to put
-{}, in each of your rules.  Here is an example match:
+In backports, we have the following spatch:
 
-arch/x86/entry/vdso/vdso32-setup.c
+@ attribute_group @
+identifier group;
+declarer name ATTRIBUTE_GROUPS;
+@@
 
-static struct ctl_table abi_table2[] = {
-        {
-                .procname       = "vsyscall32",
-		.data           = &vdso32_enabled,
-                .maxlen         = sizeof(int),
-		.mode           = 0644,
-                .proc_handler   = proc_dointvec
-	},
-        {}
+ATTRIBUTE_GROUPS(group);
+
+@ class_group depends on attribute_group @
+identifier group_class;
+identifier groups;
+fresh identifier group_dev_attr = attribute_group.group ## "_dev_attrs";
+@@
+
+struct class group_class = {
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,11,0)
+????????.dev_groups = groups,
++#else
++???????.dev_attrs = group_dev_attr,
++#endif
 };
 
-julia
+[...]
+
+
+
+But this isn't sufficient and falls over if there are multiple
+instances of ATTRIBUTE_GROUPS, it's essentially undefined which one
+gets picked.
+
+I tried to match a modified identifier like this:
+
+@ attribute_group @
+identifier group;
+fresh identifier groups = group ## "_groups";
+declarer name ATTRIBUTE_GROUPS;
+@@
+
+ATTRIBUTE_GROUPS(group);
+
+@ class_group depends on attribute_group @
+identifier group_class;
+identifier attribute_group.groups;
+fresh identifier group_dev_attr = attribute_group.group ## "_dev_attrs";
+@@
+
+struct class group_class = {
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,11,0)
+        .dev_groups = groups,
++#else
++       .dev_attrs = group_dev_attr,
++#endif
+};
+
+[...]
+
+
+but that doesn't work at all.
+
+Any thoughts?
+
+johannes
