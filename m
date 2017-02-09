@@ -1,55 +1,51 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 9 Feb 2017 21:04:14 +0100 (CET)
-Subject: [Cocci] Matching __initconst data in Linux
-In-Reply-To: <CAF5bkKt8R-M4=tYsby9h_AT3UjiRo6rcSvRre+xxVCeVuKUzrg@mail.gmail.com>
-References: <CAF5bkKt8R-M4=tYsby9h_AT3UjiRo6rcSvRre+xxVCeVuKUzrg@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1702092102560.1985@hadrien>
+From: mcgrof@kernel.org (Luis R. Rodriguez)
+Date: Thu, 9 Feb 2017 22:52:12 +0100
+Subject: [Cocci] Hunt for array users of roc_dointvec()
+In-Reply-To: <alpine.DEB.2.20.1702020003310.2021@hadrien>
+References: <20170201203531.GI24047@wotan.suse.de>
+ <alpine.DEB.2.20.1702012259050.2021@hadrien>
+ <20170201220507.GK24047@wotan.suse.de>
+ <alpine.DEB.2.20.1702012313470.2021@hadrien>
+ <20170201223133.GL24047@wotan.suse.de>
+ <alpine.DEB.2.20.1702012334030.2021@hadrien>
+ <CAB=NE6W5Booei9rqkMZLs+jpUzfh7m+rF3xFROUaZnSQ2Xu5bA@mail.gmail.com>
+ <alpine.DEB.2.20.1702020003310.2021@hadrien>
+Message-ID: <20170209215212.GM24047@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-
-
-On Thu, 9 Feb 2017, Thomas Surrel wrote:
-
-> Hello,
-> I'm just starting to learn how to use coccinelle, so sorry in advance
-> if this question ends up being silly. I am trying to do something that
-> I thought would be very simple, matching all structures in the Linux
-> kernel that are marked with __initconst, for example:
->
-> static const struct coreclk_ratio dove_coreclk_ratios[] __initconst = {
->        { .id = DOVE_CPU_TO_L2, .name = "l2clk", },
->        { .id = DOVE_CPU_TO_DDR, .name = "ddrclk", }
+On Thu, Feb 02, 2017 at 12:06:28AM +0100, Julia Lawall wrote:
+> > > Do you require that there is exactly one element in the arrays?
+> >
+> > Well my eventual hunt is for all array users. So I'm starting off by
+> > first looking for all simple setups with non-array cases, and then
+> > giving context for those that are not singular. So eventually I will
+> > write a rule that will show the entries which do not have
+> >
+> > (
+> > maxelen = sizeof(int),
+> > |
+> > maxlen =  sizeof(unsigned int).,
+> > )
+> >
+> > I figure this list should be small enough to inspect with one's eyeballs then.
+> 
+> These arrays seem to need something to mark the end.  So you need to put
+> {}, in each of your rules.  Here is an example match:
+> 
+> arch/x86/entry/vdso/vdso32-setup.c
+> 
+> static struct ctl_table abi_table2[] = {
+>         {
+>                 .procname       = "vsyscall32",
+> 		.data           = &vdso32_enabled,
+>                 .maxlen         = sizeof(int),
+> 		.mode           = 0644,
+>                 .proc_handler   = proc_dointvec
+> 	},
+>         {}
 > };
->
->
-> The following semantic patch does not work (parse error around =
-> '__initconst') :
-> @match_all_initconst@
-> type T;
-> identifier I;
-> @@
-> *static T I __initconst = {...};
->
-> What is incorrect with this patch ? Is it possible to achieve what I
-> want to do another way ?
 
-That makes two requests for the same thing in one day... :)
+That fixed it, thanks!
 
-Currently, the only attribute matching that is possible is on function
-definitions.  I may have a partial implementationof what you are
-asking for ona machine that I don't have access to right at the moment.  I
-will look into it tomorrow.
-
-julia
-
-
->
-> Thanks in advance for any help,
->
-> Thomas
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+  Luis
