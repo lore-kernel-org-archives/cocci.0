@@ -1,42 +1,34 @@
-From: mstefani@redhat.com (Michael Stefaniuc)
-Date: Sat, 11 Feb 2017 20:13:24 +0100
-Subject: [Cocci] coccilib.report.print_report Broken For Redirected STDOUT
-Message-ID: <b3ad7723-acf2-e642-8d9b-d448bb719f03@redhat.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sat, 11 Feb 2017 20:20:59 +0100 (CET)
+Subject: [Cocci] coccilib.report.print_report Broken For Redirected
+ STDOUT
+In-Reply-To: <b3ad7723-acf2-e642-8d9b-d448bb719f03@redhat.com>
+References: <b3ad7723-acf2-e642-8d9b-d448bb719f03@redhat.com>
+Message-ID: <alpine.DEB.2.20.1702112020360.1955@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hello!
+On Sat, 11 Feb 2017, Michael Stefaniuc wrote:
 
-coccilib.report.print_report is not producing any output when STDOUT is
-redirected to a file or a pipe. I have attached a simple test case.
+> Hello!
+>
+> coccilib.report.print_report is not producing any output when STDOUT is
+> redirected to a file or a pipe. I have attached a simple test case.
+>
+> spatch cocciprint.cocci cocciprint.c
+> cocciprint.c:3:8-9: Printing Suceeded
+>
+> spatch cocciprint.cocci cocciprint.c  > /tmp/nothing
+> wc -c /tmp/nothing
+> 0 /tmp/nothing
 
-spatch cocciprint.cocci cocciprint.c
-cocciprint.c:3:8-9: Printing Suceeded
+Thanks for the report.  Will have it looked into.
 
-spatch cocciprint.cocci cocciprint.c  > /tmp/nothing
-wc -c /tmp/nothing
-0 /tmp/nothing
+julia
 
-
-thanks
-bye
-	michael
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: cocciprint.c
-Type: text/x-csrc
-Size: 42 bytes
-Desc: not available
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20170211/5020f4c4/attachment.bin>
--------------- next part --------------
-@r@
-identifier i;
-position p;
-@@
- int i at p;
-
-
-@ script:python @
-p << r.p;
-@@
-coccilib.report.print_report(p[0], "Printing Suceeded")
+>
+>
+> thanks
+> bye
+> 	michael
+>
