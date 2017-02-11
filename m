@@ -1,18 +1,42 @@
-From: thomas.surrel@etuxia.com (Thomas Surrel)
-Date: Fri, 10 Feb 2017 15:58:48 +0100
-Subject: [Cocci] Matching __initconst data in Linux
-In-Reply-To: <alpine.DEB.2.20.1702092102560.1985@hadrien>
-References: <CAF5bkKt8R-M4=tYsby9h_AT3UjiRo6rcSvRre+xxVCeVuKUzrg@mail.gmail.com>
- <alpine.DEB.2.20.1702092102560.1985@hadrien>
-Message-ID: <CAF5bkKtPWgjp1dMe+ST5psMYWhMDroOHF6aD0bGAYegwjrAoTg@mail.gmail.com>
+From: mstefani@redhat.com (Michael Stefaniuc)
+Date: Sat, 11 Feb 2017 20:13:24 +0100
+Subject: [Cocci] coccilib.report.print_report Broken For Redirected STDOUT
+Message-ID: <b3ad7723-acf2-e642-8d9b-d448bb719f03@redhat.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Currently, the only attribute matching that is possible is on function
-> definitions.  I may have a partial implementationof what you are
-> asking for ona machine that I don't have access to right at the moment.  I
-> will look into it tomorrow.
+Hello!
 
-Ok, thanks for having a look, it would be nice to be able to test that.
+coccilib.report.print_report is not producing any output when STDOUT is
+redirected to a file or a pipe. I have attached a simple test case.
 
-Thomas
+spatch cocciprint.cocci cocciprint.c
+cocciprint.c:3:8-9: Printing Suceeded
+
+spatch cocciprint.cocci cocciprint.c  > /tmp/nothing
+wc -c /tmp/nothing
+0 /tmp/nothing
+
+
+thanks
+bye
+	michael
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: cocciprint.c
+Type: text/x-csrc
+Size: 42 bytes
+Desc: not available
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20170211/5020f4c4/attachment.bin>
+-------------- next part --------------
+@r@
+identifier i;
+position p;
+@@
+ int i at p;
+
+
+@ script:python @
+p << r.p;
+@@
+coccilib.report.print_report(p[0], "Printing Suceeded")
