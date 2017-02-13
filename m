@@ -1,71 +1,43 @@
-From: kumar.gala@linaro.org (Kumar Gala)
-Date: Mon, 13 Feb 2017 13:22:47 -0500
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Mon, 13 Feb 2017 22:08:10 +0100 (CET)
 Subject: [Cocci] Bitfield info?
-In-Reply-To: <CA+MoWDoXAEwqyhZzicB3dk4R5gghnwfXTcOmFfF3kYA9svmNug@mail.gmail.com>
+In-Reply-To: <682B6748-18A2-40EA-90D8-EB02B754B6C7@linaro.org>
 References: <1B4D9683-DB44-4445-8873-B7D29FC44F7B@linaro.org>
  <CA+MoWDoXAEwqyhZzicB3dk4R5gghnwfXTcOmFfF3kYA9svmNug@mail.gmail.com>
-Message-ID: <682B6748-18A2-40EA-90D8-EB02B754B6C7@linaro.org>
+ <682B6748-18A2-40EA-90D8-EB02B754B6C7@linaro.org>
+Message-ID: <alpine.DEB.2.20.1702132203030.2032@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+It's not supported in the semantic patch language.
 
-> On Feb 13, 2017, at 1:14 PM, Peter Senna Tschudin <peter.senna@gmail.com> wrote:
-> 
-> On Mon, Feb 13, 2017 at 7:12 PM, Kumar Gala <kumar.gala@linaro.org> wrote:
->> Is there any support for bitfields?  Trying to see if something is of a bitfield type or not.
-> 
-> Can you give a code example?
-> 
-> Here are many examples, search for bit there: http://coccinellery.org/
-> 
-> 
-> -- 
-> Peter
+One possible hack is to do something like the following:
 
-Here, I?m wanting to figure out that p->state is a bitfield type:
-
-----
-
-
-typedef unsigned int uint32_t;
-
-struct foo {
-	uint32_t state:4;
-};
-
-void bar(struct foo *p)
-{
-	printf("%d", p->state);
-}
-
-??
-
-@initialize:python@
+@initialize:ocaml@
 @@
-coccinelle.pd={}
+
+let isfield i =
+    List.length (Str.split (Str.regexp ":") i) = 2
 
 @r@
-typedef int8_t,int16_t,int32_t,int64_t,uint8_t,uint16_t,uint32_t,uint64_t,kpriority_t,net_stats_t,status_t;
-{int8_t,int16_t,int32_t,int64_t,kpriority_t,net_stats_t,status_t,
-uint8_t,uint16_t,uint32_t,uint64_t} x;
+identifier foo;
+field i : script:ocaml() { isfield(i) };
 type T;
-T y;
-expression list[n] es;
-constant char[] c;
-identifier f;
-position p;
 @@
 
-f(...,c at p,es,x at y,...)
+struct foo { ... i ... };
 
-@script:python collect@
-p << r.p;  // position
-f << r.f;  // func name
-T << r.T;  // the type of the argument of interest
-c << r.c;  // the format string
-n << r.n;  // the offset of the argument of interest, counted from 0
-y << r.y;
-es << r.es;
+@script:ocaml@
+i << r.i;
 @@
-import re
-print("km f:[%s] fmt:[%s] Type:[%s] offset:[%s] y:[%s] es[%s]" % (f, c, T, n, y, es))
+
+Printf.printf "%s\n" i
+
+The ocaml code just checks that the string representing the field
+declaration contains a :
+
+This is not working right@the moment.  It seems to be related
+to a problem that I was already working on today, so I will let you know
+when it is functioning on github.
+
+julia
