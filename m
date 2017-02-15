@@ -1,83 +1,81 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 14 Feb 2017 15:15:24 +0100 (CET)
-Subject: [Cocci] Bitfield info?
-In-Reply-To: <DBEE99BA-C053-489E-8088-25A680684297@linaro.org>
-References: <1B4D9683-DB44-4445-8873-B7D29FC44F7B@linaro.org>
- <CA+MoWDoXAEwqyhZzicB3dk4R5gghnwfXTcOmFfF3kYA9svmNug@mail.gmail.com>
- <682B6748-18A2-40EA-90D8-EB02B754B6C7@linaro.org>
- <alpine.DEB.2.20.1702132203030.2032@hadrien>
- <alpine.DEB.2.20.1702132227530.2032@hadrien>
- <DBEE99BA-C053-489E-8088-25A680684297@linaro.org>
-Message-ID: <alpine.DEB.2.20.1702141507220.3103@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 15 Feb 2017 12:49:06 +0100
+Subject: [Cocci] Replacing combination of kcalloc() and copy_from_user()
+ by memdup_user() with SmPL?
+In-Reply-To: <d5f46773-2137-d1d7-97d0-fb97721d4982@users.sourceforge.net>
+References: <d5f46773-2137-d1d7-97d0-fb97721d4982@users.sourceforge.net>
+Message-ID: <32e33451-c8ba-1a01-bc41-a6b8c6fc78bb@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> elfring at Sonne:~/Projekte/Coccinelle/janitor> spatch.opt replace_kcalloc_by_memdup_user-draft1.cocci ../Probe/user_sdma-excerpt1.c
+> ?
+> refactoring: position variables or mixed modifs interfere with comm_assoc iso
+> bool (bool !to
+>   >>> IS_ERR(to)
+>  || ...)
+> ?
 
+Would you like to explain this message a bit more while the following SmPL approach seems to work
+as expected?
 
-On Tue, 14 Feb 2017, Kumar Gala wrote:
-
->
-> > On Feb 13, 2017, at 4:28 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
-> >
-> >
-> >
-> > On Mon, 13 Feb 2017, Julia Lawall wrote:
-> >
-> >> It's not supported in the semantic patch language.
-> >>
-> >> One possible hack is to do something like the following:
-> >>
-> >> @initialize:ocaml@
-> >> @@
-> >>
-> >> let isfield i =
-> >>    List.length (Str.split (Str.regexp ":") i) = 2
-> >>
-> >> @r@
-> >> identifier foo;
-> >> field i : script:ocaml() { isfield(i) };
-> >> type T;
-> >> @@
-> >>
-> >> struct foo { ... i ... };
-> >>
-> >> @script:ocaml@
-> >> i << r.i;
-> >> @@
-> >>
-> >> Printf.printf "%s\n" i
-> >
-> > The above code should now work in the github version of Coccinelle.
-> >
-> > julia
-> >
-> >
-> >> The ocaml code just checks that the string representing the field
-> >> declaration contains a :
-> >>
-> >> This is not working right at the moment.  It seems to be related
-> >> to a problem that I was already working on today, so I will let you know
-> >> when it is functioning on github.
->
-> Thanks.
->
-> Is there a way I can go from the printf variable back to its type info?
-
-There is a function make_type that you can use in python.  So you could
-get the type out of the string.  Something like
-
-@script:python convert@
-fld << r.fld;
-ty;
+@refactoring@
+expression code, count, from, to, size;
+identifier label, log;
 @@
+ to =
+-     kcalloc(count, size, GFP_KERNEL)
++     memdup_user(from, size * count)
+ ;
+ if (
+-    !to
++    IS_ERR(to)
+    ) {
+-   code = -ENOMEM;
+-   goto label;
+-}
+-code = copy_from_user(to, from, (size) * (count));
+-if (code) {
+    ...
++   code = PTR_ERR(to);
+    log(..., code, ...);
+-   code = -EFAULT;
+    goto label;
+ }
 
-coccinelle.ty = make_type(extract_type fld)
 
-where extract_type is python code to get all but the last three words from
-a string.
+elfring at Sonne:~/Projekte/Coccinelle/janitor> spatch.opt replace_kcalloc_by_memdup_user-draft2.cocci ../Probe/user_sdma-excerpt1.c
+init_defs_builtins: /usr/local/lib64/coccinelle/standard.h
+HANDLING: ../Probe/user_sdma-excerpt1.c
+diff = 
+--- ../Probe/user_sdma-excerpt1.c
++++ /tmp/cocci-output-8749-f5da06-user_sdma-excerpt1.c
+@@ -11,20 +11,12 @@ int hfi1_user_sdma_process_request(struc
+ 			ret = -EINVAL;
+ 			goto free_req;
+ 		}
+-		req->tids = kcalloc(ntids, sizeof(*req->tids), GFP_KERNEL);
+-		if (!req->tids) {
+-			ret = -ENOMEM;
+-			goto free_req;
+-		}
+-		/*
+-		 * ...
+-		 */
+-		ret = copy_from_user(req->tids, iovec[idx].iov_base,
+-				     ntids * sizeof(*req->tids));
+-		if (ret) {
++		req->tids = memdup_user(iovec[idx].iov_base,
++					sizeof(*req->tids) * ntids);
++		if (IS_ERR(req->tids)) {
++			ret = PTR_ERR(req->tids);
+ 			SDMA_DBG(req, "Failed to copy %d TIDs (%d)",
+ 				 ntids, ret);
+-			ret = -EFAULT;
+ 			goto free_req;
+ 		}
+ 		req->n_tids = ntids;
 
-Then you can use convert.ty in subsequent rules.
 
-But it seems rather clunky.  We will try to implement bitfields shortly.
-
-julia
+Regards,
+Markus
