@@ -1,106 +1,19 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 2 Mar 2017 08:21:40 +0100 (CET)
-Subject: [Cocci] Problems: Adding Include directives,
- Adding ({}) construct
-In-Reply-To: <2728810.xJvpTgCk22@detux>
-References: <2728810.xJvpTgCk22@detux>
-Message-ID: <alpine.DEB.2.20.1703020816190.2094@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Fri, 3 Mar 2017 11:34:54 +0100
+Subject: [Cocci] [PATCH v3] Coccinelle: Script to replace allocate and
+ memset with zalloc functions
+In-Reply-To: <20160801070233.GA19102@amitoj-Inspiron-3542>
+References: <20160801070233.GA19102@amitoj-Inspiron-3542>
+Message-ID: <90a9cad7-5712-c507-94ce-1bdd89d7a272@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> This script finds instances of allocate and memset which can be
+> replaced with a direct call to zalloc equivalent of a function.
 
+What is the software development status for this SmPL script in comparison
+to an other directory for source code transformations?
+https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git/tree/scripts/coccinelle/api/alloc
 
-On Mon, 27 Feb 2017, sebald.ziegler.cocci at ikolus.de wrote:
-
-> Hi,
->
-> I am trying to use coccinelle to add an include directive before the other
-> includes and one after the includes:
->
-> @PreInclude@
-> @@
-> + #include "pre.h"
-> #include ...
->
->
-> @PostInclude@
-> @@
-> #include ...
-> + #include "post.h"
->
-> this works well if the source file (all includes are always at the top of the
-> file) contains more than one include directive. However, if there is only one
-> include directive -> only the PreInclude rule is executed.
-
-Sorry not to have responded sooner.
-
-This seems quite strange.  Each rule sees the result of the previous one,
-so by the time it reaches the post include rule, there would be two
-includes in the program.  I will check on it.
-
->
-> So for this program:
-> #include <stdio.h>
->
-> int main() {
->     return 0;
-> }
->
-> This is the result:
-> #include "pre.h"
-> #include <stdio.h>
->
-> int main() {
->     return 0;
-> }
->
-> So it seems that only one rule can match some code line/code pattern. Am I
-> mistaken?
-
-This is not correct.  Coccinelle works on the first rule, then provides
-the resulting code to the second rule, and so on.
-
-> What could be an approach that works for both the single include
-> directive and multiple include directives case?
->
->
-> Another Question:
-> With the following rule I want to add a macro definition just above the main
-> function:
-> @macro_square@
-> @@
-> + #define SQUARE(x) ({printf("SQUARE(x)\n"); x*x; })
-> int main(int argc, char ** argv) {
-> ...
-> }
->
-> If I execute spatch on the program above this error is reported (coccinelle
-> version: 1.0.6):
-> plus: parse error:
->   File "/tmp/testing/test.c-brackets.cocci", line 3, column 21, charpos = 39
->   around = '{',
->   whole content = + #define SQUARE(x) ({printf("SQUARE(x)\n"); x*x; })
->
-> Is this kind of code not supported or did I make a mistake somewhere?
-
-It is quite possible that ({ }) is not supported in the pattern matching
-language.  There is a hackish solution:
-
-@script:python r@
-str;
-@@
-
-coccinelle.str = "({printf("SQUARE(x)\n"); x*x; })"
-
-@macro_square@
-idntifier r.str;
-@@
-+ #define SQUARE(x) str
-int main(int argc, char ** argv) {
-...
-}
-
-Coccinelle won't actually check that what you have put into the variable
-str is an identifier.
-
-julia
+Regards,
+Markus
