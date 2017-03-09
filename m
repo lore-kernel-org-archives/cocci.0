@@ -1,50 +1,144 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 7 Mar 2017 17:31:17 +0100 (CET)
-Subject: [Cocci] How to execute coccicheck outside linux source tree?
-In-Reply-To: <CAAJ24apcC3TYyMwR0g=aBavk9JC9mb8+v=63LTK6eGDeD8WDDg@mail.gmail.com>
-References: <CAAJ24apcC3TYyMwR0g=aBavk9JC9mb8+v=63LTK6eGDeD8WDDg@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1703071730170.3150@hadrien>
+From: julia@ni.com (Julia Cartwright)
+Date: Thu, 9 Mar 2017 10:21:48 -0600
+Subject: [Cocci] [PATCH 01/19] Coccinelle: locks: identify callers of
+	spin_lock{, _irq, _irqsave}() in irqchip implementations
+In-Reply-To: <cover.1489015238.git.julia@ni.com>
+References: <cover.1489015238.git.julia@ni.com>
+Message-ID: <23190c912611c5d1d36529488e46706cdc3e4d87.1489015238.git.julia@ni.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On PREEMPT_RT, the spinlock_t type becomes an object which sleeps under
+contention.  The codepaths used to support scheduling (irq dispatching, arch
+code, the scheduler, timers) therefore must make use of the
+raw_spin_lock{,_irq,_irqsave}() variations which preserve the non-sleeping
+spinlock behavior.
 
+Because the irq_chip callbacks are invoked in the process of interrupt
+dispatch, they cannot therefore make use of spin_lock_t type.  Instead, the
+usage of raw_spinlock_t is appropriate.
 
-On Sun, 5 Mar 2017, Jeremy wrote:
+Provide a spatch to identify (and attempt to patch) such problematic irqchip
+implementations.
 
-> Hi all,
->
-> I'd like to scan some driver by coccicheck, but don't know how to execute it.
-> I know that we could scan driver in linux source tree by
-> `make coccicheck MODE=report -M=drivers/'
->
-> btw, it will print a lot of errors as follow:
->
-> Fatal error: exception Failure("meta: parse error:
->  = File "./scripts/coccinelle/misc/boolconv.cocci", line 47, column 7,
->  charpos = 773
->     around = 'true', whole content = symbol true, false;
-> ")
-> 773 777
-> Fatal error: exception Failure("meta: parse error:
->  = File "./scripts/coccinelle/misc/boolconv.cocci", line 47, column 7,
->  charpos = 773
->     around = 'true', whole content = symbol true, false;
-> ")
+Note to those generating patches using this spatch; in order to maintain
+correct semantics w/ PREEMPT_RT, it is necessary to audit the
+raw_spinlock_t-protected codepaths to ensure their execution is bounded and
+minimal.  This is a manual audit process.
 
-I think that you need to update your Coccinelle.  You can get the latest
-version from github:
+See commit 47b03ca903fb0 ("pinctrl: qcom: Use raw spinlock variants") as an
+example of _one_ such instance, which fixed a real bug seen in the field.
 
-https://github.com/coccinelle/coccinelle
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Julia Cartwright <julia@ni.com>
+---
+ .../coccinelle/locks/irq_chip_raw_spinlock.cocci   | 96 ++++++++++++++++++++++
+ 1 file changed, 96 insertions(+)
+ create mode 100644 scripts/coccinelle/locks/irq_chip_raw_spinlock.cocci
 
-Perhaps this will solve all of your problems :)
-
-julia
-
-
->
-> Jeremy
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+diff --git a/scripts/coccinelle/locks/irq_chip_raw_spinlock.cocci b/scripts/coccinelle/locks/irq_chip_raw_spinlock.cocci
+new file mode 100644
+index 000000000000..73fd4519ae29
+--- /dev/null
++++ b/scripts/coccinelle/locks/irq_chip_raw_spinlock.cocci
+@@ -0,0 +1,96 @@
++// Copyright: (C) 2017 National Instruments Corp. GPLv2.
++// Author: Julia Cartwright <julia@ni.com>
++//
++// Identify callers of non-raw spinlock_t functions in hardirq irq_chip
++// callbacks.
++//
++// spin_lock{_irq,_irqsave}(), w/ PREEMPT_RT are "sleeping" spinlocks, and so
++// therefore "sleep" under contention; identify (and potentially patch) callers
++// to use raw_spinlock_t instead.
++//
++// Confidence: Moderate
++
++virtual report
++virtual patch
++
++ at match@
++identifier __irqchip;
++identifier __irq_mask;
++@@
++	static struct irq_chip __irqchip = {
++		.irq_mask	= __irq_mask,
++	};
++
++ at match2 depends on match@
++identifier match.__irq_mask;
++identifier data;
++identifier x;
++identifier l;
++type T;
++position j0;
++expression flags;
++@@
++	static void __irq_mask(struct irq_data *data)
++	{
++		...
++		T *x;
++		...
++(
++		spin_lock_irqsave(&x->l at j0, flags);
++|
++		spin_lock_irq(&x->l at j0);
++|
++		spin_lock(&x->l at j0);
++)
++		...
++	}
++
++ at match3 depends on match2 && patch@
++type match2.T;
++identifier match2.l;
++@@
++	T {
++		...
++-		spinlock_t	l;
+++		raw_spinlock_t	l;
++		...
++	};
++
++ at match4 depends on match2 && patch@
++type match2.T;
++identifier match2.l;
++expression flags;
++T *x;
++@@
++
++(
++-spin_lock(&x->l)
+++raw_spin_lock(&x->l)
++|
++-spin_lock_irqsave(&x->l, flags)
+++raw_spin_lock_irqsave(&x->l, flags)
++|
++-spin_lock_irq(&x->l)
+++raw_spin_lock_irq(&x->l)
++|
++-spin_unlock(&x->l)
+++raw_spin_unlock(&x->l)
++|
++-spin_unlock_irq(&x->l)
+++raw_spin_unlock_irq(&x->l)
++|
++-spin_unlock_irqrestore(&x->l, flags)
+++raw_spin_unlock_irqrestore(&x->l, flags)
++|
++-spin_lock_init(&x->l)
+++raw_spin_lock_init(&x->l)
++)
++
++ at script:python wat depends on match2 && report@
++j0 << match2.j0;
++t << match2.T;
++l << match2.l;
++@@
++
++msg = "Use of non-raw spinlock is illegal in this context (%s::%s)" % (t, l)
++coccilib.report.print_report(j0[0], msg)
+-- 
+2.11.1
