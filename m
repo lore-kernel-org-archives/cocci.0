@@ -1,39 +1,23 @@
-From: jslaby@suse.cz (Jiri Slaby)
-Date: Wed, 15 Mar 2017 12:00:09 +0100
-Subject: [Cocci] [PATCH 1/1] sisusb_con: fix coccinelle warning
-Message-ID: <20170315110009.7739-1-jslaby@suse.cz>
+From: linus.walleij@linaro.org (Linus Walleij)
+Date: Wed, 15 Mar 2017 10:51:52 +0100
+Subject: [Cocci] [PATCH 00/19] fixup usage of non-raw spinlocks in
+	irqchips
+In-Reply-To: <cover.1489015238.git.julia@ni.com>
+References: <cover.1489015238.git.julia@ni.com>
+Message-ID: <CACRpkdYner6CzdM_Rmd+z_tr1K-i4Ov0n8BwiyqAJ91F3950tQ@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-After commit d705ff3818 (tty: vt, cleanup and document con_scroll), in
-the coccinelle output, we can see:
-drivers/usb/misc/sisusbvga/sisusb_con.c:852:8-9: WARNING: return of 0/1 in function 'sisusbcon_scroll_area' with return type bool
+On Thu, Mar 9, 2017 at 5:21 PM, Julia Cartwright <julia@ni.com> wrote:
 
-Return true instead of 1 in the function returning bool which was
-intended to do in d705ff3818 but omitted.
+> The following patchset introduces a new coccinelle patch,
+> irq_chip_raw_spinlock.cocci, which is used to identify irq_chip implementors
+> which acquire/release non-raw spinlocks, and in addition, a set of generated
+> patches for most cases identified.
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Fixes: d705ff3818 (tty: vt, cleanup and document con_scroll)
-Cc: Thomas Winischhofer <thomas@winischhofer.net>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-usb at vger.kernel.org
-Cc: cocci at systeme.lip6.fr
----
- drivers/usb/misc/sisusbvga/sisusb_con.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Wow that is really impressive. I expect to apply all that
+are applicable to GPIO drivers. I guess this really lowers
+the bar to run realtime on a whole slew of systems.
 
-diff --git a/drivers/usb/misc/sisusbvga/sisusb_con.c b/drivers/usb/misc/sisusbvga/sisusb_con.c
-index 4b5777ec1501..3c6948af726a 100644
---- a/drivers/usb/misc/sisusbvga/sisusb_con.c
-+++ b/drivers/usb/misc/sisusbvga/sisusb_con.c
-@@ -816,7 +816,7 @@ sisusbcon_scroll_area(struct vc_data *c, struct sisusb_usb_data *sisusb,
- 
- 	mutex_unlock(&sisusb->lock);
- 
--	return 1;
-+	return true;
- }
- 
- /* Interface routine */
--- 
-2.12.0
+Yours,
+Linus Walleij
