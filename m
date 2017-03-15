@@ -1,25 +1,43 @@
-From: me@tobin.cc (Tobin C. Harding)
-Date: Wed, 15 Mar 2017 21:35:55 +1100
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Wed, 15 Mar 2017 12:01:24 +0100 (CET)
 Subject: [Cocci] coccicheck run error
-Message-ID: <20170315103555.GA27181@eros>
+In-Reply-To: <20170315103555.GA27181@eros>
+References: <20170315103555.GA27181@eros>
+Message-ID: <alpine.DEB.2.20.1703151200540.6227@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-I am running coccinelle using
 
-$ make coccicheck MODE=report DEBUG_FILE=cocci-err.log M=drivers/staging/ks7010
-Please check for false positives in the output before submitting a patch.
-When using "patch" mode, carefully review the patch before submitting it.
 
-coccicheck failed
+On Wed, 15 Mar 2017, Tobin C. Harding wrote:
 
-$ cat cocci-err.log
-3 files match
-Fatal error: exception Sys_error("alloc_cast: No such file or directory")
+> I am running coccinelle using
+>
+> $ make coccicheck MODE=report DEBUG_FILE=cocci-err.log M=drivers/staging/ks7010
+> Please check for false positives in the output before submitting a patch.
+> When using "patch" mode, carefully review the patch before submitting it.
+>
+> coccicheck failed
+>
+> $ cat cocci-err.log
+> 3 files match
+> Fatal error: exception Sys_error("alloc_cast: No such file or directory")
+>
+> Using V=1 gives no additional indication of the error.
+>
+> Any suggestions on how to proceed please?
 
-Using V=1 gives no additional indication of the error.
+What version of Coccinelle do you have?  If you are not using the github
+version, perhaps you could try with that.
 
-Any suggestions on how to proceed please?
+julia
 
-thanks,
-Tobin.
+
+>
+> thanks,
+> Tobin.
+> _______________________________________________
+> Cocci mailing list
+> Cocci at systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
+>
