@@ -1,43 +1,39 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 15 Mar 2017 12:01:24 +0100 (CET)
-Subject: [Cocci] coccicheck run error
-In-Reply-To: <20170315103555.GA27181@eros>
-References: <20170315103555.GA27181@eros>
-Message-ID: <alpine.DEB.2.20.1703151200540.6227@hadrien>
+From: jslaby@suse.cz (Jiri Slaby)
+Date: Wed, 15 Mar 2017 12:00:09 +0100
+Subject: [Cocci] [PATCH 1/1] sisusb_con: fix coccinelle warning
+Message-ID: <20170315110009.7739-1-jslaby@suse.cz>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+After commit d705ff3818 (tty: vt, cleanup and document con_scroll), in
+the coccinelle output, we can see:
+drivers/usb/misc/sisusbvga/sisusb_con.c:852:8-9: WARNING: return of 0/1 in function 'sisusbcon_scroll_area' with return type bool
 
+Return true instead of 1 in the function returning bool which was
+intended to do in d705ff3818 but omitted.
 
-On Wed, 15 Mar 2017, Tobin C. Harding wrote:
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Fixes: d705ff3818 (tty: vt, cleanup and document con_scroll)
+Cc: Thomas Winischhofer <thomas@winischhofer.net>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-usb at vger.kernel.org
+Cc: cocci at systeme.lip6.fr
+---
+ drivers/usb/misc/sisusbvga/sisusb_con.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> I am running coccinelle using
->
-> $ make coccicheck MODE=report DEBUG_FILE=cocci-err.log M=drivers/staging/ks7010
-> Please check for false positives in the output before submitting a patch.
-> When using "patch" mode, carefully review the patch before submitting it.
->
-> coccicheck failed
->
-> $ cat cocci-err.log
-> 3 files match
-> Fatal error: exception Sys_error("alloc_cast: No such file or directory")
->
-> Using V=1 gives no additional indication of the error.
->
-> Any suggestions on how to proceed please?
-
-What version of Coccinelle do you have?  If you are not using the github
-version, perhaps you could try with that.
-
-julia
-
-
->
-> thanks,
-> Tobin.
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+diff --git a/drivers/usb/misc/sisusbvga/sisusb_con.c b/drivers/usb/misc/sisusbvga/sisusb_con.c
+index 4b5777ec1501..3c6948af726a 100644
+--- a/drivers/usb/misc/sisusbvga/sisusb_con.c
++++ b/drivers/usb/misc/sisusbvga/sisusb_con.c
+@@ -816,7 +816,7 @@ sisusbcon_scroll_area(struct vc_data *c, struct sisusb_usb_data *sisusb,
+ 
+ 	mutex_unlock(&sisusb->lock);
+ 
+-	return 1;
++	return true;
+ }
+ 
+ /* Interface routine */
+-- 
+2.12.0
