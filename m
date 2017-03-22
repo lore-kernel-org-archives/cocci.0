@@ -1,75 +1,49 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 22 Mar 2017 15:46:32 +0100 (CET)
-Subject: [Cocci] Problems with adding code after macro definitions
-In-Reply-To: <8873570.AgTeYTv5Np@detux>
-References: <8873570.AgTeYTv5Np@detux>
-Message-ID: <alpine.DEB.2.20.1703221544480.3413@hadrien>
+From: julia@ni.com (Julia Cartwright)
+Date: Wed, 22 Mar 2017 11:18:56 -0500
+Subject: [Cocci] [PATCH v2 1/9] Coccinelle: locks: identify callers of
+ spin_lock{, _irq, _irqsave}() in irqchip implementations
+In-Reply-To: <alpine.DEB.2.20.1703221053550.3413@hadrien>
+References: <cover.1490135047.git.julia@ni.com>
+ <48a11ad61edb4bec130f2ae0d46fc4e7d4855044.1490135047.git.julia@ni.com>
+ <alpine.DEB.2.20.1703221053550.3413@hadrien>
+Message-ID: <20170322161856.GJ10423@jcartwri.amer.corp.natinst.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On Wed, Mar 22, 2017 at 10:54:15AM +0100, Julia Lawall wrote:
+> On Tue, 21 Mar 2017, Julia Cartwright wrote:
+> > On PREEMPT_RT, the spinlock_t type becomes an object which sleeps under
+> > contention.  The codepaths used to support scheduling (irq dispatching, arch
+> > code, the scheduler, timers) therefore must make use of the
+> > raw_spin_lock{,_irq,_irqsave}() variations which preserve the non-sleeping
+> > spinlock behavior.
+> >
+> > Because the irq_chip callbacks are invoked in the process of interrupt
+> > dispatch, they cannot therefore make use of spin_lock_t type.  Instead, the
+> > usage of raw_spinlock_t is appropriate.
+> >
+> > Provide a spatch to identify (and attempt to patch) such problematic irqchip
+> > implementations.
+> >
+> > Note to those generating patches using this spatch; in order to maintain
+> > correct semantics w/ PREEMPT_RT, it is necessary to audit the
+> > raw_spinlock_t-protected codepaths to ensure their execution is bounded and
+> > minimal.  This is a manual audit process.
+> >
+> > See commit 47b03ca903fb0 ("pinctrl: qcom: Use raw spinlock variants") as an
+> > example of _one_ such instance, which fixed a real bug seen in the field.
+> >
+> > Cc: Thomas Gleixner <tglx@linutronix.de>
+> > Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> > Cc: Linus Walleij <linus.walleij@linaro.org>
+> > Signed-off-by: Julia Cartwright <julia@ni.com>
+> 
+> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
 
+Thanks, Julia.
 
-On Wed, 22 Mar 2017, sebald.ziegler.cocci at ikolus.de wrote:
+How do these semantic patches normally land?  It looks like they quite a
+few have gone through the kbuild tree, is this the norm?
 
-> Hi,
->
-> I try to use coccinelle for some kind of Macro instrumentation.
-> One important step is to define a wrapper for a macro after the original macro definition.
-> This is attempted in the rule: macro_wrapper_int_MAX_int_int
-> But I cannot get it to work - see the ???.
-> All other rules work as intended.
->
-> So the question is: What is the right way to specify the macro definition after which something should be added?
-> Is it at all possible to only use the name of the macro and some wildcard (as opposed to using macro name and its definition).
->
-> @script:python macros@
-> macro_wrapper_int_MAX_int_int_str;
-> @@
-> coccinelle.macro_wrapper_int_MAX_int_int_str = '({printf("MAX\\n"); MAX(p0, p1); })'
->
-> @macro_wrapper_int_MAX_int_int@
-> identifier macros.macro_wrapper_int_MAX_int_int_str;
-> @@
-> #define MAX(x,y) ???
-> +#define macro_wrapper_int_MAX_int_int(p0, p1) macro_wrapper_int_MAX_int_int_str
-
-It looks like the body of the macro will be an expression.  So just add
-expression e; in the metavariable list, and replace ??? by e.
-
-You can also match macros where the body is a statement.  Unfortunately
-macro definitions can be any random thing in general, and I don't think
-that would be supported.  At the very least, parsing the macro definition
-would fail, so it would not be possible to match against it.
-
-julia
-
->
-> @macro_replacer_macro_wrapper_int_MAX_int_int@
-> int P0;
-> int P1;
-> @@
-> -MAX(P0, P1)
-> +macro_wrapper_int_MAX_int_int(P0, P1)
->
-> C program:
-> $ cat test.c
-> #define MAX(x,y) ((x>y)?x:y)
-> #include <stdio.h>
-> int main(int argc, char** argv) {
->         int a=5;
->         int b=7;
->         int d=MAX(a,b+4);
->         return d;
-> }
->
-> Any hints and information is greatly appreciated!
->
-> Thanks,
-> Sebald
->
->
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+Thanks,
+   Other Julia
