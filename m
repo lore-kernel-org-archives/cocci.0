@@ -1,60 +1,34 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 22 Mar 2017 22:45:25 +0100 (CET)
-Subject: [Cocci] [PATCH v2 1/9] Coccinelle: locks: identify callers of
- spin_lock{, _irq, _irqsave}() in irqchip implementations
-In-Reply-To: <20170322161856.GJ10423@jcartwri.amer.corp.natinst.com>
-References: <cover.1490135047.git.julia@ni.com>
- <48a11ad61edb4bec130f2ae0d46fc4e7d4855044.1490135047.git.julia@ni.com>
- <alpine.DEB.2.20.1703221053550.3413@hadrien>
- <20170322161856.GJ10423@jcartwri.amer.corp.natinst.com>
-Message-ID: <alpine.DEB.2.20.1703222245050.2132@hadrien>
+From: jamey@minilop.net (Jamey Sharp)
+Date: Fri, 31 Mar 2017 13:12:49 -0700
+Subject: [Cocci] Coccinelle for other languages
+Message-ID: <CAJi=jad1w-H73utVzboT3nAgNa7ff1BxKC2WyFU_NN8EEHeWYw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hi all! Coccinelle is such a fantastic tool that I want to be able to use
+it for programming languages besides C. So I have some questions about
+that. At the moment I particularly care about Rust, but I'm curious about
+how the answers would change for Java or JavaScript or Python or...
 
+What approach would you suggest taking to get a Coccinelle-like tool that
+operates on Rust syntax instead? For example, could just the parsers be
+replaced, leaving most of the rest of the implementation alone? Or are
+assumptions about C baked in throughout the code base, making it perhaps
+easier to rewrite from scratch?
 
-On Wed, 22 Mar 2017, Julia Cartwright wrote:
+How much work do you think is involved in the approach you'd recommend, and
+how much background knowledge is required to work on it? Could a half-dozen
+undergrad students pull it off in six months with sufficient mentoring, or
+does this plan need PhD candidates who already understand CTL? (I can pull
+together a half-dozen undergrads pretty easily; PhD candidates are harder
+to come by.)
 
-> On Wed, Mar 22, 2017 at 10:54:15AM +0100, Julia Lawall wrote:
-> > On Tue, 21 Mar 2017, Julia Cartwright wrote:
-> > > On PREEMPT_RT, the spinlock_t type becomes an object which sleeps under
-> > > contention.  The codepaths used to support scheduling (irq dispatching, arch
-> > > code, the scheduler, timers) therefore must make use of the
-> > > raw_spin_lock{,_irq,_irqsave}() variations which preserve the non-sleeping
-> > > spinlock behavior.
-> > >
-> > > Because the irq_chip callbacks are invoked in the process of interrupt
-> > > dispatch, they cannot therefore make use of spin_lock_t type.  Instead, the
-> > > usage of raw_spinlock_t is appropriate.
-> > >
-> > > Provide a spatch to identify (and attempt to patch) such problematic irqchip
-> > > implementations.
-> > >
-> > > Note to those generating patches using this spatch; in order to maintain
-> > > correct semantics w/ PREEMPT_RT, it is necessary to audit the
-> > > raw_spinlock_t-protected codepaths to ensure their execution is bounded and
-> > > minimal.  This is a manual audit process.
-> > >
-> > > See commit 47b03ca903fb0 ("pinctrl: qcom: Use raw spinlock variants") as an
-> > > example of _one_ such instance, which fixed a real bug seen in the field.
-> > >
-> > > Cc: Thomas Gleixner <tglx@linutronix.de>
-> > > Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> > > Cc: Linus Walleij <linus.walleij@linaro.org>
-> > > Signed-off-by: Julia Cartwright <julia@ni.com>
-> >
-> > Acked-by: Julia Lawall <julia.lawall@lip6.fr>
->
-> Thanks, Julia.
->
-> How do these semantic patches normally land?  It looks like they quite a
-> few have gone through the kbuild tree, is this the norm?
+Finally, are there papers besides the 2009 POPL paper by Brunel et al that
+I should read for background on how Coccinelle is implemented?
 
-Michal Marek takes care of them.
-
-julia
-
->
-> Thanks,
->    Other Julia
->
+Please Cc me on replies as I'm not subscribed to the list. Thanks for your
+time!
+Jamey
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20170331/543c8de3/attachment.html>
