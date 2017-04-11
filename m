@@ -1,47 +1,28 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 5 Apr 2017 16:18:17 +0200 (CEST)
-Subject: [Cocci] question on parsing g_assert_cmpint() macro
-In-Reply-To: <093bdf57-0d50-8075-b0a1-6c4cbb9eda38@redhat.com>
-References: <ec3eceb6-9f04-b04c-a09c-92f744d23f36@redhat.com>
- <alpine.DEB.2.20.1704050723290.2242@hadrien>
- <093bdf57-0d50-8075-b0a1-6c4cbb9eda38@redhat.com>
-Message-ID: <alpine.DEB.2.20.1704051617480.3005@hadrien>
+From: gregkh@linuxfoundation.org (Greg Kroah-Hartman)
+Date: Tue, 11 Apr 2017 20:42:33 +0200
+Subject: [Cocci] [PATCH 1/2] firmware: Google VPD: import lib_vpd source
+	files
+In-Reply-To: <1491934554.17839.13.camel@perches.com>
+References: <1491902071-17935-1-git-send-email-thierry.escande@collabora.com>
+ <1491902071-17935-2-git-send-email-thierry.escande@collabora.com>
+ <20170411140919.GC4388@kroah.com>
+ <1491934554.17839.13.camel@perches.com>
+Message-ID: <20170411184233.GB26792@kroah.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On Tue, Apr 11, 2017 at 11:15:54AM -0700, Joe Perches wrote:
+> On Tue, 2017-04-11 at 16:09 +0200, Greg Kroah-Hartman wrote:
+> > Care to use "real" kernel variable types please?  u8, u16, and others
+> > are you friend, uint8_t really isn't what we prefer, and checkpatch
+> > should tell you that...
+> 
+> checkpatch doesn't warn about "u?int\d+_t" types unless
+> --strict is enabled and most likely it shouldn't.
 
+For brand new drivers, it's a good thing to run, to keep maintainers
+from complaining about obvious things :)
 
-On Wed, 5 Apr 2017, Eric Blake wrote:
+thanks,
 
-> On 04/05/2017 12:25 AM, Julia Lawall wrote:
->
-> >> What is the trick for teaching coccinelle about what g_assert_cmpint()
-> >> expands to, and/or completely ignoring the use of that macro, so that I
-> >> don't have to manually look for spots that the cleanup missed?
-> >
-> > Try adding
-> >
-> > #define g_assert_cmpint(x,y,z)
-> >
-> > to the macro definition file standard.h.  Or you can make your own macro
-> > definition file for qemu and give it as an argument --macro-file file.h
-> >
-> > Write back if that does not solve the problem.
->
-> Thanks. I didn't realize qemu already had a scripts/cocci-macro-file.h
-> designed just for this purpose, and it includes
->
-> #define g_assert_cmpint(a, op, b)   g_assert(a op b)
-
-This definition looks fine too.
-
-julia
-
->
-> which indeed solves the problem.
->
-> --
-> Eric Blake   eblake redhat com    +1-919-301-3266
-> Libvirt virtualization library http://libvirt.org
->
->
+greg k-h
