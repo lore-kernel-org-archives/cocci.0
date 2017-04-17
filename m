@@ -1,33 +1,62 @@
-From: joe@perches.com (Joe Perches)
-Date: Tue, 11 Apr 2017 11:50:27 -0700
-Subject: [Cocci] [PATCH 1/2] firmware: Google VPD: import lib_vpd source
-	files
-In-Reply-To: <20170411184233.GB26792@kroah.com>
-References: <1491902071-17935-1-git-send-email-thierry.escande@collabora.com>
- <1491902071-17935-2-git-send-email-thierry.escande@collabora.com>
- <20170411140919.GC4388@kroah.com> <1491934554.17839.13.camel@perches.com>
- <20170411184233.GB26792@kroah.com>
-Message-ID: <1491936627.17839.22.camel@perches.com>
+From: muffo87@gmail.com (Andrea Grandi)
+Date: Mon, 17 Apr 2017 23:45:53 +0000
+Subject: [Cocci] Place ifdef around all the expressions that are using a
+	particular macro
+Message-ID: <CACUfuoubSEp11DmhKtyfAKv7b2C_f93HP=QeKa0Op-OW4Y8S=g@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, 2017-04-11 at 20:42 +0200, Greg Kroah-Hartman wrote:
-> On Tue, Apr 11, 2017 at 11:15:54AM -0700, Joe Perches wrote:
-> > On Tue, 2017-04-11 at 16:09 +0200, Greg Kroah-Hartman wrote:
-> > > Care to use "real" kernel variable types please?  u8, u16, and others
-> > > are you friend, uint8_t really isn't what we prefer, and checkpatch
-> > > should tell you that...
-> > 
-> > checkpatch doesn't warn about "u?int\d+_t" types unless
-> > --strict is enabled and most likely it shouldn't.
-> 
-> For brand new drivers, it's a good thing to run, to keep maintainers
-> from complaining about obvious things :)
+Hello!
 
---strict emits some messages that are either unacceptable
-or unnecessary to some maintainers.
+I am back porting a set of old header files into a recent version of my C
+project. The old header files don't have the definition of various macros
+(i.e. #define) that are currently used in the library. This is causing
+various compilation errors.
 
-'course checkpatch itself is unacceptable and unnecessary
-to some maintainers too.
+I'd like to use Coccinelle to place #if 0 around the expressions as a
+temporary *workaround* in order to fix the compilation errors.
 
-cheers, Joe
+I know it's a very powerful tool, but I have just started using it and I
+would need some help writing the semantic patch.
+
+Here is a very simple example of what I have done so far:
+
+@@
+identifier a;
+expression P, N;@@-a = MACRO(P, N);+// TODO: MACRO does not exist in
+old header+#if 0+a = MACRO (P, N);+#endif+a = 0;
+
+In some case, the macro is used inside a function call. In order to catch
+this scenario I had to write something more verbose and *less generic* like:
+
+@@
+expression E, D, err, P;
+identifier f;@@-err = f(P, MACRO(E, 0), D);+// TODO: MACRO does not
+exist in old header+#if 0+err = f(P, MACRO(E, 0), D);+#endif+err = OK;
+
+Finally, there are cases where the macro is used inside an if condition.
+For example:
+
+if (a > MACRO(A, B)) {
+   // Various lines of code}
+
+What I'd like to do here would be to put #if 0 around the whole block of
+code.
+
+#if 0if (a > MACRO(A, B)) {
+   // Various lines of code}#endif
+
+*Is there a way in Coccinelle to cover all the three cases above with a
+single expression?*
+
+Also, considering that I should replace a number of macros, is there a way
+to create a generic semantic patch and use it multiple times by simply
+providing different macro names? Sort of like calling a function multiple
+times with different arguments.
+
+Thanks!!
+
+Andrea
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20170417/b3de6d6b/attachment.html>
