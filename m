@@ -1,32 +1,51 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 21 Apr 2017 17:12:18 +0200 (CEST)
-Subject: [Cocci] new to cocci, help needed
-In-Reply-To: <fef9bec0-99a6-0a40-871a-01eb7972cc61@mykolab.com>
-References: <ba1249bd-36ab-a819-34b8-186d84a4ec49@schleiser.de>
- <alpine.DEB.2.20.1704211109020.3038@hadrien>
- <e59dc5e9-df34-27e8-da04-c5590c00edef@schleiser.de>
- <alpine.DEB.2.20.1704211526390.3038@hadrien>
- <f489d08f-793d-6df2-791e-570c33bf25a6@schleiser.de>
- <fef9bec0-99a6-0a40-871a-01eb7972cc61@mykolab.com>
-Message-ID: <alpine.DEB.2.20.1704211711560.3038@hadrien>
+From: johannes@sipsolutions.net (Johannes Berg)
+Date: Fri, 21 Apr 2017 20:53:02 +0200
+Subject: [Cocci] modifying array initializers?
+In-Reply-To: <alpine.DEB.2.20.1704211607100.3038@hadrien>
+References: <1492780343.2564.4.camel@sipsolutions.net>
+ <alpine.DEB.2.20.1704211607100.3038@hadrien>
+Message-ID: <1492800782.19290.1.camel@sipsolutions.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> >>>> expression *E1;
-> >>>
-> >>> That brings me one step further, but now I have "*&", e.g.,
-> >>>
-> >>> - f(a,b,&E,whatever)
-> >>> + f(a,b,&E,sizeof(*&E))
-> >>
-> >> I think you would want sizeof(E)?
-> I normally use a second rule to clean that one up
-> @@
-> expression E;
-> @@
-> - *&
->     E
+On Fri, 2017-04-21 at 16:07 +0200, Julia Lawall wrote:
+> 
+> Just add ..., here (note the comma at the end).
 
-This is a good option too.
+I thought I tried that, but maybe not. It doesn't work - at least in my
+version - though:
 
-julia
+HANDLING: net/wireless/nl80211.c
+?????
+previous modification:
+
+? <<< static int wrap_fn(struct sk_buff *skb, struct genl_info *info)
+? <<< {
+? <<< return fn(skb, info);
+? <<< }
+? <<<?
+CONTEXT
+According to environment 2:
+???rule starting on line 1.wrap_fn -> id _wrap_nl80211_wiphy_netns
+???rule starting on line 1.fn -> id nl80211_wiphy_netns
+
+current modification:
+
+? <<< static int wrap_fn(struct sk_buff *skb, struct genl_info *info)
+? <<< {
+? <<< return fn(skb, info);
+? <<< }
+? <<<?
+CONTEXT
+According to environment 2:
+???rule starting on line 1.wrap_fn -> id _wrap_nl80211_vendor_cmd
+???rule starting on line 1.fn -> id nl80211_vendor_cmd
+
+Fatal error: exception Failure("rule starting on line 1: already tagged
+fake token\n")
+
+
+Sounds like it doesn't like to add multiple things here, let me think
+about how to work around that.
+
+johannes
