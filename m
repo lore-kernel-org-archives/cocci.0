@@ -1,34 +1,100 @@
-From: johannes@sipsolutions.net (Johannes Berg)
-Date: Fri, 21 Apr 2017 23:24:01 +0200
-Subject: [Cocci] modifying array initializers?
-In-Reply-To: <alpine.DEB.2.20.1704212321530.3038@hadrien>
-References: <1492780343.2564.4.camel@sipsolutions.net>
- <alpine.DEB.2.20.1704211607100.3038@hadrien>
- <1492800782.19290.1.camel@sipsolutions.net>
- <alpine.DEB.2.20.1704212131230.3038@hadrien>
- <1492809572.24783.1.camel@sipsolutions.net>
- <alpine.DEB.2.20.1704212321530.3038@hadrien>
-Message-ID: <1492809841.25417.0.camel@sipsolutions.net>
+From: oleg@redhat.com (Oleg Nesterov)
+Date: Sat, 22 Apr 2017 18:02:02 +0200
+Subject: [Cocci] Q: question on disjunction of sub-expression patterns
+Message-ID: <20170422160202.GA23532@redhat.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, 2017-04-21 at 23:22 +0200, Julia Lawall wrote:
+Hello,
 
-> > @@
-> > identifier fn;
-> > fresh identifier wrap_fn = "_wrap_" ## fn;
-> > @@
-> > +static int wrap_fn(struct sk_buff *skb, struct genl_info *info)
-> > +{
-> > +???????return fn(skb, info);
-> > +}
-> > +
-> 
-> Use ++ instead.??You may need to put the new function all on one
-> line.
+I am very new to spatch and I don't even know how to formulate my question,
+let me try to explain it by example.
 
-Indeed, that works (and yes, I had to put it on a single line)
+Suppose that I want to track the usage of "+" or "-" operators, this simple
+script
 
-Thanks!
+	@e@
+	expression l, r;
+	binary operator o = { -, + };
+	position p;
+	@@
 
-johannes
+	l o at p r
+
+	@script:python@
+	l << e.l;
+	r << e.r;
+	p << e.p;
+	@@
+
+	print(p[0].line,p[0].column, ':', '(%s) %s (%s)' % (l, 'OP', r))
+
+works as expected. For example, with the following C code
+
+	void func(void)
+	{
+		1 + 2 - 3;
+		4 - 5 + 6;
+	}
+
+I get
+
+	3 3 : (1) OP (2)
+	3 7 : (1 + 2) OP (3)
+	4 3 : (4) OP (5)
+	4 7 : (4 - 5) OP (6)
+	
+Now. If I change the rule "e" above
+
+	@e@
+	expression l, r;
+	position p;
+	@@
+
+	(
+		l - at p r		// PAT1
+	|
+		l + at p r		// PAT2
+	)
+
+I only get
+
+	3 7 : (1 + 2) OP (3)
+	4 3 : (4) OP (5)
+
+I could probably understand why the output for line 3 doesn't report "(1) OP (2)",
+PAT1 matches and "eats" the "1 + 2" part, so PAT2 doesn't match. Not sure.
+
+But. Could someone explain why I don't get
+
+	4 3 : (4) OP (5)
+	4 7 : (4 - 5) OP (6)
+
+for "4 - 5 + 6" statement@line 4? IOW, why PAT2 can not match _after_ PAT1?
+
+It looks as if only one pattern from disjunction can match in the same statement.
+IOW, (PAT1 | PAT2) actually means (PAT1* | PAT2*), not (PAT1 | PAT2)*. Say,
+
+	1 + 2 - 3 + 4 - 5 + 6 - 7;	
+
+results in
+
+	3 7 : (1 + 2) OP (3)
+	3 15 : (1 + 2 - 3 + 4) OP (5)
+	3 23 : (1 + 2 - 3 + 4 - 5 + 6) OP (7)
+
+, only PAT1 matches. While in the case of
+
+	1 - 2 + 3 - 4 + 5 - 6 + 7;
+
+PAT2 "wins" and blocks PAT2 till the end of the statement:
+
+	3 3 : (1) OP (2)
+	3 11 : (1 - 2 + 3) OP (4)
+	3 19 : (1 - 2 + 3 - 4 + 5) OP (6)
+	
+Is this all correct?
+
+Thanks,
+
+Oleg.
