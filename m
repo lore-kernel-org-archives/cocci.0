@@ -1,71 +1,80 @@
-From: fabf@skynet.be (Fabian Frederick)
-Date: Thu,  4 May 2017 21:09:15 +0200
-Subject: [Cocci] [PATCH linux-next RESEND] scripts/coccinelle/misc: Warn
-	about NULL check on kmap()
-Message-ID: <20170504190915.16887-1-fabf@skynet.be>
+From: garsilva@embeddedor.com (Gustavo A. R. Silva)
+Date: Thu, 04 May 2017 20:10:06 -0500
+Subject: [Cocci] trying to catch false positives with cocci script
+In-Reply-To: <alpine.DEB.2.20.1705042027000.4880@hadrien>
+References: <20170504095733.Horde.JpTNXNRhG9VnLmTmKlcw4vb@gator4166.hostgator.com>
+ <alpine.DEB.2.20.1705042027000.4880@hadrien>
+Message-ID: <20170504201006.Horde.3PZGleYRJhAxgIgqxBl0ShM@gator4166.hostgator.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-This script removes NULL check on kmap() and all process involved
-(OOM message ...)
+Hi Julia,
 
-Thanks to Jan Kara for explanations.
+Quoting Julia Lawall <julia.lawall@lip6.fr>:
 
-Acked-by: Julia Lawall <julia.lawall@lip6.fr>
-Signed-off-by: Fabian Frederick <fabf@skynet.be>
----
- scripts/coccinelle/misc/kmap.cocci | 43 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 43 insertions(+)
- create mode 100644 scripts/coccinelle/misc/kmap.cocci
+> On Thu, 4 May 2017, Gustavo A. R. Silva wrote:
+>
+>>
+>> Hello everybody,
+>>
+>> I'm trying to write a cocci script to catch false positives during static
+>> analysis to the Linux kernel code.
+>> What I want to catch is the following type of code:
+>>
+>> ...
+>> if (!ptr) {
+>> ...
+>> goto label;
+>> }
+>> ...
+>> var = ptr->x;
+>> ...
+>> label:
+>> ... (here it is not supposed to find any other _ptr_ pointer dereference)
+>>
+>> in the piece of code above a static code analyzer like Coverity issues a
+>> pointer dereference after null check.
+>>
+>> I've been trying the following:
+>>
+>> @@
+>> expression E;
+>> identifier i, id, label;
+>> position p1, p2;
+>> @@
+>> +E = NULL;
+>> if (!E) {
+>> ...
+>> goto at p1 label;
+>> +E = NULL;
+>> }@p2
+>> ...
+>> id = E->i
+>> ...
+>> label:
+>> +E = NULL;
+>>
+>> but I don't get any output. Here all the _+_ are just for reference. I don't
+>> plan to include them in any patch. I just want to spot all similar code.
+>>
+>> Any help would be greatly appreciated.
+>
+> Could you try the following:
+>
+> @@
+> expression ptr;
+> identifier x;
+> @@
+>
+> ... when != false ptr == NULL
+> *ptr->x
+>
+> The when != false means that the false branch of an if testing that ptr ==
+> NULL is not taken on the way to the dereference.
+>
 
-diff --git a/scripts/coccinelle/misc/kmap.cocci b/scripts/coccinelle/misc/kmap.cocci
-new file mode 100644
-index 0000000..9ae4a6e
---- /dev/null
-+++ b/scripts/coccinelle/misc/kmap.cocci
-@@ -0,0 +1,43 @@
-+/// kmap never fails; remove NULL test case.
-+///
-+// Copyright: (C) 2017 Fabian Frederick.  GPLv2.
-+// Comments: -
-+// Options: --no-includes --include-headers
-+
-+virtual patch
-+virtual org
-+virtual report
-+virtual context
-+
-+ at r2 depends on patch@
-+expression E;
-+position p;
-+@@
-+
-+E = kmap(...);
-+- if (!E) {
-+- ...
-+- }
-+
-+ at r depends on context || report || org @
-+expression E;
-+position p;
-+@@
-+
-+* E = kmap(...);
-+* if (@p!E) {
-+* ...
-+* }
-+
-+ at script:python depends on org@
-+p << r.p;
-+@@
-+
-+cocci.print_main("kmap() can't fail, NULL check and special process is not needed", p)
-+
-+@script:python depends on report@
-+p << r.p;
-+@@
-+
-+msg = "WARNING: NULL check on kmap() result is not needed."
-+coccilib.report.print_report(p[0], msg)
--- 
-2.9.3
+This is very neat and just what I needed.
+
+Thank you!
+--
+Gustavo A. R. Silva
