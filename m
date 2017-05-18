@@ -1,31 +1,29 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Thu, 18 May 2017 15:00:35 +0200
-Subject: [Cocci] Checking source code (including optional parts) with
-	SmPL
+Date: Thu, 18 May 2017 17:21:22 +0200
+Subject: [Cocci] Safe determination of function properties for SmPL
+	scripts
 In-Reply-To: <c77fb009-04c5-c381-e016-549cd7592059@users.sourceforge.net>
 References: <c77fb009-04c5-c381-e016-549cd7592059@users.sourceforge.net>
-Message-ID: <02b53afb-5d87-e15f-7862-b888bb102bca@users.sourceforge.net>
+Message-ID: <c18f5572-4aff-c91d-b261-3a622d3050c3@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-I would like to clarify the possibilities for corresponding software extensions
-a bit more.
-The Coccinelle software provides also the search operator ?question mark? which
-denotes code on a specific line as optional.
-https://github.com/coccinelle/coccinelle/blob/9b5e00862900b0daadf1819a6894d31544a3ba34/docs/manual/cocci_syntax.tex#L1067
+> How can the Coccinelle software help any more in such an use case?
 
-The scope of the special code there is only the marked line so that I see some
-software development challenges to pack desired search filters into one line.
+This small SmPL script example demonstrates two special selections of functions
+by their name. They belong to separate categories then.
 
-* How often do you check the handling for optional parts?
+* The primary actions should usually provide a return value somehow.
 
-  - Do you find it relevant to check for the assignment of an error code to an
-    other variable?
-
-  - Are special constraints needed for additional function calls?
+* A call of a function which will not return from its final task is one
+  possibility for an error reaction.
 
 
-* How are the chances to improve readability and maintainability for SmPL code?
+Have you got any preferences for the determination and integration of name lists
+for functions with the desired properties into the semantic patch language
+in a safe way?
+
+Would you dare to query a database table (or view) for such a purpose?
 
 Regards,
 Markus
