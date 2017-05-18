@@ -1,46 +1,31 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 14 May 2017 17:41:20 +0200
-Subject: [Cocci] Checking exception handling implementations with SmPL
-Message-ID: <c77fb009-04c5-c381-e016-549cd7592059@users.sourceforge.net>
+Date: Thu, 18 May 2017 15:00:35 +0200
+Subject: [Cocci] Checking source code (including optional parts) with
+	SmPL
+In-Reply-To: <c77fb009-04c5-c381-e016-549cd7592059@users.sourceforge.net>
+References: <c77fb009-04c5-c381-e016-549cd7592059@users.sourceforge.net>
+Message-ID: <02b53afb-5d87-e15f-7862-b888bb102bca@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hello,
+I would like to clarify the possibilities for corresponding software extensions
+a bit more.
+The Coccinelle software provides also the search operator ?question mark? which
+denotes code on a specific line as optional.
+https://github.com/coccinelle/coccinelle/blob/9b5e00862900b0daadf1819a6894d31544a3ba34/docs/manual/cocci_syntax.tex#L1067
 
-I would like to check the implementation of exception handling in various
-source files. The following script for the semantic patch language tries to
-express a few possibilities for such a source code search pattern.
+The scope of the special code there is only the marked line so that I see some
+software development challenges to pack desired search filters into one line.
 
+* How often do you check the handling for optional parts?
 
-@show_special_reactions@
-expression error_code, var;
-identifier action =~ "^(?:malloc|strdup)$",
-           no_return =~ "[Aa]bort",
-           label;
-statement es;
-@@
- var = action(...);
- if (failed(var))
- {
-(
-*   return error_code;
-|
-*   goto label;
-|
-*   no_return();
-)
- }
- else
- es
+  - Do you find it relevant to check for the assignment of an error code to an
+    other variable?
+
+  - Are special constraints needed for additional function calls?
 
 
-I find this approach too simple and therefore incomplete. Three well-known
-reactions are shown. But there can be more source code before these statements
-like further function calls and variable assignments.
-We do eventually not know the extra code there and it can also be
-generally optional.
-
-How can the Coccinelle software help any more in such an use case?
+* How are the chances to improve readability and maintainability for SmPL code?
 
 Regards,
 Markus
