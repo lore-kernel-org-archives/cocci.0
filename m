@@ -1,29 +1,30 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Thu, 18 May 2017 17:21:22 +0200
-Subject: [Cocci] Safe determination of function properties for SmPL
-	scripts
+Date: Thu, 18 May 2017 18:00:14 +0200
+Subject: [Cocci] Checking failure predicates with SmPL
 In-Reply-To: <c77fb009-04c5-c381-e016-549cd7592059@users.sourceforge.net>
 References: <c77fb009-04c5-c381-e016-549cd7592059@users.sourceforge.net>
-Message-ID: <c18f5572-4aff-c91d-b261-3a622d3050c3@users.sourceforge.net>
+Message-ID: <b961185e-575d-dd8c-23d7-23a66e5ab1a3@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> How can the Coccinelle software help any more in such an use case?
+>  var = action(...);
+>  if (failed(var))
 
-This small SmPL script example demonstrates two special selections of functions
-by their name. They belong to separate categories then.
+This SmPL specification contains a few further software development challenges.
 
-* The primary actions should usually provide a return value somehow.
+1. It could be taken into account that a function call and a corresponding check
+   for the return value are not directly next to each other.
+   A SmPL ellipsis could be added there. But I guess that special restrictions
+   will be needed then for a safe ?when specification?.
 
-* A call of a function which will not return from its final task is one
-  possibility for an error reaction.
+2. The check which should appropriately be performed for a return code depends
+   on the called function.
+   * Each failure predicate could be written as a separate SmPL rule.
+     This approach would result into code duplication to some degree.
 
-
-Have you got any preferences for the determination and integration of name lists
-for functions with the desired properties into the semantic patch language
-in a safe way?
-
-Would you dare to query a database table (or view) for such a purpose?
+   * I would prefer to keep the selection and data processing for the desired
+     predicate at a single place. But I am unsure so far how good such a variant
+     is supported by the current Coccinelle software.
 
 Regards,
 Markus
