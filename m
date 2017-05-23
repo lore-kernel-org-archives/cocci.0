@@ -1,30 +1,28 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Thu, 18 May 2017 18:00:14 +0200
-Subject: [Cocci] Checking failure predicates with SmPL
+Date: Tue, 23 May 2017 11:01:45 +0200
+Subject: [Cocci] Easier search for assignment targets with SmPL
 In-Reply-To: <c77fb009-04c5-c381-e016-549cd7592059@users.sourceforge.net>
 References: <c77fb009-04c5-c381-e016-549cd7592059@users.sourceforge.net>
-Message-ID: <b961185e-575d-dd8c-23d7-23a66e5ab1a3@users.sourceforge.net>
+Message-ID: <01dd4e26-0864-df8e-4b43-e054c0e61400@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 >  var = action(...);
->  if (failed(var))
 
-This SmPL specification contains a few further software development challenges.
+This specification looks also simple for the semantic patch language
+at first glance.
+I tried to express that a specific value is assigned to something.
+But this ?something? could be a different item depending on the position
+in the source code.
 
-1. It could be taken into account that a function call and a corresponding check
-   for the return value are not directly next to each other.
-   A SmPL ellipsis could be added there. But I guess that special restrictions
-   will be needed then for a safe ?when specification?.
+1. Variable
+2. Expression
+3. Element for a designated initialiser
 
-2. The check which should appropriately be performed for a return code depends
-   on the called function.
-   * Each failure predicate could be written as a separate SmPL rule.
-     This approach would result into code duplication to some degree.
-
-   * I would prefer to keep the selection and data processing for the desired
-     predicate at a single place. But I am unsure so far how good such a variant
-     is supported by the current Coccinelle software.
+I would appreciate if I do not need to repeat specifications for these cases
+in SmPL code. How do you think about the possibility to support the desired
+source code search by an additional metavariable type there?
+Can it become safer and more convenient to handle assignments here?
 
 Regards,
 Markus
