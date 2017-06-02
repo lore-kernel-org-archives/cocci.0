@@ -1,35 +1,67 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 23 May 2017 12:52:22 +0200
-Subject: [Cocci] Easier search for assignment targets with SmPL
-In-Reply-To: <alpine.DEB.2.20.1705231105350.2972@hadrien>
-References: <c77fb009-04c5-c381-e016-549cd7592059@users.sourceforge.net>
- <01dd4e26-0864-df8e-4b43-e054c0e61400@users.sourceforge.net>
- <alpine.DEB.2.20.1705231105350.2972@hadrien>
-Message-ID: <88de4a84-a116-7475-a5d3-a6c76992e126@users.sourceforge.net>
+From: eric.lombardi@liris.cnrs.fr (Eric Lombardi)
+Date: Fri, 2 Jun 2017 16:02:08 +0200
+Subject: [Cocci] Applying a rule multiple times on the same line/expression
+Message-ID: <005fc236-35f5-4745-b6a2-b86f39809fae@liris.cnrs.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> Can it become safer and more convenient to handle assignments here?
-> 
-> I have no idea what you are asking for.
 
-I wonder about such a kind of feedback.
+Hello Coccinelle team,
+
+I'm currently trying to use Coccinelle to fix a C/C++ mesh processing 
+code, due to an API evolution. Coccinelle helps me a lot, but I'm stuck 
+with one transformation.
+
+I have to transform a lot of expressions like "h->next()" into 
+"next(h)". It works fine for a single "->next()", but when multiple 
+"->next()" appear in the same expression, for example in 
+"h->next()->next()", an "already tagged token" error is triggered by 
+Coccinelle .
+
+I haven't find a solution or a similar case in the documentation, nor in 
+the examples.
+
+Here is a small piece of code to reproduce the error:
 
 
-> In any case, an expression metavariable already matches a variable.
+typedef  struct Halfedge_handle_*  Halfedge_handle;
 
-This information can be appropriate in some source code situations.
+struct Halfedge_handle_
+{
+	Halfedge_handle (*next)(void);
+};
 
-Do you care for any more ?special use cases??
+void test(void)
+{
+	Halfedge_handle h;
+
+	h->next(); /* ok */
+
+	h->next()->next(); /* already tagged token error */
+}
 
 
-> I don't know what a designated initializer is.
+And the corresponding part of my cocci file:
 
-I find this aspect strange when it was already discussed several times.
-http://en.cppreference.com/w/c/language/struct_initialization
+@@
+Halfedge_handle H;
+@@
+- H->next()
++ next(H)
 
-How would you prefer to handle various software development challenges around
-specifications for variable definitions?
 
-Regards,
-Markus
+What is the proper way to deal with this case ?
+
+Thanks for your help.
+
+Best regards,
+
+-- 
+
+Eric Lombardi
+
+==============================================================
+LIRIS, UMR 5205
+Laboratoire d'InfoRmatique en Image et Syst?mes d'information
+Universit? Claude Bernard Lyon 1, b?timent Nautibus
+43 boulevard du 11 novembre 1918, 69622 Villeurbanne cedex
