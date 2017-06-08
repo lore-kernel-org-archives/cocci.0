@@ -1,11 +1,11 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 8 Jun 2017 13:29:19 +0200 (CEST)
+Date: Thu, 8 Jun 2017 13:25:19 +0200 (CEST)
 Subject: [Cocci] "bad" macros in struct definitions
 In-Reply-To: <CAKwiHFjTA1grGYjjhq=i0-o0D1bjZbgiDBc1q5=RW+i-8styKA@mail.gmail.com>
 References: <CAKwiHFjkufqumwhStrpsqwJb8x8OGc989XhQY_YWbc=rkCXabw@mail.gmail.com>
  <alpine.DEB.2.20.1706081300350.3005@hadrien>
  <CAKwiHFjTA1grGYjjhq=i0-o0D1bjZbgiDBc1q5=RW+i-8styKA@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1706081328160.3005@hadrien>
+Message-ID: <alpine.DEB.2.20.1706081325020.3005@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -24,11 +24,6 @@ On Thu, 8 Jun 2017, Rasmus Villemoes wrote:
 > Something like the attached. As is, I get
 >
 > $ spatch --macro-file test.h --sp-file ./test.cocci ./test.c
-
-Try using --macro-file-builtins instead.
-
-julia
-
 > init_defs_builtins: /usr/local/lib/coccinelle/standard.h
 > init_defs: test.h
 > HANDLING: ./test.c
@@ -48,4 +43,7 @@ julia
 >  {
 > -       s->foo = malloc(sizeof(struct bar));
 >  }
->
+
+OK, thanks.  I will check on it.
+
+julia
