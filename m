@@ -1,49 +1,55 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 8 Jun 2017 13:25:19 +0200 (CEST)
+Date: Thu, 8 Jun 2017 13:34:58 +0200 (CEST)
 Subject: [Cocci] "bad" macros in struct definitions
-In-Reply-To: <CAKwiHFjTA1grGYjjhq=i0-o0D1bjZbgiDBc1q5=RW+i-8styKA@mail.gmail.com>
+In-Reply-To: <alpine.DEB.2.20.1706081328160.3005@hadrien>
 References: <CAKwiHFjkufqumwhStrpsqwJb8x8OGc989XhQY_YWbc=rkCXabw@mail.gmail.com>
  <alpine.DEB.2.20.1706081300350.3005@hadrien>
  <CAKwiHFjTA1grGYjjhq=i0-o0D1bjZbgiDBc1q5=RW+i-8styKA@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1706081325020.3005@hadrien>
+ <alpine.DEB.2.20.1706081328160.3005@hadrien>
+Message-ID: <alpine.DEB.2.20.1706081331230.3005@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 
 
-On Thu, 8 Jun 2017, Rasmus Villemoes wrote:
+On Thu, 8 Jun 2017, Julia Lawall wrote:
 
-> On 8 June 2017 at 13:02, Julia Lawall <julia.lawall@lip6.fr> wrote:
+>
+>
+> On Thu, 8 Jun 2017, Rasmus Villemoes wrote:
+>
+> > On 8 June 2017 at 13:02, Julia Lawall <julia.lawall@lip6.fr> wrote:
+> > >
+> > >
+> > > Could you send a concrete semantic patch and .c file that is not givig the
+> > > desired result?  Coccinelle does parsing in multiple passes.  It may fail
+> > > on an earlier pass (and emit error messages if you use --verbose-parsing)
+> > > but still succeed on a later one.
 > >
+> > Something like the attached. As is, I get
 > >
-> > Could you send a concrete semantic patch and .c file that is not givig the
-> > desired result?  Coccinelle does parsing in multiple passes.  It may fail
-> > on an earlier pass (and emit error messages if you use --verbose-parsing)
-> > but still succeed on a later one.
+> > $ spatch --macro-file test.h --sp-file ./test.cocci ./test.c
 >
-> Something like the attached. As is, I get
->
-> $ spatch --macro-file test.h --sp-file ./test.cocci ./test.c
-> init_defs_builtins: /usr/local/lib/coccinelle/standard.h
-> init_defs: test.h
-> HANDLING: ./test.c
->
-> but if I comment out the OBJHEAD I get the expected match in f2:
->
-> $ spatch --macro-file test.h --sp-file ./test.cocci ./test.c
-> init_defs_builtins: /usr/local/lib/coccinelle/standard.h
-> init_defs: test.h
-> HANDLING: ./test.c
-> diff =
-> --- ./test.c
-> +++ /tmp/cocci-output-22044-346b6b-test.c
-> @@ -21,5 +21,4 @@ void f1(struct s *s)
->
->  void f2(struct s *s)
->  {
-> -       s->foo = malloc(sizeof(struct bar));
->  }
+> Try using --macro-file-builtins instead.
 
-OK, thanks.  I will check on it.
+The documentation says:
+
+--macro-file:
+
+  Extra macro definitions to be taken into account when parsing the C
+  files.  This uses the provided macro definitions in addition to those in
+  the default macro file.
+
+--macro-file-builtins:
+
+  Builtin macro definitions to be taken into account when parsing the C
+  files.  This causes the macro definitions provided in the default macro
+  file to be ignored and the ones in the specified file to be used instead.
+
+I will check on why --macro-file doesn't work.  But I find the names of
+these options very unsatisfactory - I can never remember which is which,
+nor even what the choices are.  Maybe it would not be good to remove them,
+but I would consider adding --extend-macro-file and --replace-macro-file,
+as being more memorable.
 
 julia
