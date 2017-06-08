@@ -1,103 +1,54 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 2 Jun 2017 17:28:10 +0200 (CEST)
-Subject: [Cocci] Applying a rule multiple times on the same
- line/expression
-In-Reply-To: <005fc236-35f5-4745-b6a2-b86f39809fae@liris.cnrs.fr>
-References: <005fc236-35f5-4745-b6a2-b86f39809fae@liris.cnrs.fr>
-Message-ID: <alpine.DEB.2.20.1706021724280.7374@hadrien>
+From: linux@rasmusvillemoes.dk (Rasmus Villemoes)
+Date: Thu, 8 Jun 2017 12:37:45 +0200
+Subject: [Cocci] "bad" macros in struct definitions
+Message-ID: <CAKwiHFjkufqumwhStrpsqwJb8x8OGc989XhQY_YWbc=rkCXabw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+I'm trying to apply spatch to libnl
+(https://github.com/thom311/libnl), but I'm having problems with
+spatch's parsing of the header files. libnl has a macro
+
+#define NLHDR_COMMON                            \
+        int                     ce_refcnt;      \
+        struct nl_object_ops *  ce_ops;         \
+        struct nl_cache *       ce_cache;       \
+        struct nl_list_head     ce_list;        \
+        int                     ce_msgtype;     \
+        int                     ce_flags;       \
+        uint64_t                ce_mask;
 
 
-On Fri, 2 Jun 2017, Eric Lombardi wrote:
+and many data structures are defined like
 
->
-> Hello Coccinelle team,
->
-> I'm currently trying to use Coccinelle to fix a C/C++ mesh processing
-> code, due to an API evolution. Coccinelle helps me a lot, but I'm stuck
-> with one transformation.
->
-> I have to transform a lot of expressions like "h->next()" into
-> "next(h)". It works fine for a single "->next()", but when multiple
-> "->next()" appear in the same expression, for example in
-> "h->next()->next()", an "already tagged token" error is triggered by
-> Coccinelle .
->
-> I haven't find a solution or a similar case in the documentation, nor in
-> the examples.
->
-> Here is a small piece of code to reproduce the error:
->
->
-> typedef  struct Halfedge_handle_*  Halfedge_handle;
->
-> struct Halfedge_handle_
-> {
-> 	Halfedge_handle (*next)(void);
-> };
->
-> void test(void)
-> {
-> 	Halfedge_handle h;
->
-> 	h->next(); /* ok */
->
-> 	h->next()->next(); /* already tagged token error */
-> }
->
->
-> And the corresponding part of my cocci file:
->
-> @@
-> Halfedge_handle H;
-> @@
-> - H->next()
-> + next(H)
+struct rtnl_link
+{
+    NLHDR_COMMON
 
-It might work better as:
+    char                l_name[IFNAMSIZ];
+    uint32_t            l_family;
+    uint32_t            l_arptype;
+...
 
-+ next(
-  H
-+ )
-- ->next()
+I tried adding a cocci.h file containing just
 
-Tat way you don't change H.  But it might not work.  Another option would
-be to make some special cases, eg
+#define NLHDR_COMMON
 
-@@
-idexpression Halfedge_handle H;
-@@
-- H->next()
-+ next(H)
+and giving that as a --macro-file argument, but spatch still fails to
+parse the structure. If I manually remove the NLHDR_COMMON from
+rtnl_link above, everything works (that is, coccinelle now knows the
+types of the various rtnl_link members and my .cocci works as
+expected). Am I doing something wrong, or is this a bug in the "bad
+macro" handling?
 
-And then another rule for next(H)->next(), which is something that would
-be produced by the first rule.
-
-julia
+Related feature request: For now, I'm not really interested in the
+members defined by the NLHDR_COMMON macro, so being able to just stub
+it out would be fine. But I could imagine it would be nice to have it
+expand to its actual definition. I suppose that could be done by
+copying its definition to one's local --macro-file, but it would be
+nicer to have a way to say "please always expand this macro to
+whatever its current definition is".
 
 
->
->
-> What is the proper way to deal with this case ?
->
-> Thanks for your help.
->
-> Best regards,
->
-> --
->
-> Eric Lombardi
->
-> ==============================================================
-> LIRIS, UMR 5205
-> Laboratoire d'InfoRmatique en Image et Syst?mes d'information
-> Universit? Claude Bernard Lyon 1, b?timent Nautibus
-> 43 boulevard du 11 novembre 1918, 69622 Villeurbanne cedex
->
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+$ spatch --version
+spatch version 1.0.6-00153-g36e91e8 compiled with OCaml version 4.02.3
