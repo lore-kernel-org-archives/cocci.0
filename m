@@ -1,39 +1,35 @@
-From: andriy.shevchenko@linux.intel.com (Andy Shevchenko)
-Date: Sun, 11 Jun 2017 17:28:32 +0300
+From: jic23@kernel.org (Jonathan Cameron)
+Date: Sun, 11 Jun 2017 15:49:24 +0100
 Subject: [Cocci] [PATCH] scripts/coccinelle/api/gpiod_get_index.cocci:
  use gpiod_get variant when possible
 In-Reply-To: <1497189236-4666-1-git-send-email-Julia.Lawall@lip6.fr>
 References: <1497189236-4666-1-git-send-email-Julia.Lawall@lip6.fr>
-Message-ID: <1497191312.22624.110.camel@linux.intel.com>
+Message-ID: <20170611154924.42013a01@kernel.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, 2017-06-11 at 15:53 +0200, Julia Lawall wrote:
+On Sun, 11 Jun 2017 15:53:56 +0200
+Julia Lawall <Julia.Lawall@lip6.fr> wrote:
+
 > Coccinelle script to use the shorter gpiod_get function when the third
 > argument to a gpiod_get_index function is 0.
 > 
-> This rule avoids modifying wrapper functions and cases where there is
-> a
+> This rule avoids modifying wrapper functions and cases where there is a
 > series of gpiod_get_index calls.
-
-Thanks for the script.
-
-One caution nevertheless (I'm not an expert in coccinelle below, so,
-can't tell if it's already there):
-
-If there are two calls to gpio_get_index() with different indices, we
-are not going to replace the one which uses 0.
-
 > 
 > Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+Very nice!
+
+My coccinelle is simplistic enough that I'm not going to review the code
+though.
+
+Jonathan
 > 
 > ---
-> ?scripts/coccinelle/api/gpiod_get_index.cocci |???92
-> +++++++++++++++++++++++++++
-> ?1 file changed, 92 insertions(+)
+>  scripts/coccinelle/api/gpiod_get_index.cocci |   92 +++++++++++++++++++++++++++
+>  1 file changed, 92 insertions(+)
 > 
-> diff --git a/scripts/coccinelle/api/gpiod_get_index.cocci
-> b/scripts/coccinelle/api/gpiod_get_index.cocci
+> diff --git a/scripts/coccinelle/api/gpiod_get_index.cocci b/scripts/coccinelle/api/gpiod_get_index.cocci
 > new file mode 100644
 > index 0000000..a670a29
 > --- /dev/null
@@ -41,10 +37,8 @@ are not going to replace the one which uses 0.
 > @@ -0,0 +1,92 @@
 > +/// Use the shorter gpiod_get function when the third argument to a
 > +/// gpiod_get_index function is 0.
-> +//# The change might not be desired when there is a series of calls,
-> for 0, 1,
-> +//# 2, etc.??This rule checks for another such call subsequently
-> only.
+> +//# The change might not be desired when there is a series of calls, for 0, 1,
+> +//# 2, etc.  This rule checks for another such call subsequently only.
 > +///
 > +// Confidence: Moderate
 > +// Copyright: (C) 2017 Julia Lawall, Inria. GPLv2.
@@ -61,10 +55,10 @@ are not going to replace the one which uses 0.
 > +@@
 > +
 > +def not_wrapper(p):
-> +??return (p[0].current_element != "devm_gpiod_get_optional" and
-> +??????????p[0].current_element != "devm_gpiod_get" and
-> +??????????p[0].current_element != "gpiod_get_optional" and
-> +??????????p[0].current_element != "gpiod_get");
+> +  return (p[0].current_element != "devm_gpiod_get_optional" and
+> +          p[0].current_element != "devm_gpiod_get" and
+> +          p[0].current_element != "gpiod_get_optional" and
+> +          p[0].current_element != "gpiod_get");
 > +
 > + at r depends on patch && !context && !org && !report@
 > +expression e1,e2,e3,e4,e5,e6,n != 0;
@@ -84,16 +78,15 @@ are not going to replace the one which uses 0.
 > +- gpiod_get_index at p
 > ++ gpiod_get
 > +)
-> +???(e1,e2,
-> +-???0,
-> +????e3)
+> +   (e1,e2,
+> +-   0,
+> +    e3)
 > + ... when != devm_gpiod_get_index_optional(e4,e5,n,e6)
-> +?????when != devm_gpiod_get_index(e4,e5,n,e6)
-> +?????when != gpiod_get_index_optional(e4,e5,n,e6)
-> +?????when != gpiod_get_index(e4,e5,n,e6)
+> +     when != devm_gpiod_get_index(e4,e5,n,e6)
+> +     when != gpiod_get_index_optional(e4,e5,n,e6)
+> +     when != gpiod_get_index(e4,e5,n,e6)
 > +
-> +// ------------------------------------------------------------------
-> ----------
+> +// ----------------------------------------------------------------------------
 > +
 > + at r_context depends on !patch && (context || org || report) forall@
 > +expression e1, e2, e3, e4, e5, e6, n != 0;
@@ -101,24 +94,23 @@ are not going to replace the one which uses 0.
 > +@@
 > +
 > +(
-> +*??devm_gpiod_get_index_optional at p
+> +*  devm_gpiod_get_index_optional at p
 > +|
-> +*??devm_gpiod_get_index at p
+> +*  devm_gpiod_get_index at p
 > +|
-> +*??gpiod_get_index_optional at p
+> +*  gpiod_get_index_optional at p
 > +|
-> +*??gpiod_get_index at p
+> +*  gpiod_get_index at p
 > +)
-> +???(e1,e2,
-> +*????0,
-> +????e3)
+> +   (e1,e2,
+> +*    0,
+> +    e3)
 > + ... when != devm_gpiod_get_index_optional(e4,e5,n,e6)
-> +?????when != devm_gpiod_get_index(e4,e5,n,e6)
-> +?????when != gpiod_get_index_optional(e4,e5,n,e6)
-> +?????when != gpiod_get_index(e4,e5,n,e6)
+> +     when != devm_gpiod_get_index(e4,e5,n,e6)
+> +     when != gpiod_get_index_optional(e4,e5,n,e6)
+> +     when != gpiod_get_index(e4,e5,n,e6)
 > +
-> +// ------------------------------------------------------------------
-> ----------
+> +// ----------------------------------------------------------------------------
 > +
 > + at script:python r_org depends on org@
 > +p << r_context.p;
@@ -127,18 +119,16 @@ are not going to replace the one which uses 0.
 > +msg = "Use non _index variant in 0 case."
 > +coccilib.org.print_todo(p[0], msg)
 > +
-> +// ------------------------------------------------------------------
-> ----------
+> +// ----------------------------------------------------------------------------
 > +
 > + at script:python r_report depends on report@
 > +p << r_context.p;
 > +@@
 > +
-> +msg = "Use non _index variant in 0 case around line %s." %
-> (p[0].line)
+> +msg = "Use non _index variant in 0 case around line %s." % (p[0].line)
 > +coccilib.report.print_report(p[0], msg)
 > 
-
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo at vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
