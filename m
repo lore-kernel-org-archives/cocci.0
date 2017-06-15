@@ -1,51 +1,37 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 14 Jun 2017 22:56:21 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Thu, 15 Jun 2017 13:43:52 +0200
 Subject: [Cocci] Replacing suffix rules in make scripts?
-In-Reply-To: <9c2abe52-5ef9-62e0-26ab-f4fc69513257@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.20.1706142255480.3610@hadrien>
 References: <020f8c95-fcaa-d47e-410b-7fb633fefa09@users.sourceforge.net>
  <9c2abe52-5ef9-62e0-26ab-f4fc69513257@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1706142255480.3610@hadrien>
+ <alpine.DEB.2.20.1706142255480.3610@hadrien>
+Message-ID: <9d0d2319-1f9b-8e1a-fdd9-1a764e71ce9c@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> If you have changed things, then perhaps you have caused the problem?
+
+This is also another possibility in principle.
+
+It seems that I wonder again why some source files should be compiled without
+interface description files there.
 
 
-On Wed, 14 Jun 2017, SF Markus Elfring wrote:
+An other script variant showed the following result.
 
-> > So I get the impression that an other build approach will be safer there.
-> > How do you think about to add a dependency specification so that interface
-> > descriptions will be always compiled before the corresponding OCaml code?
->
-> Hello,
->
-> I have achieved another bit of progress with my attempt to replace suffix rules
-> by pattern rules in some make scripts.
-> I stumbled on the next software development challenge as follows.
->
->
-> elfring at Sonne:~/Projekte/Coccinelle/20160205> LANG=C make V=1
-> ?
-> make[6]: Entering directory '/home/elfring/Projekte/Coccinelle/20160205/globals'
-> /usr/bin/ocamlopt.opt -unsafe -I ../commons -I /home/elfring/Projekte/Coccinelle/20160205/bundles/pcre/ -c iteration.ml
-> File "iteration.ml", line 36, characters 4-28:
-> Error: Unbound module Flag
-> make[6]: *** [/home/elfring/Projekte/Coccinelle/20160205/common_rules.make:12: iteration.cmx] Error 2
-> ?
->
->
-> * Do I overlook an ?obvious? software dependency once more in this use case?
->
-> * How should the relevant details be resolved here?
 
-If you have changed things, then perhaps you have caused the problem?
+elfring at Sonne:~/Projekte/Coccinelle/20160205/globals> LANG=C make iteration.cmx V=1
+My test command:
+/usr/bin/ocamlopt.opt -unsafe -I ../commons -I /home/elfring/Projekte/Coccinelle/20160205/bundles/pcre/ -c flag.ml
+File "flag.ml", line 24, characters 17-36:
+Error: Unbound module Commands
+make: *** [Makefile:62: flag.cmx] Error 2
 
-julia
 
->
-> Regards,
-> Markus
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+Can it be that the corresponding dependency specifications were incomplete anyhow
+in this make script for the direct use at such a place?
+
+Would you like to help any more to get these dependencies more consistent?
+
+Regards,
+Markus
