@@ -1,28 +1,63 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sat, 24 Jun 2017 17:09:43 +0200
-Subject: [Cocci] Replacing suffix rules in make scripts?
-In-Reply-To: <d939c651-82f5-1b74-aeb7-6714275eb678@users.sourceforge.net>
-References: <020f8c95-fcaa-d47e-410b-7fb633fefa09@users.sourceforge.net>
- <9c2abe52-5ef9-62e0-26ab-f4fc69513257@users.sourceforge.net>
- <alpine.DEB.2.20.1706142255480.3610@hadrien>
- <47632935-6b4f-aeec-2ced-11f5d2f8609b@users.sourceforge.net>
- <alpine.DEB.2.20.1706152233080.3015@hadrien>
- <75d88a53-ace7-3bea-a3b2-bbc100091e78@users.sourceforge.net>
- <alpine.DEB.2.20.1706160802420.3013@hadrien>
- <8acbcd33-5eb7-08d3-c841-734d0359f87b@users.sourceforge.net>
- <alpine.DEB.2.20.1706160829130.3459@hadrien>
- <d939c651-82f5-1b74-aeb7-6714275eb678@users.sourceforge.net>
-Message-ID: <5bc7b80f-6cf4-e41b-f6b7-0f049e167bd6@users.sourceforge.net>
+From: okuznik@symas.com (=?utf-8?B?T25kxZllaiBLdXpuw61r?=)
+Date: Thu, 29 Jun 2017 17:04:37 +0100
+Subject: [Cocci] Matching format strings
+Message-ID: <20170629160437.nvpn32fsetlzvni7@eos.mistotebe.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Why do I get such an error message for a parallel software build attempt
-> when the specified dependencies worked as expected for the non-parallel
-> build try before?
+Hi all,
+I'm looking into what's needed to replace OpenLDAP's debug macro
+implementation which at the moment always takes 3 arguments:
 
-How do you think about the corresponding update suggestion
-?Improve some dependency specifications in make rules??
-https://github.com/elfring/Coccinelle-20160205/commit/9597598779f3604272621f6d42ead79eaafad2a8
+Debug(LEVEL, "format", arg1, arg2, arg3);
 
-Regards,
-Markus
+to something more useful (and get rid of the obvious compiler warnings
+we get from doing things like that).
+
+There are two (or three) cases I need to handle where I hope coccinelle
+would be able to help:
+
+1. Where less than three arguments are needed, they are always filled
+with zeros:
+
+Debug(level, "text with less than three format specifiers", 0, 0, 0);
+
+We want to change that to
+
+Debug( level, "format" );
+
+or equivalent. This is by far the most common one. But obviously where
+we have zeros as arguments, but there is a corresponding % format
+specifier, we don't want to drop those.
+
+2. When more are needed, usually the code looks like this:
+
+snprintf( buffer, size, "format", ... );
+Debug( level, "text: %s\n", buffer, ... );
+
+We'd like to change that to:
+
+Debug( level, "new format", merged arguments );
+
+There are fewer of those but still too many for a human to maintain
+while we discuss the merits of this change on openldap-devel with
+regards to C89, old compilers and stuff like that :)
+
+2a. There might be a place that reuses the buffer contents, but that's
+easy to check for I guess?
+
+Looking around the docs and the archive, there is some python support,
+but I have no idea how to use it yet to pick up the format strings, test
+whether a Debug line matches and prepare the change.
+
+Is coccinelle capable of expressing a semantic patch like that, and if
+yes, do you have any pointers and suggestions about how I should go
+about writing it?
+
+Thanks!
+
+-- 
+Ond?ej Kuzn?k
+Senior Software Engineer
+Symas Corporation                       http://www.symas.com
+Packaged, certified, and supported LDAP solutions powered by OpenLDAP
