@@ -1,20 +1,78 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 1 Jul 2017 20:44:03 +0200 (CEST)
-Subject: [Cocci] possible seg fault
-Message-ID: <alpine.DEB.2.20.1707012039560.5929@hadrien>
+From: Julia.Lawall@lip6.fr (Julia Lawall)
+Date: Sat,  1 Jul 2017 21:28:10 +0200
+Subject: [Cocci] [PATCH] coccinelle: api: detect unnecessary le16_to_cpu
+Message-ID: <1498937290-12285-1-git-send-email-Julia.Lawall@lip6.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hello,
+As reported by Sebastian Reichel, i2c_smbus_read_word_data() returns native
+endianness for little-endian bus (it basically has builtin
+le16_to_cpu). Calling le16_to_cpu on the result breaks support on big
+endian machines by converting it back.
 
-There is a possibility of a random segmentation fault in Coccinelle due a
-problem in Intel Skylake/Kaby Lake processors, which were first released
-in 2015.  More information about the affected processors and how to fix
-them is available here:
+This semantic patch give no reports on kernel code currently, but the
+issue is somewhat obscure and has occurred in a sumitted patch, so it could
+be good to have a check for it.
 
-https://lists.debian.org/debian-devel/2017/06/msg00308.html
+Suggested-by: Sebastian Reichel <sre@kernel.org>
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
-OCaml programs that are compute intensive are apparently particularly
-vulnerable to the problem, although the problem is not OCaml specific.
+---
 
-julia
+The rule could easily be extended with more such functions.  Let me know if
+anything else should be taken into account.
+
+ scripts/coccinelle/api/smbus_word.cocci |   45 ++++++++++++++++++++++++++++++++
+ 1 file changed, 45 insertions(+)
+
+diff --git a/scripts/coccinelle/api/smbus_word.cocci b/scripts/coccinelle/api/smbus_word.cocci
+new file mode 100644
+index 0000000..b167cf0
+--- /dev/null
++++ b/scripts/coccinelle/api/smbus_word.cocci
+@@ -0,0 +1,45 @@
++/// i2c_smbus_read_word_data() returns native endianness for little-endian
++/// bus (it basically has builtin le16_to_cpu). Calling le16_to_cpu on the
++/// result breaks support on big endian machines by converting it back.
++///
++// Confidence: Moderate
++// Copyright: (C) 2017 Julia Lawall, Inria. GPLv2.
++// URL: http://coccinelle.lip6.fr/
++// Options: --no-includes --include-headers
++// Keywords: i2c_smbus_read_word_data, le16_to_cpu
++
++virtual context
++virtual org
++virtual report
++
++// ----------------------------------------------------------------------------
++
++ at r depends on context || org || report exists@
++expression e, x;
++position j0, j1;
++@@
++
++* x at j0 = i2c_smbus_read_word_data(...)
++... when != x = e
++* le16_to_cpu at j1(x)
++
++// ----------------------------------------------------------------------------
++
++ at script:python r_org depends on org@
++j0 << r.j0;
++j1 << r.j1;
++@@
++
++msg = "le16_to_cpu not needed on i2c_smbus_read_word_data result."
++coccilib.org.print_todo(j0[0], msg)
++coccilib.org.print_link(j1[0], "")
++
++// ----------------------------------------------------------------------------
++
++@script:python r_report depends on report@
++j0 << r.j0;
++j1 << r.j1;
++@@
++
++msg = "le16_to_cpu not needed on i2c_smbus_read_word_data result around line %s." % (j1[0].line)
++coccilib.report.print_report(j0[0], msg)
