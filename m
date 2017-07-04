@@ -1,7 +1,7 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 4 Jul 2017 18:40:56 +0200 (CEST)
+From: okuznik@symas.com (=?utf-8?B?T25kxZllaiBLdXpuw61r?=)
+Date: Tue, 4 Jul 2017 17:27:32 +0100
 Subject: [Cocci] Matching format strings
-In-Reply-To: <20170704162732.urhtl54j3gbj3myh@eos.mistotebe.net>
+In-Reply-To: <WM!cc508729d042cf12207adee814670b88c105ae73cdaf601fdeb9c3e26fa32e7df0d4d49f847a216810550421de0d8de6!@mailstronghold-3.zmailcloud.com>
 References: <WM!8666006bd8d2547072f2aaa49a217ebee942918ea85a26184b30aa0c245a807e35f125c1045776851fe6d85360d3ed76!@mailstronghold-3.zmailcloud.com>
  <20170704135006.wipw7z7pzyjwc7jv@eos.mistotebe.net>
  <alpine.DEB.2.20.1707041552400.3224@hadrien>
@@ -12,110 +12,86 @@ References: <WM!8666006bd8d2547072f2aaa49a217ebee942918ea85a26184b30aa0c245a807e
  <20170704160123.lilble53tmv5t5va@eos.mistotebe.net>
  <alpine.DEB.2.20.1707041806150.11588@hadrien>
  <WM!cc508729d042cf12207adee814670b88c105ae73cdaf601fdeb9c3e26fa32e7df0d4d49f847a216810550421de0d8de6!@mailstronghold-3.zmailcloud.com>
- <20170704162732.urhtl54j3gbj3myh@eos.mistotebe.net>
-Message-ID: <alpine.DEB.2.20.1707041837300.11588@hadrien>
+Message-ID: <20170704162732.urhtl54j3gbj3myh@eos.mistotebe.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On Tue, Jul 04, 2017 at 06:09:10PM +0200, Julia Lawall wrote:
+> 
+> 
+> On Tue, 4 Jul 2017, Ond?ej Kuzn?k wrote:
+> 
+>> On Tue, Jul 04, 2017 at 05:25:46PM +0200, Julia Lawall wrote:
+>>> On Tue, 4 Jul 2017, Ond?ej Kuzn?k wrote:
+>>>> Hmm, suddenly the problems with passing expressions to python I stated
+>>>> earlier disappeared, good. Running this takes a log time on some files
+>>>> (over 10 minutes for ./servers/slapd/back-ldap/bind.c and processing of
+>>>> servers/slapd/back-meta/search.c has yet to finish after 30 minutes of
+>>>> processing).
+>>>>
+>>>> I suppose going through all the potential combinations of snprintf/Debug
+>>>> statements is what takes so long, any tips on what usually helps to
+>>>> speed things up?
+>>>
+>>> Some functions in those files have a lot of ifs.  Ifs are very expensive,
+>>> because both branches have to be considered.
+>>
+>> Do they have to be considered every time or can coccinelle sometimes
+>> understand that taking neither branch can affect the match? (as in, can
+>> I adjust the patch to help coccinelle somehow?).
+>>
+>>> In the rule below at least, I don't think you need the initial
+>>> { ... and final ... }.  That would only seem to be necessary if you have a
+>>> lot of redeclarations of variables.
+>>
+>> That is the case at least in servers/slapd/back-meta/search.c, where
+>> buf is often declared just before it is used and I hoped that would
+>> speed things up slightly.
+>>
+>> > Also, it could help to be more specific about the type of buf.
+>>
+>> I have tried
+>>
+>> {
+>> -char buf[S];
+>> -snprintf at p1( buf, E, format1, args );
+>> -Debug at p2( L, format2, args_before, buf, args_after );
+>> +Debug( L, merged, args_before, args, args_after );
+>> ... when != buf
+>> }
+>>
+>> To see whether I can remove a lot of the simple ones quickly and then
+>> work with a simpler file, but this one seems to take the same amount of
+>> time once I put the "... when != buf" in.
+> 
+> OK.  Probably the expensive cases are the ones that happen to match this
+> pattern...
 
+My test file at the moment is https://github.com/openldap/openldap/blob/master/servers/slapd/back-asyncmeta/meta_result.c
+which calls snprintf in two places only and both code blocks are very
+short. Still, the spatch takes slightly over 1000 seconds to process the
+file with the below:
 
-On Tue, 4 Jul 2017, Ond?ej Kuzn?k wrote:
+@shortcut@
+identifier buf;                                         
+expression S, E, L;
+expression list args_before, args, args_after;          
+expression format1, format2;                            
+@@                                                      
 
-> On Tue, Jul 04, 2017 at 06:09:10PM +0200, Julia Lawall wrote:
-> >
-> >
-> > On Tue, 4 Jul 2017, Ond?ej Kuzn?k wrote:
-> >
-> >> On Tue, Jul 04, 2017 at 05:25:46PM +0200, Julia Lawall wrote:
-> >>> On Tue, 4 Jul 2017, Ond?ej Kuzn?k wrote:
-> >>>> Hmm, suddenly the problems with passing expressions to python I stated
-> >>>> earlier disappeared, good. Running this takes a log time on some files
-> >>>> (over 10 minutes for ./servers/slapd/back-ldap/bind.c and processing of
-> >>>> servers/slapd/back-meta/search.c has yet to finish after 30 minutes of
-> >>>> processing).
-> >>>>
-> >>>> I suppose going through all the potential combinations of snprintf/Debug
-> >>>> statements is what takes so long, any tips on what usually helps to
-> >>>> speed things up?
-> >>>
-> >>> Some functions in those files have a lot of ifs.  Ifs are very expensive,
-> >>> because both branches have to be considered.
-> >>
-> >> Do they have to be considered every time or can coccinelle sometimes
-> >> understand that taking neither branch can affect the match? (as in, can
-> >> I adjust the patch to help coccinelle somehow?).
-> >>
-> >>> In the rule below at least, I don't think you need the initial
-> >>> { ... and final ... }.  That would only seem to be necessary if you have a
-> >>> lot of redeclarations of variables.
-> >>
-> >> That is the case at least in servers/slapd/back-meta/search.c, where
-> >> buf is often declared just before it is used and I hoped that would
-> >> speed things up slightly.
-> >>
-> >> > Also, it could help to be more specific about the type of buf.
-> >>
-> >> I have tried
-> >>
-> >> {
-> >> -char buf[S];
-> >> -snprintf at p1( buf, E, format1, args );
-> >> -Debug at p2( L, format2, args_before, buf, args_after );
-> >> +Debug( L, merged, args_before, args, args_after );
-> >> ... when != buf
-> >> }
-> >>
-> >> To see whether I can remove a lot of the simple ones quickly and then
-> >> work with a simpler file, but this one seems to take the same amount of
-> >> time once I put the "... when != buf" in.
-> >
-> > OK.  Probably the expensive cases are the ones that happen to match this
-> > pattern...
->
-> My test file at the moment is https://github.com/openldap/openldap/blob/master/servers/slapd/back-asyncmeta/meta_result.c
-> which calls snprintf in two places only and both code blocks are very
-> short. Still, the spatch takes slightly over 1000 seconds to process the
-> file with the below:
->
-> @shortcut@
-> identifier buf;
-> expression S, E, L;
-> expression list args_before, args, args_after;
-> expression format1, format2;
-> @@
->
-> {
-> -char buf[S];
-> -snprintf( buf, E, format1, args );
-> -Debug( L, format2, args_before, buf, args_after );
-> +Debug( L, "merged", args_before, args, args_after );
-> ... when != buf
-> }
->
-> I feel I'm missing something in how coccinelle works to be able to
-> make its job easier here.
+{
+-char buf[S]; 
+-snprintf( buf, E, format1, args );
+-Debug( L, format2, args_before, buf, args_after );
++Debug( L, "merged", args_before, args, args_after );   
+... when != buf                                         
+}
 
-It is searching though the control flow paths.  In this case, one of the
-blocks is:
+I feel I'm missing something in how coccinelle works to be able to
+make its job easier here.
 
-                        {
-		                char    buf[ SLAP_TEXT_BUFLEN ];
-
-                                snprintf( buf, sizeof( buf ),
-	                                "%s meta_send_entry(\"%s\"): "
-	                                "slap_bv2undef_ad(%s): %s\n",
-					op->o_log_prefix, ent.e_name.bv_val,
-	                                mapped.bv_val, text );
-
-                                Debug( LDAP_DEBUG_ANY, "%s", buf, 0, 0 );
-                                ( void )ber_scanf( &ber, "x" /* [W] */ );
-                                op->o_tmpfree( attr, op->o_tmpmemctx );
-                                continue;
-                        }
-
-I think that it is drifting off into infinity due to the continue.
-
-How about adding a timeout (eg --timeout 120) and then see how much is
-left over.
-
-julia
+-- 
+Ond?ej Kuzn?k
+Senior Software Engineer
+Symas Corporation                       http://www.symas.com
+Packaged, certified, and supported LDAP solutions powered by OpenLDAP
