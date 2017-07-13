@@ -1,46 +1,84 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 22 Jul 2017 08:39:19 +0200 (CEST)
-Subject: [Cocci] [PATCH] EDAC: remove unnecessary static in
- edac_fake_inject_write()
-In-Reply-To: <20170722063602.GB2050@nazgul.tnic>
-References: <20170704214440.GA9462@embeddedgus>
- <20170717083946.GB23129@nazgul.tnic>
- <alpine.DEB.2.20.1707212205410.2232@hadrien>
- <20170722063602.GB2050@nazgul.tnic>
-Message-ID: <alpine.DEB.2.20.1707220838410.2068@hadrien>
+From: dave@stgolabs.net (Davidlohr Bueso)
+Date: Thu, 13 Jul 2017 08:42:25 -0700
+Subject: [Cocci] coccinelle and libpython problems
+Message-ID: <20170713154225.GM30414@linux-80c1.suse>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hi,
+
+In my first attempt to create a semantic patch, I'm having
+trouble running anything related to coccinelle (both in the
+kernel via coccicheck and directly calling 'spfile'). The
+program errors out with:
+
+Py.find_library: unable to find the Python library [libpython2.7m.so returned Library not found][libpython2.7.so returned Library not found]
+
+This is freshly cloned (github) version of coccinelle. I
+also tried going back a few versions and with checkout
+to commits in 2016 and 2015 I'm getting the exact
+same issue.
+
+System is OpenSuse Leap 42.1, with the libpython packages
+installed:
+
+S | Name                   | Summary                           | Type   
+--+------------------------+-----------------------------------+--------
+i | libpython2_7-1_0       | Python Interpreter shared library | package
+i | libpython2_7-1_0-32bit | Python Interpreter shared library | package
+i | libpython3_4m1_0       | Python Interpreter shared library | package
+  | libpython3_4m1_0-32bit | Python Interpreter shared library | package
+
+Output of coccinelle's configure script (no parameters):
+
+------------------------------------------------------------------------------
+Summary, fwiw:
+
+configure flags:  
+findlib:          /usr/bin/ocamlfind	(an actual version is strongly recommended)
+menhir:           /home/dave/code/coccinelle/bundles/menhirLib/menhir  (for local package use --without-menhir, install the menhir package otherwise)
+
+ocaml scripting:  yes						       (overridable with --enable-ocaml)
+python scripting: yes						       (overridable with --enable-python)
+
+pcre regexes:     						       (overridable with --enable-pcre-syntax)
+pcre module:      local						       (for local package use --disable-pcre)
+pcre library:     yes						       (requires the libpcre-ocaml-dev package)
+
+optimized spatch: yes						       (overridable with --disable-opt)
+
+------------------------------------------------------------------------------
+Coccinelle can now be compiled and installed.
 
 
-On Sat, 22 Jul 2017, Borislav Petkov wrote:
+If you compile coccinelle again after source code changes or
+configuration changes, you may need to run first:
+  $ make clean
 
-> On Fri, Jul 21, 2017 at 10:08:12PM +0200, Julia Lawall wrote:
-> > Someone pointed out that the rule is probably not OK when the address of
-> > the static variable is taken, because then it is likely being used as
-> > permanent storage.
->
-> Makes sense to me.
->
-> > An improved rule is:
->
-> Do you think it is worth having it in scripts/coccinelle/ ?
+To compile coccinelle, run:
+  $ make
 
-Sure.  Now that it has been a bit more sanity checked.
+To install coccinelle, run:
+  $ make install
 
-> I don't think Gustavo would mind putting it there :)
+Then, to test coccinelle, run for example:
+  $ spatch -sp_file demos/simple.cocci demos/simple.c -o /tmp/new_simple.c
 
-OK, I will check with him.
+Or when coccinelle is not installed yet:
+  $ COCCINELLE_HOME=/home/dave/code/coccinelle ./scripts/spatch -sp_file demos/simple.cocci demos/simple.c -o /tmp/new_simple.c
+------------------------------------------------------------------------------
+You may need to set some environment variables so that the python
+libraries are found. The frontend 'spatch' sets the following variables:
 
-julia
+  $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+  $ export PYTHONPATH=$PYTHONPATH:${exec_prefix}/lib64/coccinelle/python
 
->
-> Thanks.
->
-> --
-> Regards/Gruss,
->     Boris.
->
-> ECO tip #101: Trim your mails when you reply.
-> --
->
+------------------------------------------------------------------------------
+
+Setting the above vars explicitly I still run into the same libpython issue.
+Even when everything is dully in /usr/local/lib64/coccinelle/
+
+Does this ring any bells?
+
+Thanks,
+Davidlohr
