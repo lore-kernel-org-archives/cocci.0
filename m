@@ -1,48 +1,47 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 14 Jul 2017 20:07:02 +0200 (CEST)
-Subject: [Cocci] Dropping K&R support
-In-Reply-To: <20170714172922.sziksfhmacwmoqph@eos.mistotebe.net>
-References: <20170714172922.sziksfhmacwmoqph@eos.mistotebe.net>
-Message-ID: <alpine.DEB.2.20.1707142005580.3699@hadrien>
+From: mansourmoufid@gmail.com (Mansour Moufid)
+Date: Fri, 14 Jul 2017 18:26:16 -0400
+Subject: [Cocci] how to ignore a list of identifiers
+Message-ID: <CALogXGWDui-TbWueMb5c9FEH+h81n-MnR+Dn=BPA=aREoRmkCg@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hi everyone,
 
+I'm trying to add the const qualifier to variables of a certain type,
+except for a few.
 
-On Fri, 14 Jul 2017, Ond?ej Kuzn?k wrote:
+For example, I'd like to modify this program:
 
-> Hi,
-> in OpenLDAP we're thinking of dropping K&R support macros in our
-> headers, but I'm having problems generating the semantic patch that
-> would work.
->
-> For example the LDAP_P macro in include/ldap.h. Let this serve as a
-> trivial example:
->
-> LDAP_F(int) some_func LDAP_P((int i, int j));
->
-> Where (on some platforms) the macros are defined as follows:
->
-> #define LDAP_P(params)    params
-> #define LDAP_V(type)      extern type
->
-> I'd think something like this should help convert it:
->
-> @@
-> @@
->
-> -LDAP_P(
->  ...
-> -)
->
-> But with or without the above in --macro-file-builtins, I can't get this
-> patch to apply. Without it, I guess it's the parse error that stops
-> coccinelle from processing it, but with the above in
-> --macro-file-builtins, no diff is produced either.
->
-> Is there something wrong with the patch? Can this be done?
+    void foo(void) {
+        int a = 1;
+        int b = 2;
+        int c = 3;
+        int d = 4;
+    }
 
-Sorry, it can't be done.  You rule wants to match an expression, not
-something around bits of a function header.
+to:
 
-julia
+    void foo(void) {
+        const int a = 1;
+        int b = 2;
+        const int c = 3;
+        int d = 4;
+    }
+
+So far I've tried this semantic patch:
+
+    @@
+    identifier x != {b, d};
+    @@
+    + const
+      int x = ...;
+
+This works but only if all the identifiers in the list are in the source.
+
+If the list is {b, z} for example, it doesn't work, and spatch says:
+
+    (ONCE) Expected tokens z b
+
+Is there an easy way to do this?
+
+Thanks for your time.
