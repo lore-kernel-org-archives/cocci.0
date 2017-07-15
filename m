@@ -1,9 +1,9 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 15 Jul 2017 07:49:35 +0200 (CEST)
+Date: Sat, 15 Jul 2017 08:59:33 +0200 (CEST)
 Subject: [Cocci] how to ignore a list of identifiers
 In-Reply-To: <CALogXGWDui-TbWueMb5c9FEH+h81n-MnR+Dn=BPA=aREoRmkCg@mail.gmail.com>
 References: <CALogXGWDui-TbWueMb5c9FEH+h81n-MnR+Dn=BPA=aREoRmkCg@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1707150748190.2838@hadrien>
+Message-ID: <alpine.DEB.2.20.1707150858520.2838@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -50,10 +50,11 @@ On Fri, 14 Jul 2017, Mansour Moufid wrote:
 >
 > Is there an easy way to do this?
 
-It shouldn't require negative constraints like that.  Until it's fixed,
-you can add the option --disable-worth-trying-opt
+What version of Coccinelle do you have?  It seems that in the github
+version this problem is already fixed.
 
 julia
+
 
 >
 > Thanks for your time.
