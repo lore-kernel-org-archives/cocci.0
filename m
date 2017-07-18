@@ -1,29 +1,36 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 15 Jul 2017 23:02:52 +0200 (CEST)
-Subject: [Cocci] how to ignore a list of identifiers
-In-Reply-To: <CALogXGWnMvMbDM3WkM4LHDSZC5P1ecZVAA4RQVJ8Xt5gZtuBFw@mail.gmail.com>
-References: <CALogXGWDui-TbWueMb5c9FEH+h81n-MnR+Dn=BPA=aREoRmkCg@mail.gmail.com>
- <alpine.DEB.2.20.1707150858520.2838@hadrien>
- <CALogXGWnMvMbDM3WkM4LHDSZC5P1ecZVAA4RQVJ8Xt5gZtuBFw@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1707152302220.5105@hadrien>
+From: elena.reshetova@intel.com (Elena Reshetova)
+Date: Tue, 18 Jul 2017 10:48:30 +0300
+Subject: [Cocci] [PATCH] Coccinelle report script for refcounters
+Message-ID: <1500364111-2192-1-git-send-email-elena.reshetova@intel.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+The below script can be used to detect potential misusage
+of atomic_t type and API for reference counting purposes.
+Now when we have a dedicated refcount_t type and API with
+security protection implemented, people should be using it
+instead.
 
+Currently it still reports many occurences since we are
+nowhere near the end of our kernel-wide conversion execrise,
+but hopefully after couple of cycles more, the amount of
+output would be much more limited.
 
-On Sat, 15 Jul 2017, Mansour Moufid wrote:
+Each script result must be analysed manually before any
+conversion, since refcount_t might not suit for certain
+purposes (for example if an object is not always destroyed
+upon refcounter reaching zero, if increments from zero are
+allowed in the code etc.)
 
-> On Sat, Jul 15, 2017 at 2:59 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
-> >
-> > What version of Coccinelle do you have?  It seems that in the github
-> > version this problem is already fixed.
-> >
-> > julia
->
-> I was using version 1.0.6. With --disable-worth-trying-opt it works.
->
-> I updated to the latest version and that works perfectly.
+As we go further and get less results in output, we will
+improve the pattern to detect conversion cases more precisely.
 
-OK, great.  We really need to make a new release some day...
+Elena Reshetova (1):
+  Coccinelle: add atomic_as_refcounter script
 
-julia
+ scripts/coccinelle/api/atomic_as_refcounter.cocci | 102 ++++++++++++++++++++++
+ 1 file changed, 102 insertions(+)
+ create mode 100644 scripts/coccinelle/api/atomic_as_refcounter.cocci
+
+-- 
+2.7.4
