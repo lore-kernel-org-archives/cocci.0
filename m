@@ -1,33 +1,47 @@
-From: bp@alien8.de (Borislav Petkov)
-Date: Sat, 22 Jul 2017 08:36:02 +0200
-Subject: [Cocci] [PATCH] EDAC: remove unnecessary static in
- edac_fake_inject_write()
-In-Reply-To: <alpine.DEB.2.20.1707212205410.2232@hadrien>
-References: <20170704214440.GA9462@embeddedgus>
- <20170717083946.GB23129@nazgul.tnic>
- <alpine.DEB.2.20.1707212205410.2232@hadrien>
-Message-ID: <20170722063602.GB2050@nazgul.tnic>
+From: hlovdal@gmail.com (=?UTF-8?B?SMOla29uIEzDuHZkYWw=?=)
+Date: Sat, 22 Jul 2017 13:34:04 +0200
+Subject: [Cocci] Dropping K&R support
+In-Reply-To: <alpine.DEB.2.20.1707142005580.3699@hadrien>
+References: <20170714172922.sziksfhmacwmoqph@eos.mistotebe.net>
+ <alpine.DEB.2.20.1707142005580.3699@hadrien>
+Message-ID: <CAACXqO9ZMBjQpzk4S5vJA_r_vhEaNAVgpJD9vttBDER0vFBRhQ@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, Jul 21, 2017 at 10:08:12PM +0200, Julia Lawall wrote:
-> Someone pointed out that the rule is probably not OK when the address of
-> the static variable is taken, because then it is likely being used as
-> permanent storage.
+On 14 July 2017 at 20:07, Julia Lawall <julia.lawall@lip6.fr> wrote:
+> On Fri, 14 Jul 2017, Ond?ej Kuzn?k wrote:
+>> Hi,
+>> in OpenLDAP we're thinking of dropping K&R support macros in our
+>> headers, but I'm having problems generating the semantic patch that
+>> would work.
+>>...
+>> @@
+>> @@
+>>
+>> -LDAP_P(
+>>  ...
+>> -)
+>>
+> Sorry, it can't be done.  You rule wants to match an expression, not
+> something around bits of a function header.
 
-Makes sense to me.
+Overall a plain text search and replace would probably give 99.??% solution,
+but one possibility would be to write a custom LDAP_P removal program
+which in a case like this is not complicated at all. To remove all occurrences
+of LDAP_P in code, you just need to keep a state if you are inside a comment
+or inside a string and do no replacement in those cases.
 
-> An improved rule is:
+The program StripCmt, http://www.bdc.cx/software/stripcmt/, which removes
+comments from C source code, almost does all the parsing needed and it
+is very simple to modify/extend. I once wrote a program to replace all
+strings in code with empty strings like
 
-Do you think it is worth having it in scripts/coccinelle/ ?
+-        const char * message = "hello";
+-        printf("\"message\" = %s\n", message); // prints: "message" = hello
++        const char * message = "";
++        printf("", message); // prints: "message" = hello
 
-I don't think Gustavo would mind putting it there :)
+and it was almost no work at all to do by basing the program on
+stripcmt's source code (which is just ~200 lines of code).
 
-Thanks.
-
--- 
-Regards/Gruss,
-    Boris.
-
-ECO tip #101: Trim your mails when you reply.
---
+BR H?kon L?vdal
