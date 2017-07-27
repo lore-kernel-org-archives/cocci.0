@@ -1,34 +1,114 @@
-From: bp@alien8.de (Borislav Petkov)
-Date: Mon, 24 Jul 2017 12:34:36 +0200
-Subject: [Cocci] [PATCH] EDAC: remove unnecessary static in
- edac_fake_inject_write()
-In-Reply-To: <6698a3ad-bb52-7297-a10b-818304c96d38@embeddedor.com>
-References: <20170704214440.GA9462@embeddedgus>
- <20170717083946.GB23129@nazgul.tnic>
- <alpine.DEB.2.20.1707212205410.2232@hadrien>
- <20170722063602.GB2050@nazgul.tnic>
- <638a94de-5eb4-eba4-7c28-4b4eb4bf8dbf@embeddedor.com>
- <7209d11a-c2f7-ca65-94d8-56f996133013@embeddedor.com>
- <alpine.DEB.2.20.1707230654200.2068@hadrien>
- <6867696d-edd1-3d21-eb7e-af68e087750a@embeddedor.com>
- <alpine.DEB.2.20.1707230749080.2068@hadrien>
- <6698a3ad-bb52-7297-a10b-818304c96d38@embeddedor.com>
-Message-ID: <20170724103436.GA23386@nazgul.tnic>
+From: gustavo@embeddedor.com (Gustavo A. R. Silva)
+Date: Thu, 27 Jul 2017 11:58:48 -0500
+Subject: [Cocci] [PATCH] Coccinelle: Script to remove unnecessary static on
+ local variables
+Message-ID: <20170727165848.GA15831@embeddedgus>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, Jul 23, 2017 at 01:25:56AM -0500, Gustavo A. R. Silva wrote:
-> Lesson learned, your original script should remain as is. :)
+Coccinelle script to remove unnecessary static on local variables when
+the variables are not used before update.
 
-Ok, then please send Julia's script as a separate patch and then in the
-EDAC patch, reference the path to that coccinelle patch so that it is
-clear what has been used.
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ scripts/coccinelle/misc/static_unnecessary.cocci | 89 ++++++++++++++++++++++++
+ 1 file changed, 89 insertions(+)
+ create mode 100644 scripts/coccinelle/misc/static_unnecessary.cocci
 
-Thanks.
-
+diff --git a/scripts/coccinelle/misc/static_unnecessary.cocci b/scripts/coccinelle/misc/static_unnecessary.cocci
+new file mode 100644
+index 0000000..79fc899
+--- /dev/null
++++ b/scripts/coccinelle/misc/static_unnecessary.cocci
+@@ -0,0 +1,89 @@
++/// Drop static on local variable when the variable is not used before update.
++//# NOTE: Be aware that if a large object is initialized all at once, it might
++//# not be wise to remove the static because that would increase the risk of a
++//# stack overflow.
++///
++// Confidence: Moderate
++// Copyright: (C) 2017 Julia Lawall, Inria. GPLv2.
++// Copyright: (C) 2017 Gustavo A. R. Silva, Core Infrastructure Initiative.
++// Copyright: (C) 2017 GPLv2.
++// URL: http://coccinelle.lip6.fr/
++// Options: --no-includes --include-headers
++// Keywords: static
++
++virtual patch
++virtual context
++virtual org
++virtual report
++
++// <smpl>
++ at bad exists@
++position p;
++identifier x;
++expression e;
++type T;
++@@
++
++static T x at p;
++... when != x = e
++x = <+...x...+>
++
++ at worse exists@
++position p;
++identifier x;
++type T;
++@@
++
++static T x at p;
++...
++ &x
++
++ at modify depends on patch && !context && !org && !report@
++identifier x;
++expression e;
++type T;
++position p != {bad.p,worse.p};
++@@
++
++-static
++ T x at p;
++ ... when != x
++     when strict
++?x = e;
++// </smpl>
++
++
++// ----------------------------------------------------------------------------
++
++ at modify_context depends on !patch && (context || org || report) forall@
++type T;
++identifier x;
++expression e;
++position p != {bad.p,worse.p};
++position j0;
++@@
++
++* static
++ T x at j0@p;
++ ... when != x
++     when strict
++?x = e;
++
++// ----------------------------------------------------------------------------
++
++ at script:python modify_org depends on org@
++j0 << modify_context.j0;
++@@
++
++msg = "Unnecessary static on local variable."
++coccilib.org.print_todo(j0[0], msg)
++
++// ----------------------------------------------------------------------------
++
++@script:python modify_report depends on report@
++j0 << modify_context.j0;
++@@
++
++msg = "Unnecessary static on local variable."
++coccilib.report.print_report(j0[0], msg)
++
 -- 
-Regards/Gruss,
-    Boris.
-
-ECO tip #101: Trim your mails when you reply.
---
+2.5.0
