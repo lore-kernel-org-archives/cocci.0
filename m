@@ -1,219 +1,132 @@
-From: keescook@chromium.org (Kees Cook)
-Date: Thu, 31 Aug 2017 16:29:13 -0700
-Subject: [Cocci] [PATCH 01/31] coccinelle: Improve setup_timer.cocci matching
-In-Reply-To: <1504222183-61202-1-git-send-email-keescook@chromium.org>
-References: <1504222183-61202-1-git-send-email-keescook@chromium.org>
-Message-ID: <1504222183-61202-2-git-send-email-keescook@chromium.org>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Tue, 1 Aug 2017 07:04:50 +0200 (CEST)
+Subject: [Cocci] [PATCH v2] Coccinelle: Script to remove unnecessary
+ static on local variables
+In-Reply-To: <20170801043804.GA4265@embeddedgus>
+References: <20170801043804.GA4265@embeddedgus>
+Message-ID: <alpine.DEB.2.20.1708010704350.2671@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-This improves the patch mode of setup_timer.cocci. Several patterns
-were missing:
- - assignments-before-init_timer() cases
- - limit the .data case removal to the specific struct timer_list instance
- - handling calls by dereference (timer->field vs timer.field)
+Acked-by: Julia Lawall <julia.lawall@lip6.fr>
 
-Cc: Julia Lawall <Julia.Lawall@lip6.fr>
-Cc: Gilles Muller <Gilles.Muller@lip6.fr>
-Cc: Nicolas Palix <nicolas.palix@imag.fr>
-Cc: Michal Marek <mmarek@suse.com>
-Cc: cocci at systeme.lip6.fr
-Signed-off-by: Kees Cook <keescook@chromium.org>
----
- scripts/coccinelle/api/setup_timer.cocci | 129 +++++++++++++++++++++++++------
- 1 file changed, 105 insertions(+), 24 deletions(-)
+On Mon, 31 Jul 2017, Gustavo A. R. Silva wrote:
 
-diff --git a/scripts/coccinelle/api/setup_timer.cocci b/scripts/coccinelle/api/setup_timer.cocci
-index eb6bd9e4ab1a..279767f3bbef 100644
---- a/scripts/coccinelle/api/setup_timer.cocci
-+++ b/scripts/coccinelle/api/setup_timer.cocci
-@@ -2,6 +2,7 @@
- /// and data fields
- // Confidence: High
- // Copyright: (C) 2016 Vaishali Thakkar, Oracle. GPLv2
-+// Copyright: (C) 2017 Kees Cook, Google. GPLv2
- // Options: --no-includes --include-headers
- // Keywords: init_timer, setup_timer
- 
-@@ -10,60 +11,123 @@ virtual context
- virtual org
- virtual report
- 
-+// Match the common cases first to avoid Coccinelle parsing loops with
-+// "... when" clauses.
-+
- @match_immediate_function_data_after_init_timer
- depends on patch && !context && !org && !report@
- expression e, func, da;
- @@
- 
---init_timer (&e);
--+setup_timer (&e, func, da);
-+-init_timer
-++setup_timer
-+ ( \(&e\|e\)
-++, func, da
-+ );
-+(
-+-\(e.function\|e->function\) = func;
-+-\(e.data\|e->data\) = da;
-+|
-+-\(e.data\|e->data\) = da;
-+-\(e.function\|e->function\) = func;
-+)
-+
-+ at match_immediate_function_data_before_init_timer
-+depends on patch && !context && !org && !report@
-+expression e, func, da;
-+@@
- 
- (
-+-\(e.function\|e->function\) = func;
-+-\(e.data\|e->data\) = da;
-+|
-+-\(e.data\|e->data\) = da;
-+-\(e.function\|e->function\) = func;
-+)
-+-init_timer
-++setup_timer
-+ ( \(&e\|e\)
-++, func, da
-+ );
-+
-+ at match_function_and_data_after_init_timer
-+depends on patch && !context && !org && !report@
-+expression e, e2, e3, e4, e5, func, da;
-+@@
-+
-+-init_timer
-++setup_timer
-+ ( \(&e\|e\)
-++, func, da
-+ );
-+ ... when != func = e2
-+     when != da = e3
-+(
- -e.function = func;
-+... when != da = e4
- -e.data = da;
- |
-+-e->function = func;
-+... when != da = e4
-+-e->data = da;
-+|
- -e.data = da;
-+... when != func = e5
- -e.function = func;
-+|
-+-e->data = da;
-+... when != func = e5
-+-e->function = func;
- )
- 
-- at match_function_and_data_after_init_timer
-+ at match_function_and_data_before_init_timer
- depends on patch && !context && !org && !report@
--expression e1, e2, e3, e4, e5, a, b;
-+expression e, e2, e3, e4, e5, func, da;
- @@
--
---init_timer (&e1);
--+setup_timer (&e1, a, b);
--
--... when != a = e2
--    when != b = e3
- (
---e1.function = a;
--... when != b = e4
---e1.data = b;
-+-e.function = func;
-+... when != da = e4
-+-e.data = da;
- |
---e1.data = b;
--... when != a = e5
---e1.function = a;
-+-e->function = func;
-+... when != da = e4
-+-e->data = da;
-+|
-+-e.data = da;
-+... when != func = e5
-+-e.function = func;
-+|
-+-e->data = da;
-+... when != func = e5
-+-e->function = func;
- )
-+... when != func = e2
-+    when != da = e3
-+-init_timer
-++setup_timer
-+ ( \(&e\|e\)
-++, func, da
-+ );
- 
- @r1 exists@
-+expression t;
- identifier f;
- position p;
- @@
- 
- f(...) { ... when any
--  init_timer at p(...)
-+  init_timer at p(\(&t\|t\))
-   ... when any
- }
- 
- @r2 exists@
-+expression r1.t;
- identifier g != r1.f;
--struct timer_list t;
- expression e8;
- @@
- 
- g(...) { ... when any
--  t.data = e8
-+  \(t.data\|t->data\) = e8
-   ... when any
- }
- 
-@@ -77,14 +141,31 @@ p << r1.p;
- cocci.include_match(False)
- 
- @r3 depends on patch && !context && !org && !report@
--expression e6, e7, c;
-+expression r1.t, func, e7;
- position r1.p;
- @@
- 
---init_timer at p (&e6);
--+setup_timer (&e6, c, 0UL);
--... when != c = e7
---e6.function = c;
-+(
-+-init_timer at p(&t);
-++setup_timer(&t, func, 0UL);
-+... when != func = e7
-+-t.function = func;
-+|
-+-t.function = func;
-+... when != func = e7
-+-init_timer at p(&t);
-++setup_timer(&t, func, 0UL);
-+|
-+-init_timer@p(t);
-++setup_timer(t, func, 0UL);
-+... when != func = e7
-+-t->function = func;
-+|
-+-t->function = func;
-+... when != func = e7
-+-init_timer at p(t);
-++setup_timer(t, func, 0UL);
-+)
- 
- // ----------------------------------------------------------------------------
- 
--- 
-2.7.4
+> Coccinelle script to remove unnecessary static on local variables when
+> the variables are not used before update.
+>
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+> ---
+> Changes in v2:
+>  Update header and Copyright note.
+>
+>  scripts/coccinelle/misc/static_unnecessary.cocci | 96 ++++++++++++++++++++++++
+>  1 file changed, 96 insertions(+)
+>  create mode 100644 scripts/coccinelle/misc/static_unnecessary.cocci
+>
+> diff --git a/scripts/coccinelle/misc/static_unnecessary.cocci b/scripts/coccinelle/misc/static_unnecessary.cocci
+> new file mode 100644
+> index 0000000..2b10586
+> --- /dev/null
+> +++ b/scripts/coccinelle/misc/static_unnecessary.cocci
+> @@ -0,0 +1,96 @@
+> +/// Drop static on local variable when the variable is not used before update.
+> +//#
+> +//# Removing unnecessary static on local variables reduces the code
+> +//# size and increases maintainability.
+> +//#
+> +//# On the other hand, even though it is rare, be aware that if a
+> +//# large object is initialized all at once, it might not be wise
+> +//# to remove the static because that would increase the risk of a
+> +//# stack overflow.
+> +///
+> +// Confidence: Moderate
+> +// Copyright: (C) 2017 Julia Lawall, Inria. GPLv2.
+> +// URL: http://coccinelle.lip6.fr/
+> +// Copyright: (C) 2017 Gustavo A. R. Silva. GPLv2.
+> +// Work supported by a grant from
+> +// The Linux Foundation's Core Infrastructure Initiative.
+> +// URL: https://www.coreinfrastructure.org/
+> +// Options: --no-includes --include-headers
+> +// Keywords: static
+> +
+> +virtual patch
+> +virtual context
+> +virtual org
+> +virtual report
+> +
+> +// <smpl>
+> + at bad exists@
+> +position p;
+> +identifier x;
+> +expression e;
+> +type T;
+> +@@
+> +
+> +T x at p;
+> +... when != x = e
+> +x = <+...x...+>
+> +
+> + at worse exists@
+> +position p;
+> +identifier x;
+> +type T;
+> +@@
+> +
+> +T x at p;
+> +...
+> + &x
+> +
+> + at modify depends on patch && !context && !org && !report@
+> +identifier x;
+> +expression e;
+> +type T;
+> +position p != {bad.p,worse.p};
+> +@@
+> +
+> +-static
+> + T x at p;
+> + ... when != x
+> +     when strict
+> +?x = e;
+> +// </smpl>
+> +
+> +
+> +// ----------------------------------------------------------------------------
+> +
+> + at modify_context depends on !patch && (context || org || report) forall@
+> +type T;
+> +identifier x;
+> +expression e;
+> +position p != {bad.p,worse.p};
+> +position j0;
+> +@@
+> +
+> +* static
+> + T x at j0@p;
+> + ... when != x
+> +     when strict
+> +?x = e;
+> +
+> +// ----------------------------------------------------------------------------
+> +
+> + at script:python modify_org depends on org@
+> +j0 << modify_context.j0;
+> +@@
+> +
+> +msg = "Unnecessary static on local variable."
+> +coccilib.org.print_todo(j0[0], msg)
+> +
+> +// ----------------------------------------------------------------------------
+> +
+> + at script:python modify_report depends on report@
+> +j0 << modify_context.j0;
+> +@@
+> +
+> +msg = "Unnecessary static on local variable."
+> +coccilib.report.print_report(j0[0], msg)
+> +
+> --
+> 2.5.0
+>
+>
