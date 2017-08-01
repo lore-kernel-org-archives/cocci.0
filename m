@@ -1,132 +1,208 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 1 Aug 2017 07:04:50 +0200 (CEST)
-Subject: [Cocci] [PATCH v2] Coccinelle: Script to remove unnecessary
- static on local variables
-In-Reply-To: <20170801043804.GA4265@embeddedgus>
-References: <20170801043804.GA4265@embeddedgus>
-Message-ID: <alpine.DEB.2.20.1708010704350.2671@hadrien>
+From: ydroneaud@opteya.com (Yann Droneaud)
+Date: Tue, 01 Aug 2017 15:04:01 +0200
+Subject: [Cocci] Surprising parsing error occuring when casting C string
+Message-ID: <1501592641.3791.10.camel@opteya.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+Hi,
 
-On Mon, 31 Jul 2017, Gustavo A. R. Silva wrote:
+I'm wondering why coccinelle seems not to be able to apply simple
+semantic patch when code source contains casted C string.
 
-> Coccinelle script to remove unnecessary static on local variables when
-> the variables are not used before update.
->
-> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-> ---
-> Changes in v2:
->  Update header and Copyright note.
->
->  scripts/coccinelle/misc/static_unnecessary.cocci | 96 ++++++++++++++++++++++++
->  1 file changed, 96 insertions(+)
->  create mode 100644 scripts/coccinelle/misc/static_unnecessary.cocci
->
-> diff --git a/scripts/coccinelle/misc/static_unnecessary.cocci b/scripts/coccinelle/misc/static_unnecessary.cocci
-> new file mode 100644
-> index 0000000..2b10586
-> --- /dev/null
-> +++ b/scripts/coccinelle/misc/static_unnecessary.cocci
-> @@ -0,0 +1,96 @@
-> +/// Drop static on local variable when the variable is not used before update.
-> +//#
-> +//# Removing unnecessary static on local variables reduces the code
-> +//# size and increases maintainability.
-> +//#
-> +//# On the other hand, even though it is rare, be aware that if a
-> +//# large object is initialized all at once, it might not be wise
-> +//# to remove the static because that would increase the risk of a
-> +//# stack overflow.
-> +///
-> +// Confidence: Moderate
-> +// Copyright: (C) 2017 Julia Lawall, Inria. GPLv2.
-> +// URL: http://coccinelle.lip6.fr/
-> +// Copyright: (C) 2017 Gustavo A. R. Silva. GPLv2.
-> +// Work supported by a grant from
-> +// The Linux Foundation's Core Infrastructure Initiative.
-> +// URL: https://www.coreinfrastructure.org/
-> +// Options: --no-includes --include-headers
-> +// Keywords: static
-> +
-> +virtual patch
-> +virtual context
-> +virtual org
-> +virtual report
-> +
-> +// <smpl>
-> + at bad exists@
-> +position p;
-> +identifier x;
-> +expression e;
-> +type T;
-> +@@
-> +
-> +T x at p;
-> +... when != x = e
-> +x = <+...x...+>
-> +
-> + at worse exists@
-> +position p;
-> +identifier x;
-> +type T;
-> +@@
-> +
-> +T x at p;
-> +...
-> + &x
-> +
-> + at modify depends on patch && !context && !org && !report@
-> +identifier x;
-> +expression e;
-> +type T;
-> +position p != {bad.p,worse.p};
-> +@@
-> +
-> +-static
-> + T x at p;
-> + ... when != x
-> +     when strict
-> +?x = e;
-> +// </smpl>
-> +
-> +
-> +// ----------------------------------------------------------------------------
-> +
-> + at modify_context depends on !patch && (context || org || report) forall@
-> +type T;
-> +identifier x;
-> +expression e;
-> +position p != {bad.p,worse.p};
-> +position j0;
-> +@@
-> +
-> +* static
-> + T x at j0@p;
-> + ... when != x
-> +     when strict
-> +?x = e;
-> +
-> +// ----------------------------------------------------------------------------
-> +
-> + at script:python modify_org depends on org@
-> +j0 << modify_context.j0;
-> +@@
-> +
-> +msg = "Unnecessary static on local variable."
-> +coccilib.org.print_todo(j0[0], msg)
-> +
-> +// ----------------------------------------------------------------------------
-> +
-> + at script:python modify_report depends on report@
-> +j0 << modify_context.j0;
-> +@@
-> +
-> +msg = "Unnecessary static on local variable."
-> +coccilib.report.print_report(j0[0], msg)
-> +
-> --
-> 2.5.0
->
->
+Given simple source file (note the lack of definition for types,
+assuming they're somewhere in an included header):
+
+$ cat test.c
+static structure_t array[] =
+{
+        { (pointer_t)"a string", 32 },
+        { (pointer_t)DEFINED, 23 }
+};
+
+void function(void)
+{
+        if (!other(1, (pointer_t)"value", 3))
+                foo();
+        else
+                bar();
+}
+
+And very simple semantic patch:
+
+$ cat test.cocci
+@@
+@@
+- foo()
++ FOO()
+
+Here's the result:
+
+$ spatch --verbose-parsing --sp-file test.cocci test.c
+init_defs_builtins: /usr/lib64/coccinelle/standard.h
+HANDLING: test.c
+ERROR-RECOV: found sync '}' at line 5
+ERROR-RECOV: found sync bis, eating } and ;
+parsing pass2: try again
+ERROR-RECOV: found sync '}' at line 5
+ERROR-RECOV: found sync bis, eating } and ;
+parse error 
+ = File "test.c", line 3, column 21, charpos = 52
+  around = '"a string"',
+  whole content =         { (pointer_t)"a string", 32 },
+badcount: 4
+bad: static structure_t array[] =
+bad: {
+BAD:!!!!!         { (pointer_t)"a string", 32 },
+bad:         { (pointer_t)DEFINED, 23 }
+bad: };
+ERROR-RECOV: found sync '}' at line 13
+parsing pass2: try again
+ERROR-RECOV: found sync '}' at line 13
+parse error 
+ = File "test.c", line 9, column 33, charpos = 164
+  around = '"value"',
+  whole content =         if (!other(1, (pointer_t)"value", 3))
+badcount: 8
+bad: };
+bad: 
+bad: void function(void)
+bad: {
+BAD:!!!!!         if (!other(1, (pointer_t)"value", 3))
+bad:                 foo();
+bad:         else
+bad:                 bar();
+bad: }
+
+Modifying a bit the semantic patch to make "pointer_t" a known type
+doesn't help:
+
+$ cat test-typedef.cocci
+@@
+typedef pointer_t;
+@@
+- foo()
++ FOO()
+
+$ spatch --verbose-parsing --sp-file test-typedef.cocci test.c
+init_defs_builtins: /usr/lib64/coccinelle/standard.h
+HANDLING: test.c
+ERROR-RECOV: found sync '}' at line 5
+ERROR-RECOV: found sync bis, eating } and ;
+parsing pass2: try again
+ERROR-RECOV: found sync '}' at line 5
+ERROR-RECOV: found sync bis, eating } and ;
+parse error 
+ = File "test.c", line 3, column 21, charpos = 52
+  around = '"a string"',
+  whole content =         { (pointer_t)"a string", 32 },
+badcount: 4
+bad: static structure_t array[] =
+bad: {
+BAD:!!!!!         { (pointer_t)"a string", 32 },
+bad:         { (pointer_t)DEFINED, 23 }
+bad: };
+ERROR-RECOV: found sync '}' at line 13
+parsing pass2: try again
+ERROR-RECOV: found sync '}' at line 13
+parse error 
+ = File "test.c", line 9, column 33, charpos = 164
+  around = '"value"',
+  whole content =         if (!other(1, (pointer_t)"value", 3))
+badcount: 8
+bad: };
+bad: 
+bad: void function(void)
+bad: {
+BAD:!!!!!         if (!other(1, (pointer_t)"value", 3))
+bad:                 foo();
+bad:         else
+bad:                 bar();
+bad: }
+
+In other hand, if I modify the source file to have definition for
+pointer_t type, and reuse the initial semantic patch, everything is
+fine:
+
+$ diff -u test.c test-typedef.c
+--- test.c	2017-08-01 14:31:03.773388889 +0200
++++ test-typedef.c	2017-08-01 14:32:15.958502964 +0200
+@@ -1,3 +1,5 @@
++typedef unsigned char *pointer_t;
++
+ static structure_t array[] =
+ {
+         { (pointer_t)"a string", 32 },
+
+$ spatch --verbose-parsing --sp-file test.cocci test-typedef.c
+init_defs_builtins: /usr/lib64/coccinelle/standard.h
+HANDLING: test-typedef.c
+diff = 
+--- test-typedef.c
++++ /tmp/cocci-output-15390-91b50a-test-typedef.c
+@@ -9,7 +9,7 @@ static structure_t array[] =
+ void function(void)
+ {
+         if (!other(1, (pointer_t)"value", 3))
+-                foo();
++                FOO();
+         else
+                 bar();
+ }
+
+While I cannot explained why it works, defining "structure_t" type in
+source code also makes spatch happy (I belive coccinelle is able to
+infer pointer_t is a type):
+
+$ diff -u test.c test-struct.c
+--- test.c	2017-08-01 14:31:03.773388889 +0200
++++ test-struct.c	2017-08-01 14:31:29.788430001 +0200
+@@ -1,3 +1,11 @@
++struct structure
++{
++        pointer_t p;
++        int i;
++};
++
++typedef structure structure_t;
++
+ static structure_t array[] =
+ {
+         { (pointer_t)"a string", 32 },
+
+
+$ spatch --verbose-parsing --sp-file test.cocci test-struct.c
+init_defs_builtins: /usr/lib64/coccinelle/standard.h
+HANDLING: test-struct.c
+diff = 
+--- test-struct.c
++++ /tmp/cocci-output-15527-0af6db-test-struct.c
+@@ -15,7 +15,7 @@ static structure_t array[] =
+ void function(void)
+ {
+         if (!other(1, (pointer_t)"value", 3))
+-                foo();
++                FOO();
+         else
+                 bar();
+ }
+
+
+
+Why `(pointer_t) "string"' is considered bad, when no proper type is
+defined in the current source file ?
+
+As soon as such construct is located in a function, the whole function
+get skipped by coccinelle, which is a pity when something has to be
+patched in the function.
+
+When applying semantic patches on large code base, it's sad to have to
+go through all files to check and apply patch manually.
+
+What can I do to work around this issue ?
+
+Regards.
+
+-- 
+Yann Droneaud
+OPTEYA
