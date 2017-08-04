@@ -1,70 +1,149 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 1 Aug 2017 16:23:50 +0200 (CEST)
-Subject: [Cocci] Surprising parsing error occuring when casting C string
-In-Reply-To: <1501597398.3791.12.camel@opteya.com>
-References: <1501592641.3791.10.camel@opteya.com>
- <alpine.DEB.2.20.1708011543570.21130@hadrien>
- <1501597398.3791.12.camel@opteya.com>
-Message-ID: <alpine.DEB.2.20.1708011623290.21130@hadrien>
+Date: Fri, 4 Aug 2017 17:23:03 +0200 (CEST)
+Subject: [Cocci] [PATCH] Coccinelle: add atomic_as_refcounter script
+In-Reply-To: <1500364111-2192-2-git-send-email-elena.reshetova@intel.com>
+References: <1500364111-2192-1-git-send-email-elena.reshetova@intel.com>
+ <1500364111-2192-2-git-send-email-elena.reshetova@intel.com>
+Message-ID: <alpine.DEB.2.20.1708041720440.22068@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 
 
-On Tue, 1 Aug 2017, Yann Droneaud wrote:
+On Tue, 18 Jul 2017, Elena Reshetova wrote:
 
-> Hi,
+> atomic_as_refcounter.cocci script allows detecting
+> cases when refcount_t type and API should be used
+> instead of atomic_t.
 >
-> Le mardi 01 ao?t 2017 ? 15:46 +0200, Julia Lawall a ?crit :
-> > On Tue, 1 Aug 2017, Yann Droneaud wrote:
-> >
-> > > I'm wondering why coccinelle seems not to be able to apply simple
-> > > semantic patch when code source contains casted C string.
-> >
-> > Fixed.  Take the github version.
-> >
-> > Basically, Coccinelle makes some inferences during parsin about what
-> > maybe a typedef.  That explains the examples you have below about
-> > some cases working.  I extended those rules to take some more kinds
-> > of constants into account.
-> >
+> Signed-off-by: Elena Reshetova <elena.reshetova@intel.com>
+> ---
+>  scripts/coccinelle/api/atomic_as_refcounter.cocci | 102 ++++++++++++++++++++++
+>  1 file changed, 102 insertions(+)
+>  create mode 100644 scripts/coccinelle/api/atomic_as_refcounter.cocci
 >
-> It works ! Thanks a lot for this very quick fix.
+> diff --git a/scripts/coccinelle/api/atomic_as_refcounter.cocci b/scripts/coccinelle/api/atomic_as_refcounter.cocci
+> new file mode 100644
+> index 0000000..a16d395
+> --- /dev/null
+> +++ b/scripts/coccinelle/api/atomic_as_refcounter.cocci
+> @@ -0,0 +1,102 @@
+> +// Check if refcount_t type and API should be used
+> +// instead of atomic_t type when dealing with refcounters
+> +//
+> +// Copyright (c) 2016-2017, Elena Reshetova, Intel Corporation
+> +//
+> +// Confidence: Moderate
+> +// URL: http://coccinelle.lip6.fr/
+> +// Options: --include-headers --very-quiet
+> +
+> +virtual report
+> +
+> + at r1 exists@
+> +identifier a, x, y;
+> +position p1, p2;
+> +identifier fname =~ ".*free.*";
+> +identifier fname2 =~ ".*destroy.*";
+> +identifier fname3 =~ ".*del.*";
+> +identifier fname4 =~ ".*queue_work.*";
+> +identifier fname5 =~ ".*schedule_work.*";
+> +identifier fname6 =~ ".*call_rcu.*";
+> +
+> +@@
+> +
+> +(
+> + atomic_dec_and_test at p1(&(a)->x)
+> +|
+> + atomic_dec_and_lock at p1(&(a)->x, ...)
+> +|
+> + atomic_long_dec_and_lock at p1(&(a)->x, ...)
+> +|
+> + atomic_long_dec_and_test at p1(&(a)->x)
+> +|
+> + atomic64_dec_and_test at p1(&(a)->x)
+> +|
+> + local_dec_and_test at p1(&(a)->x)
+> +)
+> +...
+> +?y=a
 
-Thanks for the report :)
+This makes the line optional. And if it dosn't appear, there is no
+constraint on y.  So the rule matches:
+
+int main() {
+  atomic64_dec_and_test(&(a)->x);
+  free(b);
+}
+
+I would suggest to just make two rules, one with y=a and one without.
 
 julia
 
->
-> $ ../../UPSTREAM/coccinelle/spatch.opt --version
-> spatch version 1.0.6-00186-g0acd38eed4e5 compiled with OCaml version
-> 4.04.0
-> Flags passed to the configure script: [none]
-> Python scripting support: yes
-> Syntax of regular expresssions: PCRE
->
-> $ ../../UPSTREAM/coccinelle/spatch.opt --verbose-parsing --sp-file
-> test.cocci test.c
-> init_defs_builtins: ../../UPSTREAM/coccinelle/standard.h
-> HANDLING: test.c
-> diff =
-> --- test.c
-> +++ /tmp/cocci-output-20045-ee70d9-test.c
-> @@ -7,7 +7,7 @@ static structure_t array[] =
->  void function(void)
->  {
->          if (!other(1, (pointer_t)"value", 3))
-> -                foo();
-> +                FOO();
->          else
->                  bar();
->  }
->
->
-> Regards.
->
+> +...
+> +(
+> + fname at p2(a, ...);
+> +|
+> + fname at p2(y, ...);
+> +|
+> + fname2 at p2(...);
+> +|
+> + fname3 at p2(...);
+> +|
+> + fname4 at p2(...);
+> +|
+> + fname5 at p2(...);
+> +|
+> + fname6 at p2(...);
+> +)
+> +
+> +
+> + at script:python depends on report@
+> +p1 << r1.p1;
+> +p2 << r1.p2;
+> +@@
+> +msg = "atomic_dec_and_test variation before object free at line %s."
+> +coccilib.report.print_report(p1[0], msg % (p2[0].line))
+> +
+> + at r2 exists@
+> +identifier a, x;
+> +position p1;
+> +@@
+> +
+> +(
+> +atomic_add_unless(&(a)->x,-1,1)@p1
+> +|
+> +atomic_long_add_unless(&(a)->x,-1,1)@p1
+> +|
+> +atomic64_add_unless(&(a)->x,-1,1)@p1
+> +)
+> +
+> + at script:python depends on report@
+> +p1 << r2.p1;
+> +@@
+> +msg = "atomic_add_unless"
+> +coccilib.report.print_report(p1[0], msg)
+> +
+> + at r3 exists@
+> +identifier x;
+> +position p1;
+> +@@
+> +
+> +(
+> +x = atomic_add_return at p1(-1, ...);
+> +|
+> +x = atomic_long_add_return at p1(-1, ...);
+> +|
+> +x = atomic64_add_return at p1(-1, ...);
+> +)
+> +
+> + at script:python depends on report@
+> +p1 << r3.p1;
+> +@@
+> +msg = "x = atomic_add_return(-1, ...)"
+> +coccilib.report.print_report(p1[0], msg)
+> +
+> +
 > --
-> Yann Droneaud
-> OPTEYA
+> 2.7.4
 >
 >
