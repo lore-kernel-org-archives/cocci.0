@@ -1,38 +1,54 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 8 Aug 2017 20:34:01 +0200
-Subject: [Cocci] add atomic_as_refcounter script
-In-Reply-To: <2236FBA76BA1254E88B949DDB74E612B6FF2E1DA@IRSMSX102.ger.corp.intel.com>
-References: <2236FBA76BA1254E88B949DDB74E612B6FF2E1DA@IRSMSX102.ger.corp.intel.com>
-Message-ID: <4454b236-64be-13cb-f85d-fa850619c7d6@users.sourceforge.net>
+From: cakturk@gmail.com (Cihangir Akturk)
+Date: Thu, 10 Aug 2017 20:40:25 +0300
+Subject: [Cocci] [PATCH] coccicheck: improve pattern for getting relative
+	path
+Message-ID: <1502386825-363-1-git-send-email-cakturk@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Dear Elena,
+When invoked with V=1, coccicheck script prints the information about
+which semantic patch (*.cocci file) used for this operation.  Actually,
+it prints out the relative path of the related semantic patch. The
+script uses sed to remove the source tree part from cocci file path like
+so:
 
-I have also taken another look at your script.
+FILE=`echo $COCCI | sed "s|$srctree/||"`
 
-The SmPL rule ?r1? specifies six metavariables for identifiers. It seems that
-the names ?fname3? till ?fname6? do not care for different function parameters
-in the SmPL disjunction at the end.
-How do you think about to reduce this disjunction by using a regular expression
-with an alternation like ?.*(?:call_rcu|del|queue_work|schedule_work).*?
-for a constraint?
+This pattern works well most of the time. But in cases where $COCCI
+doesn't start with "./" characters, it doesn't remove the right part.
 
-Will it help to refactor another rule a bit?
+Consider the following scenario:
 
-@r3 exists@
-identifier x;
-position p1;
-@@
- x =
-(
- atomic_add_return at p1(-1, ...);
-|
- atomic_long_add_return at p1(-1, ...);
-|
- atomic64_add_return at p1(-1, ...);
-)
+$ make coccicheck COCCI=scripts/coccinelle/api/drm-get-put.cocci \
+                        MODE=patch M=drivers/staging V=1
 
+where
 
-Regards,
-Markus
+COCCI=scripts/coccinelle/api/drm-get-put.cocci and srctree=.
+
+In this case, out pattern matches the first "s/", and we end up
+assigning "scriptcoccinelle/api/drm-get-put.cocci" to $FILE.
+
+Fix this by adding a caret ^ at the beginning of regex pattern, so that
+it matches only start of the path.
+
+Signed-off-by: Cihangir Akturk <cakturk@gmail.com>
+---
+ scripts/coccicheck | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/scripts/coccicheck b/scripts/coccicheck
+index ec487b8..8de4245 100755
+--- a/scripts/coccicheck
++++ b/scripts/coccicheck
+@@ -193,7 +193,7 @@ coccinelle () {
+ 
+     if [ $VERBOSE -ne 0 -a $ONLINE -eq 0 ] ; then
+ 
+-	FILE=`echo $COCCI | sed "s|$srctree/||"`
++	FILE=`echo $COCCI | sed "s|^$srctree/||"`
+ 
+ 	echo "Processing `basename $COCCI`"
+ 	echo "with option(s) \"$OPT\""
+-- 
+2.7.4
