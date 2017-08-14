@@ -1,67 +1,22 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 10 Aug 2017 21:08:31 +0200 (CEST)
-Subject: [Cocci] [PATCH] coccicheck: improve pattern for getting
-	relative path
-In-Reply-To: <1502386825-363-1-git-send-email-cakturk@gmail.com>
-References: <1502386825-363-1-git-send-email-cakturk@gmail.com>
-Message-ID: <alpine.DEB.2.20.1708102108110.2174@hadrien>
+From: elena.reshetova@intel.com (Elena Reshetova)
+Date: Mon, 14 Aug 2017 08:59:45 +0300
+Subject: [Cocci] [PATCH v2] coccinelle: provide rule for finding refcounters
+Message-ID: <1502690386-5605-1-git-send-email-elena.reshetova@intel.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+changes in v2:
+Following the suggestion from Julia the first rule is split into
+2. The output does not differ that much between these two versions,
+but rule became more precise.
 
 
-On Thu, 10 Aug 2017, Cihangir Akturk wrote:
+Elena Reshetova (1):
+  Coccinelle: add atomic_as_refcounter script
 
-> When invoked with V=1, coccicheck script prints the information about
-> which semantic patch (*.cocci file) used for this operation.  Actually,
-> it prints out the relative path of the related semantic patch. The
-> script uses sed to remove the source tree part from cocci file path like
-> so:
->
-> FILE=`echo $COCCI | sed "s|$srctree/||"`
->
-> This pattern works well most of the time. But in cases where $COCCI
-> doesn't start with "./" characters, it doesn't remove the right part.
->
-> Consider the following scenario:
->
-> $ make coccicheck COCCI=scripts/coccinelle/api/drm-get-put.cocci \
->                         MODE=patch M=drivers/staging V=1
->
-> where
->
-> COCCI=scripts/coccinelle/api/drm-get-put.cocci and srctree=.
->
-> In this case, out pattern matches the first "s/", and we end up
-> assigning "scriptcoccinelle/api/drm-get-put.cocci" to $FILE.
->
-> Fix this by adding a caret ^ at the beginning of regex pattern, so that
-> it matches only start of the path.
+ scripts/coccinelle/api/atomic_as_refcounter.cocci | 148 ++++++++++++++++++++++
+ 1 file changed, 148 insertions(+)
+ create mode 100644 scripts/coccinelle/api/atomic_as_refcounter.cocci
 
-Nicolas, is this ok?
-
-julia
-
->
-> Signed-off-by: Cihangir Akturk <cakturk@gmail.com>
-> ---
->  scripts/coccicheck | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/scripts/coccicheck b/scripts/coccicheck
-> index ec487b8..8de4245 100755
-> --- a/scripts/coccicheck
-> +++ b/scripts/coccicheck
-> @@ -193,7 +193,7 @@ coccinelle () {
->
->      if [ $VERBOSE -ne 0 -a $ONLINE -eq 0 ] ; then
->
-> -	FILE=`echo $COCCI | sed "s|$srctree/||"`
-> +	FILE=`echo $COCCI | sed "s|^$srctree/||"`
->
->  	echo "Processing `basename $COCCI`"
->  	echo "with option(s) \"$OPT\""
-> --
-> 2.7.4
->
->
+-- 
+2.7.4
