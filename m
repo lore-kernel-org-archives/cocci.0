@@ -1,40 +1,30 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 15 Aug 2017 22:15:24 +0200
-Subject: [Cocci] Comparing statement lists with SmPL
-In-Reply-To: <alpine.DEB.2.20.1708152208320.2049@hadrien>
-References: <aff3ee47-e4cd-af52-1a66-304f36ddc1ed@users.sourceforge.net>
- <alpine.DEB.2.20.1708151930140.4600@hadrien>
- <69d615e4-0f62-2289-dd59-97c625ba47e8@users.sourceforge.net>
- <76e2fbf5-4812-18eb-2968-53019d97ab14@users.sourceforge.net>
- <alpine.DEB.2.20.1708152208320.2049@hadrien>
-Message-ID: <c961b90f-3155-6c3a-c27f-aba071d6598f@users.sourceforge.net>
+From: garsilva@embeddedor.com (Gustavo A. R. Silva)
+Date: Tue, 15 Aug 2017 15:18:10 -0500
+Subject: [Cocci] __init macro and Coccinelle
+Message-ID: <d2d75cb0-c297-ba65-d7cd-84ff21e5d409@embeddedor.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> Now I am looking for a way to express the constraint that the statement list
->> metavariable should match only source code with two statements at least.
->> Can the search for duplicated source code be improved by the means of the
->> semantic patch language?
-> 
-> For two statements at least you could do:
-> 
-> (
-> {
-> s1
-> s2
-> ...
-> }
-> &
-> {
-> sl
-> }
-> )
+Hello everybody,
 
-Thanks for another example.
+I have the following script:
+
+@r@
+identifier f_init;
+position p;
+@@
 
 
-I admit that I am unused to such a variable combination with a SmPL conjunction.
-Will this programming interface evolve any further?
+* __init f_init at p(...)
 
-Regards,
-Markus
+I want to spot __init functions, but it doesn't seem to work. I get a 
+parse error around the __init macro:
+
+around = '__init',
+   whole content = * __init f_init at p(...)
+
+I wonder if there is a way to work around that issue?
+
+Thank you
+-- 
+Gustavo A. R. Silva
