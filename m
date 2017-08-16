@@ -1,21 +1,24 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 16 Aug 2017 19:00:11 +0200
-Subject: [Cocci] Coccinelle: add atomic_as_refcounter script
-In-Reply-To: <1502884342-10702-2-git-send-email-elena.reshetova@intel.com>
-References: <1502884342-10702-2-git-send-email-elena.reshetova@intel.com>
-Message-ID: <ae535db6-f568-9424-466d-596844c1ab9f@users.sourceforge.net>
+From: garsilva@embeddedor.com (Gustavo A. R. Silva)
+Date: Wed, 16 Aug 2017 15:09:43 -0500
+Subject: [Cocci] Reading multiple input files
+Message-ID: <92854f94-595d-180f-5288-c18017c4cc01@embeddedor.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Dear Elena,
+Hello everybody,
 
-Why do you insist to use the variables ?fname2? till ?fname6? in
-this evolving SmPL script (instead of merging them into a single one
-with a special constraint)?
+Is there any way to make a cocci script read from a list of files and 
+run on each of them?
 
-How do you think about to omit the cover letter for the addition
-of such a script (when the change log can be integrated into
-the same message for your update suggestion)?
+The scenario is as follows: I have a list of files that I know may 
+contain either actual bugs or false positives. I want to run cocci 
+scripts on each of them and I wonder if I can do this using Coccinelle only.
 
-Regards,
-Markus
+Maybe giving the cocci script a file containing the list as input and, 
+then reading the list with a python script from inside the cocci script?
+
+Is this possible?
+
+Thank you
+-- 
+Gustavo A. R. Silva
