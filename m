@@ -1,31 +1,32 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Thu, 17 Aug 2017 18:11:50 +0200
+Date: Thu, 17 Aug 2017 18:50:07 +0200
 Subject: [Cocci] Improving size determinations with SmPL
-In-Reply-To: <alpine.DEB.2.20.1708171759271.3748@hadrien>
+In-Reply-To: <alpine.DEB.2.20.1708171818300.3748@hadrien>
 References: <788ea49a-14c4-7dfe-d868-c8df90dd4439@users.sourceforge.net>
  <alpine.DEB.2.20.1708171721280.3748@hadrien>
- <a0bda451-ef87-2317-2abc-62b1bd59e386@users.sourceforge.net>
- <alpine.DEB.2.20.1708171759271.3748@hadrien>
-Message-ID: <e6f7b8c2-d1e6-ccc3-dec2-26880450a69a@users.sourceforge.net>
+ <alpine.DEB.2.20.1708171818300.3748@hadrien>
+Message-ID: <1a936e2d-a2aa-5e2e-923b-bfc585bda5c6@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->>> ... when any should be ...>
->>
->> I am unsure if I interpret your suggestion correctly.
+>> ... when any should be <...
 > 
-> No.  Go read the original message again. It says exactly what to do and
-> where it should be done.
+> I have told you exactly what to do here.
 
-Your hint might be nice.
+You are right in the sense that I misinterpreted your change suggestion.
 
 
-> Eg, my message has two comments, but you have made three changes, which is not correct.
+> The line above currently contains ... when any.  It (and only it) should be
+> completely removed and changed to <...
 
-I have tried out to convert the SmPL ellipsis into the optional dot variant.
+But I find it inappropriate to enclose the function call code by an optional
+SmPL nest construct.
 
-But I wonder still about the error message ?minus: parse error:?
-for an adjusted SmPL script variant.
+
+> Nowhere do I suggest to put <... ... when any ...>
+
+The suggested script variant seems to work finally.
+Thanks for your information.
 
 @replacement@
 identifier action, var, work;
@@ -35,7 +36,7 @@ type T, X;
  {
  ... when any
  X* var;
- <... ... when any ...>
+ <...
  var = action(...,
               sizeof(
 -                    X
@@ -43,9 +44,12 @@ type T, X;
                     ),
               ...
              )
- <... ... when any ...>
+ ...>
  }
 
+
+Now I wonder why the SmPL construct ?<+... ...+>? does not produce the same
+transformation result for the source file ?fs/pstore/ram.c?.
 
 Regards,
 Markus
