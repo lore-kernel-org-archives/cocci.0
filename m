@@ -1,42 +1,46 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 17 Aug 2017 20:44:53 +0200 (CEST)
-Subject: [Cocci] spatch / semantic patch missing some conversions?
-In-Reply-To: <CAA9_cmc79VTZ4zpQqXu5zC+s4s1gv0vzXU23Bp6BcNYrekRKBA@mail.gmail.com>
-References: <CAA9_cmee9PYMg-v+GE4r_92EWWzmRgPN8ABJA4vExfKJhSXQ=A@mail.gmail.com>
- <alpine.DEB.2.20.1708171900460.3748@hadrien>
- <CAA9_cmfBVz-m3DAsLXpWerxN26=_zoCxXT-JwF6jkHy8kdgMbA@mail.gmail.com>
- <CAA9_cmc79VTZ4zpQqXu5zC+s4s1gv0vzXU23Bp6BcNYrekRKBA@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1708172044430.2068@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Thu, 17 Aug 2017 21:26:06 +0200
+Subject: [Cocci] Comparing statement lists with SmPL
+In-Reply-To: <alpine.DEB.2.20.1708172043460.2068@hadrien>
+References: <aff3ee47-e4cd-af52-1a66-304f36ddc1ed@users.sourceforge.net>
+ <alpine.DEB.2.20.1708151930140.4600@hadrien>
+ <69d615e4-0f62-2289-dd59-97c625ba47e8@users.sourceforge.net>
+ <76e2fbf5-4812-18eb-2968-53019d97ab14@users.sourceforge.net>
+ <alpine.DEB.2.20.1708152208320.2049@hadrien>
+ <be855581-e22e-2b58-8565-68412ae590b3@users.sourceforge.net>
+ <c5f3c8db-e5ec-47c1-3d84-8392a7101645@users.sourceforge.net>
+ <alpine.DEB.2.20.1708172043460.2068@hadrien>
+Message-ID: <b4451f01-e10a-c0f3-91ff-f49e185b3644@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+>> elfring at Sonne:~/Projekte/Linux/next-patched> git checkout next-20170803 && spatch.opt ~/Projekte/Coccinelle/janitor/show_same_statements3.cocci fs/ubifs/lpt.c
+>> ?
+>> @@ -1974,10 +1974,6 @@ again:
+>>  		int ret, lnum = lprops->lnum;
+>>
+>>  		ret = scan_cb(c, lprops, path[h].in_tree, data);
+>> -		if (ret < 0) {
+>> -			err = ret;
+>> -			goto out;
+>> -		}
+>>  		if (ret & LPT_SCAN_ADD) {
+>>  			/* Add all the nodes in path to the tree in memory */
+>>  			for (h = 1; h < c->lpt_hght; h++) {
+>>
+>>
+>> Now I wonder how this test result should fit to my source code search pattern.
+> 
+> I guess there is a loop around this code, so it is reachable from itself.
 
+* How can we achieve progress with such a bit of information?
 
-On Thu, 17 Aug 2017, Dan Williams wrote:
+* Should such false positives be avoided anyhow?
 
-> On Thu, Aug 17, 2017 at 11:10 AM, Dan Williams <dan.j.williams@gmail.com> wrote:
-> > On Thu, Aug 17, 2017 at 10:06 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
-> >> The updated semantic patch is below.  It makes one pass to collect the
-> >> function names and then another pass to transform the functions, whereever
-> >> they are defined.
-> >>
-> >> I have attached the output I get on today's linux-next.  If you want to
-> >> run it your self, I suggest first running
-> >>
-> >> ~/coccinelle/scripts/idutils_index.sh
-> >>
-> >> in your kernel tree and then using the following command line:
-> >>
-> >> spatch.opt mmap.cocci --use-idutils --no-includes --include-headers --in-place /run/shm/linux-next -j X --very-quiet
-> >>
-> >> where X is the number of core you have available.
-> >>
-> >> Let me know if there are any problems.
-> >
-> > Wow! Thank you, this is great.
->
-> May I add you sign-off to the patch that goes upstream?
+* Will answers to other questions become more helpful again?
 
-OK, sure.
+* Are there further development challenges to consider for the safe identification
+  of unique statements by metavariables?
 
-julia
+Regards,
+Markus
