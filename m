@@ -1,53 +1,33 @@
-From: garsilva@embeddedor.com (Gustavo A. R. Silva)
-Date: Wed, 16 Aug 2017 15:18:22 -0500
-Subject: [Cocci] Reading multiple input files
-In-Reply-To: <alpine.DEB.2.20.1708162211390.3683@hadrien>
-References: <92854f94-595d-180f-5288-c18017c4cc01@embeddedor.com>
- <alpine.DEB.2.20.1708162211390.3683@hadrien>
-Message-ID: <26af2528-2c06-0e6f-fb91-5003738aa0f9@embeddedor.com>
+From: elena.reshetova@intel.com (Reshetova, Elena)
+Date: Thu, 17 Aug 2017 07:22:17 +0000
+Subject: [Cocci] Coccinelle: add atomic_as_refcounter script
+In-Reply-To: <ae535db6-f568-9424-466d-596844c1ab9f@users.sourceforge.net>
+References: <1502884342-10702-2-git-send-email-elena.reshetova@intel.com>
+ <ae535db6-f568-9424-466d-596844c1ab9f@users.sourceforge.net>
+Message-ID: <2236FBA76BA1254E88B949DDB74E612B6FF489CB@IRSMSX102.ger.corp.intel.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Awesome. Thank you :)
 
---
-Gustavo A. R. Silva
+> Dear Elena,
 
-On 08/16/2017 03:14 PM, Julia Lawall wrote:
->
->
-> On Wed, 16 Aug 2017, Gustavo A. R. Silva wrote:
->
->> Hello everybody,
->>
->> Is there any way to make a cocci script read from a list of files and run on
->> each of them?
->>
->> The scenario is as follows: I have a list of files that I know may contain
->> either actual bugs or false positives. I want to run cocci scripts on each of
->> them and I wonder if I can do this using Coccinelle only.
->>
->> Maybe giving the cocci script a file containing the list as input and, then
->> reading the list with a python script from inside the cocci script?
->>
->> Is this possible?
->
-> Yes.  Extracted from the latex documentation:
->
-> \rare{-{}-file-groups}{Specify a file that contains the list of files to
->   process.  Files should be listed one per line.  Blank lines should be
->   used to separate the files into \textit{groups}.  All files within a
->   single group will be treated at once.  This is useful, for example, if
->   one wants to process a complete driver, that consists of more than one
->   file, and it is necessary to consider the interaction between code
->   fragments that are present in the different files.  Single-line comments
->   beginning with \texttt{//} can be used freely and are ignored.}
->
-> In your case, just make a file with a line for each file you are
-> interested in and separate each of these lines with a blank line.
->
-> julia
->
+Hi Markus!
 
--- 
-Gustavo A. R. Silva
+> 
+> Why do you insist to use the variables ?fname2? till ?fname6? in
+> this evolving SmPL script (instead of merging them into a single one
+> with a special constraint)?
+
+I am pretty new to Coccinelle and Julia has recommended against this approach, so I was merely following her advice. 
+I really do not understand the implications of the change as well as she does. 
+Your approach would certainly look prettier script-wise, but I don't want to cause any undesirable side-effects. 
+
+> 
+> How do you think about to omit the cover letter for the addition
+> of such a script (when the change log can be integrated into
+> the same message for your update suggestion)?
+
+Sorry, not sure I understood this. Could you please explain more? 
+> 
+> Regards,
+> Markus
