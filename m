@@ -1,71 +1,76 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 17 Aug 2017 17:22:50 +0200 (CEST)
-Subject: [Cocci] Improving size determinations with SmPL
-In-Reply-To: <788ea49a-14c4-7dfe-d868-c8df90dd4439@users.sourceforge.net>
-References: <788ea49a-14c4-7dfe-d868-c8df90dd4439@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1708171721280.3748@hadrien>
+From: dan.j.williams@gmail.com (Dan Williams)
+Date: Thu, 17 Aug 2017 08:35:02 -0700
+Subject: [Cocci] spatch / semantic patch missing some conversions?
+Message-ID: <CAA9_cmee9PYMg-v+GE4r_92EWWzmRgPN8ABJA4vExfKJhSXQ=A@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hi,
 
+I'm trying to write a semantic patch that will add a flags argument to
+all mmap routines that appear in a struct file_operations instance.
+The semantic patch at the bottom of this mail mostly works, but I
+still end up needing to add rules like:
 
-On Thu, 17 Aug 2017, SF Markus Elfring wrote:
+@@
+identifier x, y;
+@@
 
-> Hello,
->
-> I have constructed the following small script for another application of the
-> semantic patch language.
->
->
-> @replacement@
-> identifier action, var, work;
-> type T, X;
-> @@
->  T work(...)
->  {
->  ... when any
->  X* var;
->  ... when any
+int bochs_mmap(struct file *x,
+                struct vm_area_struct *y
+- )
++ , unsigned long map_flags)
+{
+...
+}
 
-... when any should be <...
+...to catch straggling routines that get missed. What is confusing me
+is that when I run the below with --all-includes the *header* file
+where bochs_mmap() is declared is properly updated, but not the actual
+definition.  Is it possible that the identification of bochs_mmap() as
+an mmap operation occurs after we've already processed the file with
+the definition? That seems to be the common pattern among the failures
+I've seen (cirrus_mmap, qxl_mmap, hibmc_mmap...). I.e. occasions where
+the mmap routine is defined in a different file than the struct
+file_operations that consumes it get missed.
 
->  var = action(...,
->               sizeof(
-> -                    X
-> +                    *var
->                     ),
->               ...
->              )
->  ... when any
+---
 
-... when any should be ...>
+@ a @
+identifier fn;
+identifier ops;
+@@
 
-You request that the sizeof appear on every execution path.  <... ...>
-will cause the transformation to be performed wherever appropriate, but
-allow it not to be relevant on some execution paths.
+struct file_operations ops = { ..., .mmap = fn, ...};
 
-julia
+@@
+identifier a.fn;
+identifier x, y;
+@@
 
->  }
->
->
-> I know that this transformation approach is working to some degree.
-> I came along another source file where I do not get the desired code adjustment
-> with the software version ?1.0.6-00186-g0acd38ee? automatically.
->
-> elfring at Sonne:~/Projekte/Linux/next-patched> git checkout next-20170803 && spatch.opt ~/Projekte/Coccinelle/janitor/safer_size_determination1.cocci fs/pstore/ram.c
->
->
-> How should the software situation be changed further so that the function
-> ?ramoops_pstore_read? will be also handled in the way like I published it in the update suggestion ?pstore: Improve a size determination in three functions??
-> http://elixir.free-electrons.com/linux/v4.12.8/source/fs/pstore/ram.c#L291
-> https://patchwork.kernel.org/patch/9904523/
-> https://lkml.kernel.org/r/<23798ef4-5559-3454-ecf4-e6844b644ff3@users.sourceforge.net>
->
-> Regards,
-> Markus
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+int fn(struct file *x,
+        struct file *y
+-       )
++       , unsigned long map_flags)
+{
+...
+}
+
+@@
+identifier a.fn;
+identifier x, y;
+@@
+
+int fn(struct file *x,
+        struct vm_area_struct *y
+-       );
++       , unsigned long map_flags);
+
+@@
+identifier a.fn;
+@@
+
+int fn(struct file *,
+        struct vm_area_struct *
+-       );
++       , unsigned long);
