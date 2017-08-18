@@ -1,35 +1,33 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 18 Aug 2017 06:57:54 +0200 (CEST)
-Subject: [Cocci] spatch / semantic patch missing some conversions?
-In-Reply-To: <CAA9_cmdxUxAnEbswU1kU3qfbVMp7e9qkd9zXg0CcJLTVJPugsA@mail.gmail.com>
-References: <CAA9_cmee9PYMg-v+GE4r_92EWWzmRgPN8ABJA4vExfKJhSXQ=A@mail.gmail.com>
- <alpine.DEB.2.20.1708171900460.3748@hadrien>
- <CAA9_cmdxUxAnEbswU1kU3qfbVMp7e9qkd9zXg0CcJLTVJPugsA@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1708180657070.2298@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Fri, 18 Aug 2017 10:00:22 +0200
+Subject: [Cocci] Improving size determinations with SmPL
+In-Reply-To: <1a936e2d-a2aa-5e2e-923b-bfc585bda5c6@users.sourceforge.net>
+References: <788ea49a-14c4-7dfe-d868-c8df90dd4439@users.sourceforge.net>
+ <alpine.DEB.2.20.1708171721280.3748@hadrien>
+ <alpine.DEB.2.20.1708171818300.3748@hadrien>
+ <1a936e2d-a2aa-5e2e-923b-bfc585bda5c6@users.sourceforge.net>
+Message-ID: <7ac95e61-aab1-9182-7f8c-136254a94d24@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> The suggested script variant seems to work finally.
 
+I have tried it out once more with the following command.
 
-On Thu, 17 Aug 2017, Dan Williams wrote:
+elfring at Sonne:~/Projekte/Linux/next-patched> spatch.opt --timeout 67 -j 4 --in-place ~/Projekte/Coccinelle/janitor/safer_size_determination2.cocci fs/jfs
+?
+EXN: Common.TimeoutNote: processing took    74.0s: fs/jfs/jfs_txnmgr.c
+?
+EXN: Common.TimeoutNote: processing took    73.5s: fs/jfs/jfs_xtree.c
+?
+EXN: Common.TimeoutNote: processing took    75.2s: fs/jfs/jfs_dtree.c
+?
 
-> On Thu, Aug 17, 2017 at 10:06 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
-> > The updated semantic patch is below.  It makes one pass to collect the
-> > function names and then another pass to transform the functions, whereever
-> > they are defined.
-> >
-> > I have attached the output I get on today's linux-next.  If you want to
-> > run it your self, I suggest first running
-> >
-> > ~/coccinelle/scripts/idutils_index.sh
->
-> I tried build id-utils from source on Fedora and using the one from
-> Debian, both end up with a "mkid" that segfaults when running this
-> script. However, I'm able to make progress without the index, just a
-> bit slower. Mind sharing which version of id-utils is working for you?
+How do you think about to take another look at the shown execution times?
+Are the run time characteristics worth for another clarification?
 
-mkid --version gives
+By the way:
+I would find another line break nicer in these messages.
 
-mkid - 4.6
-
-julia
+Regards,
+Markus
