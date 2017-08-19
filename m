@@ -1,57 +1,31 @@
-From: keescook@chromium.org (Kees Cook)
-Date: Fri, 18 Aug 2017 12:48:02 -0700
-Subject: [Cocci] isomorphism for &(structure)->field vs struct.field
-In-Reply-To: <alpine.DEB.2.20.1708181906240.17742@hadrien>
-References: <CAGXu5jJygEODLuphzbxgiUQ_Box3LZy1kOBiHS7Fp5jAkpOVGQ@mail.gmail.com>
- <alpine.DEB.2.20.1708181906240.17742@hadrien>
-Message-ID: <CAGXu5jLVmZMKGdhLECEo0phyzA0O3KdrM4dLCXT_+vw=3LvcmA@mail.gmail.com>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sat, 19 Aug 2017 21:30:41 +0200
+Subject: [Cocci] Checking evaluation of a regular expression for a SmPL
+	constraint
+Message-ID: <a9e1bd38-702d-6141-4a1f-1b7bb71f0698@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, Aug 18, 2017 at 10:08 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
->
->
-> On Fri, 18 Aug 2017, Kees Cook wrote:
->
->> I'd like to have a rule that would match both:
->>
->> function(ptr);
->> ptr->field = 7;
->>
->> and
->>
->> function(&obj);
->> obj.field = 7;
->>
->> to produce:
->>
->> new_function(ptr, 7);
->>
->> and
->>
->> new_function(&obj, 7);
->>
->> respectively. The internal isomorphisms don't seem to cover this? Or
->> I'm maybe doing something wrong?
->
-> There is no isomorphism for that.  Perhaps you cold live with the
-> following?
->
-> @@
-> expression x,e;
-> @@
->
-> -f
-> +g
->   ( \(&x\|x\)
-> +, e
->   );
-> - \(x.field\|x->field\) = e;
+Hello,
 
-Ah, perfect, thanks!
+Today I published the update suggestion ?[PATCH 1/3] ecryptfs: Delete 21 error
+messages for a failed memory allocation?.
+https://patchwork.kernel.org/patch/9910539/
+https://lkml.kernel.org/r/<1dcce3db-c162-c6bc-d1a8-bcf427248a77@users.sourceforge.net>
 
--Kees
+I noticed during the preparation of this change that the implementation of
+the function ?ecryptfs_add_global_auth_tok? was not automatically found as
+an update candidate.
+A detailed regular expression is involved for a special constraint in
+an evolving SmPL script.
 
--- 
-Kees Cook
-Pixel Security
+I can pass the specified regular expression also to the program ?pcre2test?
+(version 10.23-2.5) which indicates a successful match for an identifier
+like ?kmem_cache_zalloc? then.
+
+Now I wonder about this software situation.
+Would anybody like to test once more if another mismatch can be observed
+around such regex evaluation within the Coccinelle software?
+
+Regards,
+Markus
