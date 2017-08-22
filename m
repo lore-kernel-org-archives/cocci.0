@@ -1,7 +1,7 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 22 Aug 2017 12:20:38 +0200
+Date: Tue, 22 Aug 2017 12:33:22 +0200
 Subject: [Cocci] Comparing statement lists with SmPL
-In-Reply-To: <alpine.DEB.2.20.1708221215070.3178@hadrien>
+In-Reply-To: <alpine.DEB.2.20.1708221221260.3178@hadrien>
 References: <aff3ee47-e4cd-af52-1a66-304f36ddc1ed@users.sourceforge.net>
  <alpine.DEB.2.20.1708151930140.4600@hadrien>
  <69d615e4-0f62-2289-dd59-97c625ba47e8@users.sourceforge.net>
@@ -18,21 +18,45 @@ References: <aff3ee47-e4cd-af52-1a66-304f36ddc1ed@users.sourceforge.net>
  <alpine.DEB.2.20.1708221202380.3178@hadrien>
  <9b9a69c1-105a-47e5-099e-816efd08d8f4@users.sourceforge.net>
  <alpine.DEB.2.20.1708221215070.3178@hadrien>
-Message-ID: <83922670-ac64-c8c5-1977-cddc06f4cb00@users.sourceforge.net>
+ <83922670-ac64-c8c5-1977-cddc06f4cb00@users.sourceforge.net>
+ <alpine.DEB.2.20.1708221221260.3178@hadrien>
+Message-ID: <66d79bf8-20f5-772d-3403-d593fb472e6b@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> How do the presented functions ?usb6fire_fw_ezusb_upload? and ?usb6fire_fw_fpga_upload?
->> fit to this information?
+>>> The pattern matched in two different functions?
+>>
+>> Please look once more.
+>>
+>> Yes. - This is one of the reasons why I ask here again.
+>>
+>> I would like to choose if a code analysis should happen only within a single function
+>> or on interesting parts from the complete source file.
 > 
-> The pattern matched in two different functions?
+> Feel free to make a tool of your own if you are not satisfied with the one
+> offered you.
 
-Please look once more.
+This is also possible. - But I wonder more about specific test results based
+on the currently provided software.
 
-Yes. - This is one of the reasons why I ask here again.
+I got matches for places where I would expect that they should not match.
 
-I would like to choose if a code analysis should happen only within a single function
-or on interesting parts from the complete source file.
+
+> Coccinelle applies a rule to one function at a time.
+
+This is also fine for a while.
+
+
+> That is not going to change.
+
+I imagine that the situation could evolve more if additional development resources
+will appear somehow.
+
+
+> If you want to match things in different functions, make two rules.
+
+Additional SmPL rules will search for other details.
+
 
 Regards,
 Markus
