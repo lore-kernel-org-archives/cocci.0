@@ -1,7 +1,7 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 22 Aug 2017 11:28:59 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Tue, 22 Aug 2017 12:00:35 +0200
 Subject: [Cocci] Comparing statement lists with SmPL
-In-Reply-To: <fda11784-5ed9-33ae-7beb-b5714abb11bc@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.20.1708221128420.3178@hadrien>
 References: <aff3ee47-e4cd-af52-1a66-304f36ddc1ed@users.sourceforge.net>
  <alpine.DEB.2.20.1708151930140.4600@hadrien>
  <69d615e4-0f62-2289-dd59-97c625ba47e8@users.sourceforge.net>
@@ -13,98 +13,27 @@ References: <aff3ee47-e4cd-af52-1a66-304f36ddc1ed@users.sourceforge.net>
  <b4451f01-e10a-c0f3-91ff-f49e185b3644@users.sourceforge.net>
  <alpine.DEB.2.20.1708172130300.2068@hadrien>
  <fda11784-5ed9-33ae-7beb-b5714abb11bc@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1708221128420.3178@hadrien>
+ <alpine.DEB.2.20.1708221128420.3178@hadrien>
+Message-ID: <d0047ca8-e724-af6b-26ac-a297ae2c34c8@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+>> How would you like to treat variations in such log messages?
+> 
+> They look fine as they are.
 
+I have got other development opinions there depending on the preferred design goals.
 
-On Tue, 22 Aug 2017, SF Markus Elfring wrote:
+* The mentioned small SmPL script can also help to find special differences.
 
-> >> * Are there further development challenges to consider for the safe identification
-> >>   of unique statements by metavariables?
-> >
-> > If you want to ensure that two metavariables match things
-> > in different places, then put a position variable on each match
-> > and use apython rule afterwards to discard the occurrences that
-> > are both in the same position.
->
-> I imagine that such an approach can only matter if there will be
-> several SmPL rules involved.
->
->
-> I have tried another variant out for a source code analysis.
->
-> @duplicated_code@
-> identifier work;
-> statement s1, s2;
-> type T;
-> @@
->  T work(...)
->  {
->  <+...
-> *if ((...) < 0)
-> *{
->     ...
-> *   s1
-> *   s2
-> *}
->  ...+>
->  <+...
-> *if ((...) < 0)
-> *{
->     ...
-> *   s1
-> *   s2
-> *}
->  ...+>
->  }
->
->
-> elfring at Sonne:~/Projekte/Linux/next-patched> XX=$(date) && spatch.opt -timeout 34 -j 4 --chunksize 1 --sp-file ~/Projekte/Coccinelle/janitor/show_same_statements3.cocci --dir sound > ~/Projekte/Bau/Linux/scripts/Coccinelle/tuning1/next/20170803/same_statements3+.diff 2> ~/Projekte/Bau/Linux/scripts/Coccinelle/tuning1/next/20170803/same_statements3+-errors.txt; YY=$(date) && echo "$XX | $YY"
-> Di 22. Aug 10:24:47 CEST 2017 | Di 22. Aug 10:26:04 CEST 2017
->
->
-> Now I find that a test result like the following is worth for further
-> development considerations.
->
-> ?
-> --- sound/usb/6fire/firmware.c
-> +++ /tmp/nothing/usb/6fire/firmware.c
-> @@ -246,14 +246,8 @@ static int usb6fire_fw_ezusb_upload(
->  	while (usb6fire_fw_ihex_next_record(rec)) { /* write firmware */
->  		ret = usb6fire_fw_ezusb_write(device, 0xa0, rec->address,
->  				rec->data, rec->len);
-> -		if (ret < 0) {
->  			kfree(rec);
->  			release_firmware(fw);
-> -			dev_err(&intf->dev,
-> -				"unable to upload ezusb firmware %s: data urb.\n",
-> -				fwname);
-> -			return ret;
-> -		}
->  	}
->
->  	release_firmware(fw);
-> @@ -319,13 +313,8 @@ static int usb6fire_fw_fpga_upload(
->  			buffer[i] = bitrev8((u8)*c);
->
->  		ret = usb6fire_fw_fpga_write(device, buffer, i);
-> -		if (ret < 0) {
->  			release_firmware(fw);
->  			kfree(buffer);
-> -			dev_err(&intf->dev,
-> -				"unable to upload fpga firmware: fw urb.\n");
-> -			return ret;
-> -		}
->  	}
->  	release_firmware(fw);
->  	kfree(buffer);
-> ?
->
->
-> How would you like to treat variations in such log messages?
+* These log statements are similar (and not identical) in the code structure.
+  I wonder also about other marked code places how they would fit to
+  the search pattern.
 
-They look fine as they are.
+* A test result was shown from two function implementations.
+  It can be nice to compare several functions.
+  Is it also possible that the comparison will be only performed within
+  the same function bodies?
 
-julia
+Regards,
+Markus
