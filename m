@@ -1,62 +1,55 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 22 Aug 2017 12:33:22 +0200
-Subject: [Cocci] Comparing statement lists with SmPL
-In-Reply-To: <alpine.DEB.2.20.1708221221260.3178@hadrien>
-References: <aff3ee47-e4cd-af52-1a66-304f36ddc1ed@users.sourceforge.net>
- <alpine.DEB.2.20.1708151930140.4600@hadrien>
- <69d615e4-0f62-2289-dd59-97c625ba47e8@users.sourceforge.net>
- <76e2fbf5-4812-18eb-2968-53019d97ab14@users.sourceforge.net>
- <alpine.DEB.2.20.1708152208320.2049@hadrien>
- <be855581-e22e-2b58-8565-68412ae590b3@users.sourceforge.net>
- <c5f3c8db-e5ec-47c1-3d84-8392a7101645@users.sourceforge.net>
- <alpine.DEB.2.20.1708172043460.2068@hadrien>
- <b4451f01-e10a-c0f3-91ff-f49e185b3644@users.sourceforge.net>
- <alpine.DEB.2.20.1708172130300.2068@hadrien>
- <fda11784-5ed9-33ae-7beb-b5714abb11bc@users.sourceforge.net>
- <alpine.DEB.2.20.1708221128420.3178@hadrien>
- <d0047ca8-e724-af6b-26ac-a297ae2c34c8@users.sourceforge.net>
- <alpine.DEB.2.20.1708221202380.3178@hadrien>
- <9b9a69c1-105a-47e5-099e-816efd08d8f4@users.sourceforge.net>
- <alpine.DEB.2.20.1708221215070.3178@hadrien>
- <83922670-ac64-c8c5-1977-cddc06f4cb00@users.sourceforge.net>
- <alpine.DEB.2.20.1708221221260.3178@hadrien>
-Message-ID: <66d79bf8-20f5-772d-3403-d593fb472e6b@users.sourceforge.net>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Tue, 22 Aug 2017 23:15:08 +0200 (CEST)
+Subject: [Cocci] parsing of C code
+Message-ID: <alpine.DEB.2.20.1708222304510.2050@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->>> The pattern matched in two different functions?
->>
->> Please look once more.
->>
->> Yes. - This is one of the reasons why I ask here again.
->>
->> I would like to choose if a code analysis should happen only within a single function
->> or on interesting parts from the complete source file.
-> 
-> Feel free to make a tool of your own if you are not satisfied with the one
-> offered you.
+Hello,
 
-This is also possible. - But I wonder more about specific test results based
-on the currently provided software.
+I have tried to improve the parsing of C code recently.  The main changes,
+currently available on github, are as follows:
 
-I got matches for places where I would expect that they should not match.
+1.  More aggressive inclusion of header files, combined with caching of
+header files.  Now if there is only one occurrence of a header file with a
+given name in the provided include paths, it will take that one, even if
+there is no obvious connection between the location of the .c file and the
+location of the header file.  This compensates for the lact of parsing of
+Makefiles to extract -I options.  More header files will likely now be
+included, particularly with options like --all-includes or
+--recursive-includes.  But caching of previously parsed header files has
+been reinstated, which improves performance.  This had been removed
+because it wasn't doing nested includes, even if the --recursive-includes
+option was provided, but that issue has been addressed.
 
+2. If there is a parse error within the arguments of a function call, the
+arguments are ignored, but not the entire enclosing functions definition,
+as was done previously.  For the Linux kernel, this seemed to allow
+thousands of extra lines of code to be parsed and matched by Coccinelle.
 
-> Coccinelle applies a rule to one function at a time.
+I have only tested this on the Linux kernel.  If you are using some other
+software, you can run the following semantic patch on your software using
+your current and the new versions of Coccinelle:
 
-This is also fine for a while.
+@r@
+identifier f;
+position p;
+@@
 
+f at p(...) { ... }
 
-> That is not going to change.
+@script:ocaml@
+f << r.f;
+p << r.p;
+@@
 
-I imagine that the situation could evolve more if additional development resources
-will appear somehow.
+Printf.printf "%s:%d: %s\n" (List.hd p).file (List.hd p).line f;
+flush stdout
 
+If some functions are missing in the output when using the new version, as
+compared to the output when using the old version, and if these functions
+are things you might want to process in some way, thenlet me know about
+the problem.
 
-> If you want to match things in different functions, make two rules.
-
-Additional SmPL rules will search for other details.
-
-
-Regards,
-Markus
+thanks,
+julia
