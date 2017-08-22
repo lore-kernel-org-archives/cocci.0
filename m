@@ -1,94 +1,104 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sun, 20 Aug 2017 08:24:27 +0200
-Subject: [Cocci] Checking evaluation of another script with SmPL
-	constraints
-In-Reply-To: <a9e1bd38-702d-6141-4a1f-1b7bb71f0698@users.sourceforge.net>
-References: <a9e1bd38-702d-6141-4a1f-1b7bb71f0698@users.sourceforge.net>
-Message-ID: <6f39b260-3ab3-8636-592c-37570ec33021@users.sourceforge.net>
+Date: Tue, 22 Aug 2017 11:19:02 +0200
+Subject: [Cocci] Comparing statement lists with SmPL
+In-Reply-To: <alpine.DEB.2.20.1708172130300.2068@hadrien>
+References: <aff3ee47-e4cd-af52-1a66-304f36ddc1ed@users.sourceforge.net>
+ <alpine.DEB.2.20.1708151930140.4600@hadrien>
+ <69d615e4-0f62-2289-dd59-97c625ba47e8@users.sourceforge.net>
+ <76e2fbf5-4812-18eb-2968-53019d97ab14@users.sourceforge.net>
+ <alpine.DEB.2.20.1708152208320.2049@hadrien>
+ <be855581-e22e-2b58-8565-68412ae590b3@users.sourceforge.net>
+ <c5f3c8db-e5ec-47c1-3d84-8392a7101645@users.sourceforge.net>
+ <alpine.DEB.2.20.1708172043460.2068@hadrien>
+ <b4451f01-e10a-c0f3-91ff-f49e185b3644@users.sourceforge.net>
+ <alpine.DEB.2.20.1708172130300.2068@hadrien>
+Message-ID: <fda11784-5ed9-33ae-7beb-b5714abb11bc@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Now I wonder about this software situation.
+>> * Are there further development challenges to consider for the safe identification
+>>   of unique statements by metavariables?
+> 
+> If you want to ensure that two metavariables match things
+> in different places, then put a position variable on each match
+> and use apython rule afterwards to discard the occurrences that
+> are both in the same position.
 
-I can reduce my evolving SmPL script for another test.
-
-* Using only simple strings for the constraints according to the two known
-  function names in the implementation which should be found.
-  http://elixir.free-electrons.com/linux/v4.12.8/source/fs/ecryptfs/keystore.c#L2536
-  https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/fs/ecryptfs/keystore.c?id=bb70832dd42b298d4303fd054bf18a78650ff04a#n2561
-
-* Simplify a condition check
+I imagine that such an approach can only matter if there will be
+several SmPL rules involved.
 
 
-elfring at Sonne:~/Projekte/Coccinelle/janitor> spatch.opt delete_oom_message7b.cocci ../Probe/keystore-excerpt1.c
-init_defs_builtins: /usr/local/lib64/coccinelle/standard.h
+I have tried another variant out for a source code analysis.
+
+@duplicated_code@
+identifier work;
+statement s1, s2;
+type T;
+@@
+ T work(...)
+ {
+ <+...
+*if ((...) < 0)
+*{
+    ...
+*   s1
+*   s2
+*}
+ ...+>
+ <+...
+*if ((...) < 0)
+*{
+    ...
+*   s1
+*   s2
+*}
+ ...+>
+ }
+
+
+elfring at Sonne:~/Projekte/Linux/next-patched> XX=$(date) && spatch.opt -timeout 34 -j 4 --chunksize 1 --sp-file ~/Projekte/Coccinelle/janitor/show_same_statements3.cocci --dir sound > ~/Projekte/Bau/Linux/scripts/Coccinelle/tuning1/next/20170803/same_statements3+.diff 2> ~/Projekte/Bau/Linux/scripts/Coccinelle/tuning1/next/20170803/same_statements3+-errors.txt; YY=$(date) && echo "$XX | $YY"
+Di 22. Aug 10:24:47 CEST 2017 | Di 22. Aug 10:26:04 CEST 2017
+
+
+Now I find that a test result like the following is worth for further
+development considerations.
+
 ?
-@@ -28,8 +28,6 @@ ecryptfs_add_global_auth_tok(struct ecry
- 					GFP_KERNEL);
- 	if (!new_auth_tok) {
- 		rc = -ENOMEM;
--		printk(KERN_ERR "Error allocating from "
--		       "ecryptfs_global_auth_tok_cache\n");
- 		goto out;
+--- sound/usb/6fire/firmware.c
++++ /tmp/nothing/usb/6fire/firmware.c
+@@ -246,14 +246,8 @@ static int usb6fire_fw_ezusb_upload(
+ 	while (usb6fire_fw_ihex_next_record(rec)) { /* write firmware */
+ 		ret = usb6fire_fw_ezusb_write(device, 0xa0, rec->address,
+ 				rec->data, rec->len);
+-		if (ret < 0) {
+ 			kfree(rec);
+ 			release_firmware(fw);
+-			dev_err(&intf->dev,
+-				"unable to upload ezusb firmware %s: data urb.\n",
+-				fwname);
+-			return ret;
+-		}
  	}
- 	memcpy(new_auth_tok->sig, sig, ECRYPTFS_SIG_SIZE_HEX);
-
-
-Such an update suggestion shows the expected test result while
-the following command variant points other source code places out
-for further development considerations.
-
-elfring at Sonne:~/Projekte/Coccinelle/janitor> spatch.opt delete_oom_message7.cocci ~/Projekte/Linux/next-patched/fs/ecryptfs/keystore.c
+ 
+ 	release_firmware(fw);
+@@ -319,13 +313,8 @@ static int usb6fire_fw_fpga_upload(
+ 			buffer[i] = bitrev8((u8)*c);
+ 
+ 		ret = usb6fire_fw_fpga_write(device, buffer, i);
+-		if (ret < 0) {
+ 			release_firmware(fw);
+ 			kfree(buffer);
+-			dev_err(&intf->dev,
+-				"unable to upload fpga firmware: fw urb.\n");
+-			return ret;
+-		}
+ 	}
+ 	release_firmware(fw);
+ 	kfree(buffer);
 ?
-@@ -2519,8 +2502,6 @@ int ecryptfs_add_keysig(struct ecryptfs_
-?
 
 
-How do you think about to clarify this software behaviour by reviewing
-the attached source files?
+How would you like to treat variations in such log messages?
 
 Regards,
 Markus
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: keystore-excerpt1.c
-Type: text/x-csrc
-Size: 1559 bytes
-Desc: not available
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20170820/bd90807e/attachment.bin>
--------------- next part --------------
-@deletion1@
-constant message;
-expression code, code2, error_code, target, X;
-identifier action =~ "^kmem_cache_zalloc",
-           log =~ "^printk",
-           label, release, release2, var, var2;
-statement es;
-@@
- target = action(...);
- ... when != target = X
- if (!target)
- {
- <...
-(
-  release(...);
-|
-  var = code;
-)
- ...>
-- log(..., message, ...);
- <...
-(
-  release2(...);
-|
-  var2 = code2;
-)
- ...>
-(
-  return error_code;
-|
-  goto label;
-)
- }
- else
- es
