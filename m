@@ -1,33 +1,139 @@
-From: derek@knosof.co.uk (Derek M Jones)
-Date: Tue, 22 Aug 2017 22:39:55 +0100
-Subject: [Cocci] parsing of C code
-In-Reply-To: <alpine.DEB.2.20.1708222304510.2050@hadrien>
-References: <alpine.DEB.2.20.1708222304510.2050@hadrien>
-Message-ID: <34573683-9485-cc29-ee00-f9f1855d03f9@knosof.co.uk>
+From: keescook@chromium.org (Kees Cook)
+Date: Tue, 22 Aug 2017 15:02:15 -0700
+Subject: [Cocci] Matching function prototypes and casts
+Message-ID: <CAGXu5jJAFEsBeRsSJPefu6wCDF+KdXr001ZbQWePERKFsgZsOw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Julia,
+Hi,
 
-> 1.  More aggressive inclusion of header files, combined with caching of
-> header files.  Now if there is only one occurrence of a header file with a
+I'm working on a large type conversion for struct timer_list, and
+it'll require changing all of the callback prototypes and changing
+logic at their start. For example, if I start with this:
 
-Caching can be dangerous because macros may be defined differently
-for different includes of the same header.  An option to switch off
-caching could come in handy.
 
-> given name in the provided include paths, it will take that one, even if
-> there is no obvious connection between the location of the .c file and the
-> location of the header file.  This compensates for the lact of parsing of
-> Makefiles to extract -I options.  More header files will likely now be
+void primary_callback(unsigned long arg);
+void alternate_callback(struct some_handle *handle);
+...
 
-There is no need to parse Makefiles.  Simply create a script, say coc99,
-and configure it as the compiler that make uses.  coc99 parses its
-arguments to extract whatever information cocci needs and passes
-everything to the 'real' C compiler as-is.
+void primary_callback(unsigned long arg)
+{
+    struct some_handle *handle = (struct some_handle *)arg;
+...
+}
 
-How is the O'Reilly book coming along ;-)
+void alternate_callback(struct some_handle *handle)
+{
+...
+}
+
+...
+setup_timer(&ptr->timer_field, some_callback, (unsigned long)ptr);
+...
+ptr->timer_field.function = (void (*)(unsigned long)alternate_callback;
+
+
+I'd like to end up with:
+
+
+void primary_callback(struct timer_list *t);
+void alternate_callback(struct timer_list *t);
+...
+
+void primary_callback(struct timer_list *t)
+{
+    struct some_handle *handle = container_of(t, struct some_handle,
+timer_field);
+...
+}
+
+void alternate_callback(struct timer_list *t)
+{
+    struct some_handle *handle = container_of(t, struct some_handle,
+timer_field);
+...
+}
+
+...
+setup_time(&ptr->timer_field, some_callback, &ptr->timer_field);
+...
+ptr->timer_field.function = alternate_callback;
+
+
+I'm having trouble matching the callback arg type, and I'm having
+trouble identifying the callbacks. I think I can do things like this,
+but it's not quite working:
+
+@match_setup_timer@
+identifier _p;
+struct timer_list _timer_field;
+identifier _callback;
+type _cast;
+@@
+
+(
+ setup_timer(&_p->_timer_field, _setup_callback, _p);
+|
+ setup_timer(&_p->_timer_field, (_cast)_setup_callback, _p);
+)
+
+@match_function_assignment@
+identifier _p;
+struct timer_list _timer_field;
+identifier _callback;
+type _cast;
+@@
+
+(
+ _p->_timer_field.function = _callback;
+|
+ _p->_timer_field.function = (_cast)_callback;
+)
+
+// callback(unsigned long arg)
+@change_callback_handle_cast
+depends on match_setup_timer || match_function_assignment@
+identifier ???._callback;
+struct timer_list ???._timer_field;
+type _origtype;
+identifier _origarg;
+type _handletype;
+identifier _handle;
+@@
+
+-void _callback(_origtype _origarg)
++void _callback(struct timer_list *t)
+ {
+-    _handletype *_handle = (_handletype *)_origarg;
++    _handletype *_handle = container_of(t, _handletype, _timer_field);
+
+// callback(struct something *handle)
+@change_callback_handle_arg
+depends on match_setup_timer || match_function_assignment@
+identifier ???._callback;
+struct timer_list ???._timer_field;
+type _handletype;
+identifier _handle;
+@@
+
+-void _callback(_handletype *_handle)
++void _callback(struct timer_list *t)
+ {
++    _origtype *_origarg = container_of(t, _origtype, _timer_field);
+
+
+Namely, I don't seem to be matching casts or function arg types, and I
+sometimes seem to be missing cases of struct timer_list. Also, I can't
+figure out how to have the change_callback_* rules depend on either
+matching match_setup_timer or match_function_assignment and having
+access to the matched fields...
+
+What would be the best way to deal with these?
+
+Thanks!
+
+-Kees
 
 -- 
-Derek M. Jones           Software analysis
-tel: +44 (0)1252 520667  blog:shape-of-code.coding-guidelines.com
+Kees Cook
+Pixel Security
