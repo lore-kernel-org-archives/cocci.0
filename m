@@ -1,52 +1,52 @@
-From: Julia.Lawall@lip6.fr (Julia Lawall)
-Date: Wed, 23 Aug 2017 15:11:13 +0200
-Subject: [Cocci] [PATCH] Coccinelle: setup_timer: improve messages from
-	setup_timer
-Message-ID: <1503493873-673-1-git-send-email-Julia.Lawall@lip6.fr>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 23 Aug 2017 16:43:14 +0200
+Subject: [Cocci] Comparing statement lists with SmPL
+In-Reply-To: <fda11784-5ed9-33ae-7beb-b5714abb11bc@users.sourceforge.net>
+References: <aff3ee47-e4cd-af52-1a66-304f36ddc1ed@users.sourceforge.net>
+ <alpine.DEB.2.20.1708151930140.4600@hadrien>
+ <69d615e4-0f62-2289-dd59-97c625ba47e8@users.sourceforge.net>
+ <76e2fbf5-4812-18eb-2968-53019d97ab14@users.sourceforge.net>
+ <alpine.DEB.2.20.1708152208320.2049@hadrien>
+ <be855581-e22e-2b58-8565-68412ae590b3@users.sourceforge.net>
+ <c5f3c8db-e5ec-47c1-3d84-8392a7101645@users.sourceforge.net>
+ <alpine.DEB.2.20.1708172043460.2068@hadrien>
+ <b4451f01-e10a-c0f3-91ff-f49e185b3644@users.sourceforge.net>
+ <alpine.DEB.2.20.1708172130300.2068@hadrien>
+ <fda11784-5ed9-33ae-7beb-b5714abb11bc@users.sourceforge.net>
+Message-ID: <a4596fc8-dbe4-3f54-f8d6-2d24cb870d7e@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Allow messages about multiple timers.
+> I have tried another variant out for a source code analysis.
 
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+Does the following SmPL script variant make sense?
 
----
- scripts/coccinelle/api/setup_timer.cocci |   15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+@duplicated_code@
+identifier work;
+statement s1, s2;
+type T;
+@@
+ T work(...)
+ {
+ ... when any
+*if ((...) < 0)
+*{
+    ...
+*   s1
+*   s2
+*}
+ <+...
+*if ((...) < 0)
+*{
+    ...
+*   s1
+*   s2
+*}
+ ...+>
+ }
 
-diff --git a/scripts/coccinelle/api/setup_timer.cocci b/scripts/coccinelle/api/setup_timer.cocci
-index eb6bd9e..b5ab031 100644
---- a/scripts/coccinelle/api/setup_timer.cocci
-+++ b/scripts/coccinelle/api/setup_timer.cocci
-@@ -104,11 +104,9 @@ position j0, j1, j2;
- )
- 
- @match_function_and_data_after_init_timer_context
--depends on !patch &&
--!match_immediate_function_data_after_init_timer_context &&
-- (context || org || report)@
-+depends on !patch && (context || org || report)@
- expression a, b, e1, e2, e3, e4, e5;
--position j0, j1, j2;
-+position j0 != match_immediate_function_data_after_init_timer_context.j0,j1,j2;
- @@
- 
- * init_timer at j0 (&e1);
-@@ -124,13 +122,12 @@ position j0, j1, j2;
- * e1 at j2.function = a;
- )
- 
-- at r3_context depends on !patch &&
--!match_immediate_function_data_after_init_timer_context &&
--!match_function_and_data_after_init_timer_context &&
-- (context || org || report)@
-+ at r3_context depends on !patch && (context || org || report)@
- expression c, e6, e7;
- position r1.p;
--position j0, j1;
-+position j0 !=
-+  {match_immediate_function_data_after_init_timer_context.j0,
-+   match_function_and_data_after_init_timer_context.j0}, j1;
- @@
- 
- * init_timer at j0@p (&e6);
+
+Can this approach find interesting places in any source files?
+
+Regards,
+Markus
