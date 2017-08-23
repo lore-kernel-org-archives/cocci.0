@@ -1,54 +1,96 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 23 Aug 2017 18:58:19 +0200 (CEST)
-Subject: [Cocci] parsing of C code
-In-Reply-To: <7f0ff703-0d1c-b540-602c-020890152168@knosof.co.uk>
-References: <alpine.DEB.2.20.1708222304510.2050@hadrien>
- <34573683-9485-cc29-ee00-f9f1855d03f9@knosof.co.uk>
- <alpine.DEB.2.20.1708230827550.3212@hadrien>
- <7e9b2398-24fb-859a-b989-04701a823725@knosof.co.uk>
- <alpine.DEB.2.20.1708231800390.3150@hadrien>
- <7f0ff703-0d1c-b540-602c-020890152168@knosof.co.uk>
-Message-ID: <alpine.DEB.2.20.1708231857520.3150@hadrien>
+From: keescook@chromium.org (Kees Cook)
+Date: Wed, 23 Aug 2017 11:57:12 -0700
+Subject: [Cocci] [PATCH] coccinelle: Improve setup_timer.cocci matching
+In-Reply-To: <alpine.DEB.2.20.1708231512190.3150@hadrien>
+References: <20170822235400.GA92944@beast>
+ <alpine.DEB.2.20.1708231512190.3150@hadrien>
+Message-ID: <CAGXu5jLgzcO8D1N8mkjHygd2tfoptGMAd1vK5j-8uZ5_xY9Egg@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-
-
-On Wed, 23 Aug 2017, Derek M Jones wrote:
-
-> Julia,
+On Wed, Aug 23, 2017 at 6:13 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
 >
-> > I don't think that is what it is.  The declarations are eg:
-> >
-> > static inline __printf(2, 3)
-> > void _dev_info(const struct device *dev, const char *fmt, ...)
-> > {}
-> >
-> > I guess that the whole first line is part of the declaration of _dev_info,
-> > but Coccinelle can't cope with the __printf(2, 3).
 >
-> https://stackoverflow.com/questions/17825588/what-does-this-generic-function-do
+> On Tue, 22 Aug 2017, Kees Cook wrote:
 >
-> > > Skip to ; is a remarkably effective syntax error recovery strategy.
-> >
-> > The parser needs to restart at a top-level declaration.  It's a yacc-based
-> > parser.  We can't recover within the parsing process.  Perhaps it would be
-> > possible to remove what was betwen two ;s around the line and column with
-> > the error, but it seems like there could be a risk of making things worse.
+>> This improves the patch mode of setup_timer.cocci. Several patterns were
+>> missing:
+>>  - assignments-before-init_timer() cases
+>>  - limiting the .data case removal to the struct timer_list instance
+>>  - handling calls by dereference (timer->field vs timer.field)
+>>
+>> Running this on the current kernel tree produces a large diff that I
+>> would like to get applied as the first step in removing the .data
+>> field from struct timer_list:
+>>
+>>  208 files changed, 367 insertions(+), 757 deletions(-)
+>>
+>> Signed-off-by: Kees Cook <keescook@chromium.org>
+>> ---
+>>  scripts/coccinelle/api/setup_timer.cocci | 129 +++++++++++++++++++++++++------
+>>  1 file changed, 105 insertions(+), 24 deletions(-)
+>>
+>> diff --git a/scripts/coccinelle/api/setup_timer.cocci b/scripts/coccinelle/api/setup_timer.cocci
+>> index eb6bd9e4ab1a..bc6bd8f0b4bf 100644
+>> --- a/scripts/coccinelle/api/setup_timer.cocci
+>> +++ b/scripts/coccinelle/api/setup_timer.cocci
+>> @@ -2,6 +2,7 @@
+>>  /// and data fields
+>>  // Confidence: High
+>>  // Copyright: (C) 2016 Vaishali Thakkar, Oracle. GPLv2
+>> +// Copyright: (C) 2017 Kees Cook, Google. GPLv2
+>>  // Options: --no-includes --include-headers
+>>  // Keywords: init_timer, setup_timer
+>>
+>> @@ -10,60 +11,123 @@ virtual context
+>>  virtual org
+>>  virtual report
+>>
+>> +// Match the common cases first to avoid Coccinelle parsing loops with
+>> +// "... when" clauses.
+>> +
+>>  @match_immediate_function_data_after_init_timer
+>>  depends on patch && !context && !org && !report@
+>>  expression e, func, da;
+>>  @@
+>>
+>> --init_timer (&e);
+>> -+setup_timer (&e, func, da);
+>> +-init_timer
+>> ++setup_timer
+>> + ( \(&e\|e\)
+>> ++, func, da
+>> + );
+>> +(
+>> +-\(e.function\|e->function\) = func;
+>> +-\(e.data\|e->data\) = da;
+>> +|
+>> +-\(e.function\|e->function\) = func;
+>> +-\(e.data\|e->data\) = da;
 >
-> If it's yacc based you can recover where ever you like.  Knowing how to
-> do it is something of a black art.
+> Same thing twice; I think you want to invert the last two lines.
+>
+>> +)
+>> +
+>> + at match_immediate_function_data_before_init_timer
+>> +depends on patch && !context && !org && !report@
+>> +expression e, func, da;
+>> +@@
+>>
+>>  (
+>> +-\(e.function\|e->function\) = func;
+>> +-\(e.data\|e->data\) = da;
+>> +|
+>> +-\(e.function\|e->function\) = func;
+>> +-\(e.data\|e->data\) = da;
+>
+> Same as in the previous case.
 
-Well, ocamlyacc, to be precise.
+Oops, thanks! AIUI, missing these cases must makes runtime slower.
+I'll fix it up and resend.
 
->
-> Bison supports a technique that does not require wearing a pointy hat:
->
-> stmt_list: error ';' |
->            stmt_list error ';' ;
->
-> where error represents the something-went-wrong token.
+-Kees
 
-This does look like a nice feature.
-
-julia
+-- 
+Kees Cook
+Pixel Security
