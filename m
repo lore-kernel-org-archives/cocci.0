@@ -1,223 +1,79 @@
-From: keescook@chromium.org (Kees Cook)
-Date: Tue, 22 Aug 2017 16:54:00 -0700
-Subject: [Cocci] [PATCH] coccinelle: Improve setup_timer.cocci matching
-Message-ID: <20170822235400.GA92944@beast>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Wed, 23 Aug 2017 08:43:14 +0200 (CEST)
+Subject: [Cocci] parsing of C code
+In-Reply-To: <34573683-9485-cc29-ee00-f9f1855d03f9@knosof.co.uk>
+References: <alpine.DEB.2.20.1708222304510.2050@hadrien>
+ <34573683-9485-cc29-ee00-f9f1855d03f9@knosof.co.uk>
+Message-ID: <alpine.DEB.2.20.1708230827550.3212@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-This improves the patch mode of setup_timer.cocci. Several patterns were
-missing:
- - assignments-before-init_timer() cases
- - limiting the .data case removal to the struct timer_list instance
- - handling calls by dereference (timer->field vs timer.field)
-
-Running this on the current kernel tree produces a large diff that I
-would like to get applied as the first step in removing the .data
-field from struct timer_list:
-
- 208 files changed, 367 insertions(+), 757 deletions(-)
-
-Signed-off-by: Kees Cook <keescook@chromium.org>
----
- scripts/coccinelle/api/setup_timer.cocci | 129 +++++++++++++++++++++++++------
- 1 file changed, 105 insertions(+), 24 deletions(-)
-
-diff --git a/scripts/coccinelle/api/setup_timer.cocci b/scripts/coccinelle/api/setup_timer.cocci
-index eb6bd9e4ab1a..bc6bd8f0b4bf 100644
---- a/scripts/coccinelle/api/setup_timer.cocci
-+++ b/scripts/coccinelle/api/setup_timer.cocci
-@@ -2,6 +2,7 @@
- /// and data fields
- // Confidence: High
- // Copyright: (C) 2016 Vaishali Thakkar, Oracle. GPLv2
-+// Copyright: (C) 2017 Kees Cook, Google. GPLv2
- // Options: --no-includes --include-headers
- // Keywords: init_timer, setup_timer
- 
-@@ -10,60 +11,123 @@ virtual context
- virtual org
- virtual report
- 
-+// Match the common cases first to avoid Coccinelle parsing loops with
-+// "... when" clauses.
-+
- @match_immediate_function_data_after_init_timer
- depends on patch && !context && !org && !report@
- expression e, func, da;
- @@
- 
---init_timer (&e);
--+setup_timer (&e, func, da);
-+-init_timer
-++setup_timer
-+ ( \(&e\|e\)
-++, func, da
-+ );
-+(
-+-\(e.function\|e->function\) = func;
-+-\(e.data\|e->data\) = da;
-+|
-+-\(e.function\|e->function\) = func;
-+-\(e.data\|e->data\) = da;
-+)
-+
-+ at match_immediate_function_data_before_init_timer
-+depends on patch && !context && !org && !report@
-+expression e, func, da;
-+@@
- 
- (
-+-\(e.function\|e->function\) = func;
-+-\(e.data\|e->data\) = da;
-+|
-+-\(e.function\|e->function\) = func;
-+-\(e.data\|e->data\) = da;
-+)
-+-init_timer
-++setup_timer
-+ ( \(&e\|e\)
-++, func, da
-+ );
-+
-+ at match_function_and_data_after_init_timer
-+depends on patch && !context && !org && !report@
-+expression e, e2, e3, e4, e5, func, da;
-+@@
-+
-+-init_timer
-++setup_timer
-+ ( \(&e\|e\)
-++, func, da
-+ );
-+ ... when != func = e2
-+     when != da = e3
-+(
- -e.function = func;
-+... when != da = e4
- -e.data = da;
- |
-+-e->function = func;
-+... when != da = e4
-+-e->data = da;
-+|
- -e.data = da;
-+... when != func = e5
- -e.function = func;
-+|
-+-e->data = da;
-+... when != func = e5
-+-e->function = func;
- )
- 
-- at match_function_and_data_after_init_timer
-+ at match_function_and_data_before_init_timer
- depends on patch && !context && !org && !report@
--expression e1, e2, e3, e4, e5, a, b;
-+expression e, e2, e3, e4, e5, func, da;
- @@
--
---init_timer (&e1);
--+setup_timer (&e1, a, b);
--
--... when != a = e2
--    when != b = e3
- (
---e1.function = a;
--... when != b = e4
---e1.data = b;
-+-e.function = func;
-+... when != da = e4
-+-e.data = da;
- |
---e1.data = b;
--... when != a = e5
---e1.function = a;
-+-e->function = func;
-+... when != da = e4
-+-e->data = da;
-+|
-+-e.data = da;
-+... when != func = e5
-+-e.function = func;
-+|
-+-e->data = da;
-+... when != func = e5
-+-e->function = func;
- )
-+... when != func = e2
-+    when != da = e3
-+-init_timer
-++setup_timer
-+ ( \(&e\|e\)
-++, func, da
-+ );
- 
- @r1 exists@
-+expression t;
- identifier f;
- position p;
- @@
- 
- f(...) { ... when any
--  init_timer at p(...)
-+  init_timer at p(\(&t\|t\))
-   ... when any
- }
- 
- @r2 exists@
-+expression r1.t;
- identifier g != r1.f;
--struct timer_list t;
- expression e8;
- @@
- 
- g(...) { ... when any
--  t.data = e8
-+  \(t.data\|t->data\) = e8
-   ... when any
- }
- 
-@@ -77,14 +141,31 @@ p << r1.p;
- cocci.include_match(False)
- 
- @r3 depends on patch && !context && !org && !report@
--expression e6, e7, c;
-+expression r1.t, func, e7;
- position r1.p;
- @@
- 
---init_timer at p (&e6);
--+setup_timer (&e6, c, 0UL);
--... when != c = e7
---e6.function = c;
-+(
-+-init_timer at p(&t);
-++setup_timer(&t, func, 0UL);
-+... when != func = e7
-+-t.function = func;
-+|
-+-t.function = func;
-+... when != func = e7
-+-init_timer at p(&t);
-++setup_timer(&t, func, 0UL);
-+|
-+-init_timer@p(t);
-++setup_timer(t, func, 0UL);
-+... when != func = e7
-+-t->function = func;
-+|
-+-t->function = func;
-+... when != func = e7
-+-init_timer at p(t);
-++setup_timer(t, func, 0UL);
-+)
- 
- // ----------------------------------------------------------------------------
- 
--- 
-2.7.4
 
 
--- 
-Kees Cook
-Pixel Security
+On Tue, 22 Aug 2017, Derek M Jones wrote:
+
+> Julia,
+>
+> > 1.  More aggressive inclusion of header files, combined with caching of
+> > header files.  Now if there is only one occurrence of a header file with a
+>
+> Caching can be dangerous because macros may be defined differently
+> for different includes of the same header.  An option to switch off
+> caching could come in handy.
+
+I believe that macros are only applied if they are defined in the same
+file.  At this point, I'm not 100% certain of that.  But when I ran the
+provided test script on the Linux kernel, I list very few functions as
+compared to the current --recursive-includes implementation.  The lost
+functions were due to the recovery strategy, not to macro issues.
+The Linux kernel has some declarations like
+
+type fn(a1, a2)
+
+with no trailing ; followed by a function definition.  This gives a parse
+error on a1.  In the previous version, Coccinelle was able to recover an
+parse the function definition.  In the new version, I comment out the
+arguments and then another error is encountered that is after the ).  This
+causes the recovery process to skip over the subsequent function.  The
+recovery code is rather subtle to avoid infinite loops, and so far my
+attempts to improve it have led to more of a mess than anything else.
+
+The problem could be solved by not trying to patch up errors in
+parentheses when they occur at top level.  When they occur inside a
+function, they should not impact the recovery process.
+
+Basically the recovery process is focused on finding a { in column 0 and
+then a } in column 0, and then it goes on after that.  But it can go
+backwards sometimes, because a parsing problem can cause a parsing attempt
+to read too far, into the next function.
+
+>
+> > given name in the provided include paths, it will take that one, even if
+> > there is no obvious connection between the location of the .c file and the
+> > location of the header file.  This compensates for the lact of parsing of
+> > Makefiles to extract -I options.  More header files will likely now be
+>
+> There is no need to parse Makefiles.  Simply create a script, say coc99,
+> and configure it as the compiler that make uses.  coc99 parses its
+> arguments to extract whatever information cocci needs and passes
+> everything to the 'real' C compiler as-is.
+
+At least for the Linux kernel, you can't just run one make and get all the
+files to be compiled.  Some files are indeed very hard to compile.  For a
+more uniform project this could work, though.
+
+> How is the O'Reilly book coming along ;-)
+
+Still looking for an author :)
+
+julia
+
+>
+> --
+> Derek M. Jones           Software analysis
+> tel: +44 (0)1252 520667  blog:shape-of-code.coding-guidelines.com
+> _______________________________________________
+> Cocci mailing list
+> Cocci at systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
+>
