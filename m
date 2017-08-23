@@ -1,32 +1,36 @@
-From: derek@knosof.co.uk (Derek M Jones)
-Date: Wed, 23 Aug 2017 16:48:58 +0100
-Subject: [Cocci] parsing of C code
-In-Reply-To: <alpine.DEB.2.20.1708230827550.3212@hadrien>
-References: <alpine.DEB.2.20.1708222304510.2050@hadrien>
- <34573683-9485-cc29-ee00-f9f1855d03f9@knosof.co.uk>
- <alpine.DEB.2.20.1708230827550.3212@hadrien>
-Message-ID: <7e9b2398-24fb-859a-b989-04701a823725@knosof.co.uk>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 23 Aug 2017 17:50:48 +0200
+Subject: [Cocci] Comparing statement lists with SmPL
+In-Reply-To: <alpine.DEB.2.20.1708231742480.3150@hadrien>
+References: <aff3ee47-e4cd-af52-1a66-304f36ddc1ed@users.sourceforge.net>
+ <alpine.DEB.2.20.1708151930140.4600@hadrien>
+ <69d615e4-0f62-2289-dd59-97c625ba47e8@users.sourceforge.net>
+ <76e2fbf5-4812-18eb-2968-53019d97ab14@users.sourceforge.net>
+ <alpine.DEB.2.20.1708152208320.2049@hadrien>
+ <be855581-e22e-2b58-8565-68412ae590b3@users.sourceforge.net>
+ <c5f3c8db-e5ec-47c1-3d84-8392a7101645@users.sourceforge.net>
+ <alpine.DEB.2.20.1708172043460.2068@hadrien>
+ <b4451f01-e10a-c0f3-91ff-f49e185b3644@users.sourceforge.net>
+ <alpine.DEB.2.20.1708172130300.2068@hadrien>
+ <fda11784-5ed9-33ae-7beb-b5714abb11bc@users.sourceforge.net>
+ <a4596fc8-dbe4-3f54-f8d6-2d24cb870d7e@users.sourceforge.net>
+ <alpine.DEB.2.20.1708231644340.3150@hadrien>
+ <5d690e96-5217-a89c-dac3-19c5f4066008@users.sourceforge.net>
+ <alpine.DEB.2.20.1708231742480.3150@hadrien>
+Message-ID: <d60b4d18-222f-50f7-fc50-e1f542a13fb2@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Julia,
-
-> The Linux kernel has some declarations like
+>> How should the source code search be improved further here?
 > 
-> type fn(a1, a2) >
-> with no trailing ; followed by a function definition.  This gives a parse
-> error on a1.  In the previous version, Coccinelle was able to recover an
+> If you like the results from the second case, what more do you want?
 
-The K&R style.  Perfectly legal C.
+* There are also several questionable transformation suggestions generated
+  besides the usable ones.
 
-> Basically the recovery process is focused on finding a { in column 0 and
-> then a } in column 0, and then it goes on after that.  But it can go
-> backwards sometimes, because a parsing problem can cause a parsing attempt
-> to read too far, into the next function.
+* Will answers belong also to the topic ?Get the non-optional nest construct
+  completely working for SmPL??
+  https://github.com/coccinelle/coccinelle/issues
 
-Skip to ; is a remarkably effective syntax error recovery strategy.
-
-
--- 
-Derek M. Jones           Software analysis
-tel: +44 (0)1252 520667  blog:shape-of-code.coding-guidelines.com
+Regards,
+Markus
