@@ -1,9 +1,9 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 23 Aug 2017 12:13:21 +0200 (CEST)
-Subject: [Cocci] Matching function prototypes and casts
-In-Reply-To: <CAGXu5jJAFEsBeRsSJPefu6wCDF+KdXr001ZbQWePERKFsgZsOw@mail.gmail.com>
-References: <CAGXu5jJAFEsBeRsSJPefu6wCDF+KdXr001ZbQWePERKFsgZsOw@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1708231204260.3150@hadrien>
+Date: Wed, 23 Aug 2017 15:13:43 +0200 (CEST)
+Subject: [Cocci] [PATCH] coccinelle: Improve setup_timer.cocci matching
+In-Reply-To: <20170822235400.GA92944@beast>
+References: <20170822235400.GA92944@beast>
+Message-ID: <alpine.DEB.2.20.1708231512190.3150@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -11,161 +11,227 @@ List-Id: cocci@systeme.lip6.fr
 
 On Tue, 22 Aug 2017, Kees Cook wrote:
 
-> Hi,
+> This improves the patch mode of setup_timer.cocci. Several patterns were
+> missing:
+>  - assignments-before-init_timer() cases
+>  - limiting the .data case removal to the struct timer_list instance
+>  - handling calls by dereference (timer->field vs timer.field)
 >
-> I'm working on a large type conversion for struct timer_list, and
-> it'll require changing all of the callback prototypes and changing
-> logic at their start. For example, if I start with this:
+> Running this on the current kernel tree produces a large diff that I
+> would like to get applied as the first step in removing the .data
+> field from struct timer_list:
 >
+>  208 files changed, 367 insertions(+), 757 deletions(-)
 >
-> void primary_callback(unsigned long arg);
-> void alternate_callback(struct some_handle *handle);
-> ...
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+>  scripts/coccinelle/api/setup_timer.cocci | 129 +++++++++++++++++++++++++------
+>  1 file changed, 105 insertions(+), 24 deletions(-)
 >
-> void primary_callback(unsigned long arg)
-> {
->     struct some_handle *handle = (struct some_handle *)arg;
-> ...
-> }
+> diff --git a/scripts/coccinelle/api/setup_timer.cocci b/scripts/coccinelle/api/setup_timer.cocci
+> index eb6bd9e4ab1a..bc6bd8f0b4bf 100644
+> --- a/scripts/coccinelle/api/setup_timer.cocci
+> +++ b/scripts/coccinelle/api/setup_timer.cocci
+> @@ -2,6 +2,7 @@
+>  /// and data fields
+>  // Confidence: High
+>  // Copyright: (C) 2016 Vaishali Thakkar, Oracle. GPLv2
+> +// Copyright: (C) 2017 Kees Cook, Google. GPLv2
+>  // Options: --no-includes --include-headers
+>  // Keywords: init_timer, setup_timer
 >
-> void alternate_callback(struct some_handle *handle)
-> {
-> ...
-> }
+> @@ -10,60 +11,123 @@ virtual context
+>  virtual org
+>  virtual report
 >
-> ...
-> setup_timer(&ptr->timer_field, some_callback, (unsigned long)ptr);
-> ...
-> ptr->timer_field.function = (void (*)(unsigned long)alternate_callback;
+> +// Match the common cases first to avoid Coccinelle parsing loops with
+> +// "... when" clauses.
+> +
+>  @match_immediate_function_data_after_init_timer
+>  depends on patch && !context && !org && !report@
+>  expression e, func, da;
+>  @@
 >
->
-> I'd like to end up with:
->
->
-> void primary_callback(struct timer_list *t);
-> void alternate_callback(struct timer_list *t);
-> ...
->
-> void primary_callback(struct timer_list *t)
-> {
->     struct some_handle *handle = container_of(t, struct some_handle,
-> timer_field);
-> ...
-> }
->
-> void alternate_callback(struct timer_list *t)
-> {
->     struct some_handle *handle = container_of(t, struct some_handle,
-> timer_field);
-> ...
-> }
->
-> ...
-> setup_time(&ptr->timer_field, some_callback, &ptr->timer_field);
-> ...
-> ptr->timer_field.function = alternate_callback;
->
->
-> I'm having trouble matching the callback arg type, and I'm having
-> trouble identifying the callbacks. I think I can do things like this,
-> but it's not quite working:
->
-> @match_setup_timer@
-> identifier _p;
-> struct timer_list _timer_field;
-> identifier _callback;
-> type _cast;
-> @@
->
-> (
->  setup_timer(&_p->_timer_field, _setup_callback, _p);
-> |
->  setup_timer(&_p->_timer_field, (_cast)_setup_callback, _p);
+> --init_timer (&e);
+> -+setup_timer (&e, func, da);
+> +-init_timer
+> ++setup_timer
+> + ( \(&e\|e\)
+> ++, func, da
+> + );
+> +(
+> +-\(e.function\|e->function\) = func;
+> +-\(e.data\|e->data\) = da;
+> +|
+> +-\(e.function\|e->function\) = func;
+> +-\(e.data\|e->data\) = da;
 
-The code has setup_callback but the metavariable is just callback.
+Same thing twice; I think you want to invert the last two lines.
 
-> )
+> +)
+> +
+> + at match_immediate_function_data_before_init_timer
+> +depends on patch && !context && !org && !report@
+> +expression e, func, da;
+> +@@
 >
-> @match_function_assignment@
-> identifier _p;
-> struct timer_list _timer_field;
+>  (
+> +-\(e.function\|e->function\) = func;
+> +-\(e.data\|e->data\) = da;
+> +|
+> +-\(e.function\|e->function\) = func;
+> +-\(e.data\|e->data\) = da;
 
-This is declaring a metavariable that matches an expression of type struct
-timer_list.  You are trying to match a field name, so you just want an
-identifier metavariable.  If you want to be sure that _p->_timer_field has
-type struct timer_list, then you can make an expression metavariable of
-that type, ie:
-
-struct timer_list e;
-
-and then put @e after _timer_field.  But maybe you don't even need
-_p->_timer_field and can just use e?
-
-> identifier _callback;
-> type _cast;
-> @@
->
-> (
->  _p->_timer_field.function = _callback;
-> |
->  _p->_timer_field.function = (_cast)_callback;
-> )
->
-> // callback(unsigned long arg)
-> @change_callback_handle_cast
-> depends on match_setup_timer || match_function_assignment@
-> identifier ???._callback;
-> struct timer_list ???._timer_field;
-> type _origtype;
-> identifier _origarg;
-> type _handletype;
-> identifier _handle;
-> @@
->
-> -void _callback(_origtype _origarg)
-> +void _callback(struct timer_list *t)
->  {
-> -    _handletype *_handle = (_handletype *)_origarg;
-> +    _handletype *_handle = container_of(t, _handletype, _timer_field);
->
-> // callback(struct something *handle)
-> @change_callback_handle_arg
-> depends on match_setup_timer || match_function_assignment@
-> identifier ???._callback;
-
-Is the concern here that you want to get the metavariable binding from two
-different rules?
-
-It might be possible to just have two metavariables inherited from
-different places, and then have a disjunction in the function name
-position.
-
-Alternatively, maybe those two rules could be merged.
+Same as in the previous case.
 
 julia
 
-> struct timer_list ???._timer_field;
-> type _handletype;
-> identifier _handle;
-> @@
+
+> +)
+> +-init_timer
+> ++setup_timer
+> + ( \(&e\|e\)
+> ++, func, da
+> + );
+> +
+> + at match_function_and_data_after_init_timer
+> +depends on patch && !context && !org && !report@
+> +expression e, e2, e3, e4, e5, func, da;
+> +@@
+> +
+> +-init_timer
+> ++setup_timer
+> + ( \(&e\|e\)
+> ++, func, da
+> + );
+> + ... when != func = e2
+> +     when != da = e3
+> +(
+>  -e.function = func;
+> +... when != da = e4
+>  -e.data = da;
+>  |
+> +-e->function = func;
+> +... when != da = e4
+> +-e->data = da;
+> +|
+>  -e.data = da;
+> +... when != func = e5
+>  -e.function = func;
+> +|
+> +-e->data = da;
+> +... when != func = e5
+> +-e->function = func;
+>  )
 >
-> -void _callback(_handletype *_handle)
-> +void _callback(struct timer_list *t)
->  {
-> +    _origtype *_origarg = container_of(t, _origtype, _timer_field);
+> - at match_function_and_data_after_init_timer
+> + at match_function_and_data_before_init_timer
+>  depends on patch && !context && !org && !report@
+> -expression e1, e2, e3, e4, e5, a, b;
+> +expression e, e2, e3, e4, e5, func, da;
+>  @@
+> -
+> --init_timer (&e1);
+> -+setup_timer (&e1, a, b);
+> -
+> -... when != a = e2
+> -    when != b = e3
+>  (
+> --e1.function = a;
+> -... when != b = e4
+> --e1.data = b;
+> +-e.function = func;
+> +... when != da = e4
+> +-e.data = da;
+>  |
+> --e1.data = b;
+> -... when != a = e5
+> --e1.function = a;
+> +-e->function = func;
+> +... when != da = e4
+> +-e->data = da;
+> +|
+> +-e.data = da;
+> +... when != func = e5
+> +-e.function = func;
+> +|
+> +-e->data = da;
+> +... when != func = e5
+> +-e->function = func;
+>  )
+> +... when != func = e2
+> +    when != da = e3
+> +-init_timer
+> ++setup_timer
+> + ( \(&e\|e\)
+> ++, func, da
+> + );
 >
+>  @r1 exists@
+> +expression t;
+>  identifier f;
+>  position p;
+>  @@
 >
-> Namely, I don't seem to be matching casts or function arg types, and I
-> sometimes seem to be missing cases of struct timer_list. Also, I can't
-> figure out how to have the change_callback_* rules depend on either
-> matching match_setup_timer or match_function_assignment and having
-> access to the matched fields...
+>  f(...) { ... when any
+> -  init_timer at p(...)
+> +  init_timer at p(\(&t\|t\))
+>    ... when any
+>  }
 >
-> What would be the best way to deal with these?
+>  @r2 exists@
+> +expression r1.t;
+>  identifier g != r1.f;
+> -struct timer_list t;
+>  expression e8;
+>  @@
 >
-> Thanks!
+>  g(...) { ... when any
+> -  t.data = e8
+> +  \(t.data\|t->data\) = e8
+>    ... when any
+>  }
 >
-> -Kees
+> @@ -77,14 +141,31 @@ p << r1.p;
+>  cocci.include_match(False)
+>
+>  @r3 depends on patch && !context && !org && !report@
+> -expression e6, e7, c;
+> +expression r1.t, func, e7;
+>  position r1.p;
+>  @@
+>
+> --init_timer at p (&e6);
+> -+setup_timer (&e6, c, 0UL);
+> -... when != c = e7
+> --e6.function = c;
+> +(
+> +-init_timer at p(&t);
+> ++setup_timer(&t, func, 0UL);
+> +... when != func = e7
+> +-t.function = func;
+> +|
+> +-t.function = func;
+> +... when != func = e7
+> +-init_timer at p(&t);
+> ++setup_timer(&t, func, 0UL);
+> +|
+> +-init_timer at p(t);
+> ++setup_timer(t, func, 0UL);
+> +... when != func = e7
+> +-t->function = func;
+> +|
+> +-t->function = func;
+> +... when != func = e7
+> +-init_timer at p(t);
+> ++setup_timer(t, func, 0UL);
+> +)
+>
+>  // ----------------------------------------------------------------------------
+>
+> --
+> 2.7.4
+>
 >
 > --
 > Kees Cook
