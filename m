@@ -1,100 +1,38 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 24 Aug 2017 07:26:58 +0200 (CEST)
-Subject: [Cocci] Matching function prototypes and casts
-In-Reply-To: <CAGXu5j+NRPWX6KZPW-UqijzzCkXsLF-QB6WY_cL=QSB9s2fL-Q@mail.gmail.com>
-References: <CAGXu5jJAFEsBeRsSJPefu6wCDF+KdXr001ZbQWePERKFsgZsOw@mail.gmail.com>
- <alpine.DEB.2.20.1708231204260.3150@hadrien>
- <CAGXu5jK1Kufzuf17iwwz20G=j5yMMFJtYpP4ika56kifKW2OOg@mail.gmail.com>
- <alpine.DEB.2.20.1708232317360.2025@hadrien>
- <CAGXu5j+NRPWX6KZPW-UqijzzCkXsLF-QB6WY_cL=QSB9s2fL-Q@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1708240719010.2149@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Thu, 24 Aug 2017 09:56:22 +0200
+Subject: [Cocci] Comparing statement lists with SmPL
+In-Reply-To: <alpine.DEB.2.20.1708231742480.3150@hadrien>
+References: <aff3ee47-e4cd-af52-1a66-304f36ddc1ed@users.sourceforge.net>
+ <alpine.DEB.2.20.1708151930140.4600@hadrien>
+ <69d615e4-0f62-2289-dd59-97c625ba47e8@users.sourceforge.net>
+ <76e2fbf5-4812-18eb-2968-53019d97ab14@users.sourceforge.net>
+ <alpine.DEB.2.20.1708152208320.2049@hadrien>
+ <be855581-e22e-2b58-8565-68412ae590b3@users.sourceforge.net>
+ <c5f3c8db-e5ec-47c1-3d84-8392a7101645@users.sourceforge.net>
+ <alpine.DEB.2.20.1708172043460.2068@hadrien>
+ <b4451f01-e10a-c0f3-91ff-f49e185b3644@users.sourceforge.net>
+ <alpine.DEB.2.20.1708172130300.2068@hadrien>
+ <fda11784-5ed9-33ae-7beb-b5714abb11bc@users.sourceforge.net>
+ <a4596fc8-dbe4-3f54-f8d6-2d24cb870d7e@users.sourceforge.net>
+ <alpine.DEB.2.20.1708231644340.3150@hadrien>
+ <5d690e96-5217-a89c-dac3-19c5f4066008@users.sourceforge.net>
+ <alpine.DEB.2.20.1708231742480.3150@hadrien>
+Message-ID: <5bb3366b-a087-03f3-2fe5-2b8e1c1f8c07@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> > For me it works.  Do you have the latest version of Coccinelle from
-> > github?  I used the option --all-includes.
->
-> Ah-ha! Thank you. :) I had --no-includes in my .cocci. :)
+> If you like the results from the second case, what more do you want?
 
->From a performance point of view, you might want to do what you can with
---no-includes first.  It will then only be doing the --all-includes on
-files that still contain init_timer.
+I would like to achieve somehow that the number of presented ?false positives?
+will become so low so that similar (and extended) SmPL scripts can be used for
+more automatic source code transformations with higher confidence.
 
-> More insane corner cases:
->
-> I have this function:
->
-> static void
-> hfcmulti_dbusy_timer(struct hfc_multi *hc)
-> {
-> }
->
-> And this rule (which is using the working change_timer_function_usage
-> rule to find identifiers):
->
-> // callback(struct something *handle)
-> @change_callback_handle_arg
->  depends on patch &&
->             change_timer_function_usage &&
->             !change_callback_handle_cast@
-> identifier change_timer_function_usage._callback;
-> identifier change_timer_function_usage._timer;
-> type _handletype;
-> identifier _handle;
-> @@
->
-> -static void _callback(_handletype *_handle)
-> +static void _callback(struct timer_list *t)
->  {
-> +       _handletype *_handle = TIMER_CONTAINER(_handle, t, _timer);
->         ...
->  }
->
-> It correctly produces:
->
-> -static void
-> -hfcmulti_dbusy_timer(struct hfc_multi *hc)
-> +static void hfcmulti_dbusy_timer(struct timer_list *t)
->  {
-> +       struct hfc_multi *hc = TIMER_CONTAINER(hc, t, timer);
->  }
->
-> But since this was an empty function originally, I don't want to add
-> just the variable declaration. I tried various ()-like things, but
-> they didn't work:
->
-> -static void _callback(_handletype *_handle)
-> +static void _callback(struct timer_list *t)
->  {
-> (
-> +       _handletype *_handle = TIMER_CONTAINER(_handle, t, _timer);
->         ...
-> |
-> )
->  }
->
-> etc...
+* How are are the chances to integrate corresponding variants into a script
+  collection for which you care also?
+  https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/scripts/coccinelle/
 
-Really what you care about is whether _handle was used.  I think that you
-will need two rules:
+* How much does the attention for related issues fit to the software development
+  capacity which is available so far?
 
-@exists@
-@@
-
--static void _callback(_handletype *_handle)
-+static void _callback(struct timer_list *t) {
-+  _handletype *_handle = TIMER_CONTAINER(_handle, t, _timer);
-  ...
-  _handle
-  ... when any
-}
-
-and
-
--static void _callback(_handletype *_handle)
-+static void _callback(struct timer_list *t) { ...
-}
-
-to clean up the rest.
-
-julia
+Regards,
+Markus
