@@ -1,19 +1,16 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Thu, 24 Aug 2017 12:06:09 +0200
+Date: Thu, 24 Aug 2017 12:18:31 +0200
 Subject: [Cocci] parsing of C code
-In-Reply-To: <alpine.DEB.2.20.1708231857520.3150@hadrien>
-References: <alpine.DEB.2.20.1708231857520.3150@hadrien>
-Message-ID: <49a1b796-dd6b-6eb5-e88e-5671a2f608ec@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.20.1708231104310.3150@hadrien>
+References: <alpine.DEB.2.20.1708231104310.3150@hadrien>
+Message-ID: <8fcfa4a0-678a-f8f3-003a-9c953ba36c11@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> If it's yacc based you can recover where ever you like.  Knowing how to
->> do it is something of a black art.
+> Actually, I noticed that unfolding macros can sometimes hurt more than it helps.
 
-> Well, ocamlyacc, to be precise.
-
-Can the software ?Menhir? help any more for the needed data processing?
-http://gallium.inria.fr/%7Efpottier/menhir/
+Would you like to discuss (or explain) involved implementation details
+and configuration parameters any more?
 
 Regards,
 Markus
