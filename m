@@ -1,47 +1,27 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 24 Aug 2017 12:22:51 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Thu, 24 Aug 2017 13:10:27 +0200
 Subject: [Cocci] parsing of C code
-In-Reply-To: <8fcfa4a0-678a-f8f3-003a-9c953ba36c11@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.20.1708241219540.3187@hadrien>
 References: <alpine.DEB.2.20.1708231104310.3150@hadrien>
  <8fcfa4a0-678a-f8f3-003a-9c953ba36c11@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1708241219540.3187@hadrien>
+ <alpine.DEB.2.20.1708241219540.3187@hadrien>
+Message-ID: <e113478d-2cf4-ed9a-a168-35f7209b49c0@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+> Parsing of foo fails due to the attribute __xxx(yyy) that Coccinelle is
+> not able to cope with.
+
+Why does the parsing software struggle with such input data so far?
 
 
-On Thu, 24 Aug 2017, SF Markus Elfring wrote:
+> Coccinele hopes that expanding macros will solve the problem.
 
-> > Actually, I noticed that unfolding macros can sometimes hurt more than it helps.
->
-> Would you like to discuss (or explain) involved implementation details
-> and configuration parameters any more?
+Why do you need to ?hope? something if the software could be designed
+in the way to take also special care with these source code places?
 
-#define FOO(x) BAR(x,+,y)
+Do you eventually stumble on target conflicts because of language processing
+difficulties which could be explained from the Chomsky?Sch?tzenberger hierarchy?
 
-int foo() __xxx(yyy) {
-  FOO(12);
-}
-
-int xyz() {
-  FOO(15);
-}
-
-Parsing of foo fails due to the attribute __xxx(yyy) that Coccinelle is
-not able to cope with.  Coccinele hopes that expanding macros will solve
-the problem.  Now the code becomes:
-
-#define FOO(x) BAR(x,+,y)
-
-int foo() __xxx(yyy) {
-  BAR(12,+,y);
-}
-
-int xyz() {
-  BAR(15,+,y);
-}
-
-Now foo is still unparsable, but xyz is unparsable as well.  It would have
-been better off with FOO(15);
-
-julia
+Regards,
+Markus
