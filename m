@@ -1,29 +1,21 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 25 Aug 2017 15:20:58 +0200
-Subject: [Cocci] Matching function prototypes and casts
-In-Reply-To: <alpine.DEB.2.20.1708251509060.3191@hadrien>
-References: <CAGXu5jK1Kufzuf17iwwz20G=j5yMMFJtYpP4ika56kifKW2OOg@mail.gmail.com>
- <8ee5f080-2b21-565a-cc6b-e49ba7b1e73f@users.sourceforge.net>
- <alpine.DEB.2.20.1708251353440.3191@hadrien>
- <abc618f6-8de2-95e2-7c57-b495f9704866@users.sourceforge.net>
- <alpine.DEB.2.20.1708251509060.3191@hadrien>
-Message-ID: <b3a551cf-fceb-5d0a-22ba-f8901f8a8ebf@users.sourceforge.net>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sat, 26 Aug 2017 14:13:25 +0200 (CEST)
+Subject: [Cocci] attributes
+Message-ID: <alpine.DEB.2.20.1708261410460.10724@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> (
->> *setup_timer(&E->_timer at tl, \((_func)\| \) \(&\| \) _callback, \((_data)\| \) E);
->> |
->> *E->_timer at tl.function = \((_func)\| \) \(&\| \) _callback;
->> )
-> 
-> No, it doesn't work, because \( \| \) matches an expression and there is
-> no empty expression.
+People ask from time to time about the possibility of matching attributes,
+such as __read_mostly.  It is now (github) possible to match and transform
+a single such attribute when it comes after the name of a variable in a
+variable declaration.  A possible rule is thus:
 
-Will the Coccinelle software become able to generate the desired combination
-of casts and address-of operators anyhow automatically?
+@@
+identifier i,j;
+attribute name __ro_after_init;
+@@
 
-Can the usage of optional items be expressed in a more convenient way here?
+*struct i j __ro_after_init =
+ { ... };
 
-Regards,
-Markus
+julia
