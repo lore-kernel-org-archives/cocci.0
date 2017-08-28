@@ -1,26 +1,28 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 28 Aug 2017 13:36:53 +0200 (CEST)
-Subject: [Cocci] update
-Message-ID: <alpine.DEB.2.20.1708281334400.3266@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Mon, 28 Aug 2017 15:37:48 +0200
+Subject: [Cocci] Addition of support for variable attributes
+In-Reply-To: <alpine.DEB.2.20.1708261410460.10724@hadrien>
+References: <alpine.DEB.2.20.1708261410460.10724@hadrien>
+Message-ID: <6b8f6657-28b0-7572-df15-88333aa93069@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-There was a bug in the include file management that could cause
---recursive-includes to go into an infinite loop.  That is now fixed.
+> It is now (github) possible to match and transform a single such attribute
+> when it comes after the name of a variable in a variable declaration.
 
-There is also now support for conjunctions on types.  That is:
+This is a nice extension for your software.
 
-@@
-type t;
-identifier i;
-@@
+How does this information fit to the wording in the manual?
+https://github.com/coccinelle/coccinelle/blob/2776ede39f6f4197eaa0fc8344152e5ed07e0ad3/docs/manual/cocci_syntax.tex#L308
+??
+It is not possible to match or remove an attribute, only to add one.
+??
 
-(
-struct i
-&
-t
-)
 
-will now bind both i and t appropriately.
+> attribute name __ro_after_init;
 
-julia
+Do you imagine any further software evolution if you start the specification
+of this metavariable type with two words?
+
+Regards,
+Markus
