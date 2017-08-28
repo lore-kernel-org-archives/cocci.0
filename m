@@ -1,9 +1,9 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 28 Aug 2017 08:45:06 +0200 (CEST)
+Date: Mon, 28 Aug 2017 08:59:17 +0200 (CEST)
 Subject: [Cocci] Automatic replacement of function declarations
 In-Reply-To: <CAGXu5jKhUYEMLNvmStT-x-h4UKKQkuEpFVxn4H8PPVfecUnzqg@mail.gmail.com>
 References: <CAGXu5jKhUYEMLNvmStT-x-h4UKKQkuEpFVxn4H8PPVfecUnzqg@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1708280844440.2773@hadrien>
+Message-ID: <alpine.DEB.2.20.1708280857490.2773@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -56,16 +56,8 @@ On Sun, 27 Aug 2017, Kees Cook wrote:
 > Is this a bug, or did I write my rule in some way that excludes these
 > forward declarations?
 
-It is supposed to work.  I will check on it.
+I think that the problem is with u_long.  Everything is fine if you
+replace it with int.  I'm not sure what is going on, though because there
+is no parse error.  Will check further.
 
 julia
-
->
-> Thanks!
->
-> -Kees
->
-> --
-> Kees Cook
-> Pixel Security
->
