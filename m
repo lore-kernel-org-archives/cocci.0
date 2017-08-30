@@ -1,24 +1,81 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 30 Aug 2017 15:43:23 +0200
-Subject: [Cocci] [PATCH v4] Coccinelle: add atomic_as_refcounter script
-In-Reply-To: <2236FBA76BA1254E88B949DDB74E612B6FF61354@IRSMSX102.ger.corp.intel.com>
-References: <2236FBA76BA1254E88B949DDB74E612B6FF61354@IRSMSX102.ger.corp.intel.com>
-Message-ID: <58192c22-0bdc-904d-c278-dc0b4499e406@users.sourceforge.net>
+From: joe@perches.com (Joe Perches)
+Date: Wed, 30 Aug 2017 05:38:27 -0700
+Subject: [Cocci] cocci script to add static to const declarations ?
+In-Reply-To: <alpine.DEB.2.20.1708301334550.3184@hadrien>
+References: <1504090145.2786.16.camel@perches.com>
+ <alpine.DEB.2.20.1708301334550.3184@hadrien>
+Message-ID: <1504096707.2786.20.camel@perches.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> > Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+On Wed, 2017-08-30 at 13:41 +0200, Julia Lawall wrote:
+> The following seems to work:
+> 
+> @initialize:ocaml@
+> @@
+> 
+> let diff(p,i) = not ((List.hd p).current_element = i)
+> 
+> @promising disable optional_storage@
+> position p;
+> constant c;
+> type t;
+> identifier i;
+> @@
+> 
+> const t i at p[] = { ...,c,... };
+> 
+> @worrisome@
+> position promising.p,bad;
+> constant c;
+> expression e;
+> type t;
+> identifier i;
+> @@
+> 
+> const t i at p[] = { ...,\(c\|e at bad\),... };
+> 
+> @hasexp@
+> position promising.p,worrisome.bad;
+> expression e;
+> type t;
+> identifier i;
+> @@
+> 
+> const t i at p[] = { ...,e at bad,... };
+> 
+> @depends on !hasexp@
+> position promising.p : script:ocaml(promising.i) { diff(p,i) };
+> type t;
+> identifier i;
+> @@
+> 
+> +static
+> const t i at p[] = { ... };
+> 
+> ---
+> 
+> The ocaml code checks that the declaration is inside a function, by
+> checking that the name of the current top-level element is different than
+> the name of the defined object.
+> 
+> The main rule is "worrisome", which will set a position variable if any
+> field is not a constant.  This considers anything that is in all capital
+> letters to be a constant, which is not safe.  To forbid all arrays that
+> contain any identifier, in capital letters or not, one could convert
+> 
+> \(c\|e at bad\)
+> 
+> to
+> 
+> \(i at bad\|c\|e at bad\)
+> 
+> with i defined as an identifier metavariable.
 
-> Thank you very much Julia!
+btw: thanks.
 
-I find that this acknowledgement could be presented a bit too early.
+It may be useful to put smoe of these ocaml code snippers
+like the above and the space between type and pointer bit
+into a cookbook/recipe list somewhere.
 
-
-> What is the correct path to merge this?
-
-It seems that you prefer to ignore some of my technical arguments (or concerns?).
-
-I hope that a safer source code search approach can still be achieved here.
-
-Regards,
-Markus
+cheers, Joe
