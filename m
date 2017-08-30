@@ -1,81 +1,45 @@
-From: joe@perches.com (Joe Perches)
-Date: Wed, 30 Aug 2017 05:38:27 -0700
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Wed, 30 Aug 2017 22:48:37 +0200 (CEST)
 Subject: [Cocci] cocci script to add static to const declarations ?
-In-Reply-To: <alpine.DEB.2.20.1708301334550.3184@hadrien>
+In-Reply-To: <1504094110.2786.18.camel@perches.com>
 References: <1504090145.2786.16.camel@perches.com>
  <alpine.DEB.2.20.1708301334550.3184@hadrien>
-Message-ID: <1504096707.2786.20.camel@perches.com>
+ <1504094110.2786.18.camel@perches.com>
+Message-ID: <alpine.DEB.2.20.1708302248090.2201@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, 2017-08-30 at 13:41 +0200, Julia Lawall wrote:
-> The following seems to work:
-> 
-> @initialize:ocaml@
-> @@
-> 
-> let diff(p,i) = not ((List.hd p).current_element = i)
-> 
-> @promising disable optional_storage@
-> position p;
-> constant c;
-> type t;
-> identifier i;
-> @@
-> 
-> const t i at p[] = { ...,c,... };
-> 
-> @worrisome@
-> position promising.p,bad;
-> constant c;
-> expression e;
-> type t;
-> identifier i;
-> @@
-> 
-> const t i at p[] = { ...,\(c\|e at bad\),... };
-> 
-> @hasexp@
-> position promising.p,worrisome.bad;
-> expression e;
-> type t;
-> identifier i;
-> @@
-> 
-> const t i at p[] = { ...,e at bad,... };
-> 
-> @depends on !hasexp@
-> position promising.p : script:ocaml(promising.i) { diff(p,i) };
-> type t;
-> identifier i;
-> @@
-> 
-> +static
-> const t i at p[] = { ... };
-> 
-> ---
-> 
-> The ocaml code checks that the declaration is inside a function, by
-> checking that the name of the current top-level element is different than
-> the name of the defined object.
-> 
-> The main rule is "worrisome", which will set a position variable if any
-> field is not a constant.  This considers anything that is in all capital
-> letters to be a constant, which is not safe.  To forbid all arrays that
-> contain any identifier, in capital letters or not, one could convert
-> 
-> \(c\|e at bad\)
-> 
-> to
-> 
-> \(i at bad\|c\|e at bad\)
-> 
-> with i defined as an identifier metavariable.
 
-btw: thanks.
 
-It may be useful to put smoe of these ocaml code snippers
-like the above and the space between type and pointer bit
-into a cookbook/recipe list somewhere.
+On Wed, 30 Aug 2017, Joe Perches wrote:
 
-cheers, Joe
+> On Wed, 2017-08-30 at 13:41 +0200, Julia Lawall wrote:
+> > The main rule is "worrisome", which will set a position variable if any
+> > field is not a constant.??This considers anything that is in all capital
+> > letters to be a constant, which is not safe.??To forbid all arrays that
+> > contain any identifier, in capital letters or not, one could convert
+> > \(c\|e at bad\)
+> >
+> > to
+> >
+> > \(i at bad\|c\|e at bad\)
+> []
+> > diff -u -p a/drivers/video/fbdev/tmiofb.c b/drivers/video/fbdev/tmiofb.c
+> > --- a/drivers/video/fbdev/tmiofb.c
+> > +++ b/drivers/video/fbdev/tmiofb.c
+> > @@ -436,7 +436,7 @@ static int tmiofb_sync(struct fb_info *f
+> > ?static void
+> > ?tmiofb_fillrect(struct fb_info *fbi, const struct fb_fillrect *rect)
+> > ?{
+> > -???????const u32 cmd[] = {
+> > +???????static const u32 cmd[] = {
+> > ????????????????TMIOFB_ACC_DSADR((rect->dy * fbi->mode->xres + rect->dx) * 2),
+> > ????????????????TMIOFB_ACC_DHPIX(rect->width - 1),
+> > ????????????????TMIOFB_ACC_DVPIX(rect->height - 1),
+>
+> False positives like the above exist in the attachment so
+> it seems the additional check is necessary.
+
+Hmm.  Thanks for the feedback.  I will look into it.
+
+julia
