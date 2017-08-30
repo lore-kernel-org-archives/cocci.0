@@ -1,22 +1,34 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 30 Aug 2017 12:36:48 +0200
-Subject: [Cocci] [PATCH v4] Coccinelle: add atomic_as_refcounter script
-In-Reply-To: <1504073758-16945-2-git-send-email-elena.reshetova@intel.com>
-References: <1504073758-16945-2-git-send-email-elena.reshetova@intel.com>
-Message-ID: <07a1c2dd-dd24-98d4-fbd6-afcd6853c78a@users.sourceforge.net>
+From: joe@perches.com (Joe Perches)
+Date: Wed, 30 Aug 2017 03:49:05 -0700
+Subject: [Cocci] cocci script to add static to const declarations ?
+Message-ID: <1504090145.2786.16.camel@perches.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Dear Elena,
+Any idea on how to write a cocci script that
+looks for const array declarations and adds
+static to them only when all the initializers
+of the array are constants?
 
-I hoped on a more constructive feedback for remaining implementation details
-which should be reconsidered once more.
-https://systeme.lip6.fr/pipermail/cocci/2017-August/004341.html
+For instance:
 
-* Will any more revisions be needed for your evolving script until special
-  development concerns will be taken into account appropriately?
+    int foo(int bar)
+    {
+    	    const int baz[] = {1, 2, 3};
+    }
 
-* How do you prefer to clarify unsafe search patterns finally?
+could be converted to
 
-Regards,
-Markus
+    int foo(int bar)
+    {
+    	    static const int baz[] = {1, 2, 3};
+    }
+
+but
+
+    int foo(int bar)
+    {
+    	    const int baz[] = {1, 2, 3, bar};
+    }
+
+would not be converted?
