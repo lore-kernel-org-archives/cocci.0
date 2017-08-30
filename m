@@ -1,87 +1,81 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 30 Aug 2017 07:25:00 +0200 (CEST)
-Subject: [Cocci] OpenLDAP debug statements
-In-Reply-To: <20170829221532.ukkaxuvcgr7d25cn@eos.mistotebe.net>
-References: <20170829150811.xnttkxd47mknqzzn@eos.mistotebe.net>
- <alpine.DEB.2.20.1708292315050.5428@hadrien>
- <WM!749c3f172b3974a95a60915dcb92be0a7c29793379a0cf5b8c9fa31b26724555bb6748424359219db0307c72c35963de!@mailstronghold-1.zmailcloud.com>
- <20170829221532.ukkaxuvcgr7d25cn@eos.mistotebe.net>
-Message-ID: <alpine.DEB.2.20.1708300722580.2152@hadrien>
+From: sebastian.reichel@collabora.co.uk (Sebastian Reichel)
+Date: Wed, 30 Aug 2017 02:29:39 +0200
+Subject: [Cocci] [PATCH v3 0/5] bq27xxx_battery data memory update
+In-Reply-To: <CAKvHMgTEe_xBP2ENMTU5BNwWaRjfqbAuRJC32sHYL_Mh5oJOsQ@mail.gmail.com>
+References: <20170824033617.20840-1-liam@networkimprov.net>
+ <20170829105413.6wbejdaxxxd6hk7b@earth>
+ <0bf4ba2f-18f9-1204-8241-8acb6ac6f490@ti.com>
+ <20170829212259.gs4bljwscrprsfjl@earth>
+ <CAKvHMgTEe_xBP2ENMTU5BNwWaRjfqbAuRJC32sHYL_Mh5oJOsQ@mail.gmail.com>
+Message-ID: <20170830002939.ns43wldvffmwqhuv@earth>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hi,
 
+On Tue, Aug 29, 2017 at 04:07:12PM -0700, Liam Breck wrote:
+> I don't see a Julia in CC list...
 
-On Tue, 29 Aug 2017, Ond?ej Kuzn?k wrote:
+<_< let's try that again.
 
-> On Tue, Aug 29, 2017 at 11:17:53PM +0200, Julia Lawall wrote:
-> > On Tue, 29 Aug 2017, Ond?ej Kuzn?k wrote:
-> >> Hi again,
-> >> having achieved some consensus to go ahead with this in the project and
-> >> some time to spare again, I have started on refining the patch to get as large
-> >> part of the OpenLDAP source code converted as possible.
+> On Tue, Aug 29, 2017 at 2:22 PM, Sebastian Reichel
+> <sebastian.reichel@collabora.co.uk> wrote:
+> > [adding Julia to Cc for Coccinelle question]
+> >
+> > Hi,
+> >
+> > On Tue, Aug 29, 2017 at 10:31:57AM -0500, Andrew F. Davis wrote:
+> >> On 08/29/2017 05:54 AM, Sebastian Reichel wrote:
+> >> > On Wed, Aug 23, 2017 at 08:36:12PM -0700, Liam Breck wrote:
+> >> >> Overview:
+> >> >> * Reorganizes chip data definitions
+> >> >> * Enables features landed in these patches:
+> >> >>   dt-bindings: power: supply: bq27xxx: Add monitored-battery documentation
+> >> >>   power: supply: bq27xxx: Add chip data memory read/write support
+> >> >>   power: supply: bq27xxx: Add power_supply_battery_info support
+> >> >> * Supports the following chips (only BQ27425 is active)
+> >> >>   BQ27500, 545, 425, 421, 441, 621
+> >> >>
+> >> >> Changes in v3:
+> >> >> * BQ27425 tested; workaround minor chip bug
+> >> >> * Dropped driver_version
+> >> >> * Fixed dbg_dupes logic for .props & .dm_regs
+> >> >> * Dropped two props array dupes
+> >> >>
+> >> >> Changes in v2:
+> >> >> * Added di->opts flags for remaining chip features
+> >> >> * Commented out untested bq27xxx_dm_regs parameters
+> >> >> * Changed dbg_dupes to run only once
+> >> >>
+> >> >> Notes on v1:
+> >> >> * Not fully tested (hence RFC tag)
+> >> >
+> >> > Thanks, full series queued.
+> >> >
+> >> > -- Sebastian
 > >>
-> >> There seem to be a few hundred occurrences that I can't seem to get
-> >> coccinelle to process, a few too many to process manually (by an order
-> >> of magnitude).
-> >>
+> >> Anyway, I've not got the time to fight these changes anymore, but at
+> >> very least could you drop 4/5, it's static analysis code made into a
+> >> runtime check built into a kernel driver, if not at least add my
+> >> nacked-by. :)
 > >
-> > Allowing format list to match strings in multiple pieces seems like a
-> > somewhat complex undertaking.
+> > Since it's not critical at all and nobody depends on it, I dropped 4/5
+> > for now. I agree, that checking it at runtime is not nice. On the other
+> > hand I do think a duplication check makes sense. Doing a static
+> > check should be possible, but I have no idea how to implement this
+> > (without much effort). I suspect Coccinelle can do it, so I added
+> > Julia.
+> >
+> > For reference this is the runtime check:
+> > https://patchwork.kernel.org/patch/9918953/
 >
-> Hi Julia,
-> I thought matching multiple part strings had worked before, but maybe
-> not the format string part of it.
+> [...]
 
-No, not the format string part.
-
-> Again, I have little understanding of
-> how the parser works, but maybe it might be able to keep around a second
-> internal representation of the string as it is concatenated and extract
-> this information from that, even if it did not allow all manipulations
-> on it?
-
-This was my thought also, but looking at the code, it seems complex.
-
-julia
-
->
-> Or maybe a solution that could be shared with the one for
-> stringification/concatenation (# and ##)? But at the moment, I think
-> coccinelle struggles with these as well, so maybe not.
->
-> > Perhaps the following could be acceptable?
-> >
-> > @initialize:ocaml@
-> > @@
-> >
-> > let fmtn(fmt,n) =
-> >    List.length (Str.split_delim (Str.regexp_string "%") fmt) = 3
-> >
-> > @@
-> > char[] fmt : script:ocaml() { fmtn(fmt,2) };
-> > expression list[2] args;
-> > expression E;
-> > @@
-> >
-> > Debug( E, fmt, args
-> > -, 0
-> >  );
-> >
-> > You would have to duplicate the latter rule for each possible number of
-> > arugments.
->
-> I'll test it out, the potential problem I see is when I look into the
-> second step, merging the sprintf(buf, fmt,...);Debug(...,fmt2,...,buf,...)
-> calls into a single Debug call. I think I needed similar information
-> there but had no idea how complex the format string was, but will check
-> that patch again as well.
->
-> Thanks,
->
-> --
-> Ond?ej Kuzn?k
-> Senior Software Engineer
-> Symas Corporation                       http://www.symas.com
-> Packaged, certified, and supported LDAP solutions powered by OpenLDAP
->
+-- Sebastian
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 833 bytes
+Desc: not available
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20170830/a6b38e47/attachment.asc>
