@@ -1,36 +1,168 @@
-From: joe@perches.com (Joe Perches)
-Date: Wed, 30 Aug 2017 04:55:10 -0700
-Subject: [Cocci] cocci script to add static to const declarations ?
-In-Reply-To: <alpine.DEB.2.20.1708301334550.3184@hadrien>
-References: <1504090145.2786.16.camel@perches.com>
- <alpine.DEB.2.20.1708301334550.3184@hadrien>
-Message-ID: <1504094110.2786.18.camel@perches.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Wed, 30 Aug 2017 14:26:26 +0200 (CEST)
+Subject: [Cocci] [PATCH] Coccinelle: add atomic_as_refcounter script
+In-Reply-To: <1504073758-16945-2-git-send-email-elena.reshetova@intel.com>
+References: <1504073758-16945-1-git-send-email-elena.reshetova@intel.com>
+ <1504073758-16945-2-git-send-email-elena.reshetova@intel.com>
+Message-ID: <alpine.DEB.2.20.1708301425590.3184@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, 2017-08-30 at 13:41 +0200, Julia Lawall wrote:
-> The main rule is "worrisome", which will set a position variable if any
-> field is not a constant.??This considers anything that is in all capital
-> letters to be a constant, which is not safe.??To forbid all arrays that
-> contain any identifier, in capital letters or not, one could convert
-> \(c\|e at bad\)
-> 
-> to
-> 
-> \(i at bad\|c\|e at bad\)
-[]
-> diff -u -p a/drivers/video/fbdev/tmiofb.c b/drivers/video/fbdev/tmiofb.c
-> --- a/drivers/video/fbdev/tmiofb.c
-> +++ b/drivers/video/fbdev/tmiofb.c
-> @@ -436,7 +436,7 @@ static int tmiofb_sync(struct fb_info *f
-> ?static void
-> ?tmiofb_fillrect(struct fb_info *fbi, const struct fb_fillrect *rect)
-> ?{
-> -???????const u32 cmd[] = {
-> +???????static const u32 cmd[] = {
-> ????????????????TMIOFB_ACC_DSADR((rect->dy * fbi->mode->xres + rect->dx) * 2),
-> ????????????????TMIOFB_ACC_DHPIX(rect->width - 1),
-> ????????????????TMIOFB_ACC_DVPIX(rect->height - 1),
 
-False positives like the above exist in the attachment so
-it seems the additional check is necessary.
+
+On Wed, 30 Aug 2017, Elena Reshetova wrote:
+
+> atomic_as_refcounter.cocci script allows detecting
+> cases when refcount_t type and API should be used
+> instead of atomic_t.
+>
+> Signed-off-by: Elena Reshetova <elena.reshetova@intel.com>
+
+Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+
+> ---
+>  scripts/coccinelle/api/atomic_as_refcounter.cocci | 131 ++++++++++++++++++++++
+>  1 file changed, 131 insertions(+)
+>  create mode 100644 scripts/coccinelle/api/atomic_as_refcounter.cocci
+>
+> diff --git a/scripts/coccinelle/api/atomic_as_refcounter.cocci b/scripts/coccinelle/api/atomic_as_refcounter.cocci
+> new file mode 100644
+> index 0000000..f83771b
+> --- /dev/null
+> +++ b/scripts/coccinelle/api/atomic_as_refcounter.cocci
+> @@ -0,0 +1,131 @@
+> +// Check if refcount_t type and API should be used
+> +// instead of atomic_t type when dealing with refcounters
+> +//
+> +// Copyright (c) 2016-2017, Elena Reshetova, Intel Corporation
+> +//
+> +// Confidence: Moderate
+> +// URL: http://coccinelle.lip6.fr/
+> +// Options: --include-headers --very-quiet
+> +
+> +virtual report
+> +
+> + at r1 exists@
+> +identifier a, x, y;
+> +position p1, p2;
+> +identifier fname =~ ".*free.*";
+> +identifier fname2 =~ ".*destroy.*";
+> +identifier fname3 =~ ".*del.*";
+> +identifier fname4 =~ ".*queue_work.*";
+> +identifier fname5 =~ ".*schedule_work.*";
+> +identifier fname6 =~ ".*call_rcu.*";
+> +
+> +@@
+> +
+> +(
+> + atomic_dec_and_test at p1(&(a)->x)
+> +|
+> + atomic_dec_and_lock at p1(&(a)->x, ...)
+> +|
+> + atomic_long_dec_and_lock at p1(&(a)->x, ...)
+> +|
+> + atomic_long_dec_and_test at p1(&(a)->x)
+> +|
+> + atomic64_dec_and_test at p1(&(a)->x)
+> +|
+> + local_dec_and_test at p1(&(a)->x)
+> +)
+> +...
+> +(
+> + fname at p2(a, ...);
+> +|
+> + fname2 at p2(...);
+> +|
+> + fname3 at p2(...);
+> +|
+> + fname4 at p2(...);
+> +|
+> + fname5 at p2(...);
+> +|
+> + fname6 at p2(...);
+> +)
+> +
+> +
+> + at script:python depends on report@
+> +p1 << r1.p1;
+> +p2 << r1.p2;
+> +@@
+> +msg = "atomic_dec_and_test variation before object free at line %s."
+> +coccilib.report.print_report(p1[0], msg % (p2[0].line))
+> +
+> + at r4 exists@
+> +identifier a, x, y;
+> +position p1, p2;
+> +identifier fname =~ ".*free.*";
+> +
+> +@@
+> +
+> +(
+> + atomic_dec_and_test at p1(&(a)->x)
+> +|
+> + atomic_dec_and_lock at p1(&(a)->x, ...)
+> +|
+> + atomic_long_dec_and_lock at p1(&(a)->x, ...)
+> +|
+> + atomic_long_dec_and_test at p1(&(a)->x)
+> +|
+> + atomic64_dec_and_test at p1(&(a)->x)
+> +|
+> + local_dec_and_test at p1(&(a)->x)
+> +)
+> +...
+> +y=a
+> +...
+> +fname at p2(y, ...);
+> +
+> +
+> + at script:python depends on report@
+> +p1 << r4.p1;
+> +p2 << r4.p2;
+> +@@
+> +msg = "atomic_dec_and_test variation before object free at line %s."
+> +coccilib.report.print_report(p1[0], msg % (p2[0].line))
+> +
+> + at r2 exists@
+> +identifier a, x;
+> +position p1;
+> +@@
+> +
+> +(
+> +atomic_add_unless(&(a)->x,-1,1)@p1
+> +|
+> +atomic_long_add_unless(&(a)->x,-1,1)@p1
+> +|
+> +atomic64_add_unless(&(a)->x,-1,1)@p1
+> +)
+> +
+> + at script:python depends on report@
+> +p1 << r2.p1;
+> +@@
+> +msg = "atomic_add_unless"
+> +coccilib.report.print_report(p1[0], msg)
+> +
+> + at r3 exists@
+> +identifier x;
+> +position p1;
+> +@@
+> +
+> +(
+> +x = atomic_add_return at p1(-1, ...);
+> +|
+> +x = atomic_long_add_return at p1(-1, ...);
+> +|
+> +x = atomic64_add_return at p1(-1, ...);
+> +)
+> +
+> + at script:python depends on report@
+> +p1 << r3.p1;
+> +@@
+> +msg = "x = atomic_add_return(-1, ...)"
+> +coccilib.report.print_report(p1[0], msg)
+> +
+> +
+> --
+> 2.7.4
+>
+>
