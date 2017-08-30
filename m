@@ -1,45 +1,42 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 30 Aug 2017 22:48:37 +0200 (CEST)
+From: joe@perches.com (Joe Perches)
+Date: Wed, 30 Aug 2017 15:33:11 -0700
 Subject: [Cocci] cocci script to add static to const declarations ?
-In-Reply-To: <1504094110.2786.18.camel@perches.com>
+In-Reply-To: <alpine.DEB.2.20.1708302340290.2201@hadrien>
 References: <1504090145.2786.16.camel@perches.com>
  <alpine.DEB.2.20.1708301334550.3184@hadrien>
  <1504094110.2786.18.camel@perches.com>
-Message-ID: <alpine.DEB.2.20.1708302248090.2201@hadrien>
+ <alpine.DEB.2.20.1708302340290.2201@hadrien>
+Message-ID: <1504132391.2786.31.camel@perches.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On Wed, 2017-08-30 at 23:41 +0200, Julia Lawall wrote:
+> New version.
 
+Thanks.
 
-On Wed, 30 Aug 2017, Joe Perches wrote:
+fyi: This doesn't find const structs that could be static.
 
-> On Wed, 2017-08-30 at 13:41 +0200, Julia Lawall wrote:
-> > The main rule is "worrisome", which will set a position variable if any
-> > field is not a constant.??This considers anything that is in all capital
-> > letters to be a constant, which is not safe.??To forbid all arrays that
-> > contain any identifier, in capital letters or not, one could convert
-> > \(c\|e at bad\)
-> >
-> > to
-> >
-> > \(i at bad\|c\|e at bad\)
-> []
-> > diff -u -p a/drivers/video/fbdev/tmiofb.c b/drivers/video/fbdev/tmiofb.c
-> > --- a/drivers/video/fbdev/tmiofb.c
-> > +++ b/drivers/video/fbdev/tmiofb.c
-> > @@ -436,7 +436,7 @@ static int tmiofb_sync(struct fb_info *f
-> > ?static void
-> > ?tmiofb_fillrect(struct fb_info *fbi, const struct fb_fillrect *rect)
-> > ?{
-> > -???????const u32 cmd[] = {
-> > +???????static const u32 cmd[] = {
-> > ????????????????TMIOFB_ACC_DSADR((rect->dy * fbi->mode->xres + rect->dx) * 2),
-> > ????????????????TMIOFB_ACC_DHPIX(rect->width - 1),
-> > ????????????????TMIOFB_ACC_DVPIX(rect->height - 1),
->
-> False positives like the above exist in the attachment so
-> it seems the additional check is necessary.
+Things like: drivers/gpu/drm/i915/selftests/i915_vma.c
+[]
+static int igt_vma_rotate(void *arg)
+{
+[]
+	const struct intel_rotation_plane_info planes[] = {
+		{ .width = 1, .height = 1, .stride = 1 },
+		{ .width = 2, .height = 2, .stride = 2 },
+		{ .width = 4, .height = 4, .stride = 4 },
+		{ .width = 8, .height = 8, .stride = 8 },
 
-Hmm.  Thanks for the feedback.  I will look into it.
+		{ .width = 3, .height = 5, .stride = 3 },
+		{ .width = 3, .height = 5, .stride = 4 },
+		{ .width = 3, .height = 5, .stride = 5 },
 
-julia
+		{ .width = 5, .height = 3, .stride = 5 },
+		{ .width = 5, .height = 3, .stride = 7 },
+		{ .width = 5, .height = 3, .stride = 9 },
+
+		{ .width = 4, .height = 6, .stride = 6 },
+		{ .width = 6, .height = 4, .stride = 6 },
+		{ }
+	}, *a, *b;
