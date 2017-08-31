@@ -1,7 +1,7 @@
-From: okuznik@symas.com (=?utf-8?B?T25kxZllaiBLdXpuw61r?=)
-Date: Thu, 31 Aug 2017 16:56:27 +0100
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Thu, 31 Aug 2017 18:01:07 +0200 (CEST)
 Subject: [Cocci] OpenLDAP debug statements
-In-Reply-To: <WM!a89a77e54968f94897ce9cfdcde91fbafe11503103440c35bc96b5b7348b143240bee9daf49db5256b5b922355576b8f!@mailstronghold-1.zmailcloud.com>
+In-Reply-To: <20170831155625.wypqab6gers4w4a7@eos.mistotebe.net>
 References: <WM!d9b0a1156da6c99c9820ebef21a59a8a89d121069b7a3992c73cc9e3056bf05f3193ceae9e855747b5cba0f4c7a73e77!@mailstronghold-3.zmailcloud.com>
  <20170830125059.eqlq4w54oz57azum@eos.mistotebe.net>
  <alpine.DEB.2.20.1708301504210.3184@hadrien>
@@ -12,37 +12,65 @@ References: <WM!d9b0a1156da6c99c9820ebef21a59a8a89d121069b7a3992c73cc9e3056bf05f
  <20170831154634.apai7ml2mdrf7ua4@eos.mistotebe.net>
  <alpine.DEB.2.20.1708311748110.6822@hadrien>
  <WM!a89a77e54968f94897ce9cfdcde91fbafe11503103440c35bc96b5b7348b143240bee9daf49db5256b5b922355576b8f!@mailstronghold-1.zmailcloud.com>
-Message-ID: <20170831155625.wypqab6gers4w4a7@eos.mistotebe.net>
+ <20170831155625.wypqab6gers4w4a7@eos.mistotebe.net>
+Message-ID: <alpine.DEB.2.20.1708311758540.6822@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, Aug 31, 2017 at 05:52:14PM +0200, Julia Lawall wrote:
-> On Thu, 31 Aug 2017, Ond?ej Kuzn?k wrote:
->> Yes, that has worked quite well actually. It has caused one problem,
->> though, splitting it up has made coccinelle strip curly brackets all
->> over the place, which is a bit problematic in places like this:
->>
->> if (...) {
->>     /* comment */
->>     Debug( ... );
->> }
->>
->> turning it into something very hard to read, especially if there is an
->> else branch:
->>
->> if (...)
->>     /* comment */
->>     Debug( ... );
-> 
-> So you want to drop the braces if there is no comment and keep the brace
-> if there is a comment?  You can't match on comments.  The only thing you
-> could do is check the number of lines between the { and Debug.
 
-Something slightly different, I want to remove the braces only if they
-do not "belong" to an if statement.
 
--- 
-Ond?ej Kuzn?k
-Senior Software Engineer
-Symas Corporation                       http://www.symas.com
-Packaged, certified, and supported LDAP solutions powered by OpenLDAP
+On Thu, 31 Aug 2017, Ond?ej Kuzn?k wrote:
+
+> On Thu, Aug 31, 2017 at 05:52:14PM +0200, Julia Lawall wrote:
+> > On Thu, 31 Aug 2017, Ond?ej Kuzn?k wrote:
+> >> Yes, that has worked quite well actually. It has caused one problem,
+> >> though, splitting it up has made coccinelle strip curly brackets all
+> >> over the place, which is a bit problematic in places like this:
+> >>
+> >> if (...) {
+> >>     /* comment */
+> >>     Debug( ... );
+> >> }
+> >>
+> >> turning it into something very hard to read, especially if there is an
+> >> else branch:
+> >>
+> >> if (...)
+> >>     /* comment */
+> >>     Debug( ... );
+> >
+> > So you want to drop the braces if there is no comment and keep the brace
+> > if there is a comment?  You can't match on comments.  The only thing you
+> > could do is check the number of lines between the { and Debug.
+>
+> Something slightly different, I want to remove the braces only if they
+> do not "belong" to an if statement.
+
+Does that occur?
+
+In any case, just do:
+
+@r@
+position p1;
+statement S;
+@@
+
+if (...) {@p1  Debug(...); } else S
+
+@@
+position p1 != r.p1;
+@@
+
+- {@p1
+  Debug(...);
+- }
+
+julia
+
+>
+> --
+> Ond?ej Kuzn?k
+> Senior Software Engineer
+> Symas Corporation                       http://www.symas.com
+> Packaged, certified, and supported LDAP solutions powered by OpenLDAP
+>
