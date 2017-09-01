@@ -1,55 +1,157 @@
-From: joe@perches.com (Joe Perches)
-Date: Thu, 31 Aug 2017 13:06:31 -0700
-Subject: [Cocci] cocci script to add static to const declarations ?
-In-Reply-To: <alpine.DEB.2.20.1708312123450.1984@hadrien>
-References: <1504090145.2786.16.camel@perches.com>
- <alpine.DEB.2.20.1708301334550.3184@hadrien>
- <1504094110.2786.18.camel@perches.com>
- <alpine.DEB.2.20.1708302340290.2201@hadrien>
- <1504132391.2786.31.camel@perches.com>
- <alpine.DEB.2.20.1708311618500.6822@hadrien>
- <1504203086.2786.40.camel@perches.com>
- <alpine.DEB.2.20.1708312123450.1984@hadrien>
-Message-ID: <1504209991.2786.45.camel@perches.com>
+From: elena.reshetova@intel.com (Elena Reshetova)
+Date: Fri,  1 Sep 2017 12:40:20 +0300
+Subject: [Cocci] [PATCH] Coccinelle: add atomic_as_refcounter script
+Message-ID: <1504258820-2122-1-git-send-email-elena.reshetova@intel.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 2017-08-31 at 21:25 +0200, Julia Lawall wrote:
-> On Thu, 31 Aug 2017, Joe Perches wrote:
-> > On Thu, 2017-08-31 at 16:22 +0200, Julia Lawall wrote:
-> > > On Wed, 30 Aug 2017, Joe Perches wrote:
-> > > > fyi: This doesn't find const structs that could be static.
-> > > > 
-> > > > Things like: drivers/gpu/drm/i915/selftests/i915_vma.c
-> > > > []
-> > > > static int igt_vma_rotate(void *arg)
-> > > > {
-> > > > []
-> > > > 	const struct intel_rotation_plane_info planes[] = {
-> > > > 		{ .width = 1, .height = 1, .stride = 1 },
-> > 
-> > []
-> > > > 		{ }
-> > > > 	}, *a, *b;
-> > > 
-> > > Here's a new version.  Unfortuntely, the ability of Coccinelle to break up
-> > > declarations of multiple variables like the above (planes, a, and b) is
-> > > rather limited.  So it doesn't get the above case.  But it does get some
-> > > others that have structures containing constants.  The new output is
-> > > attached.  You also need the latest version of Coccinelle from github.
-> > 
-> > Thanks again.  This looks very good to me.
-> > 
-> > Could you (or one of your minions) please submit these?
-> 
-> I think there was a discussion recently that suggested that one should
-> just submit a patch to gcc instead of 100 patches to the Linux kernel?
+atomic_as_refcounter.cocci script allows detecting
+cases when refcount_t type and API should be used
+instead of atomic_t.
 
-That's of course a good idea, but older versions
-of gcc (4,5,6, and probably 7 too) would not be
-fixed.
+Signed-off-by: Elena Reshetova <elena.reshetova@intel.com>
+Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+---
+ scripts/coccinelle/api/atomic_as_refcounter.cocci | 131 ++++++++++++++++++++++
+ 1 file changed, 131 insertions(+)
+ create mode 100644 scripts/coccinelle/api/atomic_as_refcounter.cocci
 
-> > gcc doesn't currently optimize these declarations into
-> > .text sections and instead places these bits onto stack
-> > along with initialization code for these bits.
-> > 
+diff --git a/scripts/coccinelle/api/atomic_as_refcounter.cocci b/scripts/coccinelle/api/atomic_as_refcounter.cocci
+new file mode 100644
+index 0000000..bfa880d
+--- /dev/null
++++ b/scripts/coccinelle/api/atomic_as_refcounter.cocci
+@@ -0,0 +1,131 @@
++// Check if refcount_t type and API should be used
++// instead of atomic_t type when dealing with refcounters
++//
++// Copyright (c) 2016-2017, Elena Reshetova, Intel Corporation
++//
++// Confidence: Moderate
++// URL: http://coccinelle.lip6.fr/
++// Options: --include-headers --very-quiet
++
++virtual report
++
++ at r1 exists@
++identifier a, x;
++position p1, p2;
++identifier fname =~ ".*free.*";
++identifier fname2 =~ ".*destroy.*";
++identifier fname3 =~ ".*del.*";
++identifier fname4 =~ ".*queue_work.*";
++identifier fname5 =~ ".*schedule_work.*";
++identifier fname6 =~ ".*call_rcu.*";
++
++@@
++
++(
++ atomic_dec_and_test at p1(&(a)->x)
++|
++ atomic_dec_and_lock at p1(&(a)->x, ...)
++|
++ atomic_long_dec_and_lock at p1(&(a)->x, ...)
++|
++ atomic_long_dec_and_test at p1(&(a)->x)
++|
++ atomic64_dec_and_test at p1(&(a)->x)
++|
++ local_dec_and_test at p1(&(a)->x)
++)
++...
++(
++ fname at p2(a, ...);
++|
++ fname2 at p2(...);
++|
++ fname3 at p2(...);
++|
++ fname4 at p2(...);
++|
++ fname5 at p2(...);
++|
++ fname6 at p2(...);
++)
++
++
++ at script:python depends on report@
++p1 << r1.p1;
++p2 << r1.p2;
++@@
++msg = "atomic_dec_and_test variation before object free at line %s."
++coccilib.report.print_report(p1[0], msg % (p2[0].line))
++
++ at r4 exists@
++identifier a, x, y;
++position p1, p2;
++identifier fname =~ ".*free.*";
++
++@@
++
++(
++ atomic_dec_and_test@p1(&(a)->x)
++|
++ atomic_dec_and_lock at p1(&(a)->x, ...)
++|
++ atomic_long_dec_and_lock at p1(&(a)->x, ...)
++|
++ atomic_long_dec_and_test at p1(&(a)->x)
++|
++ atomic64_dec_and_test at p1(&(a)->x)
++|
++ local_dec_and_test at p1(&(a)->x)
++)
++...
++y=a
++...
++fname at p2(y, ...);
++
++
++ at script:python depends on report@
++p1 << r4.p1;
++p2 << r4.p2;
++@@
++msg = "atomic_dec_and_test variation before object free at line %s."
++coccilib.report.print_report(p1[0], msg % (p2[0].line))
++
++@r2 exists@
++identifier a, x;
++position p1;
++@@
++
++(
++atomic_add_unless(&(a)->x,-1,1)@p1
++|
++atomic_long_add_unless(&(a)->x,-1,1)@p1
++|
++atomic64_add_unless(&(a)->x,-1,1)@p1
++)
++
++ at script:python depends on report@
++p1 << r2.p1;
++@@
++msg = "atomic_add_unless"
++coccilib.report.print_report(p1[0], msg)
++
++ at r3 exists@
++identifier x;
++position p1;
++@@
++
++(
++x = atomic_add_return at p1(-1, ...);
++|
++x = atomic_long_add_return at p1(-1, ...);
++|
++x = atomic64_add_return at p1(-1, ...);
++)
++
++@script:python depends on report@
++p1 << r3.p1;
++@@
++msg = "x = atomic_add_return(-1, ...)"
++coccilib.report.print_report(p1[0], msg)
++
++
+-- 
+2.7.4
