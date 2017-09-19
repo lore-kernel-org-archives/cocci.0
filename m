@@ -1,9 +1,9 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 19 Sep 2017 22:52:26 +0200 (CEST)
+Date: Tue, 19 Sep 2017 23:04:05 +0200 (CEST)
 Subject: [Cocci] Bug when grepping for tokens from identifier constraints
 In-Reply-To: <51127a8e-8b78-e632-0bda-0d75ba59f0bb@mykolab.com>
 References: <51127a8e-8b78-e632-0bda-0d75ba59f0bb@mykolab.com>
-Message-ID: <alpine.DEB.2.20.1709192250370.2518@hadrien>
+Message-ID: <alpine.DEB.2.20.1709192302460.2518@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -16,6 +16,13 @@ On Tue, 19 Sep 2017, Michael Stefaniuc wrote:
 > there seems to be an optimization bug when searching for the tokens from
 > an identifier constraint (is that the right term?), e.g.:
 >     identifier i = {foo, bar};
+
+The problem may be specific to this case where there are constraints on an
+identifier.  I'm not sure why it is printing or, but the code appears to
+be doing and internally.  Will look further.
+
+julia
+
 >
 > $ spatch --parse-cocci grep.cocci
 > ...
@@ -47,8 +54,11 @@ On Tue, 19 Sep 2017, Michael Stefaniuc wrote:
 >
 > I saw Julia mentioning that coccinelle is unstable at the moment so I
 > didn't try the latest from git.
-
-Github is stable, but it doesn't contain a fix to this problem.  I will
-check on it.
-
-julia
+>
+> bye
+> 	michael
+>
+>
+>
+>
+>
