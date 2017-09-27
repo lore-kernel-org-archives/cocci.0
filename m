@@ -1,7 +1,7 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 27 Sep 2017 14:16:05 +0200 (CEST)
+From: liam@networkimprov.net (Liam Breck)
+Date: Wed, 27 Sep 2017 05:46:50 -0700
 Subject: [Cocci] [PATCH v3 0/5] bq27xxx_battery data memory update
-In-Reply-To: <CAKvHMgR9kKj+3DPpoRkk52B7caA7OBf1B0Rjv1q5KxmxpFU=3Q@mail.gmail.com>
+In-Reply-To: <alpine.DEB.2.20.1709271414310.3186@hadrien>
 References: <20170824033617.20840-1-liam@networkimprov.net>
  <alpine.DEB.2.20.1708311150440.3243@hadrien>
  <CAKvHMgSkuzi_BuicT7edYrM8Q87pnPJcgHRMDJEB21wdNKf8ow@mail.gmail.com>
@@ -18,27 +18,31 @@ References: <20170824033617.20840-1-liam@networkimprov.net>
  <CAKvHMgTUrdF_ZmJYOB3jn020BMv-70MLpUBosBLstDrBN_KY9w@mail.gmail.com>
  <alpine.DEB.2.20.1709271154400.3186@hadrien>
  <CAKvHMgR9kKj+3DPpoRkk52B7caA7OBf1B0Rjv1q5KxmxpFU=3Q@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1709271414310.3186@hadrien>
+ <alpine.DEB.2.20.1709271414310.3186@hadrien>
+Message-ID: <CAKvHMgTm0JvnawzTSVJx43y-bnO-Rmh0ZPBQL0z3aYFUh=PjLw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-
-
-On Wed, 27 Sep 2017, Liam Breck wrote:
-
-> Hi Julia, thanks so much for your help!
+On Wed, Sep 27, 2017 at 5:16 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
 >
-> On Wed, Sep 27, 2017 at 3:02 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
-> > The github version of Coccinelle finally supports the semantic patch for
-> > your code.  I have attached the semantic patch.  I wonder what should be
-> > done with this?  Do you want to use it locally with make coccicheck?  Do
-> > you want it to be integrated into the kernel?  Everything in the semantic
 >
-> Yes, our intent is to push it upstream. Can you submit a patch?
+> On Wed, 27 Sep 2017, Liam Breck wrote:
 >
-> Did you test with 4.13? That should show a handful of dupes...
+>> Hi Julia, thanks so much for your help!
+>>
+>> On Wed, Sep 27, 2017 at 3:02 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
+>> > The github version of Coccinelle finally supports the semantic patch for
+>> > your code.  I have attached the semantic patch.  I wonder what should be
+>> > done with this?  Do you want to use it locally with make coccicheck?  Do
+>> > you want it to be integrated into the kernel?  Everything in the semantic
+>>
+>> Yes, our intent is to push it upstream. Can you submit a patch?
+>>
+>> Did you test with 4.13? That should show a handful of dupes...
+>
+> Are you sure?  I did a git checkout v4.13 and there aren't any occurrences
+> of BQ27XXX_DATA.
 
-Are you sure?  I did a git checkout v4.13 and there aren't any occurrences
-of BQ27XXX_DATA.
-
-julia
+Sorry, that macro landed in 4.14. If you revert this commit, you
+should see dupes:
+power: supply: bq27xxx: Remove duplicate chip data arrays
