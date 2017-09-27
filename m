@@ -1,5 +1,5 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 27 Sep 2017 15:25:14 +0200 (CEST)
+Date: Wed, 27 Sep 2017 15:25:37 +0200 (CEST)
 Subject: [Cocci] [PATCH v3 0/5] bq27xxx_battery data memory update
 In-Reply-To: <CAKvHMgQeMTgVQGk7Xn7ijNWPTPu4kVjM4ZAUUR_X-_nxSC1OBw@mail.gmail.com>
 References: <20170824033617.20840-1-liam@networkimprov.net>
@@ -18,7 +18,7 @@ References: <20170824033617.20840-1-liam@networkimprov.net>
  <CAKvHMgTUrdF_ZmJYOB3jn020BMv-70MLpUBosBLstDrBN_KY9w@mail.gmail.com>
  <alpine.DEB.2.20.1709271154400.3186@hadrien>
  <CAKvHMgQeMTgVQGk7Xn7ijNWPTPu4kVjM4ZAUUR_X-_nxSC1OBw@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1709271524240.3186@hadrien>
+Message-ID: <alpine.DEB.2.20.1709271525180.3186@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -32,8 +32,7 @@ On Wed, 27 Sep 2017, Liam Breck wrote:
 > Should we add something to the script that aborts if the correct
 > Coccinelle version is not running?
 
-Yes, I think that functionality is provided.  Otherwise, it will just not
-do anything because it is not able to parse the C code.
+I will prepare a version for integration in the kernel.
 
 julia
 
