@@ -1,37 +1,26 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Thu, 28 Sep 2017 14:15:15 +0200
+Date: Thu, 28 Sep 2017 18:26:02 +0200
 Subject: [Cocci] Further improvements for safer building of the
  Coccinelle software
-In-Reply-To: <alpine.DEB.2.20.1709272124330.3493@hadrien>
-References: <alpine.DEB.2.20.1709272124330.3493@hadrien>
-Message-ID: <2349f9c2-4f5b-c87a-be07-6facd21419c2@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.20.1709281417400.30797@hadrien>
+References: <alpine.DEB.2.20.1709281417400.30797@hadrien>
+Message-ID: <6cdc9c9c-32a8-e982-2589-1599afaf6095@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> A number of recent commits have been pushed to github,
+> What are you wondering about it?
 
-Thanks for your information.
+Was the make script changed in the way that the native executable variant
+will not be reinstalled with the suffix ?opt? any more?
 
-
-> including a new make system.
-
-Does this indicate a growing interest to clarify remaining (or even recurring)
-open issues in such a software area?
+https://github.com/coccinelle/coccinelle/blob/db8e301e8b28f20149d5edccc996cf6843047f7a/Makefile#L260
 
 
-> Let us know if any difficulties are encountered.
+Do you find the following command relevant for further considerations?
 
-I commented a few commits again.
-
-
-I have built your current software on my test system a moment ago.
-Now I wonder about the following display.
-
-elfring at Sonne:~> /usr/local/bin/spatch.opt --version
-spatch version 1.0.6-00242-g3f038a5d compiled with OCaml version 4.05.0
+Sonne:/home/elfring/Projekte/Coccinelle/20160205 # make install
 ?
-elfring at Sonne:~> /usr/local/bin/spatch --version
-spatch version 1.0.6-00304-gdb8e301e compiled with OCaml version 4.05.0
+/usr/bin/install -c -m 755 spatch.opt /usr/local/bin/spatch
 ?
 
 Regards,
