@@ -1,35 +1,31 @@
 From: mstefani@mykolab.com (Michael Stefaniuc)
-Date: Mon,  2 Oct 2017 23:05:44 +0200
-Subject: [Cocci] [PATCH] Create the BINDIR too during make install
-Message-ID: <20171002210544.7971-1-mstefani@mykolab.com>
+Date: Tue, 3 Oct 2017 14:26:51 +0200
+Subject: [Cocci] make install broken
+Message-ID: <9bf92fad-06e9-b1d5-cae2-6ba4fb9fc022@mykolab.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Fixes:
-make install
-...
-/usr/bin/install -c -m 755 spatch.opt /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/bin/spatch
-/usr/bin/install: cannot create regular file '/usr/local/packages/coccinelle-1.0.6-318-g0bf5304/bin/spatch': No such file or directory
-Makefile:262: recipe for target 'install-spatch' failed
-make: *** [install-spatch] Error 1
+Hello,
 
-Signed-off-by: Michael Stefaniuc <mstefani@mykolab.com>
----
- Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+while my Makefile patch lets make install finish a lot of stuff is missing:
+spatch foo.cocci foo.c
+warning: Can't find macro file: ./../lib/coccinelle/standard.h
+warning: Can't find default iso file: ./../lib/coccinelle/standard.iso
+Python error: No module named 'coccilib'
 
-diff --git a/Makefile b/Makefile
-index 9c7f721..2b59d45 100644
---- a/Makefile
-+++ b/Makefile
-@@ -259,7 +259,7 @@ install-bash:
- 
- .PHONY: install-spatch
- install-spatch : spatch$(TOOLS_SUFFIX)
--	$(MKDIR_P) $(DESTDIR)$(LIBDIR)
-+	$(MKDIR_P) $(DESTDIR)$(BINDIR) $(DESTDIR)$(LIBDIR)
- 	if test -f bundles/pyml/dllpyml_stubs.so; then \
- 		$(INSTALL_PROGRAM) bundles/pyml/dllpyml_stubs.so \
- 			$(DESTDIR)$(LIBDIR); \
--- 
-2.9.5
+Only this stuff gets installed:
+find /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/
+/usr/local/packages/coccinelle-1.0.6-318-g0bf5304/
+/usr/local/packages/coccinelle-1.0.6-318-g0bf5304/bin
+/usr/local/packages/coccinelle-1.0.6-318-g0bf5304/bin/spatch
+/usr/local/packages/coccinelle-1.0.6-318-g0bf5304/bin/spgen
+/usr/local/packages/coccinelle-1.0.6-318-g0bf5304/lib
+/usr/local/packages/coccinelle-1.0.6-318-g0bf5304/lib/coccinelle
+/usr/local/packages/coccinelle-1.0.6-318-g0bf5304/lib/coccinelle/dllpyml_stubs.so
+/usr/local/packages/coccinelle-1.0.6-318-g0bf5304/etc
+/usr/local/packages/coccinelle-1.0.6-318-g0bf5304/etc/bash_completion.d
+/usr/local/packages/coccinelle-1.0.6-318-g0bf5304/etc/bash_completion.d/spatch
+
+
+bye
+         michael
