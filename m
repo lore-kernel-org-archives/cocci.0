@@ -1,5 +1,5 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 5 Oct 2017 21:40:51 +0200 (CEST)
+Date: Thu, 5 Oct 2017 21:41:43 +0200 (CEST)
 Subject: [Cocci] [PATCH] coccinelle: api: detect duplicate chip data
 	arrays
 In-Reply-To: <CAKvHMgSCZ3CLfKNpQQbK79bnCss0uFTr9TP_i89rkYr8+hAGsw@mail.gmail.com>
@@ -7,7 +7,7 @@ References: <1506861768-5734-1-git-send-email-Julia.Lawall@lip6.fr>
  <CAKvHMgT07xoBW_VmAYsxUmoYaz_iN4vFh7Ljb_UQEWAd8bt22w@mail.gmail.com>
  <alpine.DEB.2.20.1710052122380.2626@hadrien>
  <CAKvHMgSCZ3CLfKNpQQbK79bnCss0uFTr9TP_i89rkYr8+hAGsw@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1710052140200.2626@hadrien>
+Message-ID: <alpine.DEB.2.20.1710052141201.2626@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -32,12 +32,6 @@ On Thu, 5 Oct 2017, Liam Breck wrote:
 >
 > How do we ask the 0-day bot team to configure their build to run this
 > script? Will they just pick it up?
-
-I put kbuild in CC.  I don't know what is the criterion for including
-semantic patches.
-
-julia
-
 >
 > >> Also maybe the name of the script should include "bq27xxx_data"?
 > >
@@ -158,6 +152,12 @@ julia
 >
 > The order of the properties has no impact, so a duplicate is
 > functionally identical.
+
+If you prefer identical, I can put that.
+
+julia
+
+
 >
 > >
 > > julia
@@ -249,4 +249,8 @@ julia
 > >> the body of a message to majordomo at vger.kernel.org
 > >> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > >>
+> --
+> To unsubscribe from this list: send the line "unsubscribe kernel-janitors" in
+> the body of a message to majordomo at vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 >
