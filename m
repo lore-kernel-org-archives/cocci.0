@@ -1,31 +1,44 @@
-From: joe@perches.com (Joe Perches)
-Date: Thu, 05 Oct 2017 12:15:59 -0700
-Subject: [Cocci] [PATCH] coccinelle: api: detect duplicate chip data
-	arrays
-In-Reply-To: <alpine.DEB.2.20.1710052113090.2626@hadrien>
-References: <1506861768-5734-1-git-send-email-Julia.Lawall@lip6.fr>
- <CAK7LNAQK7w3FBxJUhX3Vn48XsUT7jQzGDC7kzCx2r-yWm0CdEw@mail.gmail.com>
- <alpine.DEB.2.20.1710052113090.2626@hadrien>
-Message-ID: <1507230959.4434.39.camel@perches.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Fri, 6 Oct 2017 16:04:28 +0200 (CEST)
+Subject: [Cocci] make install broken
+In-Reply-To: <9bf92fad-06e9-b1d5-cae2-6ba4fb9fc022@mykolab.com>
+References: <9bf92fad-06e9-b1d5-cae2-6ba4fb9fc022@mykolab.com>
+Message-ID: <alpine.DEB.2.20.1710061604140.6420@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 2017-10-05 at 21:13 +0200, Julia Lawall wrote:
-> 
-> On Fri, 6 Oct 2017, Masahiro Yamada wrote:
-> 
-> > 2017-10-01 21:42 GMT+09:00 Julia Lawall <Julia.Lawall@lip6.fr>:
-> > > This semantic patch detects duplicate arrays declared using BQ27XXX_DATA
-> > > within a single structure.  It is currently specific to the file
-> > > drivers/power/supply/bq27xxx_battery.c.
-> > > 
-> > > Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-> > > 
-> > > ---
-> > 
-> > Applied to linux-kbuild/misc.
-> 
-> Thanks for picking it up.
+The makefile issues are perhaps now resolved.
 
-If it is specific to one file, why not just run it
-and post the resultant patch?  Why have it in tree?
+julia
+
+On Tue, 3 Oct 2017, Michael Stefaniuc wrote:
+
+> Hello,
+>
+> while my Makefile patch lets make install finish a lot of stuff is missing:
+> spatch foo.cocci foo.c
+> warning: Can't find macro file: ./../lib/coccinelle/standard.h
+> warning: Can't find default iso file: ./../lib/coccinelle/standard.iso
+> Python error: No module named 'coccilib'
+>
+> Only this stuff gets installed:
+> find /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/
+> /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/
+> /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/bin
+> /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/bin/spatch
+> /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/bin/spgen
+> /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/lib
+> /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/lib/coccinelle
+> /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/lib/coccinelle/dllpyml_stubs.so
+> /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/etc
+> /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/etc/bash_completion.d
+> /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/etc/bash_completion.d/spatch
+>
+>
+> bye
+>          michael
+> _______________________________________________
+> Cocci mailing list
+> Cocci at systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
+>
