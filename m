@@ -1,90 +1,184 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 6 Oct 2017 21:06:18 +0200 (CEST)
-Subject: [Cocci] make install broken
-In-Reply-To: <5ecbf5f5-0af4-7c44-258e-c2b464d9a01f@mykolab.com>
-References: <9bf92fad-06e9-b1d5-cae2-6ba4fb9fc022@mykolab.com>
- <alpine.DEB.2.20.1710061604140.6420@hadrien>
- <5ecbf5f5-0af4-7c44-258e-c2b464d9a01f@mykolab.com>
-Message-ID: <alpine.DEB.2.20.1710062105550.2080@hadrien>
+From: Julia.Lawall@lip6.fr (Julia Lawall)
+Date: Sun,  8 Oct 2017 21:18:40 +0200
+Subject: [Cocci] [PATCH 1/2] scripts: coccinelle: api: drop battery.cocci
+In-Reply-To: <1507490321-24900-1-git-send-email-Julia.Lawall@lip6.fr>
+References: <1507490321-24900-1-git-send-email-Julia.Lawall@lip6.fr>
+Message-ID: <1507490321-24900-2-git-send-email-Julia.Lawall@lip6.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Drop bettery.cocci as a more specific filename was preferred.
 
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
-On Fri, 6 Oct 2017, Michael Stefaniuc wrote:
+---
+ scripts/coccinelle/api/battery.cocci |  161 -----------------------------------
+ 1 file changed, 161 deletions(-)
 
-> On 10/06/2017 04:04 PM, Julia Lawall wrote:
-> > The makefile issues are perhaps now resolved.
-> Looks better as the missing stuff is installed.
-> But it isn't working when I have a symlink to spatch.
->
-> My workflow:
->
-> VERSION=`git describe`
-> ./configure --prefix=/usr/local/packages/coccinelle-$VERSION
-> make
-> make install
-> cd /usr/local/bin
-> ln -sf ../packages/coccinelle-$VERSION/bin/* .
->
-> spatch foo.cocci foo.c
-> warning: Can't find macro file: ./../lib/coccinelle/standard.h
-> init_defs: ./macros
-> warning: Can't find default iso file: ./../lib/coccinelle/standard.iso
-> Python error: No module named 'coccilib'
->
-> Using an absolute symbolic link doesn't works either.
-> Using an absolute PATH to spatch makes it work:
-> /usr/local/packages/coccinelle-1.0.6-328-g3ba77b3/bin/spatch foo.cocci foo.c
->
-> coccinelle-1.0.6-179-g058cb06 is the last version that I have compiled
-> and works with the symlinks.
->
-> No clue is there is something similar in OCaml but under perl there is
-> the handy FindBin module (FindBin::RealBin) to find the real location of
-> the binary.
-
-Thanks for the feedback.  We will try to resolve it as soon as possible.
-
-julia
-
->
-> bye
-> 	michael
->
-> >
-> > julia
-> >
-> > On Tue, 3 Oct 2017, Michael Stefaniuc wrote:
-> >
-> >> Hello,
-> >>
-> >> while my Makefile patch lets make install finish a lot of stuff is missing:
-> >> spatch foo.cocci foo.c
-> >> warning: Can't find macro file: ./../lib/coccinelle/standard.h
-> >> warning: Can't find default iso file: ./../lib/coccinelle/standard.iso
-> >> Python error: No module named 'coccilib'
-> >>
-> >> Only this stuff gets installed:
-> >> find /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/
-> >> /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/
-> >> /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/bin
-> >> /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/bin/spatch
-> >> /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/bin/spgen
-> >> /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/lib
-> >> /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/lib/coccinelle
-> >> /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/lib/coccinelle/dllpyml_stubs.so
-> >> /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/etc
-> >> /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/etc/bash_completion.d
-> >> /usr/local/packages/coccinelle-1.0.6-318-g0bf5304/etc/bash_completion.d/spatch
-> >>
-> >>
-> >> bye
-> >>          michael
-> >> _______________________________________________
-> >> Cocci mailing list
-> >> Cocci at systeme.lip6.fr
-> >> https://systeme.lip6.fr/mailman/listinfo/cocci
-> >>
->
->
+diff --git a/scripts/coccinelle/api/battery.cocci b/scripts/coccinelle/api/battery.cocci
+deleted file mode 100644
+index 77c145a..0000000
+--- a/scripts/coccinelle/api/battery.cocci
++++ /dev/null
+@@ -1,161 +0,0 @@
+-/// Detect BQ27XXX_DATA structures with identical registers, dm registers or
+-/// properties.
+-//# Doesn't unfold macros used in register or property fields.
+-//# Requires OCaml scripting
+-///
+-// Confidence: High
+-// Copyright: (C) 2017 Julia Lawall, Inria/LIP6, GPLv2.
+-// URL: http://coccinelle.lip6.fr/
+-// Requires: 1.0.7
+-// Keywords: BQ27XXX_DATA
+-
+-virtual report
+-
+- at initialize:ocaml@
+-@@
+-
+-let print_report p msg =
+-  let p = List.hd p in
+-  Printf.printf "%s:%d:%d-%d: %s" p.file p.line p.col p.col_end msg
+-
+- at str depends on report@
+-type t;
+-identifier i,i1,i2;
+-expression e1,e2;
+-@@
+-
+-t i[] = {
+-  ...,
+-  [e1] = BQ27XXX_DATA(i1,...),
+-  ...,
+-  [e2] = BQ27XXX_DATA(i2,...),
+-  ...,
+-};
+-
+- at script:ocaml tocheck@
+-i1 << str.i1;
+-i2 << str.i2;
+-i1regs; i2regs;
+-i1dmregs; i2dmregs;
+-i1props; i2props;
+-@@
+-
+-if not(i1 = i2)
+-then
+-  begin
+-    i1regs := make_ident (i1 ^ "_regs");
+-    i2regs := make_ident (i2 ^ "_regs");
+-    i1dmregs := make_ident (i1 ^ "_dm_regs");
+-    i2dmregs := make_ident (i2 ^ "_dm_regs");
+-    i1props := make_ident (i1 ^ "_props");
+-    i2props := make_ident (i2 ^ "_props")
+-  end
+-
+-(* ---------------------------------------------------------------- *)
+-
+- at getregs1@
+-typedef u8;
+-identifier tocheck.i1regs;
+-initializer list i1regs_vals;
+-position p1;
+-@@
+-
+-u8 i1regs at p1[...] = { i1regs_vals, };
+-
+- at getregs2@
+-identifier tocheck.i2regs;
+-initializer list i2regs_vals;
+-position p2;
+-@@
+-
+-u8 i2regs at p2[...] = { i2regs_vals, };
+-
+- at script:ocaml@
+-(_,i1regs_vals) << getregs1.i1regs_vals;
+-(_,i2regs_vals) << getregs2.i2regs_vals;
+-i1regs << tocheck.i1regs;
+-i2regs << tocheck.i2regs;
+-p1 << getregs1.p1;
+-p2 << getregs2.p2;
+-@@
+-
+-if i1regs < i2regs &&
+-   List.sort compare i1regs_vals = List.sort compare i2regs_vals
+-then
+-  let msg =
+-    Printf.sprintf
+-      "WARNING %s and %s (line %d) have the same registers\n"
+-      i1regs i2regs (List.hd p2).line in
+-  print_report p1 msg
+-
+-(* ---------------------------------------------------------------- *)
+-
+- at getdmregs1@
+-identifier tocheck.i1dmregs;
+-initializer list i1dmregs_vals;
+-position p1;
+-@@
+-
+-struct bq27xxx_dm_reg i1dmregs at p1[] = { i1dmregs_vals, };
+-
+- at getdmregs2@
+-identifier tocheck.i2dmregs;
+-initializer list i2dmregs_vals;
+-position p2;
+-@@
+-
+-struct bq27xxx_dm_reg i2dmregs at p2[] = { i2dmregs_vals, };
+-
+- at script:ocaml@
+-(_,i1dmregs_vals) << getdmregs1.i1dmregs_vals;
+-(_,i2dmregs_vals) << getdmregs2.i2dmregs_vals;
+-i1dmregs << tocheck.i1dmregs;
+-i2dmregs << tocheck.i2dmregs;
+-p1 << getdmregs1.p1;
+-p2 << getdmregs2.p2;
+-@@
+-
+-if i1dmregs < i2dmregs &&
+-   List.sort compare i1dmregs_vals = List.sort compare i2dmregs_vals
+-then
+-  let msg =
+-    Printf.sprintf
+-      "WARNING %s and %s (line %d) have the same dm registers\n"
+-      i1dmregs i2dmregs (List.hd p2).line in
+-  print_report p1 msg
+-
+-(* ---------------------------------------------------------------- *)
+-
+- at getprops1@
+-identifier tocheck.i1props;
+-initializer list[n1] i1props_vals;
+-position p1;
+-@@
+-
+-enum power_supply_property i1props at p1[] = { i1props_vals, };
+-
+- at getprops2@
+-identifier tocheck.i2props;
+-initializer list[n2] i2props_vals;
+-position p2;
+-@@
+-
+-enum power_supply_property i2props at p2[] = { i2props_vals, };
+-
+-@script:ocaml@
+-(_,i1props_vals) << getprops1.i1props_vals;
+-(_,i2props_vals) << getprops2.i2props_vals;
+-i1props << tocheck.i1props;
+-i2props << tocheck.i2props;
+-p1 << getprops1.p1;
+-p2 << getprops2.p2;
+-@@
+-
+-if i1props < i2props &&
+-   List.sort compare i1props_vals = List.sort compare i2props_vals
+-then
+-  let msg =
+-    Printf.sprintf
+-      "WARNING %s and %s (line %d) have the same properties\n"
+-      i1props i2props (List.hd p2).line in
+-  print_report p1 msg
