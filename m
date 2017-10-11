@@ -1,44 +1,46 @@
 From: mstefani@mykolab.com (Michael Stefaniuc)
-Date: Wed, 11 Oct 2017 21:09:35 +0200
+Date: Wed, 11 Oct 2017 21:26:57 +0200
 Subject: [Cocci] make install broken
-In-Reply-To: <f2a91d70-e81d-4344-8854-6baa5227e700@email.android.com>
-References: <f2a91d70-e81d-4344-8854-6baa5227e700@email.android.com>
-Message-ID: <f25e9b52-4f37-bedf-6c43-97cd3419d1fe@mykolab.com>
+In-Reply-To: <1237246237.5049793.1507728493328.JavaMail.zimbra@inria.fr>
+References: <9bf92fad-06e9-b1d5-cae2-6ba4fb9fc022@mykolab.com>
+ <alpine.DEB.2.20.1710061604140.6420@hadrien>
+ <5ecbf5f5-0af4-7c44-258e-c2b464d9a01f@mykolab.com>
+ <1237246237.5049793.1507728493328.JavaMail.zimbra@inria.fr>
+Message-ID: <5ad98857-a96d-ecd4-4267-35013ba9ce62@mykolab.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 Hello Thierry,
 
-On 10/11/2017 03:42 PM, Thierry Martinez wrote:
-> I wrote:
->> I just pushed on GitHub a more portable way for determining the path
-> of the
-> executable relying on proc_pidpath
+On 10/11/2017 03:28 PM, Thierry Martinez wrote:
+> Michael Stefaniuc:
+>> But it isn't working when I have a symlink to spatch.
 > 
-> I just noticed that you will need the libproc-dev package from your
-there is no such thing in Fedora. I found a procps-ng-devel but that
-doesn't provide libproc.h.
-
-> distribution to compile (Debian or Ubuntu, name on other distribution
-I'm checking Debian but cannot find a libproc there either:
-https://packages.debian.org/search?keywords=libproc
-The libproc-* is for perl.
-There are libprocps packages but the .h files in those seem to match
-what Fedora has in procps-ng-devel.
-
-A quick search finds libproc.h on github but that has an Apple copyright
-in it. It's basically this one:
-https://opensource.apple.com/source/xnu/xnu-2422.1.72/libsyscall/wrappers/libproc/libproc.h.auto.html
-
-
-> may vary). I will update install.txt and provide a fallback if the
-> function is not available (probably by reading /proc/self/exe if it
-> exists, otherwise by considering "_" as before).
+> This surprises me because this is precisely what 82a6a045 is supposed to fix,
+> and your version 3ba77b3 includes it.
 > 
-> Thank you for the report.
-> --?
-> Thierry.
-> 
+> I suppose it is because your shell does not define the environment variable
+> "_" to the path of the running executable.
+my shell (GNU bash, version 4.3.43(1)) does show the executable in $_
+but that is the symlink and not the real path to the executable.
+
+luna:~$ cd
+luna:~$ echo -e '#!/bin/bash\necho $_' > foo.sh
+luna:~$ chmod a+x foo.sh
+luna:~$ ln -s ../foo.sh bin/foo.sh
+luna:~$ ./foo.sh
+./foo.sh
+luna:~$ bin/foo.sh
+bin/foo.sh
+luna:~$ foo.sh
+/home/michi/bin/foo.sh
 
 bye
-	micheal
+	michael
+
+> 
+> I just pushed on GitHub a more portable way for determining the path of the
+> executable relying on proc_pidpath.
+> 
+> Thank you for the report.
+> 
