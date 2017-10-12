@@ -1,82 +1,35 @@
-From: thierry.martinez@inria.fr (Thierry Martinez)
-Date: Thu, 12 Oct 2017 01:43:04 +0200 (CEST)
-Subject: [Cocci] make install broken
-In-Reply-To: <5ad98857-a96d-ecd4-4267-35013ba9ce62@mykolab.com>
-References: <9bf92fad-06e9-b1d5-cae2-6ba4fb9fc022@mykolab.com>
- <alpine.DEB.2.20.1710061604140.6420@hadrien>
- <5ecbf5f5-0af4-7c44-258e-c2b464d9a01f@mykolab.com>
- <1237246237.5049793.1507728493328.JavaMail.zimbra@inria.fr>
- <5ad98857-a96d-ecd4-4267-35013ba9ce62@mykolab.com>
-Message-ID: <1791440820.5185535.1507765384109.JavaMail.zimbra@inria.fr>
+From: me@tobin.cc (Tobin C. Harding)
+Date: Thu, 12 Oct 2017 13:11:09 +1100
+Subject: [Cocci] prinkt specifiers
+In-Reply-To: <alpine.DEB.2.20.1710110726070.3833@hadrien>
+References: <20171011000745.GD2049@eros>
+ <alpine.DEB.2.20.1710110726070.3833@hadrien>
+Message-ID: <20171012021109.GA30753@eros>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hello, Michael.
-
-Michael:
-> A quick search finds libproc.h on github but that has an Apple copyright
-> in it. It's basically this one:
-> https://opensource.apple.com/source/xnu/xnu-2422.1.72/libsyscall/wrappers/libproc/libproc.h.auto.html
-
-Oops, sorry. I was confused by this (old) package:
-https://pkgs.org/download/libproc-dev
-
-It should be fixed now (by using /proc/self/exe if available, or
-the environment variable _).
-
-> my shell (GNU bash, version 4.3.43(1)) does show the executable in $_
-> but that is the symlink and not the real path to the executable.
-
-Yes, but spatch should have resolved the symlink. Anyway, I changed
-the code to use realpath, which should be more reliable (the code
-before only resolved symlinks on the executable file, without
-considering parent directories).
-
-Sorry for the wrong commit!
--- 
-Thierry.
-
------ Original Message -----
-> From: "Michael Stefaniuc" <mstefani@mykolab.com>
-> To: "Thierry Martinez" <thierry.martinez@inria.fr>
-> Cc: cocci at systeme.lip6.fr
-> Sent: Wednesday, October 11, 2017 9:26:57 PM
-> Subject: Re: [Cocci] make install broken
-> 
-> Hello Thierry,
-> 
-> On 10/11/2017 03:28 PM, Thierry Martinez wrote:
-> > Michael Stefaniuc:
-> >> But it isn't working when I have a symlink to spatch.
-> > 
-> > This surprises me because this is precisely what 82a6a045 is supposed to
-> > fix,
-> > and your version 3ba77b3 includes it.
-> > 
-> > I suppose it is because your shell does not define the environment variable
-> > "_" to the path of the running executable.
-> my shell (GNU bash, version 4.3.43(1)) does show the executable in $_
-> but that is the symlink and not the real path to the executable.
-> 
-> luna:~$ cd
-> luna:~$ echo -e '#!/bin/bash\necho $_' > foo.sh
-> luna:~$ chmod a+x foo.sh
-> luna:~$ ln -s ../foo.sh bin/foo.sh
-> luna:~$ ./foo.sh
-> ./foo.sh
-> luna:~$ bin/foo.sh
-> bin/foo.sh
-> luna:~$ foo.sh
-> /home/michi/bin/foo.sh
-> 
-> bye
-> 	michael
-> 
-> > 
-> > I just pushed on GitHub a more portable way for determining the path of the
-> > executable relying on proc_pidpath.
-> > 
-> > Thank you for the report.
-> > 
+On Wed, Oct 11, 2017 at 07:27:43AM +0200, Julia Lawall wrote:
 > 
 > 
+> On Wed, 11 Oct 2017, Tobin C. Harding wrote:
+> 
+> > Hi,
+> >
+> > Is it possible to craft a coccinelle script to find and replace calls (in the kernel) that are
+> > printing pointers using %x.
+> >
+> > Perhaps we could easily catch the calls that are casting the pointer within argument list, for example
+> >
+> > 	pr_info("x: %llx\n", (unsigned long long int)ptr);
+> >
+> > I'm happy to try and work out how to do it, just chasing a 'yes that is exactly the type of thing
+> > cocci is good at' or a 'no, you are dreaming, perhaps <this tool> can do that'
+> 
+> It's possible.  Look at coccinelle/demos/format.cocci
+> 
+> This may not be the most well tested part of Coccinelle, so if it is not
+> doing what you expect, please feel free to complain.
+> 
+> julia
+
+Thanks Julia
