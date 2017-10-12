@@ -1,27 +1,26 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Thu, 12 Oct 2017 17:17:45 +0200
-Subject: [Cocci] Checking for consistency of the version data by the
- software build system
-Message-ID: <47243c43-824f-cc0e-d950-61044f0c0d64@users.sourceforge.net>
+Date: Thu, 12 Oct 2017 17:47:23 +0200
+Subject: [Cocci] make install broken
+In-Reply-To: <1791440820.5185535.1507765384109.JavaMail.zimbra@inria.fr>
+References: <1791440820.5185535.1507765384109.JavaMail.zimbra@inria.fr>
+Message-ID: <85d845b3-148f-4169-c2af-ce904655e6dd@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hello,
+> Yes, but spatch should have resolved the symlink. Anyway, I changed
+> the code to use realpath, which should be more reliable (the code
+> before only resolved symlinks on the executable file, without
+> considering parent directories).
+>
+> Sorry for the wrong commit!
 
-The following command was executed on my test system again.
+Is this software development also relevant for the following error messages?
 
-elfring at Sonne:~/Projekte/Coccinelle/20160205> make distclean && git checkout master && git pull && ./autogen && ./configure && echo "$(./version.sh)" && grep VERSION=1 Makefile.config
-?
-1.0.6-00335-g6e5973d4
-VERSION=1.0.6-00318-g0bf53049
+elfring at Sonne:~/Projekte/Linux/next-patched> spatch ~/Projekte/Coccinelle/janitor/?.cocci ?.c
+warning: Can't find macro file: /usr/local/bin/../lib/coccinelle/standard.h
+warning: Can't find default iso file: /usr/local/bin/../lib/coccinelle/standard.iso
+Python error: No module named coccilib.elems
 
-
-An essential build script contains the macro call ?AC_INIT(?, m4_esyscmd([./version.sh]), ?)?.
-https://github.com/coccinelle/coccinelle/blob/436cc65a41ce2c5885cc7f1ee09b6c14fac1981c/configure.ac#L6
-
-So I would expect that the determined version data will be immediately reused
-in generated files. But I notice the shown mismatch occasionally.
-Do you observe also similar differences in other software build environments?
 
 Regards,
 Markus
