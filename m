@@ -1,5 +1,5 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 13 Oct 2017 23:15:37 +0200
+Date: Sat, 14 Oct 2017 15:45:09 +0200
 Subject: [Cocci] make install broken
 In-Reply-To: <3efb0049-be4f-759f-82f1-fd9579d8bd16@mykolab.com>
 References: <1791440820.5185535.1507765384109.JavaMail.zimbra@inria.fr>
@@ -9,40 +9,59 @@ References: <1791440820.5185535.1507765384109.JavaMail.zimbra@inria.fr>
  <0e4c97b2-bf8b-0014-e4bd-f2824776a565@mykolab.com>
  <30918ea5-3904-14c3-233d-15a071a80f02@users.sourceforge.net>
  <3efb0049-be4f-759f-82f1-fd9579d8bd16@mykolab.com>
-Message-ID: <df0e380d-da17-7a1a-5432-266ea33f5b78@users.sourceforge.net>
+Message-ID: <d9d6a9c2-11b7-f9b2-4676-2b1a7ac40ac6@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
-
->> I find that did this already, didn't I?
-> No , you didn't.
-
-I can try to repeat some more technical details.
-
 
 >> Which information are you missing from my software surprises?
 > You just showed the error that looks similar to mine.
 
-Yes. - I submitted only a kind of ?ping? yesterday.
+I have tried another rebuild of the current software out.
 
 
 > You miss the part about how you configured and installed it.
 
-The maintainers are completely informed.
+Would you like to take another look at affected implementation details?
 
 
 > And what exact commit you've used.
 
-I hope that I am using the published GitHub version mostly.
+elfring at Sonne:~/Projekte/Coccinelle/20160205> make distclean && git checkout master && git pull && ./autogen && ./configure && echo "$(./version.sh)" && grep VERSION=1 Makefile.config
+?
+1.0.6-00335-g6e5973d4
+VERSION=1.0.6-00335-g6e5973d4
+elfring at Sonne:~/Projekte/Coccinelle/20160205> make world
+?
 
 
-How do you think about to take another look at any of my previous
-clarification requests?
+Sonne:~ # cd /home/elfring/Projekte/Coccinelle/20160205 && make install
+?
+/usr/bin/install -c -m 755 spatch.opt /usr/local/bin/spatch
+/usr/bin/install -c -m 644 standard.h /usr/local/lib64/coccinelle
+/usr/bin/install -c -m 644 standard.iso /usr/local/lib64/coccinelle
+?
+/usr/bin/install -c -m 644 python/coccilib/*.py \
+        /usr/local/lib64/coccinelle/python/coccilib
+?
 
-* Further improvements for safer building of the Coccinelle software
-  https://systeme.lip6.fr/pipermail/cocci/2017-September/004522.html
 
-* Checking evolution for the build system of the Coccinelle software
-  https://systeme.lip6.fr/pipermail/cocci/2017-September/004524.html
+elfring at Sonne:~> /usr/local/bin/spatch --version
+spatch version 1.0.6-00335-g6e5973d4 compiled with OCaml version 4.05.0
+?
+
+
+elfring at Sonne:~/Projekte/Linux/next-patched> /usr/local/bin/spatch ~/Projekte/Coccinelle/janitor/use_seq_putc_or_seq_puts-20161027-a.cocci drivers/staging/irda/net/irlmp.c
+warning: Can't find macro file: /usr/local/bin/../lib/coccinelle/standard.h
+warning: Can't find default iso file: /usr/local/bin/../lib/coccinelle/standard.iso
+Python error: No module named coccilib.elems
+
+
+* How should the directory ?lib64? be determined for this use case?
+
+* Do I need to add any symbolic links temporarily?
+
+* Will it help to add an installation test to the software build system?
+
 
 Regards,
 Markus
