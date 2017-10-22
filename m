@@ -1,59 +1,100 @@
-From: Nicolas.Palix@imag.fr (Nicolas Palix (LIG))
-Date: Thu, 26 Oct 2017 09:22:59 +0200
-Subject: [Cocci] [PATCH] coccinelle: fix verbose message about .cocci
- file being run
-In-Reply-To: <1508993751-17218-1-git-send-email-yamada.masahiro@socionext.com>
-References: <1508993751-17218-1-git-send-email-yamada.masahiro@socionext.com>
-Message-ID: <c18712da-6b47-3b13-059d-d49db738e386@imag.fr>
+From: aishpant@gmail.com (Aishwarya Pant)
+Date: Sun, 22 Oct 2017 17:41:56 +0530
+Subject: [Cocci] [PATCH v2] coccinelle: boolconv: improve script to handle
+	more cases
+Message-ID: <20171022121156.f5r3hthijlseqlr7@aishwarya>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Le 26/10/17 ? 06:55, Masahiro Yamada a ?crit?:
-> If you run coccicheck with V=1 and COCCI=, you will see a strange
-> path to the semantic patch file.  For example, run the following:
-> 
-> $ make V=1 COCCI=scripts/coccinelle/free/kfree.cocci coccicheck
->    [ snip ]
->   The semantic patch that makes this report is available
->   in scriptcoccinelle/free/kfree.cocci.
-> 
-> Notice "s/" was dropped from "scripts/coccinelle/free/kfree.cocci".
-> 
-> When running coccicheck without O=, $srctree is expanded to ".", which
-> represents one arbitrary character in the regular expression.  Using
-> sed is not a good choice here.  Strip $srctree/ simply without sed.
-> 
-> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
-Acked-by: Nicolas Palix <nicolas.palix@imag.fr>
-> ---
-> 
->   scripts/coccicheck | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/scripts/coccicheck b/scripts/coccicheck
-> index 1bfa2d2..9d18662 100755
-> --- a/scripts/coccicheck
-> +++ b/scripts/coccicheck
-> @@ -186,7 +186,7 @@ coccinelle () {
->   
->       if [ $VERBOSE -ne 0 -a $ONLINE -eq 0 ] ; then
->   
-> -	FILE=`echo $COCCI | sed "s|$srctree/||"`
-> +	FILE=${COCCI#$srctree/}
->   
->   	echo "Processing `basename $COCCI`"
->   	echo "with option(s) \"$OPT\""
-> 
+Given expressions A, B and a binary operator op, the current script checks for
+cases where
+	A op B ? true : false can be replaced by A op B
 
+This can be extended to handle the other case where
+	A op B ? false : true can be replaced by !(A op B)
 
+Moreover we can use the binary operator type to catch all desirable comparisons
+in one go instead of writing them down.
+
+Signed-off-by: Aishwarya Pant <aishpant@gmail.com>
+Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+---
+Changes in v2:
+Re-send after addding the appropriate mailing lists
+
+scripts/coccinelle/misc/boolconv.cocci | 43 ++++++++--------------------------
+ 1 file changed, 10 insertions(+), 33 deletions(-)
+
+diff --git a/scripts/coccinelle/misc/boolconv.cocci b/scripts/coccinelle/misc/boolconv.cocci
+index 33c464d6bc71..9b32b5fd31d4 100644
+--- a/scripts/coccinelle/misc/boolconv.cocci
++++ b/scripts/coccinelle/misc/boolconv.cocci
+@@ -16,27 +16,19 @@ virtual report
+ 
+ @depends on patch@
+ expression A, B;
++binary operator op = {==,!=,>,<,>=,<=,&&,||};
+ symbol true, false;
+ @@
+ 
+ (
+-  A == B
+-|
+-  A != B
+-|
+-  A > B
+-|
+-  A < B
+-|
+-  A >= B
+-|
+-  A <= B
+-|
+-  A && B
++  A op B
++- ? true : false
+ |
+-  A || B
+++ !(
++  A op B
+++ )
++- ? false : true
+ )
+-- ? true : false
+ 
+ //----------------------------------------------------------
+ //  For context mode
+@@ -44,28 +36,13 @@ symbol true, false;
+ 
+ @r depends on !patch@
+ expression A, B;
++binary operator op = {==,!=,>,<,>=,<=,&&,||};
+ symbol true, false;
+ position p;
+ @@
+ 
+-(
+-  A == B
+-|
+-  A != B
+-|
+-  A > B
+-|
+-  A < B
+-|
+-  A >= B
+-|
+-  A <= B
+-|
+-  A && B
+-|
+-  A || B
+-)
+-* ? true : false at p
++  A op B
++* ? \(true\|false\) : \(false at p\|true@p\)
+ 
+ //----------------------------------------------------------
+ //  For org mode
 -- 
-Nicolas Palix
-http://lig-membres.imag.fr/palix/
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: smime.p7s
-Type: application/pkcs7-signature
-Size: 2959 bytes
-Desc: Signature cryptographique S/MIME
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20171026/4b23c66e/attachment-0001.p7s>
+2.11.0
