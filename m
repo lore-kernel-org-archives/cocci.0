@@ -1,73 +1,57 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 26 Oct 2017 06:02:43 +0200 (CEST)
-Subject: [Cocci] [PATCH] Coccinelle: make DEBUG_FILE option more useful
-In-Reply-To: <CAK7LNAQMTptVYLu10uF+85OsuANbC7Fo0heD4t1ybpUE6Yh-gQ@mail.gmail.com>
-References: <1508061353-24744-1-git-send-email-Julia.Lawall@lip6.fr>
- <CAK7LNAQMTptVYLu10uF+85OsuANbC7Fo0heD4t1ybpUE6Yh-gQ@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1710260601520.17107@hadrien>
+From: yamada.masahiro@socionext.com (Masahiro Yamada)
+Date: Thu, 26 Oct 2017 13:50:38 +0900
+Subject: [Cocci] [PATCH] coccinelle: grep Options and Requires fields more
+	precisely
+Message-ID: <1508993438-15325-1-git-send-email-yamada.masahiro@socionext.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Currently, the required version for badzero.cocci is picked up from
+its "Comments:" line since it contains the word "Requires".
 
+Surprisingly, ld-version.sh can extract the version number from the
+string "Requires Coccinelle version 1.0.0-rc20 or later", but this
+expectation is fragile.  Fix the .cocci file.  I removed "-rc20"
+because ld-version.sh cannot handle it.
 
-On Thu, 26 Oct 2017, Masahiro Yamada wrote:
+Make the coccicheck script to see exact patterns for "Options:" and
+"Requires:" in order to avoid accidental matching to what just happens
+to appear in comment lines.
 
-> Hi Julia,
->
->
-> 2017-10-15 18:55 GMT+09:00 Julia Lawall <Julia.Lawall@lip6.fr>:
-> > Make coccicheck checked for the existence of DEBUG_FILE on each semantic
-> > patch, and bailed if it already existed.  This meant that DEBUG_FILE was
-> > useless for checking more than one semantic patch at a time.  Now the check
-> > is moved to the start of make coccicheck, and the 2> is changed to a 2>> to
-> > append to the file on each semantic patch.  Furthermore, the spatch command
-> > that is run for each semantic patch is also added to the DEBUG_FILE, to
-> > make clear what each stdout trace corresponds to.
-> >
-> > Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-> >
->
-> I think this is a good improvement,
-> and looks almost good to me.
->
-> Just one nit.
->
->
-> >
-> >  }
-> >
-> > +if [ "$DEBUG_FILE" != "/dev/null" -a "$DEBUG_FILE" != "" ]; then
-> > +       if [ -f $DEBUG_FILE ]; then
-> > +               echo "Debug file $DEBUG_FILE exists, bailing"
-> > +               exit
-> > +       fi
-> > +       touch $DEBUG_FILE
->
-> I think this "touch" is redundant.
->
-> If the DEBUG_FILE does not exist, 2>> will automatically create it.
+Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+---
 
-Thanks very much for the feedback.  I will resubmit.
+ scripts/coccicheck                    | 4 ++--
+ scripts/coccinelle/null/badzero.cocci | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-julia
-
-
->
->
->
->
-> > +else
-> > +       DEBUG_FILE="/dev/null"
-> > +fi
-> > +
-> >  if [ "$COCCI" = "" ] ; then
-> >      for f in `find $srctree/scripts/coccinelle/ -name '*.cocci' -type f | sort`; do
-> >         coccinelle $f
-> >
->
->
->
-> --
-> Best Regards
-> Masahiro Yamada
->
+diff --git a/scripts/coccicheck b/scripts/coccicheck
+index 3e21a1b..1bfa2d2 100755
+--- a/scripts/coccicheck
++++ b/scripts/coccicheck
+@@ -168,8 +168,8 @@ OPTIONS="$OPTIONS $SPFLAGS"
+ coccinelle () {
+     COCCI="$1"
+ 
+-    OPT=`grep "Option" $COCCI | cut -d':' -f2`
+-    REQ=`grep "Requires" $COCCI | cut -d':' -f2 | sed "s| ||"`
++    OPT=`grep "Options:" $COCCI | cut -d':' -f2`
++    REQ=`grep "Requires:" $COCCI | cut -d':' -f2 | sed "s| ||"`
+     REQ_NUM=$(echo $REQ | ${DIR}/scripts/ld-version.sh)
+     if [ "$REQ_NUM" != "0" ] ; then
+ 	    if [ "$SPATCH_VERSION_NUM" -lt "$REQ_NUM" ] ; then
+diff --git a/scripts/coccinelle/null/badzero.cocci b/scripts/coccinelle/null/badzero.cocci
+index 5551da2..f597c80 100644
+--- a/scripts/coccinelle/null/badzero.cocci
++++ b/scripts/coccinelle/null/badzero.cocci
+@@ -10,7 +10,7 @@
+ // Copyright: (C) 2012 Julia Lawall, INRIA/LIP6.  GPLv2.
+ // Copyright: (C) 2012 Gilles Muller, INRIA/LiP6.  GPLv2.
+ // URL: http://coccinelle.lip6.fr/
+-// Comments: Requires Coccinelle version 1.0.0-rc20 or later
++// Requires: 1.0.0
+ // Options:
+ 
+ virtual patch
+-- 
+2.7.4
