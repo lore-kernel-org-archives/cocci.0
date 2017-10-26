@@ -1,20 +1,61 @@
-From: corbet@lwn.net (Jonathan Corbet)
-Date: Thu, 19 Oct 2017 12:55:41 -0600
-Subject: [Cocci] [PATCH] docs: dev-tools: correct Coccinelle version
-	number
-In-Reply-To: <1508059448-24317-1-git-send-email-Julia.Lawall@lip6.fr>
-References: <1508059448-24317-1-git-send-email-Julia.Lawall@lip6.fr>
-Message-ID: <20171019125541.0cca9032@lwn.net>
+From: yamada.masahiro@socionext.com (Masahiro Yamada)
+Date: Thu, 26 Oct 2017 10:49:28 +0900
+Subject: [Cocci] [PATCH] Coccinelle: make DEBUG_FILE option more useful
+In-Reply-To: <1508061353-24744-1-git-send-email-Julia.Lawall@lip6.fr>
+References: <1508061353-24744-1-git-send-email-Julia.Lawall@lip6.fr>
+Message-ID: <CAK7LNAQMTptVYLu10uF+85OsuANbC7Fo0heD4t1ybpUE6Yh-gQ@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, 15 Oct 2017 11:24:08 +0200
-Julia Lawall <Julia.Lawall@lip6.fr> wrote:
+Hi Julia,
 
-> There is no Coccinelle version 1.2.  1.0.2 must be what was intended.
-> 
+
+2017-10-15 18:55 GMT+09:00 Julia Lawall <Julia.Lawall@lip6.fr>:
+> Make coccicheck checked for the existence of DEBUG_FILE on each semantic
+> patch, and bailed if it already existed.  This meant that DEBUG_FILE was
+> useless for checking more than one semantic patch at a time.  Now the check
+> is moved to the start of make coccicheck, and the 2> is changed to a 2>> to
+> append to the file on each semantic patch.  Furthermore, the spatch command
+> that is run for each semantic patch is also added to the DEBUG_FILE, to
+> make clear what each stdout trace corresponds to.
+>
 > Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+>
 
-Applied, thanks.
+I think this is a good improvement,
+and looks almost good to me.
 
-jon
+Just one nit.
+
+
+>
+>  }
+>
+> +if [ "$DEBUG_FILE" != "/dev/null" -a "$DEBUG_FILE" != "" ]; then
+> +       if [ -f $DEBUG_FILE ]; then
+> +               echo "Debug file $DEBUG_FILE exists, bailing"
+> +               exit
+> +       fi
+> +       touch $DEBUG_FILE
+
+I think this "touch" is redundant.
+
+If the DEBUG_FILE does not exist, 2>> will automatically create it.
+
+
+
+
+> +else
+> +       DEBUG_FILE="/dev/null"
+> +fi
+> +
+>  if [ "$COCCI" = "" ] ; then
+>      for f in `find $srctree/scripts/coccinelle/ -name '*.cocci' -type f | sort`; do
+>         coccinelle $f
+>
+
+
+
+-- 
+Best Regards
+Masahiro Yamada
