@@ -1,70 +1,46 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 30 Oct 2017 11:52:13 +0800 (CST)
-Subject: [Cocci] [PATCH] Coccinelle: use false positive annotation
-In-Reply-To: <CAK7LNASBEvt6Ef3fJ=twQmV4LKSd_nbLd2BxmLtKEV8eYf3HBw@mail.gmail.com>
-References: <1509234189-26916-1-git-send-email-Julia.Lawall@lip6.fr>
- <CAK7LNASBEvt6Ef3fJ=twQmV4LKSd_nbLd2BxmLtKEV8eYf3HBw@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1710301151210.2632@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Thu, 2 Nov 2017 15:21:02 +0100
+Subject: [Cocci] Setting the section for a function with SmPL
+Message-ID: <dae0fefb-6920-8e6a-76c6-b02b5fb0d4df@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hello,
+
+Implementations of various functions will be changed on demand. It can happen
+then that you would like to know if the applied changes will result also in
+differences for the generated code.
+
+Development tools like ?size? can display some information for such a comparison.
+The total size display might be occasionally not so useful. I imagine that it
+can help to split a default section configuration into smaller parts.
+https://gcc.gnu.org/onlinedocs/gcc-7.2.0/gcc/Common-Function-Attributes.html#index-section-function-attribute
+
+I would like to append a corresponding attribute to a function signature by the
+means of the semantic patch language.
+
+@section_specification@
+type T;
+@@
+T rcar_pcie_enable_msi(...)
++ __attribute__((section ("my_update")))
+ {
+ ...
+ }
 
 
-On Mon, 30 Oct 2017, Masahiro Yamada wrote:
+Unfortunately, the software ?Coccinelle 1.0.6-00345-g2ca0befa? does not like
+such an approach so far.
 
-> Hi Julia,
->
->
-> 2017-10-29 8:43 GMT+09:00 Julia Lawall <Julia.Lawall@lip6.fr>:
-> > /// is to describe the semantic patch, while //# indicates reasons
-> > for false positives.
-> >
-> > Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-> >
-> > ---
-> >  scripts/coccinelle/misc/ifcol.cocci |    6 +++---
-> >  1 file changed, 3 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/scripts/coccinelle/misc/ifcol.cocci b/scripts/coccinelle/misc/ifcol.cocci
-> > index d0d00ef..30b248b 100644
-> > --- a/scripts/coccinelle/misc/ifcol.cocci
-> > +++ b/scripts/coccinelle/misc/ifcol.cocci
-> > @@ -3,9 +3,9 @@
-> >  /// Sometimes, code after an if that is indented is actually intended to be
-> >  /// part of the if branch.
-> >  ///
-> > -/// This has a high rate of false positives, because Coccinelle's column
-> > -/// calculation does not distinguish between spaces and tabs, so code that
-> > -/// is not visually aligned may be considered to be in the same column.
-> > +//# This has a high rate of false positives, because Coccinelle's column
-> > +//# calculation does not distinguish between spaces and tabs, so code that
-> > +//# is not visually aligned may be considered to be in the same column.
-> >  ///
->
-> Just a nit.
->
-> The last /// should be turned into //
-> if you want to avoid two blank lines in a series
-> after the semantic patch information.
->
-> (I can fix it locally if you agree with it and I am supposed to pick up this.)
+elfring at Sonne:~/Projekte/Linux/next-patched> spatch ~/Projekte/Coccinelle/janitor/set_section1.cocci drivers/pci/host/pcie-rcar.c
+?
+plus: parse error: 
+  File "/home/elfring/Projekte/Coccinelle/janitor/set_section1.cocci", line 6, column 1, charpos = 105
+  around = '{',
+  whole content =  {
 
-Thanks for detecting the problem.  It would be great if you could pick it
-up, since I haven't heard confirmation from Michal that he will start this
-again.  The change seems fine.  Thanks for your help.
 
-julia
+Can the software situation be improved anyhow for this use case?
 
->
->
->
-> >  // Confidence: Low
-> >  // Copyright: (C) 2010 Nicolas Palix, DIKU.  GPLv2.
-> >
->
->
->
-> --
-> Best Regards
-> Masahiro Yamada
->
+Regards,
+Markus
