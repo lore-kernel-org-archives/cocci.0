@@ -1,50 +1,76 @@
-From: yamada.masahiro@socionext.com (Masahiro Yamada)
-Date: Tue, 7 Nov 2017 09:18:31 +0900
-Subject: [Cocci] [PATCH v2 01/31] coccinelle: Improve setup_timer.cocci
-	matching
-In-Reply-To: <alpine.DEB.2.20.1709232235500.5987@hadrien>
-References: <1505950075-50223-1-git-send-email-keescook@chromium.org>
- <1505950075-50223-2-git-send-email-keescook@chromium.org>
- <alpine.DEB.2.20.1709232235500.5987@hadrien>
-Message-ID: <CAK7LNARxWAnuMQ_G_AK1=DWKUTw6qkh8QSqyqDwFrkzjEJQNNQ@mail.gmail.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Wed, 8 Nov 2017 21:02:12 +0800 (CST)
+Subject: [Cocci] [PATCH] Coccinelle: make DEBUG_FILE option more useful
+In-Reply-To: <CAK7LNASw=ECjKxwemiF904HeR5B_FUGGPxjZY3brH66iMs=9+Q@mail.gmail.com>
+References: <1508061353-24744-1-git-send-email-Julia.Lawall@lip6.fr>
+ <CAK7LNAQMTptVYLu10uF+85OsuANbC7Fo0heD4t1ybpUE6Yh-gQ@mail.gmail.com>
+ <alpine.DEB.2.20.1710260601520.17107@hadrien>
+ <CAK7LNASw=ECjKxwemiF904HeR5B_FUGGPxjZY3brH66iMs=9+Q@mail.gmail.com>
+Message-ID: <alpine.DEB.2.20.1711082102030.2268@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-2017-09-24 5:43 GMT+09:00 Julia Lawall <julia.lawall@lip6.fr>:
->
->
-> On Wed, 20 Sep 2017, Kees Cook wrote:
->
->> This improves the patch mode of setup_timer.cocci. Several patterns
->> were missing:
->>  - assignments-before-init_timer() cases
->>  - limit the .data case removal to the specific struct timer_list instance
->>  - handling calls by dereference (timer->field vs timer.field)
->>
->> Cc: Julia Lawall <Julia.Lawall@lip6.fr>
->> Cc: Gilles Muller <Gilles.Muller@lip6.fr>
->> Cc: Nicolas Palix <nicolas.palix@imag.fr>
->> Cc: Michal Marek <mmarek@suse.com>
->> Cc: cocci at systeme.lip6.fr
->> Signed-off-by: Kees Cook <keescook@chromium.org>
->
-> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
->
-> Note that I proposed some changes on this rule as well, on August 23
-> (https://systeme.lip6.fr/pipermail/cocci/2017-August/004386.html).  My
-> changes are still orthogonal to the ones proposed here.
->
-> Actually, my changes are in the part about matching, and this patch on
-> covers the -D patch case (transformation).  The matching rules should be
-> extended in the same way that the patch rules are extended below, but it
-> would be better to apply my patch first.
->
-> julia
->
-
-Applied to linux-kbuild/misc
 
 
--- 
-Best Regards
-Masahiro Yamada
+On Tue, 7 Nov 2017, Masahiro Yamada wrote:
+
+> 2017-10-26 13:02 GMT+09:00 Julia Lawall <julia.lawall@lip6.fr>:
+> >
+> >
+> > On Thu, 26 Oct 2017, Masahiro Yamada wrote:
+> >
+> >> Hi Julia,
+> >>
+> >>
+> >> 2017-10-15 18:55 GMT+09:00 Julia Lawall <Julia.Lawall@lip6.fr>:
+> >> > Make coccicheck checked for the existence of DEBUG_FILE on each semantic
+> >> > patch, and bailed if it already existed.  This meant that DEBUG_FILE was
+> >> > useless for checking more than one semantic patch at a time.  Now the check
+> >> > is moved to the start of make coccicheck, and the 2> is changed to a 2>> to
+> >> > append to the file on each semantic patch.  Furthermore, the spatch command
+> >> > that is run for each semantic patch is also added to the DEBUG_FILE, to
+> >> > make clear what each stdout trace corresponds to.
+> >> >
+> >> > Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+> >> >
+> >>
+> >> I think this is a good improvement,
+> >> and looks almost good to me.
+> >>
+> >> Just one nit.
+> >>
+> >>
+> >> >
+> >> >  }
+> >> >
+> >> > +if [ "$DEBUG_FILE" != "/dev/null" -a "$DEBUG_FILE" != "" ]; then
+> >> > +       if [ -f $DEBUG_FILE ]; then
+> >> > +               echo "Debug file $DEBUG_FILE exists, bailing"
+> >> > +               exit
+> >> > +       fi
+> >> > +       touch $DEBUG_FILE
+> >>
+> >> I think this "touch" is redundant.
+> >>
+> >> If the DEBUG_FILE does not exist, 2>> will automatically create it.
+> >
+> > Thanks very much for the feedback.  I will resubmit.
+> >
+> > julia
+> >
+> >
+>
+> Remove the redundant "touch"
+> and applied to linux-kbuild/misc.
+
+Thanks!
+
+julia
+
+>
+>
+>
+> --
+> Best Regards
+> Masahiro Yamada
+>
