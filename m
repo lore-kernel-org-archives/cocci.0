@@ -1,12 +1,12 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 8 Nov 2017 21:03:09 +0800 (CST)
-Subject: [Cocci] [PATCH] Coccinelle: use false positive annotation
-In-Reply-To: <CAK7LNASAbYj0Dm+wDSCQaqyqucBHisOa4QcJKL3Ar9DeoWH8tw@mail.gmail.com>
-References: <1509234189-26916-1-git-send-email-Julia.Lawall@lip6.fr>
- <CAK7LNASBEvt6Ef3fJ=twQmV4LKSd_nbLd2BxmLtKEV8eYf3HBw@mail.gmail.com>
- <alpine.DEB.2.20.1710301151210.2632@hadrien>
- <CAK7LNASAbYj0Dm+wDSCQaqyqucBHisOa4QcJKL3Ar9DeoWH8tw@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1711082102560.2708@hadrien>
+Date: Wed, 8 Nov 2017 21:12:50 +0800 (CST)
+Subject: [Cocci] [PATCH] coccinelle: fix verbose message about .cocci
+ file being run
+In-Reply-To: <CAK7LNARMTun58pa1Ew32SvQjR_u1Hg8mE-tDR_qqvztcx_Wnfg@mail.gmail.com>
+References: <1508993751-17218-1-git-send-email-yamada.masahiro@socionext.com>
+ <c18712da-6b47-3b13-059d-d49db738e386@imag.fr>
+ <CAK7LNARMTun58pa1Ew32SvQjR_u1Hg8mE-tDR_qqvztcx_Wnfg@mail.gmail.com>
+Message-ID: <alpine.DEB.2.20.1711082112400.2708@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -14,58 +14,30 @@ List-Id: cocci@systeme.lip6.fr
 
 On Tue, 7 Nov 2017, Masahiro Yamada wrote:
 
-> 2017-10-30 12:52 GMT+09:00 Julia Lawall <julia.lawall@lip6.fr>:
-> >
-> >
-> > On Mon, 30 Oct 2017, Masahiro Yamada wrote:
-> >
-> >> Hi Julia,
+> 2017-10-26 16:22 GMT+09:00 Nicolas Palix (LIG) <Nicolas.Palix@imag.fr>:
+> > Le 26/10/17 ? 06:55, Masahiro Yamada a ?crit :
 > >>
+> >> If you run coccicheck with V=1 and COCCI=, you will see a strange
+> >> path to the semantic patch file.  For example, run the following:
 > >>
-> >> 2017-10-29 8:43 GMT+09:00 Julia Lawall <Julia.Lawall@lip6.fr>:
-> >> > /// is to describe the semantic patch, while //# indicates reasons
-> >> > for false positives.
-> >> >
-> >> > Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-> >> >
-> >> > ---
-> >> >  scripts/coccinelle/misc/ifcol.cocci |    6 +++---
-> >> >  1 file changed, 3 insertions(+), 3 deletions(-)
-> >> >
-> >> > diff --git a/scripts/coccinelle/misc/ifcol.cocci b/scripts/coccinelle/misc/ifcol.cocci
-> >> > index d0d00ef..30b248b 100644
-> >> > --- a/scripts/coccinelle/misc/ifcol.cocci
-> >> > +++ b/scripts/coccinelle/misc/ifcol.cocci
-> >> > @@ -3,9 +3,9 @@
-> >> >  /// Sometimes, code after an if that is indented is actually intended to be
-> >> >  /// part of the if branch.
-> >> >  ///
-> >> > -/// This has a high rate of false positives, because Coccinelle's column
-> >> > -/// calculation does not distinguish between spaces and tabs, so code that
-> >> > -/// is not visually aligned may be considered to be in the same column.
-> >> > +//# This has a high rate of false positives, because Coccinelle's column
-> >> > +//# calculation does not distinguish between spaces and tabs, so code that
-> >> > +//# is not visually aligned may be considered to be in the same column.
-> >> >  ///
+> >> $ make V=1 COCCI=scripts/coccinelle/free/kfree.cocci coccicheck
+> >>    [ snip ]
+> >>   The semantic patch that makes this report is available
+> >>   in scriptcoccinelle/free/kfree.cocci.
 > >>
-> >> Just a nit.
+> >> Notice "s/" was dropped from "scripts/coccinelle/free/kfree.cocci".
 > >>
-> >> The last /// should be turned into //
-> >> if you want to avoid two blank lines in a series
-> >> after the semantic patch information.
+> >> When running coccicheck without O=, $srctree is expanded to ".", which
+> >> represents one arbitrary character in the regular expression.  Using
+> >> sed is not a good choice here.  Strip $srctree/ simply without sed.
 > >>
-> >> (I can fix it locally if you agree with it and I am supposed to pick up this.)
+> >> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
 > >
-> > Thanks for detecting the problem.  It would be great if you could pick it
-> > up, since I haven't heard confirmation from Michal that he will start this
-> > again.  The change seems fine.  Thanks for your help.
-> >
-> > julia
-> >
+> > Acked-by: Nicolas Palix <nicolas.palix@imag.fr>
 > >>
+> >> ---
 >
-> Fix up the second ///
-> and applied to linux-kbuild/misc.
+> Applied to linux-kbuild/misc.
 
 Thanks!
 
