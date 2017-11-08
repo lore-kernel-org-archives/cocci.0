@@ -1,12 +1,13 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 8 Nov 2017 21:12:50 +0800 (CST)
-Subject: [Cocci] [PATCH] coccinelle: fix verbose message about .cocci
- file being run
-In-Reply-To: <CAK7LNARMTun58pa1Ew32SvQjR_u1Hg8mE-tDR_qqvztcx_Wnfg@mail.gmail.com>
-References: <1508993751-17218-1-git-send-email-yamada.masahiro@socionext.com>
- <c18712da-6b47-3b13-059d-d49db738e386@imag.fr>
- <CAK7LNARMTun58pa1Ew32SvQjR_u1Hg8mE-tDR_qqvztcx_Wnfg@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1711082112400.2708@hadrien>
+Date: Wed, 8 Nov 2017 21:03:35 +0800 (CST)
+Subject: [Cocci] [PATCH] coccinelle: grep Options and Requires fields
+ more precisely
+In-Reply-To: <CAK7LNAQ9iXf1D3SWvX=GVWbEiwazDtsTBBaEhOO44PDRc5JqZw@mail.gmail.com>
+References: <1508993438-15325-1-git-send-email-yamada.masahiro@socionext.com>
+ <alpine.DEB.2.20.1710260658330.17107@hadrien>
+ <69422e77-ac67-d23f-59e2-c8d0df1819b6@imag.fr>
+ <CAK7LNAQ9iXf1D3SWvX=GVWbEiwazDtsTBBaEhOO44PDRc5JqZw@mail.gmail.com>
+Message-ID: <alpine.DEB.2.20.1711082103230.2268@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -14,28 +15,84 @@ List-Id: cocci@systeme.lip6.fr
 
 On Tue, 7 Nov 2017, Masahiro Yamada wrote:
 
-> 2017-10-26 16:22 GMT+09:00 Nicolas Palix (LIG) <Nicolas.Palix@imag.fr>:
-> > Le 26/10/17 ? 06:55, Masahiro Yamada a ?crit :
+> 2017-10-26 16:26 GMT+09:00 Nicolas Palix (LIG) <Nicolas.Palix@imag.fr>:
+> > Le 26/10/17 ? 06:59, Julia Lawall a ?crit :
 > >>
-> >> If you run coccicheck with V=1 and COCCI=, you will see a strange
-> >> path to the semantic patch file.  For example, run the following:
 > >>
-> >> $ make V=1 COCCI=scripts/coccinelle/free/kfree.cocci coccicheck
-> >>    [ snip ]
-> >>   The semantic patch that makes this report is available
-> >>   in scriptcoccinelle/free/kfree.cocci.
 > >>
-> >> Notice "s/" was dropped from "scripts/coccinelle/free/kfree.cocci".
+> >> On Thu, 26 Oct 2017, Masahiro Yamada wrote:
 > >>
-> >> When running coccicheck without O=, $srctree is expanded to ".", which
-> >> represents one arbitrary character in the regular expression.  Using
-> >> sed is not a good choice here.  Strip $srctree/ simply without sed.
+> >>> Currently, the required version for badzero.cocci is picked up from
+> >>> its "Comments:" line since it contains the word "Requires".
+> >>>
+> >>> Surprisingly, ld-version.sh can extract the version number from the
+> >>> string "Requires Coccinelle version 1.0.0-rc20 or later", but this
+> >>> expectation is fragile.  Fix the .cocci file.  I removed "-rc20"
+> >>> because ld-version.sh cannot handle it.
 > >>
-> >> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+> >>
+> >> OK.
+> >>
+> >>> Make the coccicheck script to see exact patterns for "Options:" and
+> >>> "Requires:" in order to avoid accidental matching to what just happens
+> >>> to appear in comment lines.
+> >>>
+> >>> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+> >>
+> >>
+> >> Thanks for checking on this!
+> >>
+> >> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
 > >
 > > Acked-by: Nicolas Palix <nicolas.palix@imag.fr>
+> >
 > >>
-> >> ---
+> >>> ---
+> >>>
+> >>>   scripts/coccicheck                    | 4 ++--
+> >>>   scripts/coccinelle/null/badzero.cocci | 2 +-
+> >>>   2 files changed, 3 insertions(+), 3 deletions(-)
+> >>>
+> >>> diff --git a/scripts/coccicheck b/scripts/coccicheck
+> >>> index 3e21a1b..1bfa2d2 100755
+> >>> --- a/scripts/coccicheck
+> >>> +++ b/scripts/coccicheck
+> >>> @@ -168,8 +168,8 @@ OPTIONS="$OPTIONS $SPFLAGS"
+> >>>   coccinelle () {
+> >>>       COCCI="$1"
+> >>>
+> >>> -    OPT=`grep "Option" $COCCI | cut -d':' -f2`
+> >>> -    REQ=`grep "Requires" $COCCI | cut -d':' -f2 | sed "s| ||"`
+> >>> +    OPT=`grep "Options:" $COCCI | cut -d':' -f2`
+> >>> +    REQ=`grep "Requires:" $COCCI | cut -d':' -f2 | sed "s| ||"`
+> >>>       REQ_NUM=$(echo $REQ | ${DIR}/scripts/ld-version.sh)
+> >>>       if [ "$REQ_NUM" != "0" ] ; then
+> >>>             if [ "$SPATCH_VERSION_NUM" -lt "$REQ_NUM" ] ; then
+> >>> diff --git a/scripts/coccinelle/null/badzero.cocci
+> >>> b/scripts/coccinelle/null/badzero.cocci
+> >>> index 5551da2..f597c80 100644
+> >>> --- a/scripts/coccinelle/null/badzero.cocci
+> >>> +++ b/scripts/coccinelle/null/badzero.cocci
+> >>> @@ -10,7 +10,7 @@
+> >>>   // Copyright: (C) 2012 Julia Lawall, INRIA/LIP6.  GPLv2.
+> >>>   // Copyright: (C) 2012 Gilles Muller, INRIA/LiP6.  GPLv2.
+> >>>   // URL: http://coccinelle.lip6.fr/
+> >>> -// Comments: Requires Coccinelle version 1.0.0-rc20 or later
+> >>> +// Requires: 1.0.0
+> >>>   // Options:
+> >>>
+> >>>   virtual patch
+> >>> --
+> >>> 2.7.4
+> >>>
+> >>>
+> >
+> >
+> > --
+> > Nicolas Palix
+> > http://lig-membres.imag.fr/palix/
+> >
+>
 >
 > Applied to linux-kbuild/misc.
 
