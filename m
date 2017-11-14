@@ -1,47 +1,50 @@
-From: yamada.masahiro@socionext.com (Masahiro Yamada)
-Date: Tue, 14 Nov 2017 10:03:59 +0900
-Subject: [Cocci] [PATCH] docs: dev-tools: coccinelle: delete out of date
-	wiki reference
-In-Reply-To: <alpine.DEB.2.20.1711131746510.25814@hadrien>
-References: <alpine.DEB.2.20.1711131746510.25814@hadrien>
-Message-ID: <CAK7LNATyv9NEDLU3MmdckP2-nDkkwMt7jMtiW5J-8VKxS864Nw@mail.gmail.com>
+From: yamada.masahiro@socionext.com (yamada.masahiro at socionext.com)
+Date: Tue, 14 Nov 2017 03:29:14 +0000
+Subject: [Cocci] Coccinelle: fix parallel build with
+	CHECK=scripts/coccicheck
+In-Reply-To: <b99135b2-3a57-5c78-c820-9b0ea51dad42@users.sourceforge.net>
+References: <1510210850-28866-1-git-send-email-yamada.masahiro@socionext.com>
+ <b99135b2-3a57-5c78-c820-9b0ea51dad42@users.sourceforge.net>
+Message-ID: <54280dcc7b584812bcc475d62bac9625@SOC-EX01V.e01.socionext.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi Julia, Jon,
+Hi Markus,
 
-2017-11-14 1:50 GMT+09:00 Julia Lawall <julia.lawall@lip6.fr>:
-> The wiki is no longer available.
->
-> Signed-off-by: Julia Lawall <julia.lawall@lip6.fr>
->
+I will add more description in the commit log.
+Thanks
 
-
-Jon sent the doc pull request yesterday.
-
-I will pick this up for Kbuild tree
-because I have not sent pull requests for this MW yet.
-
-
-
->
-> diff --git a/Documentation/dev-tools/coccinelle.rst b/Documentation/dev-tools/coccinelle.rst
-> index 37e474f..94f41c2 100644
-> --- a/Documentation/dev-tools/coccinelle.rst
-> +++ b/Documentation/dev-tools/coccinelle.rst
-> @@ -33,9 +33,6 @@ of many distributions, e.g. :
->  You can get the latest version released from the Coccinelle homepage at
->  http://coccinelle.lip6.fr/
->
-> -Information and tips about Coccinelle are also provided on the wiki
-> -pages at http://cocci.ekstranet.diku.dk/wiki/doku.php
-> -
->  Once you have it, run the following command::
->
->         ./configure
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+> -----Original Message-----
+> From: SF Markus Elfring [mailto:elfring at users.sourceforge.net]
+> Sent: Saturday, November 11, 2017 1:27 AM
+> To: Yamada, Masahiro/?? ?? <yamada.masahiro@socionext.com>
+> Cc: cocci at systeme.lip6.fr
+> Subject: Re: Coccinelle: fix parallel build with CHECK=scripts/coccicheck
+> 
+> > The command "make -j8 C=1 CHECK=scripts/coccicheck" produces lots of
+> > "coccicheck failed" error messages.
+> 
+> * Which software versions did you try out for these source file checks?
+> 
+> * Can the software situation be clarified any more?
+> 
+> 
+> > I do not know the coccinelle internals,
+> 
+> Would you like to extend your knowledge in this area?
+> 
+> 
+> > but I guess --jobs does not work well if spatch is invoked from Make
+> > running in parallel.
+> 
+> The desired parallelisation support can evolve into additional directions,
+> can't it?
+> 
+> 
+> > Disable --jobs in this case.
+> 
+> How do you think about further possibilities for separation of work between
+> Coccinelle and Make processes?
+> 
+> Regards,
+> Markus
