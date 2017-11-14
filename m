@@ -1,48 +1,25 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 14 Nov 2017 13:31:26 +0100
-Subject: [Cocci] Coccinelle: fix parallel build with
+Date: Tue, 14 Nov 2017 14:32:06 +0100
+Subject: [Cocci] [v4] Coccinelle: fix parallel build with
 	CHECK=scripts/coccicheck
-In-Reply-To: <alpine.DEB.2.20.1711141210560.2874@hadrien>
-References: <alpine.DEB.2.20.1711140735020.2332@hadrien>
- <e1d8885a-4e3f-a980-00d8-76515d02da17@users.sourceforge.net>
- <alpine.DEB.2.20.1711141009250.2874@hadrien>
- <533ab049-900c-fbb7-04e0-8dfaef492847@users.sourceforge.net>
- <alpine.DEB.2.20.1711141210560.2874@hadrien>
-Message-ID: <1e9f0a42-7587-b3e9-c335-e6b490ce5871@users.sourceforge.net>
+In-Reply-To: <1510659487-16361-1-git-send-email-yamada.masahiro@socionext.com>
+References: <1510659487-16361-1-git-send-email-yamada.masahiro@socionext.com>
+Message-ID: <81500e6b-6e36-ffa6-97a0-c396f3b62ca5@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> The goal is that the user can easily find the stdou and stderr information
-> while the semantic patch is running.
+> Setting NPROC=1 is a reasonable solution;
 
-It matters when the tool ?spatch? tries to apply its own parallelisation strategy.
-
-
-> This is useful for long running semantic patches to see
-> if things are going well or not.
-
-Yes, of course.
+It can be sufficient for the usual purposes of the shell script ?scripts/coccicheck?.
 
 
-> I decided on creating a directory that contains the name of the semantic
-> patch, then the date, then the pid.
+> spatch does not create the subdirectory.
 
-I imagine that time stamps and process identifiers can become fragile.
-
-
-> It should be easy for the user to see which is the most recent,
-> in the case that previous instances are remaining.
-
-This is usually fine.
-
-
-> The goal is to avoid getting a mysterious error from make coccicheck,
-> not to meet the needs of advanced users.
-
-* How advanced are they if they pass the parameter ?CHECK=scripts/coccicheck??
-
-* The Linux make script will be improved so that extra parallelisation
-  will be usually avoided by the Coccinelle software.
+I would like to point out that further development efforts will be needed
+if such a special directory handling should be avoided generally.
+How much do care about consequences if parameters for additional parallelisation
+would be passed over the command line option (or the environment variable)
+?SPFLAGS? as it is described in the file ?Documentation/dev-tools/coccinelle.rst??
 
 Regards,
 Markus
