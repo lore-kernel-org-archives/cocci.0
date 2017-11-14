@@ -1,100 +1,36 @@
-From: yamada.masahiro@socionext.com (Masahiro Yamada)
-Date: Tue, 14 Nov 2017 18:04:49 +0900
-Subject: [Cocci] [PATCH v3] coccinelle: fix parallel build with
-	CHECK=scripts/coccicheck
-Message-ID: <1510650290-3363-1-git-send-email-yamada.masahiro@socionext.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Tue, 14 Nov 2017 10:07:28 +0100 (CET)
+Subject: [Cocci] Coccinelle: badzero.cocci failure
+In-Reply-To: <CAK7LNATW91vf5Sa-vvJ7rLRNt+KRKPB=E5H_EOtOUgCB4WYmUA@mail.gmail.com>
+References: <CAK7LNATW91vf5Sa-vvJ7rLRNt+KRKPB=E5H_EOtOUgCB4WYmUA@mail.gmail.com>
+Message-ID: <alpine.DEB.2.20.1711141003410.2874@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-The command "make -j8 C=1 CHECK=scripts/coccicheck COCCI=..." produces
-lots of "coccicheck failed" error messages.
+> coccicheck failed
+> $ cat cocci-debug.txt
+> /home/masahiro/bin/spatch -D report --no-show-diff --very-quiet
+> --cocci-file scripts/coccinelle/null/badzero.cocci --dir . -I
+> ./arch/x86/include -I ./arch/x86/include/generated -I ./include -I
+> ./arch/x86/include/uapi -I ./arch/x86/include/generated/uapi -I
+> ./include/uapi -I ./include/generated/uapi --include
+> ./include/linux/kconfig.h --jobs 8 --chunksize 1
+> Fatal error: exception
+> Yes_prepare_ocamlcocci.LinkFailure("/tmp/ocaml_cocci_18c9f9.cmxs")
 
-Julia Lawall explained the coccinelle behavior as follows:
-"The problem on the Coccinelle side is that it uses a subdirectory
-with the name of the semantic patch to store standard output and
-standard error for the different threads.  I didn't want to use a
-name with the pid, so that one could easily find this information
-while Coccinelle is running.  Normally the subdirectory is cleaned
-up when Coccinelle completes, so there is only one of them at a time.
-Maybe it is best to just add the pid.  There is the risk that these
-subdirectories will accumulate if Coccinelle crashes in a way such
-that they don't get cleaned up, but Coccinelle could print a warning
-if it detects this case, rather than failing."
+Does your Coccinelle support OCaml?  I'm not sure what is the proper way to
+check for this, but in my coccinelle/config.log file I have
 
-When scripts/coccicheck is used as CHECK tool and -j option is given
-to Make, the whole of build process runs in parallel.  So, multiple
-processes try to get access to the same subdirectory.
+FEATURE_OCAML='1'
 
-I notice spatch creates the subdirectory only when it runs in parallel
-(i.e. --jobs <N> is given and <N> is greater than 1).
+spatch --version gives:
 
-Setting NPROC=1 is a sensible solution; spatch does not create the
-subdirectory.  Besides, ONLINE=1 mode takes a single file input for
-each spatch invocation, so there is no reason to parallelize it in
-the first place.
+spatch version 1.0.6-00147-g19f9421 compiled with OCaml version 4.02.3
+Flags passed to the configure script: [none]
+Python scripting support: yes
+Syntax of regular expresssions: Str
 
-Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
----
+I'm not sure why it doesn't give feedback on whether OCaml scripting is
+supported.  I will check on this.
 
-Changes in v3:
-  - Set NPROC=1 because this is a more sensible solution
-    given that there is no reason to run coccinelle in parallel
-    for ONLINE=1 mode.
-  - Move J= option handling to a proper place.
-  - Add more detailed explanation
-
-Changes in v2:
-  - Grep '-j' instead of '--jobserver-auth'.
-    '--jobserver-*' is not a stable option flag.
-    Make 4.2 change '--jobserver-fds' into '--jobserver-auth'
-  - Add -q option to grep
-
- scripts/coccicheck | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
-
-diff --git a/scripts/coccicheck b/scripts/coccicheck
-index 040a8b1..7da82a1 100755
---- a/scripts/coccicheck
-+++ b/scripts/coccicheck
-@@ -30,12 +30,6 @@ else
- 	VERBOSE=0
- fi
- 
--if [ -z "$J" ]; then
--	NPROC=$(getconf _NPROCESSORS_ONLN)
--else
--	NPROC="$J"
--fi
--
- FLAGS="--very-quiet"
- 
- # You can use SPFLAGS to append extra arguments to coccicheck or override any
-@@ -70,6 +64,13 @@ if [ "$C" = "1" -o "$C" = "2" ]; then
-     # Take only the last argument, which is the C file to test
-     shift $(( $# - 1 ))
-     OPTIONS="$COCCIINCLUDE $1"
-+
-+    # If -j option is given to Make, scripts/coccicheck runs in parallel.
-+    # If coccinelle also runs in parallel, it fails because multiple processes
-+    # try to get access to the same subdirectory that stores stdout/stderr.
-+    # No need to parallelize coccinelle in this case - this mode takes only
-+    # one file input.
-+    NPROC=1
- else
-     ONLINE=0
-     if [ "$KBUILD_EXTMOD" = "" ] ; then
-@@ -77,6 +78,12 @@ else
-     else
-         OPTIONS="--dir $KBUILD_EXTMOD $COCCIINCLUDE"
-     fi
-+
-+    if [ -z "$J" ]; then
-+        NPROC=$(getconf _NPROCESSORS_ONLN)
-+    else
-+        NPROC="$J"
-+    fi
- fi
- 
- if [ "$KBUILD_EXTMOD" != "" ] ; then
--- 
-2.7.4
+julia
