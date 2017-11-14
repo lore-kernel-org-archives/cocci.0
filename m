@@ -1,110 +1,71 @@
-From: yamada.masahiro@socionext.com (Masahiro Yamada)
-Date: Tue, 14 Nov 2017 18:08:16 +0900
-Subject: [Cocci] [PATCH v2] coccinelle: fix parallel build with
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Tue, 14 Nov 2017 10:11:21 +0100 (CET)
+Subject: [Cocci] Coccinelle: fix parallel build with
 	CHECK=scripts/coccicheck
-In-Reply-To: <alpine.DEB.2.20.1711140735020.2332@hadrien>
-References: <1510210850-28866-1-git-send-email-yamada.masahiro@socionext.com>
- <alpine.DEB.2.20.1711131628370.20333@hadrien>
- <CAK7LNASpxfq6Vg42rogQg1bixNL15O=8152=KJEnKQA=Ez6Dxw@mail.gmail.com>
- <alpine.DEB.2.20.1711131744290.20292@hadrien>
- <CAK7LNAQS02azxxMZqTYvsuixOjWVeur1RGLJNmSBHsDkZ=mjbw@mail.gmail.com>
- <alpine.DEB.2.20.1711140735020.2332@hadrien>
-Message-ID: <CAK7LNAQ7Xr6Sff-WeV4_XMCHe-E3D2=3AUOyD3rXWcHvNb90Fw@mail.gmail.com>
+In-Reply-To: <e1d8885a-4e3f-a980-00d8-76515d02da17@users.sourceforge.net>
+References: <alpine.DEB.2.20.1711140735020.2332@hadrien>
+ <e1d8885a-4e3f-a980-00d8-76515d02da17@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.20.1711141009250.2874@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi Julia,
 
 
-2017-11-14 15:44 GMT+09:00 Julia Lawall <julia.lawall@lip6.fr>:
->
->
-> On Tue, 14 Nov 2017, Masahiro Yamada wrote:
->
->> Hi Julia,
->>
->> 2017-11-14 1:45 GMT+09:00 Julia Lawall <julia.lawall@lip6.fr>:
->> >
->> >
->> > On Tue, 14 Nov 2017, Masahiro Yamada wrote:
->> >
->> >> Hi Julia,
->> >>
->> >>
->> >> 2017-11-14 0:30 GMT+09:00 Julia Lawall <julia.lawall@lip6.fr>:
->> >> >
->> >> >
->> >> > On Thu, 9 Nov 2017, Masahiro Yamada wrote:
->> >> >
->> >> >> The command "make -j8 C=1 CHECK=scripts/coccicheck" produces lots of
->> >> >> "coccicheck failed" error messages.
->> >> >>
->> >> >> I do not know the coccinelle internals, but I guess --jobs does not
->> >> >> work well if spatch is invoked from Make running in parallel.
->> >> >> Disable --jobs in this case.
->> >> >
->> >> > Why is this change under:
->> >> >
->> >> > if [ "$C" = "1" -o "$C" = "2" ];
->> >> >
->> >> > The coccicheck failed messages come also if one runs Coccinelle on the
->> >> > entire kernel.
->> >>
->> >> As far as I tested, "coccicheck failed" error only happens
->> >> when ONLINE=1.
->> >>
->> >>
->> >> make -j8 C=1 CHECK=scripts/coccicheck  COCCI=scripts/coccinelle/misc/bugon.cocci
->> >>
->> >> emits lots of errors.
->> >>
->> >>
->> >> make -j8 coccicheck  COCCI=scripts/coccinelle/misc/bugon.cocci
->> >>
->> >> is fine.
->> >>
->> >>
->> >> Have you tested it?
->> >> Do you mean you got a different result from mine?
->> >
->> > I agree with your results, with respect to the number of errors.
->> >
->> > julia
->> >
->>
->> So, what shall we do?
->>
->> If you do not like to fix it (or you can fix coccinelle itself),
->> I can take back this patch.
->
-> I'm OK with your fix.  I will check and ack it today.
->
->> I am not a coccinelle developer, so
->> setting USE_JOBS="no" is the best I can do.
->
-> The problem on the Coccinelle side is that it uses a subdirectory with the
-> name of the semantic patch to store standard output and standard error for
-> the different threads.  I didn't want to use a name with the pid, so that
-> one could easily find this information while Coccinelle is running.
-> Normally the subdirectory is cleaned up when Coccinelle completes, so
-> there is only one of them at a time.  Maybe it is best to just add the
-> pid.  There is the risk that these subdirectories will accumulate if
-> Coccinelle crashes in a way such that they don't get cleaned up, but
-> Coccinelle could print a warning if it detects this case, rather than
-> failing.
->
-> Still I think it is useful to do something on the make coccicheck side,
-> because there is no need for the double layer of parallelism.
->
+On Tue, 14 Nov 2017, SF Markus Elfring wrote:
 
+> > The problem on the Coccinelle side is that it uses a subdirectory with the
+> > name of the semantic patch to store standard output and standard error for
+> > the different threads.
+>
+> It is occasionally good to know such background information.
+>
+>
+> > I didn't want to use a name with the pid, so that one could easily find
+> > this information while Coccinelle is running.
+>
+> Do you mark these data as ?hidden? in the file system?
 
-Thanks a lot for detailed explanation!
+I don't know what this means.
 
-I brushed up my patch.
+>
+>
+> > Normally the subdirectory is cleaned up when Coccinelle completes,
+> > so there is only one of them at a time.
+>
+> I find that this can be insufficient occasionally.
+>
+>
+> > Maybe it is best to just add the pid.
+>
+> I imagine that the storage algorithm could become better configurable
+> besides the parameters ?--temp-files? and ?--tmp-dir?.
 
-Could you check v3, please?
+The problem is that running multiple coccinelles each with parallelism is
+fairly pointless, especially on the same semantic patch.  So the only
+people who do it will be those who don't understand how Coccinelle works.
+Those people won't realize that they should use such extra options either.
 
+julia
 
--- 
-Best Regards
-Masahiro Yamada
+>
+>
+> > There is the risk that these subdirectories will accumulate if
+> > Coccinelle crashes in a way such that they don't get cleaned up,
+>
+> I noticed such a situation a few times.
+>
+>
+> > but Coccinelle could print a warning if it detects this case,
+> > rather than failing.
+>
+> I would appreciate such a software adjustment.
+>
+>
+> > Still I think it is useful to do something on the make coccicheck side,
+> > because there is no need for the double layer of parallelism.
+>
+> Would you like to improve the corresponding documentation in any ways?
+>
+> Regards,
+> Markus
+>
