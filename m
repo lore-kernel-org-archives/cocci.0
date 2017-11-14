@@ -1,57 +1,37 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 14 Nov 2017 10:54:44 +0100 (CET)
-Subject: [Cocci] [PATCH] kbuild: move coccicheck help in
- scripts/Makefile.help to top Makefile
-In-Reply-To: <1510652841-6779-1-git-send-email-yamada.masahiro@socionext.com>
-References: <1510652841-6779-1-git-send-email-yamada.masahiro@socionext.com>
-Message-ID: <alpine.DEB.2.20.1711141054290.2874@hadrien>
+From: yamada.masahiro@socionext.com (Masahiro Yamada)
+Date: Tue, 14 Nov 2017 19:02:08 +0900
+Subject: [Cocci] [PATCH v3] coccinelle: fix parallel build with
+	CHECK=scripts/coccicheck
+In-Reply-To: <alpine.DEB.2.20.1711141047350.2874@hadrien>
+References: <1510650290-3363-1-git-send-email-yamada.masahiro@socionext.com>
+ <alpine.DEB.2.20.1711141047350.2874@hadrien>
+Message-ID: <CAK7LNAQ11bf1+=AYVsGfZ+vs-1P0fGCm-2y-qjgKi=KK7-+iSA@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hi Julia,
 
 
-On Tue, 14 Nov 2017, Masahiro Yamada wrote:
-
-> I do not think it is helpful to have a separate file just for the
-> coccicheck help message.  Merge scripts/Makefile.help into the
-> top-level Makefile.
+2017-11-14 18:49 GMT+09:00 Julia Lawall <julia.lawall@lip6.fr>:
+>> +
+>> +    # If -j option is given to Make, scripts/coccicheck runs in parallel.
+>> +    # If coccinelle also runs in parallel, it fails because multiple processes
+>> +    # try to get access to the same subdirectory that stores stdout/stderr.
+>> +    # No need to parallelize coccinelle in this case - this mode takes only
+>> +    # one file input.
+>> +    NPROC=1
 >
-> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+> Since I am also changing Coccinelle to avoid the problem, maybe it would
+> be better to just remove the explanation sentence (If coccinelle also runs
+> in parallel,...).
+>
+> julia
 
-Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+OK.  Which lines are unneeded?
 
-Thanks!
+Is it OK to remove all the comments, then just add "NPROC=1"?
 
-> ---
->
->  Makefile              | 2 +-
->  scripts/Makefile.help | 3 ---
->  2 files changed, 1 insertion(+), 4 deletions(-)
->  delete mode 100644 scripts/Makefile.help
->
-> diff --git a/Makefile b/Makefile
-> index f060f94..3b7d477 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -1388,7 +1388,7 @@ help:
->  	@echo  '  export_report   - List the usages of all exported symbols'
->  	@echo  '  headers_check   - Sanity check on exported headers'
->  	@echo  '  headerdep       - Detect inclusion cycles in headers'
-> -	@$(MAKE) -f $(srctree)/scripts/Makefile.help checker-help
-> +	@echo  '  coccicheck      - Check with Coccinelle'
->  	@echo  ''
->  	@echo  'Kernel selftest:'
->  	@echo  '  kselftest       - Build and run kernel selftest (run as root)'
-> diff --git a/scripts/Makefile.help b/scripts/Makefile.help
-> deleted file mode 100644
-> index d03608f..0000000
-> --- a/scripts/Makefile.help
-> +++ /dev/null
-> @@ -1,3 +0,0 @@
-> -
-> -checker-help:
-> -	@echo  '  coccicheck      - Check with Coccinelle.'
-> --
-> 2.7.4
->
->
+
+-- 
+Best Regards
+Masahiro Yamada
