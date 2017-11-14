@@ -1,46 +1,50 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 14 Nov 2017 12:09:29 +0100 (CET)
-Subject: [Cocci] [PATCH v3] coccinelle: fix parallel build with
- CHECK=scripts/coccicheck
-In-Reply-To: <CAK7LNAQ11bf1+=AYVsGfZ+vs-1P0fGCm-2y-qjgKi=KK7-+iSA@mail.gmail.com>
-References: <1510650290-3363-1-git-send-email-yamada.masahiro@socionext.com>
- <alpine.DEB.2.20.1711141047350.2874@hadrien>
- <CAK7LNAQ11bf1+=AYVsGfZ+vs-1P0fGCm-2y-qjgKi=KK7-+iSA@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1711141208200.2874@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Tue, 14 Nov 2017 11:34:05 +0100
+Subject: [Cocci] Coccinelle: fix parallel build with
+	CHECK=scripts/coccicheck
+In-Reply-To: <alpine.DEB.2.20.1711141009250.2874@hadrien>
+References: <alpine.DEB.2.20.1711140735020.2332@hadrien>
+ <e1d8885a-4e3f-a980-00d8-76515d02da17@users.sourceforge.net>
+ <alpine.DEB.2.20.1711141009250.2874@hadrien>
+Message-ID: <533ab049-900c-fbb7-04e0-8dfaef492847@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+>>> I didn't want to use a name with the pid, so that one could easily find
+>>> this information while Coccinelle is running.
+>>
+>> Do you mark these data as ?hidden? in the file system?
+> 
+> I don't know what this means.
+
+Do you fiddle with file attributes or use a dot as the first character
+in the file name?
 
 
-On Tue, 14 Nov 2017, Masahiro Yamada wrote:
+>> I imagine that the storage algorithm could become better configurable
+>> besides the parameters ?--temp-files? and ?--tmp-dir?.
+> 
+> The problem is that running multiple coccinelles each with parallelism is
+> fairly pointless,
 
-> Hi Julia,
->
->
-> 2017-11-14 18:49 GMT+09:00 Julia Lawall <julia.lawall@lip6.fr>:
-> >> +
-> >> +    # If -j option is given to Make, scripts/coccicheck runs in parallel.
-> >> +    # If coccinelle also runs in parallel, it fails because multiple processes
-> >> +    # try to get access to the same subdirectory that stores stdout/stderr.
-> >> +    # No need to parallelize coccinelle in this case - this mode takes only
-> >> +    # one file input.
-> >> +    NPROC=1
-> >
-> > Since I am also changing Coccinelle to avoid the problem, maybe it would
-> > be better to just remove the explanation sentence (If coccinelle also runs
-> > in parallel,...).
-> >
-> > julia
->
-> OK.  Which lines are unneeded?
->
-> Is it OK to remove all the comments, then just add "NPROC=1"?
+The situation might be different if the execution environment provides
+enough computation resources for processing with special data distributions.
 
-How about keeping "# No need to parallelize coccinelle in this case - this
-mode takes only one file input."?
 
-But if you think it is obvious, it would be ok to remove it also.  Someone
-can always do git blame and read the commit message if they have
-questions.
+> especially on the same semantic patch.
 
-julia
+There can be restrictions usually.
+
+
+> So the only people who do it will be those who don't understand
+> how Coccinelle works.
+
+This might be. - Or do they compare different software versions (in parallel)?
+
+
+> Those people won't realize that they should use such extra options either.
+
+Some time is needed to become more aware about advanced parameters.
+
+Regards,
+Markus
