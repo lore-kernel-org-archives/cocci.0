@@ -1,64 +1,49 @@
-From: yamada.masahiro@socionext.com (Masahiro Yamada)
-Date: Tue, 14 Nov 2017 20:13:43 +0900
-Subject: [Cocci] [PATCH v3] coccinelle: fix parallel build with
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Tue, 14 Nov 2017 12:15:28 +0100 (CET)
+Subject: [Cocci] Coccinelle: fix parallel build with
 	CHECK=scripts/coccicheck
-In-Reply-To: <alpine.DEB.2.20.1711141208200.2874@hadrien>
-References: <1510650290-3363-1-git-send-email-yamada.masahiro@socionext.com>
- <alpine.DEB.2.20.1711141047350.2874@hadrien>
- <CAK7LNAQ11bf1+=AYVsGfZ+vs-1P0fGCm-2y-qjgKi=KK7-+iSA@mail.gmail.com>
- <alpine.DEB.2.20.1711141208200.2874@hadrien>
-Message-ID: <CAK7LNASwSgk4wjp-Mn0Ar9vw2oKURtje5gu2uDB4sTHxAAuq_w@mail.gmail.com>
+In-Reply-To: <533ab049-900c-fbb7-04e0-8dfaef492847@users.sourceforge.net>
+References: <alpine.DEB.2.20.1711140735020.2332@hadrien>
+ <e1d8885a-4e3f-a980-00d8-76515d02da17@users.sourceforge.net>
+ <alpine.DEB.2.20.1711141009250.2874@hadrien>
+ <533ab049-900c-fbb7-04e0-8dfaef492847@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.20.1711141210560.2874@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-2017-11-14 20:09 GMT+09:00 Julia Lawall <julia.lawall@lip6.fr>:
+
+
+On Tue, 14 Nov 2017, SF Markus Elfring wrote:
+
+> >>> I didn't want to use a name with the pid, so that one could easily find
+> >>> this information while Coccinelle is running.
+> >>
+> >> Do you mark these data as ?hidden? in the file system?
+> >
+> > I don't know what this means.
 >
+> Do you fiddle with file attributes or use a dot as the first character
+> in the file name?
+
+The goal is that the user can easily find the stdou and stderr information
+while the semantic patch is running.  This is useful for long running
+semantic patches to see if things are going well or not.
+
+I decided on creating a directory that contains the name of the semantic
+patch, then the date, then the pid.  It should be easy for the user to see
+which is the most recent, in the case that previous instances are
+remaining.
+
+> This might be. - Or do they compare different software versions (in parallel)?
+
+It's only an issue when they have the same name and are run from the same
+directory.
+
+> > Those people won't realize that they should use such extra options either.
 >
-> On Tue, 14 Nov 2017, Masahiro Yamada wrote:
->
->> Hi Julia,
->>
->>
->> 2017-11-14 18:49 GMT+09:00 Julia Lawall <julia.lawall@lip6.fr>:
->> >> +
->> >> +    # If -j option is given to Make, scripts/coccicheck runs in parallel.
->> >> +    # If coccinelle also runs in parallel, it fails because multiple processes
->> >> +    # try to get access to the same subdirectory that stores stdout/stderr.
->> >> +    # No need to parallelize coccinelle in this case - this mode takes only
->> >> +    # one file input.
->> >> +    NPROC=1
->> >
->> > Since I am also changing Coccinelle to avoid the problem, maybe it would
->> > be better to just remove the explanation sentence (If coccinelle also runs
->> > in parallel,...).
->> >
->> > julia
->>
->> OK.  Which lines are unneeded?
->>
->> Is it OK to remove all the comments, then just add "NPROC=1"?
->
-> How about keeping "# No need to parallelize coccinelle in this case - this
-> mode takes only one file input."?
+> Some time is needed to become more aware about advanced parameters.
 
-Fair enough.
+The goal is to avoid getting a mysterious error from make coccicheck, not
+to meet the needs of advanced users.
 
-I will send v4 shortly.
-
-
-
-> But if you think it is obvious, it would be ok to remove it also.  Someone
-> can always do git blame and read the commit message if they have
-> questions.
->
-> julia
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kbuild" in
-> the body of a message to majordomo at vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+julia
