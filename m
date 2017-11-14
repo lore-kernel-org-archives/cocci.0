@@ -1,22 +1,48 @@
-From: joe@perches.com (Joe Perches)
-Date: Thu, 23 Nov 2017 16:25:37 -0800
-Subject: [Cocci] [PATCH] net: usb: hso.c: remove unneeded DRIVER_LICENSE
-	#define
-In-Reply-To: <1511479801.5308.6.camel@perches.com>
-References: <20171117141939.GD17880@kroah.com>
- <1511370336.6989.100.camel@perches.com> <20171122171201.GA6528@kroah.com>
- <1511479801.5308.6.camel@perches.com>
-Message-ID: <1511483137.5308.8.camel@perches.com>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Tue, 14 Nov 2017 13:31:26 +0100
+Subject: [Cocci] Coccinelle: fix parallel build with
+	CHECK=scripts/coccicheck
+In-Reply-To: <alpine.DEB.2.20.1711141210560.2874@hadrien>
+References: <alpine.DEB.2.20.1711140735020.2332@hadrien>
+ <e1d8885a-4e3f-a980-00d8-76515d02da17@users.sourceforge.net>
+ <alpine.DEB.2.20.1711141009250.2874@hadrien>
+ <533ab049-900c-fbb7-04e0-8dfaef492847@users.sourceforge.net>
+ <alpine.DEB.2.20.1711141210560.2874@hadrien>
+Message-ID: <1e9f0a42-7587-b3e9-c335-e6b490ce5871@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 2017-11-23 at 15:30 -0800, Joe Perches wrote:
-> --- /dev/null	2017-11-23 06:19:12.943046739 -0800
-> +++ single_use_module.pl	2017-11-23 15:23:11.729812156 -0800
-> @@ -0,0 +1,15 @@
-[]
-> +$data =~ s~$var~$string~;
+> The goal is that the user can easily find the stdou and stderr information
+> while the semantic patch is running.
 
-this needs to be:
+It matters when the tool ?spatch? tries to apply its own parallelisation strategy.
 
-$data =~ s~\b$var\b~$string~;
+
+> This is useful for long running semantic patches to see
+> if things are going well or not.
+
+Yes, of course.
+
+
+> I decided on creating a directory that contains the name of the semantic
+> patch, then the date, then the pid.
+
+I imagine that time stamps and process identifiers can become fragile.
+
+
+> It should be easy for the user to see which is the most recent,
+> in the case that previous instances are remaining.
+
+This is usually fine.
+
+
+> The goal is to avoid getting a mysterious error from make coccicheck,
+> not to meet the needs of advanced users.
+
+* How advanced are they if they pass the parameter ?CHECK=scripts/coccicheck??
+
+* The Linux make script will be improved so that extra parallelisation
+  will be usually avoided by the Coccinelle software.
+
+Regards,
+Markus
