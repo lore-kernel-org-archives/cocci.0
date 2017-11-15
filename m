@@ -1,53 +1,70 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 14 Nov 2017 17:55:46 +0100 (CET)
-Subject: [Cocci] [PATCH v3] coccinelle: fix parallel build with
- CHECK=scripts/coccicheck
-In-Reply-To: <20171114165221.GF729@wotan.suse.de>
-References: <1510650290-3363-1-git-send-email-yamada.masahiro@socionext.com>
- <20171114165221.GF729@wotan.suse.de>
-Message-ID: <alpine.DEB.2.20.1711141754420.2874@hadrien>
+Date: Wed, 15 Nov 2017 07:22:12 +0100 (CET)
+Subject: [Cocci] Coccinelle: badzero.cocci failure
+In-Reply-To: <CAK7LNATw25OPNe_oqQNCmF=Uaw1Enjx9YRRBEHsZcAgupgHc8w@mail.gmail.com>
+References: <CAK7LNATW91vf5Sa-vvJ7rLRNt+KRKPB=E5H_EOtOUgCB4WYmUA@mail.gmail.com>
+ <alpine.DEB.2.20.1711141003410.2874@hadrien>
+ <CAK7LNATw25OPNe_oqQNCmF=Uaw1Enjx9YRRBEHsZcAgupgHc8w@mail.gmail.com>
+Message-ID: <alpine.DEB.2.20.1711150721060.2147@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 
 
-On Tue, 14 Nov 2017, Luis R. Rodriguez wrote:
+On Tue, 14 Nov 2017, Masahiro Yamada wrote:
 
-> On Tue, Nov 14, 2017 at 06:04:49PM +0900, Masahiro Yamada wrote:
-> > diff --git a/scripts/coccicheck b/scripts/coccicheck
-> > index 040a8b1..7da82a1 100755
-> > --- a/scripts/coccicheck
-> > +++ b/scripts/coccicheck
-> > @@ -70,6 +64,13 @@ if [ "$C" = "1" -o "$C" = "2" ]; then
-> >      # Take only the last argument, which is the C file to test
-> >      shift $(( $# - 1 ))
-> >      OPTIONS="$COCCIINCLUDE $1"
-> > +
-> > +    # If -j option is given to Make, scripts/coccicheck runs in parallel.
-> > +    # If coccinelle also runs in parallel, it fails because multiple processes
-> > +    # try to get access to the same subdirectory that stores stdout/stderr.
-> > +    # No need to parallelize coccinelle in this case - this mode takes only
-> > +    # one file input.
-> > +    NPROC=1
+> Hi Julia,
 >
-> Shouldn't this also warn to the user, and recommend to use a proper form to
-> parallelize coccinelle? Otherwise a user might get the impression they are
-> parallelizing coccinelle where they really did not.
+>
+> 2017-11-14 18:07 GMT+09:00 Julia Lawall <julia.lawall@lip6.fr>:
+> >> coccicheck failed
+> >> $ cat cocci-debug.txt
+> >> /home/masahiro/bin/spatch -D report --no-show-diff --very-quiet
+> >> --cocci-file scripts/coccinelle/null/badzero.cocci --dir . -I
+> >> ./arch/x86/include -I ./arch/x86/include/generated -I ./include -I
+> >> ./arch/x86/include/uapi -I ./arch/x86/include/generated/uapi -I
+> >> ./include/uapi -I ./include/generated/uapi --include
+> >> ./include/linux/kconfig.h --jobs 8 --chunksize 1
+> >> Fatal error: exception
+> >> Yes_prepare_ocamlcocci.LinkFailure("/tmp/ocaml_cocci_18c9f9.cmxs")
+> >
+> > Does your Coccinelle support OCaml?  I'm not sure what is the proper way to
+> > check for this, but in my coccinelle/config.log file I have
+> >
+> > FEATURE_OCAML='1'
+>
+>
+> Yes.  I also see this line in my config.log
+>
+>
+> > spatch --version gives:
+> >
+> > spatch version 1.0.6-00147-g19f9421 compiled with OCaml version 4.02.3
+> > Flags passed to the configure script: [none]
+> > Python scripting support: yes
+> > Syntax of regular expresssions: Str
+>
+> My version output looks like follows:
+>
+> $ spatch --version
+> spatch version 1.0.6-00345-g2ca0bef compiled with OCaml version 4.02.3
+> Flags passed to the configure script: --prefix=/home/masahiro
+> Python scripting support: yes
+> Syntax of regular expresssions: PCRE
+>
+>
+> > I'm not sure why it doesn't give feedback on whether OCaml scripting is
+> > supported.  I will check on this.
 
-Coccinelle sees a file at a time when using C=1 or C=2.  There is nothing
-to parallelize at the Coccinelle level, if you want to use these options.
+Can you try the following semantic patch (called eg nothing.cocci):
+
+@script:ocaml@
+@@
+
+()
+
+on any .c file, ie
+
+spatch --sp-file nothing.cocci test.c
 
 julia
-
-
->
->   Luis
->
-> >  else
-> >      ONLINE=0
-> >      if [ "$KBUILD_EXTMOD" = "" ] ; then
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
