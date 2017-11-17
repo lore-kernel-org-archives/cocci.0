@@ -1,43 +1,39 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 16 Nov 2017 08:31:24 +0100 (CET)
-Subject: [Cocci] [PATCH] coccinelle: flags.cocci: reorganize patterns to
- improve efficiency
-In-Reply-To: <1510783347.25299.2.camel@perches.com>
-References: <alpine.DEB.2.20.1711121704350.10412@hadrien>
- <CAK7LNASTP80Yp66UP=oBM7evXD3Pg1GXJ_P9+m=dGp=mAUbe4Q@mail.gmail.com>
- <alpine.DEB.2.20.1711151550190.3647@hadrien>
- <CAK7LNAT5_RriY7yORFoWeAd5354HVmU2xXWZTvmuk3YHO+MxFA@mail.gmail.com>
- <alpine.DEB.2.20.1711152253270.2134@hadrien>
- <1510783347.25299.2.camel@perches.com>
-Message-ID: <alpine.DEB.2.20.1711160830190.12570@hadrien>
+From: rjones@redhat.com (Richard W.M. Jones)
+Date: Fri, 17 Nov 2017 19:03:08 +0000
+Subject: [Cocci] Compiling with OCaml 4.06 / safe-string
+Message-ID: <20171117190307.GA26286@redhat.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+I'm trying to compile coccinelle with OCaml 4.06, where the default
+for strings has been switched to -safe-string.
 
+It currently fails to build in the bundled parmap library:
 
-On Wed, 15 Nov 2017, Joe Perches wrote:
+/usr/bin/ocamlc.opt -unsafe -I parmap.1.0-rc7.1 -custom -cclib -lparmap_stubs   -c parmap.1.0-rc7.1/bytearray.ml -o parmap.1.0-rc7.1/bytearray.cmo
+File "parmap.1.0-rc7.1/bytearray.ml", line 38, characters 0-118:
+Warning 3: deprecated: [@@noalloc] should be used instead of "noalloc"
+File "parmap.1.0-rc7.1/bytearray.ml", line 41, characters 0-116:
+Warning 3: deprecated: [@@noalloc] should be used instead of "noalloc"
+File "parmap.1.0-rc7.1/bytearray.ml", line 47, characters 10-23:
+Warning 3: deprecated: String.create
+Use Bytes.create instead.
+File "parmap.1.0-rc7.1/bytearray.ml", line 48, characters 28-29:
+Error: This expression has type bytes but an expression was expected of type
+         string
 
-> On Wed, 2017-11-15 at 22:55 +0100, Julia Lawall wrote:
-> > What version of Coccinelle do you have?
-> > > I tried 1.0.4 and 1.0.6,
-> > > but both failed.
-> > For me, it also fails for 1.0.6.  It should be OK for 1.0.7.
->
-> Then likely this patch should not be applied or
-> some form of local version checking should be done
-> in the script itself.
->
-> Scripts that use various tools are subject to
-> language versioning requirements.
->
-> For instance, there are many things that are
-> possible with later versions of perl, but are not
-> done for various scripts because many distributions
-> do not ship with the latest versions.
+I tried fixing this, but the library is doing a bunch of stuff with
+actually overwriting strings, and I'm not clear how safe that is with
+-safe-string.  Anyway, a fix isn't trivial.  Upstream parmap doesn't
+have a fix that I could see.
 
-It will say coccicheck failed if it is not compatible with the version of
-Coccinelle.  But it shouldn't break anything.  We should put that it
-requires 1.0.7, but I don't know if that is actually checked, or just
-provided as documentation for the reader.
+Obviously I could switch to -unsafe-string, but has anyone fixed this?
 
-julia
+Rich.
+
+-- 
+Richard Jones, Virtualization Group, Red Hat http://people.redhat.com/~rjones
+Read my programming and virtualization blog: http://rwmj.wordpress.com
+Fedora Windows cross-compiler. Compile Windows programs, test, and
+build Windows installers. Over 100 libraries supported.
+http://fedoraproject.org/wiki/MinGW
