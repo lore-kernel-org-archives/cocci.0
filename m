@@ -1,11 +1,11 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 22 Nov 2017 18:21:34 +0100 (CET)
+Date: Wed, 22 Nov 2017 22:20:49 +0100 (CET)
 Subject: [Cocci] [Outreachy kernel] Re: [PATCH] net: usb: hso.c: remove
  unneeded DRIVER_LICENSE #define
 In-Reply-To: <1511370336.6989.100.camel@perches.com>
 References: <20171117141939.GD17880@kroah.com>
  <1511370336.6989.100.camel@perches.com>
-Message-ID: <alpine.DEB.2.20.1711221820260.3553@hadrien>
+Message-ID: <alpine.DEB.2.20.1711222220100.19477@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -45,17 +45,25 @@ On Wed, 22 Nov 2017, Joe Perches wrote:
 > used-once
 > macro #defines in various types of macros.
 
-It could be possible.  It's a bit tricky due to ifdefs that Coccinelle
-doesn't see and header files, but perhaps in special cases like this there
-is not much worry.
+What about module_version, eg:
+
+diff -u -p a/drivers/ata/pata_pdc202xx_old.c
+b/drivers/ata/pata_pdc202xx_old.c
+--- a/drivers/ata/pata_pdc202xx_old.c
++++ b/drivers/ata/pata_pdc202xx_old.c
+@@ -21,7 +21,6 @@
+ #include <linux/libata.h>
+
+ #define DRV_NAME "pata_pdc202xx_old"
+-#define DRV_VERSION "0.4.3"
+
+ static int pdc2026x_cable_detect(struct ata_port *ap)
+ {
+@@ -389,4 +388,4 @@ MODULE_AUTHOR("Alan Cox");
+ MODULE_DESCRIPTION("low-level driver for Promise 2024x and 20262-20267");
+ MODULE_LICENSE("GPL");
+ MODULE_DEVICE_TABLE(pci, pdc202xx);
+-MODULE_VERSION(DRV_VERSION);
++MODULE_VERSION("0.4.3");
 
 julia
-
->
-> --
-> You received this message because you are subscribed to the Google Groups "outreachy-kernel" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to outreachy-kernel+unsubscribe at googlegroups.com.
-> To post to this group, send email to outreachy-kernel at googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/outreachy-kernel/1511370336.6989.100.camel%40perches.com.
-> For more options, visit https://groups.google.com/d/optout.
->
