@@ -1,119 +1,95 @@
-From: yamada.masahiro@socionext.com (Masahiro Yamada)
-Date: Thu, 23 Nov 2017 23:18:13 +0900
-Subject: [Cocci] [PATCH v4] coccinelle: fix parallel build with
-	CHECK=scripts/coccicheck
-In-Reply-To: <alpine.DEB.2.20.1711141335220.2874@hadrien>
-References: <1510659487-16361-1-git-send-email-yamada.masahiro@socionext.com>
- <alpine.DEB.2.20.1711141335220.2874@hadrien>
-Message-ID: <CAK7LNASJQ5Pr2f+JNuENZEsb3vEU1oD=EO-iV5+L-f_YHPkbzw@mail.gmail.com>
+From: joe@perches.com (Joe Perches)
+Date: Thu, 23 Nov 2017 15:30:01 -0800
+Subject: [Cocci] [PATCH] net: usb: hso.c: remove unneeded DRIVER_LICENSE
+	#define
+In-Reply-To: <20171122171201.GA6528@kroah.com>
+References: <20171117141939.GD17880@kroah.com>
+ <1511370336.6989.100.camel@perches.com> <20171122171201.GA6528@kroah.com>
+Message-ID: <1511479801.5308.6.camel@perches.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-2017-11-14 21:35 GMT+09:00 Julia Lawall <julia.lawall@lip6.fr>:
->
->
-> On Tue, 14 Nov 2017, Masahiro Yamada wrote:
->
->> The command "make -j8 C=1 CHECK=scripts/coccicheck COCCI=..." produces
->> lots of "coccicheck failed" error messages.
->>
->> Julia Lawall explained the Coccinelle behavior as follows:
->> "The problem on the Coccinelle side is that it uses a subdirectory
->> with the name of the semantic patch to store standard output and
->> standard error for the different threads.  I didn't want to use a
->> name with the pid, so that one could easily find this information
->> while Coccinelle is running.  Normally the subdirectory is cleaned
->> up when Coccinelle completes, so there is only one of them at a time.
->> Maybe it is best to just add the pid.  There is the risk that these
->> subdirectories will accumulate if Coccinelle crashes in a way such
->> that they don't get cleaned up, but Coccinelle could print a warning
->> if it detects this case, rather than failing."
->>
->> When scripts/coccicheck is used as CHECK tool and -j option is given
->> to Make, the whole of build process runs in parallel.  So, multiple
->> processes try to get access to the same subdirectory.
->>
->> I notice spatch creates the subdirectory only when it runs in parallel
->> (i.e. --jobs <N> is given and <N> is greater than 1).
->>
->> Setting NPROC=1 is a reasonable solution; spatch does not create the
->> subdirectory.  Besides, ONLINE=1 mode takes a single file input for
->> each spatch invocation, so there is no reason to parallelize it in
->> the first place.
->>
->> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
->
-> Acked-by: Julia Lawall <Julia.Lawall@lip6.fr>
->
->> ---
->>
->> Changes in v4:
->>   - Remove unnecessary comments.  One line comment will be enough.
->>
->> Changes in v3:
->>   - Set NPROC=1 because this is a more sensible solution
->>     given that there is no reason to run coccinelle in parallel
->>     for ONLINE=1 mode.
->>   - Move J= option handling to a proper place.
->>   - Add more detailed explanation
->>
->> Changes in v2:
->>   - Grep '-j' instead of '--jobserver-auth'.
->>     '--jobserver-*' is not a stable option flag.
->>     Make 4.2 change '--jobserver-fds' into '--jobserver-auth'
->>   - Add -q option to grep
->>
->>  scripts/coccicheck | 15 +++++++++------
->>  1 file changed, 9 insertions(+), 6 deletions(-)
->>
->> diff --git a/scripts/coccicheck b/scripts/coccicheck
->> index 040a8b1..fefda40 100755
->> --- a/scripts/coccicheck
->> +++ b/scripts/coccicheck
->> @@ -30,12 +30,6 @@ else
->>       VERBOSE=0
->>  fi
->>
->> -if [ -z "$J" ]; then
->> -     NPROC=$(getconf _NPROCESSORS_ONLN)
->> -else
->> -     NPROC="$J"
->> -fi
->> -
->>  FLAGS="--very-quiet"
->>
->>  # You can use SPFLAGS to append extra arguments to coccicheck or override any
->> @@ -70,6 +64,9 @@ if [ "$C" = "1" -o "$C" = "2" ]; then
->>      # Take only the last argument, which is the C file to test
->>      shift $(( $# - 1 ))
->>      OPTIONS="$COCCIINCLUDE $1"
->> +
->> +    # No need to parallelize Coccinelle since this mode takes one input file.
->> +    NPROC=1
->>  else
->>      ONLINE=0
->>      if [ "$KBUILD_EXTMOD" = "" ] ; then
->> @@ -77,6 +74,12 @@ else
->>      else
->>          OPTIONS="--dir $KBUILD_EXTMOD $COCCIINCLUDE"
->>      fi
->> +
->> +    if [ -z "$J" ]; then
->> +        NPROC=$(getconf _NPROCESSORS_ONLN)
->> +    else
->> +        NPROC="$J"
->> +    fi
->>  fi
->>
->>  if [ "$KBUILD_EXTMOD" != "" ] ; then
->> --
->> 2.7.4
->>
->>
+On Wed, 2017-11-22 at 18:12 +0100, Greg Kroah-Hartman wrote:
+> On Wed, Nov 22, 2017 at 09:05:36AM -0800, Joe Perches wrote:
+> > On Fri, 2017-11-17 at 15:19 +0100, Greg Kroah-Hartman wrote:
+> > > There is no need to #define the license of the driver, just put it in
+> > > the MODULE_LICENSE() line directly as a text string.
+> > > 
+> > > This allows tools that check that the module license matches the source
+> > > code license to work properly, as there is no need to unwind the
+> > > unneeded dereference.
+> > 
+> > []
+> > > diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
+> > 
+> > []
+> > > @@ -76,7 +76,6 @@
+> > >  
+> > >  #define MOD_AUTHOR			"Option Wireless"
+> > >  #define MOD_DESCRIPTION			"USB High Speed Option driver"
+> > > -#define MOD_LICENSE			"GPL"
+> > >  
+> > >  #define HSO_MAX_NET_DEVICES		10
+> > >  #define HSO__MAX_MTU			2048
+> > > @@ -3288,7 +3287,7 @@ module_exit(hso_exit);
+> > >  
+> > >  MODULE_AUTHOR(MOD_AUTHOR);
+> > >  MODULE_DESCRIPTION(MOD_DESCRIPTION);
+> > > -MODULE_LICENSE(MOD_LICENSE);
+> > > +MODULE_LICENSE("GPL");
+> > 
+> > Probably all of these MODULE_<FOO>(MOD_<BAR>) uses could be
+> > simplified as well.
+> 
+> Agreed, I did that for a bunch of USB drivers, need to do it for others
+> as well.
 
-Applied to linux-kbuild.
+Here's a little perl and bash script that seems to do the right thing
+---
+--- /dev/null	2017-11-23 06:19:12.943046739 -0800
++++ single_use_module.pl	2017-11-23 15:23:11.729812156 -0800
+@@ -0,0 +1,15 @@
++$/ = undef;
++my $var = $ARGV[0];
++my $file = $ARGV[1];
++print("var: <$var> file: <$file>\n");
++open my $fh, "<", $file or die;
++my $data = <$fh>;
++close $fh;
++$data =~ s/\n#[ \t]*define\s+$var\s+(.*)\n/\n/;
++my $string = $1;
++print("string: <$string>\n");
++$string =~ s/\s+\n//;
++$data =~ s~$var~$string~;
++open my $fh, ">", $file or die;
++print $fh $data;
++close $fh;
 
-
--- 
-Best Regards
-Masahiro Yamada
+--- /dev/null	2017-11-23 06:19:12.943046739 -0800
++++ single_use_module.bash	2017-11-23 15:23:01.964676948 -0800
+@@ -0,0 +1,25 @@
++#!/bin/bash
++git grep -P '\bMODULE_[A-Z]+\s*\(\s*[A-Z_]+\s*\)' $@ |
++    while read line ; do
++	file=$(echo $line | cut -f1 -d":")
++	define=$(echo $line | cut -f2- -d":")
++	var=$(echo $define | sed -r -e 's/^MODULE_[A-Z_]+\s*\(\s*//' -r -e 's/^([A-Z_]+).*$/\1/')
++
++	# see if the define exists in the file
++	count1=$(git grep -c -P "^\s*#\s*define\s+$var\s+" $file | cut -f2- -d":")
++	if [[ $count1 != 1 ]] ; then
++	    continue
++	fi
++
++	# see if the var exists twice (once in the #define, once in the use)
++	count2=$(git grep -c -P -w $var $file | cut -f2- -d":")
++	if [[ $count2 != 2 ]] ; then
++	    continue
++	fi
++
++	if [[ "${defline: -1}" == "\\" ]] ; then
++	    continue
++	fi
++
++	perl single_use_module.pl $var $file
++    done
