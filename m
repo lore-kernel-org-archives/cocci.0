@@ -1,25 +1,41 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 14 Nov 2017 14:32:06 +0100
-Subject: [Cocci] [v4] Coccinelle: fix parallel build with
-	CHECK=scripts/coccicheck
-In-Reply-To: <1510659487-16361-1-git-send-email-yamada.masahiro@socionext.com>
-References: <1510659487-16361-1-git-send-email-yamada.masahiro@socionext.com>
-Message-ID: <81500e6b-6e36-ffa6-97a0-c396f3b62ca5@users.sourceforge.net>
+From: devel.fx.lebail@orange.fr (Francois-Xavier Le Bail)
+Date: Fri, 24 Nov 2017 11:12:55 +0100
+Subject: [Cocci] Why some changes are not done ?
+Message-ID: <764056da-dd1d-ee19-e6fb-d70b5447ca59@orange.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Setting NPROC=1 is a reasonable solution;
+Hi,
 
-It can be sufficient for the usual purposes of the shell script ?scripts/coccicheck?.
+I use the following Coccinelle script to rename some macros:
+@@
+expression E;
+@@
+(
+-EXTRACT_16BITS(E)
++EXTRACT_BE_16BITS(E)
+|
+-EXTRACT_32BITS(E)
++EXTRACT_BE_32BITS(E)
+)
 
+on the this source:
+https://raw.githubusercontent.com/the-tcpdump-group/tcpdump/6151e2190b0b40bdb6cf56354eb016284762d27b/print-tcp.c
 
-> spatch does not create the subdirectory.
+Most of the changes are done (20).
+But 2 old macro names are left.
 
-I would like to point out that further development efforts will be needed
-if such a special directory handling should be avoided generally.
-How much do care about consequences if parameters for additional parallelisation
-would be passed over the command line option (or the environment variable)
-?SPFLAGS? as it is described in the file ?Documentation/dev-tools/coccinelle.rst??
+$ git grep -n -E 'EXTRACT_[0-9]+' print-tcp.c
+print-tcp.c:871:                tlen = EXTRACT_16BITS(&ip->ip_len) - IP_HL(ip) * 4;
+print-tcp.c:878:                len32 = htonl(EXTRACT_16BITS(&ip6->ip6_plen));
 
-Regards,
-Markus
+It seems that the problem is link to macro USES_APPLE_DEPRECATED_API on line 835.
+If I comment this macro, the changes are done.
+On Apple systems:
+#define USES_APPLE_DEPRECATED_API DIAG_OFF(deprecated-declarations)
+On other systems (like the one I use):
+#define USES_APPLE_DEPRECATED_API
+
+Did I miss something?
+-- 
+Francois-Xavier
