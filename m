@@ -1,20 +1,15 @@
 From: devel.fx.lebail@orange.fr (Francois-Xavier Le Bail)
-Date: Sat, 25 Nov 2017 08:54:43 +0100
+Date: Sat, 25 Nov 2017 13:26:01 +0100
 Subject: [Cocci] Question about a not made change
 In-Reply-To: <alpine.DEB.2.20.1711250843550.2027@hadrien>
 References: <d45758b3-f6cb-dc3a-0be2-c0b282aa9be9@orange.fr>
  <alpine.DEB.2.20.1711250843550.2027@hadrien>
-Message-ID: <97896e4f-649d-8fc3-a878-00431ee1bb05@orange.fr>
+Message-ID: <633b583b-7a10-5f20-75f8-53fa51c2e3ec@orange.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 On 25/11/2017 08:44, Julia Lawall wrote:
-> 
-> 
 > On Sat, 25 Nov 2017, Francois-Xavier Le Bail wrote:
-> 
->> Hi,
->>
 >> I try the following patch:
 >> -----
 >> @@
@@ -57,7 +52,26 @@ On 25/11/2017 08:44, Julia Lawall wrote:
 > Yes :)  There is no ,... after your change, so you only perform the change
 > when it is the last argument.
 
-Of course, THANKS!
+Thus, going closer my original problem, where ND_PRINT is a macro which requires double parenthesis,
+I try :
+-----
+@@
+u_char *p;
+expression n;
+@@
+ND_PRINT((
+...,
+-p[n]
++EXTRACT_U_1(p + n)
+,...
+ ))
+-----
+I got:
+-       ND_PRINT((ndo, ": %x %x %x %x", p[1], p[2], p[3], p[4]));
++       ND_PRINT((ndo, ": %x %x %x %x", p[1], p[2], EXTRACT_U_1(p + 3), p[4]));
+-----
+
+Another thing I miss?
 
 -- 
 Francois-Xavier
