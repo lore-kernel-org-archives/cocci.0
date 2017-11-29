@@ -1,89 +1,115 @@
-From: devel.fx.lebail@orange.fr (Francois-Xavier Le Bail)
-Date: Mon, 27 Nov 2017 10:49:11 +0100
-Subject: [Cocci] Question about a not made change
-In-Reply-To: <alpine.DEB.2.20.1711251431290.2096@hadrien>
-References: <d45758b3-f6cb-dc3a-0be2-c0b282aa9be9@orange.fr>
- <alpine.DEB.2.20.1711250843550.2027@hadrien>
- <633b583b-7a10-5f20-75f8-53fa51c2e3ec@orange.fr>
- <alpine.DEB.2.20.1711251431290.2096@hadrien>
-Message-ID: <f1f1bccb-24fe-3a75-05e8-c6531faedcb9@orange.fr>
+From: Florian.Pesth@konrad-technologies.de (Pesth Florian)
+Date: Wed, 29 Nov 2017 11:13:52 +0000
+Subject: [Cocci] Recursive matches / returning lists from scripting code
+ back to coccinelle
+Message-ID: <80bb156f70ad4db195a386716dadfef6@konrad-technologies.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 25/11/2017 14:32, Julia Lawall wrote:
-> 
-> 
-> On Sat, 25 Nov 2017, Francois-Xavier Le Bail wrote:
-> 
->> On 25/11/2017 08:44, Julia Lawall wrote:
->>> On Sat, 25 Nov 2017, Francois-Xavier Le Bail wrote:
->>>> I try the following patch:
->>>> -----
->>>> @@
->>>> u_char *p;
->>>> expression n;
->>>> @@
->>>> ND_PRINT(
->>>> ...,
->>>> -p[n]
->>>> +EXTRACT_U_1(p + n)
->>>>  )
->>>> -----
->>>> on the following (minimized) code:
->>>> -----
->>>> int main()
->>>> {
->>>>         u_char *p;
->>>>         ND_PRINT(ndo, ": %02x %02x", p[1], p[2]);
->>>>
->>>>         return 0;
->>>> }
->>>> -----
->>>> I got:
->>>> -----
->>>> +++ /tmp/cocci-output-1795-a34831-main.c
->>>> @@ -1,7 +1,7 @@
->>>>  int main()
->>>>  {
->>>>         u_char *p;
->>>> -       ND_PRINT(ndo, ": %02x %02x", p[1], p[2]);
->>>> +       ND_PRINT(ndo, ": %02x %02x", p[1], EXTRACT_U_1(p + 2));
->>>>
->>>>         return 0;
->>>>  }
->>>> -----
->>>> Why the first p[1] is not change to EXTRACT_U_1(p + 1)?
->>>>
->>>> Did I miss something obvious?
->>>
->>> Yes :)  There is no ,... after your change, so you only perform the change
->>> when it is the last argument.
->>
->> Thus, going closer my original problem, where ND_PRINT is a macro which requires double parenthesis,
->> I try :
->> -----
->> @@
->> u_char *p;
->> expression n;
->> @@
->> ND_PRINT((
->> ...,
->> -p[n]
->> +EXTRACT_U_1(p + n)
->> ,...
->>  ))
->> -----
->> I got:
->> -       ND_PRINT((ndo, ": %x %x %x %x", p[1], p[2], p[3], p[4]));
->> +       ND_PRINT((ndo, ": %x %x %x %x", p[1], p[2], EXTRACT_U_1(p + 3), p[4]));
->> -----
->>
->> Another thing I miss?
-> 
-> I'm not sure that the double parens are well supported.  Try <+... ...+>
-> around your specific change, but I don't know if it will work.
+Hello everybody,
 
-It's works, Thank you !
+first of all thanks a lot for your very nice tool, it has already been proven very useful!
 
--- 
-Francois-Xavier
+Sorry, if this is covered in the grammar documentation and I have overlooked it, I'm a new user to coccinelle.
+
+Is it possible to define rules in a recursive way? I want to match a function where subsequent function calls call a certain function (in this case "malloc"). Using scripting or a different way would also be fine if I can achieve this.
+
+The patch below the mail is programmed for just two levels, but what I'd really would want is going as deep as possible. If applied to the C code below the patch, the output on my system yields:
+
+init_defs_builtins: /usr/lib/coccinelle/standard.h
+HANDLING: src/a.c
+ISR function ISR_func1 line 5 file src/a.c calling function other_func->malloc
+ISR function ISR_func1 line 5 file src/a.c calling function other_func->other_func2->malloc
+
+On another note, is it possible to pass whole lists from python or OCaml script code back to coccinelle and generate several dependent rules on it? I know I can use the value of one variable from python as a metavariable for a following rule (Although the order of matching is not entirely clear to me: When the python code depends on one rule and another rule depends on the metavariable created by this python code, are there multiple passes over the code? Or is it possible to trigger this somehow? I'm lacking still some understanding of the internal mechanism of coccinelle).
+
+Best regards and thanks!
+Florian Pesth
+
+Semantic patch:
+
+@findisr@
+expression E;
+identifier isrfunction != NULL;
+@@
+ISR_SetHandler(E, isrfunction)
+
+@mallocfunc@
+identifier malloc_func;
+@@
+malloc_func(...){
+...
+malloc(...);
+...
+}
+
+@findmalloc extends findisr@
+position p;
+identifier mallocfunc.malloc_func;
+@@
+isrfunction(...){@p
+...
+malloc_func(...);
+...
+}
+
+@script:python@
+isrfunction << findisr.isrfunction;
+p << findmalloc.p;
+malloc_func << mallocfunc.malloc_func;
+@@
+print "ISR function %s line %s file %s calling function %s->malloc" % (isrfunction, p[0].line, p[0].file, malloc_func)
+
+@cmallocfunc@
+identifier mallocfunc.malloc_func;
+identifier cmalloc_func;
+@@
+cmalloc_func(...){
+...
+malloc_func(...);
+...
+}
+
+@findcmalloc extends findisr@
+position p;
+identifier cmallocfunc.cmalloc_func;
+@@
+isrfunction(...){@p
+...
+cmalloc_func(...);
+...
+}
+
+@script:python@
+isrfunction << findisr.isrfunction;
+p << findcmalloc.p;
+cmalloc_func << cmallocfunc.cmalloc_func;
+malloc_func << mallocfunc.malloc_func;
+@@
+print "ISR function %s line %s file %s calling function %s->%s->malloc" % (isrfunction, p[0].line, p[0].file, cmalloc_func, malloc_func)
+
+Example C File:
+void other_func(int something);
+void other_func2(int something);
+
+void ISR_func1(int something)
+{
+    other_func(something);
+}
+
+void Init_ISR(void)
+{
+    int hello;
+    ISR_SetHandler(hello, ISR_func1);
+}
+
+void other_func(int something)
+{
+    malloc(sizeof(double)*something);
+    other_func2(something);
+}
+
+void other_func2(int something)
+{
+    malloc(sizeof(double)*something);
+}
