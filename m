@@ -1,156 +1,57 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 2 Dec 2017 09:14:23 +0100 (CET)
-Subject: [Cocci] BUG: possible parsing issue
-In-Reply-To: <253CF818969A9240AB2054BF91F2C2BC74A93A70@ORSMSX114.amr.corp.intel.com>
-References: <253CF818969A9240AB2054BF91F2C2BC74A93A70@ORSMSX114.amr.corp.intel.com>
-Message-ID: <alpine.DEB.2.20.1712020913040.2168@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sat, 2 Dec 2017 10:20:06 +0100
+Subject: [Cocci] =?utf-8?q?Transformation_challenges_with_SmPL_around_?=
+ =?utf-8?b?4oCcTElTVF9GT1JfRUFDSF9FTlRSWeKAnQ==?=
+In-Reply-To: <alpine.DEB.2.20.1712020913040.2168@hadrien>
+References: <alpine.DEB.2.20.1712020913040.2168@hadrien>
+Message-ID: <e1ac4060-67e9-973b-e4c7-6faa476af34e@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+>> I think I've found a bug in spatch,
+
+You showed another opportunity for further development considerations.
 
 
-On Sat, 2 Dec 2017, Brandeburg, Jesse wrote:
+>> or maybe I'm just using it wrong.
 
-> Hi, I'm very grateful for the work on coccinelle.
->
-> I think I've found a bug in spatch, or maybe I'm just using it wrong.  I see three problems in the generated patch at the end of this mail:
-> 1) space in replaced code: "hlist_for_each_entry ("
-> 2) the "if statement" in the process statement S is reformatted to be *much* longer than 80 characters
-> 3) the comments and whitespace in the code (statement S) are all deleted
->
-> spatch version 1.0.5 compiled with OCaml version 4.02.3
-> Flags passed to the configure script: --build=x86_64-redhat-linux-gnu --host=x86_64-redhat-linux-gnu --program-prefix= --disable-dependency-tracking --prefix=/usr --exec-prefix=/usr --bindir=/usr/bin --sbindir=/usr/sbin --sysconfdir=/etc --datadir=/usr/share --includedir=/usr/include --libdir=/usr/lib64 --libexecdir=/usr/libexec --localstatedir=/var --sharedstatedir=/var/lib --mandir=/usr/share/man --infodir=/usr/share/info --enable-release=yes --with-python=/usr/bin/python3 --with-menhir=/usr/bin/menhir
-> Python scripting support: yes
-> Syntax of regular expresssions: PCRE
->
->
-> Test cocci: run below script test.cocci on following c file: spatch -sp-file test.cocci test.c
-> =======
-> @@
-> identifier c,member;
-> expression f,g;
-> iterator name LIST_FOR_EACH_ENTRY;
-> iterator name hlist_for_each_entry;
-> statement S;
-> @@
->
-> - LIST_FOR_EACH_ENTRY(c,f,g,member) S
-> + hlist_for_each_entry(c,f,member) S
+Not really.
 
-Actually, the problem is that you have removed S and dded it back.
-Then you are relying on Coccinelle to do the pretty printing, and all
-comments will be dropped.  Just rewrite your rule as follows, and
-everything will be fine:
+But the specification in the shown small SmPL script could be adjusted.
 
- - LIST_FOR_EACH_ENTRY(c,f,g,member)
- + hlist_for_each_entry(c,f,member)
-   S
 
-julia
+>> - LIST_FOR_EACH_ENTRY(c,f,g,member) S
+>> + hlist_for_each_entry(c,f,member) S
 
->
-> ========
-> Here is the test c file:
-> ========
-> static int
-> add_vsi_filters(struct hw *hw, u16 vsi_id,
->                 struct hlist_head *lkup_list_head,
->                 struct hlist_head *remove_list_head)
-> {
->         struct filter_list_entry *fm_entry;
->
->         /* check to make sure VSI id is valid and within boundary */
->         if (vsi_id >=
->             (sizeof(fm_entry->vsi_list_info->vsi_map) * BITS_PER_BYTE - 1))
->                 return -EIO;
->
->         LIST_FOR_EACH_ENTRY(fm_entry, lkup_list_head, filter_mgmt_list_entry, list_entry) {
->                 struct filter_info *fi;
->
->                 fi = &fm_entry->filter_info;
->                 if ((fi->filter_act == FWD_TO_VSI &&
->                      fi->fwd_id.vsi_id == vsi_id) ||
->                     (fi->filter_act == FWD_TO_VSI_LIST &&
->                      (is_bit_set(fm_entry->vsi_list_info->vsi_map, vsi_id)))) {
->                         struct filter_list_entry *tmp;
->
->                         /* this is a multi line comment that really should stay
->                          * in the code to make sure things are truly awesome
->                          */
->                         tmp = (struct filter_list_entry *)kzalloc(sizeof(*tmp));
->                         if (!tmp)
->                                 return -EIO;
->
->                         memcpy(&tmp->filter_info, fi, sizeof(*fi));
->
->                         /* This is another great big preformatted comment that
->                          * should not be changed by having the code run thru
->                          * coccinelle
->                          */
->                         if (fi->filter_act == FWD_TO_VSI_LIST) {
->                                 tmp->filter_info.filter_act = FWD_TO_VSI;
->                                 tmp->filter_info.fwd_id.vsi_id = vsi_id;
->                         }
->
->                         list_add(&tmp->list_entry, remove_list_head);
->                 }
->         }
->         return 0;
-> }
->
-> ========
->
-> Patch output:
-> $ spatch --sp-file test.cocci test.c
-> init_defs_builtins: /usr/lib64/coccinelle/standard.h
-> HANDLING: test.c
->      (ONCE) already tagged but only removed, so safe
-> diff =
-> --- test.c
-> +++ /tmp/cocci-output-170124-d75bd4-test.c
-> @@ -10,34 +10,19 @@ add_vsi_filters(struct hw *hw, u16 vsi_i
->             (sizeof(fm_entry->vsi_list_info->vsi_map) * BITS_PER_BYTE - 1))
->                 return -EIO;
->
-> -       LIST_FOR_EACH_ENTRY(fm_entry, lkup_list_head, filter_mgmt_list_entry, list_entry) {
-> +       hlist_for_each_entry (fm_entry, lkup_list_head, list_entry) {
->                 struct filter_info *fi;
-> -
->                 fi = &fm_entry->filter_info;
-> -               if ((fi->filter_act == FWD_TO_VSI &&
-> -                    fi->fwd_id.vsi_id == vsi_id) ||
-> -                   (fi->filter_act == FWD_TO_VSI_LIST &&
-> -                    (is_bit_set(fm_entry->vsi_list_info->vsi_map, vsi_id)))) {
-> +               if ((fi->filter_act == FWD_TO_VSI && fi->fwd_id.vsi_id == vsi_id) || (fi->filter_act == FWD_TO_VSI_LIST && (is_bit_set(fm_entry->vsi_list_info->vsi_map, vsi_id)))) {
->                         struct filter_list_entry *tmp;
-> -
-> -                       /* this memory is freed up in the caller function
-> -                        * once filters for this VSI are removed
-> -                        */
->                         tmp = (struct filter_list_entry *)kzalloc(sizeof(*tmp));
->                         if (!tmp)
->                                 return -EIO;
-> -
->                         memcpy(&tmp->filter_info, fi, sizeof(*fi));
-> -
-> -                       /* Expected below fields to be set to FWD_TO_VSI and
-> -                        * the particular VSI id since we are only removing this
-> -                        * one VSI
-> -                        */
->                         if (fi->filter_act == FWD_TO_VSI_LIST) {
->                                 tmp->filter_info.filter_act = FWD_TO_VSI;
->                                 tmp->filter_info.fwd_id.vsi_id = vsi_id;
->                         }
-> -
->                         list_add(&tmp->list_entry, remove_list_head);
->                 }
->         }
->
-> --
-> Jesse Brandeburg
->
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+> Actually, the problem is that you have removed S and dded it back.
+> Then you are relying on Coccinelle to do the pretty printing,
+> and all comments will be dropped.  Just rewrite your rule as follows,
+> and everything will be fine:
+
+> - LIST_FOR_EACH_ENTRY(c,f,g,member)
+> + hlist_for_each_entry(c,f,member)
+>   S
+
+How do you think about further possibilities?
+
+Can it be also sufficient to express only the source code adjustment for
+two details?
+
+* Replacement of a macro name
+
+* Deletion (or omission) of a parameter
+
+
+@adjustment@
+expression ex;
+statement S;
+@@
+-LIST_FOR_EACH_ENTRY
++hlist_for_each_entry
+ (..., ...,
+-ex,
+ ...)
+ S
+
+Regards,
+Markus
