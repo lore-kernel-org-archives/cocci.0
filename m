@@ -1,37 +1,26 @@
-From: remicles2@gmail.com (Remington Furman)
-Date: Fri, 1 Dec 2017 15:48:54 -0800
+From: johannes@sipsolutions.net (Johannes Berg)
+Date: Sat, 02 Dec 2017 08:47:04 +0100
 Subject: [Cocci] Parse error with genl-const.cocci
-In-Reply-To: <9df770ed-da27-95c6-6f8a-bafbfcbc90e9@gmail.com>
+In-Reply-To: <0a0862ea-f5ac-f172-064d-6d8531d4db2d@gmail.com>
+ (sfid-20171202_004859_725268_37874B7C)
 References: <925f98d2-047f-785f-4162-21b53a77cd62@gmail.com>
  <1512116859.25588.4.camel@sipsolutions.net>
  <5c6cb44c-9e19-8cf2-8946-a9c0e08c3974@gmail.com>
  <1512151378.25588.20.camel@sipsolutions.net>
  <9df770ed-da27-95c6-6f8a-bafbfcbc90e9@gmail.com>
-Message-ID: <0a0862ea-f5ac-f172-064d-6d8531d4db2d@gmail.com>
+ <0a0862ea-f5ac-f172-064d-6d8531d4db2d@gmail.com>
+ (sfid-20171202_004859_725268_37874B7C)
+Message-ID: <1512200824.26976.1.camel@sipsolutions.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 12/01/2017 10:09 AM, Remington Furman wrote:
-> On 12/01/2017 10:02 AM, Johannes Berg wrote:
->> On Fri, 2017-12-01 at 09:57 -0800, Remington Furman wrote:
->>> Ok, I've rebuilt with 1.0.4, and it applied genl-const.cocci just
->>> fine.? But, later on my CPU was held at 100% for 29 minutes:
->> Yeah, known issue. Give it more time - that particular patch is
->> *really* slow. Yes, more than 29 minutes, on my system as well.
->>
->> What I can recommend is that you remove things from copy-list that you
->> don't care about, e.g. bluetooth drivers if you don't need them,
->> certain wifi drivers you don't need, etc. (before running gentree.py)
->>
->> johannes
->
-> Ok, that's great to know.? I will restart it.? I didn't know
-> about the copy list yet, that will be helpful.
->
-> Thank you again for your help.
->
-> -Remington
-Following up, running gentree.py again (without modifying the
-copy list) worked fine.
+On Fri, 2017-12-01 at 15:48 -0800, Remington Furman wrote:
+> 
+> Following up, running gentree.py again (without modifying the
+> copy list) worked fine.
 
--Remington
+Good to hear :-)
+
+Out of curiosity - how long did it take?
+
+johannes
