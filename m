@@ -1,9 +1,9 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 2 Dec 2017 09:12:59 +0100 (CET)
+Date: Sat, 2 Dec 2017 09:14:23 +0100 (CET)
 Subject: [Cocci] BUG: possible parsing issue
 In-Reply-To: <253CF818969A9240AB2054BF91F2C2BC74A93A70@ORSMSX114.amr.corp.intel.com>
 References: <253CF818969A9240AB2054BF91F2C2BC74A93A70@ORSMSX114.amr.corp.intel.com>
-Message-ID: <alpine.DEB.2.20.1712020911320.2168@hadrien>
+Message-ID: <alpine.DEB.2.20.1712020913040.2168@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -22,18 +22,6 @@ On Sat, 2 Dec 2017, Brandeburg, Jesse wrote:
 > Flags passed to the configure script: --build=x86_64-redhat-linux-gnu --host=x86_64-redhat-linux-gnu --program-prefix= --disable-dependency-tracking --prefix=/usr --exec-prefix=/usr --bindir=/usr/bin --sbindir=/usr/sbin --sysconfdir=/etc --datadir=/usr/share --includedir=/usr/include --libdir=/usr/lib64 --libexecdir=/usr/libexec --localstatedir=/var --sharedstatedir=/var/lib --mandir=/usr/share/man --infodir=/usr/share/info --enable-release=yes --with-python=/usr/bin/python3 --with-menhir=/usr/bin/menhir
 > Python scripting support: yes
 > Syntax of regular expresssions: PCRE
-
-Thanks for the report.
-
-It's probable that the bug is still there, but it could be worth trying
-the latest version on github.
-
-It looks like some kind of formatting improvement has been triggered on
-the loop header, but that it has somehow not ended, and has thus continued
-for the rest of the loop body.
-
-julia
-
 >
 >
 > Test cocci: run below script test.cocci on following c file: spatch -sp-file test.cocci test.c
@@ -48,6 +36,18 @@ julia
 >
 > - LIST_FOR_EACH_ENTRY(c,f,g,member) S
 > + hlist_for_each_entry(c,f,member) S
+
+Actually, the problem is that you have removed S and dded it back.
+Then you are relying on Coccinelle to do the pretty printing, and all
+comments will be dropped.  Just rewrite your rule as follows, and
+everything will be fine:
+
+ - LIST_FOR_EACH_ENTRY(c,f,g,member)
+ + hlist_for_each_entry(c,f,member)
+   S
+
+julia
+
 >
 > ========
 > Here is the test c file:
