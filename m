@@ -1,73 +1,64 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 2 Dec 2017 11:06:06 +0100 (CET)
-Subject: [Cocci] =?utf-8?q?Transformation_challenges_with_SmPL_around_?=
-	=?utf-8?b?4oCcTElTVF9GT1JfRUFDSF9FTlRSWeKAnQ==?=
-In-Reply-To: <1dacc554-c03c-6d4e-e559-15ac92ac9f80@users.sourceforge.net>
-References: <alpine.DEB.2.20.1712020913040.2168@hadrien>
- <e1ac4060-67e9-973b-e4c7-6faa476af34e@users.sourceforge.net>
- <alpine.DEB.2.20.1712021046000.2168@hadrien>
- <1dacc554-c03c-6d4e-e559-15ac92ac9f80@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1712021104230.2168@hadrien>
+From: Florian.Pesth@konrad-technologies.de (Pesth Florian)
+Date: Mon, 4 Dec 2017 14:04:03 +0000
+Subject: [Cocci] Recursive matches / returning lists from scripting code
+ back to coccinelle
+In-Reply-To: <alpine.DEB.2.20.1711291217460.3214@hadrien>
+References: <80bb156f70ad4db195a386716dadfef6@konrad-technologies.de>,
+ <alpine.DEB.2.20.1711291217460.3214@hadrien>
+Message-ID: <1de60b4045fc4ec69bfea4838b6ce16a@konrad-technologies.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Von: Julia Lawall <julia.lawall@lip6.fr>
+Gesendet: Mittwoch, 29. November 2017 12:21
 
+> Look at demos/iteration.cocci.? This is discussed in "Advanced SmPL" at
+> http://coccinelle.lip6.fr/papers.php.
 
-On Sat, 2 Dec 2017, SF Markus Elfring wrote:
+Thanks, this seems to be exactly what I need! However demos/iteration.cocci and demos/python_iteration.cocci should do the same with ocaml and python respectively, or is there a difference? With demos/iteration.cocci, I get a match on 
 
-> >> @adjustment@
-> >> expression ex;
-> >> statement S;
-> >> @@
-> >> -LIST_FOR_EACH_ENTRY
-> >> +hlist_for_each_entry
-> >>  (..., ...,
-> >> -ex,
-> >>  ...)
-> >>  S
-> >
-> > This is not completely a good idea.
->
-> I tried to show another approach.
->
->
-> > The ... in the argument list will match a sequence of things, not a single thing.
->
-> How does this information fit to the specification of the SmPL ellipsis
-> as a placeholder for the last macro parameter?
+...
+Skipping: demos/interprocedural_adhoc.c
+1 pending new file instances
+0 pending original file instances
 
-It is just necessary to have the position desire to be changed expressed
-unambiguously.
+HANDLING: demos/python_iteration.c
+1 pending new file instances
+0 pending original file instances
 
-(...
-- ex,
-  e1)
+HANDLING: demos/python_iteration.c
+* TODO [[view:demos/python_iteration.c::face=ovl-face1::linb=11::colb=4::cole=5][def demos/python_iteration.c::11]]
+[[view:demos/python_iteration.c::face=ovl-face2::linb=12::colb=4::cole=5][ref]]
 
-is also ok.
+but with demos/python_iteration.cocci I don't get a match:
 
->
->
-> > It could be:
-> >
-> > -LIST_FOR_EACH_ENTRY
-> > +hlist_for_each_entry
-> >  (e1,e2,
->
-> Are these metavariables required for such an use case?
->
->
-> > -ex,
-> >  ...)
-> >  S
->
-> Can such a transformation variant have nicer run time characteristics
-> in comparison to the initial SmPL script example?
+...
+Skipping: demos/interprocedural_adhoc.c
+1 pending new file instances
+0 pending original file instances
 
-In practice, I think it would be very unlikely.
+HANDLING: demos/python_iteration.c
+1 pending new file instances
+0 pending original file instances
 
-julia
+No rules apply.  Perhaps your semantic patch doesn't contain any +/-/* code, or you have a failed dependency.  If the problem is not clear, try --debug-parse-cocci or check whether any virtual rules (e.g., after_start) should be defined.
 
+This was tested with the latest git code on OpenSuse and Ubuntu:
 
-> Regards,
-> Markus
->
+spatch version 1.0.6-00362-gce2ea2c compiled with OCaml version 4.02.3
+Flags passed to the configure script: --prefix=/home/v6000d/ --disable-parmap
+OCaml scripting support: yes
+Python scripting support: yes
+Syntax of regular expresssions: PCRE
+
+BTW on Ubuntu (16.04.2 LTS) I had some problems compiling coccinelle which could be solved by adding "--disable-parmap" to the configure script. Is this a known issue? I did not need to add this option on OpenSuse.
+
+> ... There is no way to create several environments from a single
+> invocation of a script rule.? All you can do is extend the existing
+> environment that caused the rule to be executed in the first place.
+> ... [solution with global list]
+
+Thanks, if iteration works as above this will already be sufficient for me at the moment. Thanks a lot for your help!
+
+Best regards,
+Florian Pesth
