@@ -1,27 +1,47 @@
-From: jesse.brandeburg@intel.com (Jesse Brandeburg)
-Date: Mon, 4 Dec 2017 10:05:46 -0800
-Subject: [Cocci] BUG: possible parsing issue
-In-Reply-To: <alpine.DEB.2.20.1712020913040.2168@hadrien>
-References: <253CF818969A9240AB2054BF91F2C2BC74A93A70@ORSMSX114.amr.corp.intel.com>
- <alpine.DEB.2.20.1712020913040.2168@hadrien>
-Message-ID: <20171204100546.000045ab@intel.com>
+From: bruce.w.allan@intel.com (Allan, Bruce W)
+Date: Mon, 11 Dec 2017 22:27:26 +0000
+Subject: [Cocci] problem with transform of expression not line-wrapping as
+	expected
+Message-ID: <804857E1F29AAC47BF68C404FC60A184D52B6AE7@ORSMSX105.amr.corp.intel.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sat, 2 Dec 2017 09:14:23 +0100
-Julia Lawall <julia.lawall@lip6.fr> wrote:
+I'm trying to transform the following piece of code:
 
-> > - LIST_FOR_EACH_ENTRY(c,f,g,member) S
-> > + hlist_for_each_entry(c,f,member) S  
-> 
-> Actually, the problem is that you have removed S and dded it back.
-> Then you are relying on Coccinelle to do the pretty printing, and all
-> comments will be dropped.  Just rewrite your rule as follows, and
-> everything will be fine:
-> 
->  - LIST_FOR_EACH_ENTRY(c,f,g,member)
->  + hlist_for_each_entry(c,f,member)
->    S
+int main(int argc, char **argv)
+{
+	pointer_to_foo = (struct long_named_struct *)
+		func_foo(e1, a_long_expression_e2, (long_part_a_of_exp_3 *
+						        long_part_b_of_exp_3),
+			    nop_expr);
+}
 
-Wow, thanks for that, it now works. The discussion following this post
-was also very educational.  Thanks!
+
+with the following cocci script:
+
+@@
+expression ptr,e1,e2,e3,nop;
+type type;
+@@
+(
+- ptr = (type *)func_foo(e1,e2,e3,nop);
++ ptr = long_func_bar(macro_foobar(e1),e2,e3,SOME_OTHER_DEFINE);
+)
+
+to get:
+
+	pointer_to_foo = long_func_bar(macro_foobar(e1), a_long_expression_e2,
+					(long_part_a_of_exp_3 *
+					 long_part_b_of_exp_3),
+					SOME_OTHER_DEFINE);
+
+but instead end up with:
+
+	pointer_to_foo = long_func_bar(macro_foobar(e1), a_long_expression_e2,
+					(long_part_a_of_exp_3 * long_part_b_of_exp_3),
+					SOME_OTHER_DEFINE);
+
+The problem is with the (long_part_a_of_exp_3 * long_part_b_of_exp_3) which does not line wrap as I would expect and exceeds 80-columns.  Any suggestions?
+
+Thanks,
+Bruce.
