@@ -1,62 +1,52 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 11 Dec 2017 23:33:51 +0100 (CET)
-Subject: [Cocci] problem with transform of expression not line-wrapping
- as expected
-In-Reply-To: <804857E1F29AAC47BF68C404FC60A184D52B6AE7@ORSMSX105.amr.corp.intel.com>
-References: <804857E1F29AAC47BF68C404FC60A184D52B6AE7@ORSMSX105.amr.corp.intel.com>
-Message-ID: <alpine.DEB.2.20.1712112331300.4077@hadrien>
+From: remicles2@gmail.com (Remington Furman)
+Date: Tue, 12 Dec 2017 07:19:51 -0800
+Subject: [Cocci] Parse error with genl-const.cocci
+In-Reply-To: <alpine.DEB.2.20.1712011059360.2865@hadrien>
+References: <925f98d2-047f-785f-4162-21b53a77cd62@gmail.com>
+ <1512116859.25588.4.camel@sipsolutions.net>
+ <alpine.DEB.2.20.1712011015160.2865@hadrien>
+ <1512120542.25588.7.camel@sipsolutions.net>
+ <alpine.DEB.2.20.1712011059360.2865@hadrien>
+Message-ID: <e589e785-6e08-8b37-8017-09ffc8627de2@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On 12/01/2017 02:00 AM, Julia Lawall wrote:
+> On Fri, 1 Dec 2017, Johannes Berg wrote:
+>> Hi Julia,
+>>
+>> On Fri, 2017-12-01 at 10:18 +0100, Julia Lawall wrote:
+>>> The handling of attributes has also been extended so that you can actually
+>>> match against them in some cases, such as on function declarations.  On
+>>> the oher hand, nothing was done to allow attributes in front of types that
+>>> are alone.
+>> Very cool!
+>>> I can try to fix this.  In the short term, perhaps using 1.0.4 is
+>>> acceptable.
+>> To me that's OK, I'll try to keep it in mind.
+>>
+>> Can we do some "#ifdef" type syntax in spatch on the version of it? :-)
+> There's nothing for that available at the moment.
+>> I guess I could also have two different versions of the patch and write
+>> some code to pick up which one to use, but that's a bit awkward ...
+>>
+>> But let me know if you can't actually fix this (easily), then I can do
+>> that instead.
+> OK, I'll try to look at it soon.
+>
+> julia
+I thought I'd point out the layers of coevolution that result from the 
+changing spatch behavior.? :) It's a bit fractal when every layer in the 
+dependency graph has the possibility to change.? I suppose a #ifdef type 
+solution might remove the potential need to backport the .cocci patches 
+themselves going forward.
 
+But, I think it might be sufficient to just document what version of the 
+tools, in this case spatch, were used for a particular backports 
+commit/release.? It's easy enough to build any version of spatch from 
+git.? Or perhaps each .cocci patch could have a comment listing the 
+spatch version it was developed with.? Future backports releases could 
+then update the patch syntax as needed, document the spatch version, and 
+leave it at that.
 
-On Mon, 11 Dec 2017, Allan, Bruce W wrote:
-
-> I'm trying to transform the following piece of code:
->
-> int main(int argc, char **argv)
-> {
-> 	pointer_to_foo = (struct long_named_struct *)
-> 		func_foo(e1, a_long_expression_e2, (long_part_a_of_exp_3 *
-> 						        long_part_b_of_exp_3),
-> 			    nop_expr);
-> }
->
->
-> with the following cocci script:
->
-> @@
-> expression ptr,e1,e2,e3,nop;
-> type type;
-> @@
-> (
-> - ptr = (type *)func_foo(e1,e2,e3,nop);
-> + ptr = long_func_bar(macro_foobar(e1),e2,e3,SOME_OTHER_DEFINE);
-> )
->
-> to get:
->
-> 	pointer_to_foo = long_func_bar(macro_foobar(e1), a_long_expression_e2,
-> 					(long_part_a_of_exp_3 *
-> 					 long_part_b_of_exp_3),
-> 					SOME_OTHER_DEFINE);
->
-> but instead end up with:
->
-> 	pointer_to_foo = long_func_bar(macro_foobar(e1), a_long_expression_e2,
-> 					(long_part_a_of_exp_3 * long_part_b_of_exp_3),
-> 					SOME_OTHER_DEFINE);
->
-> The problem is with the (long_part_a_of_exp_3 * long_part_b_of_exp_3) which does not line wrap as I would expect and exceeds 80-columns.  Any suggestions?
-
-Coccinelle only contemplates putting newlines after commas.
-
-You may get better results if you do not remove and then put back e2 and
-e3, since they don't change.  Just put - and + for the things you actually
-want to change.
-
-You don't need the () in the leftmost column.  That is for a disjunction,
-ie a choice between multiple possibilities, and you have only
-one possibility.
-
-julia
+-Remington
