@@ -1,52 +1,65 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sat, 2 Dec 2017 11:03:41 +0100
-Subject: [Cocci] =?utf-8?q?Transformation_challenges_with_SmPL_around_?=
- =?utf-8?b?4oCcTElTVF9GT1JfRUFDSF9FTlRSWeKAnQ==?=
-In-Reply-To: <alpine.DEB.2.20.1712021046000.2168@hadrien>
-References: <alpine.DEB.2.20.1712020913040.2168@hadrien>
- <e1ac4060-67e9-973b-e4c7-6faa476af34e@users.sourceforge.net>
- <alpine.DEB.2.20.1712021046000.2168@hadrien>
-Message-ID: <1dacc554-c03c-6d4e-e559-15ac92ac9f80@users.sourceforge.net>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Thu, 14 Dec 2017 16:16:42 +0100 (CET)
+Subject: [Cocci] Parse error with genl-const.cocci
+In-Reply-To: <e589e785-6e08-8b37-8017-09ffc8627de2@gmail.com>
+References: <925f98d2-047f-785f-4162-21b53a77cd62@gmail.com>
+ <1512116859.25588.4.camel@sipsolutions.net>
+ <alpine.DEB.2.20.1712011015160.2865@hadrien>
+ <1512120542.25588.7.camel@sipsolutions.net>
+ <alpine.DEB.2.20.1712011059360.2865@hadrien>
+ <e589e785-6e08-8b37-8017-09ffc8627de2@gmail.com>
+Message-ID: <alpine.DEB.2.20.1712141614460.5502@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> @adjustment@
->> expression ex;
->> statement S;
->> @@
->> -LIST_FOR_EACH_ENTRY
->> +hlist_for_each_entry
->>  (..., ...,
->> -ex,
->>  ...)
->>  S
-> 
-> This is not completely a good idea.
-
-I tried to show another approach.
 
 
-> The ... in the argument list will match a sequence of things, not a single thing.
+On Tue, 12 Dec 2017, Remington Furman wrote:
 
-How does this information fit to the specification of the SmPL ellipsis
-as a placeholder for the last macro parameter?
+> On 12/01/2017 02:00 AM, Julia Lawall wrote:
+> > On Fri, 1 Dec 2017, Johannes Berg wrote:
+> > > Hi Julia,
+> > >
+> > > On Fri, 2017-12-01 at 10:18 +0100, Julia Lawall wrote:
+> > > > The handling of attributes has also been extended so that you can
+> > > > actually
+> > > > match against them in some cases, such as on function declarations.  On
+> > > > the oher hand, nothing was done to allow attributes in front of types
+> > > > that
+> > > > are alone.
+> > > Very cool!
+> > > > I can try to fix this.  In the short term, perhaps using 1.0.4 is
+> > > > acceptable.
+> > > To me that's OK, I'll try to keep it in mind.
+> > >
+> > > Can we do some "#ifdef" type syntax in spatch on the version of it? :-)
+> > There's nothing for that available at the moment.
+> > > I guess I could also have two different versions of the patch and write
+> > > some code to pick up which one to use, but that's a bit awkward ...
+> > >
+> > > But let me know if you can't actually fix this (easily), then I can do
+> > > that instead.
+> > OK, I'll try to look at it soon.
+> >
+> > julia
+> I thought I'd point out the layers of coevolution that result from the
+> changing spatch behavior.? :) It's a bit fractal when every layer in the
+> dependency graph has the possibility to change.? I suppose a #ifdef type
+> solution might remove the potential need to backport the .cocci patches
+> themselves going forward.
+>
+> But, I think it might be sufficient to just document what version of the
+> tools, in this case spatch, were used for a particular backports
+> commit/release.? It's easy enough to build any version of spatch from git.? Or
+> perhaps each .cocci patch could have a comment listing the spatch version it
+> was developed with.? Future backports releases could then update the patch
+> syntax as needed, document the spatch version, and leave it at that.
 
+Hello,
 
-> It could be:
-> 
-> -LIST_FOR_EACH_ENTRY
-> +hlist_for_each_entry
->  (e1,e2,
+I updated the github version of Coccinelle such that
+patches/0027-genl-const/genl-const.cocci
+will almost parse correctly.  The only thing that remains is to change
+attribute into attribute name.
 
-Are these metavariables required for such an use case?
-
-
-> -ex,
->  ...)
->  S
-
-Can such a transformation variant have nicer run time characteristics
-in comparison to the initial SmPL script example?
-
-Regards,
-Markus
+julia
