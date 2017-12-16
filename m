@@ -1,65 +1,139 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 14 Dec 2017 16:16:42 +0100 (CET)
-Subject: [Cocci] Parse error with genl-const.cocci
-In-Reply-To: <e589e785-6e08-8b37-8017-09ffc8627de2@gmail.com>
-References: <925f98d2-047f-785f-4162-21b53a77cd62@gmail.com>
- <1512116859.25588.4.camel@sipsolutions.net>
- <alpine.DEB.2.20.1712011015160.2865@hadrien>
- <1512120542.25588.7.camel@sipsolutions.net>
- <alpine.DEB.2.20.1712011059360.2865@hadrien>
- <e589e785-6e08-8b37-8017-09ffc8627de2@gmail.com>
-Message-ID: <alpine.DEB.2.20.1712141614460.5502@hadrien>
+From: knut.omang@oracle.com (Knut Omang)
+Date: Sat, 16 Dec 2017 15:42:25 +0100
+Subject: [Cocci] [PATCH v2 0/5] Support for generalized use of make C={1,
+	2} via a wrapper program
+Message-ID: <cover.630ac8faeeda67bf7a778c158174422042942d08.1513430008.git-series.knut.omang@oracle.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+This patch series implements features to make it easier to run checkers on the
+entire kernel as part of automatic and developer testing.
 
+This is done by replacing the sparse specific setup for the C={1,2} variable
+in the makefiles with setup for running scripts/runchecks, a new program that
+can run any number of different "checkers". The behaviour of runchecks is
+defined by simple "global" configuration in scripts/runchecks.cfg which can be
+extended by local configuration applying to individual files, directories or
+subtrees in the source.
 
-On Tue, 12 Dec 2017, Remington Furman wrote:
+It also fixes a minor issue with "checkpatch --fix-inplace" found during testing
+(patch #3).
 
-> On 12/01/2017 02:00 AM, Julia Lawall wrote:
-> > On Fri, 1 Dec 2017, Johannes Berg wrote:
-> > > Hi Julia,
-> > >
-> > > On Fri, 2017-12-01 at 10:18 +0100, Julia Lawall wrote:
-> > > > The handling of attributes has also been extended so that you can
-> > > > actually
-> > > > match against them in some cases, such as on function declarations.  On
-> > > > the oher hand, nothing was done to allow attributes in front of types
-> > > > that
-> > > > are alone.
-> > > Very cool!
-> > > > I can try to fix this.  In the short term, perhaps using 1.0.4 is
-> > > > acceptable.
-> > > To me that's OK, I'll try to keep it in mind.
-> > >
-> > > Can we do some "#ifdef" type syntax in spatch on the version of it? :-)
-> > There's nothing for that available at the moment.
-> > > I guess I could also have two different versions of the patch and write
-> > > some code to pick up which one to use, but that's a bit awkward ...
-> > >
-> > > But let me know if you can't actually fix this (easily), then I can do
-> > > that instead.
-> > OK, I'll try to look at it soon.
-> >
-> > julia
-> I thought I'd point out the layers of coevolution that result from the
-> changing spatch behavior.? :) It's a bit fractal when every layer in the
-> dependency graph has the possibility to change.? I suppose a #ifdef type
-> solution might remove the potential need to backport the .cocci patches
-> themselves going forward.
->
-> But, I think it might be sufficient to just document what version of the
-> tools, in this case spatch, were used for a particular backports
-> commit/release.? It's easy enough to build any version of spatch from git.? Or
-> perhaps each .cocci patch could have a comment listing the spatch version it
-> was developed with.? Future backports releases could then update the patch
-> syntax as needed, document the spatch version, and leave it at that.
+The runchecks.cfg files are parsed according to this minimal language:
 
-Hello,
+       # comments
+       # "Global configuration in scripts/runchecks.cfg:
+       checker <name>
+       typedef NAME regex
+       run <list of checkers or "all"
 
-I updated the github version of Coccinelle such that
-patches/0027-genl-const/genl-const.cocci
-will almost parse correctly.  The only thing that remains is to change
-attribute into attribute name.
+       # "local" configuration:
+       line_len <n>
+       except checkpatch_type [files ...]
+       pervasive checkpatch_type1 [checkpatch_type2 ...]
 
-julia
+With "make C=2" runchecks first parse the file scripts/runchecks.cfg, then
+look for a file named 'runchecks.cfg' in the same directory as the source file.
+If that file exists, it will be parsed and it's local configuration applied to
+allow suppression on a per checker, per check and per file basis.
+If a "local" configuration does not exist, either in the source directory or
+above, make will simply silently ignore the file.
+
+The idea is that the community can work to add runchecks.cfg files to
+directories, serving both as documentation and as a way for subsystem
+maintainers to enforce policies and individual tastes as well as TODOs and/or
+priorities, to make it easier for newcomers to contribute in this area. By
+ignoring directories/subtrees without such files, automation can start right
+away as it is trivially possible to run errorless with C=2 for the entire
+kernel.
+
+For the checker maintainers this should be a benefit as well: new
+or improved checks would generate new errors/warnings. With automatic testing
+for the checkers, these new checks would generate error reports and cause
+builds to fail. Adding the new check a 'pervasive' option at the top level or
+even for specific files, marked with a "new check - please consider fixing" comment
+or similar would make those builds pass while documenting and making the new check
+more visible.
+
+The patches includes a documentation file with some more details.
+
+This patch set has evolved from an earlier shell script implementation I made
+as only a wrapper script around checkpatch. That version have been used for a
+number of years on a driver project I worked on where we had automatic checkin
+regression testing. I extended that to also run checkpatch to avoid having to
+clean up frequent unintended whitespace changes and style violations from others...
+
+I have also tested this version on some directories I am familiar with.  The
+result of that work is available in two patch sets of 10 and 11 patches, but we
+agreed that it would be better to post them as separate patch sets later.
+
+Those patch sets illustrates how I picture the "flow" from just "reining in" the
+checkpatch detections to actually fixing classes of checkpatch issues one by
+one, while updating the checkpatch.cfg file(s) to have 0 errors or warnings at
+any commit boundary.
+
+The combined set is available here:
+
+   git://github.com/knuto/linux.git  branch runchecks
+
+I only include version 0 of runchecks.cfg in the two directories I
+worked on here as the final two patches. These files both documents where
+the issues are in those two directories, and can be used by the maintainer
+to indicate to potential helpers what to focus on as I have tried to
+illustrate by means of comments.
+
+Changes from v1:
+-----------------
+Based on feedback, the implementation is completely rewritten and extended.
+Instead of patches to checkpatch, and a sole checkpatch focus, it is now a
+generic solution implemented in python, for any type of checkers, extendable
+through some basic generic functionality, and for special needs by subclassing
+the Checker class in the implementation.
+
+This implementation fully supports checkpatch, sparse and
+checkdoc == kernel-doc -none, and also has been tested with coccicheck.
+To facilitate the same mechanism of using check types to filter what
+checks to be suppressed, I introduced the concept of "typedefs" which allows
+runchecks to effectively augment the check type space of the checker in cases
+where types either are not available at all (checkdoc) or where only a few
+can be filtered out (sparse)
+
+With this in place it also became trivial to make the look and feel similar
+for sparse and checkdoc as for checkpatch, with some optional color support
+too, to make fixing issues in the code, the goal of this whole exercise,
+much more pleasant IMHO :-)
+
+Thanks,
+Knut
+
+Knut Omang (5):
+  runchecks: Generalize make C={1,2} to support multiple checkers
+  Documentation: Add doc for runchecks, a checker runner
+  checkpatch: Improve --fix-inplace for TABSTOP
+  rds: Add runchecks.cfg for net/rds
+  RDMA/core: Add runchecks.cfg for drivers/infiniband/core
+
+ Documentation/dev-tools/coccinelle.rst |  12 +-
+ Documentation/dev-tools/index.rst      |   1 +-
+ Documentation/dev-tools/runchecks.rst  | 215 ++++++++-
+ Documentation/dev-tools/sparse.rst     |  30 +-
+ Documentation/kbuild/kbuild.txt        |   9 +-
+ Makefile                               |  23 +-
+ drivers/infiniband/core/runchecks.cfg  |  83 +++-
+ net/rds/runchecks.cfg                  |  76 +++-
+ scripts/Makefile.build                 |   4 +-
+ scripts/checkpatch.pl                  |   2 +-
+ scripts/runchecks                      | 734 ++++++++++++++++++++++++++-
+ scripts/runchecks.cfg                  |  63 ++-
+ scripts/runchecks_help.txt             |  43 ++-
+ 13 files changed, 1274 insertions(+), 21 deletions(-)
+ create mode 100644 Documentation/dev-tools/runchecks.rst
+ create mode 100644 drivers/infiniband/core/runchecks.cfg
+ create mode 100644 net/rds/runchecks.cfg
+ create mode 100755 scripts/runchecks
+ create mode 100644 scripts/runchecks.cfg
+ create mode 100644 scripts/runchecks_help.txt
+
+base-commit: ae64f9bd1d3621b5e60d7363bc20afb46aede215
+-- 
+git-series 0.9.1
