@@ -1,43 +1,38 @@
-From: joe@perches.com (Joe Perches)
-Date: Sat, 16 Dec 2017 09:00:01 -0800
-Subject: [Cocci] [PATCH v2 0/5] Support for generalized use of make C={1,
- 2} via a wrapper program
-In-Reply-To: <1513441634.31439.34.camel@oracle.com>
-References: <cover.630ac8faeeda67bf7a778c158174422042942d08.1513430008.git-series.knut.omang@oracle.com>
- <1513437684.4647.30.camel@perches.com>
- <1513441634.31439.34.camel@oracle.com>
-Message-ID: <1513443601.4647.36.camel@perches.com>
+From: knut.omang@oracle.com (Knut Omang)
+Date: Sun, 17 Dec 2017 03:19:13 +0100
+Subject: [Cocci] [PATCH v2 2/5] Documentation: Add doc for runchecks
+In-Reply-To: <c4c816cc-580f-d60b-1048-23a35ba287d3@users.sourceforge.net>
+References: <7bd67f980fdf33031c54955f7e04b435c267886e.1513430008.git-series.knut.omang@oracle.com>
+ <4be59ef0-50a9-83f5-2cf1-f5a34e5810a7@users.sourceforge.net>
+ <1513441576.31439.33.camel@oracle.com>
+ <4fe0691a-ca79-6bfc-918c-77c109ac14b3@users.sourceforge.net>
+ <1513445814.31439.41.camel@oracle.com>
+ <c4c816cc-580f-d60b-1048-23a35ba287d3@users.sourceforge.net>
+Message-ID: <1513477153.31439.112.camel@oracle.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sat, 2017-12-16 at 17:27 +0100, Knut Omang wrote:
-> On Sat, 2017-12-16 at 07:21 -0800, Joe Perches wrote:
-> > On Sat, 2017-12-16 at 15:42 +0100, Knut Omang wrote:
-> > > This patch series implements features to make it easier to run checkers on the
-> > > entire kernel as part of automatic and developer testing.
+On Sat, 2017-12-16 at 18:50 +0100, SF Markus Elfring wrote:
+> >> I assume that other wording adjustments could eventually be considered
+> >> at a few places.
 > > 
-> > This seems like a useful and reasonable series, thanks.
+> > I am afraid most of it came due to the changes I made to go from supporting just
+> > checkpatch to support many checkers from v1 to v2, so I have to take the sole
+> > responsibility...
 > 
-> thanks, appreciated,
+> Thanks for your clarification.
 > 
-> > Do please take Julia's grammar updates.
+> You showed a promising start for another software evolution.
+> My own understanding level might be also still incomplete in this case.
 > 
-> will do,
-> 
-> > How is this series to be applied?
-> 
-> I am open for suggestions.
-> 
-> Let's leave patch #3 out for now.
-> 
-> It's safe to apply #1 (and #2) alone.
+> Do you plan any extensions for higher level descriptions?
 
-I'd just as soon combine patch #1 and an updated 
-patch #2 into a single patch and get that applied
-sooner than later.
+I am itching to implement more features :-) 
+I already have some ideas and I am happy to take more, I just want the basis to get in
+first, so I am sure I don't waste my time..
+ 
+Thanks,
+Knut
 
-> They don't break anything by getting into the RDMA or RDS subsystem 
-> without patch #1, alternatively they can go together with the set of cleanup patches I
-> have prepared for each of RDMA and RDS after #1 is in.
-
-right.
+> Regards,
+> Markus
