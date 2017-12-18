@@ -1,146 +1,168 @@
-From: joe@perches.com (Joe Perches)
-Date: Sun, 17 Dec 2017 22:00:17 -0800
+From: knut.omang@oracle.com (Knut Omang)
+Date: Mon, 18 Dec 2017 14:05:15 +0100
 Subject: [Cocci] [PATCH v2 0/5] Support for generalized use of make C={1,
  2} via a wrapper program
-In-Reply-To: <20171218050043.GA1307@ziepe.ca>
+In-Reply-To: <1513576817.31581.58.camel@perches.com>
 References: <cover.630ac8faeeda67bf7a778c158174422042942d08.1513430008.git-series.knut.omang@oracle.com>
  <20171216094745.5e41ac51@xeon-e3> <1513476850.31439.108.camel@oracle.com>
- <20171218050043.GA1307@ziepe.ca>
-Message-ID: <1513576817.31581.58.camel@perches.com>
+ <20171218050043.GA1307@ziepe.ca> <1513576817.31581.58.camel@perches.com>
+Message-ID: <1513602315.22938.49.camel@oracle.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, 2017-12-17 at 22:00 -0700, Jason Gunthorpe wrote:
-> On Sun, Dec 17, 2017 at 03:14:10AM +0100, Knut Omang wrote:
-> 
-> > > I like the ability to add more checkers and keep then in the main
-> > > upstream tree. But adding overrides for specific subsystems goes against
-> > > the policy that all subsystems should be treated equally.
+On Sun, 2017-12-17 at 22:00 -0800, Joe Perches wrote:
+> On Sun, 2017-12-17 at 22:00 -0700, Jason Gunthorpe wrote:
+> > On Sun, Dec 17, 2017 at 03:14:10AM +0100, Knut Omang wrote:
 > > 
-> > This is a tool to enable automated testing for as many checks as
-> > possible, as soon as possible. Like any tool, it can be misused, but
-> > that's IMHO an orthogonal problem that I think the maintainers will
-> > be more than capable of preventing.
+> > > > I like the ability to add more checkers and keep then in the main
+> > > > upstream tree. But adding overrides for specific subsystems goes against
+> > > > the policy that all subsystems should be treated equally.
+> > > 
+> > > This is a tool to enable automated testing for as many checks as
+> > > possible, as soon as possible. Like any tool, it can be misused, but
+> > > that's IMHO an orthogonal problem that I think the maintainers will
+> > > be more than capable of preventing.
+> > > 
+> > > Think of this as a tightening screw: We eliminate errors class by
+> > > class or file by file, and in the same commit narrows in the list of
+> > > exceptions. That way we can fix issues piece by piece while avoiding
+> > > a lot of regressions in already clean parts.
 > > 
-> > Think of this as a tightening screw: We eliminate errors class by
-> > class or file by file, and in the same commit narrows in the list of
-> > exceptions. That way we can fix issues piece by piece while avoiding
-> > a lot of regressions in already clean parts.
+> > Since you used drivers/infiniband as an example for this script..
+> > 
+> > I will say I agree with this idea.
+> > 
+> > It is not that we *want* infiniband to be different from the rest of
+> > the kernel, it is that we have this historical situation where we
+> > don't have a code base that already passes the various static checker
+> > things.
+> > 
+> > I would like it very much if I could run 'make static checker' and see
+> > no warnings. This helps me know that I when I accept patches I am not
+> > introducing new problems to code that has already been cleaned up.
+> > 
+> > Today when we run checkers we get so many warnings it is too hard to
+> > make any sense of it.
 > 
-> Since you used drivers/infiniband as an example for this script..
+> Here is a list of the checkpatch messages for drivers/infiniband
+> sorted by type.
 > 
-> I will say I agree with this idea.
+> Many of these might be corrected by using
 > 
-> It is not that we *want* infiniband to be different from the rest of
-> the kernel, it is that we have this historical situation where we
-> don't have a code base that already passes the various static checker
-> things.
-> 
-> I would like it very much if I could run 'make static checker' and see
-> no warnings. This helps me know that I when I accept patches I am not
-> introducing new problems to code that has already been cleaned up.
-> 
-> Today when we run checkers we get so many warnings it is too hard to
-> make any sense of it.
+> $ ./scripts/checkpatch.pl -f --fix-inplace --types=<TYPE> \
+>   $(git ls-files drivers/infiniband/)
 
-Here is a list of the checkpatch messages for drivers/infiniband
-sorted by type.
+Yes, and I already did that work piece by piece for individual types,
+just to test the runchecks tool, and want to post that set once the 
+runchecks script and Makefile changes itself are in,
 
-Many of these might be corrected by using
+see:
 
-$ ./scripts/checkpatch.pl -f --fix-inplace --types=<TYPE> \
-  $(git ls-files drivers/infiniband/)
+https://github.com/torvalds/linux/compare/master...knuto:runchecks
 
-   5243 CHECK:CAMELCASE
-   4487 WARNING:LONG_LINE
-   1755 CHECK:PARENTHESIS_ALIGNMENT
-   1664 CHECK:SPACING
-    910 WARNING:FUNCTION_ARGUMENTS
-    742 CHECK:OPEN_ENDED_LINE
-    685 CHECK:BRACES
-    643 CHECK:UNNECESSARY_PARENTHESES
-    478 WARNING:SIZEOF_PARENTHESIS
-    361 WARNING:UNSPECIFIED_INT
-    342 WARNING:LONG_LINE_COMMENT
-    338 ERROR:SPACING
-    338 CHECK:LINE_SPACING
-    306 WARNING:SPLIT_STRING
-    278 WARNING:SPACING
-    242 WARNING:SYMBOLIC_PERMS
-    194 WARNING:BLOCK_COMMENT_STYLE
-    175 CHECK:BIT_MACRO
-    158 WARNING:SPACE_BEFORE_TAB
-    154 WARNING:LINE_SPACING
-    139 CHECK:MACRO_ARG_REUSE
-    133 CHECK:UNCOMMENTED_DEFINITION
-    122 CHECK:AVOID_BUG
-    103 CHECK:COMPARISON_TO_NULL
-    101 WARNING:ENOSYS
-     89 WARNING:BRACES
-     78 WARNING:PREFER_PR_LEVEL
-     74 WARNING:MULTILINE_DEREFERENCE
-     59 CHECK:TYPO_SPELLING
-     52 WARNING:EMBEDDED_FUNCTION_NAME
-     52 CHECK:MULTIPLE_ASSIGNMENTS
-     50 CHECK:PREFER_KERNEL_TYPES
-     45 WARNING:RETURN_VOID
-     39 WARNING:UNNECESSARY_ELSE
-     38 ERROR:POINTER_LOCATION
-     37 WARNING:ALLOC_WITH_MULTIPLY
-     36 CHECK:ALLOC_SIZEOF_STRUCT
-     35 CHECK:AVOID_EXTERNS
-     34 WARNING:PRINTK_WITHOUT_KERN_LEVEL
-     33 ERROR:CODE_INDENT
-     32 WARNING:PREFER_PACKED
-     32 CHECK:LOGICAL_CONTINUATIONS
-     29 WARNING:MEMORY_BARRIER
-     29 WARNING:LEADING_SPACE
-     28 WARNING:DEEP_INDENTATION
-     27 CHECK:USLEEP_RANGE
-     23 WARNING:SUSPECT_CODE_INDENT
-     23 ERROR:TRAILING_STATEMENTS
-     21 WARNING:LONG_LINE_STRING
-     20 WARNING:CONSIDER_KSTRTO
-     18 WARNING:CONSTANT_COMPARISON
-     18 ERROR:OPEN_BRACE
-     15 WARNING:QUOTED_WHITESPACE_BEFORE_NEWLINE
-     14 WARNING:VOLATILE
-     14 ERROR:SWITCH_CASE_INDENT_LEVEL
-     11 WARNING:OOM_MESSAGE
-     11 WARNING:INCLUDE_LINUX
-     10 WARNING:SSCANF_TO_KSTRTO
-     10 WARNING:INDENTED_LABEL
-      9 ERROR:GLOBAL_INITIALISERS
-      9 ERROR:COMPLEX_MACRO
-      9 ERROR:ASSIGN_IN_IF
-      8 WARNING:UNNECESSARY_BREAK
-      6 WARNING:PRINTF_L
-      6 WARNING:MISORDERED_TYPE
-      6 ERROR:INITIALISED_STATIC
-      5 WARNING:TABSTOP
-      5 WARNING:SINGLE_STATEMENT_DO_WHILE_MACRO
-      5 WARNING:NAKED_SSCANF
-      4 WARNING:NEEDLESS_IF
-      4 ERROR:RETURN_PARENTHESES
-      4 CHECK:BOOL_COMPARISON
-      3 WARNING:TRAILING_SEMICOLON
-      3 WARNING:STATIC_CONST_CHAR_ARRAY
-      3 ERROR:TRAILING_WHITESPACE
-      2 WARNING:UNNECESSARY_PARENTHESES
-      2 WARNING:MISSING_SPACE
-      2 WARNING:LOGGING_CONTINUATION
-      2 CHECK:ARCH_DEFINES
-      1 WARNING:TYPECAST_INT_CONSTANT
-      1 WARNING:PREFER_DEV_LEVEL
-      1 WARNING:NR_CPUS
-      1 WARNING:NEW_TYPEDEFS
-      1 WARNING:MINMAX
-      1 WARNING:MACRO_WITH_FLOW_CONTROL
-      1 WARNING:LINE_CONTINUATIONS
-      1 WARNING:DO_WHILE_MACRO_WITH_TRAILING_SEMICOLON
-      1 WARNING:DEFAULT_NO_BREAK
-      1 WARNING:CONST_STRUCT
-      1 WARNING:CONSIDER_COMPLETION
-      1 ERROR:WHILE_AFTER_BRACE
-      1 ERROR:ELSE_AFTER_BRACE
-      1 CHECK:REDUNDANT_CODE
+What I personally like about this approach is that with the runchecks.cfg file
+one can focus easily on one or two check types at a time, create a commit out of that
+and at the same time "tighten" runchecks.cfg - changes in that file then serves as 
+documentation for what got changed and use maintainers can use comments to indicate 
+why the remaining exceptions are still there - and there's a one-stop for anyone 
+wanting to contribute to checkpatch/sparse/doc fixes.
+
+And it will be possible to run bisect with make C=2 and always have 0 errors.
+
+Thanks,
+Knut
+> 
+>    5243 CHECK:CAMELCASE
+>    4487 WARNING:LONG_LINE
+>    1755 CHECK:PARENTHESIS_ALIGNMENT
+>    1664 CHECK:SPACING
+>     910 WARNING:FUNCTION_ARGUMENTS
+>     742 CHECK:OPEN_ENDED_LINE
+>     685 CHECK:BRACES
+>     643 CHECK:UNNECESSARY_PARENTHESES
+>     478 WARNING:SIZEOF_PARENTHESIS
+>     361 WARNING:UNSPECIFIED_INT
+>     342 WARNING:LONG_LINE_COMMENT
+>     338 ERROR:SPACING
+>     338 CHECK:LINE_SPACING
+>     306 WARNING:SPLIT_STRING
+>     278 WARNING:SPACING
+>     242 WARNING:SYMBOLIC_PERMS
+>     194 WARNING:BLOCK_COMMENT_STYLE
+>     175 CHECK:BIT_MACRO
+>     158 WARNING:SPACE_BEFORE_TAB
+>     154 WARNING:LINE_SPACING
+>     139 CHECK:MACRO_ARG_REUSE
+>     133 CHECK:UNCOMMENTED_DEFINITION
+>     122 CHECK:AVOID_BUG
+>     103 CHECK:COMPARISON_TO_NULL
+>     101 WARNING:ENOSYS
+>      89 WARNING:BRACES
+>      78 WARNING:PREFER_PR_LEVEL
+>      74 WARNING:MULTILINE_DEREFERENCE
+>      59 CHECK:TYPO_SPELLING
+>      52 WARNING:EMBEDDED_FUNCTION_NAME
+>      52 CHECK:MULTIPLE_ASSIGNMENTS
+>      50 CHECK:PREFER_KERNEL_TYPES
+>      45 WARNING:RETURN_VOID
+>      39 WARNING:UNNECESSARY_ELSE
+>      38 ERROR:POINTER_LOCATION
+>      37 WARNING:ALLOC_WITH_MULTIPLY
+>      36 CHECK:ALLOC_SIZEOF_STRUCT
+>      35 CHECK:AVOID_EXTERNS
+>      34 WARNING:PRINTK_WITHOUT_KERN_LEVEL
+>      33 ERROR:CODE_INDENT
+>      32 WARNING:PREFER_PACKED
+>      32 CHECK:LOGICAL_CONTINUATIONS
+>      29 WARNING:MEMORY_BARRIER
+>      29 WARNING:LEADING_SPACE
+>      28 WARNING:DEEP_INDENTATION
+>      27 CHECK:USLEEP_RANGE
+>      23 WARNING:SUSPECT_CODE_INDENT
+>      23 ERROR:TRAILING_STATEMENTS
+>      21 WARNING:LONG_LINE_STRING
+>      20 WARNING:CONSIDER_KSTRTO
+>      18 WARNING:CONSTANT_COMPARISON
+>      18 ERROR:OPEN_BRACE
+>      15 WARNING:QUOTED_WHITESPACE_BEFORE_NEWLINE
+>      14 WARNING:VOLATILE
+>      14 ERROR:SWITCH_CASE_INDENT_LEVEL
+>      11 WARNING:OOM_MESSAGE
+>      11 WARNING:INCLUDE_LINUX
+>      10 WARNING:SSCANF_TO_KSTRTO
+>      10 WARNING:INDENTED_LABEL
+>       9 ERROR:GLOBAL_INITIALISERS
+>       9 ERROR:COMPLEX_MACRO
+>       9 ERROR:ASSIGN_IN_IF
+>       8 WARNING:UNNECESSARY_BREAK
+>       6 WARNING:PRINTF_L
+>       6 WARNING:MISORDERED_TYPE
+>       6 ERROR:INITIALISED_STATIC
+>       5 WARNING:TABSTOP
+>       5 WARNING:SINGLE_STATEMENT_DO_WHILE_MACRO
+>       5 WARNING:NAKED_SSCANF
+>       4 WARNING:NEEDLESS_IF
+>       4 ERROR:RETURN_PARENTHESES
+>       4 CHECK:BOOL_COMPARISON
+>       3 WARNING:TRAILING_SEMICOLON
+>       3 WARNING:STATIC_CONST_CHAR_ARRAY
+>       3 ERROR:TRAILING_WHITESPACE
+>       2 WARNING:UNNECESSARY_PARENTHESES
+>       2 WARNING:MISSING_SPACE
+>       2 WARNING:LOGGING_CONTINUATION
+>       2 CHECK:ARCH_DEFINES
+>       1 WARNING:TYPECAST_INT_CONSTANT
+>       1 WARNING:PREFER_DEV_LEVEL
+>       1 WARNING:NR_CPUS
+>       1 WARNING:NEW_TYPEDEFS
+>       1 WARNING:MINMAX
+>       1 WARNING:MACRO_WITH_FLOW_CONTROL
+>       1 WARNING:LINE_CONTINUATIONS
+>       1 WARNING:DO_WHILE_MACRO_WITH_TRAILING_SEMICOLON
+>       1 WARNING:DEFAULT_NO_BREAK
+>       1 WARNING:CONST_STRUCT
+>       1 WARNING:CONSIDER_COMPLETION
+>       1 ERROR:WHILE_AFTER_BRACE
+>       1 ERROR:ELSE_AFTER_BRACE
+>       1 CHECK:REDUNDANT_CODE
+> 
