@@ -1,55 +1,37 @@
-From: knut.omang@oracle.com (Knut Omang)
-Date: Mon, 18 Dec 2017 18:05:33 +0100
-Subject: [Cocci] [PATCH v2 2/5] Documentation: Add doc for runchecks
-In-Reply-To: <9102c188-847a-6a59-5fce-85dfa01ad280@users.sourceforge.net>
-References: <7bd67f980fdf33031c54955f7e04b435c267886e.1513430008.git-series.knut.omang@oracle.com>
- <4be59ef0-50a9-83f5-2cf1-f5a34e5810a7@users.sourceforge.net>
- <1513441576.31439.33.camel@oracle.com>
- <9102c188-847a-6a59-5fce-85dfa01ad280@users.sourceforge.net>
-Message-ID: <1513616733.31439.188.camel@oracle.com>
+From: jgg@ziepe.ca (Jason Gunthorpe)
+Date: Mon, 18 Dec 2017 10:46:04 -0700
+Subject: [Cocci] [PATCH v2 0/5] Support for generalized use of make C={1,
+ 2} via a wrapper program
+In-Reply-To: <1513576817.31581.58.camel@perches.com>
+References: <cover.630ac8faeeda67bf7a778c158174422042942d08.1513430008.git-series.knut.omang@oracle.com>
+ <20171216094745.5e41ac51@xeon-e3>
+ <1513476850.31439.108.camel@oracle.com>
+ <20171218050043.GA1307@ziepe.ca>
+ <1513576817.31581.58.camel@perches.com>
+Message-ID: <20171218174604.GA19056@ziepe.ca>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, 2017-12-18 at 17:23 +0100, SF Markus Elfring wrote:
-> > I'll take these in for v3 as well and carefully review myself 
-> > for any further errors of the same sorts..
+On Sun, Dec 17, 2017 at 10:00:17PM -0800, Joe Perches wrote:
+
+> > Today when we run checkers we get so many warnings it is too hard to
+> > make any sense of it.
 > 
-> I suggest to consider a few additional wording adjustments.
+> Here is a list of the checkpatch messages for drivers/infiniband
+> sorted by type.
 > 
+> Many of these might be corrected by using
 > 
-> > +``runchecks``. You can for instance use::
-> 
-> +``runchecks``. You can use for instance::
+> $ ./scripts/checkpatch.pl -f --fix-inplace --types=<TYPE> \
+>   $(git ls-files drivers/infiniband/)
 
-Will fix.
+How many of these do you think it is worth to fix?
 
-> * Do you care for the handling of orphaned words in paragraphs?
+We do get a steady trickle of changes in this topic every cycle.
 
-Will look over it, thanks.
+Is it better to just do a big number of them all at once? Do you have
+an idea how disruptive this kind of work is to the whole patch flow
+eg new patches no longer applying to for-next, backports no longer
+applying, merge conflicts?
 
-> * Was any consensus achieved already for corresponding names?
-> 
->   x Could a longer variable name like ?CHECKING_FLAGS? be easier to remember
->     than the proposed ?CF??
-
-I kept CF as is already established as the flag to use for parameters with C= 
-
->   x Will the naming style matter (if you compare the approaches ?checkpatch?
->     and ?get_maintainer?)?
-
-No consensus made on the naming, just that I tried using verbatim names from sparse, eg
-lowercase-dash vs UPPERCASE_UNDERSCORE as in checkpatch and found the runchecks.cfg and
-reporting lines more easy to read using the uppercase variants, and that it looks more
-nice to have a uniform output across checkers.
-
-I think that the visual output of a test is important, as even we developers tend to be
-more happy with (and willing to execute) programs that produce nice output vs ones with
-ugly, cluttery, inconsistent output :-)
-
-Thanks,
-Knut
-
-> 
-> 
-> Regards,
-> Markus
+Jason
