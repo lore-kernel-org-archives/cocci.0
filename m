@@ -1,88 +1,36 @@
-From: knut.omang@oracle.com (Knut Omang)
-Date: Mon, 18 Dec 2017 14:41:23 +0100
+From: joe@perches.com (Joe Perches)
+Date: Mon, 18 Dec 2017 07:30:03 -0800
 Subject: [Cocci] [PATCH v2 0/5] Support for generalized use of make C={1,
  2} via a wrapper program
-In-Reply-To: <20171218050043.GA1307@ziepe.ca>
+In-Reply-To: <1513602315.22938.49.camel@oracle.com>
 References: <cover.630ac8faeeda67bf7a778c158174422042942d08.1513430008.git-series.knut.omang@oracle.com>
  <20171216094745.5e41ac51@xeon-e3> <1513476850.31439.108.camel@oracle.com>
- <20171218050043.GA1307@ziepe.ca>
-Message-ID: <1513604483.22938.65.camel@oracle.com>
+ <20171218050043.GA1307@ziepe.ca> <1513576817.31581.58.camel@perches.com>
+ <1513602315.22938.49.camel@oracle.com>
+Message-ID: <1513611003.31581.71.camel@perches.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, 2017-12-17 at 22:00 -0700, Jason Gunthorpe wrote:
-> On Sun, Dec 17, 2017 at 03:14:10AM +0100, Knut Omang wrote:
-> 
-> > > I like the ability to add more checkers and keep then in the main
-> > > upstream tree. But adding overrides for specific subsystems goes against
-> > > the policy that all subsystems should be treated equally.
+On Mon, 2017-12-18 at 14:05 +0100, Knut Omang wrote:
+> > Here is a list of the checkpatch messages for drivers/infiniband
+> > sorted by type.
 > > 
-> > This is a tool to enable automated testing for as many checks as
-> > possible, as soon as possible. Like any tool, it can be misused, but
-> > that's IMHO an orthogonal problem that I think the maintainers will
-> > be more than capable of preventing.
+> > Many of these might be corrected by using
 > > 
-> > Think of this as a tightening screw: We eliminate errors class by
-> > class or file by file, and in the same commit narrows in the list of
-> > exceptions. That way we can fix issues piece by piece while avoiding
-> > a lot of regressions in already clean parts.
+> > $ ./scripts/checkpatch.pl -f --fix-inplace --types=<TYPE> \
+> >   $(git ls-files drivers/infiniband/)
 > 
-> Since you used drivers/infiniband as an example for this script..
-> 
-> I will say I agree with this idea.
+> Yes, and I already did that work piece by piece for individual types,
+> just to test the runchecks tool, and want to post that set once the 
+> runchecks script and Makefile changes itself are in,
 
-> It is not that we *want* infiniband to be different from the rest of
-> the kernel, it is that we have this historical situation where we
-> don't have a code base that already passes the various static checker
-> things.
+I think those are independent of any runcheck tool changes and
+could be posted now.  In general, don't keep patches in a local
+tree waiting on some other unrelated patch.
 
-I poked around trying make M= in different parts of the kernel to get some 
-"mileage" and to get as much examples as possible, and it appears most of 
-the kernel has issues of sorts. Also Joe and others keep adding more checks 
-as well, and we'd want that process to coexist with the need for automatic 
-regression testing in this area.
+Just fyi:
 
-> I would like it very much if I could run 'make static checker' and see
-> no warnings. 
+There is a script that helps automate checkpatch "by-type" conversions
+with compilation, .o difference checking, and git commit editing.
 
-which is just what is the result with 'make C=2 M=drivers/infiniband/core' 
-and the patches #1 and #5 in this set in case not everyone got the point,
-
-> This helps me know that I when I accept patches I am not
-> introducing new problems to code that has already been cleaned up.
-> 
-> Today when we run checkers we get so many warnings it is too hard to
-> make any sense of it.
-> 
-> Being able to say File X is now clean for check XYZ seems very useful
-> and may motivate people to clean up the files they actualy care
-> about...
-> 
-> > > There was discussion at Kernel Summit about how the different
-> > > subsystems already have different rules. This appears to be a way
-> > > to make that worse.
-> > 
-> > IMHO this is a tool that should help maintainers implement the
-> > policies they desire.  But the tool itself does not dictate any
-> > such.
-> 
-> Yes, again, in infiniband we like to see checkpatch be good for new
-> submission, even if that clashes with surrounding code. For instance
-> we have a mixture of sizeof foo and sizeof(foo) styles in the same
-> file/function now.
-
-That's one of the fixes that the excellent --fix-inplace handles so 
-one of my patches here
-
-https://github.com/torvalds/linux/compare/master...knuto:runchecks
-
-fixes those in drivers/infiniband/core.
-
-> I certainly don't want to tell people they need to follow some
-> different style from 10 years ago when they send patches.
-> 
-
-Thanks,
-Knut
-
-> Jason
+https://lkml.org/lkml/2014/7/11/794
