@@ -1,8 +1,8 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Wed, 27 Dec 2017 11:17:57 +0100
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Wed, 27 Dec 2017 11:25:09 +0100 (CET)
 Subject: [Cocci] Coccinelle: kzalloc-simple: Add more zero allocating
  functions
-In-Reply-To: <alpine.DEB.2.20.1712271053580.2256@hadrien>
+In-Reply-To: <5a1b7200-ad7c-a4a6-2108-23264d8fdbaf@users.sourceforge.net>
 References: <1514116040-9815-1-git-send-email-himanshujha199640@gmail.com>
  <901a0b77-39c7-1284-1229-c436e0836779@users.sourceforge.net>
  <20171226191129.GA8851@himanshu-Vostro-3559>
@@ -12,37 +12,44 @@ References: <1514116040-9815-1-git-send-email-himanshujha199640@gmail.com>
  <alpine.DEB.2.20.1712271042210.2256@hadrien>
  <6d23bbd5-807c-401c-b759-19fe418f5c79@users.sourceforge.net>
  <alpine.DEB.2.20.1712271053580.2256@hadrien>
-Message-ID: <5a1b7200-ad7c-a4a6-2108-23264d8fdbaf@users.sourceforge.net>
+ <5a1b7200-ad7c-a4a6-2108-23264d8fdbaf@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.20.1712271122570.2256@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->>> The cast is useful when it is to a non-pointer type.
->>
->> Will it be needed then to use an other metavariable for the assignment target?
->>
->> How much would you like to distinguish if an item should handle a pointer
->> (or not)?
-> 
-> The compiler will complain about an assignment between an integer and a pointer,
-
-This tool distinguishes data types better.
 
 
-> so one can assume that if the code is
-> 
-> x = (T *)kmalloc();
-> 
-> then x has pointer type.
+On Wed, 27 Dec 2017, SF Markus Elfring wrote:
 
-We ?hope? so.
+> >>> The cast is useful when it is to a non-pointer type.
+> >>
+> >> Will it be needed then to use an other metavariable for the assignment target?
+> >>
+> >> How much would you like to distinguish if an item should handle a pointer
+> >> (or not)?
+> >
+> > The compiler will complain about an assignment between an integer and a pointer,
+>
+> This tool distinguishes data types better.
+>
+>
+> > so one can assume that if the code is
+> >
+> > x = (T *)kmalloc();
+> >
+> > then x has pointer type.
+>
+> We ?hope? so.
+>
+> How do you think about restrict the type for an acceptable target expression?
 
-How do you think about restrict the type for an acceptable target expression?
+It's pointless:
 
+1.  Code should not be committed into the kernel if it causes build
+problems, even warnings.
+2.  Adding type restrictions will only allow the code to be match if the
+types are available.  Having the types available will often require
+including header files.  This will massively slow down the execution time
+of Coccinelle, in this case for no benefit.
 
-> If it doesn't have type T *, it doesn't matter.
-
-I have got an other opinion for the corresponding specification in SmPL scripts.
-I would prefer to avoid another bit of logical confusion.
-
-Regards,
-Markus
+julia
