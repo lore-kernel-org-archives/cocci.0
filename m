@@ -1,55 +1,67 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 27 Dec 2017 11:25:09 +0100 (CET)
-Subject: [Cocci] Coccinelle: kzalloc-simple: Add more zero allocating
- functions
-In-Reply-To: <5a1b7200-ad7c-a4a6-2108-23264d8fdbaf@users.sourceforge.net>
-References: <1514116040-9815-1-git-send-email-himanshujha199640@gmail.com>
- <901a0b77-39c7-1284-1229-c436e0836779@users.sourceforge.net>
- <20171226191129.GA8851@himanshu-Vostro-3559>
- <alpine.DEB.2.20.1712262032410.5715@hadrien>
- <20171226194450.GA10937@himanshu-Vostro-3559>
- <f08bd431-4f9d-c341-587a-087181020232@users.sourceforge.net>
- <alpine.DEB.2.20.1712271042210.2256@hadrien>
- <6d23bbd5-807c-401c-b759-19fe418f5c79@users.sourceforge.net>
- <alpine.DEB.2.20.1712271053580.2256@hadrien>
- <5a1b7200-ad7c-a4a6-2108-23264d8fdbaf@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1712271122570.2256@hadrien>
+From: jeremy.lefaure@lse.epita.fr (=?UTF-8?B?SsOpcsOpbXk=?= Lefaure)
+Date: Fri, 29 Dec 2017 18:28:00 +0100
+Subject: [Cocci] [PATCH 1/1] Coccinelle: array_size: report even if
+ include is missing
+In-Reply-To: <alpine.DEB.2.20.1709141320170.3185@hadrien>
+References: <20170914023807.12972-1-jeremy.lefaure@lse.epita.fr>
+ <alpine.DEB.2.20.1709141320170.3185@hadrien>
+Message-ID: <20171229182800.6c44a81e@jeremy-laptop>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hi,
 
+On Thu, 14 Sep 2017 13:21:13 +0200 (CEST)
+Julia Lawall <julia.lawall@lip6.fr> wrote:
 
-On Wed, 27 Dec 2017, SF Markus Elfring wrote:
-
-> >>> The cast is useful when it is to a non-pointer type.
-> >>
-> >> Will it be needed then to use an other metavariable for the assignment target?
-> >>
-> >> How much would you like to distinguish if an item should handle a pointer
-> >> (or not)?
+> On Wed, 13 Sep 2017, J?r?my Lefaure wrote:
+> 
+> > Rule r does not depend on rule i (which is the include of
+> > linux/kernel.h) so the output should not depend on i in
+> > org and report mode.
 > >
-> > The compiler will complain about an assignment between an integer and a pointer,
->
-> This tool distinguishes data types better.
->
->
-> > so one can assume that if the code is
+> > Signed-off-by: J?r?my Lefaure <jeremy.lefaure@lse.epita.fr>  
+> 
+> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+> 
+> I guess that if the incude is missing, the person updating the code can
+> always add it.
+> 
+I don't see this patch upstream, is it lost somewhere or should I send
+it to someone else ?
+
+
+> 
+> > ---
 > >
-> > x = (T *)kmalloc();
+> > I have tested this patch in report mode on the file
+> > drivers/staging/rtlwifi/phydm/rtl8822b/halhwimg8822b_rf.c which does not
+> > use ARRAY_SIZE and does not include linux/kernel.h.
 > >
-> > then x has pointer type.
->
-> We ?hope? so.
->
-> How do you think about restrict the type for an acceptable target expression?
-
-It's pointless:
-
-1.  Code should not be committed into the kernel if it causes build
-problems, even warnings.
-2.  Adding type restrictions will only allow the code to be match if the
-types are available.  Having the types available will often require
-including header files.  This will massively slow down the execution time
-of Coccinelle, in this case for no benefit.
-
-julia
+> >  scripts/coccinelle/misc/array_size.cocci | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/scripts/coccinelle/misc/array_size.cocci b/scripts/coccinelle/misc/array_size.cocci
+> > index 6ec05710b017..09520f0941f0 100644
+> > --- a/scripts/coccinelle/misc/array_size.cocci
+> > +++ b/scripts/coccinelle/misc/array_size.cocci
+> > @@ -72,13 +72,13 @@ position p;
+> >   (sizeof(E)@p /sizeof(T))
+> >  )
+> >
+> > - at script:python depends on i&&org@
+> > + at script:python depends on org@
+> >  p << r.p;
+> >  @@
+> >
+> >  coccilib.org.print_todo(p[0], "WARNING should use ARRAY_SIZE")
+> >
+> > - at script:python depends on i&&report@
+> > + at script:python depends on report@
+> >  p << r.p;
+> >  @@
+> >
+> > --
+> > 2.14.1
+> >
+> >  
