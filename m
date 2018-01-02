@@ -1,30 +1,32 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 1 Jan 2018 10:36:14 +0100 (CET)
-Subject: [Cocci] [RESEND PATCH 1/1] Coccinelle: array_size: report even
- if include is missing
-In-Reply-To: <CAK7LNAR6jAEgiGEQd+wuZng-MhXgbhuALuRTQpAGoMEP-bGxJQ@mail.gmail.com>
-References: <20171229181423.23263-1-jeremy.lefaure@lse.epita.fr>
- <CAK7LNAR6jAEgiGEQd+wuZng-MhXgbhuALuRTQpAGoMEP-bGxJQ@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1801011036010.2700@hadrien>
+Date: Tue, 2 Jan 2018 15:28:29 +0100 (CET)
+Subject: [Cocci] =?utf-8?q?Rename_the_SmPL_script_=E2=80=9Ckzalloc-?=
+	=?utf-8?b?4oCmLmNvY2Np4oCdPw==?=
+In-Reply-To: <ae67a02e-7257-c7e0-f4a1-bdf35a3bb2d0@users.sourceforge.net>
+References: <CAK7LNAR27r4j4c1FCh_ObpMpBKXgSP6Vq3P=reA-JKoTji6Q1A@mail.gmail.com>
+ <ae67a02e-7257-c7e0-f4a1-bdf35a3bb2d0@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.20.1801021528160.24055@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 
 
-On Mon, 1 Jan 2018, Masahiro Yamada wrote:
+On Tue, 2 Jan 2018, SF Markus Elfring wrote:
 
-> 2017-12-30 3:14 GMT+09:00 J?r?my Lefaure <jeremy.lefaure@lse.epita.fr>:
-> > Rule r does not depend on rule i (which is the include of
-> > linux/kernel.h) so the output should not depend on i in
-> > org and report mode.
-> >
-> > Signed-off-by: J?r?my Lefaure <jeremy.lefaure@lse.epita.fr>
-> > Acked-by: Julia Lawall <julia.lawall@lip6.fr>
-> > ---
+> Hello,
 >
+> A script for the semantic patch language was extended in significant ways.
 >
-> Applied to linux-kbuild/misc.  Thanks!
+> [PATCH v2] Coccinelle: kzalloc-simple: Add ?all? zero allocating functions
+> https://lkml.org/lkml/2017/12/26/182
+> https://patchwork.kernel.org/patch/10133277/
+> https://lkml.kernel.org/r/<1514324410-14561-1-git-send-email-himanshujha199640@gmail.com>
+> https://systeme.lip6.fr/pipermail/cocci/2017-December/004783.html
+>
+> Now I find that it became more advanced than the previous version.
+> How do you think about to update also the corresponding file name
+> (instead of keeping the word ?simple? there)?
 
-Thanks, and happy new year!
+Why not send a patch for it yourself?
 
 julia
