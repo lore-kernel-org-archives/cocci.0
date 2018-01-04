@@ -1,50 +1,63 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 4 Jan 2018 15:53:23 +0100 (CET)
+From: devel.fx.lebail@orange.fr (Francois-Xavier Le Bail)
+Date: Thu, 4 Jan 2018 16:10:28 +0100
 Subject: [Cocci] Sources with high badcount
-In-Reply-To: <f2c1b42f-791f-dd82-6824-9c83e6c3e439@orange.fr>
+In-Reply-To: <alpine.DEB.2.20.1801041549370.3077@hadrien>
 References: <6118e43b-bdba-0b6f-13a4-8caba08ec3e0@orange.fr>
  <alpine.DEB.2.20.1801041507290.3077@hadrien>
  <f2c1b42f-791f-dd82-6824-9c83e6c3e439@orange.fr>
-Message-ID: <alpine.DEB.2.20.1801041549370.3077@hadrien>
+ <alpine.DEB.2.20.1801041549370.3077@hadrien>
+Message-ID: <d5a6e404-77ce-5ade-d7ff-40363cebf24c@orange.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On 04/01/2018 15:53, Julia Lawall wrote:
+> 
+> 
+> On Thu, 4 Jan 2018, Francois-Xavier Le Bail wrote:
+> 
+>> On 04/01/2018 15:09, Julia Lawall wrote:
+>>>
+>>>
+>>> On Thu, 4 Jan 2018, Francois-Xavier Le Bail wrote:
+>>>
+>>>> Hi,
+>>>>
+>>>> I got high badcounts with some sources.
+>>>
+>>> Actually, in this case there are just some parse errrors in the code.
+>>>
+>>> ND_PRINT((ndo, " from %s", etheraddr_string(... (line 302)
+>>> This is missing one )
+>>>
+>>> ND_PRINT((ndo, ", hops %d", EXTRACT_U_1(... (line 322)
+>>> This has one ) too many.
+>>
+>> Bingo !
+>>
+>> Thank you.
+>>
+>> Do you have an option or a tool to find these errors ?
+>> Because neither gcc nor clang find them !
+> 
+> No.  Actually the parser is built on the assumption that the code has been
+> approved by the compiler.  I'm really puzzled why gcc/clang did not
+> complain.  Perhaps the whole fils is just ifdefd out.
 
+Not ifdefd out in this case.
 
-On Thu, 4 Jan 2018, Francois-Xavier Le Bail wrote:
+> I don't know why it didn't put BAD on some line, but I guess it was pretty
+> disoriented.  It already seems to have a special handling of macros that
+> have a single argument that is an argument list, ie ND_PRINT.  That macro
+> is mentioned at the top of the --parse-c output.  Maybe it can be helpful
+> to look around the things that are mentioned there.
 
-> On 04/01/2018 15:09, Julia Lawall wrote:
-> >
-> >
-> > On Thu, 4 Jan 2018, Francois-Xavier Le Bail wrote:
-> >
-> >> Hi,
-> >>
-> >> I got high badcounts with some sources.
-> >
-> > Actually, in this case there are just some parse errrors in the code.
-> >
-> > ND_PRINT((ndo, " from %s", etheraddr_string(... (line 302)
-> > This is missing one )
-> >
-> > ND_PRINT((ndo, ", hops %d", EXTRACT_U_1(... (line 322)
-> > This has one ) too many.
->
-> Bingo !
->
-> Thank you.
->
-> Do you have an option or a tool to find these errors ?
-> Because neither gcc nor clang find them !
+After doing the ')' fixes. I got:
+BAD:!!!!!       bp = (const struct bootp *);
 
-No.  Actually the parser is built on the assumption that the code has been
-approved by the compiler.  I'm really puzzled why gcc/clang did not
-complain.  Perhaps the whole fils is just ifdefd out.
+The source line is:
+bp = (const struct bootp *)cp;
 
-I don't know why it didn't put BAD on some line, but I guess it was pretty
-disoriented.  It already seems to have a special handling of macros that
-have a single argument that is an argument list, ie ND_PRINT.  That macro
-is mentioned at the top of the --parse-c output.  Maybe it can be helpful
-to look around the things that are mentioned there.
+I have also the message 'set verbose_parsing for more info' but the '--verbose-parsing' option was used.
 
-julia
+-- 
+Francois-Xavier
