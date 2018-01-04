@@ -1,33 +1,77 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 4 Jan 2018 09:54:27 +0100 (CET)
-Subject: [Cocci] Coccinelle: Rename the script for a transformation of
- memory allocations
-In-Reply-To: <7490d0cb-4246-8e10-05cd-6219b58c4f14@users.sourceforge.net>
-References: <CAK7LNAR27r4j4c1FCh_ObpMpBKXgSP6Vq3P=reA-JKoTji6Q1A@mail.gmail.com>
- <ae67a02e-7257-c7e0-f4a1-bdf35a3bb2d0@users.sourceforge.net>
- <alpine.DEB.2.20.1801021528160.24055@hadrien>
- <6423882b-20df-61fd-d7c6-ac1bb4ec891d@users.sourceforge.net>
- <alpine.DEB.2.20.1801031301470.3229@hadrien>
- <d576069f-2786-d1fe-e015-9d7ed63e5d94@users.sourceforge.net>
- <alpine.DEB.2.20.1801031315230.23130@hadrien>
- <2ca7ce82-3223-9733-9aa5-6061c79ff804@users.sourceforge.net>
- <alpine.DEB.2.20.1801031339410.23130@hadrien>
- <7490d0cb-4246-8e10-05cd-6219b58c4f14@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1801040954020.3077@hadrien>
+From: devel.fx.lebail@orange.fr (Francois-Xavier Le Bail)
+Date: Thu, 4 Jan 2018 14:37:05 +0100
+Subject: [Cocci] Sources with high badcount
+Message-ID: <6118e43b-bdba-0b6f-13a4-8caba08ec3e0@orange.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hi,
 
+I got high badcounts with some sources.
 
-On Thu, 4 Jan 2018, SF Markus Elfring wrote:
+One of them is:
+https://raw.githubusercontent.com/the-tcpdump-group/tcpdump/master/print-bootp.c
 
-> >> Would you insist to replace such ?special characters? by dashes or underscores?
-> >
-> > Yes.  But I will also nack any very long name.
->
-> Would you find the the file name selection ?zalloc-extra_changes1.cocci? acceptable?
+Options are: --debug --verbose-parsing --no-includes
+Partial log is:
+=======================================================================
+init_defs_builtins: /usr/local/bin/../lib/coccinelle/standard.h
+-----------------------------------------------------------------------
+processing semantic patch file: ../u_char_p.cocci
+with isos from: /usr/local/bin/../lib/coccinelle/standard.iso
+-----------------------------------------------------------------------
+@@
+u_char *p;
+@@
+* p
 
-No.  I do't know what the extra changes are and I don't know what the
-number 1 means.
+HANDLING: print-bootp.c
+-----------------------------------------------------------------------
+let's go
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+ERROR-RECOV: found sync '}' at line 402
+parsing pass2: try again
+(ONCE) CPP-DEFINE: inside function, I treat it as comment
+(ONCE) CPP-UNDEF: inside function, I treat it as comment
+ERROR-RECOV: found sync '}' at line 402
+parsing pass3: try again
+PB: not found closing brace in fuzzy parsing
+ERROR-RECOV: found sync '}' at line 402
+parsing pass4: try again
+PB: not found closing brace in fuzzy parsing
+ERROR-RECOV: found sync '}' at line 402
+parse error
+ = File "print-bootp.c", line 1116, column 0, charpos = 31388
+  around = '',
+  whole content =
+badcount: 125
+bad: };
+bad:
+bad: /*
+bad:  * Print bootp requests
+bad:  */
+bad: void
+bad: bootp_print(netdissect_options *ndo,
+bad:        const u_char *cp, u_int length)
+bad: {
+bad:    const struct bootp *bp;
+bad:    static const u_char vm_cmu[4] = VM_CMU;
+bad:    static const u_char vm_rfc1048[4] = VM_RFC1048;
+bad:    uint8_t bp_op, bp_htype, bp_hlen;
+bad:
+bad:    bp = (const struct bootp *)cp;
+bad:    ND_TCHECK(bp->bp_op);
+bad:    bp_op = EXTRACT_U_1(bp->bp_op);
+bad:    ND_PRINT((ndo, "BOOTP/DHCP, %s",
+bad:              tok2str(bootp_op_values, "unknown (0x%02x)", bp_op)));
+bad:
+[...]
+=======================================================================
 
-julia
+The line 402 is the closing '}' of the 'bootp_print' function.
+
+Any clue ?
+
+-- 
+Francois-Xavier
