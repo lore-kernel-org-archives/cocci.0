@@ -1,34 +1,56 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sat, 6 Jan 2018 18:18:10 +0100
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sat, 6 Jan 2018 18:59:20 +0100 (CET)
 Subject: [Cocci] Automatic generation of SmPL rules by a script rule
-In-Reply-To: <alpine.DEB.2.20.1801061800370.2579@hadrien>
+In-Reply-To: <e6fec4c0-eec1-d6cd-4928-7ad785be7ba4@users.sourceforge.net>
 References: <c1e3f44c-63ca-3306-840b-77d677e7e91f@users.sourceforge.net>
  <alpine.DEB.2.20.1801061800370.2579@hadrien>
-Message-ID: <5fb3bd3a-d78d-7d2c-050f-146887838d95@users.sourceforge.net>
+ <5fb3bd3a-d78d-7d2c-050f-146887838d95@users.sourceforge.net>
+ <alpine.DEB.2.20.1801061822290.2579@hadrien>
+ <e6fec4c0-eec1-d6cd-4928-7ad785be7ba4@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.20.1801061858530.2579@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> The simplest thing would be to just print the rule you want in a
-> python/ocaml script rule.
-
-I would like to adjust a SmPL execution environment for special use cases somehow.
-How would ?printing? be useful here?
 
 
-> Some support was added at one point for generating rules based on matches
-> from other rules,
+On Sat, 6 Jan 2018, SF Markus Elfring wrote:
 
-Such information sounds promising.
+> > Well, I was thinking that you could eg make a script like:
+> >
+> > @script:ocaml@
+> > e << r.e;
+> > @@
+> >
+> > Printf.printf "@@\n";
+> > Printf.printf "expression f;\n";
+> > Printf.printf "@@\n\n";
+> > Printf.printf "-f(%s);\n" e
+>
+> I would prefer to use the available programming languages directly
+> instead of starting the spatch program for such file generation.
+>
+>
+> > But I'm not sure that the parser of script code would be happy with a @ in
+> > the script code, so you would have to do some trick to get around that.
+>
+> Would you like to continue the clarification for the topic ?Configuration
+> or escaping of @ characters for embedded programming language scripts??
+> https://github.com/coccinelle/coccinelle/issues/36
+>
+>
+> > I'm not interested in spending time on it in the foreseeable future.
+>
+> But I imagine that I would like to show related update suggestions
+> around SmPL scripts because of other approaches then.
+> Will alternatives become useful?
+>
+>
+> > If anyone else wants to, the code is there...
+>
+> Would you like to point any specific source files out for the current
+> intermediate development status?
 
+Files that contain the word Generated.  The file
+parsing_c/unparse_hrule.ml.
 
-> but that code has not been maintained, and I don't think it is likely
-> to be updated in the future.
-
-I am curious if there are still any chances to revive corresponding approaches.
-
-
-Is it safer therefore to generate advanced SmPL script files by external
-software tools (at the moment)?
-
-Regards,
-Markus
+julia
