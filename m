@@ -1,48 +1,80 @@
-From: pombredanne@nexb.com (Philippe Ombredanne)
-Date: Sun, 7 Jan 2018 13:03:57 +0100
-Subject: [Cocci] [PATCH v3 1/1] runchecks: Generalize make C={1,
- 2} to support multiple checkers
-In-Reply-To: <87vagg8jjw.fsf@intel.com>
-References: <cover.5b56d020b8e826a7da33b1823c059acd0c123f8b.1515072782.git-series.knut.omang@oracle.com>
- <5f292b7effba0efcf4855bff83b7b9313ac45895.1515072782.git-series.knut.omang@oracle.com>
- <874lo1aait.fsf@intel.com> <1515096931.31439.647.camel@oracle.com>
- <87vagg8jjw.fsf@intel.com>
-Message-ID: <CAOFm3uGCJmPiHF_tGVXSUXbiGyK2HP-0Ahfv7SS+dJrmnkc5WQ@mail.gmail.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Wed, 10 Jan 2018 09:40:19 +0100 (CET)
+Subject: [Cocci] Patching const char * constants
+In-Reply-To: <20180109202248.7a1e4e1c@eridanus>
+References: <20180109202248.7a1e4e1c@eridanus>
+Message-ID: <alpine.DEB.2.20.1801100933580.3252@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Knut,
 
-On Fri, Jan 5, 2018 at 3:30 PM, Jani Nikula <jani.nikula@linux.intel.com> wrote:
-> On Thu, 04 Jan 2018, Knut Omang <knut.omang@oracle.com> wrote:
->> On Thu, 2018-01-04 at 17:50 +0200, Jani Nikula wrote:
->>> On Thu, 04 Jan 2018, Knut Omang <knut.omang@oracle.com> wrote:
->>> > Add scripts/runchecks which has generic support for running
->>> > checker tools in a convenient and user friendly way that
->>> > the author hopes can contribute to rein in issues detected
->>> > by these tools in a manageable and convenient way.
 
-<snip>
+On Tue, 9 Jan 2018, Rob Hoelz wrote:
 
->>> > --- /dev/null
->>> > +++ b/scripts/runchecks
->>> > @@ -0,0 +1,734 @@
->>> > +#!/usr/bin/python
->>> > +
->>> > +# SPDX-License-Identifier: GPL-2.0
+> Hi Coccinelle community,
+>
+> I just discovered Coccinelle a few days ago, and already my mind is reeling with the possibilities.
+> I'm doing some work porting the Claws Mail mail client to GTK3, and I think Coccinelle would be a
+> great tool to use to accomplish this task.
+>
+> One of the thing I'm trying to use Coccinelle to do is to detect and patch string concatenation via
+> string literal juxtaposition; for example:
+>
+> > ...
+> >  GTK_STOCK_NO, "+" GTK_STOCK_YES, NULL);
+>
+> I would like to write a spatch that does something like the following:
+>
+> > @@
+> > constant char *stock_constant =~ "^GTK_STOCK";
+> > @@
+> >
+> > -"+" stock_constant
+> > +stock_constant
+>
+> For starters, Coccinelle doesn't seem to recognize string juxtaposition (spatch gives me an error when
+> I try this); secondly, I can't seem to get "constant char *p" to match *any* string literals.  For example,
+> take this simple test program:
+>
+> > int
+> > main(void)
+> > {
+> >    const char *p = "bar";
+> >    return 0;
+> > }
+>
+> If I just use "constant p", it'll match the 0 literal in the return statement.  I can use "constant int p" to
+> make only that 0 match, but I'd like to match the "bar" string literal, and "constant char *p" doesn't seem to
+> work.  Is there some way I can get Coccinelle to match only string literals to a metavariable?
 
-Thank you for using an SPDX tag here ....  .
+It's constant char[] c.  A string is an array.
 
-<snip>
+>
+> Another quick question: is there a way to tell Coccinelle to dump its AST so I can see which type an expression
+> has been assigned?  Having such a tool might help me get more familiar with the tool!
 
->>> > +#
->>> > +# This program is free software; you can redistribute it and/or modify
->>> > +# it under the terms of the GNU General Public License version 2
->>> > +# as published by the Free Software Foundation.
->>> > +
+No there is nothing like this.  There is a BNF in the documentation
+(http://coccinelle.lip6.fr/docs/index.html).
+People don't find it very user-friendly, but for example here:
 
-....but then please DRY: do not add this extra legalese which is redundant.
+http://coccinelle.lip6.fr/docs/main_grammar010.html
 
--- 
-Cordially
-Philippe Ombredanne
+you can see that there are possibilities like:
+
+exp metaidAssignOp exp
+exp metaidBinOp exp
+metaidExp
+metaidConst
+
+Unfortunately, none of those names actually correspond to the way in which
+one declares those metavariables, which are assignment operator x, binary
+operator x, expression, and constant, respectively.
+
+It may be helpful to look at the examples in http://coccinellery.org/
+
+For the concatenated strings, unfortunately the patern matching language
+doesn't support that.  The only thing you can do is match the full string,
+and then do some magic with python to get out the parts you want.  I'm not
+sure that this is the best first project.
+
+julia
