@@ -1,58 +1,166 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 13 Jan 2018 07:46:09 +0100 (CET)
-Subject: [Cocci] Support for macro expansion
-In-Reply-To: <CALt5rJvkW=LLVxiVNocak_+q339SOpJy2WMmynswY2gOmxDNig@mail.gmail.com>
-References: <CALt5rJt=t1iHb42+hMPEoxqV12EMt+jge2e5AXaASAFGzpt_Ew@mail.gmail.com>
- <alpine.DEB.2.20.1801121947510.3042@hadrien>
- <CALt5rJvkW=LLVxiVNocak_+q339SOpJy2WMmynswY2gOmxDNig@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1801130744400.2203@hadrien>
+From: himanshujha199640@gmail.com (Himanshu Jha)
+Date: Sat, 13 Jan 2018 21:26:30 +0530
+Subject: [Cocci] [PATCH] Coccinelle: alloc_cast: Add more memory allocating
+	functions to the list
+Message-ID: <1515858990-31699-1-git-send-email-himanshujha199640@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Add more memory allocating functions that are frequently used in the kernel
+code to the existing list and remove the useless casts where it is
+unnecessary.
 
+But preserve those casts having __attribute__ such as __force, __iomem,
+etc which are used by Sparse in the static analysis of the code.
 
-On Fri, 12 Jan 2018, Martijn Coenen wrote:
+Also remove two blank lines at EOF.
 
-> On Fri, Jan 12, 2018 at 7:50 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
-> >
-> > Is it possible to parse the macro? That is, is the body a legal C
-> > statement or expression?
->
-> The macro I was looking at is module_usb_serial_driver():
->
-> https://elixir.free-electrons.com/linux/v4.15-rc7/source/include/linux/usb/serial.h#L433
->
-> The macro itself expands to another macro (maybe that is the
-> problem?), which expands to a few C function definitions. In this case
-> I was interested in seeing whether a file used the
-> "usb_serial_register_drivers()" function, which is called in one of
-> those function definitions.
+Signed-off-by: Himanshu Jha <himanshujha199640@gmail.com>
+---
+ scripts/coccinelle/api/alloc/alloc_cast.cocci | 92 +++++++++++++++++++++------
+ 1 file changed, 71 insertions(+), 21 deletions(-)
 
-The easiest thing would be to just extend your semantic patch to look for
-uses of module_usb_serial_driver.  module_usb_serial_driver however is
-called outside of any function.  So you need to make a declaration among
-the metavariables:
-
-declarer name module_usb_serial_driver;
-
-It doesn't make it ia metavariable, but rather gives some information
-about the name so that it will look for this name at top level.
-
-julia
-
-
->
-> Thanks,
-> Martijn
->
-> >
-> >
-> > Normally, macros are only unfolded when doing so is necessary to parse the
-> > context in which the macro occurs.  But when a macro is unfolded for that
-> > reason, it is not possible to transform the unfolded code, although it is
-> > possible to match it.
-> >
-> > It is indeed possible that the --preprocess argument does not do anything.
-> >
-> > julia
->
+diff --git a/scripts/coccinelle/api/alloc/alloc_cast.cocci b/scripts/coccinelle/api/alloc/alloc_cast.cocci
+index 6c308ee..408ee38 100644
+--- a/scripts/coccinelle/api/alloc/alloc_cast.cocci
++++ b/scripts/coccinelle/api/alloc/alloc_cast.cocci
+@@ -5,10 +5,11 @@
+ //# kmalloc, kzalloc, kcalloc, kmem_cache_alloc, kmem_cache_zalloc,
+ //# kmem_cache_alloc_node, kmalloc_node and kzalloc_node and removes
+ //# the casting as it is not required. The result in the patch case may
+-//#need some reformatting.
++//# need some reformatting.
+ //
+ // Confidence: High
+-// Copyright: 2014, Himangi Saraogi  GPLv2.
++// Copyright: (C) 2014 Himangi Saraogi GPLv2.
++// Copyright: (C) 2017 Himanshu Jha GPLv2.
+ // Comments:
+ // Options: --no-includes --include-headers
+ //
+@@ -18,55 +19,104 @@ virtual patch
+ virtual org
+ virtual report
+ 
++ at initialize:python@
++@@
++import re
++pattern = '__'
++m = re.compile(pattern)
++
++ at r1 depends on context || patch@
++type T;
++@@
++
++  (T *)
++  \(kmalloc\|kzalloc\|kcalloc\|kmem_cache_alloc\|kmem_cache_zalloc\|
++   kmem_cache_alloc_node\|kmalloc_node\|kzalloc_node\|vmalloc\|vzalloc\|
++   dma_alloc_coherent\|dma_zalloc_coherent\|devm_kmalloc\|devm_kzalloc\|
++   kvmalloc\|kvzalloc\|kvmalloc_node\|kvzalloc_node\|pci_alloc_consistent\|
++   pci_zalloc_consistent\|kmem_alloc\|kmem_zalloc\|kmem_zone_alloc\|
++   kmem_zone_zalloc\|vmalloc_node\|vzalloc_node\)(...)
++
+ //----------------------------------------------------------
+ //  For context mode
+ //----------------------------------------------------------
+ 
+- at depends on context@
+-type T;
++ at script:python depends on context@
++t << r1.T;
++@@
++
++if m.search(t) != None:
++        cocci.include_match(False)
++
++ at depends on context && r1@
++type r1.T;
+ @@
+ 
+ * (T *)
+   \(kmalloc\|kzalloc\|kcalloc\|kmem_cache_alloc\|kmem_cache_zalloc\|
+-   kmem_cache_alloc_node\|kmalloc_node\|kzalloc_node\)(...)
++   kmem_cache_alloc_node\|kmalloc_node\|kzalloc_node\|vmalloc\|vzalloc\|
++   dma_alloc_coherent\|dma_zalloc_coherent\|devm_kmalloc\|devm_kzalloc\|
++   kvmalloc\|kvzalloc\|kvmalloc_node\|kvzalloc_node\|pci_alloc_consistent\|
++   pci_zalloc_consistent\|kmem_alloc\|kmem_zalloc\|kmem_zone_alloc\|
++   kmem_zone_zalloc\|vmalloc_node\|vzalloc_node\)(...)
+ 
+ //----------------------------------------------------------
+ //  For patch mode
+ //----------------------------------------------------------
+ 
+- at depends on patch@
+-type T;
++ at script:python depends on patch@
++t << r1.T;
++@@
++
++if m.search(t) != None:
++        cocci.include_match(False)
++
++ at depends on patch && r1@
++type r1.T;
+ @@
+ 
+ - (T *)
+-  (\(kmalloc\|kzalloc\|kcalloc\|kmem_cache_alloc\|kmem_cache_zalloc\|
+-   kmem_cache_alloc_node\|kmalloc_node\|kzalloc_node\)(...))
++  \(kmalloc\|kzalloc\|kcalloc\|kmem_cache_alloc\|kmem_cache_zalloc\|
++   kmem_cache_alloc_node\|kmalloc_node\|kzalloc_node\|vmalloc\|vzalloc\|
++   dma_alloc_coherent\|dma_zalloc_coherent\|devm_kmalloc\|devm_kzalloc\|
++   kvmalloc\|kvzalloc\|kvmalloc_node\|kvzalloc_node\|pci_alloc_consistent\|
++   pci_zalloc_consistent\|kmem_alloc\|kmem_zalloc\|kmem_zone_alloc\|
++   kmem_zone_zalloc\|vmalloc_node\|vzalloc_node\)(...)
+ 
+ //----------------------------------------------------------
+ //  For org and report mode
+ //----------------------------------------------------------
+ 
+- at r depends on org || report@
++ at r2 depends on org || report@
+ type T;
+ position p;
+ @@
+ 
+- (T at p *)\(kmalloc\|kzalloc\|kcalloc\|kmem_cache_alloc\|kmem_cache_zalloc\|
+-   kmem_cache_alloc_node\|kmalloc_node\|kzalloc_node\)(...)
++ (T@p *)
++  \(kmalloc\|kzalloc\|kcalloc\|kmem_cache_alloc\|kmem_cache_zalloc\|
++   kmem_cache_alloc_node\|kmalloc_node\|kzalloc_node\|vmalloc\|vzalloc\|
++   dma_alloc_coherent\|dma_zalloc_coherent\|devm_kmalloc\|devm_kzalloc\|
++   kvmalloc\|kvzalloc\|kvmalloc_node\|kvzalloc_node\|pci_alloc_consistent\|
++   pci_zalloc_consistent\|kmem_alloc\|kmem_zalloc\|kmem_zone_alloc\|
++   kmem_zone_zalloc\|vmalloc_node\|vzalloc_node\)(...)
+ 
+ @script:python depends on org@
+-p << r.p;
+-t << r.T;
++p << r2.p;
++t << r2.T;
+ @@
+ 
+-coccilib.org.print_safe_todo(p[0], t)
++if m.search(t) != None:
++	cocci.include_match(False)
++else:
++	coccilib.org.print_safe_todo(p[0], t)
+ 
+ @script:python depends on report@
+-p << r.p;
+-t << r.T;
++p << r2.p;
++t << r2.T;
+ @@
+ 
+-msg="WARNING: casting value returned by memory allocation function to (%s *) is useless." % (t)
+-coccilib.report.print_report(p[0], msg)
+-
+-
++if m.search(t) != None:
++	cocci.include_match(False)
++else:
++	msg="WARNING: casting value returned by memory allocation function to (%s *) is useless." % (t)
++	coccilib.report.print_report(p[0], msg)
+-- 
+2.7.4
