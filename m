@@ -1,10 +1,10 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 13 Jan 2018 17:24:22 +0100 (CET)
-Subject: [Cocci] [PATCH] Coccinelle: alloc_cast: Add more memory
- allocating functions to the list
-In-Reply-To: <1515858990-31699-1-git-send-email-himanshujha199640@gmail.com>
-References: <1515858990-31699-1-git-send-email-himanshujha199640@gmail.com>
-Message-ID: <alpine.DEB.2.20.1801131724090.3470@hadrien>
+Date: Sat, 13 Jan 2018 17:27:22 +0100 (CET)
+Subject: [Cocci] [PATCH] Coccinelle: kzalloc-simple: Rename
+ kzalloc-simple to zalloc-simple
+In-Reply-To: <1515859050-31764-1-git-send-email-himanshujha199640@gmail.com>
+References: <1515859050-31764-1-git-send-email-himanshujha199640@gmail.com>
+Message-ID: <alpine.DEB.2.20.1801131727091.3470@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -12,165 +12,929 @@ List-Id: cocci@systeme.lip6.fr
 
 On Sat, 13 Jan 2018, Himanshu Jha wrote:
 
-> Add more memory allocating functions that are frequently used in the kernel
-> code to the existing list and remove the useless casts where it is
-> unnecessary.
->
-> But preserve those casts having __attribute__ such as __force, __iomem,
-> etc which are used by Sparse in the static analysis of the code.
->
-> Also remove two blank lines at EOF.
+> Rename kzalloc-simple to zalloc-simple since now the rule is not
+> specific to kzalloc function only, but also to many other zero memory
+> allocating functions specified in the rule.
 >
 > Signed-off-by: Himanshu Jha <himanshujha199640@gmail.com>
 
 Acked-by: Julia Lawall <julia.lawall@lip6.fr>
 
 > ---
->  scripts/coccinelle/api/alloc/alloc_cast.cocci | 92 +++++++++++++++++++++------
->  1 file changed, 71 insertions(+), 21 deletions(-)
+>  scripts/coccinelle/api/alloc/kzalloc-simple.cocci | 448 ----------------------
+>  scripts/coccinelle/api/alloc/zalloc.cocci         | 448 ++++++++++++++++++++++
+>  2 files changed, 448 insertions(+), 448 deletions(-)
+>  delete mode 100644 scripts/coccinelle/api/alloc/kzalloc-simple.cocci
+>  create mode 100644 scripts/coccinelle/api/alloc/zalloc.cocci
 >
-> diff --git a/scripts/coccinelle/api/alloc/alloc_cast.cocci b/scripts/coccinelle/api/alloc/alloc_cast.cocci
-> index 6c308ee..408ee38 100644
-> --- a/scripts/coccinelle/api/alloc/alloc_cast.cocci
-> +++ b/scripts/coccinelle/api/alloc/alloc_cast.cocci
-> @@ -5,10 +5,11 @@
->  //# kmalloc, kzalloc, kcalloc, kmem_cache_alloc, kmem_cache_zalloc,
->  //# kmem_cache_alloc_node, kmalloc_node and kzalloc_node and removes
->  //# the casting as it is not required. The result in the patch case may
-> -//#need some reformatting.
-> +//# need some reformatting.
->  //
->  // Confidence: High
-> -// Copyright: 2014, Himangi Saraogi  GPLv2.
-> +// Copyright: (C) 2014 Himangi Saraogi GPLv2.
-> +// Copyright: (C) 2017 Himanshu Jha GPLv2.
->  // Comments:
->  // Options: --no-includes --include-headers
->  //
-> @@ -18,55 +19,104 @@ virtual patch
->  virtual org
->  virtual report
->
-> + at initialize:python@
-> +@@
-> +import re
-> +pattern = '__'
-> +m = re.compile(pattern)
-> +
-> + at r1 depends on context || patch@
-> +type T;
-> +@@
-> +
-> +  (T *)
-> +  \(kmalloc\|kzalloc\|kcalloc\|kmem_cache_alloc\|kmem_cache_zalloc\|
-> +   kmem_cache_alloc_node\|kmalloc_node\|kzalloc_node\|vmalloc\|vzalloc\|
-> +   dma_alloc_coherent\|dma_zalloc_coherent\|devm_kmalloc\|devm_kzalloc\|
-> +   kvmalloc\|kvzalloc\|kvmalloc_node\|kvzalloc_node\|pci_alloc_consistent\|
-> +   pci_zalloc_consistent\|kmem_alloc\|kmem_zalloc\|kmem_zone_alloc\|
-> +   kmem_zone_zalloc\|vmalloc_node\|vzalloc_node\)(...)
-> +
->  //----------------------------------------------------------
->  //  For context mode
->  //----------------------------------------------------------
->
+> diff --git a/scripts/coccinelle/api/alloc/kzalloc-simple.cocci b/scripts/coccinelle/api/alloc/kzalloc-simple.cocci
+> deleted file mode 100644
+> index 92b2091..0000000
+> --- a/scripts/coccinelle/api/alloc/kzalloc-simple.cocci
+> +++ /dev/null
+> @@ -1,448 +0,0 @@
+> -///
+> -/// Use zeroing allocator rather than allocator followed by memset with 0
+> -///
+> -/// This considers some simple cases that are common and easy to validate
+> -/// Note in particular that there are no ...s in the rule, so all of the
+> -/// matched code has to be contiguous
+> -///
+> -// Confidence: High
+> -// Copyright: (C) 2009-2010 Julia Lawall, Nicolas Palix, DIKU.  GPLv2.
+> -// Copyright: (C) 2009-2010 Gilles Muller, INRIA/LiP6.  GPLv2.
+> -// Copyright: (C) 2017 Himanshu Jha GPLv2.
+> -// URL: http://coccinelle.lip6.fr/rules/kzalloc.html
+> -// Options: --no-includes --include-headers
+> -//
+> -// Keywords: kmalloc, kzalloc
+> -// Version min: < 2.6.12 kmalloc
+> -// Version min:   2.6.14 kzalloc
+> -//
+> -
+> -virtual context
+> -virtual patch
+> -virtual org
+> -virtual report
+> -
+> -//----------------------------------------------------------
+> -//  For context mode
+> -//----------------------------------------------------------
+> -
 > - at depends on context@
-> -type T;
-> + at script:python depends on context@
-> +t << r1.T;
-> +@@
-> +
-> +if m.search(t) != None:
-> +        cocci.include_match(False)
-> +
-> + at depends on context && r1@
-> +type r1.T;
->  @@
->
->  * (T *)
->    \(kmalloc\|kzalloc\|kcalloc\|kmem_cache_alloc\|kmem_cache_zalloc\|
-> -   kmem_cache_alloc_node\|kmalloc_node\|kzalloc_node\)(...)
-> +   kmem_cache_alloc_node\|kmalloc_node\|kzalloc_node\|vmalloc\|vzalloc\|
-> +   dma_alloc_coherent\|dma_zalloc_coherent\|devm_kmalloc\|devm_kzalloc\|
-> +   kvmalloc\|kvzalloc\|kvmalloc_node\|kvzalloc_node\|pci_alloc_consistent\|
-> +   pci_zalloc_consistent\|kmem_alloc\|kmem_zalloc\|kmem_zone_alloc\|
-> +   kmem_zone_zalloc\|vmalloc_node\|vzalloc_node\)(...)
->
->  //----------------------------------------------------------
->  //  For patch mode
->  //----------------------------------------------------------
->
+> -type T, T2;
+> -expression x;
+> -expression E1;
+> -statement S;
+> -@@
+> -
+> -* x = (T)\(kmalloc(E1, ...)\|vmalloc(E1)\|dma_alloc_coherent(...,E1,...)\|
+> -  kmalloc_node(E1, ...)\|kmem_cache_alloc(...)\|kmem_alloc(E1, ...)\|
+> -  devm_kmalloc(...,E1,...)\|kvmalloc(E1, ...)\|pci_alloc_consistent(...,E1,...)\|
+> -  kvmalloc_node(E1,...)\);
+> -  if ((x==NULL) || ...) S
+> -* memset((T2)x,0,E1);
+> -
+> -//----------------------------------------------------------
+> -//  For patch mode
+> -//----------------------------------------------------------
+> -
 > - at depends on patch@
-> -type T;
-> + at script:python depends on patch@
-> +t << r1.T;
-> +@@
-> +
-> +if m.search(t) != None:
-> +        cocci.include_match(False)
-> +
-> + at depends on patch && r1@
-> +type r1.T;
->  @@
->
->  - (T *)
-> -  (\(kmalloc\|kzalloc\|kcalloc\|kmem_cache_alloc\|kmem_cache_zalloc\|
-> -   kmem_cache_alloc_node\|kmalloc_node\|kzalloc_node\)(...))
-> +  \(kmalloc\|kzalloc\|kcalloc\|kmem_cache_alloc\|kmem_cache_zalloc\|
-> +   kmem_cache_alloc_node\|kmalloc_node\|kzalloc_node\|vmalloc\|vzalloc\|
-> +   dma_alloc_coherent\|dma_zalloc_coherent\|devm_kmalloc\|devm_kzalloc\|
-> +   kvmalloc\|kvzalloc\|kvmalloc_node\|kvzalloc_node\|pci_alloc_consistent\|
-> +   pci_zalloc_consistent\|kmem_alloc\|kmem_zalloc\|kmem_zone_alloc\|
-> +   kmem_zone_zalloc\|vmalloc_node\|vzalloc_node\)(...)
->
->  //----------------------------------------------------------
->  //  For org and report mode
->  //----------------------------------------------------------
->
+> -type T, T2;
+> -expression x;
+> -expression E1,E2,E3,E4;
+> -statement S;
+> -@@
+> -
+> -(
+> -- x = kmalloc(E1,E2);
+> -+ x = kzalloc(E1,E2);
+> -|
+> -- x = (T *)kmalloc(E1,E2);
+> -+ x = kzalloc(E1,E2);
+> -|
+> -- x = (T)kmalloc(E1,E2);
+> -+ x = (T)kzalloc(E1,E2);
+> -|
+> -- x = vmalloc(E1);
+> -+ x = vzalloc(E1);
+> -|
+> -- x = (T *)vmalloc(E1);
+> -+ x = vzalloc(E1);
+> -|
+> -- x = (T)vmalloc(E1);
+> -+ x = (T)vzalloc(E1);
+> -|
+> -- x = dma_alloc_coherent(E2,E1,E3,E4);
+> -+ x = dma_zalloc_coherent(E2,E1,E3,E4);
+> -|
+> -- x = (T *)dma_alloc_coherent(E2,E1,E3,E4);
+> -+ x = dma_zalloc_coherent(E2,E1,E3,E4);
+> -|
+> -- x = (T)dma_alloc_coherent(E2,E1,E3,E4);
+> -+ x = (T)dma_zalloc_coherent(E2,E1,E3,E4);
+> -|
+> -- x = kmalloc_node(E1,E2,E3);
+> -+ x = kzalloc_node(E1,E2,E3);
+> -|
+> -- x = (T *)kmalloc_node(E1,E2,E3);
+> -+ x = kzalloc_node(E1,E2,E3);
+> -|
+> -- x = (T)kmalloc_node(E1,E2,E3);
+> -+ x = (T)kzalloc_node(E1,E2,E3);
+> -|
+> -- x = kmem_cache_alloc(E3,E4);
+> -+ x = kmem_cache_zalloc(E3,E4);
+> -|
+> -- x = (T *)kmem_cache_alloc(E3,E4);
+> -+ x = kmem_cache_zalloc(E3,E4);
+> -|
+> -- x = (T)kmem_cache_alloc(E3,E4);
+> -+ x = (T)kmem_cache_zalloc(E3,E4);
+> -|
+> -- x = kmem_alloc(E1,E2);
+> -+ x = kmem_zalloc(E1,E2);
+> -|
+> -- x = (T *)kmem_alloc(E1,E2);
+> -+ x = kmem_zalloc(E1,E2);
+> -|
+> -- x = (T)kmem_alloc(E1,E2);
+> -+ x = (T)kmem_zalloc(E1,E2);
+> -|
+> -- x = devm_kmalloc(E2,E1,E3);
+> -+ x = devm_kzalloc(E2,E1,E3);
+> -|
+> -- x = (T *)devm_kmalloc(E2,E1,E3);
+> -+ x = devm_kzalloc(E2,E1,E3);
+> -|
+> -- x = (T)devm_kmalloc(E2,E1,E3);
+> -+ x = (T)devm_kzalloc(E2,E1,E3);
+> -|
+> -- x = kvmalloc(E1,E2);
+> -+ x = kvzalloc(E1,E2);
+> -|
+> -- x = (T *)kvmalloc(E1,E2);
+> -+ x = kvzalloc(E1,E2);
+> -|
+> -- x = (T)kvmalloc(E1,E2);
+> -+ x = (T)kvzalloc(E1,E2);
+> -|
+> -- x = pci_alloc_consistent(E2,E1,E3);
+> -+ x = pci_zalloc_consistent(E2,E1,E3);
+> -|
+> -- x = (T *)pci_alloc_consistent(E2,E1,E3);
+> -+ x = pci_zalloc_consistent(E2,E1,E3);
+> -|
+> -- x = (T)pci_alloc_consistent(E2,E1,E3);
+> -+ x = (T)pci_zalloc_consistent(E2,E1,E3);
+> -|
+> -- x = kvmalloc_node(E1,E2,E3);
+> -+ x = kvzalloc_node(E1,E2,E3);
+> -|
+> -- x = (T *)kvmalloc_node(E1,E2,E3);
+> -+ x = kvzalloc_node(E1,E2,E3);
+> -|
+> -- x = (T)kvmalloc_node(E1,E2,E3);
+> -+ x = (T)kvzalloc_node(E1,E2,E3);
+> -)
+> -  if ((x==NULL) || ...) S
+> -- memset((T2)x,0,E1);
+> -
+> -//----------------------------------------------------------
+> -//  For org mode
+> -//----------------------------------------------------------
+> -
 > - at r depends on org || report@
-> + at r2 depends on org || report@
->  type T;
->  position p;
->  @@
->
-> - (T at p *)\(kmalloc\|kzalloc\|kcalloc\|kmem_cache_alloc\|kmem_cache_zalloc\|
-> -   kmem_cache_alloc_node\|kmalloc_node\|kzalloc_node\)(...)
-> + (T at p *)
-> +  \(kmalloc\|kzalloc\|kcalloc\|kmem_cache_alloc\|kmem_cache_zalloc\|
-> +   kmem_cache_alloc_node\|kmalloc_node\|kzalloc_node\|vmalloc\|vzalloc\|
-> +   dma_alloc_coherent\|dma_zalloc_coherent\|devm_kmalloc\|devm_kzalloc\|
-> +   kvmalloc\|kvzalloc\|kvmalloc_node\|kvzalloc_node\|pci_alloc_consistent\|
-> +   pci_zalloc_consistent\|kmem_alloc\|kmem_zalloc\|kmem_zone_alloc\|
-> +   kmem_zone_zalloc\|vmalloc_node\|vzalloc_node\)(...)
->
->  @script:python depends on org@
+> -type T, T2;
+> -expression x;
+> -expression E1,E2;
+> -statement S;
+> -position p;
+> -@@
+> -
+> - x = (T)kmalloc at p(E1,E2);
+> - if ((x==NULL) || ...) S
+> - memset((T2)x,0,E1);
+> -
+> - at script:python depends on org@
 > -p << r.p;
-> -t << r.T;
-> +p << r2.p;
-> +t << r2.T;
->  @@
->
-> -coccilib.org.print_safe_todo(p[0], t)
-> +if m.search(t) != None:
-> +	cocci.include_match(False)
-> +else:
-> +	coccilib.org.print_safe_todo(p[0], t)
->
->  @script:python depends on report@
+> -x << r.x;
+> -@@
+> -
+> -msg="%s" % (x)
+> -msg_safe=msg.replace("[","@(").replace("]",")")
+> -coccilib.org.print_todo(p[0], msg_safe)
+> -
+> - at script:python depends on report@
 > -p << r.p;
-> -t << r.T;
-> +p << r2.p;
-> +t << r2.T;
->  @@
->
-> -msg="WARNING: casting value returned by memory allocation function to (%s *) is useless." % (t)
+> -x << r.x;
+> -@@
+> -
+> -msg="WARNING: kzalloc should be used for %s, instead of kmalloc/memset" % (x)
 > -coccilib.report.print_report(p[0], msg)
 > -
+> -//-----------------------------------------------------------------
+> - at r1 depends on org || report@
+> -type T, T2;
+> -expression x;
+> -expression E1;
+> -statement S;
+> -position p;
+> -@@
 > -
-> +if m.search(t) != None:
-> +	cocci.include_match(False)
-> +else:
-> +	msg="WARNING: casting value returned by memory allocation function to (%s *) is useless." % (t)
-> +	coccilib.report.print_report(p[0], msg)
+> - x = (T)vmalloc at p(E1);
+> - if ((x==NULL) || ...) S
+> - memset((T2)x,0,E1);
+> -
+> - at script:python depends on org@
+> -p << r1.p;
+> -x << r1.x;
+> -@@
+> -
+> -msg="%s" % (x)
+> -msg_safe=msg.replace("[","@(").replace("]",")")
+> -coccilib.org.print_todo(p[0], msg_safe)
+> -
+> - at script:python depends on report@
+> -p << r1.p;
+> -x << r1.x;
+> -@@
+> -
+> -msg="WARNING: vzalloc should be used for %s, instead of vmalloc/memset" % (x)
+> -coccilib.report.print_report(p[0], msg)
+> -
+> -//-----------------------------------------------------------------
+> - at r2 depends on org || report@
+> -type T, T2;
+> -expression x;
+> -expression E1,E2,E3,E4;
+> -statement S;
+> -position p;
+> -@@
+> -
+> - x = (T)dma_alloc_coherent at p(E2,E1,E3,E4);
+> - if ((x==NULL) || ...) S
+> - memset((T2)x,0,E1);
+> -
+> - at script:python depends on org@
+> -p << r2.p;
+> -x << r2.x;
+> -@@
+> -
+> -msg="%s" % (x)
+> -msg_safe=msg.replace("[","@(").replace("]",")")
+> -coccilib.org.print_todo(p[0], msg_safe)
+> -
+> - at script:python depends on report@
+> -p << r2.p;
+> -x << r2.x;
+> -@@
+> -
+> -msg="WARNING: dma_zalloc_coherent should be used for %s, instead of dma_alloc_coherent/memset" % (x)
+> -coccilib.report.print_report(p[0], msg)
+> -
+> -//-----------------------------------------------------------------
+> - at r3 depends on org || report@
+> -type T, T2;
+> -expression x;
+> -expression E1,E2,E3;
+> -statement S;
+> -position p;
+> -@@
+> -
+> - x = (T)kmalloc_node at p(E1,E2,E3);
+> - if ((x==NULL) || ...) S
+> - memset((T2)x,0,E1);
+> -
+> - at script:python depends on org@
+> -p << r3.p;
+> -x << r3.x;
+> -@@
+> -
+> -msg="%s" % (x)
+> -msg_safe=msg.replace("[","@(").replace("]",")")
+> -coccilib.org.print_todo(p[0], msg_safe)
+> -
+> - at script:python depends on report@
+> -p << r3.p;
+> -x << r3.x;
+> -@@
+> -
+> -msg="WARNING: kzalloc_node should be used for %s, instead of kmalloc_node/memset" % (x)
+> -coccilib.report.print_report(p[0], msg)
+> -
+> -//-----------------------------------------------------------------
+> - at r4 depends on org || report@
+> -type T, T2;
+> -expression x;
+> -expression E1,E2,E3;
+> -statement S;
+> -position p;
+> -@@
+> -
+> - x = (T)kmem_cache_alloc at p(E2,E3);
+> - if ((x==NULL) || ...) S
+> - memset((T2)x,0,E1);
+> -
+> - at script:python depends on org@
+> -p << r4.p;
+> -x << r4.x;
+> -@@
+> -
+> -msg="%s" % (x)
+> -msg_safe=msg.replace("[","@(").replace("]",")")
+> -coccilib.org.print_todo(p[0], msg_safe)
+> -
+> - at script:python depends on report@
+> -p << r4.p;
+> -x << r4.x;
+> -@@
+> -
+> -msg="WARNING: kmem_cache_zalloc should be used for %s, instead of kmem_cache_alloc/memset" % (x)
+> -coccilib.report.print_report(p[0], msg)
+> -
+> -//-----------------------------------------------------------------
+> - at r5 depends on org || report@
+> -type T, T2;
+> -expression x;
+> -expression E1,E2;
+> -statement S;
+> -position p;
+> -@@
+> -
+> - x = (T)kmem_alloc at p(E1,E2);
+> - if ((x==NULL) || ...) S
+> - memset((T2)x,0,E1);
+> -
+> - at script:python depends on org@
+> -p << r5.p;
+> -x << r5.x;
+> -@@
+> -
+> -msg="%s" % (x)
+> -msg_safe=msg.replace("[","@(").replace("]",")")
+> -coccilib.org.print_todo(p[0], msg_safe)
+> -
+> - at script:python depends on report@
+> -p << r5.p;
+> -x << r5.x;
+> -@@
+> -
+> -msg="WARNING: kmem_zalloc should be used for %s, instead of kmem_alloc/memset" % (x)
+> -coccilib.report.print_report(p[0], msg)
+> -
+> -//-----------------------------------------------------------------
+> - at r6 depends on org || report@
+> -type T, T2;
+> -expression x;
+> -expression E1,E2,E3;
+> -statement S;
+> -position p;
+> -@@
+> -
+> - x = (T)devm_kmalloc at p(E2,E1,E3);
+> - if ((x==NULL) || ...) S
+> - memset((T2)x,0,E1);
+> -
+> - at script:python depends on org@
+> -p << r6.p;
+> -x << r6.x;
+> -@@
+> -
+> -msg="%s" % (x)
+> -msg_safe=msg.replace("[","@(").replace("]",")")
+> -coccilib.org.print_todo(p[0], msg_safe)
+> -
+> - at script:python depends on report@
+> -p << r6.p;
+> -x << r6.x;
+> -@@
+> -
+> -msg="WARNING: devm_kzalloc should be used for %s, instead of devm_kmalloc/memset" % (x)
+> -coccilib.report.print_report(p[0], msg)
+> -
+> -//-----------------------------------------------------------------
+> - at r7 depends on org || report@
+> -type T, T2;
+> -expression x;
+> -expression E1,E2;
+> -statement S;
+> -position p;
+> -@@
+> -
+> - x = (T)kvmalloc at p(E1,E2);
+> - if ((x==NULL) || ...) S
+> - memset((T2)x,0,E1);
+> -
+> - at script:python depends on org@
+> -p << r7.p;
+> -x << r7.x;
+> -@@
+> -
+> -msg="%s" % (x)
+> -msg_safe=msg.replace("[","@(").replace("]",")")
+> -coccilib.org.print_todo(p[0], msg_safe)
+> -
+> - at script:python depends on report@
+> -p << r7.p;
+> -x << r7.x;
+> -@@
+> -
+> -msg="WARNING: kvzalloc should be used for %s, instead of kvmalloc/memset" % (x)
+> -coccilib.report.print_report(p[0], msg)
+> -
+> -//-----------------------------------------------------------------
+> - at r8 depends on org || report@
+> -type T, T2;
+> -expression x;
+> -expression E1,E2,E3;
+> -statement S;
+> -position p;
+> -@@
+> -
+> - x = (T)pci_alloc_consistent at p(E2,E1,E3);
+> - if ((x==NULL) || ...) S
+> - memset((T2)x,0,E1);
+> -
+> - at script:python depends on org@
+> -p << r8.p;
+> -x << r8.x;
+> -@@
+> -
+> -msg="%s" % (x)
+> -msg_safe=msg.replace("[","@(").replace("]",")")
+> -coccilib.org.print_todo(p[0], msg_safe)
+> -
+> - at script:python depends on report@
+> -p << r8.p;
+> -x << r8.x;
+> -@@
+> -
+> -msg="WARNING: pci_zalloc_consistent should be used for %s, instead of pci_alloc_consistent/memset" % (x)
+> -coccilib.report.print_report(p[0], msg)
+> -//-----------------------------------------------------------------
+> - at r9 depends on org || report@
+> -type T, T2;
+> -expression x;
+> -expression E1,E2,E3;
+> -statement S;
+> -position p;
+> -@@
+> -
+> - x = (T)kvmalloc_node at p(E1,E2,E3);
+> - if ((x==NULL) || ...) S
+> - memset((T2)x,0,E1);
+> -
+> - at script:python depends on org@
+> -p << r9.p;
+> -x << r9.x;
+> -@@
+> -
+> -msg="%s" % (x)
+> -msg_safe=msg.replace("[","@(").replace("]",")")
+> -coccilib.org.print_todo(p[0], msg_safe)
+> -
+> - at script:python depends on report@
+> -p << r9.p;
+> -x << r9.x;
+> -@@
+> -
+> -msg="WARNING: kvzalloc_node should be used for %s, instead of kvmalloc_node/memset" % (x)
+> -coccilib.report.print_report(p[0], msg)
+> diff --git a/scripts/coccinelle/api/alloc/zalloc.cocci b/scripts/coccinelle/api/alloc/zalloc.cocci
+> new file mode 100644
+> index 0000000..92b2091
+> --- /dev/null
+> +++ b/scripts/coccinelle/api/alloc/zalloc.cocci
+> @@ -0,0 +1,448 @@
+> +///
+> +/// Use zeroing allocator rather than allocator followed by memset with 0
+> +///
+> +/// This considers some simple cases that are common and easy to validate
+> +/// Note in particular that there are no ...s in the rule, so all of the
+> +/// matched code has to be contiguous
+> +///
+> +// Confidence: High
+> +// Copyright: (C) 2009-2010 Julia Lawall, Nicolas Palix, DIKU.  GPLv2.
+> +// Copyright: (C) 2009-2010 Gilles Muller, INRIA/LiP6.  GPLv2.
+> +// Copyright: (C) 2017 Himanshu Jha GPLv2.
+> +// URL: http://coccinelle.lip6.fr/rules/kzalloc.html
+> +// Options: --no-includes --include-headers
+> +//
+> +// Keywords: kmalloc, kzalloc
+> +// Version min: < 2.6.12 kmalloc
+> +// Version min:   2.6.14 kzalloc
+> +//
+> +
+> +virtual context
+> +virtual patch
+> +virtual org
+> +virtual report
+> +
+> +//----------------------------------------------------------
+> +//  For context mode
+> +//----------------------------------------------------------
+> +
+> + at depends on context@
+> +type T, T2;
+> +expression x;
+> +expression E1;
+> +statement S;
+> +@@
+> +
+> +* x = (T)\(kmalloc(E1, ...)\|vmalloc(E1)\|dma_alloc_coherent(...,E1,...)\|
+> +  kmalloc_node(E1, ...)\|kmem_cache_alloc(...)\|kmem_alloc(E1, ...)\|
+> +  devm_kmalloc(...,E1,...)\|kvmalloc(E1, ...)\|pci_alloc_consistent(...,E1,...)\|
+> +  kvmalloc_node(E1,...)\);
+> +  if ((x==NULL) || ...) S
+> +* memset((T2)x,0,E1);
+> +
+> +//----------------------------------------------------------
+> +//  For patch mode
+> +//----------------------------------------------------------
+> +
+> + at depends on patch@
+> +type T, T2;
+> +expression x;
+> +expression E1,E2,E3,E4;
+> +statement S;
+> +@@
+> +
+> +(
+> +- x = kmalloc(E1,E2);
+> ++ x = kzalloc(E1,E2);
+> +|
+> +- x = (T *)kmalloc(E1,E2);
+> ++ x = kzalloc(E1,E2);
+> +|
+> +- x = (T)kmalloc(E1,E2);
+> ++ x = (T)kzalloc(E1,E2);
+> +|
+> +- x = vmalloc(E1);
+> ++ x = vzalloc(E1);
+> +|
+> +- x = (T *)vmalloc(E1);
+> ++ x = vzalloc(E1);
+> +|
+> +- x = (T)vmalloc(E1);
+> ++ x = (T)vzalloc(E1);
+> +|
+> +- x = dma_alloc_coherent(E2,E1,E3,E4);
+> ++ x = dma_zalloc_coherent(E2,E1,E3,E4);
+> +|
+> +- x = (T *)dma_alloc_coherent(E2,E1,E3,E4);
+> ++ x = dma_zalloc_coherent(E2,E1,E3,E4);
+> +|
+> +- x = (T)dma_alloc_coherent(E2,E1,E3,E4);
+> ++ x = (T)dma_zalloc_coherent(E2,E1,E3,E4);
+> +|
+> +- x = kmalloc_node(E1,E2,E3);
+> ++ x = kzalloc_node(E1,E2,E3);
+> +|
+> +- x = (T *)kmalloc_node(E1,E2,E3);
+> ++ x = kzalloc_node(E1,E2,E3);
+> +|
+> +- x = (T)kmalloc_node(E1,E2,E3);
+> ++ x = (T)kzalloc_node(E1,E2,E3);
+> +|
+> +- x = kmem_cache_alloc(E3,E4);
+> ++ x = kmem_cache_zalloc(E3,E4);
+> +|
+> +- x = (T *)kmem_cache_alloc(E3,E4);
+> ++ x = kmem_cache_zalloc(E3,E4);
+> +|
+> +- x = (T)kmem_cache_alloc(E3,E4);
+> ++ x = (T)kmem_cache_zalloc(E3,E4);
+> +|
+> +- x = kmem_alloc(E1,E2);
+> ++ x = kmem_zalloc(E1,E2);
+> +|
+> +- x = (T *)kmem_alloc(E1,E2);
+> ++ x = kmem_zalloc(E1,E2);
+> +|
+> +- x = (T)kmem_alloc(E1,E2);
+> ++ x = (T)kmem_zalloc(E1,E2);
+> +|
+> +- x = devm_kmalloc(E2,E1,E3);
+> ++ x = devm_kzalloc(E2,E1,E3);
+> +|
+> +- x = (T *)devm_kmalloc(E2,E1,E3);
+> ++ x = devm_kzalloc(E2,E1,E3);
+> +|
+> +- x = (T)devm_kmalloc(E2,E1,E3);
+> ++ x = (T)devm_kzalloc(E2,E1,E3);
+> +|
+> +- x = kvmalloc(E1,E2);
+> ++ x = kvzalloc(E1,E2);
+> +|
+> +- x = (T *)kvmalloc(E1,E2);
+> ++ x = kvzalloc(E1,E2);
+> +|
+> +- x = (T)kvmalloc(E1,E2);
+> ++ x = (T)kvzalloc(E1,E2);
+> +|
+> +- x = pci_alloc_consistent(E2,E1,E3);
+> ++ x = pci_zalloc_consistent(E2,E1,E3);
+> +|
+> +- x = (T *)pci_alloc_consistent(E2,E1,E3);
+> ++ x = pci_zalloc_consistent(E2,E1,E3);
+> +|
+> +- x = (T)pci_alloc_consistent(E2,E1,E3);
+> ++ x = (T)pci_zalloc_consistent(E2,E1,E3);
+> +|
+> +- x = kvmalloc_node(E1,E2,E3);
+> ++ x = kvzalloc_node(E1,E2,E3);
+> +|
+> +- x = (T *)kvmalloc_node(E1,E2,E3);
+> ++ x = kvzalloc_node(E1,E2,E3);
+> +|
+> +- x = (T)kvmalloc_node(E1,E2,E3);
+> ++ x = (T)kvzalloc_node(E1,E2,E3);
+> +)
+> +  if ((x==NULL) || ...) S
+> +- memset((T2)x,0,E1);
+> +
+> +//----------------------------------------------------------
+> +//  For org mode
+> +//----------------------------------------------------------
+> +
+> + at r depends on org || report@
+> +type T, T2;
+> +expression x;
+> +expression E1,E2;
+> +statement S;
+> +position p;
+> +@@
+> +
+> + x = (T)kmalloc at p(E1,E2);
+> + if ((x==NULL) || ...) S
+> + memset((T2)x,0,E1);
+> +
+> + at script:python depends on org@
+> +p << r.p;
+> +x << r.x;
+> +@@
+> +
+> +msg="%s" % (x)
+> +msg_safe=msg.replace("[","@(").replace("]",")")
+> +coccilib.org.print_todo(p[0], msg_safe)
+> +
+> + at script:python depends on report@
+> +p << r.p;
+> +x << r.x;
+> +@@
+> +
+> +msg="WARNING: kzalloc should be used for %s, instead of kmalloc/memset" % (x)
+> +coccilib.report.print_report(p[0], msg)
+> +
+> +//-----------------------------------------------------------------
+> + at r1 depends on org || report@
+> +type T, T2;
+> +expression x;
+> +expression E1;
+> +statement S;
+> +position p;
+> +@@
+> +
+> + x = (T)vmalloc at p(E1);
+> + if ((x==NULL) || ...) S
+> + memset((T2)x,0,E1);
+> +
+> + at script:python depends on org@
+> +p << r1.p;
+> +x << r1.x;
+> +@@
+> +
+> +msg="%s" % (x)
+> +msg_safe=msg.replace("[","@(").replace("]",")")
+> +coccilib.org.print_todo(p[0], msg_safe)
+> +
+> + at script:python depends on report@
+> +p << r1.p;
+> +x << r1.x;
+> +@@
+> +
+> +msg="WARNING: vzalloc should be used for %s, instead of vmalloc/memset" % (x)
+> +coccilib.report.print_report(p[0], msg)
+> +
+> +//-----------------------------------------------------------------
+> + at r2 depends on org || report@
+> +type T, T2;
+> +expression x;
+> +expression E1,E2,E3,E4;
+> +statement S;
+> +position p;
+> +@@
+> +
+> + x = (T)dma_alloc_coherent at p(E2,E1,E3,E4);
+> + if ((x==NULL) || ...) S
+> + memset((T2)x,0,E1);
+> +
+> + at script:python depends on org@
+> +p << r2.p;
+> +x << r2.x;
+> +@@
+> +
+> +msg="%s" % (x)
+> +msg_safe=msg.replace("[","@(").replace("]",")")
+> +coccilib.org.print_todo(p[0], msg_safe)
+> +
+> + at script:python depends on report@
+> +p << r2.p;
+> +x << r2.x;
+> +@@
+> +
+> +msg="WARNING: dma_zalloc_coherent should be used for %s, instead of dma_alloc_coherent/memset" % (x)
+> +coccilib.report.print_report(p[0], msg)
+> +
+> +//-----------------------------------------------------------------
+> + at r3 depends on org || report@
+> +type T, T2;
+> +expression x;
+> +expression E1,E2,E3;
+> +statement S;
+> +position p;
+> +@@
+> +
+> + x = (T)kmalloc_node at p(E1,E2,E3);
+> + if ((x==NULL) || ...) S
+> + memset((T2)x,0,E1);
+> +
+> + at script:python depends on org@
+> +p << r3.p;
+> +x << r3.x;
+> +@@
+> +
+> +msg="%s" % (x)
+> +msg_safe=msg.replace("[","@(").replace("]",")")
+> +coccilib.org.print_todo(p[0], msg_safe)
+> +
+> + at script:python depends on report@
+> +p << r3.p;
+> +x << r3.x;
+> +@@
+> +
+> +msg="WARNING: kzalloc_node should be used for %s, instead of kmalloc_node/memset" % (x)
+> +coccilib.report.print_report(p[0], msg)
+> +
+> +//-----------------------------------------------------------------
+> + at r4 depends on org || report@
+> +type T, T2;
+> +expression x;
+> +expression E1,E2,E3;
+> +statement S;
+> +position p;
+> +@@
+> +
+> + x = (T)kmem_cache_alloc at p(E2,E3);
+> + if ((x==NULL) || ...) S
+> + memset((T2)x,0,E1);
+> +
+> + at script:python depends on org@
+> +p << r4.p;
+> +x << r4.x;
+> +@@
+> +
+> +msg="%s" % (x)
+> +msg_safe=msg.replace("[","@(").replace("]",")")
+> +coccilib.org.print_todo(p[0], msg_safe)
+> +
+> + at script:python depends on report@
+> +p << r4.p;
+> +x << r4.x;
+> +@@
+> +
+> +msg="WARNING: kmem_cache_zalloc should be used for %s, instead of kmem_cache_alloc/memset" % (x)
+> +coccilib.report.print_report(p[0], msg)
+> +
+> +//-----------------------------------------------------------------
+> + at r5 depends on org || report@
+> +type T, T2;
+> +expression x;
+> +expression E1,E2;
+> +statement S;
+> +position p;
+> +@@
+> +
+> + x = (T)kmem_alloc at p(E1,E2);
+> + if ((x==NULL) || ...) S
+> + memset((T2)x,0,E1);
+> +
+> + at script:python depends on org@
+> +p << r5.p;
+> +x << r5.x;
+> +@@
+> +
+> +msg="%s" % (x)
+> +msg_safe=msg.replace("[","@(").replace("]",")")
+> +coccilib.org.print_todo(p[0], msg_safe)
+> +
+> + at script:python depends on report@
+> +p << r5.p;
+> +x << r5.x;
+> +@@
+> +
+> +msg="WARNING: kmem_zalloc should be used for %s, instead of kmem_alloc/memset" % (x)
+> +coccilib.report.print_report(p[0], msg)
+> +
+> +//-----------------------------------------------------------------
+> + at r6 depends on org || report@
+> +type T, T2;
+> +expression x;
+> +expression E1,E2,E3;
+> +statement S;
+> +position p;
+> +@@
+> +
+> + x = (T)devm_kmalloc at p(E2,E1,E3);
+> + if ((x==NULL) || ...) S
+> + memset((T2)x,0,E1);
+> +
+> + at script:python depends on org@
+> +p << r6.p;
+> +x << r6.x;
+> +@@
+> +
+> +msg="%s" % (x)
+> +msg_safe=msg.replace("[","@(").replace("]",")")
+> +coccilib.org.print_todo(p[0], msg_safe)
+> +
+> + at script:python depends on report@
+> +p << r6.p;
+> +x << r6.x;
+> +@@
+> +
+> +msg="WARNING: devm_kzalloc should be used for %s, instead of devm_kmalloc/memset" % (x)
+> +coccilib.report.print_report(p[0], msg)
+> +
+> +//-----------------------------------------------------------------
+> + at r7 depends on org || report@
+> +type T, T2;
+> +expression x;
+> +expression E1,E2;
+> +statement S;
+> +position p;
+> +@@
+> +
+> + x = (T)kvmalloc at p(E1,E2);
+> + if ((x==NULL) || ...) S
+> + memset((T2)x,0,E1);
+> +
+> + at script:python depends on org@
+> +p << r7.p;
+> +x << r7.x;
+> +@@
+> +
+> +msg="%s" % (x)
+> +msg_safe=msg.replace("[","@(").replace("]",")")
+> +coccilib.org.print_todo(p[0], msg_safe)
+> +
+> + at script:python depends on report@
+> +p << r7.p;
+> +x << r7.x;
+> +@@
+> +
+> +msg="WARNING: kvzalloc should be used for %s, instead of kvmalloc/memset" % (x)
+> +coccilib.report.print_report(p[0], msg)
+> +
+> +//-----------------------------------------------------------------
+> + at r8 depends on org || report@
+> +type T, T2;
+> +expression x;
+> +expression E1,E2,E3;
+> +statement S;
+> +position p;
+> +@@
+> +
+> + x = (T)pci_alloc_consistent at p(E2,E1,E3);
+> + if ((x==NULL) || ...) S
+> + memset((T2)x,0,E1);
+> +
+> + at script:python depends on org@
+> +p << r8.p;
+> +x << r8.x;
+> +@@
+> +
+> +msg="%s" % (x)
+> +msg_safe=msg.replace("[","@(").replace("]",")")
+> +coccilib.org.print_todo(p[0], msg_safe)
+> +
+> + at script:python depends on report@
+> +p << r8.p;
+> +x << r8.x;
+> +@@
+> +
+> +msg="WARNING: pci_zalloc_consistent should be used for %s, instead of pci_alloc_consistent/memset" % (x)
+> +coccilib.report.print_report(p[0], msg)
+> +//-----------------------------------------------------------------
+> + at r9 depends on org || report@
+> +type T, T2;
+> +expression x;
+> +expression E1,E2,E3;
+> +statement S;
+> +position p;
+> +@@
+> +
+> + x = (T)kvmalloc_node at p(E1,E2,E3);
+> + if ((x==NULL) || ...) S
+> + memset((T2)x,0,E1);
+> +
+> + at script:python depends on org@
+> +p << r9.p;
+> +x << r9.x;
+> +@@
+> +
+> +msg="%s" % (x)
+> +msg_safe=msg.replace("[","@(").replace("]",")")
+> +coccilib.org.print_todo(p[0], msg_safe)
+> +
+> + at script:python depends on report@
+> +p << r9.p;
+> +x << r9.x;
+> +@@
+> +
+> +msg="WARNING: kvzalloc_node should be used for %s, instead of kvmalloc_node/memset" % (x)
+> +coccilib.report.print_report(p[0], msg)
 > --
 > 2.7.4
 >
