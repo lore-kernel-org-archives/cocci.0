@@ -1,25 +1,33 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sat, 13 Jan 2018 18:38:32 +0100
-Subject: [Cocci] Coccinelle: kzalloc-simple: Rename kzalloc-simple to
- zalloc-simple
-In-Reply-To: <1515859050-31764-1-git-send-email-himanshujha199640@gmail.com>
-References: <1515859050-31764-1-git-send-email-himanshujha199640@gmail.com>
-Message-ID: <1ce7a532-ecf6-6dcd-1944-c9fc9dab709e@users.sourceforge.net>
+Date: Sat, 13 Jan 2018 19:19:25 +0100
+Subject: [Cocci] Coccinelle: alloc_cast: Add more memory allocating
+ functions to the list
+In-Reply-To: <1515858990-31699-1-git-send-email-himanshujha199640@gmail.com>
+References: <1515858990-31699-1-git-send-email-himanshujha199640@gmail.com>
+Message-ID: <721a4579-336b-c367-d802-746cf0ecbeca@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Rename kzalloc-simple to zalloc-simple since now the rule is not
-> specific to kzalloc function only, but also to many other zero memory
-> allocating functions specified in the rule.
+> Add more memory allocating functions that are frequently used in the kernel
+> code to the existing list and remove the useless casts where it is
+> unnecessary.
 
-1. Please add the tag ?Suggested-by? to the commit description.
+Thanks for your approach to extend this SmPL script.
 
-   See also:
-   Rename the SmPL script ?kzalloc-?.cocci??
-   https://systeme.lip6.fr/pipermail/cocci/2018-January/004803.html
-   https://lkml.kernel.org/r/<alpine.DEB.2.20.1801021541070.24055@hadrien>
+I would find the term ?selection? more appropriate than the word ?list? here.
 
-2. Please try this update suggestion once more by using the command ?git mv?.
+
+
+>+  \(kmalloc\|kzalloc\|kcalloc\|kmem_cache_alloc\|kmem_cache_zalloc\|
+
+I suggest to choose an other code layout for such growing SmPL disjunctions.
+How are the chances to specify each function name on a separate script line?
+
+
+Would you ever like to reduce code duplication by including external files?
+
+
+Could an alternation (regular expression) be used for a SmPL constraint?
 
 Regards,
 Markus
