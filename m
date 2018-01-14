@@ -1,8 +1,8 @@
-From: himanshujha199640@gmail.com (Himanshu Jha)
-Date: Sun, 14 Jan 2018 16:58:44 +0530
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sun, 14 Jan 2018 13:48:25 +0100 (CET)
 Subject: [Cocci] Coccinelle: alloc_cast: Add more memory allocating
  functions to the list
-In-Reply-To: <8649d987-c6f2-f36d-3a6f-cfda02557362@users.sourceforge.net>
+In-Reply-To: <5e10af93-14cd-371d-2262-bef2fb2ca387@users.sourceforge.net>
 References: <1515858990-31699-1-git-send-email-himanshujha199640@gmail.com>
  <68dd2f4a-7921-922c-399d-284d3506415d@users.sourceforge.net>
  <alpine.DEB.2.20.1801141003270.7902@hadrien>
@@ -11,64 +11,26 @@ References: <1515858990-31699-1-git-send-email-himanshujha199640@gmail.com>
  <0ca5933b-6973-8273-2646-3241157058cf@users.sourceforge.net>
  <alpine.DEB.2.20.1801141126290.7902@hadrien>
  <8649d987-c6f2-f36d-3a6f-cfda02557362@users.sourceforge.net>
-Message-ID: <20180114112844.GA2649@himanshu-Vostro-3559>
+ <20180114112844.GA2649@himanshu-Vostro-3559>
+ <5e10af93-14cd-371d-2262-bef2fb2ca387@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.20.1801141344350.7902@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sun, Jan 14, 2018 at 11:46:34AM +0100, SF Markus Elfring wrote:
-> > Look at the script code just under the comment "For context mode" and just
-> > under the comment "For patch mode".  Both of them use m.
-> 
-> I would like to apologise that I overlooked these places somehow.
+> 4. Is is more efficient to use the Python key word ?in? to look for
+>    a short string instead of fiddling with the programming interface
+>    for regular expressions?
 
-Rather than apologising, start looking the SmPL grammar documentation
-first. For eg. You asked about the 'initialize' code so take your time
-and read what actually initialize does rather than writing about each
-and very change. If its not mentioned there then ask Julia, that is what
-I do. But first search around the documentation.
+If you test it and find that it is significantly more efficient, then
+please send a patch accordingly.
 
-> 
-> > __ are typically used in sparse annotations.
+>
+> 5. Please omit the variable ?msg? in the last SmPL rule.
+>    The need data can be passed directly instead.
 
-Now, again look for what __attribute__ means and why is it used ? How is
-it benefiticial to sparse for static analysis. Even wikipedia explains
-that!
+The use of the msg variable is common in the semantic patches in the
+kernel.  Ampng other things it increases the chance that the line will fit
+in 80 characters.  It is not completely a success here, but at least it is
+more of a success than it would be otherwise.
 
-> Is this search pattern worth for a corresponding comment in the Python code?
-> 
-> 
-> How do you think about to pass it to the method ?compile? directly (without the variable ?pattern?)?
-
-Would removing that boost performance ?
-pattern variable improves readability and I mean people can easily guess
-"Ok he searching for a pattern ..."
-
-Whatever you wish to suggest, don't just email directly! Look for
-documentation, explore, test the patch with the -next tree and show the
-benchmarks to the relevant people. And finally prepare a patch and send
-upstream.
-
-Respect the developers, they also have their job.
-Don't ask trivial questions to Julia or any other develper before
-searching and exploring. She also has her research and other productive
-stuff to do and not just sitting idle replying to each and every email.
-
-Also, don't linger on *trivial* stuffs that improve the comment, add a
-tabspace etc.
-
-Lastly, you have a habit of saying:
-"How about this ... ?' "How about that ...  ?"
-"What if ... ?"
-
-You have all the tools, documentations, source code, and you can explore
-it yourself too before asking. That is what we call *opensource* :-)
-
-BONUS:
-https://www.kernel.org/doc/html/latest/dev-tools/coccinelle.html
-http://coccinelle.lip6.fr/docs/index.html
-https://en.wikipedia.org/wiki/Sparse#Annotations
-
-
--- 
-Thanks
-Himanshu Jha
+julia
