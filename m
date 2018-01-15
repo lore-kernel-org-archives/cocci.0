@@ -1,50 +1,44 @@
-From: rob@hoelz.ro (Rob Hoelz)
-Date: Mon, 15 Jan 2018 10:59:35 -0600
-Subject: [Cocci] Patching string literal juxtaposition
-In-Reply-To: <58ff3bae-29c1-19cf-99f1-5b96e7855101@users.sourceforge.net>
-References: <20180109202248.7a1e4e1c@eridanus>
- <58ff3bae-29c1-19cf-99f1-5b96e7855101@users.sourceforge.net>
-Message-ID: <20180115105935.430cae15@eridanus>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Mon, 15 Jan 2018 21:29:14 +0100 (CET)
+Subject: [Cocci] [PATCH] demos: python_regexp: Fix regex matching
+In-Reply-To: <1516019805-4523-1-git-send-email-himanshujha199640@gmail.com>
+References: <1516019805-4523-1-git-send-email-himanshujha199640@gmail.com>
+Message-ID: <alpine.DEB.2.20.1801152129040.2251@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 11 Jan 2018 14:30:16 +0100
-SF Markus Elfring <elfring@users.sourceforge.net> wrote:
 
-> > @@
-> > constant char *stock_constant =~ "^GTK_STOCK";
-> > @@
-> >
-> > -"+" stock_constant
-> > +stock_constant
-> >
-> > For starters, Coccinelle doesn't seem to recognize string
-> > juxtaposition (spatch gives me an error when I try this);  
-> 
-> It would be nice if this small source code adjustment could be
-> specified also for the semantic patch language in such a convenient
-> and succinct way. But the Coccinelle software provides a specific
-> behaviour for string literals so far. I imagine then that you could
-> achieve the desired transformation with an other approach.
-> 
-> * How do you think about to choose any of the supported programming
-> languages for the construction of corresponding SmPL script rules?
->   http://coccinelle.lip6.fr/docs/main_grammar003.html
-> 
-> * A ?constant? could be stored in a script variable by this
-> metavariable type. http://coccinelle.lip6.fr/docs/main_grammar002.html
-> 
->   The received input string can be adjusted in ways you like by
-> additional function calls from the available programming interfaces.
->   Would you like to propagate the constructed value back to another
-> script rule by calling the SmPL method ?make_expr??
-> 
-> Regards,
-> Markus
-> 
 
-I'm *very* much new to Coccinelle, so I think I'll have to trying the scripting
-interface as per Julia's suggestion.  I think I need to experiment with Coccinelle
-a bit (or a lot!) more to get the hang of it.
+On Mon, 15 Jan 2018, Himanshu Jha wrote:
 
--Rob
+> Fix regex matching by using correct python syntax by passing the
+> compiled regex object to the argument of search function for effective
+> searching.
+>
+> Signed-off-by: Himanshu Jha <himanshujha199640@gmail.com>
+
+Applied, thanks.
+
+julia
+
+> ---
+>  demos/python_regexp.cocci | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/demos/python_regexp.cocci b/demos/python_regexp.cocci
+> index ce43367..ffb4bd1 100644
+> --- a/demos/python_regexp.cocci
+> +++ b/demos/python_regexp.cocci
+> @@ -16,7 +16,7 @@ id << r_init.id;
+>  @@
+>
+>  print "COCCI: Analyzing %s" % id
+> -if m.search(id.ident) != None:
+> +if m.search(id) != None:
+>  	print "COCCI: %s matchs '_new$'" % id
+>  else:
+>  	print "COCCI: %s discarded" % id
+> --
+> 2.7.4
+>
+>
