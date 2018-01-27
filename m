@@ -1,52 +1,28 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 19 Jan 2018 17:18:54 +0100 (CET)
-Subject: [Cocci] Coccinelle: zalloc-simple: Checking consequences from
- the usage of at signs in Python strings
-In-Reply-To: <ff8a1313-90a3-d009-dbc4-034fdbae82af@users.sourceforge.net>
-References: <CAK7LNAR27r4j4c1FCh_ObpMpBKXgSP6Vq3P=reA-JKoTji6Q1A@mail.gmail.com>
- <ff8a1313-90a3-d009-dbc4-034fdbae82af@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1801191717510.3668@hadrien>
+From: Julia.Lawall@lip6.fr (Julia Lawall)
+Date: Sat, 27 Jan 2018 19:23:36 +0100
+Subject: [Cocci] [PATCH] Coccinelle: memdup: drop spurious line
+Message-ID: <1517077416-17848-1-git-send-email-Julia.Lawall@lip6.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+The kmemdup line in the non-patch case was left over from the added kmemdup
+line in the patch case.
 
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
-On Fri, 19 Jan 2018, SF Markus Elfring wrote:
+---
+ scripts/coccinelle/api/memdup.cocci |    1 -
+ 1 file changed, 1 deletion(-)
 
-> > I removed the blank line at EOF,
-> > then applied to linux-kbuild/misc.
->
-> This script for the semantic patch language is using the at sign within string
-> literals for Python code.
->
-> It is nice when this character seems to work also with the current software.
-
-So it works, but you are complaining anyway?
-
-> How does its usage fit to the following information in the SmPL manual?
->
-> https://github.com/coccinelle/coccinelle/blob/bf1c6a5869dd324f5faeeaa3a12d57270e478b21/docs/manual/cocci_syntax.tex#L50
->
-> ??
-> Furthermore, @ should not be used in this code.
-> Spatch scans the script code for the next @ and considers that to be the
-> beginning of the next rule, even if @ occurs within e.g., a comment.
-> ??
-
-I guess the conclusion is that it woks in strings (which are pretty
-universal) and not in comments (which are language specific).
-
-julia
-
->
-> See also:
-> Configuration or escaping of @ characters for embedded programming language scripts
-> https://github.com/coccinelle/coccinelle/issues/36
->
-> Regards,
-> Markus
-> --
-> To unsubscribe from this list: send the line "unsubscribe kernel-janitors" in
-> the body of a message to majordomo at vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+diff --git a/scripts/coccinelle/api/memdup.cocci b/scripts/coccinelle/api/memdup.cocci
+index 3d1aa71..1249b72 100644
+--- a/scripts/coccinelle/api/memdup.cocci
++++ b/scripts/coccinelle/api/memdup.cocci
+@@ -49,7 +49,6 @@ statement S;
+ @@
+ 
+ *  to = \(kmalloc at p\|kzalloc at p\)(size,flag);
+-   to = kmemdup(from,size,flag);
+    if (to==NULL || ...) S
+ *  memcpy(to, from, size);
+ 
