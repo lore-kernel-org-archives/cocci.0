@@ -1,21 +1,31 @@
-From: dan.carpenter@oracle.com (Dan Carpenter)
-Date: Thu, 1 Feb 2018 13:25:01 +0300
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Thu, 1 Feb 2018 12:06:35 +0100 (CET)
 Subject: [Cocci] [PATCH] coccinelle: reduce false positives
-In-Reply-To: <1517478532-5444-1-git-send-email-Julia.Lawall@lip6.fr>
+In-Reply-To: <20180201102501.kc5pfxojn7fhxat4@mwanda>
 References: <1517478532-5444-1-git-send-email-Julia.Lawall@lip6.fr>
-Message-ID: <20180201102501.kc5pfxojn7fhxat4@mwanda>
+ <20180201102501.kc5pfxojn7fhxat4@mwanda>
+Message-ID: <alpine.DEB.2.20.1802011158110.3135@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, Feb 01, 2018 at 10:48:52AM +0100, Julia Lawall wrote:
-> Some files use both a non-devm allocation and a devm_allocation.  Don't
-> complain about a free when the same function contains a non-devm
-> allocation.
-> 
-> Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-> 
+Here are the results that are eliminated by my change:
 
-That's surprising...  Do you have an example false positive?
+drivers/clk/axs10x/pll_clock.c:323:1-6 kfree(pll_clk);
+drivers/clk/clk-gpio.c:131:2-7 kfree(clk_gpio);
+drivers/clk/clk-hsdk-pll.c:410:1-6 kfree(pll_clk);
+drivers/clk/hisilicon/clk.c:97:1-6 kfree(clk_data);
+drivers/mfd/syscon.c:130:1-8 iounmap(base);
+drivers/mfd/syscon.c:132:1-6 kfree(syscon);
+drivers/pinctrl/freescale/pinctrl-mxs.c:139:2-7 kfree(group);
+drivers/pinctrl/samsung/pinctrl-exynos5440.c:264:1-6 kfree(gname);
+drivers/platform/chrome/cros_ec_debugfs.c:248:1-6 kfree(msg);
+drivers/pwm/pwm-lp3943.c:56:3-8 kfree(pwm_map);
 
-regards,
-dan carpenter
+The semantic patch is pretty naive in that it assumes that all uses of the
+same name point to the same thing.
+
+Looking through the code, it looks like sometimes both an __init and a
+probe function are provided, and the __init function doesn't have access to
+a device object.
+
+julia
