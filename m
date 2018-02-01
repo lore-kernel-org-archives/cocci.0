@@ -1,113 +1,28 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 1 Feb 2018 10:40:40 +0100 (CET)
-Subject: [Cocci] [PATCH] Coccinelle: zalloc-simple: Delete function
- "kmem_cache_alloc" from SmPL rules
-In-Reply-To: <6bee0e11-59ef-b7b1-886e-7abaa30887f2@users.sourceforge.net>
-References: <CAK7LNAR27r4j4c1FCh_ObpMpBKXgSP6Vq3P=reA-JKoTji6Q1A@mail.gmail.com>
- <6bee0e11-59ef-b7b1-886e-7abaa30887f2@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1802011040110.3135@hadrien>
+From: Julia.Lawall@lip6.fr (Julia Lawall)
+Date: Thu,  1 Feb 2018 10:20:55 +0100
+Subject: [Cocci] [PATCH] Coccinelle: coccicheck: fix typo
+Message-ID: <1517476855-5235-1-git-send-email-Julia.Lawall@lip6.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Correct spelling of "coccinelle".
 
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
-On Thu, 1 Feb 2018, SF Markus Elfring wrote:
+---
+ scripts/coccicheck |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> From: Markus Elfring <elfring@users.sourceforge.net>
-> Date: Thu, 1 Feb 2018 10:20:47 +0100
->
-> The deletion for a call of the function "memset" depends on
-> the specification that a size determination is passed by
-> the expression "E1".
-> The function "kmem_cache_alloc" was specified despite of the technical
-> detail that this function does not get a parameter passed which would
-> correspond to such a size information.
->
-> Thus remove it from the first two SmPL rules and omit the rule "r4".
-
-Nack.  It should be supported by the size determined in another way.
-
-julia
-
-> Link: https://elixir.free-electrons.com/linux/v4.15/source/tools/testing/radix-tree/linux/slab.h#L14
-> Link: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/tools/testing/radix-tree/linux/slab.h?id=f26e52e08ab8e56f528ac14aa7929b3477de5616#n14
-> Fixes: 5e2d9da5b9ba350a4f13bd3b255be046bcf86465 ("Coccinelle: kzalloc-simple: Add all zero allocating functions")
-> Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
-> ---
->  scripts/coccinelle/api/alloc/zalloc-simple.cocci | 41 +-----------------------
->  1 file changed, 1 insertion(+), 40 deletions(-)
->
-> diff --git a/scripts/coccinelle/api/alloc/zalloc-simple.cocci b/scripts/coccinelle/api/alloc/zalloc-simple.cocci
-> index 92b20913055f..3bee6cdd99ea 100644
-> --- a/scripts/coccinelle/api/alloc/zalloc-simple.cocci
-> +++ b/scripts/coccinelle/api/alloc/zalloc-simple.cocci
-> @@ -34,7 +34,7 @@ statement S;
->  @@
->
->  * x = (T)\(kmalloc(E1, ...)\|vmalloc(E1)\|dma_alloc_coherent(...,E1,...)\|
-> -  kmalloc_node(E1, ...)\|kmem_cache_alloc(...)\|kmem_alloc(E1, ...)\|
-> +  kmalloc_node(E1, ...)\|kmem_alloc(E1, ...)\|
->    devm_kmalloc(...,E1,...)\|kvmalloc(E1, ...)\|pci_alloc_consistent(...,E1,...)\|
->    kvmalloc_node(E1,...)\);
->    if ((x==NULL) || ...) S
-> @@ -88,15 +88,6 @@ statement S;
->  - x = (T)kmalloc_node(E1,E2,E3);
->  + x = (T)kzalloc_node(E1,E2,E3);
->  |
-> -- x = kmem_cache_alloc(E3,E4);
-> -+ x = kmem_cache_zalloc(E3,E4);
-> -|
-> -- x = (T *)kmem_cache_alloc(E3,E4);
-> -+ x = kmem_cache_zalloc(E3,E4);
-> -|
-> -- x = (T)kmem_cache_alloc(E3,E4);
-> -+ x = (T)kmem_cache_zalloc(E3,E4);
-> -|
->  - x = kmem_alloc(E1,E2);
->  + x = kmem_zalloc(E1,E2);
->  |
-> @@ -268,36 +259,6 @@ x << r3.x;
->  msg="WARNING: kzalloc_node should be used for %s, instead of kmalloc_node/memset" % (x)
->  coccilib.report.print_report(p[0], msg)
->
-> -//-----------------------------------------------------------------
-> - at r4 depends on org || report@
-> -type T, T2;
-> -expression x;
-> -expression E1,E2,E3;
-> -statement S;
-> -position p;
-> -@@
-> -
-> - x = (T)kmem_cache_alloc at p(E2,E3);
-> - if ((x==NULL) || ...) S
-> - memset((T2)x,0,E1);
-> -
-> - at script:python depends on org@
-> -p << r4.p;
-> -x << r4.x;
-> -@@
-> -
-> -msg="%s" % (x)
-> -msg_safe=msg.replace("[","@(").replace("]",")")
-> -coccilib.org.print_todo(p[0], msg_safe)
-> -
-> - at script:python depends on report@
-> -p << r4.p;
-> -x << r4.x;
-> -@@
-> -
-> -msg="WARNING: kmem_cache_zalloc should be used for %s, instead of kmem_cache_alloc/memset" % (x)
-> -coccilib.report.print_report(p[0], msg)
-> -
->  //-----------------------------------------------------------------
->  @r5 depends on org || report@
->  type T, T2;
-> --
-> 2.16.1
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe kernel-janitors" in
-> the body of a message to majordomo at vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+diff --git a/scripts/coccicheck b/scripts/coccicheck
+index ecfac64..9fedca6 100755
+--- a/scripts/coccicheck
++++ b/scripts/coccicheck
+@@ -177,7 +177,7 @@ coccinelle () {
+     REQ_NUM=$(echo $REQ | ${DIR}/scripts/ld-version.sh)
+     if [ "$REQ_NUM" != "0" ] ; then
+ 	    if [ "$SPATCH_VERSION_NUM" -lt "$REQ_NUM" ] ; then
+-		    echo "Skipping coccinele SmPL patch: $COCCI"
++		    echo "Skipping coccinelle SmPL patch: $COCCI"
+ 		    echo "You have coccinelle:           $SPATCH_VERSION"
+ 		    echo "This SmPL patch requires:      $REQ"
+ 		    return
