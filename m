@@ -1,80 +1,32 @@
-From: devel.fx.lebail@orange.fr (Francois-Xavier Le Bail)
-Date: Thu, 8 Feb 2018 16:15:50 +0100
-Subject: [Cocci] Not pointer expression
-In-Reply-To: <alpine.DEB.2.20.1802081539391.23604@hadrien>
-References: <f33cbd82-389c-77c4-65f9-af15f4eb4ab3@orange.fr>
- <alpine.DEB.2.20.1802081539391.23604@hadrien>
-Message-ID: <8d635d32-fecb-db89-4d01-e6be446d7be0@orange.fr>
+From: Robert.Larice@t-online.de (Robert Larice)
+Date: Sat, 10 Feb 2018 13:12:27 +0100
+Subject: [Cocci] please help me with a failing match
+Message-ID: <kkk1vlt55g.fsf@bora.foobar.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 08/02/2018 15:44, Julia Lawall wrote:
-> 
-> 
-> On Thu, 8 Feb 2018, Francois-Xavier Le Bail wrote:
-> 
->> Hi,
->>
->> expression *e;
->> define 'e' is a pointer expression.
->>
->> Is there a way to define 'e' is *not* a pointer expression?
-> 
-> @@
-> expression *e;
-> expression e1;
-> @@
-> 
-> (
-> e
-> |
-> *e1
-> )
-> 
-> The above will highlight all expressions that have not been inferred to
-> have a pointer type.  But note that that doesn't mean that it has been
-> inferred that the expression as a non-pointer type.  It could be that not
-> enough information is available.
-> 
-> Another option would be:
-> 
-> @@
-> expression *e;
-> type T;
-> T e1;
-> @@
-> 
-> (
-> e
-> |
-> *e1
-> )
-> 
-> Now it should require that e1 actually has a known type and it is not a
-> pointer type.
-> 
-> Another approach would be:
-> 
-> @bad@
-> position p;
-> expression *e;
-> @@
-> 
-> e at p
-> 
-> @ok@
-> position p != bad.p;
-> type T;
-> T e;
-> @@
-> 
-> *e at p
-> 
-> If you are actually interested in structure types, you could also say
-> 
-> struct e;
+Dear People,
 
-Thanks, I will do some tests with these different approaches.
+  I'm completely new here.
 
--- 
-Francois-Xavier
+  Attached is a small piece of .c and a .cocci file.
+  There is a "return 41;" in both files, commented out.
+  If I uncomment this "return 41;" in both files then
+    spatch will not match the pieces any more.
+
+  Could you please help me to undertand and circumvent this issue ?
+
+Best Regards,
+  Robert Larice
+
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: try-goto-2.cocci
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20180210/7f5c486b/attachment.ksh>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: try-goto-2.c
+Type: text/x-csrc
+Size: 94 bytes
+Desc: not available
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20180210/7f5c486b/attachment.bin>
