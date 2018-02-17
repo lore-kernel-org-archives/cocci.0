@@ -1,14 +1,16 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 17 Feb 2018 18:09:20 +0100 (CET)
+Date: Sat, 17 Feb 2018 18:44:07 +0100 (CET)
 Subject: [Cocci] Determination for the absence of an option in a
  function call
-In-Reply-To: <a3c2fbd6-00f4-0113-aab8-4caeed631e1c@users.sourceforge.net>
+In-Reply-To: <b65bd20c-de90-2136-b375-246b873cf2a3@users.sourceforge.net>
 References: <96508c06-9473-e558-fba1-7e4db6646ee7@users.sourceforge.net>
  <alpine.DEB.2.20.1802171703560.2205@hadrien>
  <2b678153-b7c0-6100-6d9c-624bd61e2b78@users.sourceforge.net>
  <alpine.DEB.2.20.1802171741560.2205@hadrien>
  <a3c2fbd6-00f4-0113-aab8-4caeed631e1c@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1802171808110.2205@hadrien>
+ <alpine.DEB.2.20.1802171808110.2205@hadrien>
+ <b65bd20c-de90-2136-b375-246b873cf2a3@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.20.1802171842050.2205@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -16,35 +18,60 @@ List-Id: cocci@systeme.lip6.fr
 
 On Sat, 17 Feb 2018, SF Markus Elfring wrote:
 
-> >> I am working with the determination for memory allocation functions
-> >> from Linux source files for a while.
-> >> It matters in this software domain if the option ?__GFP_NOWARN? was applied
-> >> (or not).
+> >> It is easy to check the presence of such an identifier.
+> >> But I find it very challenging to determine (by script code)
+> >> if it is actually not passed (as an option) in a function call.
 > >
-> > <+...__GFP_NOWARN...+> in the appropriate argument position.
+> > It's not clear what you want.
 >
-> It is easy to check the presence of such an identifier.
-> But I find it very challenging to determine (by script code)
-> if it is actually not passed (as an option) in a function call.
+> Another try ?
+>
+>
+> > You will have to send some examples.
+>
+> When we look at concrete Linux source code, we mostly see that
+> the option ?__GFP_NOWARN? is just missing for a call of a function
+> like ?devm_kmalloc?.
+>
+> An other analysis tool can show the information that such an identifier
+> is referenced only in 207 files (from Linux 4.16-rc1).
+>
+> But how can the Coccinelle software help here to exclude these source
+> code places from specific transformation attempts?
 
-It's not clear what you want.  You will have to send some examples.
+(
+f(...,<+...__GFP_NOWARN...+>,...)
+|
+transformation
+)
+
+Alternatively,
+
+@ok@
+position p;
+@@
+f(...,<+...__GFP_NOWARN...+>,...)
+
+@@
+position p != ok.p;
+@@
+- f at p(...)
++ whatever
 
 >
 >
-> >> Each function name is usually connected with a specific argument count.
-> >> This fact has got some consequences for the development of corresponding
-> >> SmPL scripts.
+> >> How would you manage the information which of the parameters
+> >> would get the argument ?gfp? (for example)?
 > >
-> > I still have no idea what you are looking for here.
+> > You have to match the definition of the function to find out what
+> > parameter position you are interested in.
 >
-> I imagine that SmPL disjunctions (or further SmPL rules) will be
-> relevant to distinguish the known parameter numbers.
+> It seems to be feasible to encode such knowledge for a small number
+> of function names (in SmPL disjunctions or regular expressions).
 >
-> How would you manage the information which of the parameters
-> would get the argument ?gfp? (for example)?
+> But how does the software situation look like when you would like
+> to automate the search for interesting positions as much as possible?
 
-You have to match the definition of the function to find out what
-parameter position you are interested in.  If the function is defined in
-another file you may need to use iteration.  See demos/iteration.cocci.
+My iteration suggestion covers this case.
 
 julia
