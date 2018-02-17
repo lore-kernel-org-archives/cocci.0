@@ -1,42 +1,33 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sat, 17 Feb 2018 15:54:16 +0100
-Subject: [Cocci] Clarification for scripted SmPL constraints
-In-Reply-To: <alpine.DEB.2.20.1802171531330.2205@hadrien>
-References: <06b4669e-7419-e4f8-1761-4e58eef44fbd@users.sourceforge.net>
- <alpine.DEB.2.20.1802171437580.2205@hadrien>
- <388d5af8-d3e4-ee18-7481-3675e2b52024@users.sourceforge.net>
- <alpine.DEB.2.20.1802171510070.2205@hadrien>
- <9d550db4-cad4-f625-32da-173078fdde54@users.sourceforge.net>
- <alpine.DEB.2.20.1802171531330.2205@hadrien>
-Message-ID: <0fcc795e-4d45-d92e-b2c2-149a8485dfd5@users.sourceforge.net>
+Date: Sat, 17 Feb 2018 17:00:21 +0100
+Subject: [Cocci] Determination for the absence of an option in a function
+	call
+Message-ID: <96508c06-9473-e558-fba1-7e4db6646ee7@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
->> Which parameters should be passed to the selected function?
-> 
-> You can always pass the declared metavariable.
+Hello,
 
-I have got special imaginations for convenient parameter passing
-in such an use case.
+I am working with the following specification in some scripts for the semantic
+patch language.
 
-
-> You can put a comma-separated list of inherited metavariables
-
-Do you suggest that a dependency on metavariable inheritance is required?
+?
+ target = action(...);
+?
 
 
-> (r.a, r.b, ...) between the parentheses, and then use a, b, etc in the script code.
+This source code search pattern shows that a return value from a function call
+should be stored somewhere. The concrete call is restricted by a selection of
+function names. Such an approach is working to some degree when restrictions
+on function call parameters can be omitted.
 
-I would appreciate if the needed data would be directly available for
-the predicate function (without repeating variable names).
+But a safer source code analysis requires to distinguish these parameters in
+more detail.
 
+1. How should be ensured that a specific option was not passed?
 
-> If there are no disjunctions in the rule and if the declared metavariable
-> is no seprated by ... from a metavariable previously declared in the same rule,
-> then the latter variable can be included in the () as well, with no rule
-> name, and then used in the script code.
-
-I find this condition hard to understand at the moment.
+2. The parameter number becomes also relevant then.
+   How should functions be split based on their signature?
 
 Regards,
 Markus
