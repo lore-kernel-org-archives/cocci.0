@@ -1,31 +1,26 @@
-From: Robert.Larice@t-online.de (Robert Larice)
-Date: Sat, 17 Feb 2018 21:53:05 +0100
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sat, 17 Feb 2018 22:44:13 +0100 (CET)
 Subject: [Cocci] might be bug report, breaking up of a comment
-Message-ID: <kkd113ibim.fsf@bora.foobar.de>
+In-Reply-To: <kkd113ibim.fsf@bora.foobar.de>
+References: <kkd113ibim.fsf@bora.foobar.de>
+Message-ID: <alpine.DEB.2.20.1802172243470.12418@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hello,
 
-  attached is a small example which seems to
-    break up a comment line,
-    thus commenting out following lines.
 
-  Please look at the "long reuse" line
-    which will have an open comment when spatch is run,
-    thus commenting out the following "struct line *options"
+On Sat, 17 Feb 2018, Robert Larice wrote:
 
-Best Regards,
-  Robert Larice
+> Hello,
+>
+>   attached is a small example which seems to
+>     break up a comment line,
+>     thus commenting out following lines.
+>
+>   Please look at the "long reuse" line
+>     which will have an open comment when spatch is run,
+>     thus commenting out the following "struct line *options"
 
--------------- next part --------------
-An embedded and charset-unspecified text was scrubbed...
-Name: ex5.cocci
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20180217/689ecef7/attachment.ksh>
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: ex5.c
-Type: text/x-csrc
-Size: 299 bytes
-Desc: not available
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20180217/689ecef7/attachment.bin>
+I also see this undesriable behavior.  Thanks for the report.
+
+julia
