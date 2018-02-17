@@ -1,8 +1,8 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 17 Feb 2018 20:47:23 +0100 (CET)
+Date: Sat, 17 Feb 2018 21:25:18 +0100 (CET)
 Subject: [Cocci] Determination for the absence of an option in a
  function call
-In-Reply-To: <2a43676a-fdee-236c-221e-f75a6bcd24f2@users.sourceforge.net>
+In-Reply-To: <5e69411a-310d-f80b-6bd6-48158f5a1afd@users.sourceforge.net>
 References: <96508c06-9473-e558-fba1-7e4db6646ee7@users.sourceforge.net>
  <alpine.DEB.2.20.1802171703560.2205@hadrien>
  <2b678153-b7c0-6100-6d9c-624bd61e2b78@users.sourceforge.net>
@@ -12,7 +12,9 @@ References: <96508c06-9473-e558-fba1-7e4db6646ee7@users.sourceforge.net>
  <b65bd20c-de90-2136-b375-246b873cf2a3@users.sourceforge.net>
  <alpine.DEB.2.20.1802171842050.2205@hadrien>
  <2a43676a-fdee-236c-221e-f75a6bcd24f2@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1802172047020.12418@hadrien>
+ <alpine.DEB.2.20.1802172047020.12418@hadrien>
+ <5e69411a-310d-f80b-6bd6-48158f5a1afd@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.20.1802172124410.12418@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -20,16 +22,26 @@ List-Id: cocci@systeme.lip6.fr
 
 On Sat, 17 Feb 2018, SF Markus Elfring wrote:
 
-> > f(...,<+...__GFP_NOWARN...+>,...)
+> >>> f(...,<+...__GFP_NOWARN...+>,...)
+> >>
+> >> Does this SmPL specification mean that the identifier can appear anywhere
+> >> within the function call parameters?
+> >
+> > Yes.
+> >
+> >> Would it be acceptable for a risk level of false positives to omit
+> >> the check for the really appropriate parameter position?
+> >
+> > Up to you to see what happens.
 >
-> Does this SmPL specification mean that the identifier can appear anywhere
-> within the function call parameters?
+> Thanks for another clarification.
+>
+> Does it increase the chances to integrate any SmPL scripts
+> for transformation of questionable error messages after
+> failed memory allocations into a directory which you maintain?
+>
+> Which confidence categorisation would fit here?
 
-Yes.
-
-> Would it be acceptable for a risk level of false positives to omit
-> the check for the really appropriate parameter position?
-
-Up to you to see what happens.
+Low.  The script has no idea whether the printed string is useful or not.
 
 julia
