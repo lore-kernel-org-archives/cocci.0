@@ -1,129 +1,97 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 14 Feb 2018 20:27:46 +0100 (CET)
-Subject: [Cocci] [PATCH 2/2] mm: Add kvmalloc_ab_c and kvzalloc_struct
-In-Reply-To: <CAGXu5jL9hqQGe672CmvFwqNbtTr=qu7WRwHuS4Vy7o5sX_UTgg@mail.gmail.com>
-References: <20180214182618.14627-1-willy@infradead.org>
- <20180214182618.14627-3-willy@infradead.org>
- <CAGXu5jL9hqQGe672CmvFwqNbtTr=qu7WRwHuS4Vy7o5sX_UTgg@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1802142026520.2178@hadrien>
+From: Robert.Larice@t-online.de (Robert Larice)
+Date: Sat, 17 Feb 2018 10:06:52 +0100
+Subject: [Cocci] please help me with a failing match
+In-Reply-To: <alpine.DEB.2.20.1802101613320.3317@hadrien> (Julia Lawall's
+ message of "Sat, 10 Feb 2018 16:15:20 +0100 (CET)")
+References: <kkk1vlt55g.fsf@bora.foobar.de>
+ <alpine.DEB.2.20.1802101422060.3317@hadrien>
+ <87wozkkhsg.fsf@t-online.de>
+ <alpine.DEB.2.20.1802101613320.3317@hadrien>
+Message-ID: <kkmv08htn7.fsf@bora.foobar.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Julia Lawall <julia.lawall@lip6.fr> writes:
 
+> On Sat, 10 Feb 2018, Robert Larice wrote:
+>
+>> Julia Lawall <julia.lawall@lip6.fr> writes:
+>>
+>> > On Sat, 10 Feb 2018, Robert Larice wrote:
+>> >
+>> >> Dear People,
+>> >>
+>> >>   I'm completely new here.
+>> >>
+>> >>   Attached is a small piece of .c and a .cocci file.
+>> >>   There is a "return 41;" in both files, commented out.
+>> >>   If I uncomment this "return 41;" in both files then
+>> >>     spatch will not match the pieces any more.
+>> >>
+>> >>   Could you please help me to undertand and circumvent this issue ?
+>> >
+>> > I have not noticed this problem before, but I suspect that it is due to
+>> > the fact that Coccinelle is matching the control-flow path and not the
+>> > abstract syntax tree. In a control-flow graph, nothing follows a return.
+>> >
+>> > julia
+>>
+>> Thank You,
+>> I tried to sneak around the problem with a second "rule" which
+>>   translates "return 42" to "auxiliary(42)".
+>> My intention was to first change the source in such a way
+>>   that the "control-flow" graph does not end at the "return",
+>> and then hope that the second (accordingly modified) rule would
+>>   match.
+>> This didn't work, I assume I would have to express the idea of
+>>   first applying the first rule
+>>     then to rebuild the control-flow graph
+>>   then try the second rule.
+>>   (and finally undo the changes of the first rule in a third rule)
+>> I can not force "rebuild" without invoking spatch myself a second time.
+>
+> If you change all the returns to something else and then match your
+> pattern, and then change them it should work.
+>
+>>
+>> ---
+>> I'm a bit of a maintainer for the "ngspice" project, which has a vast
+>>   amount of very old files, and lots of semi duplicated stuff often crying
+>>   for a thourough hair wash,
+>> stumbled over this intresting tool, and am tying it for a certain
+>>   rewrite I'm currently busy with.
+>
+> OK,feel free to ask more questions if you run into further issues.
+>
+> julia
 
-On Wed, 14 Feb 2018, Kees Cook wrote:
+Hello,
 
-> On Wed, Feb 14, 2018 at 10:26 AM, Matthew Wilcox <willy@infradead.org> wrote:
-> > From: Matthew Wilcox <mawilcox@microsoft.com>
-> >
-> > We have kvmalloc_array in order to safely allocate an array with a
-> > number of elements specified by userspace (avoiding arithmetic overflow
-> > leading to a buffer overrun).  But it's fairly common to have a header
-> > in front of that array (eg specifying the length of the array), so we
-> > need a helper function for that situation.
-> >
-> > kvmalloc_ab_c() is the workhorse that does the calculation, but in spite
-> > of our best efforts to name the arguments, it's really hard to remember
-> > which order to put the arguments in.  kvzalloc_struct() eliminates that
-> > effort; you tell it about the struct you're allocating, and it puts the
-> > arguments in the right order for you (and checks that the arguments
-> > you've given are at least plausible).
-> >
-> > For comparison between the three schemes:
-> >
-> >         sev = kvzalloc(sizeof(*sev) + sizeof(struct v4l2_kevent) * elems,
-> >                         GFP_KERNEL);
-> >         sev = kvzalloc_ab_c(elems, sizeof(struct v4l2_kevent), sizeof(*sev),
-> >                         GFP_KERNEL);
-> >         sev = kvzalloc_struct(sev, events, elems, GFP_KERNEL);
-> >
-> > Signed-off-by: Matthew Wilcox <mawilcox@microsoft.com>
-> > ---
-> >  include/linux/mm.h | 51 +++++++++++++++++++++++++++++++++++++++++++++++++++
-> >  1 file changed, 51 insertions(+)
-> >
-> > diff --git a/include/linux/mm.h b/include/linux/mm.h
-> > index 81bd7f0be286..ddf929c5aaee 100644
-> > --- a/include/linux/mm.h
-> > +++ b/include/linux/mm.h
-> > @@ -557,6 +557,57 @@ static inline void *kvmalloc_array(size_t n, size_t size, gfp_t flags)
-> >         return kvmalloc(n * size, flags);
-> >  }
-> >
-> > +/**
-> > + * kvmalloc_ab_c() - Allocate memory.
->
-> Longer description, maybe? "Allocate a *b + c bytes of memory"?
->
-> > + * @n: Number of elements.
-> > + * @size: Size of each element (should be constant).
-> > + * @c: Size of header (should be constant).
->
-> If these should be constant, should we mark them as "const"? Or WARN
-> if __builtin_constant_p() isn't true?
->
-> > + * @gfp: Memory allocation flags.
-> > + *
-> > + * Use this function to allocate @n * @size + @c bytes of memory.  This
-> > + * function is safe to use when @n is controlled from userspace; it will
-> > + * return %NULL if the required amount of memory cannot be allocated.
-> > + * Use kvfree() to free the allocated memory.
-> > + *
-> > + * The kvzalloc_hdr_arr() function is easier to use as it has typechecking
->
-> renaming typo? Should this be "kvzalloc_struct()"?
->
-> > + * and you do not need to remember which of the arguments should be constants.
-> > + *
-> > + * Context: Process context.  May sleep; the @gfp flags should be based on
-> > + *         %GFP_KERNEL.
-> > + * Return: A pointer to the allocated memory or %NULL.
-> > + */
-> > +static inline __must_check
-> > +void *kvmalloc_ab_c(size_t n, size_t size, size_t c, gfp_t gfp)
-> > +{
-> > +       if (size != 0 && n > (SIZE_MAX - c) / size)
-> > +               return NULL;
-> > +
-> > +       return kvmalloc(n * size + c, gfp);
-> > +}
-> > +#define kvzalloc_ab_c(a, b, c, gfp)    kvmalloc_ab_c(a, b, c, gfp | __GFP_ZERO)
->
-> Nit: "(gfp) | __GFP_ZERO" just in case of insane usage.
->
-> > +
-> > +/**
-> > + * kvzalloc_struct() - Allocate and zero-fill a structure containing a
-> > + *                    variable length array.
-> > + * @p: Pointer to the structure.
-> > + * @member: Name of the array member.
-> > + * @n: Number of elements in the array.
-> > + * @gfp: Memory allocation flags.
-> > + *
-> > + * Allocate (and zero-fill) enough memory for a structure with an array
-> > + * of @n elements.  This function is safe to use when @n is specified by
-> > + * userspace as the arithmetic will not overflow.
-> > + * Use kvfree() to free the allocated memory.
-> > + *
-> > + * Context: Process context.  May sleep; the @gfp flags should be based on
-> > + *         %GFP_KERNEL.
-> > + * Return: Zero-filled memory or a NULL pointer.
-> > + */
-> > +#define kvzalloc_struct(p, member, n, gfp)                             \
-> > +       (typeof(p))kvzalloc_ab_c(n,                                     \
-> > +               sizeof(*(p)->member) + __must_be_array((p)->member),    \
-> > +               offsetof(typeof(*(p)), member), gfp)
-> > +
-> >  extern void kvfree(const void *addr);
-> >
-> >  static inline atomic_t *compound_mapcount_ptr(struct page *page)
->
-> It might be nice to include another patch that replaces some of the
-> existing/common uses of a*b+c with the new function...
->
-> Otherwise, yes, please. We could build a coccinelle rule for
-> additional replacements...
+  Thank you for your help. I've four or five .cocci files now which
+    do the job at hand for ngspice quite well. The rewrite of return
+    to something else with two times invocation of spatch did work.
+  Then I found another simpler way. So thats done.
 
-Thanks for the suggestion.  I will look into it.
+  Playing around, trying to better understand what it means
+    to have more than one rule, their interaction etc ..
+    I came to the attached example.
+  Here I have basically tried to remove the whole body of a function
+    iff the function matches two other @rules@
+  It seems to work if I use the '*' notation, but doesnt if I use
+    '+/-'
+  Can you give me a hint which helps me to understand this ?
 
-julia
+Regards,
+  Robert
+
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: ex4.cocci
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20180217/12a80ed1/attachment.ksh>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: ex4.c
+Type: text/x-csrc
+Size: 150 bytes
+Desc: not available
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20180217/12a80ed1/attachment.bin>
