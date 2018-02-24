@@ -1,50 +1,52 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 17 Feb 2018 23:43:08 +0100 (CET)
-Subject: [Cocci] might be bug report, breaking up of a comment
-In-Reply-To: <kky3jrgtjg.fsf@bora.foobar.de>
-References: <kkd113ibim.fsf@bora.foobar.de>
- <alpine.DEB.2.20.1802172243470.12418@hadrien> <kky3jrgtjg.fsf@bora.foobar.de>
-Message-ID: <alpine.DEB.2.20.1802172341300.12418@hadrien>
+From: mcgrof@kernel.org (Luis R. Rodriguez)
+Date: Sat, 24 Feb 2018 02:59:41 +0000
+Subject: [Cocci] [PATCH] lib/test_kmod: Fix an integer overflow test
+In-Reply-To: <20180122102754.GD23912@mwanda>
+References: <20180122102754.GD23912@mwanda>
+Message-ID: <20180224025941.GB14069@wotan.suse.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On Mon, Jan 22, 2018 at 01:27:54PM +0300, Dan Carpenter wrote:
+> The main problem is that the parentheses are in the wrong place and the
+> unlikely() call returns either 0 or 1 so it's never less than zero.
 
+Doh, thanks, yes. Seems worth considering a grammar rule for it.
 
-On Sat, 17 Feb 2018, Robert Larice wrote:
+> The other problem is that signed integer overflows like "INT_MAX + 1" are
+> undefined behavior.
 
-> Julia Lawall <julia.lawall@lip6.fr> writes:
->
-> > On Sat, 17 Feb 2018, Robert Larice wrote:
-> >
-> >> Hello,
-> >>
-> >>   attached is a small example which seems to
-> >>     break up a comment line,
-> >>     thus commenting out following lines.
-> >>
-> >>   Please look at the "long reuse" line
-> >>     which will have an open comment when spatch is run,
-> >>     thus commenting out the following "struct line *options"
-> >
-> > I also see this undesriable behavior.  Thanks for the report.
-> >
-> > julia
->
-> grepping a bit in the source code I found this:
->   cpp_eat_until_nl
-> perhaps in the vicinity of the issue.
->
-> and there is this comment somewhere:
->
-> (* cpp recognize C comments, so when #define xx (yy) /* comment \n ... */
->  * then he has already erased the /* comment. So:
->  * - dont eat the start of the comment otherwise afterwards we are in the middle
->  *   of a comment and so will problably get a parse error somewhere.
->  * - have to recognize comments in cpp_eat_until_nl.
->  *)
+Likewise.
 
-Thanks for the help, but that's not it at all.  The problem is in the
-function get_indent in the file parsing_c/unparse_c.ml.  I'll try to fix
-it tomorrow.
+This seems like another possible generic typo issue. But I would not resolve it
+the way you did, in this particular case below num_test_devs represents the
+number of already registered devs, before we increment. So the way to resolve
+this would be:
 
-julia
+	if (num_test_devs + 1 == INT_MAX)
+
+I'll get this upstream, thanks!
+
+  Luis
+
+> Fixes: d9c6a72d6fa2 ("kmod: add test driver to stress test the module loader")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> 
+> diff --git a/lib/test_kmod.c b/lib/test_kmod.c
+> index e372b97eee13..30fd6d9e5361 100644
+> --- a/lib/test_kmod.c
+> +++ b/lib/test_kmod.c
+> @@ -1141,7 +1141,7 @@ static struct kmod_test_device *register_test_dev_kmod(void)
+>  	mutex_lock(&reg_dev_mutex);
+>  
+>  	/* int should suffice for number of devices, test for wrap */
+> -	if (unlikely(num_test_devs + 1) < 0) {
+> +	if (num_test_devs == INT_MAX) {
+>  		pr_err("reached limit of number of test devices\n");
+>  		goto out;
+>  	}
+> 
+
+-- 
+Luis Rodriguez, SUSE LINUX GmbH
+Maxfeldstrasse 5; D-90409 Nuernberg
