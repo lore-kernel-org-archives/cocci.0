@@ -1,45 +1,25 @@
-From: dan.carpenter@oracle.com (Dan Carpenter)
-Date: Sun, 25 Feb 2018 02:34:36 +0300
-Subject: [Cocci] [PATCH] lib/test_kmod: Fix an integer overflow test
-In-Reply-To: <20180224220601.GG14069@wotan.suse.de>
-References: <20180122102754.GD23912@mwanda>
- <20180224025941.GB14069@wotan.suse.de>
- <20180224084516.pex3ogxzipzj2o5y@mwanda>
- <20180224220601.GG14069@wotan.suse.de>
-Message-ID: <20180224233436.6sj4vgn7l4rnfti5@mwanda>
+From: bruce.w.allan@intel.com (Allan, Bruce W)
+Date: Thu, 1 Mar 2018 19:13:45 +0000
+Subject: [Cocci] transform needing a calculation from a Python script
+Message-ID: <804857E1F29AAC47BF68C404FC60A184ED57F7E8@ORSMSX105.amr.corp.intel.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Sat, Feb 24, 2018 at 10:06:01PM +0000, Luis R. Rodriguez wrote:
-> On Sat, Feb 24, 2018 at 11:45:16AM +0300, Dan Carpenter wrote:
-> > On Sat, Feb 24, 2018 at 02:59:41AM +0000, Luis R. Rodriguez wrote:
-> > > On Mon, Jan 22, 2018 at 01:27:54PM +0300, Dan Carpenter wrote:
-> > > > The main problem is that the parentheses are in the wrong place and the
-> > > > unlikely() call returns either 0 or 1 so it's never less than zero.
-> > > 
-> > > Doh, thanks, yes. Seems worth considering a grammar rule for it.
-> > > 
-> > > > The other problem is that signed integer overflows like "INT_MAX + 1" are
-> > > > undefined behavior.
-> > > 
-> > > Likewise.
-> > > 
-> > > This seems like another possible generic typo issue. But I would not resolve it
-> > > the way you did, in this particular case below num_test_devs represents the
-> > > number of already registered devs, before we increment. So the way to resolve
-> > > this would be:
-> > > 
-> > > 	if (num_test_devs + 1 == INT_MAX)
-> > > 
-> > > I'll get this upstream, thanks!
-> > 
-> > There is no issue if num_test_devs is INT_MAX.  But capping it at
-> > INT_MAX - 1 is also fine.
-> 
-> If num_test_devs is INT_MAX, then doing num_test_devs + 1 overflows
-> and as you noted that is undefined?
+We have a macro that takes a right-justified contiguous set of bits and shifts it left to create a bitmask:
 
-If it's INT_MAX we never do "num_test_devs + 1", we return a NULL.
+#define FOO(m, s)            (m) << (s)
 
-regards,
-dan carpenter
+where m is in hex and s is an integer.  I'd like to transform occurrences of it to the Linux kernel's GENMASK(high, low) macro (which creates a contiguous bitmask starting at bit position low and ending@position high), but am having problems trying to figure out how to do that.
+
+For example, I'd like to transform:
+               #define BITMASK_A         FOO(0x3F, 4)                      /* 0x3F0 */
+to
+               #define BITMASK_A         GENMASK(9, 4)                 /* 0x3F0 */
+
+The value s in FOO() is the same as the value low in GENMASK(), but the value high in GENMASK() must be calculated from the values m and s in FOO().  One calculation would be to use the hamming weight (hweight) such as hweight(m) + s - 1.  My Python-foo is non-existent but I have found online an example for calculating the hamming weight with the Python script 'def hweight(n): return bin(n).count("1")'.  Is it possible to use this (or another) Python script in a Coccinelle script to do this transform, and if so, what would that look like?  If the transform cannot use Python, is there another suggestion?
+
+Thanks,
+Bruce.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20180301/d114de3a/attachment.html>
