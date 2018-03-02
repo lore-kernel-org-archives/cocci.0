@@ -1,114 +1,22 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 2 Mar 2018 07:39:35 +0100 (CET)
-Subject: [Cocci] transform needing a calculation from a Python script
-In-Reply-To: <804857E1F29AAC47BF68C404FC60A184ED57FE21@ORSMSX105.amr.corp.intel.com>
-References: <804857E1F29AAC47BF68C404FC60A184ED57F7E8@ORSMSX105.amr.corp.intel.com>
- <alpine.DEB.2.20.1803012044390.3474@hadrien>
- <804857E1F29AAC47BF68C404FC60A184ED57FE21@ORSMSX105.amr.corp.intel.com>
-Message-ID: <alpine.DEB.2.20.1803020736260.2214@hadrien>
+Date: Fri, 2 Mar 2018 08:12:44 +0100 (CET)
+Subject: [Cocci] New Coccinelle release?
+In-Reply-To: <20180302004914.GA27885@vader.DHCP.thefacebook.com>
+References: <20180302004914.GA27885@vader.DHCP.thefacebook.com>
+Message-ID: <alpine.DEB.2.20.1803020811550.2214@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 
 
-On Thu, 1 Mar 2018, Allan, Bruce W wrote:
+On Thu, 1 Mar 2018, Omar Sandoval wrote:
 
-> > -----Original Message-----
-> > From: Julia Lawall [mailto:julia.lawall at lip6.fr]
-> > Sent: Thursday, March 01, 2018 11:46 AM
-> > To: Allan, Bruce W <bruce.w.allan@intel.com>
-> > Cc: cocci at systeme.lip6.fr
-> > Subject: Re: [Cocci] transform needing a calculation from a Python script
-> >
-> >
-> >
-> > On Thu, 1 Mar 2018, Allan, Bruce W wrote:
-> >
-> > >
-> > > We have a macro that takes a right-justified contiguous set of bits and
-> > > shifts it left to create a bitmask:
-> > >
-> > >
-> > >
-> > > #define FOO(m, s)??????????? (m) << (s)
-> > >
-> > >
-> > >
-> > > where m is in hex and s is an integer.? I?d like to transform occurrences of
-> > > it to the Linux kernel?s GENMASK(high, low) macro (which creates a
-> > > contiguous bitmask starting at bit position low and ending at position
-> > > high), but am having problems trying to figure out how to do that.
-> > >
-> > >
-> > >
-> > > For example, I?d like to transform:
-> > >
-> > > ?????????????? #define BITMASK_A???????? FOO(0x3F, 4)
-> > > /* 0x3F0 */
-> > >
-> > > to
-> > >
-> > > ?????????????? #define BITMASK_A???????? GENMASK(9, 4)? ?????????????? /*
-> > > 0x3F0 */
-> > >
-> > >
-> > >
-> > > The value s in FOO() is the same as the value low in GENMASK(), but the
-> > > value high in GENMASK() must be calculated from the values m and s in
-> > > FOO().? One calculation would be to use the hamming weight (hweight) such
-> > as
-> > > hweight(m) + s ? 1.? My Python-foo is non-existent but I have found online
-> > > an example for calculating the hamming weight with the Python script ?def
-> > > hweight(n): return bin(n).count("1")?.? Is it possible to use this (or
-> > > another) Python script in a Coccinelle script to do this transform, and if
-> > > so, what would that look like?? If the transform cannot use Python, is there
-> > > another suggestion?
-> >
-> > I think that you can follow the model of the following code
-> > (demos/pythontococci.cocci).  Let me know if it is not clear.
->
-> Sorry, no, it is not clear to me how this works.
+> It's been a year and a half since the last release of coccinelle but
+> there have been many changes since then. Would it be possible to get a
+> new official release?
 
-The first rule matches whatever you want to change and established some
-metavariables that contain information you will want to give to python.
-
-The second rule declares some new variables y and z, as well as inheriting
-information from the first rule.  This is where you call your python code,
-and you assign the new variables to whatever you will need to compute your
-result.  The last rule uses the information obtained from the first and
-second rules to make the transformation.  It declares the metavariables
-inherited from python as identifiers, but they can contain any
-more complex expression as well.
+There always seems to be one more small bug remaining.  We will try to
+take care of this soon.  In any case, the version on github is always
+stable.  We do the actual work elsewhere.
 
 julia
-
->
-> >
-> > julia
-> >
-> > @a@
-> > identifier x;
-> > @@
-> >
-> > foo(x);
-> >
-> > @script:python b@
-> > x << a.x;
-> > y;
-> > z;
-> > @@
-> >
-> > print y
-> > coccinelle.y = x
-> > coccinelle.z = "something"
-> > print y
-> >
-> > @c@
-> > identifier b.y;
-> > identifier b.z;
-> > identifier a.x;
-> > @@
-> >
-> > - bar();
-> > + matched_bar(y,z,x);
->
