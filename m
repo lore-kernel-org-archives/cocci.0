@@ -1,49 +1,77 @@
-From: willy@infradead.org (Matthew Wilcox)
-Date: Thu, 8 Mar 2018 15:05:12 -0800
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Fri, 9 Mar 2018 06:59:43 +0100 (CET)
 Subject: [Cocci] [PATCH 2/2] mm: Add kvmalloc_ab_c and kvzalloc_struct
-In-Reply-To: <alpine.DEB.2.20.1803080722300.3754@hadrien>
+In-Reply-To: <20180308230512.GD29073@bombadil.infradead.org>
 References: <20180214182618.14627-1-willy@infradead.org>
  <20180214182618.14627-3-willy@infradead.org>
  <CAGXu5jL9hqQGe672CmvFwqNbtTr=qu7WRwHuS4Vy7o5sX_UTgg@mail.gmail.com>
  <alpine.DEB.2.20.1803072212160.2814@hadrien>
  <20180308025812.GA9082@bombadil.infradead.org>
  <alpine.DEB.2.20.1803080722300.3754@hadrien>
-Message-ID: <20180308230512.GD29073@bombadil.infradead.org>
+ <20180308230512.GD29073@bombadil.infradead.org>
+Message-ID: <alpine.DEB.2.20.1803090654480.2321@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, Mar 08, 2018 at 07:24:47AM +0100, Julia Lawall wrote:
-> On Wed, 7 Mar 2018, Matthew Wilcox wrote:
-> > On Wed, Mar 07, 2018 at 10:18:21PM +0100, Julia Lawall wrote:
-> > > > Otherwise, yes, please. We could build a coccinelle rule for
-> > > > additional replacements...
+
+
+On Thu, 8 Mar 2018, Matthew Wilcox wrote:
+
+> On Thu, Mar 08, 2018 at 07:24:47AM +0100, Julia Lawall wrote:
+> > On Wed, 7 Mar 2018, Matthew Wilcox wrote:
+> > > On Wed, Mar 07, 2018 at 10:18:21PM +0100, Julia Lawall wrote:
+> > > > > Otherwise, yes, please. We could build a coccinelle rule for
+> > > > > additional replacements...
+> > > >
+> > > > A potential semantic patch and the changes it generates are attached
+> > > > below.  Himanshu Jha helped with its development.  Working on this
+> > > > uncovered one bug, where the allocated array is too large, because the
+> > > > size provided for it was a structure size, but actually only pointers to
+> > > > that structure were to be stored in it.
 > > >
-> > > A potential semantic patch and the changes it generates are attached
-> > > below.  Himanshu Jha helped with its development.  Working on this
-> > > uncovered one bug, where the allocated array is too large, because the
-> > > size provided for it was a structure size, but actually only pointers to
-> > > that structure were to be stored in it.
+> > > This is cool!  Thanks for doing the coccinelle patch!  Diffstat:
+> > >
+> > >  50 files changed, 81 insertions(+), 124 deletions(-)
+> > >
+> > > I find that pretty compelling.  I'll repost the kvmalloc_struct patch
+> > > imminently.
 > >
-> > This is cool!  Thanks for doing the coccinelle patch!  Diffstat:
-> >
-> >  50 files changed, 81 insertions(+), 124 deletions(-)
-> >
-> > I find that pretty compelling.  I'll repost the kvmalloc_struct patch
-> > imminently.
-> 
-> Thanks.  So it's OK to replace kmalloc and kzalloc, even though they
-> didn't previously consider vmalloc and even though kmalloc doesn't zero?
+> > Thanks.  So it's OK to replace kmalloc and kzalloc, even though they
+> > didn't previously consider vmalloc and even though kmalloc doesn't zero?
+>
+> We'll also need to replace the corresponding places where those structs
+> are freed with kvfree().  Can coccinelle handle that too?
 
-We'll also need to replace the corresponding places where those structs
-are freed with kvfree().  Can coccinelle handle that too?
+This would be harder to do 100% reliably.  Coccinelle would have to rely
+on the structure name or the structure type, if the free is in a different
+function.  But I guess that the type should be mostly reliable, since all
+instances of allocations of the same type should be transformed in the
+same way.
 
-> There are a few other cases that use GFP_NOFS and GFP_NOWAIT, but I didn't
-> transform those because the comment says that the flags should be
-> GFP_KERNEL based.  Should those be transformed too?
+>
+> > There are a few other cases that use GFP_NOFS and GFP_NOWAIT, but I didn't
+> > transform those because the comment says that the flags should be
+> > GFP_KERNEL based.  Should those be transformed too?
+>
+> The problem with non-GFP_KERNEL allocations is that vmalloc may have to
+> allocate page tables, which is always done with an implicit GFP_KERNEL
+> allocation.  There's an intent to get rid of GFP_NOFS, but that's not
+> been realised yet (and I'm not sure of our strategy to eliminate it ...
+> I'll send a separate email about that).  I'm not sure why anything's
+> trying to allocate with GFP_NOWAIT; can you send a list of those places?
 
-The problem with non-GFP_KERNEL allocations is that vmalloc may have to
-allocate page tables, which is always done with an implicit GFP_KERNEL
-allocation.  There's an intent to get rid of GFP_NOFS, but that's not
-been realised yet (and I'm not sure of our strategy to eliminate it ...
-I'll send a separate email about that).  I'm not sure why anything's
-trying to allocate with GFP_NOWAIT; can you send a list of those places?
+drivers/dma/fsl-edma.c:
+
+fsl_desc = kzalloc(sizeof(*fsl_desc) + sizeof(struct fsl_edma_sw_tcd) * sg_len, GFP_NOWAIT);
+
+drivers/dma/st_fdma.c:
+
+fdesc = kzalloc(sizeof(*fdesc) + sizeof(struct st_fdma_sw_node) * sg_len,
+GFP_NOWAIT);
+
+drivers/dma/pxa_dma.c:
+
+sw_desc = kzalloc(sizeof(*sw_desc) + nb_hw_desc * sizeof(struct
+pxad_desc_hw *), GFP_NOWAIT);
+
+julia
