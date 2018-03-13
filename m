@@ -1,7 +1,7 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 13 Mar 2018 18:19:51 +0100 (CET)
+Date: Tue, 13 Mar 2018 19:35:44 +0100 (CET)
 Subject: [Cocci] [PATCH 2/2] mm: Add kvmalloc_ab_c and kvzalloc_struct
-In-Reply-To: <20180308230512.GD29073@bombadil.infradead.org>
+In-Reply-To: <20180313183220.GA21538@bombadil.infradead.org>
 References: <20180214182618.14627-1-willy@infradead.org>
  <20180214182618.14627-3-willy@infradead.org>
  <CAGXu5jL9hqQGe672CmvFwqNbtTr=qu7WRwHuS4Vy7o5sX_UTgg@mail.gmail.com>
@@ -9,52 +9,31 @@ References: <20180214182618.14627-1-willy@infradead.org>
  <20180308025812.GA9082@bombadil.infradead.org>
  <alpine.DEB.2.20.1803080722300.3754@hadrien>
  <20180308230512.GD29073@bombadil.infradead.org>
-Message-ID: <alpine.DEB.2.20.1803131818550.3117@hadrien>
+ <alpine.DEB.2.20.1803131818550.3117@hadrien>
+ <20180313183220.GA21538@bombadil.infradead.org>
+Message-ID: <alpine.DEB.2.20.1803131935160.3117@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 
 
-On Thu, 8 Mar 2018, Matthew Wilcox wrote:
+On Tue, 13 Mar 2018, Matthew Wilcox wrote:
 
-> On Thu, Mar 08, 2018 at 07:24:47AM +0100, Julia Lawall wrote:
-> > On Wed, 7 Mar 2018, Matthew Wilcox wrote:
-> > > On Wed, Mar 07, 2018 at 10:18:21PM +0100, Julia Lawall wrote:
-> > > > > Otherwise, yes, please. We could build a coccinelle rule for
-> > > > > additional replacements...
-> > > >
-> > > > A potential semantic patch and the changes it generates are attached
-> > > > below.  Himanshu Jha helped with its development.  Working on this
-> > > > uncovered one bug, where the allocated array is too large, because the
-> > > > size provided for it was a structure size, but actually only pointers to
-> > > > that structure were to be stored in it.
+> On Tue, Mar 13, 2018 at 06:19:51PM +0100, Julia Lawall wrote:
+> > On Thu, 8 Mar 2018, Matthew Wilcox wrote:
+> > > On Thu, Mar 08, 2018 at 07:24:47AM +0100, Julia Lawall wrote:
+> > > > Thanks.  So it's OK to replace kmalloc and kzalloc, even though they
+> > > > didn't previously consider vmalloc and even though kmalloc doesn't zero?
 > > >
-> > > This is cool!  Thanks for doing the coccinelle patch!  Diffstat:
-> > >
-> > >  50 files changed, 81 insertions(+), 124 deletions(-)
-> > >
-> > > I find that pretty compelling.  I'll repost the kvmalloc_struct patch
-> > > imminently.
+> > > We'll also need to replace the corresponding places where those structs
+> > > are freed with kvfree().  Can coccinelle handle that too?
 > >
-> > Thanks.  So it's OK to replace kmalloc and kzalloc, even though they
-> > didn't previously consider vmalloc and even though kmalloc doesn't zero?
+> > Is the use of vmalloc a necessary part of the design?  Or could there be a
+> > non vmalloc versions for call sites that are already ok with that?
 >
-> We'll also need to replace the corresponding places where those structs
-> are freed with kvfree().  Can coccinelle handle that too?
+> We can also add kmalloc_struct() along with kmalloc_ab_c that won't fall
+> back to vmalloc but just return NULL.
 
-Is the use of vmalloc a necessary part of the design?  Or could there be a
-non vmalloc versions for call sites that are already ok with that?
+It could be safer than being sure to find all of the relevant kfrees.
 
 julia
-
-> > There are a few other cases that use GFP_NOFS and GFP_NOWAIT, but I didn't
-> > transform those because the comment says that the flags should be
-> > GFP_KERNEL based.  Should those be transformed too?
->
-> The problem with non-GFP_KERNEL allocations is that vmalloc may have to
-> allocate page tables, which is always done with an implicit GFP_KERNEL
-> allocation.  There's an intent to get rid of GFP_NOFS, but that's not
-> been realised yet (and I'm not sure of our strategy to eliminate it ...
-> I'll send a separate email about that).  I'm not sure why anything's
-> trying to allocate with GFP_NOWAIT; can you send a list of those places?
->
