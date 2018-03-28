@@ -1,91 +1,30 @@
-From: knut.omang@oracle.com (Knut Omang)
-Date: Tue, 20 Mar 2018 06:44:35 +0100
-Subject: [Cocci] [PATCH v4 1/1] runchecks: Generalize make C={1,
- 2} to support multiple checkers
-In-Reply-To: <1517815200.3118.383.camel@oracle.com>
-References: <cover.a7e2d48abd08947a9bb46ef5d18a8f33066cc40d.1516356501.git-series.knut.omang@oracle.com>
- <c271ba8f99393585d69db71f40db3c01c44769e4.1516356501.git-series.knut.omang@oracle.com>
- <1517812899.3118.372.camel@oracle.com>
- <CAK7LNAS8QG947WpFn6bCnNVLj=x7jbAyLKVRS429wP+1jYbOUA@mail.gmail.com>
- <1517815200.3118.383.camel@oracle.com>
-Message-ID: <1521524675.3354.302.camel@oracle.com>
+From: joe@perches.com (Joe Perches)
+Date: Wed, 28 Mar 2018 11:11:16 -0700
+Subject: [Cocci] [PATCH] crypto: cavium: zip: Remove unnecessary
+	parentheses
+In-Reply-To: <20180328175736.17360-1-rvarsha016@gmail.com>
+References: <20180328175736.17360-1-rvarsha016@gmail.com>
+Message-ID: <1522260676.12357.121.camel@perches.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, 2018-02-05 at 08:20 +0100, Knut Omang wrote:
-> On Mon, 2018-02-05 at 16:03 +0900, Masahiro Yamada wrote:
-
-Hi Masahiro,
-
-I know these are busy times but any hope of getting forward on this?
-Anything more I can do to ease the process?
-
-Thanks for your time,
-Knut
-
-> > 2018-02-05 15:41 GMT+09:00 Knut Omang <knut.omang@oracle.com>:
-> > > On Fri, 2018-01-19 at 11:14 +0100, Knut Omang wrote:
-> > >> Add scripts/runchecks which has generic support for running
-> > >> checker tools in a convenient and user friendly way that
-> > >> the author hopes can contribute to rein in issues detected
-> > >> by these tools in a manageable and convenient way.
-> > >>
-> > >> scripts/runchecks provides the following basic functionality:
-> > >>
-> > >> * Makes it possible to selectively suppress output from individual
-> > >>   checks on a per file or per subsystem basis.
-> > >> * Unifies output and suppression input from different tools
-> > >>   by providing a single unified syntax and presentation for the
-> > >>   underlying tools in the style of "scripts/checkpatch.pl --show-types".
-> > >> * Allows selective run of one, or more (or all) configured tools
-> > >>   for each file.
-> > >>
-> > >> In the Makefile system, the sparse specific setup has been replaced
-> > >> by setup for runchecks.
-> > >
-> > > Hi all,
-> > >
-> > > - Anything more I can/need to do to bring this forward?
-> > > - Any quiet concerns?
-> > >
-> > > I realize it is a subsystem crossing change,
+On Wed, 2018-03-28 at 23:27 +0530, Varsha Rao wrote:
+> This patch fixes the clang warning of extraneous parentheses, with the
+> following coccinelle script.
+> 
+> @@
+> identifier i;
+> constant c;
+> @@
+> (
+> -((i == c))
+> +i == c
 > > 
-> > Is it?  Only Kbuild this is related to.
 > 
-> Ok, I see!
-> 
-> > > and a lot going on elsewhere,
-> > > nevertheless I believe this is a time saver in the slightly longer run,
-> > > as it allows automation of checking, even without a "perfect"
-> > > code base to begin with.
-> > >
-> > 
-> > Sorry for the delay.
-> 
-> I understand, no problem - just was afraid it was about to get lost 
-> in between subsystems,
-> 
-> > I have not been able to find time to dive into the detail yet.
-> > (Actually, I tried to do that for v2 or v3, where Python code was so dirty,
-> > then consumed my time to figure out what the code was trying to do)
-> 
-> Hopefully v4 is cleaner from a Python code style point of view at least,
-> but let me know if you have any particular part of the code in mind wrt 
-> readability. Also hopefully the docs should be of help.
-> 
-> > I find my concern here:
-> > https://lkml.org/lkml/2018/1/5/497
-> 
-> I believe I have addressed the issues there in v4.
-> 
-> > Anyway, I will take a look again when I find some time.
-> > You do not need to take care of the detail until I request to do so.
-> 
-> Ok, thanks a lot for your time and the quick response now!
-> 
-> Best regards,
-> Knut
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kbuild" in
-> the body of a message to majordomo at vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> -((i <= c))
+> +i <= c
+
+Why just the "==" and "<=" cases?
+Why not "<", ">" and ">=" too?
+
+Why not expression instead of constant?
