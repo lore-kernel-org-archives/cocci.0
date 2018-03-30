@@ -1,56 +1,30 @@
-From: rvarsha016@gmail.com (Varsha Rao)
-Date: Thu, 29 Mar 2018 21:03:45 +0530
-Subject: [Cocci] [PATCH] crypto: cavium: zip: Remove unnecessary
-	parentheses
-In-Reply-To: <1522260676.12357.121.camel@perches.com>
-References: <20180328175736.17360-1-rvarsha016@gmail.com>
- <1522260676.12357.121.camel@perches.com>
-Message-ID: <CAAFX7JTfWdaGra+kWBJt-GXVVO601K03qWnExFKFD_9vxS-03g@mail.gmail.com>
+From: Julia.Lawall@lip6.fr (Julia Lawall)
+Date: Fri, 30 Mar 2018 18:43:44 +0200
+Subject: [Cocci] [PATCH] debugfs_simple_attr.cocci: add clarifying
+	information
+Message-ID: <1522428224-20192-1-git-send-email-Julia.Lawall@lip6.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, Mar 28, 2018 at 11:41 PM, Joe Perches wrote:
->
-> On Wed, 2018-03-28 at 23:27, Varsha Rao wrote:
-> > This patch fixes the clang warning of extraneous parentheses, with the
-> > following coccinelle script.
-> >
-> > @@
-> > identifier i;
-> > constant c;
-> > @@
-> > (
-> > -((i == c))
-> > +i == c
-> > >
-> >
-> > -((i <= c))
-> > +i <= c
->
-> Why just the "==" and "<=" cases?
-> Why not "<", ">" and ">=" too?
->
-> Why not expression instead of constant?
+The referenced commit gives some information about the overhead
+reduced by this change.
 
-Initially I had the other cases too and used expression instead of
-constant. But the results included only "==" and "<=" cases with
-constant. Along with one false positive case.
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
---- a/drivers/crypto/cavium/zip/zip_main.c
-+++ b/drivers/crypto/cavium/zip/zip_main.c
-@@ -99,7 +99,7 @@ static struct zip_device *zip_alloc_devi
-  */
- struct zip_device *zip_get_device(int node)
- {
--    if ((node < MAX_ZIP_DEVICES) && (node >= 0))
-+    if (node < MAX_ZIP_DEVICES && node >= 0)
-         return zip_dev[node];
+---
+ scripts/coccinelle/api/debugfs/debugfs_simple_attr.cocci |    2 ++
+ 1 file changed, 2 insertions(+)
 
-     zip_err("ZIP device not found for node id %d\n", node);
-
-I checked if there was any case of extra parentheses around relational
-operators left, but there were none. Hence, in the script I included
-only the cases present in the result.
-
-Thanks,
-Varsha
+diff --git a/scripts/coccinelle/api/debugfs/debugfs_simple_attr.cocci b/scripts/coccinelle/api/debugfs/debugfs_simple_attr.cocci
+index 7c31231..6ff97e2 100644
+--- a/scripts/coccinelle/api/debugfs/debugfs_simple_attr.cocci
++++ b/scripts/coccinelle/api/debugfs/debugfs_simple_attr.cocci
+@@ -5,6 +5,8 @@
+ //# Rationale: DEFINE_SIMPLE_ATTRIBUTE + debugfs_create_file()
+ //# imposes some significant overhead as compared to
+ //# DEFINE_DEBUGFS_ATTRIBUTE + debugfs_create_file_unsafe().
++//# See commit c64688081490 ("debugfs: add support for self-protecting
++//# attribute file fops") for further information.
+ //
+ // Copyright (C): 2016 Nicolai Stange
+ // Options: --no-includes
