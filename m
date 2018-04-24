@@ -1,25 +1,38 @@
-From: derek@knosof.co.uk (Derek M Jones)
-Date: Tue, 24 Apr 2018 16:41:31 +0100
+From: mahfouz.saif.elyazal@gmail.com (Aya Mahfouz)
+Date: Tue, 24 Apr 2018 20:04:40 +0200
 Subject: [Cocci] award for Coccinelle paper
-In-Reply-To: <alpine.DEB.2.20.1804241619440.2231@hadrien>
+In-Reply-To: <alpine.DEB.2.20.1804241210210.2398@hadrien>
 References: <alpine.DEB.2.20.1804241210210.2398@hadrien>
- <e9192a1e-45f5-3443-0f66-e487f7fc4f22@knosof.co.uk>
- <20180424135731.GA1136@katana2> <alpine.DEB.2.20.1804241619440.2231@hadrien>
-Message-ID: <9b68f2f1-4e1e-58ce-f42f-dd0dd38efe93@knosof.co.uk>
+Message-ID: <CAJBmjuh8xqZOdKu6iPugJPP4XiFJo0oSX1gMRxxCRjo9qFMjcw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Julia,
+On Tue, Apr 24, 2018 at 1:12 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
 
-> ACM Software award?  Nobel prize? (perhaps not...)
+> The 2008 Eurosys paper:
+>
+> Documenting and automating collateral evolutions in Linux device drivers.
+>
+> received the Eurosys "Test of Time" award.  Many thanks to everyone on
+> this list who has helped to make this possible.
+>
 
-Nobel prize for??? Literature?
+Great News! Congratulations! :)
 
-The Turing award seems to generate the most publicity.
+>
+> thanks,
+> julia
+>
 
-http://shape-of-code.coding-guidelines.com/2018/04/19/influential-philosophers-of-source-code/
+Kind Regards,
+Aya Saif El-yazal Mahfouz
 
 
--- 
-Derek M. Jones           Software analysis
-tel: +44 (0)1252 520667  blog:shape-of-code.coding-guidelines.com
+> _______________________________________________
+> Cocci mailing list
+> Cocci at systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20180424/05eb89be/attachment.html>
