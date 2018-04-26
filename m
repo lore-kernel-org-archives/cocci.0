@@ -1,38 +1,35 @@
-From: mahfouz.saif.elyazal@gmail.com (Aya Mahfouz)
-Date: Tue, 24 Apr 2018 20:04:40 +0200
-Subject: [Cocci] award for Coccinelle paper
-In-Reply-To: <alpine.DEB.2.20.1804241210210.2398@hadrien>
-References: <alpine.DEB.2.20.1804241210210.2398@hadrien>
-Message-ID: <CAJBmjuh8xqZOdKu6iPugJPP4XiFJo0oSX1gMRxxCRjo9qFMjcw@mail.gmail.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Thu, 26 Apr 2018 09:25:54 +0100 (WEST)
+Subject: [Cocci] [cocci-bug] coccinelle 1.0.6: OpenMP #pragma directive
+ leads to function ignore
+In-Reply-To: <20180426081209.GA7703@localhost>
+References: <20180426081209.GA7703@localhost>
+Message-ID: <alpine.DEB.2.20.1804260925270.2402@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, Apr 24, 2018 at 1:12 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
-
-> The 2008 Eurosys paper:
->
-> Documenting and automating collateral evolutions in Linux device drivers.
->
-> received the Eurosys "Test of Time" award.  Many thanks to everyone on
-> this list who has helped to make this possible.
->
-
-Great News! Congratulations! :)
-
->
-> thanks,
-> julia
->
-
-Kind Regards,
-Aya Saif El-yazal Mahfouz
 
 
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
+On Thu, 26 Apr 2018, Michele Martone wrote:
+
+> Dear Prof. Lawall and Coccinelle team,
 >
--------------- next part --------------
-An HTML attachment was scrubbed...
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20180424/05eb89be/attachment.html>
+> I'm an enthusiastical, however still beginner use of Coccinelle.
+>
+> While running spatch 1.0.6 on a long OpenMP-enabled listing, I
+> noticed that the presence of the C line:
+>  #pragma omp parallel for reduction(+:I) private(I)
+> seems to prevent restructuring of the function containing it.
+> If I simplify the pragma to something like
+>  #pragma omp parallel
+> the problem disappears.
+>
+> Is there anything I can do to restructure large codes containing
+> many of such similar lines ?
+>
+> In the attachment you find a test case and the output I experience.
+
+Thanks for the report.  We can try to make the parsing of #pragmas more
+flexible.
+
+julia
