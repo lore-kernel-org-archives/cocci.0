@@ -1,11 +1,11 @@
 From: Robert.Larice@t-online.de (Robert Larice)
-Date: Sun, 29 Apr 2018 14:54:17 +0200
-Subject: [Cocci] please help me with a "repetition"
-In-Reply-To: <alpine.DEB.2.20.1804291328170.4211@hadrien> (Julia Lawall's
- message of "Sun, 29 Apr 2018 13:32:18 +0200 (CEST)")
-References: <kkefiy2s6f.fsf@bora.foobar.de>
- <alpine.DEB.2.20.1804291328170.4211@hadrien>
-Message-ID: <kk604a2mx2.fsf@bora.foobar.de>
+Date: Sun, 29 Apr 2018 15:06:17 +0200
+Subject: [Cocci] perhaps a bug
+In-Reply-To: <alpine.DEB.2.20.1804291457570.3679@hadrien> (Julia Lawall's
+ message of "Sun, 29 Apr 2018 14:58:30 +0200 (CEST)")
+References: <kka7tm2na4.fsf@bora.foobar.de>
+ <alpine.DEB.2.20.1804291457570.3679@hadrien>
+Message-ID: <kk1sey2md2.fsf@bora.foobar.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -15,34 +15,24 @@ Julia Lawall <julia.lawall@lip6.fr> writes:
 >
 >> Hello,
 >>
->>   probably a stupid question,
->>   I'm failing to match something like this
->>
->> +  int newvar;
->>    i++; i++; ... any sequence of only "i++";
->> +  buckbear(42);
->>
->>   I don't succeed to express this "maximum length repetition"
->>     in the mids of those two insertions.
+>>   attached is a small example which does something strange
+>>     to a  "int i, j;" within a "#ifdef..."
+>>   Perhaps this points to a bug in coccinelle,
+>>   Would you please check ?
 >
-> It's not completely straightforward.  You could try:
+> Thanks for the report.  It looks like a bug.  But everything is fine if
+> you removed the --defined BOO.
 >
-> @r1@
-> position p;
-> @@
->
-> ...
+> julia
 
-Thank You very much,
+Yes, in this example it works without this --defined announcement.
 
-  your suggestion works perfectly well in my actual task.
+I stumbled on this with something more complex, which for some
+ reason I don't understand yet ignores a wanted transformation
+ in a #ifdef..#endif, except if I add such a --defined.
+Only then it honours my transformation, but fails with this bug.
 
-  I was trying something different,
-  very aproximately something like:
-      ... when != i++;
-    + int newvar;
-      i++;
-  and didn't get anywhere.
+I certainly will try to work around somehow.
 
-Thanks !
+Regards,
   Robert
