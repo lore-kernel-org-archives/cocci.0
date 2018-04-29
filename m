@@ -1,69 +1,67 @@
-From: Robert.Larice@t-online.de (Robert Larice)
-Date: Sun, 29 Apr 2018 15:43:50 +0200
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Sun, 29 Apr 2018 16:00:21 +0200 (CEST)
 Subject: [Cocci] perhaps a bug
-In-Reply-To: <alpine.DEB.2.20.1804291515450.3679@hadrien> (Julia Lawall's
- message of "Sun, 29 Apr 2018 15:16:37 +0200 (CEST)")
+In-Reply-To: <kksh7e1621.fsf@bora.foobar.de>
 References: <kka7tm2na4.fsf@bora.foobar.de>
- <alpine.DEB.2.20.1804291457570.3679@hadrien>
- <kk1sey2md2.fsf@bora.foobar.de>
- <alpine.DEB.2.20.1804291515450.3679@hadrien>
-Message-ID: <kksh7e1621.fsf@bora.foobar.de>
+ <alpine.DEB.2.20.1804291457570.3679@hadrien> <kk1sey2md2.fsf@bora.foobar.de>
+ <alpine.DEB.2.20.1804291515450.3679@hadrien> <kksh7e1621.fsf@bora.foobar.de>
+Message-ID: <alpine.DEB.2.20.1804291559430.3679@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Julia Lawall <julia.lawall@lip6.fr> writes:
 
-> On Sun, 29 Apr 2018, Robert Larice wrote:
+
+On Sun, 29 Apr 2018, Robert Larice wrote:
+
+> Julia Lawall <julia.lawall@lip6.fr> writes:
 >
->> Julia Lawall <julia.lawall@lip6.fr> writes:
->>
->> > On Sun, 29 Apr 2018, Robert Larice wrote:
->> >
->> >> Hello,
->> >>
->> >>   attached is a small example which does something strange
->> >>     to a  "int i, j;" within a "#ifdef..."
->> >>   Perhaps this points to a bug in coccinelle,
->> >>   Would you please check ?
->> >
->> > Thanks for the report.  It looks like a bug.  But everything is fine if
->> > you removed the --defined BOO.
->> >
->> > julia
->>
->> Yes, in this example it works without this --defined announcement.
->>
->> I stumbled on this with something more complex, which for some
->>  reason I don't understand yet ignores a wanted transformation
->>  in a #ifdef..#endif, except if I add such a --defined.
->> Only then it honours my transformation, but fails with this bug.
+> > On Sun, 29 Apr 2018, Robert Larice wrote:
+> >
+> >> Julia Lawall <julia.lawall@lip6.fr> writes:
+> >>
+> >> > On Sun, 29 Apr 2018, Robert Larice wrote:
+> >> >
+> >> >> Hello,
+> >> >>
+> >> >>   attached is a small example which does something strange
+> >> >>     to a  "int i, j;" within a "#ifdef..."
+> >> >>   Perhaps this points to a bug in coccinelle,
+> >> >>   Would you please check ?
+> >> >
+> >> > Thanks for the report.  It looks like a bug.  But everything is fine if
+> >> > you removed the --defined BOO.
+> >> >
+> >> > julia
+> >>
+> >> Yes, in this example it works without this --defined announcement.
+> >>
+> >> I stumbled on this with something more complex, which for some
+> >>  reason I don't understand yet ignores a wanted transformation
+> >>  in a #ifdef..#endif, except if I add such a --defined.
+> >> Only then it honours my transformation, but fails with this bug.
+> >
+> > I don't think the --defined option has been tested much.  Perhaps without
+> > the --defined there is a parse error on the function.
+> >
+> > julia
 >
-> I don't think the --defined option has been tested much.  Perhaps without
-> the --defined there is a parse error on the function.
+> Hello Julia,
 >
-> julia
+>   I've attached a ripped down example to show the behaviour
+>     with regard to the #ifdef
+>   Without the --defined, nothing gets tranformed.
+>   I don't see a parsing problem so far.
+>   Perhaps you can have a look and get an idea why
+>     here the --defined is important.
+>   I've seen other transformations where this was not necessairy.
 
-Hello Julia,
+Thanks.  Coccinelle doesn't show parsing problems by default.  You can see
+them with spatch --parse-c foo.c or with the --verbose-parsing option.
 
-  I've attached a ripped down example to show the behaviour
-    with regard to the #ifdef
-  Without the --defined, nothing gets tranformed.
-  I don't see a parsing problem so far.
-  Perhaps you can have a look and get an idea why
-    here the --defined is important.
-  I've seen other transformations where this was not necessairy.
+julia
 
-Best Regards,
-  Robert
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: ex3.c
-Type: text/x-csrc
-Size: 372 bytes
-Desc: not available
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20180429/ac526743/attachment-0001.bin>
--------------- next part --------------
-An embedded and charset-unspecified text was scrubbed...
-Name: ex3.cocci
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20180429/ac526743/attachment-0001.ksh>
+>
+> Best Regards,
+>   Robert
+>
+>
