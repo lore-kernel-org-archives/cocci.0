@@ -1,17 +1,21 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Thu, 26 Apr 2018 15:01:23 +0200
-Subject: [Cocci] Coccinelle 1.0.6: OpenMP #pragma directive leads to
- function ignore
-In-Reply-To: <alpine.DEB.2.20.1804260925270.2402@hadrien>
-References: <alpine.DEB.2.20.1804260925270.2402@hadrien>
-Message-ID: <6de4391f-624c-0e45-1f6f-434ccb3bda71@users.sourceforge.net>
+From: Robert.Larice@t-online.de (Robert Larice)
+Date: Sun, 29 Apr 2018 13:00:40 +0200
+Subject: [Cocci] please help me with a "repetition"
+Message-ID: <kkefiy2s6f.fsf@bora.foobar.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> We can try to make the parsing of #pragmas more flexible.
+Hello,
 
-I am also curious on further software evolution in this area for a while.
-https://github.com/coccinelle/coccinelle/issues/51
+  probably a stupid question,
+  I'm failing to match something like this
 
-Regards,
-Markus
++  int newvar;
+   i++; i++; ... any sequence of only "i++";
++  buckbear(42);
+
+  I don't succeed to express this "maximum length repetition"
+    in the mids of those two insertions.
+
+Best Regards,
+  Robert
