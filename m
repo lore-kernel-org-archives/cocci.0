@@ -1,10 +1,10 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 29 Apr 2018 15:15:25 +0200 (CEST)
-Subject: [Cocci] please help me with a "repetition"
-In-Reply-To: <kk604a2mx2.fsf@bora.foobar.de>
-References: <kkefiy2s6f.fsf@bora.foobar.de>
- <alpine.DEB.2.20.1804291328170.4211@hadrien> <kk604a2mx2.fsf@bora.foobar.de>
-Message-ID: <alpine.DEB.2.20.1804291514400.3679@hadrien>
+Date: Sun, 29 Apr 2018 15:16:37 +0200 (CEST)
+Subject: [Cocci] perhaps a bug
+In-Reply-To: <kk1sey2md2.fsf@bora.foobar.de>
+References: <kka7tm2na4.fsf@bora.foobar.de>
+ <alpine.DEB.2.20.1804291457570.3679@hadrien> <kk1sey2md2.fsf@bora.foobar.de>
+Message-ID: <alpine.DEB.2.20.1804291515450.3679@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -18,36 +18,24 @@ On Sun, 29 Apr 2018, Robert Larice wrote:
 > >
 > >> Hello,
 > >>
-> >>   probably a stupid question,
-> >>   I'm failing to match something like this
-> >>
-> >> +  int newvar;
-> >>    i++; i++; ... any sequence of only "i++";
-> >> +  buckbear(42);
-> >>
-> >>   I don't succeed to express this "maximum length repetition"
-> >>     in the mids of those two insertions.
+> >>   attached is a small example which does something strange
+> >>     to a  "int i, j;" within a "#ifdef..."
+> >>   Perhaps this points to a bug in coccinelle,
+> >>   Would you please check ?
 > >
-> > It's not completely straightforward.  You could try:
+> > Thanks for the report.  It looks like a bug.  But everything is fine if
+> > you removed the --defined BOO.
 > >
-> > @r1@
-> > position p;
-> > @@
-> >
-> > ...
+> > julia
 >
-> Thank You very much,
+> Yes, in this example it works without this --defined announcement.
 >
->   your suggestion works perfectly well in my actual task.
->
->   I was trying something different,
->   very aproximately something like:
->       ... when != i++;
->     + int newvar;
->       i++;
->   and didn't get anywhere.
+> I stumbled on this with something more complex, which for some
+>  reason I don't understand yet ignores a wanted transformation
+>  in a #ifdef..#endif, except if I add such a --defined.
+> Only then it honours my transformation, but fails with this bug.
 
-This should work for the first bunch of i++;'s, but not if there are
-several of them.
+I don't think the --defined option has been tested much.  Perhaps without
+the --defined there is a parse error on the function.
 
 julia
