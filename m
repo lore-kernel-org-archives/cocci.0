@@ -1,67 +1,28 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 29 Apr 2018 13:32:18 +0200 (CEST)
-Subject: [Cocci] please help me with a "repetition"
-In-Reply-To: <kkefiy2s6f.fsf@bora.foobar.de>
-References: <kkefiy2s6f.fsf@bora.foobar.de>
-Message-ID: <alpine.DEB.2.20.1804291328170.4211@hadrien>
+From: Robert.Larice@t-online.de (Robert Larice)
+Date: Sun, 29 Apr 2018 14:46:27 +0200
+Subject: [Cocci] perhaps a bug
+Message-ID: <kka7tm2na4.fsf@bora.foobar.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hello,
 
+  attached is a small example which does something strange
+    to a  "int i, j;" within a "#ifdef..."
+  Perhaps this points to a bug in coccinelle,
+  Would you please check ?
 
-On Sun, 29 Apr 2018, Robert Larice wrote:
+Best Regards,
+  Robert
 
-> Hello,
->
->   probably a stupid question,
->   I'm failing to match something like this
->
-> +  int newvar;
->    i++; i++; ... any sequence of only "i++";
-> +  buckbear(42);
->
->   I don't succeed to express this "maximum length repetition"
->     in the mids of those two insertions.
-
-It's not completely straightforward.  You could try:
-
-@r1@
-position p;
-@@
-
-i++;
-i++;@p
-
-@@
-position p != r1.p;
-@@
-
-+ int newvar;
-i++;@p
-
-@r2@
-position p;
-@@
-
-i++;@p
-i++;
-
-@@
-position p != r2.p;
-@@
-
-i++;@p
-+ buckbear(42);
-
-julia
-
-
-
->
-> Best Regards,
->   Robert
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: ex1.c
+Type: text/x-csrc
+Size: 122 bytes
+Desc: not available
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20180429/e536b96f/attachment.bin>
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: ex1.cocci
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20180429/e536b96f/attachment.ksh>
