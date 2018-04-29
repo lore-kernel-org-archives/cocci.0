@@ -1,67 +1,49 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 29 Apr 2018 16:00:21 +0200 (CEST)
-Subject: [Cocci] perhaps a bug
-In-Reply-To: <kksh7e1621.fsf@bora.foobar.de>
-References: <kka7tm2na4.fsf@bora.foobar.de>
- <alpine.DEB.2.20.1804291457570.3679@hadrien> <kk1sey2md2.fsf@bora.foobar.de>
- <alpine.DEB.2.20.1804291515450.3679@hadrien> <kksh7e1621.fsf@bora.foobar.de>
-Message-ID: <alpine.DEB.2.20.1804291559430.3679@hadrien>
+From: keescook@chromium.org (Kees Cook)
+Date: Sun, 29 Apr 2018 09:59:27 -0700
+Subject: [Cocci] [PATCH 2/2] mm: Add kvmalloc_ab_c and kvzalloc_struct
+In-Reply-To: <20180313183220.GA21538@bombadil.infradead.org>
+References: <20180214182618.14627-1-willy@infradead.org>
+ <20180214182618.14627-3-willy@infradead.org>
+ <CAGXu5jL9hqQGe672CmvFwqNbtTr=qu7WRwHuS4Vy7o5sX_UTgg@mail.gmail.com>
+ <alpine.DEB.2.20.1803072212160.2814@hadrien>
+ <20180308025812.GA9082@bombadil.infradead.org>
+ <alpine.DEB.2.20.1803080722300.3754@hadrien>
+ <20180308230512.GD29073@bombadil.infradead.org>
+ <alpine.DEB.2.20.1803131818550.3117@hadrien>
+ <20180313183220.GA21538@bombadil.infradead.org>
+Message-ID: <CAGXu5jKLaY2vzeFNaEhZOXbMgDXp4nF4=BnGCFfHFRwL6LXNHA@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On Tue, Mar 13, 2018 at 11:32 AM, Matthew Wilcox <willy@infradead.org> wrote:
+> On Tue, Mar 13, 2018 at 06:19:51PM +0100, Julia Lawall wrote:
+>> On Thu, 8 Mar 2018, Matthew Wilcox wrote:
+>> > On Thu, Mar 08, 2018 at 07:24:47AM +0100, Julia Lawall wrote:
+>> > > Thanks.  So it's OK to replace kmalloc and kzalloc, even though they
+>> > > didn't previously consider vmalloc and even though kmalloc doesn't zero?
+>> >
+>> > We'll also need to replace the corresponding places where those structs
+>> > are freed with kvfree().  Can coccinelle handle that too?
+>>
+>> Is the use of vmalloc a necessary part of the design?  Or could there be a
+>> non vmalloc versions for call sites that are already ok with that?
+>
+> We can also add kmalloc_struct() along with kmalloc_ab_c that won't fall
+> back to vmalloc but just return NULL.
+
+Did this ever happen? I'd also like to see kmalloc_array_3d() or
+something that takes three size arguments. We have a lot of this
+pattern too:
+
+kmalloc(sizeof(foo) * A * B, gfp...)
+
+And we could turn that into:
+
+kmalloc_array_3d(sizeof(foo), A, B, gfp...)
+
+-Kees
 
 
-On Sun, 29 Apr 2018, Robert Larice wrote:
-
-> Julia Lawall <julia.lawall@lip6.fr> writes:
->
-> > On Sun, 29 Apr 2018, Robert Larice wrote:
-> >
-> >> Julia Lawall <julia.lawall@lip6.fr> writes:
-> >>
-> >> > On Sun, 29 Apr 2018, Robert Larice wrote:
-> >> >
-> >> >> Hello,
-> >> >>
-> >> >>   attached is a small example which does something strange
-> >> >>     to a  "int i, j;" within a "#ifdef..."
-> >> >>   Perhaps this points to a bug in coccinelle,
-> >> >>   Would you please check ?
-> >> >
-> >> > Thanks for the report.  It looks like a bug.  But everything is fine if
-> >> > you removed the --defined BOO.
-> >> >
-> >> > julia
-> >>
-> >> Yes, in this example it works without this --defined announcement.
-> >>
-> >> I stumbled on this with something more complex, which for some
-> >>  reason I don't understand yet ignores a wanted transformation
-> >>  in a #ifdef..#endif, except if I add such a --defined.
-> >> Only then it honours my transformation, but fails with this bug.
-> >
-> > I don't think the --defined option has been tested much.  Perhaps without
-> > the --defined there is a parse error on the function.
-> >
-> > julia
->
-> Hello Julia,
->
->   I've attached a ripped down example to show the behaviour
->     with regard to the #ifdef
->   Without the --defined, nothing gets tranformed.
->   I don't see a parsing problem so far.
->   Perhaps you can have a look and get an idea why
->     here the --defined is important.
->   I've seen other transformations where this was not necessairy.
-
-Thanks.  Coccinelle doesn't show parsing problems by default.  You can see
-them with spatch --parse-c foo.c or with the --verbose-parsing option.
-
-julia
-
->
-> Best Regards,
->   Robert
->
->
+-- 
+Kees Cook
+Pixel Security
