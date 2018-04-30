@@ -1,125 +1,108 @@
-From: michelemartone@users.sourceforge.net (Michele Martone)
-Date: Mon, 30 Apr 2018 09:47:28 +0200
-Subject: [Cocci] [cocci-bug] coccinelle 1.0.6: OpenMP #pragma directive
- leads to function ignore
-In-Reply-To: <alpine.DEB.2.20.1804300940580.2351@hadrien>
-References: <20180426081209.GA7703@localhost>
- <alpine.DEB.2.20.1804260925270.2402@hadrien>
- <20180426102122.GB7703@localhost>
- <alpine.DEB.2.20.1804300842440.2351@hadrien>
- <20180430073930.GA20750@localhost>
- <alpine.DEB.2.20.1804300940580.2351@hadrien>
-Message-ID: <20180430074728.GB20750@localhost>
+From: keescook@chromium.org (Kees Cook)
+Date: Mon, 30 Apr 2018 12:02:14 -0700
+Subject: [Cocci] [PATCH 2/2] mm: Add kvmalloc_ab_c and kvzalloc_struct
+In-Reply-To: <20180429203023.GA11891@bombadil.infradead.org>
+References: <20180214182618.14627-1-willy@infradead.org>
+ <20180214182618.14627-3-willy@infradead.org>
+ <CAGXu5jL9hqQGe672CmvFwqNbtTr=qu7WRwHuS4Vy7o5sX_UTgg@mail.gmail.com>
+ <alpine.DEB.2.20.1803072212160.2814@hadrien>
+ <20180308025812.GA9082@bombadil.infradead.org>
+ <alpine.DEB.2.20.1803080722300.3754@hadrien>
+ <20180308230512.GD29073@bombadil.infradead.org>
+ <alpine.DEB.2.20.1803131818550.3117@hadrien>
+ <20180313183220.GA21538@bombadil.infradead.org>
+ <CAGXu5jKLaY2vzeFNaEhZOXbMgDXp4nF4=BnGCFfHFRwL6LXNHA@mail.gmail.com>
+ <20180429203023.GA11891@bombadil.infradead.org>
+Message-ID: <CAGXu5j+N9tt4rxaUMxoZnE-ziqU_yu-jkt-cBZ=R8wmYq6XBTg@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 20180430 at 09:42, Julia Lawall wrote:
-> 
-> 
-> On Mon, 30 Apr 2018, Michele Martone wrote:
-> 
-> > On 20180430 at 08:43, Julia Lawall wrote:
-> > > On Thu, 26 Apr 2018, Michele Martone wrote:
-> > >
-> > > > On 20180426 at 09:25, Julia Lawall wrote:
-> > > > > On Thu, 26 Apr 2018, Michele Martone wrote:
-> > > > >
-> > > > > > Dear Prof. Lawall and Coccinelle team,
-> > > > > >
-> > > > > > I'm an enthusiastical, however still beginner use of Coccinelle.
-> > > > > >
-> > > > > > While running spatch 1.0.6 on a long OpenMP-enabled listing, I
-> > > > > > noticed that the presence of the C line:
-> > > > > >  #pragma omp parallel for reduction(+:I) private(I)
-> > > > > > seems to prevent restructuring of the function containing it.
-> > > > > > If I simplify the pragma to something like
-> > > > > >  #pragma omp parallel
-> > > > > > the problem disappears.
-> > > > > >
-> > > > > > Is there anything I can do to restructure large codes containing
-> > > > > > many of such similar lines ?
-> > > > > >
-> > > > > > In the attachment you find a test case and the output I experience.
-> > > > >
-> > > > > Thanks for the report.  We can try to make the parsing of #pragmas more
-> > > > > flexible.
-> > > > >
-> > > > > julia
-> > > >
-> > > > Dear Julia,
-> > > >
-> > > > thanks for the quick response!
-> > > >
-> > > > I'll be waiting for Coccinelle-sided developments then.
-> > > >
-> > > > May I ask what would you recommend now to circumvent this ?
-> > > >
-> > > > From the SmPL v1.0.6 Grammar I am not aware of any way to
-> > > > e.g. ignore pragma lines as they were comments.
-> > > >
-> > > > So the best what comes to my mind is to:
-> > > >
-> > > >  - comment #pragma lines
-> > > >  - compute semantic patch
-> > > >  - apply   semantic patch
-> > > >  - uncomment #pragma lines
-> > > >
-> > > > If there is any better solution, please let me know.
-> > >
-> > > The problem is now fixed in the github version of Coccinelle.
-> > >
-> > > julia
-> >
-> > That is good news -- thank you :-)
-> >
-> > Handling such pragma lines opens new ranges of use for Coccinelle!
-> >
-> > On my side, I just followed install.txt:
-> >
-> > #!/bin/bash
-> > set -e
-> > set -x
-> > trap "read" EXIT # will block for input on error
-> > git clone https://github.com/coccinelle/coccinelle.git
-> > cd coccinelle
-> > ./autogen
-> > ./configure
-> > make # it stops here
-> > # make install
-> >
-> > and it reaches:
-> >
-> > ...
-> > OCAMLOPT  enter.ml
-> > OCAMLC    main.mli
-> > OCAMLOPT  main.ml
-> > OCAMLOPT  -o spatch.opt
-> > /usr/lib64/ocaml/libbigarray.a(bigarray_stubs.o): In function `caml_ba_deserialize':
-> > /home/abuild/rpmbuild/BUILD/ocaml-4.03.0/otherlibs/bigarray/bigarray_stubs.c:979: undefined reference to `caml_umul_overflow'
-> > /home/abuild/rpmbuild/BUILD/ocaml-4.03.0/otherlibs/bigarray/bigarray_stubs.c:985: undefined reference to `caml_umul_overflow'
-> > collect2: error: ld returned 1 exit status
-> > File "caml_startup", line 1:
-> > Error: Error during linking
-> > Makefile:609: recipe for target 'spatch.opt' failed
-> > make: *** [spatch.opt] Error 2
-> > rm parsing_cocci/lexer_cli.ml parsing_cocci/parser_cocci_menhir.ml.d parsing_cocci/parser_cocci_menhir.mli.d parsing_cocci/lexer_script.ml parsing_cocci/lexer_cocci.ml parsing_c/lexer_c.ml
-> > + read
-> >
-> > It's my first experience building any ocaml-based software, so
-> > I would appreciate any hint how to proceed further, if possible.
-> 
-> Oops, I'll forward this to my engineer, who knows about building issues.
-> I'm not sure if he will answer before Wednesday, due to the holiday.
-> What is your OS?
+On Sun, Apr 29, 2018 at 1:30 PM, Matthew Wilcox <willy@infradead.org> wrote:
+> On Sun, Apr 29, 2018 at 09:59:27AM -0700, Kees Cook wrote:
+>> Did this ever happen?
+>
+> Not yet.  I brought it up at LSFMM, and I'll repost the patches soon.
+>
+>> I'd also like to see kmalloc_array_3d() or
+>> something that takes three size arguments. We have a lot of this
+>> pattern too:
+>>
+>> kmalloc(sizeof(foo) * A * B, gfp...)
+>>
+>> And we could turn that into:
+>>
+>> kmalloc_array_3d(sizeof(foo), A, B, gfp...)
+>
+> Are either of A or B constant?  Because if so, we could just use
+> kmalloc_array.  If not, then kmalloc_array_3d becomes a little more
+> expensive than kmalloc_array because we have to do a divide at runtime
+> instead of compile-time.  that's still better than allocating too few
+> bytes, of course.
 
- $ cat /etc/os-release 
- NAME="openSUSE Leap"
- VERSION="42.3"
- ID=opensuse
- ID_LIKE="suse"
- VERSION_ID="42.3"
- PRETTY_NAME="openSUSE Leap 42.3"
- ANSI_COLOR="0;32"
- CPE_NAME="cpe:/o:opensuse:leap:42.3"
+Yeah, getting the order of the division is nice. Some thoughts below...
 
-thanks!
+>
+> I'm wondering how far down the abc + ab + ac + bc + d rabbit-hole we're
+> going to end up going.  As far as we have to, I guess.
+
+Well, the common patterns I've seen so far are:
+
+a
+ab
+abc
+a + bc
+ab + cd
+
+For any longer multiplications, I've only found[1]:
+
+drivers/staging/rtl8188eu/os_dep/osdep_service.c:       void **a =
+kzalloc(h * sizeof(void *) + h * w * size, GFP_KERNEL);
+
+
+At the end of the day, though, I don't really like having all these
+different names...
+
+kmalloc(), kmalloc_array(), kmalloc_ab_c(), kmalloc_array_3d()
+
+with their "matching" zeroing function:
+
+kzalloc(), kcalloc(), kzalloc_ab_c(), kmalloc_array_3d(..., gfp | __GFP_ZERO)
+
+For the multiplication cases, I wonder if we could just have:
+
+kmalloc_multN(gfp, a, b, c, ...)
+kzalloc_multN(gfp, a, b, c, ...)
+
+and we can replace all kcalloc() users with kzalloc_mult2(), all
+kmalloc_array() users with kmalloc_mult2(), the abc uses with
+kmalloc_mult3().
+
+That said, I *do* like kmalloc_struct() as it's a very common pattern...
+
+Or maybe, just leave the pattern in the name? kmalloc_ab(),
+kmalloc_abc(), kmalloc_ab_c(), kmalloc_ab_cd() ?
+
+Getting the constant ordering right could be part of the macro
+definition, maybe? i.e.:
+
+static inline void *kmalloc_ab(size_t a, size_t b, gfp_t flags)
+{
+    if (__builtin_constant_p(a) && a != 0 && \
+        b > SIZE_MAX / a)
+            return NULL;
+    else if (__builtin_constant_p(b) && b != 0 && \
+               a > SIZE_MAX / b)
+            return NULL;
+
+    return kmalloc(a * b, flags);
+}
+
+(I just wish C had a sensible way to catch overflow...)
+
+-Kees
+
+[1] git grep -E 'alloc\([^,]+[^(]\*[^)][^,]+[^(]\*[^)][^,]+[^(]\*[^)][^,]+,'
+
+-- 
+Kees Cook
+Pixel Security
