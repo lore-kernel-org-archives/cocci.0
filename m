@@ -1,227 +1,119 @@
-From: rvarsha016@gmail.com (Varsha Rao)
-Date: Sat, 31 Mar 2018 15:01:14 +0530
-Subject: [Cocci] [PATCH v2] crypto: cavium: zip: Remove unnecessary
-	parentheses
-Message-ID: <20180331093114.5034-1-rvarsha016@gmail.com>
+From: keescook@chromium.org (Kees Cook)
+Date: Mon, 30 Apr 2018 15:29:39 -0700
+Subject: [Cocci] [PATCH 2/2] mm: Add kvmalloc_ab_c and kvzalloc_struct
+In-Reply-To: <20180430201607.GA7041@bombadil.infradead.org>
+References: <CAGXu5jL9hqQGe672CmvFwqNbtTr=qu7WRwHuS4Vy7o5sX_UTgg@mail.gmail.com>
+ <alpine.DEB.2.20.1803072212160.2814@hadrien>
+ <20180308025812.GA9082@bombadil.infradead.org>
+ <alpine.DEB.2.20.1803080722300.3754@hadrien>
+ <20180308230512.GD29073@bombadil.infradead.org>
+ <alpine.DEB.2.20.1803131818550.3117@hadrien>
+ <20180313183220.GA21538@bombadil.infradead.org>
+ <CAGXu5jKLaY2vzeFNaEhZOXbMgDXp4nF4=BnGCFfHFRwL6LXNHA@mail.gmail.com>
+ <20180429203023.GA11891@bombadil.infradead.org>
+ <CAGXu5j+N9tt4rxaUMxoZnE-ziqU_yu-jkt-cBZ=R8wmYq6XBTg@mail.gmail.com>
+ <20180430201607.GA7041@bombadil.infradead.org>
+Message-ID: <CAGXu5jKAWm5Hr7ixbJuAUBNDxeO1i1sExFJmWDKd2SaxbTF1Ow@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-This patch fixes the clang warning of extraneous parentheses, with the
-following coccinelle script.
+On Mon, Apr 30, 2018 at 1:16 PM, Matthew Wilcox <willy@infradead.org> wrote:
+> On Mon, Apr 30, 2018 at 12:02:14PM -0700, Kees Cook wrote:
+>> For any longer multiplications, I've only found[1]:
+>>
+>> drivers/staging/rtl8188eu/os_dep/osdep_service.c:       void **a =
+>> kzalloc(h * sizeof(void *) + h * w * size, GFP_KERNEL);
+>
+> That's pretty good, although it's just an atrocious vendor driver and
+> it turns out all of those things are constants, and it'd be far better
+> off with just declaring an array.  I bet they used to declare one on
+> the stack ...
 
-@@
-identifier i;
-constant c;
-expression e;
-@@
-(
-!((e))
-|
--((
-\(i == c\|i != c\|i <= c\|i < c\|i >= c\|i > c\)
--))
-)
+Yeah, it was just a quick hack to look for stuff.
 
-Signed-off-by: Varsha Rao <rvarsha016@gmail.com>
----
-Changes in v2:
- - Modified coccinelle script
+>
+>> At the end of the day, though, I don't really like having all these
+>> different names...
+>>
+>> kmalloc(), kmalloc_array(), kmalloc_ab_c(), kmalloc_array_3d()
+>>
+>> with their "matching" zeroing function:
+>>
+>> kzalloc(), kcalloc(), kzalloc_ab_c(), kmalloc_array_3d(..., gfp | __GFP_ZERO)
+>
+> Yes, it's not very regular.
+>
+>> For the multiplication cases, I wonder if we could just have:
+>>
+>> kmalloc_multN(gfp, a, b, c, ...)
+>> kzalloc_multN(gfp, a, b, c, ...)
+>>
+>> and we can replace all kcalloc() users with kzalloc_mult2(), all
+>> kmalloc_array() users with kmalloc_mult2(), the abc uses with
+>> kmalloc_mult3().
+>
+> I'm reluctant to do away with kcalloc() as it has the obvious heritage
+> from user-space calloc() with the addition of GFP flags.
 
- drivers/crypto/cavium/zip/zip_regs.h | 42 ++++++++++++++++++------------------
- 1 file changed, 21 insertions(+), 21 deletions(-)
+But it encourages misuse with calloc(N * M, gfp) ... if we removed
+calloc and kept k[mz]alloc_something(gfp, a, b, c...) I think we'd
+have better adoption.
 
-diff --git a/drivers/crypto/cavium/zip/zip_regs.h b/drivers/crypto/cavium/zip/zip_regs.h
-index d0be682305c1..874e0236c87e 100644
---- a/drivers/crypto/cavium/zip/zip_regs.h
-+++ b/drivers/crypto/cavium/zip/zip_regs.h
-@@ -443,7 +443,7 @@ union zip_corex_bist_status {
- 
- static inline u64 ZIP_COREX_BIST_STATUS(u64 param1)
- {
--	if (((param1 <= 1)))
-+	if (param1 <= 1)
- 		return 0x0520ull + (param1 & 1) * 0x8ull;
- 	pr_err("ZIP_COREX_BIST_STATUS: %llu\n", param1);
- 	return 0;
-@@ -537,7 +537,7 @@ union zip_dbg_corex_inst {
- 
- static inline u64 ZIP_DBG_COREX_INST(u64 param1)
- {
--	if (((param1 <= 1)))
-+	if (param1 <= 1)
- 		return 0x0640ull + (param1 & 1) * 0x8ull;
- 	pr_err("ZIP_DBG_COREX_INST: %llu\n", param1);
- 	return 0;
-@@ -568,7 +568,7 @@ union zip_dbg_corex_sta {
- 
- static inline u64 ZIP_DBG_COREX_STA(u64 param1)
- {
--	if (((param1 <= 1)))
-+	if (param1 <= 1)
- 		return 0x0680ull + (param1 & 1) * 0x8ull;
- 	pr_err("ZIP_DBG_COREX_STA: %llu\n", param1);
- 	return 0;
-@@ -599,7 +599,7 @@ union zip_dbg_quex_sta {
- 
- static inline u64 ZIP_DBG_QUEX_STA(u64 param1)
- {
--	if (((param1 <= 7)))
-+	if (param1 <= 7)
- 		return 0x1800ull + (param1 & 7) * 0x8ull;
- 	pr_err("ZIP_DBG_QUEX_STA: %llu\n", param1);
- 	return 0;
-@@ -817,7 +817,7 @@ union zip_msix_pbax {
- 
- static inline u64 ZIP_MSIX_PBAX(u64 param1)
- {
--	if (((param1 == 0)))
-+	if (param1 == 0)
- 		return 0x0000838000FF0000ull;
- 	pr_err("ZIP_MSIX_PBAX: %llu\n", param1);
- 	return 0;
-@@ -846,7 +846,7 @@ union zip_msix_vecx_addr {
- 
- static inline u64 ZIP_MSIX_VECX_ADDR(u64 param1)
- {
--	if (((param1 <= 17)))
-+	if (param1 <= 17)
- 		return 0x0000838000F00000ull + (param1 & 31) * 0x10ull;
- 	pr_err("ZIP_MSIX_VECX_ADDR: %llu\n", param1);
- 	return 0;
-@@ -875,7 +875,7 @@ union zip_msix_vecx_ctl {
- 
- static inline u64 ZIP_MSIX_VECX_CTL(u64 param1)
- {
--	if (((param1 <= 17)))
-+	if (param1 <= 17)
- 		return 0x0000838000F00008ull + (param1 & 31) * 0x10ull;
- 	pr_err("ZIP_MSIX_VECX_CTL: %llu\n", param1);
- 	return 0;
-@@ -900,7 +900,7 @@ union zip_quex_done {
- 
- static inline u64 ZIP_QUEX_DONE(u64 param1)
- {
--	if (((param1 <= 7)))
-+	if (param1 <= 7)
- 		return 0x2000ull + (param1 & 7) * 0x8ull;
- 	pr_err("ZIP_QUEX_DONE: %llu\n", param1);
- 	return 0;
-@@ -925,7 +925,7 @@ union zip_quex_done_ack {
- 
- static inline u64 ZIP_QUEX_DONE_ACK(u64 param1)
- {
--	if (((param1 <= 7)))
-+	if (param1 <= 7)
- 		return 0x2200ull + (param1 & 7) * 0x8ull;
- 	pr_err("ZIP_QUEX_DONE_ACK: %llu\n", param1);
- 	return 0;
-@@ -950,7 +950,7 @@ union zip_quex_done_ena_w1c {
- 
- static inline u64 ZIP_QUEX_DONE_ENA_W1C(u64 param1)
- {
--	if (((param1 <= 7)))
-+	if (param1 <= 7)
- 		return 0x2600ull + (param1 & 7) * 0x8ull;
- 	pr_err("ZIP_QUEX_DONE_ENA_W1C: %llu\n", param1);
- 	return 0;
-@@ -975,7 +975,7 @@ union zip_quex_done_ena_w1s {
- 
- static inline u64 ZIP_QUEX_DONE_ENA_W1S(u64 param1)
- {
--	if (((param1 <= 7)))
-+	if (param1 <= 7)
- 		return 0x2400ull + (param1 & 7) * 0x8ull;
- 	pr_err("ZIP_QUEX_DONE_ENA_W1S: %llu\n", param1);
- 	return 0;
-@@ -1004,7 +1004,7 @@ union zip_quex_done_wait {
- 
- static inline u64 ZIP_QUEX_DONE_WAIT(u64 param1)
- {
--	if (((param1 <= 7)))
-+	if (param1 <= 7)
- 		return 0x2800ull + (param1 & 7) * 0x8ull;
- 	pr_err("ZIP_QUEX_DONE_WAIT: %llu\n", param1);
- 	return 0;
-@@ -1029,7 +1029,7 @@ union zip_quex_doorbell {
- 
- static inline u64 ZIP_QUEX_DOORBELL(u64 param1)
- {
--	if (((param1 <= 7)))
-+	if (param1 <= 7)
- 		return 0x4000ull + (param1 & 7) * 0x8ull;
- 	pr_err("ZIP_QUEX_DOORBELL: %llu\n", param1);
- 	return 0;
-@@ -1058,7 +1058,7 @@ union zip_quex_err_ena_w1c {
- 
- static inline u64 ZIP_QUEX_ERR_ENA_W1C(u64 param1)
- {
--	if (((param1 <= 7)))
-+	if (param1 <= 7)
- 		return 0x3600ull + (param1 & 7) * 0x8ull;
- 	pr_err("ZIP_QUEX_ERR_ENA_W1C: %llu\n", param1);
- 	return 0;
-@@ -1087,7 +1087,7 @@ union zip_quex_err_ena_w1s {
- 
- static inline u64 ZIP_QUEX_ERR_ENA_W1S(u64 param1)
- {
--	if (((param1 <= 7)))
-+	if (param1 <= 7)
- 		return 0x3400ull + (param1 & 7) * 0x8ull;
- 	pr_err("ZIP_QUEX_ERR_ENA_W1S: %llu\n", param1);
- 	return 0;
-@@ -1120,7 +1120,7 @@ union zip_quex_err_int {
- 
- static inline u64 ZIP_QUEX_ERR_INT(u64 param1)
- {
--	if (((param1 <= 7)))
-+	if (param1 <= 7)
- 		return 0x3000ull + (param1 & 7) * 0x8ull;
- 	pr_err("ZIP_QUEX_ERR_INT: %llu\n", param1);
- 	return 0;
-@@ -1150,7 +1150,7 @@ union zip_quex_err_int_w1s {
- 
- static inline u64 ZIP_QUEX_ERR_INT_W1S(u64 param1)
- {
--	if (((param1 <= 7)))
-+	if (param1 <= 7)
- 		return 0x3200ull + (param1 & 7) * 0x8ull;
- 	pr_err("ZIP_QUEX_ERR_INT_W1S: %llu\n", param1);
- 	return 0;
-@@ -1179,7 +1179,7 @@ union zip_quex_gcfg {
- 
- static inline u64 ZIP_QUEX_GCFG(u64 param1)
- {
--	if (((param1 <= 7)))
-+	if (param1 <= 7)
- 		return 0x1A00ull + (param1 & 7) * 0x8ull;
- 	pr_err("ZIP_QUEX_GCFG: %llu\n", param1);
- 	return 0;
-@@ -1204,7 +1204,7 @@ union zip_quex_map {
- 
- static inline u64 ZIP_QUEX_MAP(u64 param1)
- {
--	if (((param1 <= 7)))
-+	if (param1 <= 7)
- 		return 0x1400ull + (param1 & 7) * 0x8ull;
- 	pr_err("ZIP_QUEX_MAP: %llu\n", param1);
- 	return 0;
-@@ -1236,7 +1236,7 @@ union zip_quex_sbuf_addr {
- 
- static inline u64 ZIP_QUEX_SBUF_ADDR(u64 param1)
- {
--	if (((param1 <= 7)))
-+	if (param1 <= 7)
- 		return 0x1000ull + (param1 & 7) * 0x8ull;
- 	pr_err("ZIP_QUEX_SBUF_ADDR: %llu\n", param1);
- 	return 0;
-@@ -1276,7 +1276,7 @@ union zip_quex_sbuf_ctl {
- 
- static inline u64 ZIP_QUEX_SBUF_CTL(u64 param1)
- {
--	if (((param1 <= 7)))
-+	if (param1 <= 7)
- 		return 0x1200ull + (param1 & 7) * 0x8ull;
- 	pr_err("ZIP_QUEX_SBUF_CTL: %llu\n", param1);
- 	return 0;
+>> That said, I *do* like kmalloc_struct() as it's a very common pattern...
+>
+> Thanks!  And way harder to misuse than kmalloc_ab_c().
+
+Yes, quite so. It's really why I went with kmalloc_array_3d(), but now
+I'm thinking better of it...
+
+>> Or maybe, just leave the pattern in the name? kmalloc_ab(),
+>> kmalloc_abc(), kmalloc_ab_c(), kmalloc_ab_cd() ?
+>>
+>> Getting the constant ordering right could be part of the macro
+>> definition, maybe? i.e.:
+>>
+>> static inline void *kmalloc_ab(size_t a, size_t b, gfp_t flags)
+>> {
+>>     if (__builtin_constant_p(a) && a != 0 && \
+>>         b > SIZE_MAX / a)
+>>             return NULL;
+>>     else if (__builtin_constant_p(b) && b != 0 && \
+>>                a > SIZE_MAX / b)
+>>             return NULL;
+>>
+>>     return kmalloc(a * b, flags);
+>> }
+>
+> Ooh, if neither a nor b is constant, it just didn't do a check ;-(  This
+> stuff is hard.
+
+Yup, quite true. Obviously not the final form. ;) I meant to
+illustrate that we could do compile-time tricks to reorder the
+division in an efficient manner.
+
+>> (I just wish C had a sensible way to catch overflow...)
+>
+> Every CPU I ever worked with had an "overflow" bit ... do we have a
+> friend on the C standards ctte who might figure out a way to let us
+> write code that checks it?
+
+On the CPU it's not retained across multiple calculations. And the
+type matters too. This came up recently in a separate thread too:
+http://openwall.com/lists/kernel-hardening/2018/03/26/4
+
+>> [1] git grep -E 'alloc\([^,]+[^(]\*[^)][^,]+[^(]\*[^)][^,]+[^(]\*[^)][^,]+,'
+>
+> I'm impressed, but it's not going to catch
+>
+>         veryLongPointerNameThatsMeaningfulToMe = kmalloc(initialSize +
+>                 numberOfEntries * entrySize + someOtherThing * yourMum,
+>                 GFP_KERNEL);
+
+Right, it wasn't meant to be exhaustive. I just included it in case
+anyone wanted to go grepping around for themselves.
+
+-Kees
+
 -- 
-2.14.3
+Kees Cook
+Pixel Security
