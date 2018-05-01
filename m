@@ -1,7 +1,7 @@
-From: linux@rasmusvillemoes.dk (Rasmus Villemoes)
-Date: Mon, 30 Apr 2018 23:29:04 +0200
+From: keescook@chromium.org (Kees Cook)
+Date: Tue, 1 May 2018 10:00:27 -0700
 Subject: [Cocci] [PATCH 2/2] mm: Add kvmalloc_ab_c and kvzalloc_struct
-In-Reply-To: <20180430201607.GA7041@bombadil.infradead.org>
+In-Reply-To: <4ad99a55-9c93-5ea1-5954-3cb6e5ba7df9@rasmusvillemoes.dk>
 References: <CAGXu5jL9hqQGe672CmvFwqNbtTr=qu7WRwHuS4Vy7o5sX_UTgg@mail.gmail.com>
  <alpine.DEB.2.20.1803072212160.2814@hadrien>
  <20180308025812.GA9082@bombadil.infradead.org>
@@ -13,44 +13,57 @@ References: <CAGXu5jL9hqQGe672CmvFwqNbtTr=qu7WRwHuS4Vy7o5sX_UTgg@mail.gmail.com>
  <20180429203023.GA11891@bombadil.infradead.org>
  <CAGXu5j+N9tt4rxaUMxoZnE-ziqU_yu-jkt-cBZ=R8wmYq6XBTg@mail.gmail.com>
  <20180430201607.GA7041@bombadil.infradead.org>
-Message-ID: <4ad99a55-9c93-5ea1-5954-3cb6e5ba7df9@rasmusvillemoes.dk>
+ <4ad99a55-9c93-5ea1-5954-3cb6e5ba7df9@rasmusvillemoes.dk>
+Message-ID: <CAGXu5j+tYhQOfVMkZdPzW5CX103LHpm8SYSN51VFLufn0Z0y6Q@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 2018-04-30 22:16, Matthew Wilcox wrote:
-> On Mon, Apr 30, 2018 at 12:02:14PM -0700, Kees Cook wrote:
+On Mon, Apr 30, 2018 at 2:29 PM, Rasmus Villemoes
+<linux@rasmusvillemoes.dk> wrote:
+> On 2018-04-30 22:16, Matthew Wilcox wrote:
+>> On Mon, Apr 30, 2018 at 12:02:14PM -0700, Kees Cook wrote:
+>>>
+>>> Getting the constant ordering right could be part of the macro
+>>> definition, maybe? i.e.:
+>>>
+>>> static inline void *kmalloc_ab(size_t a, size_t b, gfp_t flags)
+>>> {
+>>>     if (__builtin_constant_p(a) && a != 0 && \
+>>>         b > SIZE_MAX / a)
+>>>             return NULL;
+>>>     else if (__builtin_constant_p(b) && b != 0 && \
+>>>                a > SIZE_MAX / b)
+>>>             return NULL;
+>>>
+>>>     return kmalloc(a * b, flags);
+>>> }
 >>
->> Getting the constant ordering right could be part of the macro
->> definition, maybe? i.e.:
+>> Ooh, if neither a nor b is constant, it just didn't do a check ;-(  This
+>> stuff is hard.
 >>
->> static inline void *kmalloc_ab(size_t a, size_t b, gfp_t flags)
->> {
->>     if (__builtin_constant_p(a) && a != 0 && \
->>         b > SIZE_MAX / a)
->>             return NULL;
->>     else if (__builtin_constant_p(b) && b != 0 && \
->>                a > SIZE_MAX / b)
->>             return NULL;
+>>> (I just wish C had a sensible way to catch overflow...)
 >>
->>     return kmalloc(a * b, flags);
->> }
-> 
-> Ooh, if neither a nor b is constant, it just didn't do a check ;-(  This
-> stuff is hard.
-> 
->> (I just wish C had a sensible way to catch overflow...)
-> 
-> Every CPU I ever worked with had an "overflow" bit ... do we have a
-> friend on the C standards ctte who might figure out a way to let us
-> write code that checks it?
+>> Every CPU I ever worked with had an "overflow" bit ... do we have a
+>> friend on the C standards ctte who might figure out a way to let us
+>> write code that checks it?
+>
+> gcc 5.1+ (I think) have the __builtin_OP_overflow checks that should
+> generate reasonable code. Too bad there's no completely generic
+> check_all_ops_in_this_expression(a+b*c+d/e, or_jump_here). Though it's
+> hard to define what they should be checked against - probably would
+> require all subexpressions (including the variables themselves) to have
+> the same type.
+>
+> plug: https://lkml.org/lkml/2015/7/19/358
 
-gcc 5.1+ (I think) have the __builtin_OP_overflow checks that should
-generate reasonable code. Too bad there's no completely generic
-check_all_ops_in_this_expression(a+b*c+d/e, or_jump_here). Though it's
-hard to define what they should be checked against - probably would
-require all subexpressions (including the variables themselves) to have
-the same type.
+That's a very nice series. Why did it never get taken? It seems to do
+the right things quite correctly.
 
-plug: https://lkml.org/lkml/2015/7/19/358
+Daniel, while this isn't a perfect solution, is this something you'd
+use in graphics-land?
 
-Rasmus
+-Kees
+
+-- 
+Kees Cook
+Pixel Security
