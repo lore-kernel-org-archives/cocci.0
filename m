@@ -1,65 +1,64 @@
-From: michelemartone@users.sourceforge.net (Michele Martone)
-Date: Wed, 2 May 2018 15:16:39 +0200
-Subject: [Cocci] [cocci-bug] coccinelle 1.0.6: OpenMP #pragma directive
- leads to function ignore
-In-Reply-To: <CA+MoWDrmVnz+cXjepPwWqBPgAoujD9m+1pAMv7JJMFy_2CjNUA@mail.gmail.com>
-References: <20180426081209.GA7703@localhost>
- <alpine.DEB.2.20.1804260925270.2402@hadrien>
- <20180426102122.GB7703@localhost>
- <alpine.DEB.2.20.1804300842440.2351@hadrien>
- <20180430073930.GA20750@localhost>
- <CA+MoWDrmVnz+cXjepPwWqBPgAoujD9m+1pAMv7JJMFy_2CjNUA@mail.gmail.com>
-Message-ID: <20180502131639.GA26874@localhost>
+From: linux@rasmusvillemoes.dk (Rasmus Villemoes)
+Date: Fri, 4 May 2018 01:00:43 +0200
+Subject: [Cocci] [PATCH 2/2] mm: Add kvmalloc_ab_c and kvzalloc_struct
+In-Reply-To: <CAGXu5j+tYhQOfVMkZdPzW5CX103LHpm8SYSN51VFLufn0Z0y6Q@mail.gmail.com>
+References: <CAGXu5jL9hqQGe672CmvFwqNbtTr=qu7WRwHuS4Vy7o5sX_UTgg@mail.gmail.com>
+ <alpine.DEB.2.20.1803072212160.2814@hadrien>
+ <20180308025812.GA9082@bombadil.infradead.org>
+ <alpine.DEB.2.20.1803080722300.3754@hadrien>
+ <20180308230512.GD29073@bombadil.infradead.org>
+ <alpine.DEB.2.20.1803131818550.3117@hadrien>
+ <20180313183220.GA21538@bombadil.infradead.org>
+ <CAGXu5jKLaY2vzeFNaEhZOXbMgDXp4nF4=BnGCFfHFRwL6LXNHA@mail.gmail.com>
+ <20180429203023.GA11891@bombadil.infradead.org>
+ <CAGXu5j+N9tt4rxaUMxoZnE-ziqU_yu-jkt-cBZ=R8wmYq6XBTg@mail.gmail.com>
+ <20180430201607.GA7041@bombadil.infradead.org>
+ <4ad99a55-9c93-5ea1-5954-3cb6e5ba7df9@rasmusvillemoes.dk>
+ <CAGXu5j+tYhQOfVMkZdPzW5CX103LHpm8SYSN51VFLufn0Z0y6Q@mail.gmail.com>
+Message-ID: <4e25ff5b-f8fc-7012-83c2-b56e6928e8bc@rasmusvillemoes.dk>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 20180430 at 09:44, Peter Senna Tschudin wrote:
-> [...]
+On 2018-05-01 19:00, Kees Cook wrote:
+> On Mon, Apr 30, 2018 at 2:29 PM, Rasmus Villemoes
+> <linux@rasmusvillemoes.dk> wrote:
+>>
+>> gcc 5.1+ (I think) have the __builtin_OP_overflow checks that should
+>> generate reasonable code. Too bad there's no completely generic
+>> check_all_ops_in_this_expression(a+b*c+d/e, or_jump_here). Though it's
+>> hard to define what they should be checked against - probably would
+>> require all subexpressions (including the variables themselves) to have
+>> the same type.
+>>
+>> plug: https://lkml.org/lkml/2015/7/19/358
 > 
-> > #!/bin/bash
-> > set -e
-> > set -x
-> > trap "read" EXIT # will block for input on error
-> > git clone https://github.com/coccinelle/coccinelle.git
-> > cd coccinelle
-> > ./autogen
-> > ./configure
-> > make # it stops here
-> > # make install
-> >
-> > and it reaches:
-> >
-> > ...
-> > OCAMLOPT  enter.ml
-> > OCAMLC    main.mli
-> > OCAMLOPT  main.ml
-> > OCAMLOPT  -o spatch.opt
-> > /usr/lib64/ocaml/libbigarray.a(bigarray_stubs.o): In function `caml_ba_deserialize':
-> > /home/abuild/rpmbuild/BUILD/ocaml-4.03.0/otherlibs/bigarray/bigarray_stubs.c:979: undefined reference to `caml_umul_overflow'
-> > /home/abuild/rpmbuild/BUILD/ocaml-4.03.0/otherlibs/bigarray/bigarray_stubs.c:985: undefined reference to `caml_umul_overflow'
-> > collect2: error: ld returned 1 exit status
-> > File "caml_startup", line 1:
-> > Error: Error during linking
-> > Makefile:609: recipe for target 'spatch.opt' failed
-> > make: *** [spatch.opt] Error 2
-> > rm parsing_cocci/lexer_cli.ml parsing_cocci/parser_cocci_menhir.ml.d parsing_cocci/parser_cocci_menhir.mli.d parsing_cocci/lexer_script.ml parsing_cocci/lexer_cocci.ml parsing_c/lexer_c.ml
-> > + read
-> 
-> I usually ask the package manager to install build dependencies for me:
-> 
-> Fedora:
-> $ sudo dnf builddep coccinelle
-> 
-> Ubuntu/Debian:
-> $ sudo apt-get build-dep coccinelle
-> 
-> [...]
+> That's a very nice series. Why did it never get taken?
 
-Dear Peter, thanks for the apt-get based recipe,  
-it worked for me on debian buster with ocaml-4.0.5.
+Well, nobody seemed particularly interested, and then
+https://lkml.org/lkml/2015/10/28/215 happened... but he did later seem
+to admit that it could be useful for the multiplication checking, and
+that "the gcc interface for multiplication overflow is fine".
 
-Dear Julia, thanks for the pragma patch which will
-enable coccinelle to support OpenMP-enabled listings
-too (I just tested it on the above setup) :-)
+I still think even for unsigned types overflow checking can be subtle. E.g.
 
-Michele
+u32 somevar;
+
+if (somevar + sizeof(foo) < somevar)
+  return -EOVERFLOW;
+somevar += sizeof(this);
+
+is broken, because the LHS is promoted to unsigned long/size_t, then so
+is the RHS for the comparison, and the comparison is thus always false
+(on 64bit). It gets worse if the two types are more "opaque", and in any
+case it's not always easy to verify at a glance that the types are the
+same, or@least that the expression of the widest type is on the RHS.
+
+> It seems to do the right things quite correctly.
+
+Yes, I wouldn't suggest it without the test module verifying corner
+cases, and checking it has the same semantics whether used with old or
+new gcc.
+
+Would you shepherd it through if I updated the patches and resent?
+
+Rasmus
