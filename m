@@ -1,7 +1,7 @@
-From: linux@rasmusvillemoes.dk (Rasmus Villemoes)
-Date: Fri, 4 May 2018 01:00:43 +0200
+From: keescook@chromium.org (Kees Cook)
+Date: Thu, 3 May 2018 17:36:28 -0700
 Subject: [Cocci] [PATCH 2/2] mm: Add kvmalloc_ab_c and kvzalloc_struct
-In-Reply-To: <CAGXu5j+tYhQOfVMkZdPzW5CX103LHpm8SYSN51VFLufn0Z0y6Q@mail.gmail.com>
+In-Reply-To: <4e25ff5b-f8fc-7012-83c2-b56e6928e8bc@rasmusvillemoes.dk>
 References: <CAGXu5jL9hqQGe672CmvFwqNbtTr=qu7WRwHuS4Vy7o5sX_UTgg@mail.gmail.com>
  <alpine.DEB.2.20.1803072212160.2814@hadrien>
  <20180308025812.GA9082@bombadil.infradead.org>
@@ -15,50 +15,70 @@ References: <CAGXu5jL9hqQGe672CmvFwqNbtTr=qu7WRwHuS4Vy7o5sX_UTgg@mail.gmail.com>
  <20180430201607.GA7041@bombadil.infradead.org>
  <4ad99a55-9c93-5ea1-5954-3cb6e5ba7df9@rasmusvillemoes.dk>
  <CAGXu5j+tYhQOfVMkZdPzW5CX103LHpm8SYSN51VFLufn0Z0y6Q@mail.gmail.com>
-Message-ID: <4e25ff5b-f8fc-7012-83c2-b56e6928e8bc@rasmusvillemoes.dk>
+ <4e25ff5b-f8fc-7012-83c2-b56e6928e8bc@rasmusvillemoes.dk>
+Message-ID: <CAGXu5jJ9Uw9pDOYfBH8iXTVqiQXgNrEqzpk7a5mOCrH0G3CoyA@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 2018-05-01 19:00, Kees Cook wrote:
-> On Mon, Apr 30, 2018 at 2:29 PM, Rasmus Villemoes
-> <linux@rasmusvillemoes.dk> wrote:
+On Thu, May 3, 2018 at 4:00 PM, Rasmus Villemoes
+<linux@rasmusvillemoes.dk> wrote:
+> On 2018-05-01 19:00, Kees Cook wrote:
+>> On Mon, Apr 30, 2018 at 2:29 PM, Rasmus Villemoes
+>> <linux@rasmusvillemoes.dk> wrote:
+>>>
+>>> gcc 5.1+ (I think) have the __builtin_OP_overflow checks that should
+>>> generate reasonable code. Too bad there's no completely generic
+>>> check_all_ops_in_this_expression(a+b*c+d/e, or_jump_here). Though it's
+>>> hard to define what they should be checked against - probably would
+>>> require all subexpressions (including the variables themselves) to have
+>>> the same type.
+>>>
+>>> plug: https://lkml.org/lkml/2015/7/19/358
 >>
->> gcc 5.1+ (I think) have the __builtin_OP_overflow checks that should
->> generate reasonable code. Too bad there's no completely generic
->> check_all_ops_in_this_expression(a+b*c+d/e, or_jump_here). Though it's
->> hard to define what they should be checked against - probably would
->> require all subexpressions (including the variables themselves) to have
->> the same type.
->>
->> plug: https://lkml.org/lkml/2015/7/19/358
-> 
-> That's a very nice series. Why did it never get taken?
+>> That's a very nice series. Why did it never get taken?
+>
+> Well, nobody seemed particularly interested, and then
+> https://lkml.org/lkml/2015/10/28/215 happened... but he did later seem
+> to admit that it could be useful for the multiplication checking, and
+> that "the gcc interface for multiplication overflow is fine".
 
-Well, nobody seemed particularly interested, and then
-https://lkml.org/lkml/2015/10/28/215 happened... but he did later seem
-to admit that it could be useful for the multiplication checking, and
-that "the gcc interface for multiplication overflow is fine".
+Oh, excellent. Thank you for that pointer! That conversation covered a
+lot of ground. I need to think a little more about how to apply the
+thoughts there with the kmalloc() needs and the GPU driver needs...
 
-I still think even for unsigned types overflow checking can be subtle. E.g.
+> I still think even for unsigned types overflow checking can be subtle. E.g.
+>
+> u32 somevar;
+>
+> if (somevar + sizeof(foo) < somevar)
+>   return -EOVERFLOW;
+> somevar += sizeof(this);
+>
+> is broken, because the LHS is promoted to unsigned long/size_t, then so
+> is the RHS for the comparison, and the comparison is thus always false
+> (on 64bit). It gets worse if the two types are more "opaque", and in any
+> case it's not always easy to verify at a glance that the types are the
+> same, or at least that the expression of the widest type is on the RHS.
 
-u32 somevar;
+That's an excellent example, yes. (And likely worth including in the
+commit log somewhere.)
 
-if (somevar + sizeof(foo) < somevar)
-  return -EOVERFLOW;
-somevar += sizeof(this);
+>
+>> It seems to do the right things quite correctly.
+>
+> Yes, I wouldn't suggest it without the test module verifying corner
+> cases, and checking it has the same semantics whether used with old or
+> new gcc.
+>
+> Would you shepherd it through if I updated the patches and resent?
 
-is broken, because the LHS is promoted to unsigned long/size_t, then so
-is the RHS for the comparison, and the comparison is thus always false
-(on 64bit). It gets worse if the two types are more "opaque", and in any
-case it's not always easy to verify at a glance that the types are the
-same, or@least that the expression of the widest type is on the RHS.
+Yes, though we may need reworking if we actually want to do the
+try/catch style (since that was talked about with GPU stuff too...)
 
-> It seems to do the right things quite correctly.
+Either way, yes, a refresh would be lovely! :)
 
-Yes, I wouldn't suggest it without the test module verifying corner
-cases, and checking it has the same semantics whether used with old or
-new gcc.
+-Kees
 
-Would you shepherd it through if I updated the patches and resent?
-
-Rasmus
+-- 
+Kees Cook
+Pixel Security
