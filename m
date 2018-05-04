@@ -1,98 +1,72 @@
-From: keescook@chromium.org (Kees Cook)
-Date: Thu, 3 May 2018 17:40:34 -0700
-Subject: [Cocci] [PATCH 2/2] mm: Add kvmalloc_ab_c and kvzalloc_struct
-In-Reply-To: <CAGXu5jJ9Uw9pDOYfBH8iXTVqiQXgNrEqzpk7a5mOCrH0G3CoyA@mail.gmail.com>
-References: <CAGXu5jL9hqQGe672CmvFwqNbtTr=qu7WRwHuS4Vy7o5sX_UTgg@mail.gmail.com>
- <alpine.DEB.2.20.1803072212160.2814@hadrien>
- <20180308025812.GA9082@bombadil.infradead.org>
- <alpine.DEB.2.20.1803080722300.3754@hadrien>
- <20180308230512.GD29073@bombadil.infradead.org>
- <alpine.DEB.2.20.1803131818550.3117@hadrien>
- <20180313183220.GA21538@bombadil.infradead.org>
- <CAGXu5jKLaY2vzeFNaEhZOXbMgDXp4nF4=BnGCFfHFRwL6LXNHA@mail.gmail.com>
- <20180429203023.GA11891@bombadil.infradead.org>
- <CAGXu5j+N9tt4rxaUMxoZnE-ziqU_yu-jkt-cBZ=R8wmYq6XBTg@mail.gmail.com>
- <20180430201607.GA7041@bombadil.infradead.org>
- <4ad99a55-9c93-5ea1-5954-3cb6e5ba7df9@rasmusvillemoes.dk>
- <CAGXu5j+tYhQOfVMkZdPzW5CX103LHpm8SYSN51VFLufn0Z0y6Q@mail.gmail.com>
- <4e25ff5b-f8fc-7012-83c2-b56e6928e8bc@rasmusvillemoes.dk>
- <CAGXu5jJ9Uw9pDOYfBH8iXTVqiQXgNrEqzpk7a5mOCrH0G3CoyA@mail.gmail.com>
-Message-ID: <CAGXu5jJ1dA4MA-MuzGXdF+sGMZN17BMf-WOod=hFgqt=e7zaKA@mail.gmail.com>
+From: jglisse@redhat.com (Jerome Glisse)
+Date: Fri, 4 May 2018 15:30:10 -0400
+Subject: [Cocci] Multiple match versus single header result in conflicts
+Message-ID: <20180504193010.GA25201@redhat.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, May 3, 2018 at 5:36 PM, Kees Cook <keescook@chromium.org> wrote:
-> On Thu, May 3, 2018 at 4:00 PM, Rasmus Villemoes
-> <linux@rasmusvillemoes.dk> wrote:
->> On 2018-05-01 19:00, Kees Cook wrote:
->>> On Mon, Apr 30, 2018 at 2:29 PM, Rasmus Villemoes
->>> <linux@rasmusvillemoes.dk> wrote:
->>>>
->>>> gcc 5.1+ (I think) have the __builtin_OP_overflow checks that should
->>>> generate reasonable code. Too bad there's no completely generic
->>>> check_all_ops_in_this_expression(a+b*c+d/e, or_jump_here). Though it's
->>>> hard to define what they should be checked against - probably would
->>>> require all subexpressions (including the variables themselves) to have
->>>> the same type.
->>>>
->>>> plug: https://lkml.org/lkml/2015/7/19/358
->>>
->>> That's a very nice series. Why did it never get taken?
->>
->> Well, nobody seemed particularly interested, and then
->> https://lkml.org/lkml/2015/10/28/215 happened... but he did later seem
->> to admit that it could be useful for the multiplication checking, and
->> that "the gcc interface for multiplication overflow is fine".
->
-> Oh, excellent. Thank you for that pointer! That conversation covered a
-> lot of ground. I need to think a little more about how to apply the
-> thoughts there with the kmalloc() needs and the GPU driver needs...
->
->> I still think even for unsigned types overflow checking can be subtle. E.g.
->>
->> u32 somevar;
->>
->> if (somevar + sizeof(foo) < somevar)
->>   return -EOVERFLOW;
->> somevar += sizeof(this);
->>
->> is broken, because the LHS is promoted to unsigned long/size_t, then so
->> is the RHS for the comparison, and the comparison is thus always false
->> (on 64bit). It gets worse if the two types are more "opaque", and in any
->> case it's not always easy to verify at a glance that the types are the
->> same, or at least that the expression of the widest type is on the RHS.
->
-> That's an excellent example, yes. (And likely worth including in the
-> commit log somewhere.)
->
->>
->>> It seems to do the right things quite correctly.
->>
->> Yes, I wouldn't suggest it without the test module verifying corner
->> cases, and checking it has the same semantics whether used with old or
->> new gcc.
->>
->> Would you shepherd it through if I updated the patches and resent?
->
-> Yes, though we may need reworking if we actually want to do the
-> try/catch style (since that was talked about with GPU stuff too...)
->
-> Either way, yes, a refresh would be lovely! :)
+Following semantics does not update function prototype in header file:
 
-Whatever the case, I think we need to clean up all the kmalloc() math
-anyway. As mentioned earlier, there are a handful of more complex
-cases, but the vast majority are just A * B. I've put up a series here
-now, and I'll send it out soon. I want to think more about 3-factor
-products, addition, etc:
+@S@
+identifier I1, I2;
+@@
+struct myop I1 = { ..., .add = I2 , ... };
 
-https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git/log/?h=kspp/kmalloc/2-factor-products
+@U depends on S@
+identifier S.I2;
+identifier A1, A2;
+type T1, T2;
+@@
+int I2(T1 A1,
++int c,
+T2 A2) { ... }
 
-The commit logs need more details (i.e. about making constants the
-second argument for optimal compiler results, etc), but there's a
-Coccinelle-generated first pass.
+run with spatch --in-place --sp-file test.spatch --dir . --all-includes
+(tested various includes/headers combinations) on 3 files f1.h f1.c
+f2.c (if f1.c and f2.c are merge together then thing works).
 
--Kees
+f1.h: ----------------------------------------------------------------
+struct myop {
+    int (*add)(int, int);
+};
 
--- 
-Kees Cook
-Pixel Security
+int myadd(int, int);
+----------------------------------------------------------------------
+
+f1.c: ----------------------------------------------------------------
+#include "f1.h"
+
+int myadd(int a, int b)
+{
+    return a + b;
+}
+
+struct myop myop = {
+    .add = myadd,
+};
+----------------------------------------------------------------------
+
+f2.c: ----------------------------------------------------------------
+#include "f1.h"
+
+int myadd2(int a, int b)
+{
+    return a + b;
+}
+
+struct myop myop2 = {
+    .add = myadd2,
+};
+----------------------------------------------------------------------
+
+If f1.c and f2.c are just one file than the header files is properly
+updated. The error message is:
+
+different modification result for ./f1.h
+
+I am not sure if there is a way to make the semantic patch work against
+such scenario. So is this expected ? Is my semantic patch wrong ? Or
+is it a bug in coccinelle ?
+
+Thank you,
+J?r?me
