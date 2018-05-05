@@ -1,81 +1,34 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 5 May 2018 07:20:04 +0200 (CEST)
-Subject: [Cocci] Multiple match versus single header result in conflicts
-In-Reply-To: <20180504193010.GA25201@redhat.com>
-References: <20180504193010.GA25201@redhat.com>
-Message-ID: <alpine.DEB.2.20.1805050718570.2528@hadrien>
+Date: Sat, 5 May 2018 20:16:09 +0200 (CEST)
+Subject: [Cocci] Blocks Support?
+In-Reply-To: <alpine.DEB.2.20.1804171639391.4631@hadrien>
+References: <CADZ9DPx6=rs2vBrauhsLeBbrjT6798KkgAYnRLr16eu_UsKKJA@mail.gmail.com>
+ <alpine.DEB.2.20.1804171639391.4631@hadrien>
+Message-ID: <alpine.DEB.2.20.1805052015060.2553@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 
 
-On Fri, 4 May 2018, Jerome Glisse wrote:
+On Tue, 17 Apr 2018, Julia Lawall wrote:
 
-> Following semantics does not update function prototype in header file:
 >
-> @S@
-> identifier I1, I2;
-> @@
-> struct myop I1 = { ..., .add = I2 , ... };
 >
-> @U depends on S@
-> identifier S.I2;
-> identifier A1, A2;
-> type T1, T2;
-> @@
-> int I2(T1 A1,
-> +int c,
-> T2 A2) { ... }
+> On Tue, 17 Apr 2018, Mitchell Cuddie wrote:
 >
-> run with spatch --in-place --sp-file test.spatch --dir . --all-includes
-> (tested various includes/headers combinations) on 3 files f1.h f1.c
-> f2.c (if f1.c and f2.c are merge together then thing works).
+> > Has anyone looked at supporting the blocks extension in Coccinelle?
+> > https://clang.llvm.org/docs/BlockLanguageSpec.html
+> >
+> > There are a number of large projects like WebKit that could make use of
+> > Coccinelle if it could parse the code. Any thoughts?
 >
-> f1.h: ----------------------------------------------------------------
-> struct myop {
->     int (*add)(int, int);
-> };
->
-> int myadd(int, int);
-> ----------------------------------------------------------------------
->
-> f1.c: ----------------------------------------------------------------
-> #include "f1.h"
->
-> int myadd(int a, int b)
-> {
->     return a + b;
-> }
->
-> struct myop myop = {
->     .add = myadd,
-> };
-> ----------------------------------------------------------------------
->
-> f2.c: ----------------------------------------------------------------
-> #include "f1.h"
->
-> int myadd2(int a, int b)
-> {
->     return a + b;
-> }
->
-> struct myop myop2 = {
->     .add = myadd2,
-> };
-> ----------------------------------------------------------------------
->
-> If f1.c and f2.c are just one file than the header files is properly
-> updated. The error message is:
->
-> different modification result for ./f1.h
->
-> I am not sure if there is a way to make the semantic patch work against
-> such scenario. So is this expected ? Is my semantic patch wrong ? Or
-> is it a bug in coccinelle ?
+> Looking extremely quickly it looks like it could be possible.  Do you just
+> want the parser not to crash or to change this kind of code.  Could you
+> send a small typical example?
 
-I believe that Coccinelle just doesn't make the effort to realize that the
-modifications are the same.  Probably things will be fine if you don't use
---in-place.
+Currently, Coccinelle doesn't support nested function definitions.
+
+Are these blocks used heavily in the code you are interested in?  If
+Coccinelle can't parse one function, it will just move on to the next one.
 
 julia
