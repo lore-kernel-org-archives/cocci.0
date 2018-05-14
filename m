@@ -1,14 +1,14 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 14 May 2018 17:33:44 +0200 (CEST)
-Subject: [Cocci] Moving a function body to an other source code place
- with SmPL
-In-Reply-To: <b4bed5e0-c747-a470-62c3-a53971ace610@users.sourceforge.net>
+Date: Mon, 14 May 2018 21:41:46 +0200 (CEST)
+Subject: [Cocci] Checking the support for source code transformations
+ with special characters
+In-Reply-To: <9507e4af-3a80-f691-e75a-e4ddec1548c8@users.sourceforge.net>
 References: <704e29ae-bd49-6b84-eb96-45f6d3ad004e@users.sourceforge.net>
  <alpine.DEB.2.20.1805141632540.17398@hadrien>
  <03b3476d-083f-216b-bfef-03b0b1b25d21@users.sourceforge.net>
  <alpine.DEB.2.20.1805141714300.17398@hadrien>
- <b4bed5e0-c747-a470-62c3-a53971ace610@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1805141732340.17398@hadrien>
+ <9507e4af-3a80-f691-e75a-e4ddec1548c8@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.20.1805142139440.2739@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -23,28 +23,14 @@ On Mon, 14 May 2018, SF Markus Elfring wrote:
 > >
 > > No.  Whitespace is never preserved in metavariables.
 >
-> I guess that this aspect will trigger further software development consequences.
+> How does such information fit to the following wording in the documentation?
+> https://github.com/coccinelle/coccinelle/blob/848f85e256516330c06f5fd8dc782b854ed9aa03/docs/manual/introduction.tex#L4
 >
-> How should a function body be converted into a part of a macro then?
+> ?? automate repetitive source-to-source style-preserving program transformations ??
 
-If you want to do this, you might need to add \ at the ends of lines.  You
-can do that in python or ocaml, treating the result as an identifier.
+When Coccinelle adds code, it makes an effort to conform to the
+indentation of the context in which the code is placed, not the context
+from which the code was removed.  The goal is to preserve the stule of the
+code as a whole.
 
 julia
-
->
->
-> >> How will the software behaviour evolve if I stumble on the message
-> >> ?Fatal error: exception Coccinelle_modules.Common.Timeout? after passing
-> >> the parameter ?--timeout 123? for a change attempt with a C++ source file?
-> >> (Am I too impatient here?)
-> >
-> > No evolution is planned.  I see no reason why matching the body of a
-> > function should intrinsically cause a timeout.
->
-> I am also unsure if the Coccinelle software can cope in an other time frame
-> with another example file I am experimenting a bit.
->
-> Regards,
-> Markus
->
