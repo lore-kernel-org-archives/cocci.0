@@ -1,38 +1,61 @@
-From: jglisse@redhat.com (Jerome Glisse)
-Date: Thu, 17 May 2018 10:50:25 -0400
-Subject: [Cocci] =?utf-8?q?Checking_consequences_from_=E2=80=9Cexists?=
- =?utf-8?q?=E2=80=9D_usage_with_big_file_name_selection?=
-In-Reply-To: <10d2d384-95c0-dec1-b284-f5afb7d9ce81@users.sourceforge.net>
-References: <20180516201559.GD2994@redhat.com>
- <10d2d384-95c0-dec1-b284-f5afb7d9ce81@users.sourceforge.net>
-Message-ID: <20180517145023.GB5048@redhat.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Thu, 17 May 2018 21:28:00 +0200 (CEST)
+Subject: [Cocci] Matching function pointer typedef
+In-Reply-To: <20180515203606.GA3687@redhat.com>
+References: <20180515203606.GA3687@redhat.com>
+Message-ID: <alpine.DEB.2.20.1805172125150.2273@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, May 17, 2018 at 11:11:04AM +0200, SF Markus Elfring wrote:
-> > Note i am in no rush, i just wanted to report this as it is likely a bug somewhere
-> 
-> Thanks for your description of a strange software behaviour.
-> 
-> How often do you work with the specification ?exists? in other SmPL scripts?
 
-I need to review all of them but i think i can remove most of them
-now that Julia explained that i do not need them if there is no ...
-between first match and second match in my rules.
 
-> 
-> 
-> > moreover i have a work around.
-> 
-> Is the other transformation approach the solution which is really desired?
+On Tue, 15 May 2018, Jerome Glisse wrote:
 
-My work around was to add function with nested block to an extra
-group on which i run the same semantic patch again to take care of
-nested block when the original group as two big.
+> Hello,
+>
+> I am trying to modify an function pointer typedef something like:
+>
+> @@
+> @@
+> - typedef void (*toto_t)(int a, int b);
+> + typedef void (*toto_t)(int a, int b, int c);
 
-This is a minor inconvenience now that i have found why my semantic
-patch was not modifying nested block (took me a while to converge
-on the number of files as root of the issue).
+This now works.  Currently, you need to remove the whole typedef and add
+it back, not just add the third argument as H?kon suggested.
 
-Cheers,
-J?r?me
+>
+> But it seems spatch or the semantic does not handle function pointer.
+> Or simply that typedef is not well handled in the first place. Thing
+> like:
+>
+> @@
+> @@
+> - typedef int nombre;
+> + typedef unsigned nombre;
+
+Was this just an experiment, or is it something you need?  I would imagine
+that the problem is that "unsigned" as a type by itself is not well
+supported.
+
+julia
+
+> also fails to work. But if typedef is use with struct then it works.
+> For instance:
+>
+> @@
+> @@
+> - typedef struct {int a;} nombre;
+> + typedef struct {unsigned a;} nombre;
+>
+> Do work. Looking at declaration grammar i do not see why the former
+> does not work. I am using fedora 27 coccinelle 1.0.6 if that matters.
+>
+> Is this a known limitation or am i writting it wrong ?
+>
+> Thank you for any input on this,
+> J?r?me
+> _______________________________________________
+> Cocci mailing list
+> Cocci at systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
+>
