@@ -1,15 +1,12 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 18 May 2018 19:13:47 +0200 (CEST)
-Subject: [Cocci] Checking run times for transformation of Linux source
- code with SmPL
-In-Reply-To: <f9b0c961-7182-86ea-bb39-486ffc732db0@users.sourceforge.net>
-References: <alpine.DEB.2.20.1805172241400.2273@hadrien>
- <d1902859-7b9b-4dea-0e5b-8d4876f90495@users.sourceforge.net>
- <alpine.DEB.2.20.1805181802060.3339@hadrien>
- <416a7972-d6ce-38b2-9983-ce0446b5ab61@users.sourceforge.net>
- <alpine.DEB.2.20.1805181848290.3339@hadrien>
- <f9b0c961-7182-86ea-bb39-486ffc732db0@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1805181912360.3339@hadrien>
+Date: Fri, 18 May 2018 19:54:38 +0200 (CEST)
+Subject: [Cocci] Matching function pointer typedef
+In-Reply-To: <c3c0b202-ad2c-b53e-f73c-acc2baba9279@users.sourceforge.net>
+References: <alpine.DEB.2.20.1805172125150.2273@hadrien>
+ <51d95102-78ad-b56b-c470-c83d3f6c6b9b@users.sourceforge.net>
+ <alpine.DEB.2.20.1805181853230.3339@hadrien>
+ <c3c0b202-ad2c-b53e-f73c-acc2baba9279@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.20.1805181954120.3339@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -17,17 +14,18 @@ List-Id: cocci@systeme.lip6.fr
 
 On Fri, 18 May 2018, SF Markus Elfring wrote:
 
-> > Coccinelle doesn't parse every file in the kernel.
+> >>> Currently, you need to remove the whole typedef and add it back,
+> >>
+> >> I find this information inappropriate because such a source code replacement
+> >> was attempted.
+> >
+> > It was attempted before the change was made.
 >
-> I find this information strange.
->
->
-> > It only parses the files that contain the name of the function being modified.
->
-> Do you interpret the required source code parsing efforts in a special way?
+> I get the impression from such feedback that another clarification
+> would be useful about the granularity if each function parameter can be
+> adjusted in data type definitions finally.
 
-Coccinelle searches the semantic patch for the important words.  Then it
-implements something like grep to find files that contain those imprtant
-words.  Or maybe it just uses git grep by default.
+Concretely, the typedef name has to appear on the same line as all the
+parameters.
 
 julia
