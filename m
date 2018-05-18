@@ -1,18 +1,15 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 18 May 2018 19:12:18 +0200 (CEST)
-Subject: [Cocci] convert if (x) stmt to if (x) {stmt}
-In-Reply-To: <cea31c3d-fde8-e866-a03c-de868148ed12@users.sourceforge.net>
-References: <alpine.DEB.2.20.1805162139340.3296@hadrien>
- <f9593244-a490-295b-537d-5dcc5e1017d5@users.sourceforge.net>
- <alpine.DEB.2.20.1805170919390.4571@hadrien>
- <b44ad180-3d38-ba5e-80ab-bc932263dba7@users.sourceforge.net>
- <alpine.DEB.2.20.1805172248210.2273@hadrien>
- <0c08d40c-4047-db00-9b4a-4d6a7799afe0@users.sourceforge.net>
- <alpine.DEB.2.20.1805181759490.3339@hadrien>
- <2240107d-5e70-6489-f48a-5f6675c55c64@users.sourceforge.net>
- <alpine.DEB.2.20.1805181842590.3339@hadrien>
- <cea31c3d-fde8-e866-a03c-de868148ed12@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1805181911180.3339@hadrien>
+Date: Fri, 18 May 2018 19:13:47 +0200 (CEST)
+Subject: [Cocci] Checking run times for transformation of Linux source
+ code with SmPL
+In-Reply-To: <f9b0c961-7182-86ea-bb39-486ffc732db0@users.sourceforge.net>
+References: <alpine.DEB.2.20.1805172241400.2273@hadrien>
+ <d1902859-7b9b-4dea-0e5b-8d4876f90495@users.sourceforge.net>
+ <alpine.DEB.2.20.1805181802060.3339@hadrien>
+ <416a7972-d6ce-38b2-9983-ce0446b5ab61@users.sourceforge.net>
+ <alpine.DEB.2.20.1805181848290.3339@hadrien>
+ <f9b0c961-7182-86ea-bb39-486ffc732db0@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.20.1805181912360.3339@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -20,41 +17,17 @@ List-Id: cocci@systeme.lip6.fr
 
 On Fri, 18 May 2018, SF Markus Elfring wrote:
 
-> >> I understood one suggestion in the way for a SmPL specification
-> >> like the following.
-> >>
-> >> if (...)
-> >> +{
-> >>  S;
-> >> +e;
-> >> +}
-> >
-> > The rule has no goal of adding some unknown e;.
+> > Coccinelle doesn't parse every file in the kernel.
 >
-> How does this feedback fit to your wording ?In each rule that contains S1,
-> you first could replace the S1 by e; ???
+> I find this information strange.
+>
+>
+> > It only parses the files that contain the name of the function being modified.
+>
+> Do you interpret the required source code parsing efforts in a special way?
 
-I didn't mean to write a semantic patch to remove S1 and add e;.  I meant
-to put e; instead of S1 in the rule, producing the rule below.
+Coccinelle searches the semantic patch for the important words.  Then it
+implements something like grep to find files that contain those imprtant
+words.  Or maybe it just uses git grep by default.
 
 julia
-
->
->
-> > if (...)
-> > + {
-> >   e;
-> > + }
-> >   else S
-> >
-> > I don't see why one should consider whether e; should have been written in
-> > a different way in making this transformation.
->
-> It seems that you present another variant for a SmPL script.
->
-> I assume that there are further constraints to consider for the discussed
-> change pattern.
->
-> Regards,
-> Markus
->
