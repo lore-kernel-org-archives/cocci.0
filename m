@@ -1,16 +1,13 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 19 May 2018 07:36:39 +0200 (CEST)
+From: arend.vanspriel@broadcom.com (Arend van Spriel)
+Date: Sat, 19 May 2018 08:41:00 +0200
 Subject: [Cocci] Need help compiling coccinelle on Ubuntu 16.04
 In-Reply-To: <CAF_dkJCyP-2Yc-fynAGWp5D7YZP5ybaLXrYK4EHc_Z7XSP9kiA@mail.gmail.com>
 References: <CAF_dkJCyP-2Yc-fynAGWp5D7YZP5ybaLXrYK4EHc_Z7XSP9kiA@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1805190735090.2237@hadrien>
+Message-ID: <5AFFC6FC.1070906@broadcom.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-
-
-On Wed, 16 May 2018, Patrick Doyle wrote:
-
+On 5/16/2018 3:48 PM, Patrick Doyle wrote:
 > TherI just tried compiling coccinelle on a Ubuntu 16.04 system, having
 > installed all the dependencies that seem to make sense, and it fails
 > to compile.
@@ -38,13 +35,6 @@ On Wed, 16 May 2018, Patrick Doyle wrote:
 > tools/spgen/source/spgen_lexer.ml
 > parsing_cocci/parser_cocci_menhir.mli.d parsing_cocci/lexer_script.ml
 > parsing_cocci/lexer_cocci.ml parsing_c/lexer_c.ml
-
-I had this problem and then somehow it disappeared...  I think that
-somehow it is supposed to be giving a warning, but not actually failing.
-But it does really look like it fails.  We will look into it.
-
-julia
-
 >
 > I have installed libparmap-ocaml-dev:
 >
@@ -52,7 +42,7 @@ julia
 > Sorting... Done
 > Full Text Search... Done
 > libparmap-ocaml-dev/xenial,now 1.0~rc7-1 amd64 [installed]
->   small OCaml library allowing to exploit multicore architectures
+>    small OCaml library allowing to exploit multicore architectures
 >
 > and /usr/lib/ocaml/parmp shows:
 >
@@ -79,10 +69,11 @@ julia
 > would be appreciated.
 >
 > Thank you.
->
-> --wpd
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+
+I found compiling it required too many stuff I did not really want on my 
+system. So I generally pick up recent version from launchpad:
+
+https://launchpad.net/~npalix/+archive/ubuntu/coccinelle
+
+Regards,
+Arend
