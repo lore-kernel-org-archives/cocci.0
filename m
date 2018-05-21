@@ -1,46 +1,38 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 19 May 2018 17:57:52 +0200 (CEST)
-Subject: [Cocci] Need help compiling coccinelle on Ubuntu 16.04
-In-Reply-To: <CAF_dkJB=v5dyjJwC5HFHfubP0NRhPPQCWkY6QbnF0OSB8LiBJw@mail.gmail.com>
-References: <CAF_dkJCyP-2Yc-fynAGWp5D7YZP5ybaLXrYK4EHc_Z7XSP9kiA@mail.gmail.com>
- <alpine.DEB.2.20.1805190735090.2237@hadrien>
- <CAF_dkJB=v5dyjJwC5HFHfubP0NRhPPQCWkY6QbnF0OSB8LiBJw@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1805191757170.2277@hadrien>
+From: Julia.Lawall@lip6.fr (Julia Lawall)
+Date: Mon, 21 May 2018 08:58:48 +0200
+Subject: [Cocci] [PATCH] coccinelle: mini_lock: improve performance
+Message-ID: <1526885928-1712-1-git-send-email-Julia.Lawall@lip6.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Replace <+... ...+> by ... when any.  <+... ...+> is slow, and in some
+obscure cases involving backward jumps it doesn't force the unlock to
+actually come after the end of the if.
 
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
-On Sat, 19 May 2018, Patrick Doyle wrote:
+---
+ scripts/coccinelle/locks/mini_lock.cocci |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-> On Sat, May 19, 2018 at 1:36 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
-> > On Wed, 16 May 2018, Patrick Doyle wrote:
-> >
-> >> I just tried compiling coccinelle on a Ubuntu 16.04 system, having
-> >> installed all the dependencies that seem to make sense, and it fails
-> >> to compile.
-> >
-> > I had this problem and then somehow it disappeared...  I think that
-> > somehow it is supposed to be giving a warning, but not actually failing.
-> > But it does really look like it fails.  We will look into it.
-> >
-> > Julia
-> Thank you Julia,
-> I think you are correct.  When I looked more closely at the error
-> message, I saw that make ignored the failure code, and indeed, when I
-> attempted to run my application that relies upon spach > 1.0.6 (the
-> Linux backports tool), it appears to have worked.
-
-That's great!  Sorry that the output is so misleading...
-
-julia
-
->
-> Sorry for the spam... I had reached the point where one too many
-> things were going wrong and decided to just stop and ask for some
-> help.
->
-> Thanks again.
->
-> --wpd
->
+diff --git a/scripts/coccinelle/locks/mini_lock.cocci b/scripts/coccinelle/locks/mini_lock.cocci
+index 47f649b..19c6ee5 100644
+--- a/scripts/coccinelle/locks/mini_lock.cocci
++++ b/scripts/coccinelle/locks/mini_lock.cocci
+@@ -67,12 +67,14 @@ identifier lock,unlock;
+ @@
+ 
+ *lock(E1 at p,...);
+-<+... when != E1
++... when != E1
++    when any
+ if (...) {
+   ... when != E1
+ *  return@r ...;
+ }
+-...+>
++... when != E1
++    when any
+ *unlock at up(E1,...);
+ 
+ @script:python depends on org@
