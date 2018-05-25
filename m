@@ -1,51 +1,67 @@
-From: yamada.masahiro@socionext.com (Masahiro Yamada)
-Date: Tue, 22 May 2018 23:22:45 +0900
-Subject: [Cocci] [PATCH] coccinelle: mini_lock: improve performance
-In-Reply-To: <1526885928-1712-1-git-send-email-Julia.Lawall@lip6.fr>
-References: <1526885928-1712-1-git-send-email-Julia.Lawall@lip6.fr>
-Message-ID: <CAK7LNATojz3pvx=KsJiJDvgykUSqrNUmoQsvn7d5SJQ-Wh7+Pg@mail.gmail.com>
+From: michelemartone@users.sourceforge.net (Michele Martone)
+Date: Fri, 25 May 2018 15:56:29 +0200
+Subject: [Cocci] [cocci-bug] coccinelle 1.0.6: OpenMP #pragma directive
+ leads to function ignore
+In-Reply-To: <20180502131639.GA26874@localhost>
+References: <20180426081209.GA7703@localhost>
+ <alpine.DEB.2.20.1804260925270.2402@hadrien>
+ <20180426102122.GB7703@localhost>
+ <alpine.DEB.2.20.1804300842440.2351@hadrien>
+ <20180430073930.GA20750@localhost>
+ <CA+MoWDrmVnz+cXjepPwWqBPgAoujD9m+1pAMv7JJMFy_2CjNUA@mail.gmail.com>
+ <20180502131639.GA26874@localhost>
+Message-ID: <20180525135629.GA21989@localhost>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-2018-05-21 15:58 GMT+09:00 Julia Lawall <Julia.Lawall@lip6.fr>:
-> Replace <+... ...+> by ... when any.  <+... ...+> is slow, and in some
-> obscure cases involving backward jumps it doesn't force the unlock to
-> actually come after the end of the if.
->
-> Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
->
-> ---
+On 20180502 at 15:16, Michele Martone wrote:
+> On 20180430 at 09:44, Peter Senna Tschudin wrote:
+> > ... 
+> Dear Peter, thanks for the apt-get based recipe,  
+> it worked for me on debian buster with ocaml-4.0.5.
+> 
+> Dear Julia, thanks for the pragma patch which will
+> enable coccinelle to support OpenMP-enabled listings
+> too (I just tested it on the above setup) :-)
+> 
+> Michele
 
-Applied to linux-kbuild. Thanks!
+Dear Julia,
 
->  scripts/coccinelle/locks/mini_lock.cocci |    6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
->
-> diff --git a/scripts/coccinelle/locks/mini_lock.cocci b/scripts/coccinelle/locks/mini_lock.cocci
-> index 47f649b..19c6ee5 100644
-> --- a/scripts/coccinelle/locks/mini_lock.cocci
-> +++ b/scripts/coccinelle/locks/mini_lock.cocci
-> @@ -67,12 +67,14 @@ identifier lock,unlock;
->  @@
->
->  *lock(E1 at p,...);
-> -<+... when != E1
-> +... when != E1
-> +    when any
->  if (...) {
->    ... when != E1
->  *  return at r ...;
->  }
-> -...+>
-> +... when != E1
-> +    when any
->  *unlock at up(E1,...);
->
->  @script:python depends on org@
->
+I have another similar minimal test spatch case failing, attached.
+It seems like using
+ #pragma omp parallel for private(I)
+breaks the semantic patch, while having 
+ #pragma omp parallel for 
+is still ok.
+Please see attachment.
 
+I'm using self-built ocaml (e407ecf11 2018-05-25)
+and coccinelle (a4532f08 2018-05-17).
 
+would be very useful to have full #pragma resilience!
 
--- 
-Best Regards
-Masahiro Yamada
+Michele
+-------------- next part --------------
+// seems like this example breaks:
+// spatch version 1.0.6-00440-ga4532f08 compiled with OCaml version 4.08.0+dev0-2018-04-09
+// (a4532f08 2018-05-17)
+
+/*
+pragma_ignored_again.cocci:
+
+@@
+symbol A,I,J;
+@@
+
+-A[I]
++A[J]
+*/
+void f(void)
+{
+	int*A=NULL,I=0;
+// pragma presence breaks semantic patch (remote private(i) to 'fix' it)
+// comment it to have A[I] -> A[J]
+#pragma omp parallel for private(I)
+	A[I]++;
+}
