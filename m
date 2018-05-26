@@ -1,67 +1,26 @@
-From: michelemartone@users.sourceforge.net (Michele Martone)
-Date: Fri, 25 May 2018 15:56:29 +0200
-Subject: [Cocci] [cocci-bug] coccinelle 1.0.6: OpenMP #pragma directive
- leads to function ignore
-In-Reply-To: <20180502131639.GA26874@localhost>
-References: <20180426081209.GA7703@localhost>
- <alpine.DEB.2.20.1804260925270.2402@hadrien>
- <20180426102122.GB7703@localhost>
- <alpine.DEB.2.20.1804300842440.2351@hadrien>
- <20180430073930.GA20750@localhost>
- <CA+MoWDrmVnz+cXjepPwWqBPgAoujD9m+1pAMv7JJMFy_2CjNUA@mail.gmail.com>
- <20180502131639.GA26874@localhost>
-Message-ID: <20180525135629.GA21989@localhost>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sat, 26 May 2018 22:33:36 +0200
+Subject: [Cocci] Evolution around profiling of SmPL script execution
+Message-ID: <595d32bf-e506-614a-f1d1-3295a0322647@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 20180502 at 15:16, Michele Martone wrote:
-> On 20180430 at 09:44, Peter Senna Tschudin wrote:
-> > ... 
-> Dear Peter, thanks for the apt-get based recipe,  
-> it worked for me on debian buster with ocaml-4.0.5.
-> 
-> Dear Julia, thanks for the pragma patch which will
-> enable coccinelle to support OpenMP-enabled listings
-> too (I just tested it on the above setup) :-)
-> 
-> Michele
+Hello,
 
-Dear Julia,
+The Coccinelle software supports profiling for the execution of SmPL scripts
+to some degree.
+I find the corresponding description improvable for the provided data.
 
-I have another similar minimal test spatch case failing, attached.
-It seems like using
- #pragma omp parallel for private(I)
-breaks the semantic patch, while having 
- #pragma omp parallel for 
-is still ok.
-Please see attachment.
+1. I would find an other separation for the available columns nicer.
 
-I'm using self-built ocaml (e407ecf11 2018-05-25)
-and coccinelle (a4532f08 2018-05-17).
+2. I suggest to add a column ?area? so that the measured data processing
+   can be distinguished better.
+   How should the execution of each SmPL rule be identified there?
 
-would be very useful to have full #pragma resilience!
+3. The output of measurement units could be occasionally omitted.
 
-Michele
--------------- next part --------------
-// seems like this example breaks:
-// spatch version 1.0.6-00440-ga4532f08 compiled with OCaml version 4.08.0+dev0-2018-04-09
-// (a4532f08 2018-05-17)
 
-/*
-pragma_ignored_again.cocci:
+Will the display become more configurable for these software profiling results?
 
-@@
-symbol A,I,J;
-@@
-
--A[I]
-+A[J]
-*/
-void f(void)
-{
-	int*A=NULL,I=0;
-// pragma presence breaks semantic patch (remote private(i) to 'fix' it)
-// comment it to have A[I] -> A[J]
-#pragma omp parallel for private(I)
-	A[I]++;
-}
+Regards,
+Markus
