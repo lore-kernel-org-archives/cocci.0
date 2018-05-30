@@ -1,26 +1,19 @@
 From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Sat, 26 May 2018 22:33:36 +0200
-Subject: [Cocci] Evolution around profiling of SmPL script execution
-Message-ID: <595d32bf-e506-614a-f1d1-3295a0322647@users.sourceforge.net>
+Date: Wed, 30 May 2018 15:32:12 +0200
+Subject: [Cocci] Increase precision for display of SmPL script execution
+	durations
+Message-ID: <b36b5d25-1784-6228-a689-0dbf8d15ffb0@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 Hello,
 
-The Coccinelle software supports profiling for the execution of SmPL scripts
-to some degree.
-I find the corresponding description improvable for the provided data.
-
-1. I would find an other separation for the available columns nicer.
-
-2. I suggest to add a column ?area? so that the measured data processing
-   can be distinguished better.
-   How should the execution of each SmPL rule be identified there?
-
-3. The output of measurement units could be occasionally omitted.
-
-
-Will the display become more configurable for these software profiling results?
+The Coccinelle software can display profiling results for the execution
+of SmPL scripts. The measured durations are formatted in a way so that
+the information ?0.000 sec? is presented for some functions so far.
+I guess that these data processing efforts were performed with a non-zero
+time value.
+How do you think about to show this detail precisely?
 
 Regards,
 Markus
