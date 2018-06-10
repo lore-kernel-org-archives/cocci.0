@@ -1,40 +1,38 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 10 Jun 2018 09:43:37 +0200 (CEST)
-Subject: [Cocci] High level restriction of function calls with SmPL
-In-Reply-To: <ece57387-d899-55dd-738d-0180d08b7935@users.sourceforge.net>
-References: <8f24e468-34d5-7cce-9543-7833fc8e76f7@users.sourceforge.net>
- <alpine.DEB.2.20.1806100838190.2313@hadrien>
- <ece57387-d899-55dd-738d-0180d08b7935@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1806100942590.2313@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sun, 10 Jun 2018 10:22:08 +0200
+Subject: [Cocci] Addition of a data type property with SmPL
+Message-ID: <a207d700-456d-d502-b855-66fd50a528ee@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hello,
+
+I would like to try another source code transformation out with the help of
+the semantic patch language.
+
+@addition@
+identifier var;
+type T;
+@@
+ T
++const
+ * var;
 
 
-On Sun, 10 Jun 2018, SF Markus Elfring wrote:
+elfring at Sonne:~/Projekte/Coccinelle/janitor> spatch --parse-cocci add_const3.cocci
+init_defs_builtins: /usr/local/bin/../lib/coccinelle/standard.h
+plus: parse error: 
+  File "add_const3.cocci", line 6, column 1, charpos = 42
+  around = 'const',
+  whole content = +const
 
-> >>      when != action(..., input, ...)
-> ?
-> >> Now I am looking for ways to restrict (or filter) such function calls further.
-> ?
-> > "restrict ... further" and "correspond" are not precise.
->
-> The ?imprecision? happens because I find SmPL expression possibilities unclear
-> once more here.
->
->
-> > I have no idea what you want to do.
->
-> I guess that we have got a common understanding that something should be
-> performed for function calls.
-> The input data type is known for a single parameter in a generic way
-> (for this SmPL example).
-> Now it is interesting if one of its properties like the changeability
-> (usage of ?const?) will be acceptable for selected function calls.
-> Do you get more ideas for the desired software clarification?
 
-I still have no idea what you want to do.  Please provide an example.  If
-you don't know concretely what you want to do, please figure it out and
-then ask afterwards.
+* How do you think about this test result?
 
-julia
+* Can the addition of such a data type property be generally avoided
+  if it would be present already?
+
+https://github.com/coccinelle/coccinelle/issues/49
+
+Regards,
+Markus
