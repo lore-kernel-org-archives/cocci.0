@@ -1,31 +1,34 @@
-From: keescook@google.com (Kees Cook)
-Date: Mon, 11 Jun 2018 16:17:32 -0700
-Subject: [Cocci] Weird whitespace behavior?
-Message-ID: <CAGXu5j+XA87CBA9Xbqb4C-wLndaNW+usPgA9043m4TDeFUcxpw@mail.gmail.com>
+From: joe@perches.com (Joe Perches)
+Date: Mon, 11 Jun 2018 13:28:29 -0700
+Subject: [Cocci] check for non-const arguments used only as const accesses
+Message-ID: <be8cb9f390cec1bfd8db88cb5d792f9d99b5c138.camel@perches.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi,
+Many times it would be useful to update functions
+where non-const arguments are used only as const
+dereferences or as arguments to other function that
+use const.
 
-I've been doing some large treewide changes to the allocators, and I
-notice that Coccinelle does something odd for a specific case. I have
-two scripts, one operating on kmalloc() and one operating on
-devm_kmalloc(). They are identical script except for the function
-names, however, while kmalloc produces patches like this:
+Is it possible for coccinelle to find and show
+these types of uses that could be const?
 
-- foo = kmalloc(a * b, gfp);
-+ foo = kmalloc_array(a, b, gfp);
+e.g.
 
-the devm_kmalloc one produces:
+int foo(int val, u8 *a, int index)
+{
+	return val + a[index];
+}
 
-- foo = devm_kmalloc(handle, a * b, gfp);
-+ foo =devm_kmalloc_array(a, b, gfp);
+where a is indexed but not modified
+and could be declared const u8 *a
 
-I can't figure out why the space after "=" is missing and have been
-manually fixing it up...
+or
 
--Kees
+void foo(char *a, char *b)
+{
+	strcpy(a, b);
+}
 
--- 
-Kees Cook
-Pixel Security
+where the 2nd arg to foo could or should
+be const char *b
