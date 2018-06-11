@@ -1,50 +1,31 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 11 Jun 2018 23:23:30 +0200 (CEST)
-Subject: [Cocci] check for non-const arguments used only as const
-	accesses
-In-Reply-To: <be8cb9f390cec1bfd8db88cb5d792f9d99b5c138.camel@perches.com>
-References: <be8cb9f390cec1bfd8db88cb5d792f9d99b5c138.camel@perches.com>
-Message-ID: <alpine.DEB.2.20.1806112321370.2521@hadrien>
+From: keescook@google.com (Kees Cook)
+Date: Mon, 11 Jun 2018 16:17:32 -0700
+Subject: [Cocci] Weird whitespace behavior?
+Message-ID: <CAGXu5j+XA87CBA9Xbqb4C-wLndaNW+usPgA9043m4TDeFUcxpw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hi,
 
+I've been doing some large treewide changes to the allocators, and I
+notice that Coccinelle does something odd for a specific case. I have
+two scripts, one operating on kmalloc() and one operating on
+devm_kmalloc(). They are identical script except for the function
+names, however, while kmalloc produces patches like this:
 
-On Mon, 11 Jun 2018, Joe Perches wrote:
+- foo = kmalloc(a * b, gfp);
++ foo = kmalloc_array(a, b, gfp);
 
-> Many times it would be useful to update functions
-> where non-const arguments are used only as const
-> dereferences or as arguments to other function that
-> use const.
->
-> Is it possible for coccinelle to find and show
-> these types of uses that could be const?
+the devm_kmalloc one produces:
 
-Yes, it's possible.  It's a bit complex because the use is often inter
-procedural.  I made a semantic patch for it, but I didn't invest a lot of
-time in it because I wasn't sure if it would be considered to be useful,
-or just useless churn.
+- foo = devm_kmalloc(handle, a * b, gfp);
++ foo =devm_kmalloc_array(a, b, gfp);
 
-julia
+I can't figure out why the space after "=" is missing and have been
+manually fixing it up...
 
->
-> e.g.
->
-> int foo(int val, u8 *a, int index)
-> {
-> 	return val + a[index];
-> }
->
-> where a is indexed but not modified
-> and could be declared const u8 *a
->
-> or
->
-> void foo(char *a, char *b)
-> {
-> 	strcpy(a, b);
-> }
->
-> where the 2nd arg to foo could or should
-> be const char *b
->
+-Kees
+
+-- 
+Kees Cook
+Pixel Security
