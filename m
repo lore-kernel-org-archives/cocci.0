@@ -1,50 +1,40 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 12 Jun 2018 06:54:36 +0200 (CEST)
-Subject: [Cocci] Weird whitespace behavior?
-In-Reply-To: <CAGXu5jKybK9vJ3jaDXx8LYhdvkwy4C4UcC46Qww+tzPof1LJBQ@mail.gmail.com>
-References: <CAGXu5j+XA87CBA9Xbqb4C-wLndaNW+usPgA9043m4TDeFUcxpw@mail.gmail.com>
- <CAGXu5jKybK9vJ3jaDXx8LYhdvkwy4C4UcC46Qww+tzPof1LJBQ@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1806120653280.2309@hadrien>
+Date: Tue, 12 Jun 2018 07:29:59 +0200 (CEST)
+Subject: [Cocci] check for non-const arguments used only as const
+	accesses
+In-Reply-To: <ef6d66c75ebb2b23cb1d3802bf5becd7b972e027.camel@perches.com>
+References: <be8cb9f390cec1bfd8db88cb5d792f9d99b5c138.camel@perches.com>
+ <alpine.DEB.2.20.1806112321370.2521@hadrien>
+ <ef6d66c75ebb2b23cb1d3802bf5becd7b972e027.camel@perches.com>
+Message-ID: <alpine.DEB.2.20.1806120728290.2309@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 
 
-On Mon, 11 Jun 2018, Kees Cook wrote:
+On Mon, 11 Jun 2018, Joe Perches wrote:
 
-> On Mon, Jun 11, 2018 at 4:17 PM, Kees Cook <keescook@google.com> wrote:
-> > Hi,
+> On Mon, 2018-06-11 at 23:23 +0200, Julia Lawall wrote:
+> > On Mon, 11 Jun 2018, Joe Perches wrote:
+> > > Many times it would be useful to update functions
+> > > where non-const arguments are used only as const
+> > > dereferences or as arguments to other function that
+> > > use const.
+> > >
+> > > Is it possible for coccinelle to find and show
+> > > these types of uses that could be const?
 > >
-> > I've been doing some large treewide changes to the allocators, and I
-> > notice that Coccinelle does something odd for a specific case. I have
-> > two scripts, one operating on kmalloc() and one operating on
-> > devm_kmalloc(). They are identical script except for the function
-> > names, however, while kmalloc produces patches like this:
-> >
-> > - foo = kmalloc(a * b, gfp);
-> > + foo = kmalloc_array(a, b, gfp);
-> >
-> > the devm_kmalloc one produces:
-> >
-> > - foo = devm_kmalloc(handle, a * b, gfp);
-> > + foo =devm_kmalloc_array(a, b, gfp);
-> >
-> > I can't figure out why the space after "=" is missing and have been
-> > manually fixing it up...
-
-I would need your semantic patch to see the problem.
-
-> And while I'm at it... line breaks aren't working like I'd expect:
+> > Yes, it's possible.  It's a bit complex because the use is often inter
+> > procedural.  I made a semantic patch for it, but I didn't invest a lot of
+> > time in it because I wasn't sure if it would be considered to be useful,
+> > or just useless churn.
 >
-> -               collection = kmalloc(sizeof(struct hid_collection) *
-> -                               parser->device->collection_size * 2,
-> GFP_KERNEL);
-> +               collection = kmalloc(array3_size(sizeof(struct
-> hid_collection), parser->device->collection_size, 2),
-> +                                    GFP_KERNEL);
->
-> Why wasn't array3_size() correctly line wrapped?
+> I believe such a patch would not be useless as
+> it allows conversion of structures and arrays
+> that are currently placed into r/w memory (data)
+> to be moved to const (text).
 
-I think that line breaking only works on the outermost function call.
+I guess that for such a patch to be accepted, one would have to show that
+it does permit that.
 
 julia
