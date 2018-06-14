@@ -1,40 +1,180 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 12 Jun 2018 07:29:59 +0200 (CEST)
-Subject: [Cocci] check for non-const arguments used only as const
-	accesses
-In-Reply-To: <ef6d66c75ebb2b23cb1d3802bf5becd7b972e027.camel@perches.com>
-References: <be8cb9f390cec1bfd8db88cb5d792f9d99b5c138.camel@perches.com>
- <alpine.DEB.2.20.1806112321370.2521@hadrien>
- <ef6d66c75ebb2b23cb1d3802bf5becd7b972e027.camel@perches.com>
-Message-ID: <alpine.DEB.2.20.1806120728290.2309@hadrien>
+From: keescook@chromium.org (Kees Cook)
+Date: Thu, 14 Jun 2018 16:58:07 -0700
+Subject: [Cocci] [PATCH] Coccinelle: add atomic_as_refcounter script
+In-Reply-To: <1504258820-2122-1-git-send-email-elena.reshetova@intel.com>
+References: <1504258820-2122-1-git-send-email-elena.reshetova@intel.com>
+Message-ID: <CAGXu5jK-6fNvaEiX1Wvp98BKv+uF17KdFyPQKi5hgE-Jz3-+Tg@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-
-
-On Mon, 11 Jun 2018, Joe Perches wrote:
-
-> On Mon, 2018-06-11 at 23:23 +0200, Julia Lawall wrote:
-> > On Mon, 11 Jun 2018, Joe Perches wrote:
-> > > Many times it would be useful to update functions
-> > > where non-const arguments are used only as const
-> > > dereferences or as arguments to other function that
-> > > use const.
-> > >
-> > > Is it possible for coccinelle to find and show
-> > > these types of uses that could be const?
-> >
-> > Yes, it's possible.  It's a bit complex because the use is often inter
-> > procedural.  I made a semantic patch for it, but I didn't invest a lot of
-> > time in it because I wasn't sure if it would be considered to be useful,
-> > or just useless churn.
+On Fri, Sep 1, 2017 at 2:40 AM, Elena Reshetova
+<elena.reshetova@intel.com> wrote:
+> atomic_as_refcounter.cocci script allows detecting
+> cases when refcount_t type and API should be used
+> instead of atomic_t.
 >
-> I believe such a patch would not be useless as
-> it allows conversion of structures and arrays
-> that are currently placed into r/w memory (data)
-> to be moved to const (text).
+> Signed-off-by: Elena Reshetova <elena.reshetova@intel.com>
+> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
 
-I guess that for such a patch to be accepted, one would have to show that
-it does permit that.
+Reviewed-by: Kees Cook <keescook@chromium.org>
 
-julia
+Oops, I think this got lost. Who can take this patch? I thought Julia
+ran the scripts/coccinelle/ tree, but looking at git log, it looks
+more like it's Masahiro? Either way, let's get this in the tree. Who
+can take it?
+
+Thanks!
+
+-Kees
+
+> ---
+>  scripts/coccinelle/api/atomic_as_refcounter.cocci | 131 ++++++++++++++++++++++
+>  1 file changed, 131 insertions(+)
+>  create mode 100644 scripts/coccinelle/api/atomic_as_refcounter.cocci
+>
+> diff --git a/scripts/coccinelle/api/atomic_as_refcounter.cocci b/scripts/coccinelle/api/atomic_as_refcounter.cocci
+> new file mode 100644
+> index 0000000..bfa880d
+> --- /dev/null
+> +++ b/scripts/coccinelle/api/atomic_as_refcounter.cocci
+> @@ -0,0 +1,131 @@
+> +// Check if refcount_t type and API should be used
+> +// instead of atomic_t type when dealing with refcounters
+> +//
+> +// Copyright (c) 2016-2017, Elena Reshetova, Intel Corporation
+> +//
+> +// Confidence: Moderate
+> +// URL: http://coccinelle.lip6.fr/
+> +// Options: --include-headers --very-quiet
+> +
+> +virtual report
+> +
+> + at r1 exists@
+> +identifier a, x;
+> +position p1, p2;
+> +identifier fname =~ ".*free.*";
+> +identifier fname2 =~ ".*destroy.*";
+> +identifier fname3 =~ ".*del.*";
+> +identifier fname4 =~ ".*queue_work.*";
+> +identifier fname5 =~ ".*schedule_work.*";
+> +identifier fname6 =~ ".*call_rcu.*";
+> +
+> +@@
+> +
+> +(
+> + atomic_dec_and_test at p1(&(a)->x)
+> +|
+> + atomic_dec_and_lock at p1(&(a)->x, ...)
+> +|
+> + atomic_long_dec_and_lock at p1(&(a)->x, ...)
+> +|
+> + atomic_long_dec_and_test at p1(&(a)->x)
+> +|
+> + atomic64_dec_and_test at p1(&(a)->x)
+> +|
+> + local_dec_and_test at p1(&(a)->x)
+> +)
+> +...
+> +(
+> + fname at p2(a, ...);
+> +|
+> + fname2 at p2(...);
+> +|
+> + fname3 at p2(...);
+> +|
+> + fname4 at p2(...);
+> +|
+> + fname5 at p2(...);
+> +|
+> + fname6 at p2(...);
+> +)
+> +
+> +
+> + at script:python depends on report@
+> +p1 << r1.p1;
+> +p2 << r1.p2;
+> +@@
+> +msg = "atomic_dec_and_test variation before object free at line %s."
+> +coccilib.report.print_report(p1[0], msg % (p2[0].line))
+> +
+> + at r4 exists@
+> +identifier a, x, y;
+> +position p1, p2;
+> +identifier fname =~ ".*free.*";
+> +
+> +@@
+> +
+> +(
+> + atomic_dec_and_test at p1(&(a)->x)
+> +|
+> + atomic_dec_and_lock at p1(&(a)->x, ...)
+> +|
+> + atomic_long_dec_and_lock at p1(&(a)->x, ...)
+> +|
+> + atomic_long_dec_and_test at p1(&(a)->x)
+> +|
+> + atomic64_dec_and_test at p1(&(a)->x)
+> +|
+> + local_dec_and_test at p1(&(a)->x)
+> +)
+> +...
+> +y=a
+> +...
+> +fname at p2(y, ...);
+> +
+> +
+> + at script:python depends on report@
+> +p1 << r4.p1;
+> +p2 << r4.p2;
+> +@@
+> +msg = "atomic_dec_and_test variation before object free at line %s."
+> +coccilib.report.print_report(p1[0], msg % (p2[0].line))
+> +
+> + at r2 exists@
+> +identifier a, x;
+> +position p1;
+> +@@
+> +
+> +(
+> +atomic_add_unless(&(a)->x,-1,1)@p1
+> +|
+> +atomic_long_add_unless(&(a)->x,-1,1)@p1
+> +|
+> +atomic64_add_unless(&(a)->x,-1,1)@p1
+> +)
+> +
+> + at script:python depends on report@
+> +p1 << r2.p1;
+> +@@
+> +msg = "atomic_add_unless"
+> +coccilib.report.print_report(p1[0], msg)
+> +
+> + at r3 exists@
+> +identifier x;
+> +position p1;
+> +@@
+> +
+> +(
+> +x = atomic_add_return at p1(-1, ...);
+> +|
+> +x = atomic_long_add_return at p1(-1, ...);
+> +|
+> +x = atomic64_add_return at p1(-1, ...);
+> +)
+> +
+> + at script:python depends on report@
+> +p1 << r3.p1;
+> +@@
+> +msg = "x = atomic_add_return(-1, ...)"
+> +coccilib.report.print_report(p1[0], msg)
+> +
+> +
+> --
+> 2.7.4
+>
+
+
+
+-- 
+Kees Cook
+Pixel Security
