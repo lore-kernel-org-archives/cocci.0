@@ -1,10 +1,12 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sun, 17 Jun 2018 19:51:24 +0200 (CEST)
+Date: Sun, 17 Jun 2018 20:40:33 +0200 (CEST)
 Subject: [Cocci] Searching for constants between shift operators with
  SmPL
-In-Reply-To: <5e128120-0168-397f-e2fb-9ffd59ec3683@users.sourceforge.net>
+In-Reply-To: <ae26a5be-ba96-cf08-c3cb-cced3c04f44d@users.sourceforge.net>
 References: <5e128120-0168-397f-e2fb-9ffd59ec3683@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1806171949590.2506@hadrien>
+ <alpine.DEB.2.20.1806171949590.2506@hadrien>
+ <ae26a5be-ba96-cf08-c3cb-cced3c04f44d@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.20.1806172038050.2506@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -12,24 +14,26 @@ List-Id: cocci@systeme.lip6.fr
 
 On Sun, 17 Jun 2018, SF Markus Elfring wrote:
 
-> Hello,
+> > You can't just put ... at random places.
 >
-> The following script for the semantic patch language can mark a bit of source
-> code also in a corresponding example.
+> I hope that this software aspect can be adjusted somehow.
+
+No.
+
 >
+> > If you are in an expression, ... must replace a single expression.
 >
-> @display@
-> constant C;
-> expression A, B;
-> identifier X;
-> type T;
-> @@
->  T X = A
->  <<
-> *C
->  <<
->  B;
+> Can it be optional at the end?
+
+I don't know what "it" refers to, but the answer is surely no.
+
 >
+> >> 2. I have observed that no source code is found if I omit the metavariables ?T?
+> >>    and ?X? (omission of the assignment target) in a SmPL script variant.
+> >
+> > Since I don't know anythign about the code you are applying it to,
+>
+> Please look once more at the constructed example.
 >
 > int main(void)
 > {
@@ -38,28 +42,32 @@ On Sun, 17 Jun 2018, SF Markus Elfring wrote:
 > }
 >
 >
-> 1. I get the error message ?minus: parse error? after the addition of
->    a SmPL ellipsis behind the metavariable ?B?.
+> > and I don't know the exact definition of the semantic patch,
+>
+> Can the following SmPL search approach trigger further software development considerations?
+>
+> @display@
+> constant C;
+> expression A, B;
+> @@
+>  A
+>  <<
+> *C
+>  <<
+>  B ...;
+>
+>
+> This SmPL script variant does not present the error message ?minus:
+> parse error?.
 
-You can't just put ... at random places.  If you are in an expression, ...
-must replace a single expression.
+That's true.  You have an expression followed by ... followed by an empty
+statement.  It will match things like:
 
-> 2. I have observed that no source code is found if I omit the metavariables ?T?
->    and ?X? (omission of the assignment target) in a SmPL script variant.
+foo = x << 12 << b;
+test();
+test();
+;
 
-Since I don't know anythign about the code you are applying it to, and I
-don't know the exact definition of the semantic patch, I can't answer the
-question.
+It doesn't match your sample program.
 
 julia
-
->
-> How do you think about to clarify these software situations any more?
->
-> Regards,
-> Markus
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
