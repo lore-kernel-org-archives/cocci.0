@@ -1,191 +1,44 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 15 Jun 2018 07:06:20 +0200 (CEST)
-Subject: [Cocci] [PATCH] Coccinelle: add atomic_as_refcounter script
-In-Reply-To: <CAGXu5jK-6fNvaEiX1Wvp98BKv+uF17KdFyPQKi5hgE-Jz3-+Tg@mail.gmail.com>
-References: <1504258820-2122-1-git-send-email-elena.reshetova@intel.com>
- <CAGXu5jK-6fNvaEiX1Wvp98BKv+uF17KdFyPQKi5hgE-Jz3-+Tg@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1806150705540.2565@hadrien>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sun, 17 Jun 2018 19:09:11 +0200
+Subject: [Cocci] Searching for constants between shift operators with SmPL
+Message-ID: <5e128120-0168-397f-e2fb-9ffd59ec3683@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hello,
+
+The following script for the semantic patch language can mark a bit of source
+code also in a corresponding example.
 
 
-On Thu, 14 Jun 2018, Kees Cook wrote:
+@display@
+constant C;
+expression A, B;
+identifier X;
+type T;
+@@
+ T X = A
+ <<
+*C
+ <<
+ B;
 
-> On Fri, Sep 1, 2017 at 2:40 AM, Elena Reshetova
-> <elena.reshetova@intel.com> wrote:
-> > atomic_as_refcounter.cocci script allows detecting
-> > cases when refcount_t type and API should be used
-> > instead of atomic_t.
-> >
-> > Signed-off-by: Elena Reshetova <elena.reshetova@intel.com>
-> > Acked-by: Julia Lawall <julia.lawall@lip6.fr>
->
-> Reviewed-by: Kees Cook <keescook@chromium.org>
->
-> Oops, I think this got lost. Who can take this patch? I thought Julia
-> ran the scripts/coccinelle/ tree, but looking at git log, it looks
-> more like it's Masahiro? Either way, let's get this in the tree. Who
-> can take it?
 
-Masahiro takes patches.
+int main(void)
+{
+unsigned int a = 2, b = 4;
+unsigned long c = a << 2 << b;
+}
 
-julia
 
->
-> Thanks!
->
-> -Kees
->
-> > ---
-> >  scripts/coccinelle/api/atomic_as_refcounter.cocci | 131 ++++++++++++++++++++++
-> >  1 file changed, 131 insertions(+)
-> >  create mode 100644 scripts/coccinelle/api/atomic_as_refcounter.cocci
-> >
-> > diff --git a/scripts/coccinelle/api/atomic_as_refcounter.cocci b/scripts/coccinelle/api/atomic_as_refcounter.cocci
-> > new file mode 100644
-> > index 0000000..bfa880d
-> > --- /dev/null
-> > +++ b/scripts/coccinelle/api/atomic_as_refcounter.cocci
-> > @@ -0,0 +1,131 @@
-> > +// Check if refcount_t type and API should be used
-> > +// instead of atomic_t type when dealing with refcounters
-> > +//
-> > +// Copyright (c) 2016-2017, Elena Reshetova, Intel Corporation
-> > +//
-> > +// Confidence: Moderate
-> > +// URL: http://coccinelle.lip6.fr/
-> > +// Options: --include-headers --very-quiet
-> > +
-> > +virtual report
-> > +
-> > + at r1 exists@
-> > +identifier a, x;
-> > +position p1, p2;
-> > +identifier fname =~ ".*free.*";
-> > +identifier fname2 =~ ".*destroy.*";
-> > +identifier fname3 =~ ".*del.*";
-> > +identifier fname4 =~ ".*queue_work.*";
-> > +identifier fname5 =~ ".*schedule_work.*";
-> > +identifier fname6 =~ ".*call_rcu.*";
-> > +
-> > +@@
-> > +
-> > +(
-> > + atomic_dec_and_test at p1(&(a)->x)
-> > +|
-> > + atomic_dec_and_lock at p1(&(a)->x, ...)
-> > +|
-> > + atomic_long_dec_and_lock at p1(&(a)->x, ...)
-> > +|
-> > + atomic_long_dec_and_test at p1(&(a)->x)
-> > +|
-> > + atomic64_dec_and_test at p1(&(a)->x)
-> > +|
-> > + local_dec_and_test at p1(&(a)->x)
-> > +)
-> > +...
-> > +(
-> > + fname at p2(a, ...);
-> > +|
-> > + fname2 at p2(...);
-> > +|
-> > + fname3 at p2(...);
-> > +|
-> > + fname4 at p2(...);
-> > +|
-> > + fname5 at p2(...);
-> > +|
-> > + fname6 at p2(...);
-> > +)
-> > +
-> > +
-> > + at script:python depends on report@
-> > +p1 << r1.p1;
-> > +p2 << r1.p2;
-> > +@@
-> > +msg = "atomic_dec_and_test variation before object free at line %s."
-> > +coccilib.report.print_report(p1[0], msg % (p2[0].line))
-> > +
-> > + at r4 exists@
-> > +identifier a, x, y;
-> > +position p1, p2;
-> > +identifier fname =~ ".*free.*";
-> > +
-> > +@@
-> > +
-> > +(
-> > + atomic_dec_and_test at p1(&(a)->x)
-> > +|
-> > + atomic_dec_and_lock at p1(&(a)->x, ...)
-> > +|
-> > + atomic_long_dec_and_lock at p1(&(a)->x, ...)
-> > +|
-> > + atomic_long_dec_and_test at p1(&(a)->x)
-> > +|
-> > + atomic64_dec_and_test at p1(&(a)->x)
-> > +|
-> > + local_dec_and_test at p1(&(a)->x)
-> > +)
-> > +...
-> > +y=a
-> > +...
-> > +fname at p2(y, ...);
-> > +
-> > +
-> > + at script:python depends on report@
-> > +p1 << r4.p1;
-> > +p2 << r4.p2;
-> > +@@
-> > +msg = "atomic_dec_and_test variation before object free at line %s."
-> > +coccilib.report.print_report(p1[0], msg % (p2[0].line))
-> > +
-> > + at r2 exists@
-> > +identifier a, x;
-> > +position p1;
-> > +@@
-> > +
-> > +(
-> > +atomic_add_unless(&(a)->x,-1,1)@p1
-> > +|
-> > +atomic_long_add_unless(&(a)->x,-1,1)@p1
-> > +|
-> > +atomic64_add_unless(&(a)->x,-1,1)@p1
-> > +)
-> > +
-> > + at script:python depends on report@
-> > +p1 << r2.p1;
-> > +@@
-> > +msg = "atomic_add_unless"
-> > +coccilib.report.print_report(p1[0], msg)
-> > +
-> > + at r3 exists@
-> > +identifier x;
-> > +position p1;
-> > +@@
-> > +
-> > +(
-> > +x = atomic_add_return at p1(-1, ...);
-> > +|
-> > +x = atomic_long_add_return at p1(-1, ...);
-> > +|
-> > +x = atomic64_add_return at p1(-1, ...);
-> > +)
-> > +
-> > + at script:python depends on report@
-> > +p1 << r3.p1;
-> > +@@
-> > +msg = "x = atomic_add_return(-1, ...)"
-> > +coccilib.report.print_report(p1[0], msg)
-> > +
-> > +
-> > --
-> > 2.7.4
-> >
->
->
->
-> --
-> Kees Cook
-> Pixel Security
->
+1. I get the error message ?minus: parse error? after the addition of
+   a SmPL ellipsis behind the metavariable ?B?.
+
+2. I have observed that no source code is found if I omit the metavariables ?T?
+   and ?X? (omission of the assignment target) in a SmPL script variant.
+
+
+How do you think about to clarify these software situations any more?
+
+Regards,
+Markus
