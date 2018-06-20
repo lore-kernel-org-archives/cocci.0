@@ -1,151 +1,60 @@
-From: chrisz@openbsd.org (Christopher Zimmermann)
-Date: Tue, 19 Jun 2018 08:11:39 +0200
-Subject: [Cocci] [bug-cocci] fix bytecode build of pyml
-Message-ID: <20180619081139.2181baf1@mortimer.gmerlin.de>
+From: dan.carpenter@oracle.com (Dan Carpenter)
+Date: Wed, 20 Jun 2018 12:56:50 +0300
+Subject: [Cocci] [PATCH] staging: rtl8723bs: Fix two possible
+ sleep-in-atomic-context bugs in translate_scan()
+In-Reply-To: <20180620095016.8484-1-baijiaju1990@gmail.com>
+References: <20180620095016.8484-1-baijiaju1990@gmail.com>
+Message-ID: <20180620095650.fga6xi7fyjgybs76@mwanda>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi,
+On Wed, Jun 20, 2018 at 05:50:16PM +0800, Jia-Ju Bai wrote:
+> The driver may sleep with holding a spinlock.
+> The function call paths (from bottom to top) in Linux-4.16.7 are:
+> 
+> [FUNC] kzalloc(GFP_KERNEL)
+> drivers/staging/rtl8723bs/os_dep/ioctl_linux.c, 323: 
+> 		kzalloc in translate_scan
+> drivers/staging/rtl8723bs/os_dep/ioctl_linux.c, 1554: 
+> 		translate_scan in rtw_wx_get_scan
+> drivers/staging/rtl8723bs/os_dep/ioctl_linux.c, 1533: 
+> 		spin_lock_bh in rtw_wx_get_scan
+> 
+> [FUNC] kzalloc(GFP_KERNEL)
+> drivers/staging/rtl8723bs/os_dep/ioctl_linux.c, 455: 
+> 		kzalloc in translate_scan
+> drivers/staging/rtl8723bs/os_dep/ioctl_linux.c, 1554: 
+> 		translate_scan in rtw_wx_get_scan
+> drivers/staging/rtl8723bs/os_dep/ioctl_linux.c, 1533: 
+> 		spin_lock_bh in rtw_wx_get_scan
+> 
+> To fix these bugs, GFP_KERNEL is replaced with GFP_ATOMIC.
+> 
+> These bugs are found by my static analysis tool (DSAC-2) and checked by
+> my code review.
+> 
+> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+> ---
+>  drivers/staging/rtl8723bs/os_dep/ioctl_linux.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c b/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c
+> index b26533983864..7632b8974563 100644
+> --- a/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c
+> +++ b/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c
+> @@ -321,7 +321,7 @@ static char *translate_scan(struct adapter *padapter,
+>  		RT_TRACE(_module_rtl871x_mlme_c_, _drv_info_, ("rtw_wx_get_scan: ssid =%s\n", pnetwork->network.Ssid.Ssid));
+>  		RT_TRACE(_module_rtl871x_mlme_c_, _drv_info_, ("rtw_wx_get_scan: wpa_len =%d rsn_len =%d\n", wpa_len, rsn_len));
+>  
+> -		buf = kzalloc(MAX_WPA_IE_LEN*2, GFP_KERNEL);
+> +		buf = kzalloc(MAX_WPA_IE_LEN*2, GFP_ATOMIC);
+>  		if (!buf)
+>  			return start;
 
-please consider inclusion of the following patches.
+Thanks!  It occurs to me that another way to detect this bug is that
+one of the allocations in this function already uses GFP_ATOMIC.  It
+doesn't normally make sense to mix GFP_ATOMIC and GFP_KERNEL when there
+isn't any locking in the function.
 
-Christopher Zimmermann
-
-
-Signed-off-by: Christopher Zimmermann <chrisz@openbsd.org>
-Index: bundles/pyml/Makefile
---- bundles/pyml/Makefile.orig
-+++ bundles/pyml/Makefile
-@@ -52,8 +52,8 @@ $(SRC_DIR)/pyml_compat.cmx: $(SRC_DIR)/pyml_compat.ml 
- $(SRC_DIR)/pyml_compat.cmo: $(SRC_DIR)/pyml_compat.ml
-$(SRC_DIR)/pyml_compat.cmi $(OCAMLC_CMD) -c $< -o $@
- 
--$(SRC_DIR)/generate: $(SRC_DIR)/pyml_compat.cmx $(SRC_DIR)/generate.cmx
--	$(OCAMLOPT) $^ -o $@
-+$(SRC_DIR)/generate: $(SRC_DIR)/pyml_compat.cmo $(SRC_DIR)/generate.cmo
-+	$(OCAMLC_CMD) $^ -o $@
- 
- $(SRC_DIR)/generate.cmx: $(SRC_DIR)/generate.ml
-$(SRC_DIR)/pyml_compat.cmx $(OCAMLOPT_CMD) -c $< -o $@
-
-
-
-
-This does not set a default options as suggested in configure.ac,
-but overrides the user-provided setting.
-
-Signed-off-by: Christopher Zimmermann <chrisz@openbsd.org>
-Index: configure
---- configure.orig
-+++ configure
-@@ -14416,7 +14416,6 @@ fi
- 
- fi
- 
--enable_opt="yes"
- 
- 
- if test "x$enable_opt" = xyes; then :
-
-
-Signed-off-by: Christopher Zimmermann <chrisz@openbsd.org>
-Index: parsing_c/unparse_c.ml
---- parsing_c/unparse_c.ml.orig
-+++ parsing_c/unparse_c.ml
-@@ -2362,11 +2362,11 @@ let start_mark = function
- *)
- module String = struct
-   let init n f =
--    let s = String.make n ' ' in
-+    let s = Bytes.make n ' ' in
-     for i = 0 to n - 1 do
-       s.[i] <- f i
-     done;
--    s
-+    Bytes.unsafe_to_string s
- 
-   let map f s =
-     init (String.length s) (fun i -> f s.[i])
-
-
-Signed-off-by: Christopher Zimmermann <chrisz@openbsd.org>
-Index: Makefile
---- Makefile.orig
-+++ Makefile
-@@ -71,7 +71,7 @@ INCLUDEDIRSDEP=commons commons/ocamlextra \
-  parsing_cocci parsing_c ocaml python engine popl09 extra \
-  $(MAKELIBS)
- 
--INCLUDEDIRS=$(INCLUDEDIRSDEP) $(PCREDIR) $(PARMAPDIR) $(INCLIBS)
-+INCLUDEDIRS=$(INCLUDEDIRSDEP) $(PCREDIR) $(PARMAPDIR) $(INCLIBS) +num
- 
- ##############################################################################
- # Generic variables
-
-
-Signed-off-by: Christopher Zimmermann <chrisz@openbsd.org>
-Index: parsing_c/Makefile
---- parsing_c/Makefile.orig
-+++ parsing_c/Makefile
-@@ -42,9 +42,9 @@ LIBS=../commons/commons.cma ../globals/globals.cma \
- INCLUDESDEP= -I ../commons -I ../commons/ocamlextra \
-   -I ../globals -I  ../parsing_cocci
- 
--INCLUDES=$(INCLUDESDEP) $(TARZANINCLUDE)
-+INCLUDES=$(INCLUDESDEP) $(TARZANINCLUDE) -I +num
- 
--SYSLIBS= str.cma unix.cma num.cma
-+SYSLIBS= str.cma unix.cma nums.cma
- 
- ##############################################################################
- # Generic variables
-
-
-
-Signed-off-by: Christopher Zimmermann <chrisz@openbsd.org>
-Index: parsing_c/unparse_c.ml
---- parsing_c/unparse_c.ml.orig
-+++ parsing_c/unparse_c.ml
-@@ -2362,11 +2362,11 @@ let start_mark = function
- *)
- module String = struct
-   let init n f =
--    let s = String.make n ' ' in
-+    let s = Bytes.make n ' ' in
-     for i = 0 to n - 1 do
-       s.[i] <- f i
-     done;
--    s
-+    Bytes.unsafe_to_string s
- 
-   let map f s =
-     init (String.length s) (fun i -> f s.[i])
-
-
-Signed-off-by: Christopher Zimmermann <chrisz@openbsd.org>
-Index: tools/spgen/source/Makefile
---- tools/spgen/source/Makefile.orig
-+++ tools/spgen/source/Makefile
-@@ -39,7 +39,7 @@ LIBS_OPT = $(LIBS:=.cmxa)
- 
- INCLUDEDIRS= $(COCCIDIR)/commons $(COCCIDIR)/commons/ocamlextra \
- 	$(COCCIDIR)/globals $(COCCIDIR)/parsing_cocci
-$(COCCIDIR)/parsing_c \
--	$(PCREDIR)
-+	$(PCREDIR) +num
- 
- INCLUDES=$(INCLUDEDIRS:%=-I %)
- 
-
-
--- 
-http://gmerlin.de
-OpenPGP: http://gmerlin.de/christopher.pub
-2779 7F73 44FD 0736 B67A  C410 69EC 7922 34B4 2566
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: not available
-Type: application/pgp-signature
-Size: 833 bytes
-Desc: OpenPGP digital signature
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20180619/2101c2c8/attachment.asc>
+regards,
+dan carpenter
