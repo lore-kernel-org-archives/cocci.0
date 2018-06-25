@@ -1,96 +1,53 @@
-From: joe@perches.com (Joe Perches)
-Date: Wed, 20 Jun 2018 11:25:08 -0700
-Subject: [Cocci] [PATCH v2 2/2] hwmon: npcm750: add NPCM7xx PWM and Fan
-	driver
-In-Reply-To: <20180620164853.GA3459@roeck-us.net>
-References: <20180619105352.97181-1-tmaimon77@gmail.com>
- <20180619105352.97181-3-tmaimon77@gmail.com>
- <20180620164853.GA3459@roeck-us.net>
-Message-ID: <a6a5a21236c37cfc63329e54248d941bf6d49e3c.camel@perches.com>
+From: michelemartone@users.sourceforge.net (Michele Martone)
+Date: Mon, 25 Jun 2018 17:44:02 +0200
+Subject: [Cocci] coccinelle computes patch very slowly
+Message-ID: <20180625154402.GC7044@localhost>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-(adding Julia Lawall and cocci mailing list)
+Dear Coccinelle Team,
 
-On Wed, 2018-06-20 at 09:48 -0700, Guenter Roeck wrote:
-[]
-> > +static inline void npcm7xx_fan_start_capture(struct npcm7xx_pwm_fan_data *data,
-> > +						 u8 fan, u8 cmp)
-> > +{
-> > +	u8 fan_id = 0;
-> > +	u8 reg_mode = 0;
-> > +	u8 reg_int = 0;
-> > +	unsigned long flags;
-> > +
-> > +	fan_id = NPCM7XX_FAN_INPUT(fan, cmp);
-> > +
-> > +	/* to check whether any fan tach is enable */
-> > +	if (data->npcm7xx_fan[fan_id].FanStFlag != FAN_DISABLE) {
-> > +		/* reset status */
-> > +		spin_lock_irqsave(&data->npcm7xx_fan_lock[fan], flags);
-> > +
-> > +		data->npcm7xx_fan[fan_id].FanStFlag = FAN_INIT;
-> > +		reg_int = ioread8(NPCM7XX_FAN_REG_TIEN(data->fan_base, fan));
-> > +
-> > +		if (cmp == NPCM7XX_FAN_CMPA) {
-> > +			/* enable interrupt */
-> > +			iowrite8((u8) (reg_int | (NPCM7XX_FAN_TIEN_TAIEN |
-> > +						  NPCM7XX_FAN_TIEN_TEIEN)),
-> 
-> Is the (u8) typecast really necessary ? Seems unlikely.
+While patching source files of a few thousand lines long, I 
+noticed prohibitively long patch compute times (seemed hanged).
 
-The cast is not really necessary here as there would
-be an implicit cast already.
+This effectively prevented spatch from being usable.
 
-Some might complain about loss of type safety and
-"make W=123" would probably emit something here.
+I attach a minimalistic program and patch replicating the problem.
 
-But casts to the same type are not necessary.
+It seems like presence of uninitialized variables  and/or
+a loops body might slow down spatch computation extremely.
 
-A possible coccinelle script to find casts to the
-same type is below, but there are some false positives
-for things like __force and __user casts
-
-Also, spatch (1.0.4) seems to have a defect for this
-when the type is used in operations that change a
-smaller type to int or unsigned int.
-
-i.e.: (offset is u16, but offset * 2 is int)
-
-While running the cocci script below:
-
-HANDLING: drivers/net/ethernet/intel/igb/e1000_nvm.c
-diff = 
-diff -u -p a/drivers/net/drivers/net/ethernet/intel/igb/e1000_nvm.c b/drivers/net/ethernet/intel/igb/e1000_nvm.c
---- a/drivers/net/ethernet/intel/igb/e1000_nvm.c
-+++ b/drivers/net/ethernet/intel/igb/e1000_nvm.c
-@@ -335,7 +335,7 @@ s32 igb_read_nvm_spi(struct e1000_hw *hw
- 
- 	/* Send the READ command (opcode + addr) */
- 	igb_shift_out_eec_bits(hw, read_opcode, nvm->opcode_bits);
--	igb_shift_out_eec_bits(hw, (u16)(offset*2), nvm->address_bits);
-+	igb_shift_out_eec_bits(hw, (offset * 2), nvm->address_bits);
- 
- 	/* Read the data.  SPI NVMs increment the address with each byte
- 	 * read and will roll over if reading beyond the end.  This allows
-
----
-
-Anyway, here's the cocci script:
-
-$ cat same_typecast.cocci
+I will be grateful of any support!
+Michele
+-------------- next part --------------
+/*
+// A semantic patch introducing casting on function return:
 @@
 type T;
-T foo;
+identifier I;
+symbol f;
 @@
 
--	(T *)&foo
-+	&foo
+T I;
+...
 
-@@
-type T;
-T foo;
-@@
-
--	(T)foo
-+	foo
+-I = 
++I = (T) 
+ f(...);
+*/
+// Unfortunately, the above semantic patch takes 44s to run `spatch --sp-file <patch above> <snippet below>` !
+// By using initializing declarators, or deleting the loop, it takes a fraction of a second.
+// Tested with a coccinelle version 04d390a4414e626a0ca83f65f1ec08390c378cd1 (Sat May 26 07:43:36 2018 +0200).
+// spatch version 1.0.6-00440-ga4532f08 compiled with OCaml version 4.08.0+dev0-2018-04-09
+void * f(){return 0;}
+void g(void)
+{
+  int v1=0, v2=0;
+  int *a1, *a2;
+  int presence, of, these, slows, down, patch, computing, extremely, y1, y2, y3, y4, y5;//each new uninitialized variable can cost seconds!
+  //int presence=0, of=0, these=0, slows=0, down=0, patch=0, computing=0, extremely=0, y1=0, y2=0, y3=0, y4=0, y5=0;//inizialized ones are fine
+  //undefined_t status;// presence of this (if uncommented) slows down a lot
+  a1 = f();
+  for(v1 = 0; v1 < v2; v1++) { } // presence of this loop here, too! delete it to have a huge speedup ?!
+  a2 = f();
+}
