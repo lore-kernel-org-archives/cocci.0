@@ -1,53 +1,45 @@
-From: michelemartone@users.sourceforge.net (Michele Martone)
-Date: Mon, 25 Jun 2018 17:44:02 +0200
-Subject: [Cocci] coccinelle computes patch very slowly
-Message-ID: <20180625154402.GC7044@localhost>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Mon, 25 Jun 2018 19:13:11 +0200 (CEST)
+Subject: [Cocci] Support for C++ delete expressions
+In-Reply-To: <6f9689bc-4fd8-34ff-ed26-f8a57ad16baf@users.sourceforge.net>
+References: <169e2663-6c92-c6ce-4b27-47d8494490f4@users.sourceforge.net>
+ <alpine.DEB.2.20.1806031831320.2242@hadrien>
+ <7e3bd4a1-daaf-5b84-5de2-c446cc0a4c1c@users.sourceforge.net>
+ <alpine.DEB.2.20.1806032126430.2740@hadrien>
+ <c8f05f51-fa3c-9770-ac99-20a23df8e4c3@users.sourceforge.net>
+ <alpine.DEB.2.20.1806111248510.3334@hadrien>
+ <6f9689bc-4fd8-34ff-ed26-f8a57ad16baf@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.20.1806251912300.4673@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Dear Coccinelle Team,
 
-While patching source files of a few thousand lines long, I 
-noticed prohibitively long patch compute times (seemed hanged).
 
-This effectively prevented spatch from being usable.
+On Mon, 25 Jun 2018, SF Markus Elfring wrote:
 
-I attach a minimalistic program and patch replicating the problem.
+> > delete [] is now supported by the C++ parser (ie with option --c++).
+>
+> This is nice.
+>
+>
+> > Note that no C++ specific operators are supported by the semantic
+> > patch language.
+>
+> How will the software situation evolve further for corresponding key words?
+>
+> Would you ever like to support a source code transformation
+> where unnecessary null pointer checks can be removed before
+> such delete statements?
+>
+> Another description:
+> https://clang.llvm.org/extra/clang-tidy/checks/readability-delete-null-pointer.html
 
-It seems like presence of uninitialized variables  and/or
-a loops body might slow down spatch computation extremely.
+C++ is not a priority for me personally.  If someone wants to fund adding
+better support for C++, that would probably be good for Coccinelle.
 
-I will be grateful of any support!
-Michele
--------------- next part --------------
-/*
-// A semantic patch introducing casting on function return:
-@@
-type T;
-identifier I;
-symbol f;
-@@
+julia
 
-T I;
-...
-
--I = 
-+I = (T) 
- f(...);
-*/
-// Unfortunately, the above semantic patch takes 44s to run `spatch --sp-file <patch above> <snippet below>` !
-// By using initializing declarators, or deleting the loop, it takes a fraction of a second.
-// Tested with a coccinelle version 04d390a4414e626a0ca83f65f1ec08390c378cd1 (Sat May 26 07:43:36 2018 +0200).
-// spatch version 1.0.6-00440-ga4532f08 compiled with OCaml version 4.08.0+dev0-2018-04-09
-void * f(){return 0;}
-void g(void)
-{
-  int v1=0, v2=0;
-  int *a1, *a2;
-  int presence, of, these, slows, down, patch, computing, extremely, y1, y2, y3, y4, y5;//each new uninitialized variable can cost seconds!
-  //int presence=0, of=0, these=0, slows=0, down=0, patch=0, computing=0, extremely=0, y1=0, y2=0, y3=0, y4=0, y5=0;//inizialized ones are fine
-  //undefined_t status;// presence of this (if uncommented) slows down a lot
-  a1 = f();
-  for(v1 = 0; v1 < v2; v1++) { } // presence of this loop here, too! delete it to have a huge speedup ?!
-  a2 = f();
-}
+>
+> Regards,
+> Markus
+>
