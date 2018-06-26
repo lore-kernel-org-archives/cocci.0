@@ -1,47 +1,41 @@
-From: johannes@sipsolutions.net (Johannes Berg)
-Date: Mon, 25 Jun 2018 22:33:52 +0200
-Subject: [Cocci] Parse error with genl-const.cocci
-In-Reply-To: <alpine.DEB.2.20.1712141614460.5502@hadrien>
-References: <925f98d2-047f-785f-4162-21b53a77cd62@gmail.com>
- <1512116859.25588.4.camel@sipsolutions.net>
- <alpine.DEB.2.20.1712011015160.2865@hadrien>
- <1512120542.25588.7.camel@sipsolutions.net>
- <alpine.DEB.2.20.1712011059360.2865@hadrien>
- <e589e785-6e08-8b37-8017-09ffc8627de2@gmail.com>
- <alpine.DEB.2.20.1712141614460.5502@hadrien>
-Message-ID: <1529958832.10347.5.camel@sipsolutions.net>
+From: joe@perches.com (Joe Perches)
+Date: Mon, 25 Jun 2018 19:10:59 -0700
+Subject: [Cocci] [PATCH v2 net] nfp: cast sizeof() to int when comparing
+ with error code
+In-Reply-To: <20180626011631.22717-1-cgxu519@gmx.com>
+References: <20180626011631.22717-1-cgxu519@gmx.com>
+Message-ID: <ff0b2834b771a467246b9f7c1b4600c38f5bb463.camel@perches.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Julia,
+On Tue, 2018-06-26 at 09:16 +0800, Chengguang Xu wrote:
+> sizeof() will return unsigned value so in the error check
+> negative error code will be always larger than sizeof().
 
-> I updated the github version of Coccinelle such that
-> patches/0027-genl-const/genl-const.cocci
-> will almost parse correctly.  The only thing that remains is to change
-> attribute into attribute name.
+This looks like a general class of error in the kernel
+where a signed result that could be returning a -errno
+is tested against < or <= sizeof()
 
-I'm not sure why, but for some reason I thought back then (https://git.k
-ernel.org/pub/scm/linux/kernel/git/backports/backports.git/commit/?id=98
-272f479c2126a135dfcb12484e93d5888164ab) that the following would work
-with 1.0.6:
+A couple examples:
 
-@@
-attribute name __genl_const;
-@@
-(
--const struct genl_multicast_group
-+__genl_const struct genl_multicast_group
-|
--const struct genl_ops
-+__genl_const struct genl_ops
-)
+drivers/input/mouse/elan_i2c_smbus.c:
+
+		len = i2c_smbus_read_block_data(client,
+						ETP_SMBUS_IAP_PASSWORD_READ,
+						val);
+		if (len < sizeof(u16)) {
+
+i2c_smbus_read_block_data can return a negative errno
 
 
+net/smc/smc_clc.c:
 
-However, Hauke pointed out it doesn't, and I can confirm. On 1.0.6, I
-can't get this to work at all, it refuses to parse "attribute name" and
-it refuses to parse the patch part with just "attribute".
+	len = kernel_sendmsg(smc->clcsock, &msg, &vec, 1,
+			     sizeof(struct smc_clc_msg_decline));
+	if (len < sizeof(struct smc_clc_msg_decline))
 
-Is there any way to get this to work again?
+where kernel_sendmsg can return a negative errno
 
-johannes
+There are probably others, I didn't look hard.
+
+Perhaps a cocci script to find these could be generated?
