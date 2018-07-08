@@ -1,51 +1,57 @@
-From: Thierry.Martinez@inria.fr (Thierry Martinez)
-Date: Wed, 04 Jul 2018 18:00:40 +0200
-Subject: [Cocci] Checking evolution around software build parameters
-In-Reply-To: <b5366687-eac7-1a85-0c90-15b620b734d5@users.sourceforge.net>
-References: <169e2663-6c92-c6ce-4b27-47d8494490f4@users.sourceforge.net>
- <alpine.DEB.2.20.1806031831320.2242@hadrien>
- <7e3bd4a1-daaf-5b84-5de2-c446cc0a4c1c@users.sourceforge.net>
- <alpine.DEB.2.20.1806032126430.2740@hadrien>
- <c8f05f51-fa3c-9770-ac99-20a23df8e4c3@users.sourceforge.net>
- <alpine.DEB.2.20.1806111248510.3334@hadrien>
- <b5366687-eac7-1a85-0c90-15b620b734d5@users.sourceforge.net>
-Message-ID: <ow4bmbnvvmf.fsf@wifi-eduroam-85-166.paris.inria.fr>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Sun, 8 Jul 2018 09:42:09 +0200
+Subject: [Cocci] Applicability of SmPL inheritance?
+Message-ID: <1ed9edbe-e2aa-dfec-a2c3-fb43274f2c2e@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-SF Markus Elfring?:
-> /usr/bin/ocamlc.opt -c commons/proc_pidpath_stubs.c
-> gcc: error: unrecognized command line option
-> ?-fstack-clash-protection?; did you mean ?-fstack-protector??
+Hello,
 
-Thank you for reporting this. It seems that ocamlc assumes a version
-of GCC more recent than the version installed on your system.
+I would like to clarify another combination of functionality from the semantic
+patch language.
+The following small SmPL script can be constructed to find some function calls.
 
-In commit c619caf8 (github master), I removed the C stubs and replaced
-by pure OCaml implementations. The problem should have disappeared now.
+@rtg@
+identifier F, G;
+@@
+ F(..., 9);
+*G(1, ...);
 
-Cheers,
--- 
-Thierry.
+@rth@
+identifier F, H;
+@@
+ F(..., 9);
+*H(2, ...);
 
-SF Markus Elfring?:
->> delete [] is now supported by the C++ parser (ie with option --c++).
->
-> Thanks for this software extension.
->
-> Now I am curious on collateral evolution around this information.
->
-> elfring at Sonne:~/Projekte/Coccinelle/20160205> git checkout master && git pull && ./autogen && ./configure && grep VERSION=1 Makefile.config && LANG=C make world
-> ?
-> VERSION=1.0.6-00452-g175de16b
-> ?
-> /usr/bin/ocamlc.opt -c commons/proc_pidpath_stubs.c
-> gcc: error: unrecognized command line option ?-fstack-clash-protection?; did you mean ?-fstack-protector??
-> make: *** [Makefile:633: commons/proc_pidpath_stubs.o] Error 2
->
->
-> Are there any special dependencies to consider for the usage of
-> the software ?OCaml 4.05.0-5.1? (on my openSUSE development system)?
->
-> Regards,
-> Markus
+
+The important detail is here that both SmPL rules specify to search for
+the same function calls before other source code should be found.
+This common SmPL code could be moved into another SmPL rule.
+
+@rpx@
+identifier F;
+position P;
+@@
+ F(..., 9);@P
+
+@rpg@
+identifier rpx.F, G;
+position rpx.P;
+@@
+ F(..., 9);@P
+*G(1, ...);
+
+@rph@
+identifier rpx.F, H;
+position rpx.P;
+@@
+ F(..., 9);@P
+*H(2, ...);
+
+
+I became curious to know if the shown inherited information could be used also
+without repeating SmPL code for a precondition.
+Can the search be continued directly behind the determined source code position?
+
+Regards,
+Markus
