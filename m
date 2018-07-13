@@ -1,61 +1,64 @@
 From: himanshujha199640@gmail.com (Himanshu Jha)
-Date: Fri, 13 Jul 2018 22:12:13 +0530
-Subject: [Cocci] Coccinelle: change strncpy+truncation to strlcpy
-In-Reply-To: <5e93dba5-1a57-ee59-e714-17a80b3fb031@users.sourceforge.net>
+Date: Sat, 14 Jul 2018 00:11:06 +0530
+Subject: [Cocci] Coccinelle: Development challenges around software
+	profiling
+In-Reply-To: <d6fac368-bb43-f53c-0f58-b25a81156a4e@users.sourceforge.net>
 References: <20180713091412.GA11250@himanshu-Vostro-3559>
  <5e93dba5-1a57-ee59-e714-17a80b3fb031@users.sourceforge.net>
-Message-ID: <20180713164213.GA2747@himanshu-Vostro-3559>
+ <20180713164213.GA2747@himanshu-Vostro-3559>
+ <d6fac368-bb43-f53c-0f58-b25a81156a4e@users.sourceforge.net>
+Message-ID: <20180713184105.GA6945@himanshu-Vostro-3559>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, Jul 13, 2018 at 04:26:41PM +0200, SF Markus Elfring wrote:
-> > (
-> > - strncpy(
-> > + strlcpy(
-> >   dest, src, sizeof(sz));
-> > - dest[sizeof(sz) - 1] = '\0';
-> > |
-> > - strncpy(
-> > + strlcpy(
-> >   dest, src, f); 
-> > - dest[f - 1] = '\0';
-> > )
+[ removing Dominique Martinet as I don't want to spoil his weekend ;) ]
+On Fri, Jul 13, 2018 at 07:11:33PM +0200, SF Markus Elfring wrote:
+> > Btw, Markus, I am curious to know how do you benchmark Coccinelle rules?
 > 
-> How do you think about the following code transformation specification
-> which would work with SmPL disjunctions at other places?
+> Such software profiling functionality belongs to the current
+> standard functionality (to some degree).
+> I suggest to take another look at information sources like
+> the following.
 > 
-> -strncpy
-> +strlcpy
->         (dest, src, \( sizeof(sz) \| f \) );
-> -dest[\( sizeof(sz) \| f \) - 1] = '\0';
+> * Increase precision for display of SmPL script execution durations
+>   https://systeme.lip6.fr/pipermail/cocci/2018-May/005102.html
 
-Great!!!
-Much cleaner than mine I would say.
+Agreed! Though we have --profile option.
 
-Btw, Markus, I am curious to know how do you benchmark Coccinelle rules?
+I couldn't see your patch in the above link to do what you requested.
+Did I miss something ?
 
-> > Also, it is advised to put a space affer '+/-'
+> * Selection of benchmarks
+>   https://github.com/coccinelle/coccinelle/issues/133
+
+Hmm. 
+
+97 issues authored by you. Seems like you put a lot of time exploring
+Coccinelle. But I don't see your "patches" in the cocci mailing-list !?
+
+> > I wish to see Coccinelle handling headers in source file in future.
 > 
-> It depends on the circumstances.
-
-I advised only for improving readability and what is followed in every
-Cocci rule in the mainline kernel.
-
-Bikeshedding ;)
-
-> * Will you become interested in the usage of the double addition token?
->   http://coccinelle.lip6.fr/docs/main_grammar005.html#sec11
+> Data processing is also supported for header files to some degree
+> if you pass corresponding command line parameters.
 > 
-> * The Coccinelle software contains software development challenges as can be
->   seen in the feature request ?Support replacement of arithmetic operators
->   with SmPL?.
->   https://github.com/coccinelle/coccinelle/issues/144
+> * Are you looking for any special source code there?
 
-Ah, I see.
+Suppose for eg I wish to replace:
 
-Great working on improving Coccinelle.
+- #include <linux/module>
++ #include <linux/iio.h>
 
-I wish to see Coccinelle handling headers in source file in future.
+as iio.h to already includes(assume) module.h
+
+Or another eg. would be to replace all <asm/...> with <linux/...>
+https://lkml.org/lkml/2017/10/5/106
+
+
+> * Do you find run time characteristics for data parsing acceptable?
+
+For the zalloc-simple.cocci, I would like to have some profiling
+facilities to determine the best approach for framing the rule.
+Isn't it ?
 
 -- 
 Himanshu Jha
