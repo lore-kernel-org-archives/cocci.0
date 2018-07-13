@@ -1,60 +1,64 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 13 Jul 2018 11:28:46 -0400 (EDT)
+From: himanshujha199640@gmail.com (Himanshu Jha)
+Date: Fri, 13 Jul 2018 22:12:13 +0530
 Subject: [Cocci] Coccinelle: change strncpy+truncation to strlcpy
-In-Reply-To: <20180713152539.GB14190@nautica>
-References: <1531444483-17338-1-git-send-email-asmadeus@codewreck.org>
- <4b9986b2-957a-081a-038e-afc5acf0bfdd@users.sourceforge.net>
- <20180713152539.GB14190@nautica>
-Message-ID: <alpine.DEB.2.20.1807131127531.3042@hadrien>
+In-Reply-To: <5e93dba5-1a57-ee59-e714-17a80b3fb031@users.sourceforge.net>
+References: <20180713091412.GA11250@himanshu-Vostro-3559>
+ <5e93dba5-1a57-ee59-e714-17a80b3fb031@users.sourceforge.net>
+Message-ID: <20180713164213.GA2747@himanshu-Vostro-3559>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On Fri, Jul 13, 2018 at 04:26:41PM +0200, SF Markus Elfring wrote:
+> > (
+> > - strncpy(
+> > + strlcpy(
+> >   dest, src, sizeof(sz));
+> > - dest[sizeof(sz) - 1] = '\0';
+> > |
+> > - strncpy(
+> > + strlcpy(
+> >   dest, src, f); 
+> > - dest[f - 1] = '\0';
+> > )
+> 
+> How do you think about the following code transformation specification
+> which would work with SmPL disjunctions at other places?
+> 
+> -strncpy
+> +strlcpy
+>         (dest, src, \( sizeof(sz) \| f \) );
+> -dest[\( sizeof(sz) \| f \) - 1] = '\0';
 
+Great!!!
+Much cleaner than mine I would say.
 
-On Fri, 13 Jul 2018, Dominique Martinet wrote:
+Btw, Markus, I am curious to know how do you benchmark Coccinelle rules?
 
-> SF Markus Elfring wrote on Fri, Jul 13, 2018:
-> > > +msg = "SUGGESTION: strncpy followed by truncation can be strlcpy"
-> > > +coccilib.report.print_report(p[0],msg)
-> >
-> > I would prefer to omit an intermediate Python variable (similar to the previous
-> > SmPL rule) just for the simple display of such a message.
-> >
-> > +coccilib.report.print_report(p[0],
-> > +                             "SUGGESTION: strncpy followed by truncation can be strlcpy.")
->
-> Out of curiosity, is the performance cost of using an intermediate
-> variable high in spatch?
+> > Also, it is advised to put a space affer '+/-'
+> 
+> It depends on the circumstances.
 
-There is no reason that it would have any cost.
+I advised only for improving readability and what is followed in every
+Cocci rule in the mainline kernel.
 
-> I personally do not mind either way, but that does make for a pretty
-> long line once indented and I know many who would prefer the initial
-> version.
->
-> > > +-strncpy at p(
-> > > ++strlcpy(
-> > > +  dest, src, sz);
-> >
-> > How do you think about to adjust another SmPL code transformation specification
-> > like the following?
-> >
-> > +-strncpy at p
-> > ++strlcpy
-> > +        (dest, src, sz);
->
-> This also came from the example I picked, but if this does not make a
-> difference as it sounds like I will update to that.
+Bikeshedding ;)
 
-Probably not removing something just to add it back would be a good idea.
+> * Will you become interested in the usage of the double addition token?
+>   http://coccinelle.lip6.fr/docs/main_grammar005.html#sec11
+> 
+> * The Coccinelle software contains software development challenges as can be
+>   seen in the feature request ?Support replacement of arithmetic operators
+>   with SmPL?.
+>   https://github.com/coccinelle/coccinelle/issues/144
 
-julia
+Ah, I see.
 
->
-> --
-> Dominique Martinet
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+Great working on improving Coccinelle.
+
+I wish to see Coccinelle handling headers in source file in future.
+
+-- 
+Himanshu Jha
+Undergraduate Student
+Department of Electronics & Communication
+Guru Tegh Bahadur Institute of Technology
