@@ -1,72 +1,42 @@
 From: asmadeus@codewreck.org (Dominique Martinet)
-Date: Fri, 13 Jul 2018 10:00:23 +0200
-Subject: [Cocci] [PATCH 01/18] coccinelle: change strncpy+truncation to
- strlcpy
-In-Reply-To: <20180713074455.GA6859@himanshu-Vostro-3559>
+Date: Fri, 13 Jul 2018 17:25:39 +0200
+Subject: [Cocci] Coccinelle: change strncpy+truncation to strlcpy
+In-Reply-To: <4b9986b2-957a-081a-038e-afc5acf0bfdd@users.sourceforge.net>
 References: <1531444483-17338-1-git-send-email-asmadeus@codewreck.org>
- <20180713074455.GA6859@himanshu-Vostro-3559>
-Message-ID: <20180713080023.GB9638@nautica>
+ <4b9986b2-957a-081a-038e-afc5acf0bfdd@users.sourceforge.net>
+Message-ID: <20180713152539.GB14190@nautica>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Himanshu Jha wrote on Fri, Jul 13, 2018:
-> > I expect each maintainer will pick their share of the patchs if they
-> > agree with it and the rest will just be dropped?
+SF Markus Elfring wrote on Fri, Jul 13, 2018:
+> > +msg = "SUGGESTION: strncpy followed by truncation can be strlcpy"
+> > +coccilib.report.print_report(p[0],msg)
 > 
-> Masahiro Yamada <yamada.masahiro@socionext.com> takes coccinelle patches,
-> so please cc him or your patch would be lost.
-
-Thanks, will do.
-
-> > +virtual patch
-> > +virtual context
+> I would prefer to omit an intermediate Python variable (similar to the previous
+> SmPL rule) just for the simple display of such a message.
 > 
-> You might consider adding context rule or remove this line perhaps ?
+> +coccilib.report.print_report(p[0],
+> +                             "SUGGESTION: strncpy followed by truncation can be strlcpy.")
 
-Victim of copypasta, I'll remove this.
+Out of curiosity, is the performance cost of using an intermediate
+variable high in spatch?
+I personally do not mind either way, but that does make for a pretty
+long line once indented and I know many who would prefer the initial
+version.
 
 > > +-strncpy at p(
 > > ++strlcpy(
 > > +  dest, src, sz);
-> > +-dest[sz - 1] = '\0';
 > 
-> The above rule produces an output that I think is not correct:
-> --------------------------------------------------------------
-> diff = 
-> diff -u -p a//ti/wl1251/acx.c b//ti/wl1251/acx.c
-> --- a//ti/wl1251/acx.c
-> +++ b//ti/wl1251/acx.c
-> @@ -150,14 +150,7 @@ int wl1251_acx_fw_version(struct wl1251
->  	}
->  
->  	/* be careful with the buffer sizes */
-> -	strncpy(buf, rev->fw_version, min(len, sizeof(rev->fw_version)));
-> -
-> -	/*
-> -	 * if the firmware version string is exactly
-> -	 * sizeof(rev->fw_version) long or fw_len is less than
-> -	 * sizeof(rev->fw_version) it won't be null terminated
-> -	 */
-> -	buf[min(len, sizeof(rev->fw_version)) - 1] = '\0';
-> +	strlcpy(buf, rev->fw_version, min(len, sizeof(rev->fw_version)));
+> How do you think about to adjust another SmPL code transformation specification
+> like the following?
 > 
-> -----------------------------------------------------------------
-> 
-> I think the comment is useful and should not be removed.
+> +-strncpy at p
+> ++strlcpy
+> +        (dest, src, sz);
 
-I agree this comment is useful now that I'm taking a closer look, I
-glanced at this too fast.
-I'm not sure how to make coccinelle not remove comments between lines
-though?
-
-> Also, consider changing Confidence level appropriately.
-
-I am (was?) pretty confident on the change itself, the only exceptions
-would be if someone relied on strncpy to fill the end of the buffer with
-zero to not leak data somewhere but that is not easy to judge by itself
-(although I hope rare enough)
-
-I'm honestly not sure what would be appropriate in this case.
+This also came from the example I picked, but if this does not make a
+difference as it sounds like I will update to that.
 
 -- 
 Dominique Martinet
