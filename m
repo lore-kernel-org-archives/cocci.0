@@ -1,110 +1,100 @@
-From: himanshujha199640@gmail.com (Himanshu Jha)
-Date: Sat, 14 Jul 2018 01:56:50 +0530
-Subject: [Cocci] Coccinelle: Development challenges around software
-	profiling
-In-Reply-To: <536adc42-1680-e4be-bfee-7d01c37a239d@users.sourceforge.net>
-References: <20180713091412.GA11250@himanshu-Vostro-3559>
- <5e93dba5-1a57-ee59-e714-17a80b3fb031@users.sourceforge.net>
- <20180713164213.GA2747@himanshu-Vostro-3559>
- <d6fac368-bb43-f53c-0f58-b25a81156a4e@users.sourceforge.net>
- <20180713184105.GA6945@himanshu-Vostro-3559>
- <536adc42-1680-e4be-bfee-7d01c37a239d@users.sourceforge.net>
-Message-ID: <20180713202650.GA11690@himanshu-Vostro-3559>
+From: asmadeus@codewreck.org (Dominique Martinet)
+Date: Fri, 13 Jul 2018 18:11:38 +0200
+Subject: [Cocci] [PATCH 01/18] coccinelle: change strncpy+truncation to
+ strlcpy
+In-Reply-To: <alpine.DEB.2.20.1807130647460.3063@hadrien>
+ <20180713091412.GA11250@himanshu-Vostro-3559>
+Message-ID: <20180713161138.GA17418@nautica>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Fri, Jul 13, 2018 at 09:45:06PM +0200, SF Markus Elfring wrote:
-> >> * Increase precision for display of SmPL script execution durations
-> >>   https://systeme.lip6.fr/pipermail/cocci/2018-May/005102.html
-> > 
-> > Agreed! Though we have --profile option.
-> > 
-> > I couldn't see your patch in the above link to do what you requested.
-> > Did I miss something ?
+Himanshu Jha wrote on Fri, Jul 13, 2018:
+> Try this:
 > 
-> Do you find Julia's feedback more interesting for one of my
-> update suggestions around related topics?
-> https://systeme.lip6.fr/pipermail/cocci/2018-May/005104.html
+> $ spatch -D patch --sp-file strlcopy.cocci --very-quiet drivers/net/wireless/ti/wl1251/acx.c
 > 
+> ---------------------------------------------------------------------
+> virtual patch
 > 
-> Examples for further development considerations:
-> https://systeme.lip6.fr/pipermail/cocci/2018-June/005105.html
-> https://systeme.lip6.fr/pipermail/cocci/2018-June/005106.html
+> @depends on patch@
+> expression dest, src, sz; 
+> identifier f;
+> @@
 > 
+> (
+> - strncpy(
+> + strlcpy(
+>   dest, src, sizeof(sz));
+> - dest[sizeof(sz) - 1] = '\0';
+> |
+> - strncpy(
+> + strlcpy(
+>   dest, src, f); 
+> - dest[f - 1] = '\0';
+> )
+> ---------------------------------------------------------------------
 > 
-> > 97 issues authored by you.
+> This eliminates that case because expression is generic metavariable and
+> it somehow matched whole "min(len, sizeof(...)..", so it better to
+> divide the rules as done above to be more specific about the matching
+> pattern.
 > 
-> I suggest to recheck this information.
-> https://github.com/coccinelle/coccinelle/issues?author%3Aelfring
-> 
-> I am trained to report various items.   ;-)
+> I thought to replace "identifier f" with "constant F" but that misses
+> few cases.
 
-Yeah, I can figure that out.
-But...
+My first test started with 'constant sz' as well and I found expression
+to be better.
+If I understand this correctly, it just makes sure not to match the
+'min(...)' expression so the problem doesn't arise, but it's not really
+a solution as it is really a chance that this comment comes here for
+this more complex expression.
+I'd rather just advise to pay attention to comments and drop the
+confidence level
 
-	"Talk is cheap. Show me the code."
+> Also, it is advised to put a space affer '+/-'
 
-That what I have saw in my nearly one year experience ;)
+Ok, thanks
 
-> > Seems like you put a lot of time exploring Coccinelle.
-> 
-> This is an usual ?side effect? from my work also with this software
-> for years.
+Julia Lawall wrote on Fri, Jul 13, 2018:
+> For the file drivers/net/wireless/ti/wl1251/acx.c, the following keeps the
+> comment before the buf update and moves the strlcpy call below it.  It
+> does however drop the comment just before the original call to strncpy.
 
-Ow.
+Nice, doing it in two passes does the trick; it even keeps the comment
+before strncpy if there was no comment in between.
 
-> > But I don't see your "patches" in the cocci mailing-list !?
-> 
-> * The main developers omitted attribution for some changes
->   which were influenced (or even triggered) by my direct feedback.
-> 
-> * Would you like to inspect any pull requests once more?
->   https://github.com/coccinelle/coccinelle/pulls
+I'm sorry to write that after being provided with such a nice
+work-around though, now that I'm a bit less tired I've had a look at the
+comments again and it does not make sense to keep the second comment as
+is -- the whole point of using strlcpy (or now strscpy as per feedback
+elsewhere) is that the string will be null terminated properly after the
+call, so I'll stick to the original version.
 
-I will check them out, later.
 
-> 
-> > Suppose for eg I wish to replace:
-> > 
-> > - #include <linux/module>
-> > + #include <linux/iio.h>
-> 
-> The replacement of paths for include statements is another software
-> development challenge.
-> Did you ever look at the following feature request?
-> 
-> Support data processing for include statements together with
-> the use of metavariables
-> https://github.com/coccinelle/coccinelle/issues/138
+I also see the position does not seem to be useful for the patch phase,
+spatch automatically only applies only to what was matched earlier in
+report mode?
 
-I don't know Ocaml or else would've tried adding such feature.
-Did you try to send a patch instead ?
+>>> +-strncpy at p
+>>> ++strlcpy
+>>> +        (dest, src, sz);
+>>
+>> This also came from the example I picked, but if this does not make a
+>> difference as it sounds like I will update to that.
+>
+> Probably not removing something just to add it back would be a good
+> idea.
 
-Nobody is looking for ideas, you need to work it out yourself IMHO. And
-Coccinelle mailing-list queries/suggestions/rants is handled by Julia
-only, not sure if Michael or any past cocci reviewers are still present.
-So, its difficult.
+Actually playing with your example made me realize that removing and
+re-adding argument does fix the indentation issue in the original code I
+had noticed for mptctl, so it might actually unexpectedly be a good idea
+to go in the opposite direction and make coccinelle remove/add arguments
+in the general case (e.g. if strncpy and strlcpy hadn't been the same
+length)
 
-> 
-> >> * Do you find run time characteristics for data parsing acceptable?
-> > 
-> > For the zalloc-simple.cocci, I would like to have some profiling
-> > facilities to determine the best approach for framing the rule.
-> 
-> Which further development ideas did you get for this SmPL script
-> in the meantime (since previous clarification attempts got bumpy)?
+The jury is still out for this one :)
 
-I didn't get time to look after the rule got merged, and I started
-working on IIO and am still working
-https://summerofcode.withgoogle.com/projects/#6691473790074880
 
-Few months back I worked on a rule with help of Julia:
-https://lkml.org/lkml/2018/3/7/1009
-
-But somehow there was no development in that direction :(
-
+Thanks for all the feedbacks,
 -- 
-Himanshu Jha
-Undergraduate Student
-Department of Electronics & Communication
-Guru Tegh Bahadur Institute of Technology
+Dominique Martinet
