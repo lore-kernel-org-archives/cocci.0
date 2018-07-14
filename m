@@ -1,62 +1,52 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 20 Jul 2018 07:49:59 +0200 (CEST)
-Subject: [Cocci] [PATCH v3] coccinelle: suggest replacing
- strncpy+truncation by strscpy
-In-Reply-To: <20180720054050.GA32233@nautica>
-References: <1531555951-9627-1-git-send-email-asmadeus@codewreck.org>
- <1532047018-23754-1-git-send-email-asmadeus@codewreck.org>
- <alpine.DEB.2.20.1807200731240.2349@hadrien> <20180720054050.GA32233@nautica>
-Message-ID: <alpine.DEB.2.20.1807200745400.2349@hadrien>
+From: asmadeus@codewreck.org (Dominique Martinet)
+Date: Sat, 14 Jul 2018 15:08:00 +0200
+Subject: [Cocci] [PATCH v2] coccinelle: strncpy+truncation by strscpy
+In-Reply-To: <alpine.DEB.2.20.1807140750040.3356@hadrien>
+ <alpine.DEB.2.20.1807140743550.3356@hadrien>
+Message-ID: <20180714130800.GA15334@nautica>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Julia Lawall wrote on Sat, Jul 14, 2018:
+> Not a big deal, but actually the v2 goes below the ---
+
+I've seen both being done (if you look at the git log of the linux
+kernel and search for 'v2' you will have some matches)
+
+The list was a bit long in this case, but I think it's worth at least
+mentioning that the previous version used strlcpy and why I changed in
+the commit message.
+
+> > +msg = "SUGGESTION: strncpy followed by truncation can be strscpy, if the destination buffer does not need to be fully overwritten"
+> > +coccilib.report.print_report(p[0], msg)
+> 
+> This is the first SUGGESTION.  I don't know if anyone out there is relying
+> on it always being WARNING or ERROR.
+
+Eh, I must have been really unlucky with the scripts I looked at, one
+just happened to have SUGGESTION used like this (misc/warn.cocci), but
+now you said that I can see it's the only one!
+
+I'm not sure on what to do here, if you think there could be scripts
+relying on that then I'll change this to WARNING, but the wording feels
+a bit strong and "suggestion" leaves more room for interpretation.
 
 
-On Fri, 20 Jul 2018, Dominique Martinet wrote:
+> Copyright stuff in the other sub-thread
 
-> Julia Lawall wrote on Fri, Jul 20, 2018:
-> > > strscpy does however not clear the end of the destination buffer, so
-> > > there is a risk of information leak if the full buffer is copied as is
-> > > out of the kernel - this needs manual checking.
-> >
-> > As fasr as I can tell from lkml, only one of these patches has been
-> > accepted?  There was also a concern about an information leak that there
-> > was no response to.  Actually, I would prefer that more of the generated
-> > patches are accepted before accepting the semantic patch, for something
-> > that is not quite so obviously correct.
->
-> As I'm pointing to the script which generated the patch in the generated
-> patches, I got told that it would be better to get the coccinelle script
-> accepted first, and asked others to hold on taking the patches at
-> several places - I didn't resend any v2 of these with strscpy yet mostly
-> for that reason.
+Replying here instead to limit the number of mails sent,
+I think people would look at git blame/log if there is no name in the
+file, but I can understand it is simpler if a name is present.
 
-I can't accept a semantic patch for which I can't judge the correctness.
-It would be better to put a proper commit message in the individual
-patches and get them accepted first.
+Just a nitpick on format, all copyright comments on cocci scripts end
+with the license; since that will be added as an SPDX tag instead do you
+mind if I do not list it again there?
 
-The actual change is made by a script that is only a few lines long.  You
-can put those lines in your commit message if you like.
 
-> There were concerns for information leaks that I believe I adressed in
-> the specific patch that was pointed out by the concern (I might have
-> missed some?), but I'll take the time to check all the patches
-> individually before resending as well as filling in better commit
-> messages which also was one of the main concerns.
->
-> I'm however a bit stuck if I'm waiting for the cocinelle script to be
-> accepted to resend the patches, but you're waiting for the individual
-> patches to be accepted to take the script... :)
->
->
-> I guess there is no value in the script landing first by itself, I'll
-> just remove the script path from the commit messages and resend the
-> first few this weekend.
+Also just a head's up, I'll be AFK for the next ~48 hours; I'll post a
+v3 of the patch with license/copyright added, possibly suggestion
+changed, and whatever else comes up by then :)
 
-It's not that there is no value to the script.  The problem is that I
-don't know if the script is correct - I'm not familiar with these string
-functions.  Once the script is in the kernel, it stays there beyond your
-patches, so I would prefer to know that it is correct up front, rather
-than having to remove it afterwards.
-
-julia
+Thanks,
+-- 
+Dominique Martinet
