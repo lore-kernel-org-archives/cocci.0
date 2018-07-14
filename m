@@ -1,100 +1,112 @@
 From: asmadeus@codewreck.org (Dominique Martinet)
-Date: Fri, 13 Jul 2018 18:11:38 +0200
-Subject: [Cocci] [PATCH 01/18] coccinelle: change strncpy+truncation to
- strlcpy
-In-Reply-To: <alpine.DEB.2.20.1807130647460.3063@hadrien>
- <20180713091412.GA11250@himanshu-Vostro-3559>
-Message-ID: <20180713161138.GA17418@nautica>
+Date: Sat, 14 Jul 2018 10:12:31 +0200
+Subject: [Cocci] [PATCH v2] coccinelle: strncpy+truncation by strscpy
+In-Reply-To: <1531444483-17338-1-git-send-email-asmadeus@codewreck.org>
+References: <1531444483-17338-1-git-send-email-asmadeus@codewreck.org>
+Message-ID: <1531555951-9627-1-git-send-email-asmadeus@codewreck.org>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Himanshu Jha wrote on Fri, Jul 13, 2018:
-> Try this:
-> 
-> $ spatch -D patch --sp-file strlcopy.cocci --very-quiet drivers/net/wireless/ti/wl1251/acx.c
-> 
-> ---------------------------------------------------------------------
-> virtual patch
-> 
-> @depends on patch@
-> expression dest, src, sz; 
-> identifier f;
-> @@
-> 
-> (
-> - strncpy(
-> + strlcpy(
->   dest, src, sizeof(sz));
-> - dest[sizeof(sz) - 1] = '\0';
-> |
-> - strncpy(
-> + strlcpy(
->   dest, src, f); 
-> - dest[f - 1] = '\0';
-> )
-> ---------------------------------------------------------------------
-> 
-> This eliminates that case because expression is generic metavariable and
-> it somehow matched whole "min(len, sizeof(...)..", so it better to
-> divide the rules as done above to be more specific about the matching
-> pattern.
-> 
-> I thought to replace "identifier f" with "constant F" but that misses
-> few cases.
+Besides being simpler, using strscpy instead of strncpy+truncation
+fixes part of the following class of new gcc warnings:
 
-My first test started with 'constant sz' as well and I found expression
-to be better.
-If I understand this correctly, it just makes sure not to match the
-'min(...)' expression so the problem doesn't arise, but it's not really
-a solution as it is really a chance that this comment comes here for
-this more complex expression.
-I'd rather just advise to pay attention to comments and drop the
-confidence level
+    drivers/gpu/drm/i915/intel_tv.c: In function ?intel_tv_get_modes?:
+    drivers/gpu/drm/i915/intel_tv.c:1358:3: error: ?strncpy? specified bound 32 equals
+    destination size [-Werror=stringop-truncation]
+       strncpy(mode_ptr->name, input->name, DRM_DISPLAY_MODE_LEN);
+       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    cc1: all warnings being treated as errors
 
-> Also, it is advised to put a space affer '+/-'
+Note that this is note a proper fix for this warning. The warning was
+intended to have developers check the return code of strncpy and
+act in case of truncation (print a warning, abort the function or
+something similar if the original string was not nul terminated);
+the change to strscpy only works because gcc does not handle the
+function the same way.
 
-Ok, thanks
+v2:
+ - Use strscpy instead of strlcpy, as strlcpy can read after the number
+of requested bytes in the source string, and none of the replaced users
+want to know the source string size length
+ - Add longer semantic patch information, warning in particular for
+information leak
+ - Lowered Confidence level to medium because of the possibility of
+information leak, that needs manual checking
+ - Fix spacing of the diff section and removed unused virtual context
 
-Julia Lawall wrote on Fri, Jul 13, 2018:
-> For the file drivers/net/wireless/ti/wl1251/acx.c, the following keeps the
-> comment before the buf update and moves the strlcpy call below it.  It
-> does however drop the comment just before the original call to strncpy.
+Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
+---
+Thanks for the many feedback I received; I hope I didn't miss any.
+In particular, I have conciously not removed the intermediate msg
+variable; as I made the message longer I actually added one more of
+these for the org mode section.
+I also have decided to let spatch remove the second comment, given the
+confidence level has been lowered, the user should be able to manually
+adjust the result if required.
 
-Nice, doing it in two passes does the trick; it even keeps the comment
-before strncpy if there was no comment in between.
+I will resend the other patchs of the series a much smaller number at
+a time after doing all the appropriate checks and giving them a better
+comment, after this has been merged.
 
-I'm sorry to write that after being provided with such a nice
-work-around though, now that I'm a bit less tired I've had a look at the
-comments again and it does not make sense to keep the second comment as
-is -- the whole point of using strlcpy (or now strscpy as per feedback
-elsewhere) is that the string will be null terminated properly after the
-call, so I'll stick to the original version.
+ .../coccinelle/misc/strncpy_truncation.cocci  | 50 +++++++++++++++++++
+ 1 file changed, 50 insertions(+)
+ create mode 100644 scripts/coccinelle/misc/strncpy_truncation.cocci
 
-
-I also see the position does not seem to be useful for the patch phase,
-spatch automatically only applies only to what was matched earlier in
-report mode?
-
->>> +-strncpy at p
->>> ++strlcpy
->>> +        (dest, src, sz);
->>
->> This also came from the example I picked, but if this does not make a
->> difference as it sounds like I will update to that.
->
-> Probably not removing something just to add it back would be a good
-> idea.
-
-Actually playing with your example made me realize that removing and
-re-adding argument does fix the indentation issue in the original code I
-had noticed for mptctl, so it might actually unexpectedly be a good idea
-to go in the opposite direction and make coccinelle remove/add arguments
-in the general case (e.g. if strncpy and strlcpy hadn't been the same
-length)
-
-The jury is still out for this one :)
-
-
-Thanks for all the feedbacks,
+diff --git a/scripts/coccinelle/misc/strncpy_truncation.cocci b/scripts/coccinelle/misc/strncpy_truncation.cocci
+new file mode 100644
+index 000000000000..dd157fc8ec5f
+--- /dev/null
++++ b/scripts/coccinelle/misc/strncpy_truncation.cocci
+@@ -0,0 +1,50 @@
++/// Use strscpy rather than strncpy(dest,..,sz) + dest[sz-1] = '\0'
++///
++//# This makes an effort to find occurences of strncpy followed by forced
++//# truncation, which can generate gcc stringop-truncation warnings when
++//# source and destination buffers are the same size.
++//# Using strscpy will always do that nul-termination for us and not read
++//# more than the maximum bytes requested in src, use that instead.
++//#
++//# The result needs checking that the destination buffer does not need
++//# its tail zeroed (either cleared beforehand or will never leave the
++//# kernel) so as not to leak information
++//
++// Confidence: Medium
++// Comments:
++// Options: --no-includes --include-headers
++
++virtual patch
++virtual report
++virtual org
++
++ at r@
++expression dest, src, sz;
++position p;
++@@
++
++strncpy at p(dest, src, sz);
++dest[sz - 1] = '\0';
++
++ at script:python depends on org@
++p << r.p;
++@@
++
++msg = "strncpy followed by truncation can be strscpy, if the destination buffer does not need to be fully overwritten"
++cocci.print_main(msg, p)
++
++ at script:python depends on report@
++p << r.p;
++@@
++
++msg = "SUGGESTION: strncpy followed by truncation can be strscpy, if the destination buffer does not need to be fully overwritten"
++coccilib.report.print_report(p[0], msg)
++
++@ok depends on patch@
++expression r.dest, r.src, r.sz;
++@@
++
++- strncpy
+++ strscpy
++   (dest, src, sz);
++- dest[sz - 1] = '\0';
 -- 
-Dominique Martinet
+2.17.1
