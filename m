@@ -1,123 +1,47 @@
 From: asmadeus@codewreck.org (Dominique Martinet)
-Date: Fri, 20 Jul 2018 02:36:58 +0200
-Subject: [Cocci] [PATCH v3] coccinelle: suggest replacing strncpy+truncation
-	by strscpy
-In-Reply-To: <1531555951-9627-1-git-send-email-asmadeus@codewreck.org>
+Date: Fri, 20 Jul 2018 07:40:50 +0200
+Subject: [Cocci] [PATCH v3] coccinelle: suggest replacing
+ strncpy+truncation by strscpy
+In-Reply-To: <alpine.DEB.2.20.1807200731240.2349@hadrien>
 References: <1531555951-9627-1-git-send-email-asmadeus@codewreck.org>
-Message-ID: <1532047018-23754-1-git-send-email-asmadeus@codewreck.org>
+ <1532047018-23754-1-git-send-email-asmadeus@codewreck.org>
+ <alpine.DEB.2.20.1807200731240.2349@hadrien>
+Message-ID: <20180720054050.GA32233@nautica>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Using strscpy instead of strncpy+truncation is simpler and fixes part
-of the following class of new gcc warnings:
+Julia Lawall wrote on Fri, Jul 20, 2018:
+> > strscpy does however not clear the end of the destination buffer, so
+> > there is a risk of information leak if the full buffer is copied as is
+> > out of the kernel - this needs manual checking.
+> 
+> As fasr as I can tell from lkml, only one of these patches has been
+> accepted?  There was also a concern about an information leak that there
+> was no response to.  Actually, I would prefer that more of the generated
+> patches are accepted before accepting the semantic patch, for something
+> that is not quite so obviously correct.
 
-    drivers/gpu/drm/i915/intel_tv.c: In function ?intel_tv_get_modes?:
-    drivers/gpu/drm/i915/intel_tv.c:1358:3: error: ?strncpy? specified bound 32 equals
-    destination size [-Werror=stringop-truncation]
-       strncpy(mode_ptr->name, input->name, DRM_DISPLAY_MODE_LEN);
-       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    cc1: all warnings being treated as errors
+As I'm pointing to the script which generated the patch in the generated
+patches, I got told that it would be better to get the coccinelle script
+accepted first, and asked others to hold on taking the patches at
+several places - I didn't resend any v2 of these with strscpy yet mostly
+for that reason.
 
-Note that this is not a proper fix for this warning. The warning was
-intended to have developers check the return code of strncpy and
-act in case of truncation (print a warning, abort the function or
-something similar if the original string was not nul terminated);
-the change to strscpy only works because gcc does not handle the
-function the same way.
 
-A previous version of this patch suggested to use strlcpy instead,
-but strscpy is preferred because it does not read more than the given
-length of the source string unlike strlcpy, which could read after the
-end of the buffer in case of unterminated string.
+There were concerns for information leaks that I believe I adressed in
+the specific patch that was pointed out by the concern (I might have
+missed some?), but I'll take the time to check all the patches
+individually before resending as well as filling in better commit
+messages which also was one of the main concerns.
 
-strscpy does however not clear the end of the destination buffer, so
-there is a risk of information leak if the full buffer is copied as is
-out of the kernel - this needs manual checking.
+I'm however a bit stuck if I'm waiting for the cocinelle script to be
+accepted to resend the patches, but you're waiting for the individual
+patches to be accepted to take the script... :)
 
-Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
----
-v2:
- - Use strscpy instead of strlcpy, as strlcpy can read after the number
-of requested bytes in the source string, and none of the replaced users
-want to know the source string size length 
- - Add longer semantic patch information, warning in particular for
-information leak
- - Lowered Confidence level to medium because of the possibility of
-information leak, that needs manual checking
- - Fix spacing of the diff section and removed unused virtual context
 
-v3:
- - Add license/copyright
- - Rewording of commit message
+I guess there is no value in the script landing first by itself, I'll
+just remove the script path from the commit messages and resend the
+first few this weekend.
 
-I didn't see many other remarks, but kept SUGGESTION as discussed.
-I didn't move all virtuals in a single line because none of the other
-kernel patch do it, and still do not see any advantage of moving the
-string to not use a variable so kept that as well.
-
-This should hopefully be the last version :)
-
- .../coccinelle/misc/strncpy_truncation.cocci  | 52 +++++++++++++++++++
- 1 file changed, 52 insertions(+)
- create mode 100644 scripts/coccinelle/misc/strncpy_truncation.cocci
-
-diff --git a/scripts/coccinelle/misc/strncpy_truncation.cocci b/scripts/coccinelle/misc/strncpy_truncation.cocci
-new file mode 100644
-index 000000000000..7732cde23a85
---- /dev/null
-+++ b/scripts/coccinelle/misc/strncpy_truncation.cocci
-@@ -0,0 +1,52 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/// Use strscpy rather than strncpy(dest,..,sz) + dest[sz-1] = '\0'
-+///
-+//# This makes an effort to find occurences of strncpy followed by forced
-+//# truncation, which can generate gcc stringop-truncation warnings when
-+//# source and destination buffers are the same size.
-+//# Using strscpy will always do that nul-termination for us and not read
-+//# more than the maximum bytes requested in src, use that instead.
-+//#
-+//# The result needs checking that the destination buffer does not need
-+//# its tail zeroed (either cleared beforehand or will never leave the
-+//# kernel) so as not to leak information
-+//
-+// Confidence: Medium
-+// Copyright: (C) 2018  Dominique Martinet
-+// Comments:
-+// Options: --no-includes --include-headers
-+
-+virtual patch
-+virtual report
-+virtual org
-+
-+ at r@
-+expression dest, src, sz;
-+position p;
-+@@
-+
-+strncpy at p(dest, src, sz);
-+dest[sz - 1] = '\0';
-+
-+ at script:python depends on org@
-+p << r.p;
-+@@
-+
-+msg = "strncpy followed by truncation can be strscpy, if the destination buffer does not need to be fully overwritten"
-+cocci.print_main(msg, p)
-+
-+ at script:python depends on report@
-+p << r.p;
-+@@
-+
-+msg = "SUGGESTION: strncpy followed by truncation can be strscpy, if the destination buffer does not need to be fully overwritten"
-+coccilib.report.print_report(p[0], msg)
-+
-+@ok depends on patch@
-+expression r.dest, r.src, r.sz;
-+@@
-+
-+- strncpy
-++ strscpy
-+   (dest, src, sz);
-+- dest[sz - 1] = '\0';
 -- 
-2.17.1
+Dominique Martinet
