@@ -1,47 +1,50 @@
-From: asmadeus@codewreck.org (Dominique Martinet)
-Date: Fri, 20 Jul 2018 07:40:50 +0200
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Fri, 20 Jul 2018 08:03:35 +0200 (CEST)
 Subject: [Cocci] [PATCH v3] coccinelle: suggest replacing
  strncpy+truncation by strscpy
-In-Reply-To: <alpine.DEB.2.20.1807200731240.2349@hadrien>
+In-Reply-To: <20180720055705.GA2810@nautica>
 References: <1531555951-9627-1-git-send-email-asmadeus@codewreck.org>
  <1532047018-23754-1-git-send-email-asmadeus@codewreck.org>
- <alpine.DEB.2.20.1807200731240.2349@hadrien>
-Message-ID: <20180720054050.GA32233@nautica>
+ <alpine.DEB.2.20.1807200731240.2349@hadrien> <20180720054050.GA32233@nautica>
+ <alpine.DEB.2.20.1807200745400.2349@hadrien>
+ <20180720055705.GA2810@nautica>
+Message-ID: <alpine.DEB.2.20.1807200759230.2349@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Julia Lawall wrote on Fri, Jul 20, 2018:
-> > strscpy does however not clear the end of the destination buffer, so
-> > there is a risk of information leak if the full buffer is copied as is
-> > out of the kernel - this needs manual checking.
-> 
-> As fasr as I can tell from lkml, only one of these patches has been
-> accepted?  There was also a concern about an information leak that there
-> was no response to.  Actually, I would prefer that more of the generated
-> patches are accepted before accepting the semantic patch, for something
-> that is not quite so obviously correct.
-
-As I'm pointing to the script which generated the patch in the generated
-patches, I got told that it would be better to get the coccinelle script
-accepted first, and asked others to hold on taking the patches at
-several places - I didn't resend any v2 of these with strscpy yet mostly
-for that reason.
 
 
-There were concerns for information leaks that I believe I adressed in
-the specific patch that was pointed out by the concern (I might have
-missed some?), but I'll take the time to check all the patches
-individually before resending as well as filling in better commit
-messages which also was one of the main concerns.
+On Fri, 20 Jul 2018, Dominique Martinet wrote:
 
-I'm however a bit stuck if I'm waiting for the cocinelle script to be
-accepted to resend the patches, but you're waiting for the individual
-patches to be accepted to take the script... :)
+> Julia Lawall wrote on Fri, Jul 20, 2018:
+> > On Fri, 20 Jul 2018, Dominique Martinet wrote:
+> > > I guess there is no value in the script landing first by itself, I'll
+> > > just remove the script path from the commit messages and resend the
+> > > first few this weekend.
+> >
+> > It's not that there is no value to the script.  The problem is that I
+> > don't know if the script is correct - I'm not familiar with these string
+> > functions.  Once the script is in the kernel, it stays there beyond your
+> > patches, so I would prefer to know that it is correct up front, rather
+> > than having to remove it afterwards.
+>
+> I understand, I didn't say there is no value in the script ("landing
+> first by itself" doesn't mean it should/can not be taken later)
+>
+> I'll bump this thread again in a couple of weeks after having resent
+> most of the other patches
 
+Thanks.
 
-I guess there is no value in the script landing first by itself, I'll
-just remove the script path from the commit messages and resend the
-first few this weekend.
+The rule is also not so efficient in the patch case, because you have the
+rule r that matches the pattern, and then the ok rule at the end that
+matches the same pattern.  It would be better to put depends on org ||
+report in the rule r, and let the patch rule be freestanding, ie just
+declare dest, src, and sz, not r.dest, etc.
 
--- 
-Dominique Martinet
+If you like, you can also add the context case by just putting a * in
+front of the strncpy call in the r rule.  That highlights the change in
+diff-like output, which can in general be useful to see the context in
+which the issue occurs.
+
+julia
