@@ -1,35 +1,36 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 27 Jul 2018 00:36:38 +0200 (CEST)
+From: timur@kernel.org (Timur Tabi)
+Date: Thu, 26 Jul 2018 17:39:07 -0500
 Subject: [Cocci] Search/replace inside string constants?
 In-Reply-To: <CAOZdJXUV2CS=V8K3WMmWXZf5cE9Jrgfwv2e-R0+PJGrzj3tr1Q@mail.gmail.com>
 References: <CAOZdJXUV2CS=V8K3WMmWXZf5cE9Jrgfwv2e-R0+PJGrzj3tr1Q@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1807270034400.2489@hadrien>
+Message-ID: <CAOZdJXV_hpNQBpOtyCUqV--tH65o5GLTe93F2NnTKJ0m-h01sQ@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Also, while I have you attention, is this correct?
 
+@rule1@
+expression x;
+expression list y;
+@@
+-DBG_PRINTF(x, y);
++NV_PRINTF(y);
 
-On Thu, 26 Jul 2018, Timur Tabi wrote:
+@depends on rule1@
+@@
+-DBG_LEVEL_ERRORS
++LEVEL_ERROR
 
-> Is there a way to edit string constants?  I need to change
->
-> "NVRM: ...."
->
-> into
->
-> "..."
->
-> That is, I need to remove the "NVRM: " from a string.  I tried this:
->
-> @depends on rule1@
-> @@
-> -"NVRM: "
-> +""
->
-> But it doesn't do anything.
+This appears to work, but I think the "depends on" is just saying that
+if rule1 succeeds, then go ahead and replace all DBG_LEVEL_ERRORS with
+LEVEL_ERROR.  However, I really only want that to happen inside an
+NV_PRINTF.  I tried doing this:
 
-The easiest thing would be to use python.  You can look at
-demos/pythontococci.cocci for an example.  If you send a complete change
-that you would like to make, I can write an example rule.
+@depends on rule1@
+@@
+NV_PRINTF(
+-DBG_LEVEL_ERRORS
++LEVEL_ERROR
+ );
 
-julia
+That that doesn't do anything.
