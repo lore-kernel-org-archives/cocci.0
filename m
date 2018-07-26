@@ -1,30 +1,58 @@
-From: timur@kernel.org (Timur Tabi)
-Date: Thu, 26 Jul 2018 17:44:48 -0500
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Fri, 27 Jul 2018 00:51:03 +0200 (CEST)
 Subject: [Cocci] Search/replace inside string constants?
-In-Reply-To: <alpine.DEB.2.20.1807270034400.2489@hadrien>
+In-Reply-To: <CAOZdJXV_hpNQBpOtyCUqV--tH65o5GLTe93F2NnTKJ0m-h01sQ@mail.gmail.com>
 References: <CAOZdJXUV2CS=V8K3WMmWXZf5cE9Jrgfwv2e-R0+PJGrzj3tr1Q@mail.gmail.com>
- <alpine.DEB.2.20.1807270034400.2489@hadrien>
-Message-ID: <CAOZdJXWgmXbbTjOJL2osCLE_sy7kdb-_fnrPx7QnrSuZCnaQ2A@mail.gmail.com>
+ <CAOZdJXV_hpNQBpOtyCUqV--tH65o5GLTe93F2NnTKJ0m-h01sQ@mail.gmail.com>
+Message-ID: <alpine.DEB.2.20.1807270048590.2489@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, Jul 26, 2018 at 5:36 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
+
+
+On Thu, 26 Jul 2018, Timur Tabi wrote:
+
+> Also, while I have you attention, is this correct?
 >
-> The easiest thing would be to use python.  You can look at
-> demos/pythontococci.cocci for an example.  If you send a complete change
-> that you would like to make, I can write an example rule.
+> @rule1@
+> expression x;
+> expression list y;
+> @@
+> -DBG_PRINTF(x, y);
+> +NV_PRINTF(y);
+>
+> @depends on rule1@
+> @@
+> -DBG_LEVEL_ERRORS
+> +LEVEL_ERROR
+>
+> This appears to work, but I think the "depends on" is just saying that
+> if rule1 succeeds, then go ahead and replace all DBG_LEVEL_ERRORS with
+> LEVEL_ERROR.  However, I really only want that to happen inside an
+> NV_PRINTF.  I tried doing this:
+>
+> @depends on rule1@
+> @@
+> NV_PRINTF(
+> -DBG_LEVEL_ERRORS
+> +LEVEL_ERROR
+>  );
+>
+> That that doesn't do anything.
 
-My goal is to replace usage of a deprecated macro with a new one, but
-some of the parameters has changed.
+I don't know what the NV_PRINTF call looks like.  You can say
 
-So
+NV_PRINTF(...,
+- DBG_LEVEL_ERRORS,
++ LEVEL_ERROR,
+  ...);
 
-DBG_PRINTF((DBG_MODULE_OS, DBG_LEVEL_ERRORS, "NVRM: error status:
-0x%x\n", status));
+If DBG_LEVEL_ERRORS can come at an unknown argument position.
 
-becomes
+julia
 
-NV_PRINTF(LEVEL_ERROR, "failed to blacklist GPU: 0x%x\n", status);
-
-So I think I've got everything except the removal of "NVRM: " from the
-beginning of any strings where the macro has been changed.
+> _______________________________________________
+> Cocci mailing list
+> Cocci at systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
+>
