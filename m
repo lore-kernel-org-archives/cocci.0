@@ -1,36 +1,30 @@
 From: timur@kernel.org (Timur Tabi)
-Date: Thu, 26 Jul 2018 17:39:07 -0500
+Date: Thu, 26 Jul 2018 17:44:48 -0500
 Subject: [Cocci] Search/replace inside string constants?
-In-Reply-To: <CAOZdJXUV2CS=V8K3WMmWXZf5cE9Jrgfwv2e-R0+PJGrzj3tr1Q@mail.gmail.com>
+In-Reply-To: <alpine.DEB.2.20.1807270034400.2489@hadrien>
 References: <CAOZdJXUV2CS=V8K3WMmWXZf5cE9Jrgfwv2e-R0+PJGrzj3tr1Q@mail.gmail.com>
-Message-ID: <CAOZdJXV_hpNQBpOtyCUqV--tH65o5GLTe93F2NnTKJ0m-h01sQ@mail.gmail.com>
+ <alpine.DEB.2.20.1807270034400.2489@hadrien>
+Message-ID: <CAOZdJXWgmXbbTjOJL2osCLE_sy7kdb-_fnrPx7QnrSuZCnaQ2A@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Also, while I have you attention, is this correct?
+On Thu, Jul 26, 2018 at 5:36 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
+>
+> The easiest thing would be to use python.  You can look at
+> demos/pythontococci.cocci for an example.  If you send a complete change
+> that you would like to make, I can write an example rule.
 
-@rule1@
-expression x;
-expression list y;
-@@
--DBG_PRINTF(x, y);
-+NV_PRINTF(y);
+My goal is to replace usage of a deprecated macro with a new one, but
+some of the parameters has changed.
 
-@depends on rule1@
-@@
--DBG_LEVEL_ERRORS
-+LEVEL_ERROR
+So
 
-This appears to work, but I think the "depends on" is just saying that
-if rule1 succeeds, then go ahead and replace all DBG_LEVEL_ERRORS with
-LEVEL_ERROR.  However, I really only want that to happen inside an
-NV_PRINTF.  I tried doing this:
+DBG_PRINTF((DBG_MODULE_OS, DBG_LEVEL_ERRORS, "NVRM: error status:
+0x%x\n", status));
 
-@depends on rule1@
-@@
-NV_PRINTF(
--DBG_LEVEL_ERRORS
-+LEVEL_ERROR
- );
+becomes
 
-That that doesn't do anything.
+NV_PRINTF(LEVEL_ERROR, "failed to blacklist GPU: 0x%x\n", status);
+
+So I think I've got everything except the removal of "NVRM: " from the
+beginning of any strings where the macro has been changed.
