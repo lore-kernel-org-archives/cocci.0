@@ -1,30 +1,35 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 27 Jul 2018 19:14:37 +0200 (CEST)
+Date: Fri, 27 Jul 2018 21:40:30 +0200 (CEST)
 Subject: [Cocci] Search/replace inside string constants?
-In-Reply-To: <8c83d9bf-bf11-567a-62f8-0ab713c6a310@users.sourceforge.net>
-References: <CAOZdJXV4rb-Snt95ZcLJG1v-qV_O+RKjC=X0ACZghmDK=WXGnA@mail.gmail.com>
- <8c83d9bf-bf11-567a-62f8-0ab713c6a310@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1807271914180.12787@hadrien>
+In-Reply-To: <6ca5500f-039e-e586-9366-719f847f3352@nvidia.com>
+References: <CAOZdJXUV2CS=V8K3WMmWXZf5cE9Jrgfwv2e-R0+PJGrzj3tr1Q@mail.gmail.com>
+ <alpine.DEB.2.20.1807270034400.2489@hadrien>
+ <CAOZdJXWgmXbbTjOJL2osCLE_sy7kdb-_fnrPx7QnrSuZCnaQ2A@mail.gmail.com>
+ <alpine.DEB.2.20.1807270051320.2489@hadrien>
+ <CAOZdJXV4rb-Snt95ZcLJG1v-qV_O+RKjC=X0ACZghmDK=WXGnA@mail.gmail.com>
+ <alpine.DEB.2.20.1807271845380.12787@hadrien>
+ <69450411-cc54-ccad-2dfa-7dfbd439c0ba@nvidia.com>
+ <alpine.DEB.2.20.1807271910330.12787@hadrien>
+ <6ca5500f-039e-e586-9366-719f847f3352@nvidia.com>
+Message-ID: <alpine.DEB.2.20.1807272139060.3602@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+It seems that the last rule would be better as:
 
+@@
+expression list[r.n] r.es;
+constant char[] r.c;
+identifier s.c2;
+@@
 
-On Fri, 27 Jul 2018, SF Markus Elfring wrote:
+NV_PRINTF(es,
+- c
++ c2
+  ,...)
 
-> > @script:python s@
-> > c << r.c;
-> > c2;
-> > @@
-> > if c.startswith('"NVRM: '):
-> >     coccinelle.c2 = '"' + c[7:];
-> > else:
-> >    coccinelle.c2 = c;
->
-> I suggest to reconsider the action if no modification should be performed finally.
-> How do you think about to use the statement ?cocci.include_match(False)?
-> in the else branch instead?
-
-This is also a reasonable strategy.
+It seems that when you remove and add back a comma, it thinks you really
+want a comma to be there, and there is none if the string is the last
+argument.
 
 julia
