@@ -1,32 +1,30 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Fri, 27 Jul 2018 19:09:35 +0200
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Fri, 27 Jul 2018 19:14:37 +0200 (CEST)
 Subject: [Cocci] Search/replace inside string constants?
-In-Reply-To: <CAOZdJXV4rb-Snt95ZcLJG1v-qV_O+RKjC=X0ACZghmDK=WXGnA@mail.gmail.com>
+In-Reply-To: <8c83d9bf-bf11-567a-62f8-0ab713c6a310@users.sourceforge.net>
 References: <CAOZdJXV4rb-Snt95ZcLJG1v-qV_O+RKjC=X0ACZghmDK=WXGnA@mail.gmail.com>
-Message-ID: <8c83d9bf-bf11-567a-62f8-0ab713c6a310@users.sourceforge.net>
+ <8c83d9bf-bf11-567a-62f8-0ab713c6a310@users.sourceforge.net>
+Message-ID: <alpine.DEB.2.20.1807271914180.12787@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> @script:python s@
-> c << r.c;
-> c2;
-> @@
-> if c.startswith('"NVRM: '):
->     coccinelle.c2 = '"' + c[7:];
-> else:
->    coccinelle.c2 = c;
-
-I suggest to reconsider the action if no modification should be performed finally.
-How do you think about to use the statement ?cocci.include_match(False)?
-in the else branch instead?
 
 
-> But this didn't:
+On Fri, 27 Jul 2018, SF Markus Elfring wrote:
 
-I wonder also about the shown source code situation that an unwanted prefix
-could be still preserved in the error message from such a transformation example.
+> > @script:python s@
+> > c << r.c;
+> > c2;
+> > @@
+> > if c.startswith('"NVRM: '):
+> >     coccinelle.c2 = '"' + c[7:];
+> > else:
+> >    coccinelle.c2 = c;
+>
+> I suggest to reconsider the action if no modification should be performed finally.
+> How do you think about to use the statement ?cocci.include_match(False)?
+> in the else branch instead?
 
-Would you like to show your final SmPL replacement rule here?
+This is also a reasonable strategy.
 
-Regards,
-Markus
+julia
