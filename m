@@ -1,26 +1,21 @@
-From: timur@tabi.org (Timur Tabi)
-Date: Fri, 27 Jul 2018 15:25:46 -0500
-Subject: [Cocci] Search/replace inside string constants?
-In-Reply-To: <alpine.DEB.2.20.1807272139060.3602@hadrien>
-References: <CAOZdJXUV2CS=V8K3WMmWXZf5cE9Jrgfwv2e-R0+PJGrzj3tr1Q@mail.gmail.com>
- <alpine.DEB.2.20.1807270034400.2489@hadrien>
- <CAOZdJXWgmXbbTjOJL2osCLE_sy7kdb-_fnrPx7QnrSuZCnaQ2A@mail.gmail.com>
- <alpine.DEB.2.20.1807270051320.2489@hadrien>
- <CAOZdJXV4rb-Snt95ZcLJG1v-qV_O+RKjC=X0ACZghmDK=WXGnA@mail.gmail.com>
- <alpine.DEB.2.20.1807271845380.12787@hadrien>
- <69450411-cc54-ccad-2dfa-7dfbd439c0ba@nvidia.com>
- <alpine.DEB.2.20.1807271910330.12787@hadrien>
- <6ca5500f-039e-e586-9366-719f847f3352@nvidia.com>
- <alpine.DEB.2.20.1807272139060.3602@hadrien>
-Message-ID: <7a83d1c1-f8f6-3027-f3f4-5c9247445bfe@tabi.org>
+From: timur@kernel.org (Timur Tabi)
+Date: Fri, 27 Jul 2018 15:52:32 -0500
+Subject: [Cocci] Perforce support,
+ or generating list of files that would be changed?
+In-Reply-To: <alpine.DEB.2.20.1807262241320.6047@hadrien>
+References: <CAOZdJXXmFPuZFmeaJcB4V5+biQ3DBFZTyam452BgyV9MLgnP4Q@mail.gmail.com>
+ <alpine.DEB.2.20.1807262225450.6047@hadrien>
+ <CAOZdJXXY-kD+6=gDD8fBgPNNFKe5g_=2GLV-zYi54k2AVD1pLQ@mail.gmail.com>
+ <alpine.DEB.2.20.1807262241320.6047@hadrien>
+Message-ID: <CAOZdJXUnTYD8vdyjsQPqFfEzvSt=CYhC2tBmnQ+kkonz8JBpLw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 07/27/2018 02:40 PM, Julia Lawall wrote:
-> 
-> It seems that when you remove and add back a comma, it thinks you really
-> want a comma to be there, and there is none if the string is the last
-> argument.
+On Thu, Jul 26, 2018 at 3:42 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
+> Coccinelle can make a list of relevant files, but there is not a guarantee
+> that the rule will actually match on those files.  The option is
+> --selected-only.
 
-That was it, thanks!  It all works now.  You can add me to the list of 
-coccinelle fans. :-)
+Thanks, that works.  I also discovered that this works:
+
+spatch --very-quiet --dir .   | lsdiff --strip 1
