@@ -1,30 +1,12 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 27 Jul 2018 18:46:16 +0200 (CEST)
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Fri, 27 Jul 2018 19:09:35 +0200
 Subject: [Cocci] Search/replace inside string constants?
 In-Reply-To: <CAOZdJXV4rb-Snt95ZcLJG1v-qV_O+RKjC=X0ACZghmDK=WXGnA@mail.gmail.com>
-References: <CAOZdJXUV2CS=V8K3WMmWXZf5cE9Jrgfwv2e-R0+PJGrzj3tr1Q@mail.gmail.com>
- <alpine.DEB.2.20.1807270034400.2489@hadrien>
- <CAOZdJXWgmXbbTjOJL2osCLE_sy7kdb-_fnrPx7QnrSuZCnaQ2A@mail.gmail.com>
- <alpine.DEB.2.20.1807270051320.2489@hadrien>
- <CAOZdJXV4rb-Snt95ZcLJG1v-qV_O+RKjC=X0ACZghmDK=WXGnA@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1807271845380.12787@hadrien>
+References: <CAOZdJXV4rb-Snt95ZcLJG1v-qV_O+RKjC=X0ACZghmDK=WXGnA@mail.gmail.com>
+Message-ID: <8c83d9bf-bf11-567a-62f8-0ab713c6a310@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-
-
-On Fri, 27 Jul 2018, Timur Tabi wrote:
-
-> On Thu, Jul 26, 2018 at 5:54 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
->
-> > @script:python s@
-> > c << r.c;
-> > c2;
-> > @@
-> > coccinelle.c2 = "desired change in c with extra double quotes on the outside"
->
-> Ok, I almost have it working.  It seems to trigger some of the time.
->
 > @script:python s@
 > c << r.c;
 > c2;
@@ -32,26 +14,19 @@ On Fri, 27 Jul 2018, Timur Tabi wrote:
 > if c.startswith('"NVRM: '):
 >     coccinelle.c2 = '"' + c[7:];
 > else:
->     coccinelle.c2 = c;
->
-> So this works:
->
-> -        DBG_PRINTF((DBG_MODULE_OS, DBG_LEVEL_ERRORS,
-> -            "NVRM: failed to blacklist GPU: 0x%x\n", rmStatus));
-> +        NV_PRINTF(LEVEL_ERROR, "failed to blacklist GPU: 0x%x\n",
-> +                  rmStatus);
->
+>    coccinelle.c2 = c;
+
+I suggest to reconsider the action if no modification should be performed finally.
+How do you think about to use the statement ?cocci.include_match(False)?
+in the else branch instead?
+
+
 > But this didn't:
->
-> -        DBG_PRINTF((DBG_MODULE_OS, DBG_LEVEL_ERRORS,
-> -            "NVRM: fifoGetUserdBar1MapInfo failed, bailing out of
-> RmInitAdapter\n"));
-> +        NV_PRINTF(LEVEL_ERROR,
-> +                  "NVRM: fifoGetUserdBar1MapInfo failed, bailing out
-> of RmInitAdapter\n");
 
-Do you know what the problem is?  If not, please send the complete
-semantic patch and an appropriate .c file so that I can test it.
+I wonder also about the shown source code situation that an unwanted prefix
+could be still preserved in the error message from such a transformation example.
 
-thanks,
-julia
+Would you like to show your final SmPL replacement rule here?
+
+Regards,
+Markus
