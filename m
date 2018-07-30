@@ -1,46 +1,27 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 28 Jul 2018 08:54:01 +0200 (CEST)
-Subject: [Cocci] Search/replace inside string constants?
-In-Reply-To: <a87fbecd-88fa-e638-7bab-e662030850dd@users.sourceforge.net>
-References: <CAOZdJXV4rb-Snt95ZcLJG1v-qV_O+RKjC=X0ACZghmDK=WXGnA@mail.gmail.com>
- <a87fbecd-88fa-e638-7bab-e662030850dd@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1807280853300.2466@hadrien>
+From: timur@kernel.org (Timur Tabi)
+Date: Mon, 30 Jul 2018 14:53:09 -0500
+Subject: [Cocci] Removing trailing whitespace at the end of changes lines?
+Message-ID: <CAOZdJXWdvdkEc1qrbsONSu77NuMpFWpCi-hMycjS5CaGikk6+A@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+I've noticed that some lines changed with my cocci script have a
+trailing whitespace at the end of the first line.  For example:
 
+-        DBG_PRINTF((DBG_MODULE_GLOBAL, DBG_LEVEL_ERRORS,
+-                    "NVRM: %s: failed to save GPU crash data\n",
+-                    __FUNCTION__));
++        NV_PRINTF(LEVEL_ERROR,
++                  "%s: failed to save GPU crash data\n", __FUNCTION__);
 
-On Sat, 28 Jul 2018, SF Markus Elfring wrote:
-
-> > @script:python s@
-> > c << r.c;
-> > c2;
-> > @@
-> > if c.startswith('"NVRM: '):
-> >     coccinelle.c2 = '"' + c[7:];
-> > else:
-> >     coccinelle.c2 = c;
->
-> I have got another software development idea for this transformation approach.
-> The detection of unwanted prefixes could be moved into a regular expression
-> like ?^"NVRM: ? for the constraint of the metavariable for which SmPL inheritance
-> is used here, couldn't it?
-> The shown SmPL rule ?s? needs to work only with matching data then so that
-> the Python code could be reduced to the statement ?coccinelle.c2 = '"' + c[7:]?.
-
-This could be reasonable.
-
-julia
-
->
-> How do you think about to try such a script variant out besides adjustments
-> for comma positions?
-> https://systeme.lip6.fr/pipermail/cocci/2018-July/005212.html
->
-> Regards,
-> Markus
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+There is a blank space after "LEVEL_ERROR,".  I've attached my cocci
+script, but considering that coccinelle seems to reformat lines after
+they've been modified,
+I suspect that the problem is not in my script per se.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: nv_printf.cocci
+Type: application/octet-stream
+Size: 1915 bytes
+Desc: not available
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20180730/592b7c82/attachment.obj>
