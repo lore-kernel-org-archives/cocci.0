@@ -1,64 +1,46 @@
-From: elfring@users.sourceforge.net (SF Markus Elfring)
-Date: Tue, 31 Jul 2018 18:12:35 +0200
+From: ttabi@nvidia.com (Timur Tabi)
+Date: Tue, 31 Jul 2018 14:48:34 -0500
 Subject: [Cocci] Compacting parameters into fewer lines
-In-Reply-To: <CAOZdJXUFFTEQbrKMYzC_+Zf=TgzTOQZdD9NLqBRq7Pymjph9fg@mail.gmail.com>
+In-Reply-To: <2efc7722-b133-79e6-df1e-7b489213c5fd@users.sourceforge.net>
 References: <CAOZdJXUFFTEQbrKMYzC_+Zf=TgzTOQZdD9NLqBRq7Pymjph9fg@mail.gmail.com>
-Message-ID: <2efc7722-b133-79e6-df1e-7b489213c5fd@users.sourceforge.net>
+ <2efc7722-b133-79e6-df1e-7b489213c5fd@users.sourceforge.net>
+Message-ID: <650a688e-b34d-4944-9484-249da36fb1c3@nvidia.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-> Attached.
+On 07/31/2018 11:12 AM, SF Markus Elfring wrote:
+> @rule1@
+> expression x;
+> expression list y;
+> @@
+> -DBG_PRINTF
+> +NV_PRINTF
+>            (
+> -          (x),
+>             y);
 
-I have taken this transformation approach as an opportunity to take another look
-at implementation details for further software development considerations.
+This doesn't work:
 
+-        DBG_PRINTF((DBG_MODULE_OS, DEBUGLEVEL_ERRORS,
+-            "NVRM: x86emu: int $%d (eax = %08x)\n", num, M.x86.R_EAX));
++        NV_PRINTF();
 
-@rule1@
-expression x;
-expression list y;
-@@
--DBG_PRINTF
-+NV_PRINTF
-          (
--          (x),
-           y);
+> @A depends on rule1@
+> @@
+>  NV_PRINTF(...,
+> -          \(DBG_LEVEL_INFO \| DEBUGLEVEL_TRACEINFO \| DBG_LEVEL_SETUPINFO \| DEBUGLEVEL_SETUPINFO\)
+> +          LEVEL_INFO
+>            , ...);
 
+This does work, thanks.
 
-You repeated additions of identifiers in a few SmPL rules. I would find it nicer
-to combine corresponding deletions into SmPL disjunctions (when you would like
-to avoid to fiddle with regular expressions as SmPL constraints).
+> Do you find such SmPL code adjustments useful?
 
+Yes, thank you.  I always appreciate optimization suggestions.
 
-@A depends on rule1@
-@@
- NV_PRINTF(...,
--          \(DBG_LEVEL_INFO \| DEBUGLEVEL_TRACEINFO \| DBG_LEVEL_SETUPINFO \| DEBUGLEVEL_SETUPINFO\)
-+          LEVEL_INFO
-           , ...);
-
-@B depends on rule1@
-@@
- NV_PRINTF(...,
--          \(DBG_LEVEL_USERERRORS \| DEBUGLEVEL_USERERRORS\)
-+          LEVEL_NOTICE
-           , ...);
-
-@C depends on rule1@
-@@
- NV_PRINTF(...,
--          \(DBG_LEVEL_WARNINGS \| DEBUGLEVEL_WARNINGS\)
-+          LEVEL_WARNING
-           , ...);
-
-@D depends on rule1@
-@@
- NV_PRINTF(...,
--          \(DBG_LEVEL_ERRORS \| DEBUGLEVEL_ERRORS\)
-+          LEVEL_ERROR
-           , ...);
-
-
-Do you find such SmPL code adjustments useful?
-
-Regards,
-Markus
+-----------------------------------------------------------------------------------
+This email message is for the sole use of the intended recipient(s) and may contain
+confidential information.  Any unauthorized review, use, disclosure or distribution
+is prohibited.  If you are not the intended recipient, please contact the sender by
+reply email and destroy all copies of the original message.
+-----------------------------------------------------------------------------------
