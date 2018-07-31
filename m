@@ -1,19 +1,40 @@
 From: timur@kernel.org (Timur Tabi)
-Date: Mon, 30 Jul 2018 15:27:35 -0500
-Subject: [Cocci] Removing trailing whitespace at the end of changes
-	lines?
-In-Reply-To: <alpine.DEB.2.20.1807302220180.3269@hadrien>
-References: <CAOZdJXWdvdkEc1qrbsONSu77NuMpFWpCi-hMycjS5CaGikk6+A@mail.gmail.com>
- <alpine.DEB.2.20.1807302220180.3269@hadrien>
-Message-ID: <CAOZdJXVRmHE3ZPpRuXCqdsmjdp0uBFTJdwoB-Gs6rHCwucHpCQ@mail.gmail.com>
+Date: Tue, 31 Jul 2018 09:27:58 -0500
+Subject: [Cocci] Compacting parameters into fewer lines
+Message-ID: <CAOZdJXUXp5gmU7_nBftF=5BrSF0u6tygH71uP2knBMJTjfdgkQ@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, Jul 30, 2018 at 3:21 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
-> Coccinelle makes some special efforts to add newlines to respect the 80
-> character boundary.  It seems that the associated space is not always
-> getting removed.  I will try to take a look.
+Coccinelle does a pretty good job at compating parameters into fewer
+lines, but it's not always aggressive enough.  Is there a tuning
+parameter I can try?
 
-It appears to happen only when the second parameter is on the second
-line.  That is, the LEVEL_xxx parameter is the only parameter on the
-first line.
+For example, this is good:
+
+-                    DBG_PRINTF((
+-                        DBG_MODULE_GLOBAL, DBG_LEVEL_ERRORS,
+-                        "NVRM: Failed to allocate object handle in %s\n",
+-                        __FUNCTION__));
++                    NV_PRINTF(LEVEL_ERROR,
++                              "Failed to allocate object handle in %s\n",
++                              __FUNCTION__);
+
+But here, the call to NV_PRINTF only needs two lines, not three.
+Parameters 1 and 2 can fit on the same line, or parameters 2 and 3 can
+be put on the same line.  In this case, it didn't even try:
+
+-                DBG_PRINTF((
+-                    DBG_MODULE_GLOBAL, DBG_LEVEL_ERRORS,
+-                    "NVRM: Unable to alloc device in %s\n", __FUNCTION__));
++                NV_PRINTF(LEVEL_ERROR,
++                          "Unable to alloc device in %s\n",
++                          __FUNCTION__);
+
+Here, it compacted a little bit, but it could have done more.  This
+could have fit in one line:
+
+-        DBG_PRINTF((DBG_MODULE_OS, DEBUGLEVEL_TRACEINFO,
+-                    "NVGVI: %s(), Null state\n",
+-                    __FUNCTION__));
++        NV_PRINTF(LEVEL_INFO, "%s(), Null state\n",
++                  __FUNCTION__);
