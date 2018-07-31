@@ -1,60 +1,32 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 31 Jul 2018 17:18:41 +0200 (CEST)
+From: ttabi@nvidia.com (Timur Tabi)
+Date: Tue, 31 Jul 2018 10:34:58 -0500
 Subject: [Cocci] Compacting parameters into fewer lines
-In-Reply-To: <CAOZdJXUFFTEQbrKMYzC_+Zf=TgzTOQZdD9NLqBRq7Pymjph9fg@mail.gmail.com>
+In-Reply-To: <alpine.DEB.2.20.1807311716480.7379@hadrien>
 References: <CAOZdJXUXp5gmU7_nBftF=5BrSF0u6tygH71uP2knBMJTjfdgkQ@mail.gmail.com>
  <alpine.DEB.2.20.1807311630350.7379@hadrien>
  <CAOZdJXUFFTEQbrKMYzC_+Zf=TgzTOQZdD9NLqBRq7Pymjph9fg@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1807311716480.7379@hadrien>
+ <alpine.DEB.2.20.1807311716480.7379@hadrien>
+Message-ID: <0be413e6-36f3-9a5b-bb79-29b02546f352@nvidia.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On 07/31/2018 10:18 AM, Julia Lawall wrote:
+> I think that if a parameter is not in danger of overflowing and is not
+> modified it won't move.  It's not optimally formatting the argument list,
+> just avoiding going past the specified number of columns.
+> 
+> For example, some people may prefer one argument per line, while others
+> prefer to pack them as much as possible.  It doesn't try to figure out
+> this preference.
 
+That makes sense.  However, when the cocci script shortens a line, the 
+lines now look funny.  Also, it appears that since coccinelle already 
+has the ability to reformat function calls, it would be nice if we could 
+tap into that feature to do a sort of automatic reformatting.
 
-On Tue, 31 Jul 2018, Timur Tabi wrote:
-
-> On Tue, Jul 31, 2018 at 9:33 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
->
-> >> Coccinelle does a pretty good job at compating parameters into fewer
-> >> lines, but it's not always aggressive enough.  Is there a tuning
-> >> parameter I can try?
-> >
-> >     "--max-width", Arg.Set_int Flag_parsing_c.max_width,
-> >     "  column limit for generated code";
->
-> $ spatch --sp-file ~/sw/dev/gpu_drv/chips_a/nv_printf.cocci
-> --max-width 80 --dir . > /tmp/n.patch
-> /usr/lib/coccinelle/spatch: unknown option '--max-width'.
->
-> $ spatch --version
-> spatch version 1.0.4 with Python support and with PCRE support
->
-> >> -        DBG_PRINTF((DBG_MODULE_OS, DEBUGLEVEL_TRACEINFO,
-> >> -                    "NVGVI: %s(), Null state\n",
-> >> -                    __FUNCTION__));
-> >> +        NV_PRINTF(LEVEL_INFO, "%s(), Null state\n",
-> >> +                  __FUNCTION__);
-> >
-> > In this case, I think it is just leaving __FUNCTION__ where it is.
->
-> So what decides when it moves a parameter and when it doesn't?
-
-I think that if a parameter is not in danger of overflowing and is not
-modified it won't move.  It's not optimally formatting the argument list,
-just avoiding going past the specified number of columns.
-
-For example, some people may prefer one argument per line, while others
-prefer to pack them as much as possible.  It doesn't try to figure out
-this preference.
-
-julia
-
-
->
-> > Please always send a semantic patch and a .c file if you have a concern
-> > about something, even if you have sent them before.  Then I can treat the
-> > problems one by one, and don't have to search around in my mailbox for the
-> > relevant information.
->
-> Attached.
->
+-----------------------------------------------------------------------------------
+This email message is for the sole use of the intended recipient(s) and may contain
+confidential information.  Any unauthorized review, use, disclosure or distribution
+is prohibited.  If you are not the intended recipient, please contact the sender by
+reply email and destroy all copies of the original message.
+-----------------------------------------------------------------------------------
