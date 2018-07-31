@@ -1,32 +1,40 @@
-From: ttabi@nvidia.com (Timur Tabi)
-Date: Tue, 31 Jul 2018 10:34:58 -0500
-Subject: [Cocci] Compacting parameters into fewer lines
-In-Reply-To: <alpine.DEB.2.20.1807311716480.7379@hadrien>
-References: <CAOZdJXUXp5gmU7_nBftF=5BrSF0u6tygH71uP2knBMJTjfdgkQ@mail.gmail.com>
- <alpine.DEB.2.20.1807311630350.7379@hadrien>
- <CAOZdJXUFFTEQbrKMYzC_+Zf=TgzTOQZdD9NLqBRq7Pymjph9fg@mail.gmail.com>
- <alpine.DEB.2.20.1807311716480.7379@hadrien>
-Message-ID: <0be413e6-36f3-9a5b-bb79-29b02546f352@nvidia.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Tue, 31 Jul 2018 21:18:43 +0200 (CEST)
+Subject: [Cocci] Removing trailing whitespace at the end of changes
+ lines?
+In-Reply-To: <CAOZdJXWdvdkEc1qrbsONSu77NuMpFWpCi-hMycjS5CaGikk6+A@mail.gmail.com>
+References: <CAOZdJXWdvdkEc1qrbsONSu77NuMpFWpCi-hMycjS5CaGikk6+A@mail.gmail.com>
+Message-ID: <alpine.DEB.2.20.1807312117330.2306@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 07/31/2018 10:18 AM, Julia Lawall wrote:
-> I think that if a parameter is not in danger of overflowing and is not
-> modified it won't move.  It's not optimally formatting the argument list,
-> just avoiding going past the specified number of columns.
-> 
-> For example, some people may prefer one argument per line, while others
-> prefer to pack them as much as possible.  It doesn't try to figure out
-> this preference.
 
-That makes sense.  However, when the cocci script shortens a line, the 
-lines now look funny.  Also, it appears that since coccinelle already 
-has the ability to reformat function calls, it would be nice if we could 
-tap into that feature to do a sort of automatic reformatting.
 
------------------------------------------------------------------------------------
-This email message is for the sole use of the intended recipient(s) and may contain
-confidential information.  Any unauthorized review, use, disclosure or distribution
-is prohibited.  If you are not the intended recipient, please contact the sender by
-reply email and destroy all copies of the original message.
------------------------------------------------------------------------------------
+On Mon, 30 Jul 2018, Timur Tabi wrote:
+
+> I've noticed that some lines changed with my cocci script have a
+> trailing whitespace at the end of the first line.  For example:
+>
+> -        DBG_PRINTF((DBG_MODULE_GLOBAL, DBG_LEVEL_ERRORS,
+> -                    "NVRM: %s: failed to save GPU crash data\n",
+> -                    __FUNCTION__));
+> +        NV_PRINTF(LEVEL_ERROR,
+> +                  "%s: failed to save GPU crash data\n", __FUNCTION__);
+>
+> There is a blank space after "LEVEL_ERROR,".  I've attached my cocci
+> script, but considering that coccinelle seems to reformat lines after
+> they've been modified,
+> I suspect that the problem is not in my script per se.
+
+Could you send a .c file that produces the problem?  I tried with the
+attached file but I don't get any trailing spaces.
+
+julia
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: nv_printf.c
+Type: text/x-csrc
+Size: 171 bytes
+Desc: 
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20180731/e82135ec/attachment.bin>
