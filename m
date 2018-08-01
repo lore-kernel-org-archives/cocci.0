@@ -1,24 +1,44 @@
-From: corbet@lwn.net (Jonathan Corbet)
-Date: Fri, 31 Aug 2018 16:52:35 -0600
-Subject: [Cocci] [PATCH v2] docs: dev-tools: coccinelle: Update
-	documentation
-In-Reply-To: <20180813104638.7935-1-himanshujha199640@gmail.com>
-References: <20180813104638.7935-1-himanshujha199640@gmail.com>
-Message-ID: <20180831165235.1c12e0b8@lwn.net>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 1 Aug 2018 08:08:45 +0200
+Subject: [Cocci] Compacting parameters into fewer lines
+In-Reply-To: <650a688e-b34d-4944-9484-249da36fb1c3@nvidia.com>
+References: <CAOZdJXUFFTEQbrKMYzC_+Zf=TgzTOQZdD9NLqBRq7Pymjph9fg@mail.gmail.com>
+ <2efc7722-b133-79e6-df1e-7b489213c5fd@users.sourceforge.net>
+ <650a688e-b34d-4944-9484-249da36fb1c3@nvidia.com>
+Message-ID: <d7969956-e440-3dad-4d88-da39b8809148@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, 13 Aug 2018 16:16:38 +0530
-Himanshu Jha <himanshujha199640@gmail.com> wrote:
-
-> * Fix install instruction by adding `./autogen` command
->   before `./configure`.
-> * Add link to a more detailed installation instruction.
-> * Add link to SmPL grammar documentation.
-> * Add single space after ',' to slightly improve readability.
+>> @rule1@
+>> expression x;
+>> expression list y;
+>> @@
+>> -DBG_PRINTF
+>> +NV_PRINTF
+>> ?????????? (
+>> -????????? (x),
+>> ??????????? y);
 > 
-> Signed-off-by: Himanshu Jha <himanshujha199640@gmail.com>
+> This doesn't work:
 
-Applied, thanks,
+Do you care if a macro (or function) parameter is optionally enclosed by parentheses?
 
-jon
+
+> -??????? DBG_PRINTF((DBG_MODULE_OS, DEBUGLEVEL_ERRORS,
+> -??????????? "NVRM: x86emu: int $%d (eax = %08x)\n", num, M.x86.R_EAX));
+> +??????? NV_PRINTF();
+
+Does this test result need any further clarification for the desired
+software behaviour on an other change granularity?
+
+
+> I always appreciate optimization suggestions.
+
+I have got another software development idea for this transformation approach.
+
+How do you think about to improve the replacement specification a bit more
+by combining the variants A  till D into a single SmPL rule which will use
+a nested SmPL disjunction?
+
+Regards,
+Markus
