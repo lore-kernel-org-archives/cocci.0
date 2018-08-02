@@ -1,48 +1,32 @@
-From: ttabi@nvidia.com (Timur Tabi)
-Date: Thu, 2 Aug 2018 15:32:11 -0500
-Subject: [Cocci] Compacting parameters into fewer lines
-In-Reply-To: <d7969956-e440-3dad-4d88-da39b8809148@users.sourceforge.net>
-References: <CAOZdJXUFFTEQbrKMYzC_+Zf=TgzTOQZdD9NLqBRq7Pymjph9fg@mail.gmail.com>
- <2efc7722-b133-79e6-df1e-7b489213c5fd@users.sourceforge.net>
- <650a688e-b34d-4944-9484-249da36fb1c3@nvidia.com>
- <d7969956-e440-3dad-4d88-da39b8809148@users.sourceforge.net>
-Message-ID: <27cf1649-2b6c-c456-ab04-70f7e211134f@nvidia.com>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Thu, 2 Aug 2018 22:33:25 +0200 (CEST)
+Subject: [Cocci] Code wrapped in macros ignored by script
+In-Reply-To: <e0920777-4b76-dfa3-03fa-97d1d76cd229@nvidia.com>
+References: <e0920777-4b76-dfa3-03fa-97d1d76cd229@nvidia.com>
+Message-ID: <alpine.DEB.2.20.1808022232230.2301@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 08/01/2018 01:08 AM, SF Markus Elfring wrote:
 
-> Do you care if a macro (or function) parameter is optionally enclosed by parentheses?
 
-It's not optional.  The calls to DBG_PRINTF use double parens, and need 
-to be replaced with single parens when using NV_PRINTF.
+On Thu, 2 Aug 2018, Timur Tabi wrote:
 
->> -??????? DBG_PRINTF((DBG_MODULE_OS, DEBUGLEVEL_ERRORS,
->> -??????????? "NVRM: x86emu: int $%d (eax = %08x)\n", num, M.x86.R_EAX));
->> +??????? NV_PRINTF();
-> 
-> Does this test result need any further clarification for the desired
-> software behaviour on an other change granularity?
+> My cocci script (attached) ignores lines that are embedded inside other
+> macros.? Example:
+>
+> #define DB(x)?? x
+>
+> void func()
+> {
+> ??? DB(if (DEBUG_IO_TRACE())
+> ??????????????? DBG_PRINTF((DBG_MODULE_GLOBAL, DBG_LEVEL_INFO, "inb %#04x \n",
+> addr));)
+> }
+>
+> Is there a way to get coccinelle to ignore the DB( and )?
 
-I don't understand that.
+No.  Either Coccinelle can parse the macro use as is, which is not
+possible here, because an if can't be an argument to a function call, or
+it expands the macro, in which case no transformation is possible.
 
-The purpose of the script is to convert
-
-DBG_PRINTF((DBG_MODULE_OS, DEBUGLEVEL_ERRORS, "NVRM: x86emu: int $%d 
-(eax = %08x)\n", num, M.x86.R_EAX));
-
-into
-
-NV_PRINTF(LEVEL_ERRORS, "x86emu: int $%d (eax = %08x)\n", num, M.x86.R_EAX);
-
-> How do you think about to improve the replacement specification a bit more
-> by combining the variants A  till D into a single SmPL rule which will use
-> a nested SmPL disjunction?
-
-I don't know what a "nested SmPL disjunction" is.
------------------------------------------------------------------------------------
-This email message is for the sole use of the intended recipient(s) and may contain
-confidential information.  Any unauthorized review, use, disclosure or distribution
-is prohibited.  If you are not the intended recipient, please contact the sender by
-reply email and destroy all copies of the original message.
------------------------------------------------------------------------------------
+julia
