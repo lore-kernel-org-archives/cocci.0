@@ -1,72 +1,78 @@
-From: jrnieder@gmail.com (Jonathan Nieder)
-Date: Thu, 2 Aug 2018 23:44:19 -0700
-Subject: [Cocci] [PoC] coccinelle: make Coccinelle-related make targets
- more fine-grained
-In-Reply-To: <alpine.DEB.2.20.1808030755350.2446@hadrien>
-References: <20180723135100.24288-1-szeder.dev@gmail.com>
- <20180802115522.16107-1-szeder.dev@gmail.com>
- <20180802180155.GD15984@sigill.intra.peff.net>
- <87bmaktpbt.fsf@evledraar.gmail.com>
- <alpine.DEB.2.20.1808030755350.2446@hadrien>
-Message-ID: <20180803064419.GC237521@aiede.svl.corp.google.com>
+From: Julia.Lawall@lip6.fr (Julia Lawall)
+Date: Fri,  3 Aug 2018 18:32:11 +0200
+Subject: [Cocci] [PATCH] Coccinelle: doubletest: reduce side effect false
+	positives
+Message-ID: <1533313931-3639-1-git-send-email-Julia.Lawall@lip6.fr>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi,
+Ensure that the cited expression is not a function call or an
+assignment to reduce the chance of false positives.
 
-Julia Lawall wrote:
+Slightly modify the warning message to indicate another source
+of false positves.
 
-> This was already possible.  Make coccicheck is not supposed to be used
-> with -j, but rather with J=n.  That tells Coccinelle to parallelize the
-> treatment of the files internally.  In this case, the semantic patch is
-> only parsed once, and then n worker processes are forked to treat the
-> different files.
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
-Thanks for this hint.
+---
+ scripts/coccinelle/tests/doubletest.cocci |   34 ++++++++++++++++++++++--------
+ 1 file changed, 26 insertions(+), 8 deletions(-)
 
-I wonder if we can make this happen automatically under suitable
-conditions.  We can parse -j<num> out of MAKEFLAGS and convert it into a
-J=<num> argument, but that only solves half the problem: the "make"
-parent process would think that the coccinelle run only deserves to
-occupy one job slot.
-
-Technically we could do all this using a wrapper that pretends to be a
-submake <https://www.gnu.org/software/make/manual/html_node/Job-Slots.html>
-(prefixing the command with '+', parsing jobserver options from the
-MAKEFLAGS envvar) but it gets ugly.
-
-It's likely that the best we can do is just to advertise J more
-prominently.
-
-[...]
->> On Thu, Aug 02 2018, Jeff King wrote:
-
->>>   cat contrib/coccinelle/*.cocci >mega.cocci
->>>   make -j40 coccicheck COCCI_SEM_PATCHES=mega.cocci
->
-> There was already a COCCI=foo.cocci argument to focus on a single semantic
-> patch.
->
-> I'm surprised that the above cat command would work.  Semantic patch rules
-> have names, and Coccinelle will not be happy isf two rules have the same
-> name.
-
-Yes, Git's semantic patches (in contrib/coccinelle) tend to be
-relatively undemanding.
-
->       Some may also have variables declared in initializers, although
-> perhaps the ones in the kernel don't do this.  Causing these variables to
-> be shared would not have a good effect.
-
-... oh!  You're thinking of the Linux kernel.
-
-It looks like Linux's scripts/coccicheck has a lot we can crib from.
-That's where the J envvar and automatic parallelism you mentioned are
-implemented, too.
-
-So it sounds to me like at a minimum we should use all of that. ;-)
-
-Thanks again for the pointers.
-
-Sincerely,
-Jonathan
+diff --git a/scripts/coccinelle/tests/doubletest.cocci b/scripts/coccinelle/tests/doubletest.cocci
+index 78d74c2..7af2ce7 100644
+--- a/scripts/coccinelle/tests/doubletest.cocci
++++ b/scripts/coccinelle/tests/doubletest.cocci
+@@ -1,6 +1,7 @@
+ /// Find &&/|| operations that include the same argument more than once
+-//# A common source of false positives is when the argument performs a side
+-//# effect.
++//# A common source of false positives is when the expression, or
++//# another expresssion in the same && or || operation, performs a
++//# side effect.
+ ///
+ // Confidence: Moderate
+ // Copyright: (C) 2010 Nicolas Palix, DIKU.  GPLv2.
+@@ -20,20 +21,37 @@ position p;
+ @@
+ 
+ (
+-* E at p
+-  || ... || E
++ E at p || ... || E
+ |
+-* E at p
+-  && ... && E
++ E at p && ... && E
+ )
+ 
+- at script:python depends on org@
++ at bad@
++expression r.E,e1,e2,fn;
++position r.p;
++assignment operator op;
++@@
++
++(
++E at p
++&
++ <+... \(fn(...)\|e1 op e2\|e1++\|e1--\|++e1\|--e1\) ...+>
++)
++
++ at depends on context && !bad@
++expression r.E;
++position r.p;
++@@
++
++*E at p
++
++ at script:python depends on org && !bad@
+ p << r.p;
+ @@
+ 
+ cocci.print_main("duplicated argument to && or ||",p)
+ 
+- at script:python depends on report@
++@script:python depends on report && !bad@
+ p << r.p;
+ @@
+ 
