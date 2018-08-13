@@ -1,99 +1,77 @@
-From: yamada.masahiro@socionext.com (Masahiro Yamada)
-Date: Mon, 13 Aug 2018 16:29:42 +0900
-Subject: [Cocci] [PATCH] Coccinelle: doubletest: reduce side effect
-	false positives
-In-Reply-To: <1533313931-3639-1-git-send-email-Julia.Lawall@lip6.fr>
-References: <1533313931-3639-1-git-send-email-Julia.Lawall@lip6.fr>
-Message-ID: <CAK7LNATeY08JV9kEm9M9O5O1WkxoxKFWTd+BLXe0_pjBs92fcw@mail.gmail.com>
+From: himanshujha199640@gmail.com (Himanshu Jha)
+Date: Mon, 13 Aug 2018 16:06:14 +0530
+Subject: [Cocci] [PATCH] docs: dev-tools: coccinelle: Update documentation
+Message-ID: <20180813103614.7495-1-himanshujha199640@gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-2018-08-04 1:32 GMT+09:00 Julia Lawall <Julia.Lawall@lip6.fr>:
-> Ensure that the cited expression is not a function call or an
-> assignment to reduce the chance of false positives.
->
-> Slightly modify the warning message to indicate another source
-> of false positves.
->
-> Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
->
+* Fix install instruction by adding `./autogen` command
+  before `./configure`.
+* Add link to a more detailed installation instruction.
+* Add link to SmPL grammar documentation.
+* Add single space after ',' to slightly improve readability.
 
+Signed-off-by: Himanshu Jha <himanshujha199640@gmail.com>
+---
+ Documentation/dev-tools/coccinelle.rst | 23 +++++++++++++++++++----
+ 1 file changed, 19 insertions(+), 4 deletions(-)
 
-Applied to linux-kbuild. Thanks!
-
-
-(Please send a reminder
-if there are more coccinelle patches I missed.)
-
-
-
-
-> ---
->  scripts/coccinelle/tests/doubletest.cocci |   34 ++++++++++++++++++++++--------
->  1 file changed, 26 insertions(+), 8 deletions(-)
->
-> diff --git a/scripts/coccinelle/tests/doubletest.cocci b/scripts/coccinelle/tests/doubletest.cocci
-> index 78d74c2..7af2ce7 100644
-> --- a/scripts/coccinelle/tests/doubletest.cocci
-> +++ b/scripts/coccinelle/tests/doubletest.cocci
-> @@ -1,6 +1,7 @@
->  /// Find &&/|| operations that include the same argument more than once
-> -//# A common source of false positives is when the argument performs a side
-> -//# effect.
-> +//# A common source of false positives is when the expression, or
-> +//# another expresssion in the same && or || operation, performs a
-> +//# side effect.
->  ///
->  // Confidence: Moderate
->  // Copyright: (C) 2010 Nicolas Palix, DIKU.  GPLv2.
-> @@ -20,20 +21,37 @@ position p;
->  @@
->
->  (
-> -* E at p
-> -  || ... || E
-> + E at p || ... || E
->  |
-> -* E at p
-> -  && ... && E
-> + E at p && ... && E
->  )
->
-> - at script:python depends on org@
-> + at bad@
-> +expression r.E,e1,e2,fn;
-> +position r.p;
-> +assignment operator op;
-> +@@
-> +
-> +(
-> +E at p
-> +&
-> + <+... \(fn(...)\|e1 op e2\|e1++\|e1--\|++e1\|--e1\) ...+>
-> +)
-> +
-> + at depends on context && !bad@
-> +expression r.E;
-> +position r.p;
-> +@@
-> +
-> +*E at p
-> +
-> + at script:python depends on org && !bad@
->  p << r.p;
->  @@
->
->  cocci.print_main("duplicated argument to && or ||",p)
->
-> - at script:python depends on report@
-> + at script:python depends on report && !bad@
->  p << r.p;
->  @@
->
->
-
-
-
+diff --git a/Documentation/dev-tools/coccinelle.rst b/Documentation/dev-tools/coccinelle.rst
+index 94f41c290bfc..f8305cd55186 100644
+--- a/Documentation/dev-tools/coccinelle.rst
++++ b/Documentation/dev-tools/coccinelle.rst
+@@ -30,18 +30,29 @@ of many distributions, e.g. :
+  - NetBSD
+  - FreeBSD
+ 
+-You can get the latest version released from the Coccinelle homepage at
++Some distribution packages are obsolete and it is recommended
++to use the latest version released from the Coccinelle homepage at
+ http://coccinelle.lip6.fr/
+ 
+-Once you have it, run the following command::
++Or Github at:
+ 
+-     	./configure
++https://github.com/coccinelle/coccinelle
++
++Once you have it, run the following commands::
++
++        ./autogen
++        ./configure
+         make
+ 
+ as a regular user, and install it with::
+ 
+         sudo make install
+ 
++More detailed installation instruction to build from source can be
++found at:
++
++https://github.com/coccinelle/coccinelle/blob/master/install.txt
++
+ Supplemental documentation
+ ---------------------------
+ 
+@@ -51,6 +62,10 @@ https://bottest.wiki.kernel.org/coccicheck
+ 
+ The wiki documentation always refers to the linux-next version of the script.
+ 
++For Semantic Patch Language(SmPL) grammar documentation refer to:
++
++http://coccinelle.lip6.fr/documentation.php
++
+ Using Coccinelle on the Linux kernel
+ ------------------------------------
+ 
+@@ -223,7 +238,7 @@ Since coccicheck runs through make, it naturally runs from the kernel
+ proper dir, as such the second rule above would be implied for picking up a
+ .cocciconfig when using ``make coccicheck``.
+ 
+-``make coccicheck`` also supports using M= targets.If you do not supply
++``make coccicheck`` also supports using M= targets. If you do not supply
+ any M= target, it is assumed you want to target the entire kernel.
+ The kernel coccicheck script has::
+ 
 -- 
-Best Regards
-Masahiro Yamada
+2.17.1
