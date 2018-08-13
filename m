@@ -1,40 +1,99 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 10 Aug 2018 21:35:38 +0200 (CEST)
-Subject: [Cocci] bash completion doesn't work
-In-Reply-To: <20180810191611.GA11411@himanshu-Vostro-3559>
-References: <20180805120416.GA22450@himanshu-Vostro-3559>
- <alpine.DEB.2.20.1808051703550.2620@hadrien>
- <20180810191611.GA11411@himanshu-Vostro-3559>
-Message-ID: <alpine.DEB.2.20.1808102135270.2806@hadrien>
+From: yamada.masahiro@socionext.com (Masahiro Yamada)
+Date: Mon, 13 Aug 2018 16:29:42 +0900
+Subject: [Cocci] [PATCH] Coccinelle: doubletest: reduce side effect
+	false positives
+In-Reply-To: <1533313931-3639-1-git-send-email-Julia.Lawall@lip6.fr>
+References: <1533313931-3639-1-git-send-email-Julia.Lawall@lip6.fr>
+Message-ID: <CAK7LNATeY08JV9kEm9M9O5O1WkxoxKFWTd+BLXe0_pjBs92fcw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-
-
-On Sat, 11 Aug 2018, Himanshu Jha wrote:
-
-> On Sun, Aug 05, 2018 at 05:04:19PM +0200, Julia Lawall wrote:
-> >
-> >
-> > On Sun, 5 Aug 2018, Himanshu Jha wrote:
-> >
-> > > Hi,
-> > >
-> > >
-> > > Installed fresh Coccinelle from Github and following
-> > > install.txt for bash completion using 'make install-bash'.
-> > > The bash completion didn't work because of placement of file:
-> >
-> > Thanks for the reports.  I will ask Thierry to look at it when he is
-> > available.
+2018-08-04 1:32 GMT+09:00 Julia Lawall <Julia.Lawall@lip6.fr>:
+> Ensure that the cited expression is not a function call or an
+> assignment to reduce the chance of false positives.
 >
-> Both the issues have been fixed!
+> Slightly modify the warning message to indicate another source
+> of false positves.
 >
-> --with-bash-completion option works great and no more misleading
-> warnings were observed.
+> Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 >
-> Thanks Julia & Thierry.
 
-Thanks for the feedback!
 
-julia
+Applied to linux-kbuild. Thanks!
+
+
+(Please send a reminder
+if there are more coccinelle patches I missed.)
+
+
+
+
+> ---
+>  scripts/coccinelle/tests/doubletest.cocci |   34 ++++++++++++++++++++++--------
+>  1 file changed, 26 insertions(+), 8 deletions(-)
+>
+> diff --git a/scripts/coccinelle/tests/doubletest.cocci b/scripts/coccinelle/tests/doubletest.cocci
+> index 78d74c2..7af2ce7 100644
+> --- a/scripts/coccinelle/tests/doubletest.cocci
+> +++ b/scripts/coccinelle/tests/doubletest.cocci
+> @@ -1,6 +1,7 @@
+>  /// Find &&/|| operations that include the same argument more than once
+> -//# A common source of false positives is when the argument performs a side
+> -//# effect.
+> +//# A common source of false positives is when the expression, or
+> +//# another expresssion in the same && or || operation, performs a
+> +//# side effect.
+>  ///
+>  // Confidence: Moderate
+>  // Copyright: (C) 2010 Nicolas Palix, DIKU.  GPLv2.
+> @@ -20,20 +21,37 @@ position p;
+>  @@
+>
+>  (
+> -* E at p
+> -  || ... || E
+> + E at p || ... || E
+>  |
+> -* E at p
+> -  && ... && E
+> + E at p && ... && E
+>  )
+>
+> - at script:python depends on org@
+> + at bad@
+> +expression r.E,e1,e2,fn;
+> +position r.p;
+> +assignment operator op;
+> +@@
+> +
+> +(
+> +E at p
+> +&
+> + <+... \(fn(...)\|e1 op e2\|e1++\|e1--\|++e1\|--e1\) ...+>
+> +)
+> +
+> + at depends on context && !bad@
+> +expression r.E;
+> +position r.p;
+> +@@
+> +
+> +*E at p
+> +
+> + at script:python depends on org && !bad@
+>  p << r.p;
+>  @@
+>
+>  cocci.print_main("duplicated argument to && or ||",p)
+>
+> - at script:python depends on report@
+> + at script:python depends on report && !bad@
+>  p << r.p;
+>  @@
+>
+>
+
+
+
+-- 
+Best Regards
+Masahiro Yamada
