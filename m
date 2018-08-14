@@ -1,99 +1,129 @@
-From: der.herr@hofr.at (Nicholas Mc Guire)
-Date: Tue, 14 Aug 2018 03:29:31 +0000
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Tue, 14 Aug 2018 07:47:05 +0200 (CEST)
 Subject: [Cocci] 2 basic question
-Message-ID: <20180814032931.GA28344@osadl.at>
+In-Reply-To: <20180814032931.GA28344@osadl.at>
+References: <20180814032931.GA28344@osadl.at>
+Message-ID: <alpine.DEB.2.20.1808140739000.3326@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 
-Hi !
 
- Trying to do some verification of the coccinelle tool
- it self and one of the tasks was to estimate false
- negatives (so reliability not accuracy). To be able
- to do that the first task was to determin if a semantic
- patch specification would actually be looking at all
- instances. The following trivial cocci spec was used:
+On Tue, 14 Aug 2018, Nicholas Mc Guire wrote:
 
-<snip>
-virtual report
+>
+> Hi !
+>
+>  Trying to do some verification of the coccinelle tool
+>  it self and one of the tasks was to estimate false
+>  negatives (so reliability not accuracy). To be able
+>  to do that the first task was to determin if a semantic
+>  patch specification would actually be looking at all
+>  instances. The following trivial cocci spec was used:
+>
+> <snip>
+> virtual report
+>
+> @found@
+> position p;
+> @@
+>
+>    kmalloc at p(...)
+>
+> @script:python depends on report@
+> p << found.p;
+> @@
+> msg = "kmalloc called"
+> coccilib.report.print_report(p[0],msg)
+> <snip>
+>
+> With this I run coccicheck on 4.18-rc8 (linux-stable)
+>
+>   make coccicheck COCCI=kmalloc1.cocci | tee kmalloc.log
+>
+> which gives me a line count of (wc -l kmalloc.log after
+> removing the header) 4722 instances
+>
+> But cscope reports 4746 kmalloc cases - so I??m wondering
+> if coccinelle is actually checking all cases or where
+> this difference would come from ?
+> Is the assumption that the above specification sould actually
+> report every usage of kmalloc correct ?
 
-@found@
-position p;
+Coccinelle doesn't process code that it can't parse.  The amount of real
+function code that is not parsable should be very small, but it is
+possible that such code contains a call to kmalloc.
+
+On the other hand, I don't know what cscope gives you.  Recently, I have
+seen for example a call to kmalloc and then an error message like "kmalloc
+failed".  So would it find both of them?
+
+>
+> The second issue is that to simplify completness verification
+> I wanted to add simple counters like so:
+>
+>
+> <snip>
+> virtual report
+> @initialize:python@
+> @@
+> import sys
+>
+> count=0
+>
+> def show():
+>    print("Total %d" % count)
+>
+> @found@
+> position p;
+> @@
+>
+>    kmalloc at p(...)
+>
+> @script:python depends on report@
+> p << found.p;
+> @@
+>
+> count = count + 1
+> msg = "kmalloc called"
+> coccilib.report.print_report(p[0],msg)
+>
+> @finalize:python depends on report@
+> @@
+> show()
+> <snip>
+> this works when run with spach version (spatch --version):
+> spatch version 1.0.1 with Python support and with PCRE support
+>
+> And will give me the same as wc -l
+> Total 4722
+>
+> but not with a current git version (spatch --version):
+>  spatch version 1.0.7-00500-g97695d0 compiled with OCaml version 4.01.0
+>  Flags passed to the configure script: [none]
+>  OCaml scripting support: yes
+>  Python scripting support: yes
+>  Syntax of regular expresssions: PCRE
+>
+> where Total 0 is reported
+>
+> did the python interface change and my usage is obsolete
+> or is this a regression ?
+
+I just tested it on drivers/usb and got 347.  Did you run it in parallel
+in the second case (or with make coccicheck, because by default that runs
+in parallel)?  If you do that, the counter will only get updated in the
+child processes, but the printing happens in the main process.  If you
+want to run in parallel, you need to merge the values.  See
+tests/merge_vars_python.cocci.  Basically, you write:
+
+@finalize:python@
+l1 << merge.v1;
+l2 << merge.v2;
+l3 << merge.v3;
 @@
 
-   kmalloc at p(...)
+and then l1 l2 and l3 are lists of the values resulting from the various
+iterations.  You can then add them up.
 
-@script:python depends on report@
-p << found.p;
-@@
-msg = "kmalloc called" 
-coccilib.report.print_report(p[0],msg)
-<snip>
-
-With this I run coccicheck on 4.18-rc8 (linux-stable)
-
-  make coccicheck COCCI=kmalloc1.cocci | tee kmalloc.log
-
-which gives me a line count of (wc -l kmalloc.log after
-removing the header) 4722 instances
-
-But cscope reports 4746 kmalloc cases - so I??m wondering
-if coccinelle is actually checking all cases or where
-this difference would come from ?
-Is the assumption that the above specification sould actually
-report every usage of kmalloc correct ?
-
-The second issue is that to simplify completness verification
-I wanted to add simple counters like so:
-
-
-<snip>
-virtual report
-@initialize:python@
-@@
-import sys
-
-count=0
-
-def show():
-   print("Total %d" % count)
-
-@found@
-position p;
-@@
-
-   kmalloc at p(...)
-
-@script:python depends on report@
-p << found.p;
-@@
-
-count = count + 1
-msg = "kmalloc called" 
-coccilib.report.print_report(p[0],msg)
-
-@finalize:python depends on report@
-@@
-show()
-<snip>
-this works when run with spach version (spatch --version):
-spatch version 1.0.1 with Python support and with PCRE support
-
-And will give me the same as wc -l 
-Total 4722
-
-but not with a current git version (spatch --version):
- spatch version 1.0.7-00500-g97695d0 compiled with OCaml version 4.01.0
- Flags passed to the configure script: [none]
- OCaml scripting support: yes
- Python scripting support: yes
- Syntax of regular expresssions: PCRE
-
-where Total 0 is reported
-
-did the python interface change and my usage is obsolete
-or is this a regression ?
-
-thx!
-hofrat
+julia
