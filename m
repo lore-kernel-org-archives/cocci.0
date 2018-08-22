@@ -1,29 +1,70 @@
-From: johannes@sipsolutions.net (Johannes Berg)
-Date: Thu, 16 Aug 2018 09:05:22 +0200
-Subject: [Cocci] New release after 1.0.7?
-In-Reply-To: <72ebc0aac08fd1e82dfb09cc12a2c8321f302d49.camel@intel.com>
- (sfid-20180814_163933_723729_9E8F6797)
-References: <32b52167e7dd5734ba4aa5f21aa1fddd257e6292.camel@intel.com>
- <alpine.DEB.2.20.1808141515280.3371@hadrien>
- <deb8e4df52ce0baddcae77458a8a7246814b8804.camel@intel.com>
- <alpine.DEB.2.20.1808141541470.3371@hadrien>
- <72ebc0aac08fd1e82dfb09cc12a2c8321f302d49.camel@intel.com>
- (sfid-20180814_163933_723729_9E8F6797)
-Message-ID: <1534403122.3547.51.camel@sipsolutions.net>
+From: luca@coelho.fi (Luca Coelho)
+Date: Wed, 22 Aug 2018 12:38:30 +0300
+Subject: [Cocci] Finding and replacing a struct inside another struct
+In-Reply-To: <ea981773c0caca06958f6dc5f5238954b520056b.camel@coelho.fi>
+References: <ea981773c0caca06958f6dc5f5238954b520056b.camel@coelho.fi>
+Message-ID: <74f2d0049e235c1bd02f94a83cdaf00eaf401174.camel@coelho.fi>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Tue, 2018-08-14 at 17:39 +0300, Luciano Coelho wrote:
+On Wed, 2018-08-22 at 12:30 +0300, Luca Coelho wrote:
+> Hi,
 > 
-> Yes, this looks right! So it seems to be working with 1.0.8. :P
+> I need some help again. :)
+> 
+> I have a struct (cfg80211_crypto_settings) that contains a new
+> element
+> that I want to substitute for a function call
+> (cfg_control_port_over_nl80211).  But this struct appears inside
+> another struct.
+> 
+> So I tried this:
+> 
+> First I try to find a struct that contains the struct I want (with
+> the
+> @parent_child@ rule):
+> 
+> @parent_child@
+> identifier child;
+> identifier parent_type;
+> @@
+> struct parent_type
+> {
+> ...
+> struct cfg80211_crypto_settings child;
+> ...
+> }
+> 
+> And then I try to match usage of the parent struct that I found:
+> 
+> @@
+> identifier parent_child.child;
+> identifier parent_child.parent_type;
+> identifier p;
+> @@
+> struct parent_type *p;
+> <...
+> -p.child.control_over_nl80211
+> +cfg_control_port_over_nl80211(&p.child)
+> ...>
 
-There is no 1.0.8 though.
+Ah, I think I found the problem... I was using p.child, but I was
+defining p as a pointer!
 
-Julia, can you clear up the confusion with 1.0.7 and perhaps make a
-1.0.8 release? Right now, there's only a very old (1.0.4 I think)
-release that can do this at all, but it isn't compatible with the
-current syntax. We'd like to have a release that has this ability so we
-can check for the (minimum) version.
+I guess I should have this instead:
 
-Thanks,
-johannes
+@@
+identifier parent_child.child;
+identifier parent_child.parent_type;
+ide
+ntifier p;
+@@
+struct parent_type *p;
+<...
+-p->child.control_over_nl80211
++cf
+g_control_port_over_nl80211(&p->child)
+...>
+
+--
+Luca.
