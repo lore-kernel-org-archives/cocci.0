@@ -1,53 +1,96 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 22 Aug 2018 06:54:16 -0400 (EDT)
-Subject: [Cocci] Finding and replacing a struct inside another struct
-In-Reply-To: <040d643bff98456efb34f1c4987a5e9e6ed0b93a.camel@coelho.fi>
-References: <ea981773c0caca06958f6dc5f5238954b520056b.camel@coelho.fi>
- <74f2d0049e235c1bd02f94a83cdaf00eaf401174.camel@coelho.fi>
- <040d643bff98456efb34f1c4987a5e9e6ed0b93a.camel@coelho.fi>
-Message-ID: <alpine.DEB.2.21.1808220653240.2365@hadrien>
+From: keescook@chromium.org (Kees Cook)
+Date: Thu, 23 Aug 2018 14:56:19 -0700
+Subject: [Cocci] [Fwd: Re: [PATCH] rtc: sun6i: Use struct_size() in
+	kzalloc()]
+In-Reply-To: <700bfdf296aa112799b6a6f091162cc34f6fef10.camel@perches.com>
+References: <CAGXu5jKPOVRk5DbFMKu0BV_K-ES+j+6_aApjyo0X8zXBfTYDnw@mail.gmail.com>
+ <700bfdf296aa112799b6a6f091162cc34f6fef10.camel@perches.com>
+Message-ID: <CAGXu5jL3C78vkVL968HtBdLZgRYYQp4_pTKMT=BTJnk5z6CH3w@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-
-
-On Wed, 22 Aug 2018, Luca Coelho wrote:
-
-> On Wed, 2018-08-22 at 12:38 +0300, Luca Coelho wrote:
-> > On Wed, 2018-08-22 at 12:30 +0300, Luca Coelho wrote:
-> > > Hi,
-> > >
-> > > I need some help again. :)
-> > >
-> > > I have a struct (cfg80211_crypto_settings) that contains a new
-> > > element
-> > > that I want to substitute for a function call
-> > > (cfg_control_port_over_nl80211).  But this struct appears inside
-> > > another struct.
-> > >
-> > > So I tried this:
-> > >
-> > > First I try to find a struct that contains the struct I want (with
-> > > the
-> > > @parent_child@ rule):
-> > >
-> > > @parent_child@
-> > > identifier child;
-> > > identifier parent_type;
-> > > @@
-> > > struct parent_type
-> > > {
-> > > ...
-> > > struct cfg80211_crypto_settings child;
-> > > ...
-> > > }
+On Thu, Aug 23, 2018 at 2:48 PM, Joe Perches <joe@perches.com> wrote:
+> Forwarding a question about coccinelle and isomorphisms from Kees Cook
 >
-> Unfortunately it seems that the parent struct doesn't really match with
-> this.  I guess I'll have to hardcode the parent struct as well.
+> ---------- Forwarded message ----------
+> From: Kees Cook <keescook@chromium.org>
+> To: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+> Cc: Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Maxime Ripard <maxime.ripard@bootlin.com>, Chen-Yu Tsai <wens@csie.org>, linux-rtc at vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, LKML <linux-kernel@vger.kernel.org>
+> Bcc:
+> Date: Thu, 23 Aug 2018 13:56:35 -0700
+> Subject: Re: [PATCH] rtc: sun6i: Use struct_size() in kzalloc()
+> On Thu, Aug 23, 2018 at 11:51 AM, Gustavo A. R. Silva
+> <gustavo@embeddedor.com> wrote:
+>> One of the more common cases of allocation size calculations is finding
+>> the size of a structure that has a zero-sized array at the end, along
+>> with memory for some number of elements for that array. For example:
+>>
+>> struct foo {
+>>         int stuff;
+>>         void *entry[];
+>> };
+>>
+>> instance = kzalloc(sizeof(struct foo) + sizeof(void *) * count, GFP_KERNEL);
+>>
+>> Instead of leaving these open-coded and prone to type mistakes, we can
+>> now use the new struct_size() helper:
+>>
+>> instance = kzalloc(struct_size(instance, entry, count), GFP_KERNEL);
+>>
+>> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+>> ---
+>>  drivers/rtc/rtc-sun6i.c | 3 +--
+>>  1 file changed, 1 insertion(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/rtc/rtc-sun6i.c b/drivers/rtc/rtc-sun6i.c
+>> index 2cd5a7b..fe07310 100644
+>> --- a/drivers/rtc/rtc-sun6i.c
+>> +++ b/drivers/rtc/rtc-sun6i.c
+>> @@ -199,8 +199,7 @@ static void __init sun6i_rtc_clk_init(struct device_node *node)
+>>         if (!rtc)
+>>                 return;
+>>
+>> -       clk_data = kzalloc(sizeof(*clk_data) + (sizeof(*clk_data->hws) * 2),
+>> -                          GFP_KERNEL);
+>> +       clk_data = kzalloc(struct_size(clk_data, hws, 2), GFP_KERNEL);
+>>         if (!clk_data) {
+>>                 kfree(rtc);
+>>                 return;
+>
+> This looks like entirely correct to me, but I'm surprised the
+> Coccinelle script didn't discover this. I guess the isomorphisms don't
+> cover the parenthesis?
 
-Is this a Coccinelle problem, or is the code just not organized as you
-would like.  If it is a Coccinelle problem, please send the source code as
-well.
+I had this:
 
-thanks,
-julia
+@@
+identifier alloc =~
+"kmalloc|kzalloc|kmalloc_node|kzalloc_node|vmalloc|vzalloc|kvmalloc|kvzalloc";
+identifier VAR, ELEMENT;
+expression COUNT;
+@@
+
+- alloc(sizeof(*VAR) + COUNT * sizeof(*VAR->ELEMENT)
++ alloc(struct_size(VAR, ELEMENT, COUNT)
+  , ...)
+
+But I needed to explicitly change the rule to:
+
+(
+- alloc(sizeof(*VAR) + COUNT * sizeof(*VAR->ELEMENT)
++ alloc(struct_size(VAR, ELEMENT, COUNT)
+  , ...)
+|
+- alloc(sizeof(*VAR) + (COUNT * sizeof(*VAR->ELEMENT))
++ alloc(struct_size(VAR, ELEMENT, COUNT)
+  , ...)
+)
+
+to add the ()s. I would expect arithmetic commutative expressions to
+match? But I had to add parens?
+
+-Kees
+
+-- 
+Kees Cook
+Pixel Security
