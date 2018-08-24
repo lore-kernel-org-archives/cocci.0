@@ -1,159 +1,97 @@
 From: joe@perches.com (Joe Perches)
-Date: Thu, 23 Aug 2018 15:21:40 -0700
+Date: Thu, 23 Aug 2018 17:25:51 -0700
 Subject: [Cocci] [Fwd: Re: [PATCH] rtc: sun6i: Use struct_size() in
 	kzalloc()]
-In-Reply-To: <alpine.DEB.2.21.1808231811110.2376@hadrien>
+In-Reply-To: <alpine.DEB.2.21.1808232014550.2536@hadrien>
 References: <CAGXu5jKPOVRk5DbFMKu0BV_K-ES+j+6_aApjyo0X8zXBfTYDnw@mail.gmail.com>
  <700bfdf296aa112799b6a6f091162cc34f6fef10.camel@perches.com>
  <CAGXu5jL3C78vkVL968HtBdLZgRYYQp4_pTKMT=BTJnk5z6CH3w@mail.gmail.com>
  <alpine.DEB.2.21.1808231759050.2376@hadrien>
  <CAGXu5jLjOtG0jTt2ZVyZe7ivBfZhRTyOKai0fHMzPFxUCr3LRg@mail.gmail.com>
  <alpine.DEB.2.21.1808231811110.2376@hadrien>
-Message-ID: <4a992fbb6ae172baf3c76ed979bf6804914b089e.camel@perches.com>
+ <4a992fbb6ae172baf3c76ed979bf6804914b089e.camel@perches.com>
+ <CAGXu5jKdbGCLdSQFTdGnhgN+tNKHFV=XEkapgtYmx+hK79NMbw@mail.gmail.com>
+ <0258fc5a24ad69f75f615d88fc93c714a91cb684.camel@perches.com>
+ <alpine.DEB.2.21.1808232014550.2536@hadrien>
+Message-ID: <881775fc5dad6aeb44467b1073ed45bcf75f9767.camel@perches.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 2018-08-23 at 18:13 -0400, Julia Lawall wrote:
+On Thu, 2018-08-23 at 20:17 -0400, Julia Lawall wrote:
 > 
-> On Thu, 23 Aug 2018, Kees Cook wrote:
+> On Thu, 23 Aug 2018, Joe Perches wrote:
 > 
-> > On Thu, Aug 23, 2018 at 3:00 PM, Julia Lawall <julia.lawall@lip6.fr> wrote:
-> > > 
-> > > 
-> > > On Thu, 23 Aug 2018, Kees Cook wrote:
-> > > 
-> > > > On Thu, Aug 23, 2018 at 2:48 PM, Joe Perches <joe@perches.com> wrote:
-> > > > > Forwarding a question about coccinelle and isomorphisms from Kees Cook
+> > On Thu, 2018-08-23 at 15:27 -0700, Kees Cook wrote:
+> > > On Thu, Aug 23, 2018 at 3:21 PM, Joe Perches <joe@perches.com> wrote:
+> > > > On Thu, 2018-08-23 at 18:13 -0400, Julia Lawall wrote:
 > > > > > 
-> > > > > ---------- Forwarded message ----------
-> > > > > From: Kees Cook <keescook@chromium.org>
-> > > > > To: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-> > > > > Cc: Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Maxime Ripard <maxime.ripard@bootlin.com>, Chen-Yu Tsai <wens@csie.org>, linux-rtc at vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, LKML <linux-kernel@vger.kernel.org>
-> > > > > Bcc:
-> > > > > Date: Thu, 23 Aug 2018 13:56:35 -0700
-> > > > > Subject: Re: [PATCH] rtc: sun6i: Use struct_size() in kzalloc()
-> > > > > On Thu, Aug 23, 2018 at 11:51 AM, Gustavo A. R. Silva
-> > > > > <gustavo@embeddedor.com> wrote:
-> > > > > > One of the more common cases of allocation size calculations is finding
-> > > > > > the size of a structure that has a zero-sized array at the end, along
-> > > > > > with memory for some number of elements for that array. For example:
-> > > > > > 
-> > > > > > struct foo {
-> > > > > >         int stuff;
-> > > > > >         void *entry[];
-> > > > > > };
-> > > > > > 
-> > > > > > instance = kzalloc(sizeof(struct foo) + sizeof(void *) * count, GFP_KERNEL);
-> > > > > > 
-> > > > > > Instead of leaving these open-coded and prone to type mistakes, we can
-> > > > > > now use the new struct_size() helper:
-> > > > > > 
-> > > > > > instance = kzalloc(struct_size(instance, entry, count), GFP_KERNEL);
-> > > > > > 
-> > > > > > Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-> > > > > > ---
-> > > > > >  drivers/rtc/rtc-sun6i.c | 3 +--
-> > > > > >  1 file changed, 1 insertion(+), 2 deletions(-)
-> > > > > > 
-> > > > > > diff --git a/drivers/rtc/rtc-sun6i.c b/drivers/rtc/rtc-sun6i.c
-> > > > > > index 2cd5a7b..fe07310 100644
-> > > > > > --- a/drivers/rtc/rtc-sun6i.c
-> > > > > > +++ b/drivers/rtc/rtc-sun6i.c
-> > > > > > @@ -199,8 +199,7 @@ static void __init sun6i_rtc_clk_init(struct device_node *node)
-> > > > > >         if (!rtc)
-> > > > > >                 return;
-> > > > > > 
-> > > > > > -       clk_data = kzalloc(sizeof(*clk_data) + (sizeof(*clk_data->hws) * 2),
-> > > > > > -                          GFP_KERNEL);
-> > > > > > +       clk_data = kzalloc(struct_size(clk_data, hws, 2), GFP_KERNEL);
-> > > > > >         if (!clk_data) {
-> > > > > >                 kfree(rtc);
-> > > > > >                 return;
+> > > > > On Thu, 23 Aug 2018, Kees Cook wrote:
 > > > > > 
-> > > > > This looks like entirely correct to me, but I'm surprised the
-> > > > > Coccinelle script didn't discover this. I guess the isomorphisms don't
-> > > > > cover the parenthesis?
+> > > > > (a + b) * c
+> > > > > 
+> > > > > It will consider a pattern with the parentheses removed, but that pattern
+> > > > > won't match anything, because real trees that consist of a + b * c are
+> > > > > parsed in a different way.
 > > > > 
-> > > > I had this:
+> > > > spatch 1.0.4 doesn't seem to:
 > > > > 
+> > > > $ spatch --version
+> > > > spatch version 1.0.4 with Python support and with PCRE support
+> > > > $ cat match_mul.cocci
 > > > > @@
-> > > > identifier alloc =~
-> > > > "kmalloc|kzalloc|kmalloc_node|kzalloc_node|vmalloc|vzalloc|kvmalloc|kvzalloc";
-> > > > identifier VAR, ELEMENT;
-> > > > expression COUNT;
+> > > > expression a, b, c;
+> > > > int d;
 > > > > @@
 > > > > 
-> > > > - alloc(sizeof(*VAR) + COUNT * sizeof(*VAR->ELEMENT)
-> > > > + alloc(struct_size(VAR, ELEMENT, COUNT)
-> > > >   , ...)
-> > > > 
-> > > > But I needed to explicitly change the rule to:
-> > > > 
-> > > > (
-> > > > - alloc(sizeof(*VAR) + COUNT * sizeof(*VAR->ELEMENT)
-> > > > + alloc(struct_size(VAR, ELEMENT, COUNT)
-> > > >   , ...)
-> > > > > 
-> > > > 
-> > > > - alloc(sizeof(*VAR) + (COUNT * sizeof(*VAR->ELEMENT))
-> > > > + alloc(struct_size(VAR, ELEMENT, COUNT)
-> > > >   , ...)
-> > > > )
-> > > > 
-> > > > to add the ()s. I would expect arithmetic commutative expressions to
-> > > > match? But I had to add parens?
+> > > > *       d = a * b + c;
 > > > 
-> > > Isomorphisms don't add parens.  They only remove them.  If they added
-> > > them, you would end up with the possibility of having them everywhere, in
-> > > all permutations, which would be slow and useless.
+> > > But "(a * b) + c" for the rule does:
 > > 
-> > Would a rule for:
+> > Yes, but not for other valid uses like below:
 > > 
-> > a + (b * c)
+> > $ cat match_mul.cocci
+> > @@
+> > expression a, b, c;
+> > int d;
+> > @@
 > > 
-> > match:
+> > *	d = (a * b) + c;
+> > $ cat test_mul.c
+> > int a, b, c, d;
 > > 
-> > a + b * c
+> > void foo(void)
+> > {
+> > 	d = ((a * b) + c);
+> > 	d = ((a * b)) + c;
+> > 	d = (a * b) + c;
+> > 	d = a * b + c;
+> > }
+> > $ spatch -sp-file match_mul.cocci test_mul.c
+> > init_defs_builtins: /usr/lib/coccinelle/standard.h
+> > HANDLING: test_mul.c
+> > diff =
+> > --- test_mul.c
+> > +++ /tmp/cocci-output-23856-7e83f7-test_mul.c
+> > @@ -4,6 +4,4 @@ void foo(void)
+> >  {
+> >  	d = ((a * b) + c);
+> >  	d = ((a * b)) + c;
+> > -	d = (a * b) + c;
+> > -	d = a * b + c;
+> >  }
 > 
-> I would say yes.  Basically it removes the parentheses but doesn't reparse
-> the code, so it doesn't redo the associativity.  Since * has higher
-> precedence than +, then both will be matched.  On the other hand, if you
-> put:
+> I'm not sure to get the point.
 > 
-> (a + b) * c
-> 
-> It will consider a pattern with the parentheses removed, but that pattern
-> won't match anything, because real trees that consist of a + b * c are
-> parsed in a different way.
+> If you think that people may fully parenthesize the code, then ((a * b) +
+> c) would be a reasonable option for the pattern.  I'm not sure why double
+> parentheses, ((a * b)) + c, should exist in the first place.
 
-spatch 1.0.4 doesn't seem to:
+People who write code do a lot of unnecessary things.
+It's code I've seen in the past.
+It occurs more with expressions than identifiers.
 
-$ spatch --version
-spatch version 1.0.4 with Python support and with PCRE support
-$ cat match_mul.cocci 
-@@
-expression a, b, c;
-int d;
-@@
+It'd be nice if coccinelle could parse arbitrarily
+parenthesized code and script down to its minimal
+logical requirements and match as maximally as possible.
 
-*	d = a * b + c;
-$ cat test_mul.c 
-int a, b, c, d;
-
-void foo(void)
-{
-	d = (a * b) + c;
-	d = a * b + c;
-}
-$ spatch -sp-file match_mul.cocci test_mul.c
-init_defs_builtins: /usr/lib/coccinelle/standard.h
-HANDLING: test_mul.c
-diff = 
---- test_mul.c
-+++ /tmp/cocci-output-22607-ba6f76-test_mul.c
-@@ -3,5 +3,4 @@ int a, b, c, d;
- void foo(void)
- {
- 	d = (a * b) + c;
--	d = a * b + c;
- }
+cheers, Joe
