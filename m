@@ -1,75 +1,82 @@
-From: joe@perches.com (Joe Perches)
-Date: Thu, 23 Aug 2018 15:59:39 -0700
-Subject: [Cocci] [Fwd: Re: [PATCH] rtc: sun6i: Use struct_size() in
-	kzalloc()]
-In-Reply-To: <CAGXu5jKdbGCLdSQFTdGnhgN+tNKHFV=XEkapgtYmx+hK79NMbw@mail.gmail.com>
-References: <CAGXu5jKPOVRk5DbFMKu0BV_K-ES+j+6_aApjyo0X8zXBfTYDnw@mail.gmail.com>
- <700bfdf296aa112799b6a6f091162cc34f6fef10.camel@perches.com>
- <CAGXu5jL3C78vkVL968HtBdLZgRYYQp4_pTKMT=BTJnk5z6CH3w@mail.gmail.com>
- <alpine.DEB.2.21.1808231759050.2376@hadrien>
- <CAGXu5jLjOtG0jTt2ZVyZe7ivBfZhRTyOKai0fHMzPFxUCr3LRg@mail.gmail.com>
- <alpine.DEB.2.21.1808231811110.2376@hadrien>
- <4a992fbb6ae172baf3c76ed979bf6804914b089e.camel@perches.com>
- <CAGXu5jKdbGCLdSQFTdGnhgN+tNKHFV=XEkapgtYmx+hK79NMbw@mail.gmail.com>
-Message-ID: <0258fc5a24ad69f75f615d88fc93c714a91cb684.camel@perches.com>
+From: peff@peff.net (Jeff King)
+Date: Fri, 24 Aug 2018 02:42:29 -0400
+Subject: [Cocci] excluding a function from coccinelle transformation
+Message-ID: <20180824064228.GA3183@sigill.intra.peff.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Thu, 2018-08-23 at 15:27 -0700, Kees Cook wrote:
-> On Thu, Aug 23, 2018 at 3:21 PM, Joe Perches <joe@perches.com> wrote:
-> > On Thu, 2018-08-23 at 18:13 -0400, Julia Lawall wrote:
-> > > 
-> > > On Thu, 23 Aug 2018, Kees Cook wrote:
-> > > 
-> > > (a + b) * c
-> > > 
-> > > It will consider a pattern with the parentheses removed, but that pattern
-> > > won't match anything, because real trees that consist of a + b * c are
-> > > parsed in a different way.
-> > 
-> > spatch 1.0.4 doesn't seem to:
-> > 
-> > $ spatch --version
-> > spatch version 1.0.4 with Python support and with PCRE support
-> > $ cat match_mul.cocci
-> > @@
-> > expression a, b, c;
-> > int d;
-> > @@
-> > 
-> > *       d = a * b + c;
-> 
-> But "(a * b) + c" for the rule does:
+In Git's Coccinelle patches, we sometimes want to suppress a
+transformation inside a particular function. For example, in finding
+conversions of hashcmp() to oidcmp(), we should not convert the call in
+oidcmp() itself, since that would cause infinite recursion. We write the
+semantic patch like this:
 
-Yes, but not for other valid uses like below:
+  @@
+  identifier f != oidcmp;
+  expression E1, E2;
+  @@
+    f(...) {...
+  - hashcmp(E1->hash, E2->hash)
+  + oidcmp(E1, E2)
+    ...}
 
-$ cat match_mul.cocci
-@@
-expression a, b, c;
-int d;
-@@
+This catches some cases, but not all. For instance, there's one case in
+sequencer.c which it does not convert. Now here's where it gets weird.
+If I instead use the angle-bracket form of ellipses, like this:
 
-*	d = (a * b) + c;
-$ cat test_mul.c 
-int a, b, c, d;
+  @@
+  identifier f != oidcmp;
+  expression E1, E2;
+  @@
+    f(...) {<...
+  - hashcmp(E1->hash, E2->hash)
+  + oidcmp(E1, E2)
+    ...>}
 
-void foo(void)
-{
-	d = ((a * b) + c);
-	d = ((a * b)) + c;
-	d = (a * b) + c;
-	d = a * b + c;
-}
-$ spatch -sp-file match_mul.cocci test_mul.c
-init_defs_builtins: /usr/lib/coccinelle/standard.h
-HANDLING: test_mul.c
-diff = 
---- test_mul.c
-+++ /tmp/cocci-output-23856-7e83f7-test_mul.c
-@@ -4,6 +4,4 @@ void foo(void)
- {
- 	d = ((a * b) + c);
- 	d = ((a * b)) + c;
--	d = (a * b) + c;
--	d = a * b + c;
- }
+then we do generate the expected diff! Here's a much more cut-down
+source file that demonstrates the same behavior:
+
+  int foo(void)
+  {
+    if (1)
+      if (!hashcmp(x, y))
+        return 1;
+    return 0;
+  }
+
+If I remove the initial "if (1)" then a diff is generated with either
+semantic patch (and the particulars of the "if" are not important; the
+same thing happens if it's a while-loop. The key thing seems to be that
+the code is not in the top-level block of the function).
+
+And here's some double-weirdness. I get those results with spatch 1.0.4,
+which is what's in Debian unstable. If I then upgrade to 1.0.6 from
+Debian experimental, then _neither_ patch produces any results! Instead
+I get:
+
+  init_defs_builtins: /usr/lib/coccinelle/standard.h
+  (ONCE) Expected tokens oidcmp hashcmp hash
+  Skipping:foo.c
+
+(whereas before, even the failing case said "HANDLING: foo.c").
+
+And then one final check: I built coccinelle from the current tip of
+https://github.com/coccinelle/coccinelle (1.0.7-00504-g670b2243).
+With my cut-down case, that version generates a diff with either
+semantic patch. But for the full-blown case in sequencer.c, it still
+only works with the angle brackets.
+
+So my questions are:
+
+  - is this a bug in coccinelle? Or I not understand how "..." is
+    supposed to work here?
+
+    (It does seem like there was possibly a separate bug introduced in
+    1.0.6 that was later fixed; we can probably ignore that and just
+    focus on the behavior in the current tip of master).
+
+  - is there a better way to represent this kind of "transform this
+    everywhere _except_ in this function" semantic patch? (preferably
+    one that does not tickle this bug, if it is indeed a bug ;) ).
+
+-Peff
