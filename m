@@ -1,82 +1,133 @@
-From: peff@peff.net (Jeff King)
-Date: Fri, 24 Aug 2018 02:42:29 -0400
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Fri, 24 Aug 2018 07:04:27 -0400 (EDT)
 Subject: [Cocci] excluding a function from coccinelle transformation
-Message-ID: <20180824064228.GA3183@sigill.intra.peff.net>
+In-Reply-To: <20180824064228.GA3183@sigill.intra.peff.net>
+References: <20180824064228.GA3183@sigill.intra.peff.net>
+Message-ID: <alpine.DEB.2.21.1808240652370.2344@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-In Git's Coccinelle patches, we sometimes want to suppress a
-transformation inside a particular function. For example, in finding
-conversions of hashcmp() to oidcmp(), we should not convert the call in
-oidcmp() itself, since that would cause infinite recursion. We write the
-semantic patch like this:
 
-  @@
-  identifier f != oidcmp;
-  expression E1, E2;
-  @@
-    f(...) {...
-  - hashcmp(E1->hash, E2->hash)
-  + oidcmp(E1, E2)
-    ...}
 
-This catches some cases, but not all. For instance, there's one case in
-sequencer.c which it does not convert. Now here's where it gets weird.
-If I instead use the angle-bracket form of ellipses, like this:
+On Fri, 24 Aug 2018, Jeff King wrote:
 
-  @@
-  identifier f != oidcmp;
-  expression E1, E2;
-  @@
-    f(...) {<...
-  - hashcmp(E1->hash, E2->hash)
-  + oidcmp(E1, E2)
-    ...>}
+> In Git's Coccinelle patches, we sometimes want to suppress a
+> transformation inside a particular function. For example, in finding
+> conversions of hashcmp() to oidcmp(), we should not convert the call in
+> oidcmp() itself, since that would cause infinite recursion. We write the
+> semantic patch like this:
+>
+>   @@
+>   identifier f != oidcmp;
+>   expression E1, E2;
+>   @@
+>     f(...) {...
+>   - hashcmp(E1->hash, E2->hash)
+>   + oidcmp(E1, E2)
+>     ...}
 
-then we do generate the expected diff! Here's a much more cut-down
-source file that demonstrates the same behavior:
+The problem is with how how ... works.  For transformation, A ... B
+requires that B occur on every execution path starting with A, unless that
+execution path ends up in error handling code.
+(eg, if (...) { ... return; }).  Here your A is the start if the function.
+So you need a call to hashcmp on every path through the function, which
+fails when you add ifs.
 
-  int foo(void)
-  {
-    if (1)
-      if (!hashcmp(x, y))
-        return 1;
-    return 0;
-  }
+If you use * (searching) instead of - and + (transformation) it will only
+require that a path exists.  * is mean for bug finding, where you often
+want to find eg whether there exists a path that is missing a free.
 
-If I remove the initial "if (1)" then a diff is generated with either
-semantic patch (and the particulars of the "if" are not important; the
-same thing happens if it's a while-loop. The key thing seems to be that
-the code is not in the top-level block of the function).
+If you want the exists behavior with a transformation rule, then you can
+put exists at the top of the rule between the initial @@.  I don't suggest
+this in general, as it can lead to inconsistencies.
 
-And here's some double-weirdness. I get those results with spatch 1.0.4,
-which is what's in Debian unstable. If I then upgrade to 1.0.6 from
-Debian experimental, then _neither_ patch produces any results! Instead
-I get:
+What you want is what you ended up using, which is <... P ...> which
+allows zero or more occurrences of P.
 
-  init_defs_builtins: /usr/lib/coccinelle/standard.h
-  (ONCE) Expected tokens oidcmp hashcmp hash
-  Skipping:foo.c
+However, this can all be very expensive, because you are matching paths
+through the function definition which you don't really care about.  All
+you care about here is the name.  So another approach is
 
-(whereas before, even the failing case said "HANDLING: foo.c").
+@@
+position p : script:python() { p[0].current_element != "oldcmp" };
+expression E1,E2;
+@@
 
-And then one final check: I built coccinelle from the current tip of
-https://github.com/coccinelle/coccinelle (1.0.7-00504-g670b2243).
-With my cut-down case, that version generates a diff with either
-semantic patch. But for the full-blown case in sequencer.c, it still
-only works with the angle brackets.
+- hashcmp(E1->hash, E2->hash)
++ oidcmp(E1, E2)
 
-So my questions are:
+(I assume that "not equals" is written != in python)
 
-  - is this a bug in coccinelle? Or I not understand how "..." is
-    supposed to work here?
+Another issue with A ... B is that by default A and B should not appear in
+the matched region.  So your original rule matches only the case where
+every execution path contains exactly one call to hashcmp, not more than
+one.  So that was another problem with it.
 
-    (It does seem like there was possibly a separate bug introduced in
-    1.0.6 that was later fixed; we can probably ignore that and just
-    focus on the behavior in the current tip of master).
+julia
 
-  - is there a better way to represent this kind of "transform this
-    everywhere _except_ in this function" semantic patch? (preferably
-    one that does not tickle this bug, if it is indeed a bug ;) ).
-
--Peff
+>
+> This catches some cases, but not all. For instance, there's one case in
+> sequencer.c which it does not convert. Now here's where it gets weird.
+> If I instead use the angle-bracket form of ellipses, like this:
+>
+>   @@
+>   identifier f != oidcmp;
+>   expression E1, E2;
+>   @@
+>     f(...) {<...
+>   - hashcmp(E1->hash, E2->hash)
+>   + oidcmp(E1, E2)
+>     ...>}
+>
+> then we do generate the expected diff! Here's a much more cut-down
+> source file that demonstrates the same behavior:
+>
+>   int foo(void)
+>   {
+>     if (1)
+>       if (!hashcmp(x, y))
+>         return 1;
+>     return 0;
+>   }
+>
+> If I remove the initial "if (1)" then a diff is generated with either
+> semantic patch (and the particulars of the "if" are not important; the
+> same thing happens if it's a while-loop. The key thing seems to be that
+> the code is not in the top-level block of the function).
+>
+> And here's some double-weirdness. I get those results with spatch 1.0.4,
+> which is what's in Debian unstable. If I then upgrade to 1.0.6 from
+> Debian experimental, then _neither_ patch produces any results! Instead
+> I get:
+>
+>   init_defs_builtins: /usr/lib/coccinelle/standard.h
+>   (ONCE) Expected tokens oidcmp hashcmp hash
+>   Skipping:foo.c
+>
+> (whereas before, even the failing case said "HANDLING: foo.c").
+>
+> And then one final check: I built coccinelle from the current tip of
+> https://github.com/coccinelle/coccinelle (1.0.7-00504-g670b2243).
+> With my cut-down case, that version generates a diff with either
+> semantic patch. But for the full-blown case in sequencer.c, it still
+> only works with the angle brackets.
+>
+> So my questions are:
+>
+>   - is this a bug in coccinelle? Or I not understand how "..." is
+>     supposed to work here?
+>
+>     (It does seem like there was possibly a separate bug introduced in
+>     1.0.6 that was later fixed; we can probably ignore that and just
+>     focus on the behavior in the current tip of master).
+>
+>   - is there a better way to represent this kind of "transform this
+>     everywhere _except_ in this function" semantic patch? (preferably
+>     one that does not tickle this bug, if it is indeed a bug ;) ).
+>
+> -Peff
+> _______________________________________________
+> Cocci mailing list
+> Cocci at systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
+>
