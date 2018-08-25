@@ -1,103 +1,40 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 24 Aug 2018 17:00:38 -0400 (EDT)
-Subject: [Cocci] excluding a function from coccinelle transformation
-In-Reply-To: <20180824205349.GA31853@sigill.intra.peff.net>
-References: <20180824064228.GA3183@sigill.intra.peff.net>
- <alpine.DEB.2.21.1808240652370.2344@hadrien>
- <20180824205349.GA31853@sigill.intra.peff.net>
-Message-ID: <alpine.DEB.2.21.1808241658430.2378@hadrien>
+From: peff@peff.net (Jeff King)
+Date: Sat, 25 Aug 2018 04:22:51 -0400
+Subject: [Cocci] Excluding a function from Coccinelle transformation
+In-Reply-To: <20d4a3cf-d7b6-81e6-25b0-94535795242b@users.sourceforge.net>
+References: <20180824205349.GA31853@sigill.intra.peff.net>
+ <20d4a3cf-d7b6-81e6-25b0-94535795242b@users.sourceforge.net>
+Message-ID: <20180825082251.GA1672@sigill.intra.peff.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On Sat, Aug 25, 2018 at 10:08:30AM +0200, SF Markus Elfring wrote:
 
-
-On Fri, 24 Aug 2018, Jeff King wrote:
-
-> On Fri, Aug 24, 2018 at 07:04:27AM -0400, Julia Lawall wrote:
->
-> > On Fri, 24 Aug 2018, Jeff King wrote:
+> >> However, this can all be very expensive, because you are matching paths
+> >> through the function definition which you don't really care about.
+> >> All you care about here is the name.  So another approach is
 > >
-> > > In Git's Coccinelle patches, we sometimes want to suppress a
-> > > transformation inside a particular function. For example, in finding
-> > > conversions of hashcmp() to oidcmp(), we should not convert the call in
-> > > oidcmp() itself, since that would cause infinite recursion. We write the
-> > > semantic patch like this:
-> > >
-> > >   @@
-> > >   identifier f != oidcmp;
-> > >   expression E1, E2;
-> > >   @@
-> > >     f(...) {...
-> > >   - hashcmp(E1->hash, E2->hash)
-> > >   + oidcmp(E1, E2)
-> > >     ...}
+> > Yeah, it is. Using the pre-1.0.7 version, the original patch runs in
+> > ~1.3 minutes on my machine. With "<... P ...>" it's almost 4 minutes.
+> > Your python suggestion runs in about 1.5 minutes.
 > >
-> > The problem is with how how ... works.  For transformation, A ... B
-> > requires that B occur on every execution path starting with A, unless that
-> > execution path ends up in error handling code.
-> > (eg, if (...) { ... return; }).  Here your A is the start if the function.
-> > So you need a call to hashcmp on every path through the function, which
-> > fails when you add ifs.
->
-> Thank you! This explanation (and the one below about A and B not
-> appearing in the matched region) helped my understanding tremendously.
->
-> > What you want is what you ended up using, which is <... P ...> which
-> > allows zero or more occurrences of P.
->
-> And now this makes much more sense (I stumbled onto it through brute
-> force, but now I understand _why_ it works).
->
-> > However, this can all be very expensive, because you are matching paths
-> > through the function definition which you don't really care about.  All
-> > you care about here is the name.  So another approach is
->
-> Yeah, it is. Using the pre-1.0.7 version, the original patch runs in
-> ~1.3 minutes on my machine. With "<... P ...>" it's almost 4 minutes.
-> Your python suggestion runs in about 1.5 minutes.
->
-> Curiously, 1.0.4 runs the original patch in only 24 seconds, and the
-> angle-bracket one takes 52 seconds. I'm not sure if something changed in
-> coccinelle, or if my build is simply less optimized (my 1.0.4 is from
-> the Debian package, and I'm building 1.0.7 from source; I had trouble
-> building 1.0.4 from source).
+> > Curiously, 1.0.4 runs the original patch in only 24 seconds, and the
+> > angle-bracket one takes 52 seconds. I'm not sure if something changed in
+> > coccinelle, or if my build is simply less optimized (my 1.0.4 is from
+> > the Debian package, and I'm building 1.0.7 from source; ?
+> 
+> I guess that such run time comparisons are interesting for further software
+> development considerations.
+> 
+> * How often would you run discussed SmPL scripts?
 
-I don't remember the exact status of 1.0.4.  It is possible that an
-optimization was found to pose problems and was removed in the meantime.
+We run them as part of every automated CI build, and some people run
+them manually periodically (I'd guess once every few days or so).
 
-<... ...> can be useful when you expect it to eg match an if branch.  For
-a function with over 1000 lines and many conditionals, it might not be a
-good idea.  Actually, the main problem is with loops.  If there is a loop
-in the function the performance can be much slower.
+I don't think speed is critical for our use case. I mostly wanted to see
+if the angle-bracket approach was intolerably slow (it's not, which
+makes it an acceptable tradeoff against the need to have spatch built
+with python support). And I found the speed difference between the two
+versions mostly a curiosity.
 
-julia
-
->
-> > @@
-> > position p : script:python() { p[0].current_element != "oldcmp" };
-> > expression E1,E2;
-> > @@
-> >
-> > - hashcmp(E1->hash, E2->hash)
-> > + oidcmp(E1, E2)
->
-> Aha, this is exactly the magic I was hoping for. I agree this is the
-> best way to express it. I just had to tweak the patch to include the
-> position:
->
->   - hashcmp at p(E1->hash, E2->hash)
->
-> and it worked great. Unfortunately, Debian's spatch is not built with
-> python support. :(
->
-> I'm not sure if we (the Git project) want to make the jump to requiring
-> a more specific spatch. OTOH, only a handful of developers actually run
-> it, and the python support does seem quite useful. And 1.0.4 is rather
-> old at this point.
->
-> Again, thanks very much for your response. I have a much better
-> understanding of what's going on now, and what our options are for
-> moving forward.
->
-> -Peff
->
+-Peff
