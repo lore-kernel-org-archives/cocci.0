@@ -1,34 +1,55 @@
-From: linjia@ruijie.com.cn (linjia at ruijie.com.cn)
-Date: Tue, 28 Aug 2018 02:56:34 +0000
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Mon, 27 Aug 2018 21:00:37 -0700 (PDT)
 Subject: [Cocci] about cocci installing
-Message-ID: <265E382B26F78742B972BE038FD292C61DD2DE28@FZEX3.ruijie.com.cn>
+In-Reply-To: <265E382B26F78742B972BE038FD292C61DD2DE28@FZEX3.ruijie.com.cn>
+References: <265E382B26F78742B972BE038FD292C61DD2DE28@FZEX3.ruijie.com.cn>
+Message-ID: <alpine.DEB.2.21.1808272059570.2601@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Dear sir:
-  I try to install cocci by opam in centos, but failed as following
-
-[root at localhost]# opam install coccinelle
-[WARNING] Running as root is not recommended
-Your request can't be satisfied:
-  - No package matches coccinelle.
 
 
-And I didn?t find packages for centos on homepage of cocci
+On Tue, 28 Aug 2018, linjia at ruijie.com.cn wrote:
 
-Packages exist for several distributions:
+>
+> Dear sir:
+>
+> ? I try to install cocci by opam in centos, but failed as following
+>
+> ?
+>
+> [root at localhost]# opam install coccinelle
+>
+> [WARNING] Running as root is not recommended
+>
+> Your request can't be satisfied:
+>
+> ? - No package matches coccinelle.
+>
+> ?
+>
+> ?
+>
+> And I didn?t find packages for centos on homepage of cocci
+>
+> ?
+>
+> Packages exist for several distributions:
+>
+>  *  Slackware, thanks to Dimitris Zlatanidis
+>  *  Debian, thanks to Eugeniy Meshcheryakov
+>  *  Ubuntu See also the Ubuntu package on PPA, which contains a more recent version of Coccincelle.
+>  *  Fedora, thanks to Richard W.M. Jones and Michal Schmidt
+>  *  OpenSUSE
+>  *  Arch Linux, thanks to Sylvain HENRY
+>  *  NetBSD, thanks to Thomas Klausner
+>  *  FreeBSD
+>  *  OpenBSD
+>  *  Gentoo
+>
+> So is there ready packages for download and installing ? thanks a lot!
 
-  *   Slackware<http://slackbuilds.org/repository/14.1/development/coccinelle/?search=coccinelle>, thanks to Dimitris Zlatanidis
-  *   Debian<http://packages.debian.org/squeeze/coccinelle>, thanks to Eugeniy Meshcheryakov
-  *   Ubuntu<https://launchpad.net/ubuntu/+source/coccinelle> See also the Ubuntu package on PPA<https://launchpad.net/%7Enpalix/+archive/coccinelle>, which contains a more recent version of Coccincelle.
-  *   Fedora<https://apps.fedoraproject.org/packages/coccinelle>, thanks to Richard W.M. Jones and Michal Schmidt
-  *   OpenSUSE<https://software.opensuse.org/package/coccinelle/>
-  *   Arch Linux<https://aur.archlinux.org/packages/coccinelle/>, thanks to Sylvain HENRY
-  *   NetBSD<http://pkgsrc.se/devel/coccinelle>, thanks to Thomas Klausner
-  *   FreeBSD<http://www.freebsd.org/cgi/ports.cgi?query=coccinelle&stype=all>
-  *   OpenBSD<http://openports.se/devel/coccinelle>
-  *   Gentoo<http://gpo.zugaina.org/dev-util/coccinelle>
-So is there ready packages for download and installing ? thanks a lot!
--------------- next part --------------
-An HTML attachment was scrubbed...
-URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20180828/31aac76f/attachment.html>
+Not that I know of.  Could you just get the github version and compile it
+yourself?  That way you will have the most up to date version anyway.
+
+julia
