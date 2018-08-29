@@ -1,80 +1,68 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 28 Aug 2018 15:19:08 -0700 (PDT)
-Subject: [Cocci] coccinelle to rescue for "C++11 requires a space
- between literal and string macro"
-In-Reply-To: <DM3PR14MB0766042ACA4CECA31C33FF29800A0@DM3PR14MB0766.namprd14.prod.outlook.com>
-References: <DM3PR14MB0766042ACA4CECA31C33FF29800A0@DM3PR14MB0766.namprd14.prod.outlook.com>
-Message-ID: <alpine.DEB.2.21.1808281514290.2555@hadrien>
+From: moustafa@cmpsamurai.com (Moustafa Mahmoud)
+Date: Wed, 29 Aug 2018 03:52:57 +0200
+Subject: [Cocci]
+	=?utf-8?q?Embedding_Meta-variables_in_added_Comments_usin?=
+	=?utf-8?q?g_semantic_patches=D8=B2?=
+In-Reply-To: <alpine.DEB.2.21.1808280350290.2313@hadrien>
+References: <CAKCTf_bKa6MbcvLw=0r+pjXB-TrqAKAPyXhu+vZ=0vXih7i54Q@mail.gmail.com>
+ <alpine.DEB.2.21.1808280350290.2313@hadrien>
+Message-ID: <CAKCTf_YSXLYoP8u2q0TzcUGNZY1tqfYw46ubmz+RFht54hCB2Q@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Thanks alot for your reply. I will look into this option .
+I was hoping to use coccinelle to annotate some c code so that I would
+later parse it to determine the program flow.
+
+Is there a way to get more information from -show-ctrl-flow switch in
+coccinelle ? It only shows "if" nodes without the expression s inside them
+in dot graph ?
+
+Thanks alot
 
 
-On Tue, 28 Aug 2018, Felix Blyakher wrote:
+On Tue, Aug 28, 2018, 12:53 PM Julia Lawall <julia.lawall@lip6.fr> wrote:
 
-> Hello coccinelle experts,
->
-> I'm working with the legacy code and with newish gcc 7.3 hit the following warning:
->
-> warning: invalid suffix on literal; C++11 requires a space between literal and string macro [-Wliteral-suffix]
->  #define PADARG64 "0x%016"QUAD"x"
->                   ^
->
-> where QUAD is a platform dependent string, thus the macro.
->
-> The string concatenation works in C OK for this code, though, gcc rightfully complains
-> about required space and wants it to be:
->
->  #define PADARG64 "0x%016" QUAD "x"
->
-> The code like this is sprinkled across huge code base, mostly in printf-like statements,
-> and some in defines like above to be used in printf-like statements.
->
-> I'd like to use coccinelle to change the code globally.
-> I was trying something like (I know it may have false positive, just need to get something for starter):
 >
 >
-> @@
-> Identifier I;
-> @@
+> On Tue, 28 Aug 2018, Moustafa Mahmoud wrote:
 >
-> -"I"
-> +" I "
-
-Coccinelle doesn't interpret things inside strings, except format
-directives.  Also, identifier shouldn't be capitalized.
-
-What you want is:
-
-@@
-constant char[] c;
-@@
-
-- c
-+ c
-
-When Coccinelle adds the string back, it will pretty print it properly.
-If you want to see a diff in the output, put --force-diff on the command
-line.  Normally Coccinelle doesn't print a diff when there are only
-whitespace changes.
-
-This will work on every string in your code.  If you don't want this, then
-you can put:
-
-constant char[] c : script:python { check c };
-
-where check is some python code you write under
-
-@initialize:python@
-@@
-
-def check ...
-
-to check whether it is a string with multiple pieces.  Note that the c
-that check received will have the spaces already, so it won't be possible
-to tell if the string is actually missing spaces.  But you can distinguish
-strings in multiple pieces from string that are atomic.
-
-Let me know if anything is not clear.
-
-julia
+> > this semantic patch doesn't produce the required behavioir
+> >
+> > @annotate_if_conditions@
+> > expression ex;
+> > @@
+> >
+> > <+...
+> > + /* ex */
+> > if(ex){...}
+> > ...+>
+> >
+> >
+> > it produces the following
+> >
+> >      int x =5;
+> >      int y =6;
+> >      int m =funct();
+> > +    /* ex */   // the required behavoir I need is  /* x */
+> >      if(x)
+> >      {
+> > +       /* ex */
+> >         if(y)
+> >         {
+> >             return 1;
+>
+> Sorry, it doesn't work.  Currently the only tihng you can do is use python
+> to make an identifier metavariable that actually contains a comment, and
+> then add that metavariable where you want your comments.  By your comments
+> will have to have a ; after them, and are thus better made with // than
+> with /* */, because an identifier is not a valid statement by itself.
+> Instead you need an identifier followed by a semicolon.
+>
+> For using python to make an identifier metavariable please see
+> demos/pythontococci.{c,cocci,res}.  Please write back if it is not clear.
+>
+> julia
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20180829/e576f045/attachment.html>
