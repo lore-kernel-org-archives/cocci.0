@@ -1,93 +1,159 @@
 From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 28 Aug 2018 19:52:36 -0700 (PDT)
-Subject: [Cocci]
- =?iso8859-6?q?Embedding_Meta-variables_in_added_Comments_?=
- =?iso8859-6?q?using_semantic_patches=D2?=
-In-Reply-To: <CAKCTf_YSXLYoP8u2q0TzcUGNZY1tqfYw46ubmz+RFht54hCB2Q@mail.gmail.com>
-References: <CAKCTf_bKa6MbcvLw=0r+pjXB-TrqAKAPyXhu+vZ=0vXih7i54Q@mail.gmail.com>
- <alpine.DEB.2.21.1808280350290.2313@hadrien>
- <CAKCTf_YSXLYoP8u2q0TzcUGNZY1tqfYw46ubmz+RFht54hCB2Q@mail.gmail.com>
-Message-ID: <alpine.DEB.2.21.1808281948060.2297@hadrien>
+Date: Wed, 29 Aug 2018 09:32:12 -0700 (PDT)
+Subject: [Cocci] coccinelle to rescue for "C++11 requires a space
+ between literal and string macro"
+In-Reply-To: <CY1PR14MB0762DAD8C953D15476B8881380090@CY1PR14MB0762.namprd14.prod.outlook.com>
+References: <DM3PR14MB0766042ACA4CECA31C33FF29800A0@DM3PR14MB0766.namprd14.prod.outlook.com>,
+ <alpine.DEB.2.21.1808281514290.2555@hadrien>
+ <CY1PR14MB0762DAD8C953D15476B8881380090@CY1PR14MB0762.namprd14.prod.outlook.com>
+Message-ID: <alpine.DEB.2.21.1808290929001.2306@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-
-
-On Wed, 29 Aug 2018, Moustafa Mahmoud wrote:
-
-> Thanks alot for your reply. I will look into this option .I was hoping to
-> use coccinelle to annotate some c code so that I would later parse it to
-> determine the program flow.
+> However, "every string" is too aggressive in a wider conetxt. For example it
+> picked up the following, which I wouldn't like to change:
 >
-> Is there a way to get more information from -show-ctrl-flow switch in
-> coccinelle ? It only shows "if" nodes without the expression s inside them
-> in dot graph ?
+> -               YY_FATAL_ERROR( "out of dynamic memory in cfg_yy_scan_bytes()" );
+> +               YY_FATAL_ERROR("out of dynamic memory in cfg_yy_scan_bytes()" );
 
-No, nothing is provided for that.  I think that the feeling was that the
-expressions could be quite big, and the graph would become unreadable.  Of
-course, if you want to do some other processing of the graph, you don't
-care about that.
+This would not be changed if you use my python suggestion.
 
-If you are willing to write OCaml code, maybe you would be better off to
-just run the parser and the construction of the control-flow graph, and
-then do what you want with the resulting data structure.  It is possible
-to make the implementation of Coccinelle into a library that you can link
-your own OCaml code with and then call the functions from the Coccinelle
-infrastructure that you want.
+
+>
+> >
+> >When Coccinelle adds the string back, it will pretty print it properly.
+>
+> While generally it's a good thing, it doesn't always makes the code better,
+> e.g.
+>
+> -      printf("--- Stored file link statistics are:\n"
+> -             "---  Virtual transmitted = %llu (bytes)\n"
+> -             "---  Virtual received    = %llu (bytes)\n"
+> -             "---  Actual transmitted  = %llu (bytes)\n"
+> -             "---  Actual received     = %llu (bytes)\n",
+> +      printf("--- Stored file link statistics are:\n" "---  Virtual transmitted = %llu (bytes)\n" "---  Virtual received    = %llu (bytes)\n" "---  Actual transmitted  = %llu (bytes)\n" "---  Actual received     = %llu (bytes)\n",
+>
+> It concatenated strings (with the space in between), where they meant to
+> be split on separate lines for readability.
+> Can this feature be disabled (with some command line option)?
+
+Normally metavariables lose their whitespace information, so that they can
+match at other places.  Probably you could solve the problem just by
+updating the python code to also reject strings that contain a large
+number of characters.
 
 julia
 
+> >If you want to see a diff in the output, put --force-diff on the command
+> >line.  Normally Coccinelle doesn't print a diff when there are only
+> >whitespace changes.
+> >
+> >This will work on every string in your code.  If you don't want this, then
+> >you can put:
+> >
+> >constant char[] c : script:python { check c };
+> >
+> >where check is some python code you write under
+> >
+> >@initialize:python@
+> >@@
+> >
+> >def check ...
+> >
+> >to check whether it is a string with multiple pieces.  Note that the c
+> >that check received will have the spaces already, so it won't be possible
+> >to tell if the string is actually missing spaces.  But you can distinguish
+> >strings in multiple pieces from string that are atomic.
 >
-> Thanks alot
+> Yes, this is what I'm planning to work on, as "every string" is too
+> aggressive.
+> (While this script is fun to work on, I've been interrupted by other
+> urgent work related tasks.)
 >
+> Thanks a lot,
+> Felix
 >
-> On Tue, Aug 28, 2018, 12:53 PM Julia Lawall <julia.lawall@lip6.fr> wrote:
+> >
+> >Let me know if anything is not clear.
+> >
+> >julia
 >
->
->       On Tue, 28 Aug 2018, Moustafa Mahmoud wrote:
->
->       > this semantic patch doesn't produce the required behavioir
->       >
->       > @annotate_if_conditions@
->       > expression ex;
->       > @@
->       >
->       > <+...
->       > + /* ex */
->       > if(ex){...}
->       > ...+>
->       >
->       >
->       > it produces the following?
->       >
->       > ? ? ?int x =5;
->       > ? ? ?int y =6;
->       > ? ? ?int m =funct();
->       > +? ? /* ex */? ?// the required behavoir I need is? /* x */
->       > ? ? ?if(x)
->       > ? ? ?{
->       > +? ? ? ?/* ex */
->       > ? ? ? ? if(y)
->       > ? ? ? ? {
->       > ? ? ? ? ? ? return 1;
->
->       Sorry, it doesn't work.? Currently the only tihng you can do is
->       use python
->       to make an identifier metavariable that actually contains a
->       comment, and
->       then add that metavariable where you want your comments.? By
->       your comments
->       will have to have a ; after them, and are thus better made with
->       // than
->       with /* */, because an identifier is not a valid statement by
->       itself.
->       Instead you need an identifier followed by a semicolon.
->
->       For using python to make an identifier metavariable please see
->       demos/pythontococci.{c,cocci,res}.? Please write back if it is
->       not clear.
->
->       julia
+> ________________________________________
+> From: Julia Lawall <julia.lawall@lip6.fr>
+> Sent: Tuesday, August 28, 2018 5:19:08 PM
+> To: Felix Blyakher
+> Cc: cocci at systeme.lip6.fr
+> Subject: Re: [Cocci] coccinelle to rescue for "C++11 requires a space between literal and string macro"
 >
 >
+>
+> On Tue, 28 Aug 2018, Felix Blyakher wrote:
+>
+> > Hello coccinelle experts,
+> >
+> > I'm working with the legacy code and with newish gcc 7.3 hit the following warning:
+> >
+> > warning: invalid suffix on literal; C++11 requires a space between literal and string macro [-Wliteral-suffix]
+> >  #define PADARG64 "0x%016"QUAD"x"
+> >                   ^
+> >
+> > where QUAD is a platform dependent string, thus the macro.
+> >
+> > The string concatenation works in C OK for this code, though, gcc rightfully complains
+> > about required space and wants it to be:
+> >
+> >  #define PADARG64 "0x%016" QUAD "x"
+> >
+> > The code like this is sprinkled across huge code base, mostly in printf-like statements,
+> > and some in defines like above to be used in printf-like statements.
+> >
+> > I'd like to use coccinelle to change the code globally.
+> > I was trying something like (I know it may have false positive, just need to get something for starter):
+> >
+> >
+> > @@
+> > Identifier I;
+> > @@
+> >
+> > -"I"
+> > +" I "
+>
+> Coccinelle doesn't interpret things inside strings, except format
+> directives.  Also, identifier shouldn't be capitalized.
+>
+> What you want is:
+>
+> @@
+> constant char[] c;
+> @@
+>
+> - c
+> + c
+>
+> When Coccinelle adds the string back, it will pretty print it properly.
+> If you want to see a diff in the output, put --force-diff on the command
+> line.  Normally Coccinelle doesn't print a diff when there are only
+> whitespace changes.
+>
+> This will work on every string in your code.  If you don't want this, then
+> you can put:
+>
+> constant char[] c : script:python { check c };
+>
+> where check is some python code you write under
+>
+> @initialize:python@
+> @@
+>
+> def check ...
+>
+> to check whether it is a string with multiple pieces.  Note that the c
+> that check received will have the spaces already, so it won't be possible
+> to tell if the string is actually missing spaces.  But you can distinguish
+> strings in multiple pieces from string that are atomic.
+>
+> Let me know if anything is not clear.
+>
+> julia
+> The information contained in this transmission may be confidential. Any disclosure, copying, or further distribution of confidential information is not permitted unless such privilege is explicitly granted in writing by Quantum. Quantum reserves the right to have electronic communications, including email and attachments, sent across its networks filtered through security software programs and retain such messages in order to comply with applicable data security and retention requirements. Quantum is not responsible for the proper and complete transmission of the substance of this communication or for any delay in its receipt.
 >
