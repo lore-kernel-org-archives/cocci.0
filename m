@@ -1,55 +1,83 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 30 Aug 2018 09:51:18 -0700 (PDT)
-Subject: [Cocci] Checking support for the analysis of preprocessor
- definitions
-In-Reply-To: <c78ab16d-c26b-9a90-1989-c5a91e276e67@users.sourceforge.net>
-References: <alpine.DEB.2.21.1808281514290.2555@hadrien>
- <c78ab16d-c26b-9a90-1989-c5a91e276e67@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.21.1808300947350.2604@hadrien>
+From: clabbe@baylibre.com (Corentin Labbe)
+Date: Fri,  7 Sep 2018 19:41:44 +0000
+Subject: [Cocci] [PATCH 2/5] include: add
+	setbits32/clrbits32/clrsetbits32/setbits64/clrbits64/clrsetbits64
+	in linux/setbits.h
+In-Reply-To: <1536349307-20714-1-git-send-email-clabbe@baylibre.com>
+References: <1536349307-20714-1-git-send-email-clabbe@baylibre.com>
+Message-ID: <1536349307-20714-3-git-send-email-clabbe@baylibre.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+This patch adds setbits32/clrbits32/clrsetbits32 and
+setbits64/clrbits64/clrsetbits64 in linux/setbits.h header.
 
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+---
+ include/linux/setbits.h | 55 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 55 insertions(+)
+ create mode 100644 include/linux/setbits.h
 
-On Thu, 30 Aug 2018, SF Markus Elfring wrote:
-
-> >>  #define PADARG64 "0x%016"QUAD"x"
->
-> How does the support for such preprocessor definitions look like by
-> the Coccinelle software currently?
-> https://github.com/coccinelle/coccinelle/issues/139
->
-> I have tried another source code analysis experiment out.
-> I got the following information then.
->
-> elfring at Sonne:~/Projekte/Coccinelle/janitor> spatch --parse-cocci ~/Projekte/Coccinelle/Probe/find_macro_without_spaces_besides_identifier1.cocci
-> ?
-> minus: parse error:
-
-The only options before the : in such messages are minus and plus.  Minus
-is the removed and context code as it should be matched against the
-existing code. Plus is the added code or the context in which it occurs.
-
->   ?
->   around = 'Q',
->   whole content =  #define P64 "a"@literal_end Q at usage "@literal_startb"
-
-I don't think that the semantic patch language supports concatenated
-strings as patterns.
-
-julia
-
->
-> I find this error message questionable because my test SmPL script does not
-> contain a deletion specification (no ?minus? there).
->
-> Are these double quotation characters treated as tokens (for the attempted
-> data processing with position metavariables)?
-> http://coccinelle.lip6.fr/docs/main_grammar002.html
->
-> Does such an example indicate challenges to see the end of the used variables
-> (by the means of the semantic patch language)?
->
-> Regards,
-> Markus
->
+diff --git a/include/linux/setbits.h b/include/linux/setbits.h
+new file mode 100644
+index 000000000000..3e1e273551bb
+--- /dev/null
++++ b/include/linux/setbits.h
+@@ -0,0 +1,55 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __LINUX_SETBITS_H
++#define __LINUX_SETBITS_H
++
++#include <linux/io.h>
++
++#define __setbits(readfunction, writefunction, addr, set) \
++	writefunction((readfunction(addr) | (set)), addr)
++#define __clrbits(readfunction, writefunction, addr, mask) \
++	writefunction((readfunction(addr) & ~(mask)), addr)
++#define __clrsetbits(readfunction, writefunction, addr, mask, set) \
++	writefunction(((readfunction(addr) & ~(mask)) | (set)), addr)
++#define __setclrbits(readfunction, writefunction, addr, mask, set) \
++	writefunction(((readfunction(addr) | (seti)) & ~(mask)), addr)
++
++#define setbits32(addr, set) __setbits(readl, writel, addr, set)
++#define setbits32_relaxed(addr, set) __setbits(readl_relaxed, writel_relaxed, \
++					       addr, set)
++
++#define clrbits32(addr, mask) __clrbits(readl, writel, addr, mask)
++#define clrbits32_relaxed(addr, mask) __clrbits(readl_relaxed, writel_relaxed, \
++						addr, mask)
++
++#define clrsetbits32(addr, mask, set) __clrsetbits(readl, writel, addr, mask, set)
++#define clrsetbits32_relaxed(addr, mask, set) __clrsetbits(readl_relaxed, \
++							   writel_relaxed, \
++							   addr, mask, set)
++
++#define setclrbits32(addr, mask, set) __setclrbits(readl, writel, addr, mask, set)
++#define setclrbits32_relaxed(addr, mask, set) __setclrbits(readl_relaxed, \
++							   writel_relaxed, \
++							   addr, mask, set)
++
++/* We cannot use CONFIG_64BIT as some x86 drivers use writeq */
++#if defined(writeq) && defined(readq)
++#define setbits64(addr, set) __setbits(readq, writeq, addr, set)
++#define setbits64_relaxed(addr, set) __setbits(readq_relaxed, writeq_relaxed, \
++					       addr, set)
++
++#define clrbits64(addr, mask) __clrbits(readq, writeq, addr, mask)
++#define clrbits64_relaxed(addr, mask) __clrbits(readq_relaxed, writeq_relaxed, \
++						addr, mask)
++
++#define clrsetbits64(addr, mask, set) __clrsetbits(readq, writeq, addr, mask, set)
++#define clrsetbits64_relaxed(addr, mask, set) __clrsetbits(readq_relaxed, \
++							   writeq_relaxed, \
++							   addr, mask, set)
++
++#define setclrbits64(addr, mask, set) __setclrbits(readq, writeq, addr, mask, set)
++#define setclrbits64_relaxed(addr, mask, set) __setclrbits(readq_relaxed, \
++							   writeq_relaxed, \
++							   addr, mask, set)
++#endif /* writeq/readq */
++
++#endif /* __LINUX_SETBITS_H */
+-- 
+2.16.4
