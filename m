@@ -1,115 +1,93 @@
-From: christophe.leroy@c-s.fr (Christophe LEROY)
-Date: Mon, 10 Sep 2018 07:24:16 +0200
-Subject: [Cocci] [PATCH 0/5] introduce
- setbits32/clrbits32/clrsetbits32/setbits64/clrbits64/clrsetbits64 functions
-In-Reply-To: <1536349307-20714-1-git-send-email-clabbe@baylibre.com>
+From: clabbe@baylibre.com (LABBE Corentin)
+Date: Mon, 10 Sep 2018 20:49:29 +0200
+Subject: [Cocci] [PATCH 2/5] include: add
+ setbits32/clrbits32/clrsetbits32/setbits64/clrbits64/clrsetbits64 in
+ linux/setbits.h
+In-Reply-To: <8bfa1740800ca494028350addd7c874a8b4804bb.camel@buserror.net>
 References: <1536349307-20714-1-git-send-email-clabbe@baylibre.com>
-Message-ID: <93f879d1-ddae-9a7c-e629-ee34f97686c6@c-s.fr>
+ <1536349307-20714-3-git-send-email-clabbe@baylibre.com>
+ <8bfa1740800ca494028350addd7c874a8b4804bb.camel@buserror.net>
+Message-ID: <20180910184929.GA7819@Red>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On Fri, Sep 07, 2018 at 03:00:40PM -0500, Scott Wood wrote:
+> On Fri, 2018-09-07 at 19:41 +0000, Corentin Labbe wrote:
+> > This patch adds setbits32/clrbits32/clrsetbits32 and
+> > setbits64/clrbits64/clrsetbits64 in linux/setbits.h header.
+> > 
+> > Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> > ---
+> >  include/linux/setbits.h | 55
+> > +++++++++++++++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 55 insertions(+)
+> >  create mode 100644 include/linux/setbits.h
+> > 
+> > diff --git a/include/linux/setbits.h b/include/linux/setbits.h
+> > new file mode 100644
+> > index 000000000000..3e1e273551bb
+> > --- /dev/null
+> > +++ b/include/linux/setbits.h
+> > @@ -0,0 +1,55 @@
+> > +/* SPDX-License-Identifier: GPL-2.0 */
+> > +#ifndef __LINUX_SETBITS_H
+> > +#define __LINUX_SETBITS_H
+> > +
+> > +#include <linux/io.h>
+> > +
+> > +#define __setbits(readfunction, writefunction, addr, set) \
+> > +	writefunction((readfunction(addr) | (set)), addr)
+> > +#define __clrbits(readfunction, writefunction, addr, mask) \
+> > +	writefunction((readfunction(addr) & ~(mask)), addr)
+> > +#define __clrsetbits(readfunction, writefunction, addr, mask, set) \
+> > +	writefunction(((readfunction(addr) & ~(mask)) | (set)), addr)
+> > +#define __setclrbits(readfunction, writefunction, addr, mask, set) \
+> > +	writefunction(((readfunction(addr) | (seti)) & ~(mask)), addr)
+> > +
+> > +#define setbits32(addr, set) __setbits(readl, writel, addr, set)
+> > +#define setbits32_relaxed(addr, set) __setbits(readl_relaxed,
+> > writel_relaxed, \
+> > +					       addr, set)
+> > +
+> > +#define clrbits32(addr, mask) __clrbits(readl, writel, addr, mask)
+> > +#define clrbits32_relaxed(addr, mask) __clrbits(readl_relaxed,
+> > writel_relaxed, \
+> > +						addr, mask)
+> 
+> So now setbits32/clrbits32 is implicitly little-endian?  Introducing new
+> implicit-endian accessors is probably a bad thing in general, but doing it
+> with a name that until this patchset was implicitly big-endian (at least on
+> powerpc) seems worse.  Why not setbits32_le()?
+> 
 
-
-Le 07/09/2018 ? 21:41, Corentin Labbe a ?crit?:
-> Hello
-> 
-> This patchset adds a new set of functions which are open-coded in lot of
-> place.
-> Basicly the pattern is always the same, "read, modify a bit, write"
-> some driver already have thoses pattern them as functions. (like ahci_sunxi.c or dwmac-meson8b)
-> 
-> The first patch rename some powerpc funtions which already use the same name (xxxbits32)
-> but with only bigendian values.
-
-The same name as what ?
+I believed that writel/readl was endian agnostic, but It seems that I was wrong.
+So I will use _le32.
 
 > 
-> The second patch adds the header.
+> > +
+> > +#define clrsetbits32(addr, mask, set) __clrsetbits(readl, writel, addr,
+> > mask, set)
+> > +#define clrsetbits32_relaxed(addr, mask, set) __clrsetbits(readl_relaxed, \
+> > +							   writel_relaxed,
+> > \
+> > +							   addr, mask, set)
+> > +
+> > +#define setclrbits32(addr, mask, set) __setclrbits(readl, writel, addr,
+> > mask, set)
+> > +#define setclrbits32_relaxed(addr, mask, set) __setclrbits(readl_relaxed, \
+> > +							   writel_relaxed,
+> > \
+> > +							   addr, mask, set)
+> 
+> What's the use case for setclrbits?  I don't see it used anywhere in this
+> patchset (not even in the coccinelle patterns), it doesn't seem like it would
+> be a common pattern, and it could easily get confused with clrsetbits.
+> 
 
-But the second patch adds functions with the same name as the powerpc 
-ones but doing something different. Why consider that setbits32() should 
-be LE and not BE ?
+It is absent from the coccinelle script due to copy/paste error.
+And absent from patchset since it is only two possible example that I can test.
 
-Christophe
+If you run the next fixed coccinelle script, you will find some setclrbits.
+Since I fear that mask and set could have some common bits sometimes, I prefer to keep separate clrsetbits and setclrbits.
 
-
-> The third patch is an ugly try to implement a coccinelle semantic patch to
-> find all place where xxxbits function could be used.
-> Probably this spatch could be better written and I didnt found an easy way to add the "linux/setbits" header.
-> 
-> The two last patch are example of convertion of two drivers.
-> Thoses patchs give an example of the reduction of code won by using xxxbits32.
-> 
-> This patchset is tested with the ahci_sunxi and dwmac-sun8i drivers.
-> 
-> Regards
-> 
-> Corentin Labbe (5):
->    powerpc: rename setbits32/clrbits32 to setbits32_be/clrbits32_be
->    include: add
->      setbits32/clrbits32/clrsetbits32/setbits64/clrbits64/clrsetbits64 in
->      linux/setbits.h
->    coccinelle: add xxxsetbitsXX converting spatch
->    net: ethernet: stmmac: use xxxsetbits32
->    ata: ahci_sunxi: use xxxsetbits32 functions
-> 
->   arch/powerpc/include/asm/fsl_lbc.h                 |   2 +-
->   arch/powerpc/include/asm/io.h                      |   5 +-
->   arch/powerpc/platforms/44x/canyonlands.c           |   4 +-
->   arch/powerpc/platforms/4xx/gpio.c                  |  28 +-
->   arch/powerpc/platforms/512x/pdm360ng.c             |   6 +-
->   arch/powerpc/platforms/52xx/mpc52xx_common.c       |   6 +-
->   arch/powerpc/platforms/52xx/mpc52xx_gpt.c          |  10 +-
->   arch/powerpc/platforms/82xx/ep8248e.c              |   2 +-
->   arch/powerpc/platforms/82xx/km82xx.c               |   6 +-
->   arch/powerpc/platforms/82xx/mpc8272_ads.c          |  10 +-
->   arch/powerpc/platforms/82xx/pq2.c                  |   2 +-
->   arch/powerpc/platforms/82xx/pq2ads-pci-pic.c       |   4 +-
->   arch/powerpc/platforms/82xx/pq2fads.c              |  10 +-
->   arch/powerpc/platforms/83xx/km83xx.c               |   6 +-
->   arch/powerpc/platforms/83xx/mpc836x_mds.c          |   2 +-
->   arch/powerpc/platforms/85xx/mpc85xx_mds.c          |   2 +-
->   arch/powerpc/platforms/85xx/mpc85xx_pm_ops.c       |   4 +-
->   arch/powerpc/platforms/85xx/mpc85xx_rdb.c          |   2 +-
->   arch/powerpc/platforms/85xx/p1022_ds.c             |   4 +-
->   arch/powerpc/platforms/85xx/p1022_rdk.c            |   4 +-
->   arch/powerpc/platforms/85xx/t1042rdb_diu.c         |   4 +-
->   arch/powerpc/platforms/85xx/twr_p102x.c            |   2 +-
->   arch/powerpc/platforms/86xx/mpc8610_hpcd.c         |   4 +-
->   arch/powerpc/platforms/8xx/adder875.c              |   2 +-
->   arch/powerpc/platforms/8xx/m8xx_setup.c            |   4 +-
->   arch/powerpc/platforms/8xx/mpc86xads_setup.c       |   4 +-
->   arch/powerpc/platforms/8xx/mpc885ads_setup.c       |  28 +-
->   arch/powerpc/platforms/embedded6xx/flipper-pic.c   |   6 +-
->   arch/powerpc/platforms/embedded6xx/hlwd-pic.c      |   8 +-
->   arch/powerpc/platforms/embedded6xx/wii.c           |  10 +-
->   arch/powerpc/sysdev/cpm1.c                         |  26 +-
->   arch/powerpc/sysdev/cpm2.c                         |  16 +-
->   arch/powerpc/sysdev/cpm_common.c                   |   4 +-
->   arch/powerpc/sysdev/fsl_85xx_l2ctlr.c              |   8 +-
->   arch/powerpc/sysdev/fsl_lbc.c                      |   2 +-
->   arch/powerpc/sysdev/fsl_pci.c                      |   8 +-
->   arch/powerpc/sysdev/fsl_pmc.c                      |   2 +-
->   arch/powerpc/sysdev/fsl_rcpm.c                     |  74 ++--
->   arch/powerpc/sysdev/fsl_rio.c                      |   4 +-
->   arch/powerpc/sysdev/fsl_rmu.c                      |   8 +-
->   arch/powerpc/sysdev/mpic_timer.c                   |  12 +-
->   drivers/ata/ahci_sunxi.c                           |  51 +--
->   .../net/ethernet/stmicro/stmmac/dwmac-meson8b.c    |  54 +--
->   drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c  |  55 +--
->   .../net/ethernet/stmicro/stmmac/dwmac1000_core.c   |  21 +-
->   drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c  |  51 +--
->   drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c   |  13 +-
->   drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c   |  42 +-
->   drivers/net/ethernet/stmicro/stmmac/dwmac5.c       |  11 +-
->   drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c    |  17 +-
->   .../net/ethernet/stmicro/stmmac/dwxgmac2_core.c    |  30 +-
->   drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c |  69 +---
->   .../net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c  |  11 +-
->   drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c  |   7 +-
->   include/linux/setbits.h                            |  55 +++
->   scripts/coccinelle/misc/setbits.cocci              | 423 +++++++++++++++++++++
->   56 files changed, 776 insertions(+), 489 deletions(-)
->   create mode 100644 include/linux/setbits.h
->   create mode 100644 scripts/coccinelle/misc/setbits.cocci
-> 
+Regards
