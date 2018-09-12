@@ -1,32 +1,28 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 12 Sep 2018 08:26:09 +0200 (CEST)
-Subject: [Cocci] Weird problem trying to match code inside a function
-In-Reply-To: <4fc4acde-96a7-941e-bfd2-2fcf5ce4eaed@users.sourceforge.net>
-References: <fa1892a1698ad83235d455a947c354a54fa34c1d.camel@coelho.fi>
- <4fc4acde-96a7-941e-bfd2-2fcf5ce4eaed@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.21.1809120825260.2434@hadrien>
+From: johannes@sipsolutions.net (Johannes Berg)
+Date: Wed, 12 Sep 2018 12:16:09 +0200
+Subject: [Cocci] New release after 1.0.7?
+In-Reply-To: <alpine.DEB.2.20.1809121214160.31876@hadrien>
+References: <32b52167e7dd5734ba4aa5f21aa1fddd257e6292.camel@intel.com>
+ <alpine.DEB.2.20.1808141515280.3371@hadrien>
+ (sfid-20180814_152007_774372_35ED45D6)
+ <1536564277.3224.7.camel@sipsolutions.net>
+ <alpine.DEB.2.20.1809121214160.31876@hadrien>
+Message-ID: <1536747369.3678.11.camel@sipsolutions.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On Wed, 2018-09-12 at 12:14 +0200, Julia Lawall wrote:
 
+> > I see now that the website advertises the 1.0.7 release, however
+> > 
+> >  * it's not tagged in git(hub) - all previous releases have a tag
+> >  * commit c1522bde ("Release 1.0.7") is NOT what's released as 1.0.7 on
+> >    the website
+> >  * it *looks* like the actual 1.0.7 release was cut from a much newer
+> >    git commit, likely with the fix?
+> 
+> There is now a tag for the official release of 1.0.7 in github.
 
-On Wed, 12 Sep 2018, SF Markus Elfring wrote:
+Great, thanks!
 
-> > Can you shed some light?
->
-> Did you notice the following information in the manual for the semantic
-> patch language?
-> https://github.com/coccinelle/coccinelle/blob/dd206b29bf372a8f8e63ffe549f8184e10f2ea7e/docs/manual/cocci_syntax.tex#L1607
->
-> ??
-> All matching done by a SmPL rule is done intraprocedurally.
-> ??
->
->
-> Can this trigger software development considerations when you try
-> to add source code after a found function implementation?
-
-As the manual says, all matching is done within a function.  Adding code
-is not matching.
-
-julia
+johannes
