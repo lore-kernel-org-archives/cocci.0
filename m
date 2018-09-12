@@ -1,38 +1,104 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 12 Sep 2018 12:14:48 +0200 (CEST)
-Subject: [Cocci] New release after 1.0.7?
-In-Reply-To: <1536564277.3224.7.camel@sipsolutions.net>
-References: <32b52167e7dd5734ba4aa5f21aa1fddd257e6292.camel@intel.com>
- <alpine.DEB.2.20.1808141515280.3371@hadrien>
- (sfid-20180814_152007_774372_35ED45D6)
- <1536564277.3224.7.camel@sipsolutions.net>
-Message-ID: <alpine.DEB.2.20.1809121214160.31876@hadrien>
+From: der.herr@hofr.at (Nicholas Mc Guire)
+Date: Wed, 12 Sep 2018 12:33:04 +0000
+Subject: [Cocci] checking and fixing comma operator in if condition
+Message-ID: <20180912123304.GA18497@osadl.at>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hi !
+
+ The below spatch works for me - and finds the cases I was looking
+ for in report mode. In patch mode it fixes some in a bad way though
+ due to some additional "bugs" in the if statement like:
+
++++ b/gpu/drm/nouveau/nvkm/core/notify.c
+@@ -136,14 +136,16 @@ nvkm_notify_init(struct nvkm_object *obj
+ {
+        unsigned long flags;
+        int ret = -ENODEV;
+-       if ((notify->event = event), event->refs) {
++       (notify->event = event);
++       if (event->refs) {
+  
+ The extra parenthesis is wrong inside the if but of course it is
+ kind of "wronger" outside the if while still valid C-code. Other
+ cases that are fixed in a questionable case are e.g.
+
+--- a/gpu/drm/nouveau/nvkm/subdev/fb/ramgk104.c
++++ b/gpu/drm/nouveau/nvkm/subdev/fb/ramgk104.c
+@@ -1168,7 +1168,8 @@ gk104_ram_prog_0(struct gk104_ram *ram,
+        if (&cfg->head == &ram->cfg)
+                return;
+
+-       if (mask = 0, data = 0, ram->diff.rammap_11_0a_03fe) {
++       mask = 0, data = 0;
++       if (ram->diff.rammap_11_0a_03fe) {
+
+ In futher cases it is not clear if the unconditional part really was
+ intended to take effect outside the conditional code so it is not
+ clear if the placement before the if () is technically correct (I
+ think it is semantically equivalent though - so bug-preserving in
+ those cases).
+
+ So... is it then better not even to offer the patch mode in this case ?
+
+ Finally as it seems that while this is a general no-go, in the current
+ -stable sources it only affects files in drivers/gpu/drm/nouveau/, thus
+ not sure if this makes much sense for mainline at all.
 
 
-On Mon, 10 Sep 2018, Johannes Berg wrote:
+thx!
+hofrat
 
-> Julia,
->
-> On Tue, 2018-08-14 at 15:19 +0200, Julia Lawall wrote:
->
-> > Sorry, I'm not sure where 1.0.7 came from. [...]
->
-> > I would indeed like to make a release now that the compiations issues are
-> > resolved and things seem more stable.
->
-> Were you able to clear this up?
->
-> I see now that the website advertises the 1.0.7 release, however
->
->  * it's not tagged in git(hub) - all previous releases have a tag
->  * commit c1522bde ("Release 1.0.7") is NOT what's released as 1.0.7 on
->    the website
->  * it *looks* like the actual 1.0.7 release was cut from a much newer
->    git commit, likely with the fix?
 
-There is now a tag for the official release of 1.0.7 in github.
+/// Check for unconditional code "hiding" in an if condition
+/// effectively that code is unconditionally executed before
+/// reaching the actual branch statement - which just makes it
+/// hard to read and thus is *always* wrong.
+/// Some of the cases found also look buggy 
+///
+/// As of 4.19-rc3 all 50 cases look like they are found and fixed
+/// correctly - but as this is in the nuveau driver only it might
+/// well be that this only fits that specific pattern.
+///
+// Confidence: Low
+// Copyright: (C) 2018 Nicholas Mc Guire, OSADL.  GPLv2.
+// Comments:
+// Options: --no-includes --include-headers
 
-julia
+virtual patch
+virtual report
+
+@badif@
+position p;
+statement S;
+expression E1,E2;
+@@
+
+  if at p (E1,E2) S
+
+@script:python depends on report@
+p << badif.p;
+@@
+
+msg = "unconditional code hiding in if condition" 
+coccilib.report.print_report(p[0],msg)
+
+@fixbadif depends on badif && patch@
+position p=badif.p;
+statement S;
+expression E1=badif.E1,E2=badif.E2;
+@@
+
++ E1;
+  if@p (
+- E1,
+  E2) 
+  S 
+
+@script:python depends on patch@
+p << fixbadif.p;
+@@
+
+msg = "unconditional code in if condition moved" 
+coccilib.report.print_report(p[0],msg)
