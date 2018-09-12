@@ -1,104 +1,66 @@
-From: der.herr@hofr.at (Nicholas Mc Guire)
-Date: Wed, 12 Sep 2018 12:33:04 +0000
-Subject: [Cocci] checking and fixing comma operator in if condition
-Message-ID: <20180912123304.GA18497@osadl.at>
+From: elfring@users.sourceforge.net (SF Markus Elfring)
+Date: Wed, 12 Sep 2018 20:33:26 +0200
+Subject: [Cocci] Checking patches for questionable comma expressions in
+ if conditions
+In-Reply-To: <20180912123304.GA18497@osadl.at>
+References: <20180912123304.GA18497@osadl.at>
+Message-ID: <d16d096c-2598-32c3-e489-d7f00b2aec51@users.sourceforge.net>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-Hi !
+> The below spatch works for me - and finds the cases I was looking
+> for in report mode.
 
- The below spatch works for me - and finds the cases I was looking
- for in report mode. In patch mode it fixes some in a bad way though
- due to some additional "bugs" in the if statement like:
-
-+++ b/gpu/drm/nouveau/nvkm/core/notify.c
-@@ -136,14 +136,16 @@ nvkm_notify_init(struct nvkm_object *obj
- {
-        unsigned long flags;
-        int ret = -ENODEV;
--       if ((notify->event = event), event->refs) {
-+       (notify->event = event);
-+       if (event->refs) {
-  
- The extra parenthesis is wrong inside the if but of course it is
- kind of "wronger" outside the if while still valid C-code. Other
- cases that are fixed in a questionable case are e.g.
-
---- a/gpu/drm/nouveau/nvkm/subdev/fb/ramgk104.c
-+++ b/gpu/drm/nouveau/nvkm/subdev/fb/ramgk104.c
-@@ -1168,7 +1168,8 @@ gk104_ram_prog_0(struct gk104_ram *ram,
-        if (&cfg->head == &ram->cfg)
-                return;
-
--       if (mask = 0, data = 0, ram->diff.rammap_11_0a_03fe) {
-+       mask = 0, data = 0;
-+       if (ram->diff.rammap_11_0a_03fe) {
-
- In futher cases it is not clear if the unconditional part really was
- intended to take effect outside the conditional code so it is not
- clear if the placement before the if () is technically correct (I
- think it is semantically equivalent though - so bug-preserving in
- those cases).
-
- So... is it then better not even to offer the patch mode in this case ?
-
- Finally as it seems that while this is a general no-go, in the current
- -stable sources it only affects files in drivers/gpu/drm/nouveau/, thus
- not sure if this makes much sense for mainline at all.
+This is nice.
 
 
-thx!
-hofrat
+> In patch mode it fixes some in a bad way though due to some additional "bugs"
+> in the if statement like:
+?
+> -       if ((notify->event = event), event->refs) {
+> +       (notify->event = event);
+> +       if (event->refs) {
 
+I am curious on how software development considerations will evolve further
+for such generated patches.
 
-/// Check for unconditional code "hiding" in an if condition
-/// effectively that code is unconditionally executed before
-/// reaching the actual branch statement - which just makes it
-/// hard to read and thus is *always* wrong.
-/// Some of the cases found also look buggy 
-///
-/// As of 4.19-rc3 all 50 cases look like they are found and fixed
-/// correctly - but as this is in the nuveau driver only it might
-/// well be that this only fits that specific pattern.
-///
-// Confidence: Low
-// Copyright: (C) 2018 Nicholas Mc Guire, OSADL.  GPLv2.
-// Comments:
-// Options: --no-includes --include-headers
+Will the shown script for the semantic patch language need any more fine-tuning?
 
-virtual patch
-virtual report
+Would the following transformation variant result in desirable differences
+(after the specification of extra parentheses)?
+
 
 @badif@
-position p;
+position P;
 statement S;
 expression E1,E2;
 @@
+ if at P ((E1),E2) S
 
-  if at p (E1,E2) S
+?
 
-@script:python depends on report@
-p << badif.p;
-@@
-
-msg = "unconditional code hiding in if condition" 
-coccilib.report.print_report(p[0],msg)
-
-@fixbadif depends on badif && patch@
-position p=badif.p;
+@fixbadif depends on patch && badif@
+position badif.P;
 statement S;
-expression E1=badif.E1,E2=badif.E2;
+expression badif.E1,badif.E2;
 @@
++E1;
+ if at P (
+-      (E1),
+       E2)
+      S
 
-+ E1;
-  if@p (
-- E1,
-  E2) 
-  S 
 
-@script:python depends on patch@
-p << fixbadif.p;
-@@
+> -       if (mask = 0, data = 0, ram->diff.rammap_11_0a_03fe) {
+> +       mask = 0, data = 0;
+> +       if (ram->diff.rammap_11_0a_03fe) {
+>
+> In futher cases it is not clear if the unconditional part really was
+> intended to take effect outside the conditional code so it is not
+> clear if the placement before the if () is technically correct
 
-msg = "unconditional code in if condition moved" 
-coccilib.report.print_report(p[0],msg)
+How do you think about to convert such a development concern into a more
+advanced source code search pattern?
+
+Regards,
+Markus
