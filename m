@@ -1,85 +1,110 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 12 Sep 2018 23:20:32 +0200 (CEST)
-Subject: [Cocci] Checking patches for questionable comma expressions in
- if conditions
-In-Reply-To: <d16d096c-2598-32c3-e489-d7f00b2aec51@users.sourceforge.net>
-References: <20180912123304.GA18497@osadl.at>
- <d16d096c-2598-32c3-e489-d7f00b2aec51@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.21.1809122318240.2437@hadrien>
+From: moustafa@cmpsamurai.com (Moustafa Mahmoud)
+Date: Sun, 16 Sep 2018 16:58:03 +0200
+Subject: [Cocci] Strange behavior with replacing multiple typedefs
+Message-ID: <CAKCTf_YQgm-tgnsvfF6hV=sd+GjRU41XniWJqmoBFzwyDSr1-Q@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hello all,
+I am facing this problem with typedefs, what I am trying to achieve is
+convering multiple typedefs into single ones.
 
 
-On Wed, 12 Sep 2018, SF Markus Elfring wrote:
+typedef int x,y;
 
-> > The below spatch works for me - and finds the cases I was looking
-> > for in report mode.
->
-> This is nice.
->
->
-> > In patch mode it fixes some in a bad way though due to some additional "bugs"
-> > in the if statement like:
-> ?
-> > -       if ((notify->event = event), event->refs) {
-> > +       (notify->event = event);
-> > +       if (event->refs) {
->
-> I am curious on how software development considerations will evolve further
-> for such generated patches.
->
-> Will the shown script for the semantic patch language need any more fine-tuning?
->
-> Would the following transformation variant result in desirable differences
-> (after the specification of extra parentheses)?
->
->
-> @badif@
-> position P;
-> statement S;
-> expression E1,E2;
-> @@
->  if at P ((E1),E2) S
->
-> ?
->
-> @fixbadif depends on patch && badif@
-> position badif.P;
-> statement S;
-> expression badif.E1,badif.E2;
-> @@
-> +E1;
->  if at P (
-> -      (E1),
->        E2)
->       S
+into :
 
-Alternatively, I suspect that one could just do
+typedef  int x;
+typedef int y;
 
-- (
-  E
-- )
-  ;
 
-Or the original rule could be
+when I try to replace them inside functions, everything works as expected\
 
-+E1;
- if (
-- (E1),
-  E2) S1 else S2
+My Rule :
+@rule1@
+identifier fn;
+type t;
+metavariable mm;
+@@
 
->
->
-> > -       if (mask = 0, data = 0, ram->diff.rammap_11_0a_03fe) {
-> > +       mask = 0, data = 0;
-> > +       if (ram->diff.rammap_11_0a_03fe) {
-> >
-> > In futher cases it is not clear if the unconditional part really was
-> > intended to take effect outside the conditional code so it is not
-> > clear if the placement before the if () is technically correct
+++ typedef t mm;
+fn(...){
+<+...
+- typedef t mm;
+...+>
+}
 
-I'm not sure to understand the problem here.  You want to also change the
-, on the added line to a semicolon?
+The C Code
 
-julia
+typedef int;
+typedef int mr,e4;
+
+int main()
+{
+    typedef int sss, ssd;
+}
+
+The Diff :
+diff =
+--- typedef.c
++++ /tmp/cocci-output-91048-e42770-typedef.c
+@@ -3,7 +3,8 @@
+ typedef int;
+ typedef int mr,e4;
+
++typedef int ssd;
++typedef int sss;
+ int main()
+ {
+-    typedef int sss, ssd;
+ }
+\ No newline at end of file
+
+
+However if I try to generalize it
+
+@rule1@
+type t;
+metavariable mm;
+@@
+
+++ typedef t mm;
+- typedef t mm;
+
+
+
+The C Code:
+
+typedef int;
+typedef int mr,e4;
+
+int main()
+{
+    typedef int sss, ssd;
+}
+
+What I get is this :
+
+ typedef int;
+-typedef int mr,e4;
++typedef int e4;
++typedef int mr;
++typedef int;
+
+ int main()
+ {
+-    typedef int sss, ssd;
++    typedef int ssd;
++    typedef int sss;
++    typedef int;
+ }
+\ No newline at end of file
+
+
+You can notice the extra  "+  typedef int;" , why are those produced ? is
+there a way to achieve what  want without them ?
+
+Thank you very much.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20180916/4f7fbf15/attachment.html>
