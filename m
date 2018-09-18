@@ -1,38 +1,78 @@
-From: johannes@sipsolutions.net (Johannes Berg)
-Date: Tue, 18 Sep 2018 11:22:23 +0200
-Subject: [Cocci] 0079-netdev-destructor.cocci very slow
-In-Reply-To: <afcbee1b-be9f-bbd2-a72e-1a89a24b4f3d@hauke-m.de>
- (sfid-20180917_235548_596100_F1A753F4)
-References: <afcbee1b-be9f-bbd2-a72e-1a89a24b4f3d@hauke-m.de>
- (sfid-20180917_235548_596100_F1A753F4)
-Message-ID: <1537262543.2957.19.camel@sipsolutions.net>
+From: julia.lawall@lip6.fr (Julia Lawall)
+Date: Tue, 18 Sep 2018 12:41:33 +0200 (CEST)
+Subject: [Cocci] moving const instead of not matching?
+In-Reply-To: <1537262433.2957.18.camel@sipsolutions.net>
+References: <1537262433.2957.18.camel@sipsolutions.net>
+Message-ID: <alpine.DEB.2.20.1809181239470.3737@hadrien>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, 2018-09-17 at 23:55 +0200, Hauke Mehrtens wrote:
-> The 0079-netdev-destructor.cocci spatch in backports is very slow for
-> me. For bigger files I get a warning that it takes over to 15 seconds to
-> apply it to just one file, for the complete backports tree it takes over
-> an hour to apply.
-> 
-> This is the patch:
-> https://git.kernel.org/pub/scm/linux/kernel/git/backports/backports.git/tree/patches/0079-netdev-destructor.cocci
-> 
-> When I remove the <-- --> in the first rule, it is applied in some
-> seconds on the complete tree, so an speed improvement of about 100
-> times, but it is not working correctly any more. ;-)
-> 
-> Is this normal or how can I improve the spatch to be faster? I am using
-> coccinelle 1.0.7 build with default configure arguments against the
-> libraries from Debian stable.
 
-We've had this discussion before :-)
-I think we determined that it was normal.
 
-> If this is normal I should probably try to reduce the number of files it
-> tries to apply this against in gentree.py before spatch gets started.
+On Tue, 18 Sep 2018, Johannes Berg wrote:
 
-spatch should already try that internally, but perhaps with some extra
-knowledge we can do a better job ...
+> I was trying to do something like this:
+>
+> @@
+> typedef u8;
+> expression D, T, S2;
+> @@
+> (
+>  memcpy(
+> -(u8 *)(D)
+> +D
+>  ,
+> -(u8 *)(T)
+> +T
+>  , S2)
+> |
+>  memcpy(
+> -(u8 *)(D)
+> +D
+>  ,
+> -(T)
+> +T
+>  , S2)
+> |
+>  memcpy(
+> -(D)
+> +D
+>  ,
+> -(u8 *)(T)
+> +T
+>  , S2)
+> )
+>
+>
+> but then I ran across a place that had a const, and the result was
+> rather unexpected:
+>
+> $ spatch --sp-file /tmp/test3.spatch /tmp/test.c
+> init_defs_builtins: /usr/lib64/coccinelle/standard.h
+> HANDLING: /tmp/test.c
+> diff =
+> --- /tmp/test.c
+> +++ /tmp/cocci-output-8879-8411db-test.c
+> @@ -1,4 +1,4 @@
+>  int main()
+>  {
+> -	memcpy(dst, (const u8 *)src, sz);
+> +	memcpy(dst, src const, sz);
+>  }
+>
+>
+> Why is the const being moved there, rather than not matching?
 
-johannes
+To get it to not match this case, put disable optional_qualifier in the
+rule header.  There is an isomorphism that allows it to not care about
+whether things like const or volatile are present or not, but apparently
+it is not deleting it as it should be.
+
+If you want to match the const case, you can make some other rules with
+const explicitly.
+
+> spatch version 1.0.6.
+
+You may want to upgrade, although it's unrelated to this issue.
+
+julia
