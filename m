@@ -1,118 +1,116 @@
 From: clabbe@baylibre.com (Corentin Labbe)
-Date: Mon, 24 Sep 2018 19:04:13 +0000
-Subject: [Cocci] [PATCH v2 4/7] ata: ahci_sunxi: use xxxsetbits32 functions
+Date: Mon, 24 Sep 2018 19:04:11 +0000
+Subject: [Cocci] [PATCH v2 2/7] include: add
+	setbits32/clrbits32/clrsetbits32/setbits64/clrbits64/clrsetbits64
+	in linux/setbits.h
 In-Reply-To: <1537815856-31728-1-git-send-email-clabbe@baylibre.com>
 References: <1537815856-31728-1-git-send-email-clabbe@baylibre.com>
-Message-ID: <1537815856-31728-5-git-send-email-clabbe@baylibre.com>
+Message-ID: <1537815856-31728-3-git-send-email-clabbe@baylibre.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-This patch converts ahci_sunxi to use xxxsetbits32 functions
+This patch adds setbits32/clrbits32/clrsetbits32 and
+setbits64/clrbits64/clrsetbits64 in linux/setbits.h header.
 
 Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
 ---
- drivers/ata/ahci_sunxi.c | 51 ++++++++++++------------------------------------
- 1 file changed, 12 insertions(+), 39 deletions(-)
+ include/linux/setbits.h | 88 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 88 insertions(+)
+ create mode 100644 include/linux/setbits.h
 
-diff --git a/drivers/ata/ahci_sunxi.c b/drivers/ata/ahci_sunxi.c
-index 911710643305..5b285a6dff60 100644
---- a/drivers/ata/ahci_sunxi.c
-+++ b/drivers/ata/ahci_sunxi.c
-@@ -25,6 +25,7 @@
- #include <linux/of_device.h>
- #include <linux/platform_device.h>
- #include <linux/regulator/consumer.h>
-+#include <linux/setbits.h>
- #include "ahci.h"
- 
- #define DRV_NAME "ahci-sunxi"
-@@ -58,34 +59,6 @@ MODULE_PARM_DESC(enable_pmp,
- #define AHCI_P0PHYCR	0x0178
- #define AHCI_P0PHYSR	0x017c
- 
--static void sunxi_clrbits(void __iomem *reg, u32 clr_val)
--{
--	u32 reg_val;
--
--	reg_val = readl(reg);
--	reg_val &= ~(clr_val);
--	writel(reg_val, reg);
--}
--
--static void sunxi_setbits(void __iomem *reg, u32 set_val)
--{
--	u32 reg_val;
--
--	reg_val = readl(reg);
--	reg_val |= set_val;
--	writel(reg_val, reg);
--}
--
--static void sunxi_clrsetbits(void __iomem *reg, u32 clr_val, u32 set_val)
--{
--	u32 reg_val;
--
--	reg_val = readl(reg);
--	reg_val &= ~(clr_val);
--	reg_val |= set_val;
--	writel(reg_val, reg);
--}
--
- static u32 sunxi_getbits(void __iomem *reg, u8 mask, u8 shift)
- {
- 	return (readl(reg) >> shift) & mask;
-@@ -100,22 +73,22 @@ static int ahci_sunxi_phy_init(struct device *dev, void __iomem *reg_base)
- 	writel(0, reg_base + AHCI_RWCR);
- 	msleep(5);
- 
--	sunxi_setbits(reg_base + AHCI_PHYCS1R, BIT(19));
--	sunxi_clrsetbits(reg_base + AHCI_PHYCS0R,
-+	setbits_le32(reg_base + AHCI_PHYCS1R, BIT(19));
-+	clrsetbits_le32(reg_base + AHCI_PHYCS0R,
- 			 (0x7 << 24),
- 			 (0x5 << 24) | BIT(23) | BIT(18));
--	sunxi_clrsetbits(reg_base + AHCI_PHYCS1R,
-+	clrsetbits_le32(reg_base + AHCI_PHYCS1R,
- 			 (0x3 << 16) | (0x1f << 8) | (0x3 << 6),
- 			 (0x2 << 16) | (0x6 << 8) | (0x2 << 6));
--	sunxi_setbits(reg_base + AHCI_PHYCS1R, BIT(28) | BIT(15));
--	sunxi_clrbits(reg_base + AHCI_PHYCS1R, BIT(19));
--	sunxi_clrsetbits(reg_base + AHCI_PHYCS0R,
-+	setbits_le32(reg_base + AHCI_PHYCS1R, BIT(28) | BIT(15));
-+	clrbits_le32(reg_base + AHCI_PHYCS1R, BIT(19));
-+	clrsetbits_le32(reg_base + AHCI_PHYCS0R,
- 			 (0x7 << 20), (0x3 << 20));
--	sunxi_clrsetbits(reg_base + AHCI_PHYCS2R,
-+	clrsetbits_le32(reg_base + AHCI_PHYCS2R,
- 			 (0x1f << 5), (0x19 << 5));
- 	msleep(5);
- 
--	sunxi_setbits(reg_base + AHCI_PHYCS0R, (0x1 << 19));
-+	setbits_le32(reg_base + AHCI_PHYCS0R, (0x1 << 19));
- 
- 	timeout = 250; /* Power up takes aprox 50 us */
- 	do {
-@@ -130,7 +103,7 @@ static int ahci_sunxi_phy_init(struct device *dev, void __iomem *reg_base)
- 		udelay(1);
- 	} while (1);
- 
--	sunxi_setbits(reg_base + AHCI_PHYCS2R, (0x1 << 24));
-+	setbits_le32(reg_base + AHCI_PHYCS2R, (0x1 << 24));
- 
- 	timeout = 100; /* Calibration takes aprox 10 us */
- 	do {
-@@ -158,10 +131,10 @@ static void ahci_sunxi_start_engine(struct ata_port *ap)
- 	struct ahci_host_priv *hpriv = ap->host->private_data;
- 
- 	/* Setup DMA before DMA start */
--	sunxi_clrsetbits(hpriv->mmio + AHCI_P0DMACR, 0x0000ff00, 0x00004400);
-+	clrsetbits_le32(hpriv->mmio + AHCI_P0DMACR, 0x0000ff00, 0x00004400);
- 
- 	/* Start DMA */
--	sunxi_setbits(port_mmio + PORT_CMD, PORT_CMD_START);
-+	setbits_le32(port_mmio + PORT_CMD, PORT_CMD_START);
- }
- 
- static const struct ata_port_info ahci_sunxi_port_info = {
+diff --git a/include/linux/setbits.h b/include/linux/setbits.h
+new file mode 100644
+index 000000000000..6e7e257134ae
+--- /dev/null
++++ b/include/linux/setbits.h
+@@ -0,0 +1,88 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __LINUX_SETBITS_H
++#define __LINUX_SETBITS_H
++
++#include <linux/io.h>
++
++#define __setbits(readfunction, writefunction, addr, set) \
++	writefunction((readfunction(addr) | (set)), addr)
++#define __clrbits(readfunction, writefunction, addr, mask) \
++	writefunction((readfunction(addr) & ~(mask)), addr)
++#define __clrsetbits(readfunction, writefunction, addr, mask, set) \
++	writefunction(((readfunction(addr) & ~(mask)) | (set)), addr)
++#define __setclrbits(readfunction, writefunction, addr, mask, set) \
++	writefunction(((readfunction(addr) | (set)) & ~(mask)), addr)
++
++#ifndef setbits_le32
++#define setbits_le32(addr, set) __setbits(readl, writel, addr, set)
++#endif
++#ifndef setbits_le32_relaxed
++#define setbits_le32_relaxed(addr, set) __setbits(readl_relaxed, writel_relaxed, \
++					       addr, set)
++#endif
++
++#ifndef clrbits_le32
++#define clrbits_le32(addr, mask) __clrbits(readl, writel, addr, mask)
++#endif
++#ifndef clrbits_le32_relaxed
++#define clrbits_le32_relaxed(addr, mask) __clrbits(readl_relaxed, writel_relaxed, \
++						addr, mask)
++#endif
++
++#ifndef clrsetbits_le32
++#define clrsetbits_le32(addr, mask, set) __clrsetbits(readl, writel, addr, mask, set)
++#endif
++#ifndef clrsetbits_le32_relaxed
++#define clrsetbits_le32_relaxed(addr, mask, set) __clrsetbits(readl_relaxed, \
++							   writel_relaxed, \
++							   addr, mask, set)
++#endif
++
++#ifndef setclrbits_le32
++#define setclrbits_le32(addr, mask, set) __setclrbits(readl, writel, addr, mask, set)
++#endif
++#ifndef setclrbits_le32_relaxed
++#define setclrbits_le32_relaxed(addr, mask, set) __setclrbits(readl_relaxed, \
++							   writel_relaxed, \
++							   addr, mask, set)
++#endif
++
++/* We cannot use CONFIG_64BIT as some x86 drivers use non-atomicwriteq() */
++#if defined(writeq) && defined(readq)
++#ifndef setbits_le64
++#define setbits_le64(addr, set) __setbits(readq, writeq, addr, set)
++#endif
++#ifndef setbits_le64_relaxed
++#define setbits_le64_relaxed(addr, set) __setbits(readq_relaxed, writeq_relaxed, \
++					       addr, set)
++#endif
++
++#ifndef clrbits_le64
++#define clrbits_le64(addr, mask) __clrbits(readq, writeq, addr, mask)
++#endif
++#ifndef clrbits_le64_relaxed
++#define clrbits_le64_relaxed(addr, mask) __clrbits(readq_relaxed, writeq_relaxed, \
++						addr, mask)
++#endif
++
++#ifndef clrsetbits_le64
++#define clrsetbits_le64(addr, mask, set) __clrsetbits(readq, writeq, addr, mask, set)
++#endif
++#ifndef clrsetbits_le64_relaxed
++#define clrsetbits_le64_relaxed(addr, mask, set) __clrsetbits(readq_relaxed, \
++							   writeq_relaxed, \
++							   addr, mask, set)
++#endif
++
++#ifndef setclrbits_le64
++#define setclrbits_le64(addr, mask, set) __setclrbits(readq, writeq, addr, mask, set)
++#endif
++#ifndef setclrbits_le64_relaxed
++#define setclrbits_le64_relaxed(addr, mask, set) __setclrbits(readq_relaxed, \
++							   writeq_relaxed, \
++							   addr, mask, set)
++#endif
++
++#endif /* writeq/readq */
++
++#endif /* __LINUX_SETBITS_H */
 -- 
 2.16.4
