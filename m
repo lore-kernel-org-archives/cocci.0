@@ -1,58 +1,117 @@
-From: johannes@sipsolutions.net (Johannes Berg)
-Date: Wed, 19 Sep 2018 11:02:09 +0200
-Subject: [Cocci] 0079-netdev-destructor.cocci very slow
-In-Reply-To: <alpine.DEB.2.20.1809191047200.4106@hadrien>
-References: <afcbee1b-be9f-bbd2-a72e-1a89a24b4f3d@hauke-m.de>
- <1537262543.2957.19.camel@sipsolutions.net>
- <c823a257-4a1e-f3d0-d5a4-4face3c0c85a@hauke-m.de>
- <1537346626.10305.2.camel@sipsolutions.net>
- <alpine.DEB.2.20.1809191047200.4106@hadrien>
-Message-ID: <1537347729.10305.10.camel@sipsolutions.net>
+From: clabbe@baylibre.com (Corentin Labbe)
+Date: Mon, 24 Sep 2018 19:04:09 +0000
+Subject: [Cocci] [PATCH v2 0/7] include: add
+	setbits32/clrbits32/clrsetbits32/setbits64/clrbits64/clrsetbits64
+Message-ID: <1537815856-31728-1-git-send-email-clabbe@baylibre.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Wed, 2018-09-19 at 10:49 +0200, Julia Lawall wrote:
+Hello
 
-> > > It looks like coccinelle already does such a grep when I remove the <--
-> > > --> from the patch, because this is about 100 times faster.
-> > 
-> > Good point, not sure why it doesn't do that with the <... ...>?
-> 
-> Because <... ...> means 0 or more of what is inside.
+This patchset adds a new set of functions which are open-coded in lot of
+place.
+Basicly the pattern is always the same, "read, modify a bit, write"
+some driver and the powerpc arch already have thoses pattern them as functions. (like ahci_sunxi.c or dwmac-meson8b)
 
-Oops, right.
+The first patch rename some powerpc funtions for being consistent with
+the new name convention.
 
-> <+... ...+> looks for one or more and may be faster.
+The second patch adds the header with all setbits functions.
 
-Indeed, it's two orders of magnitude faster (running it on just
-drivers/net/wireless goes from ~500 to ~2s for me) as it can throw away
-almost all files immediately.
+The third patch is a try to implement a coccinelle semantic patch to
+find all place where xxxbits function could be used.
+It should not be merged since it is un-finalized.
+For the moment, the "add setbits.h header" is not working and need a future
+coccinelle version.
 
-> On the other hand, it ensures that
-> there is one or more, which can also be expensive.
+The four last patch are example of some drivers convertion.
+Thoses patchs give an example of the reduction of code won by using xxxbits32.
 
-That doesn't really matter all that much for us - the (really) expensive
-part is running it on all files that don't even contain it at all.
+I would like to thanks Julia Lawall for her help on the coccinelle
+patch.
 
-> It could be better to just have a rule:
-> 
-> @worthwhile@
-> @@
-> 
-> (
-> functions(...)
-> > 
-> 
-> you(...)
-> > 
-> 
-> like(...)
-> )
-> 
-> and then have the <... ...> rule depend on worthwhile.
+Regards
 
-Good idea too.
+Changes since v1:
+- renamed LE functions to _leXX
+- updated coccinnelle patch with JLawall's comments
 
-Thanks!
+Corentin Labbe (7):
+  powerpc: rename setbits32/clrbits32 to setbits32_be/clrbits32_be
+  include: add
+    setbits32/clrbits32/clrsetbits32/setbits64/clrbits64/clrsetbits64 in
+    linux/setbits.h
+  coccinelle: add xxxsetbitsXX converting spatch
+  ata: ahci_sunxi: use xxxsetbits32 functions
+  net: ethernet: stmmac: dwmac-sun8i: use xxxsetbits32
+  drm: meson: use xxxsetbits32
+  net: stmmac: dwmac-meson8b: use xxxsetbits32
 
-johannes
+ arch/powerpc/include/asm/fsl_lbc.h                 |   2 +-
+ arch/powerpc/include/asm/io.h                      |   5 +-
+ arch/powerpc/platforms/44x/canyonlands.c           |   4 +-
+ arch/powerpc/platforms/4xx/gpio.c                  |  28 +-
+ arch/powerpc/platforms/512x/pdm360ng.c             |   6 +-
+ arch/powerpc/platforms/52xx/mpc52xx_common.c       |   6 +-
+ arch/powerpc/platforms/52xx/mpc52xx_gpt.c          |  10 +-
+ arch/powerpc/platforms/82xx/ep8248e.c              |   2 +-
+ arch/powerpc/platforms/82xx/km82xx.c               |   6 +-
+ arch/powerpc/platforms/82xx/mpc8272_ads.c          |  10 +-
+ arch/powerpc/platforms/82xx/pq2.c                  |   2 +-
+ arch/powerpc/platforms/82xx/pq2ads-pci-pic.c       |   4 +-
+ arch/powerpc/platforms/82xx/pq2fads.c              |  10 +-
+ arch/powerpc/platforms/83xx/km83xx.c               |   6 +-
+ arch/powerpc/platforms/83xx/mpc836x_mds.c          |   2 +-
+ arch/powerpc/platforms/85xx/mpc85xx_mds.c          |   2 +-
+ arch/powerpc/platforms/85xx/mpc85xx_pm_ops.c       |   4 +-
+ arch/powerpc/platforms/85xx/mpc85xx_rdb.c          |   2 +-
+ arch/powerpc/platforms/85xx/p1022_ds.c             |   4 +-
+ arch/powerpc/platforms/85xx/p1022_rdk.c            |   4 +-
+ arch/powerpc/platforms/85xx/t1042rdb_diu.c         |   4 +-
+ arch/powerpc/platforms/85xx/twr_p102x.c            |   2 +-
+ arch/powerpc/platforms/86xx/mpc8610_hpcd.c         |   4 +-
+ arch/powerpc/platforms/8xx/adder875.c              |   2 +-
+ arch/powerpc/platforms/8xx/m8xx_setup.c            |   4 +-
+ arch/powerpc/platforms/8xx/mpc86xads_setup.c       |   4 +-
+ arch/powerpc/platforms/8xx/mpc885ads_setup.c       |  28 +-
+ arch/powerpc/platforms/embedded6xx/flipper-pic.c   |   6 +-
+ arch/powerpc/platforms/embedded6xx/hlwd-pic.c      |   8 +-
+ arch/powerpc/platforms/embedded6xx/wii.c           |  10 +-
+ arch/powerpc/sysdev/cpm1.c                         |  26 +-
+ arch/powerpc/sysdev/cpm2.c                         |  16 +-
+ arch/powerpc/sysdev/cpm_common.c                   |   4 +-
+ arch/powerpc/sysdev/fsl_85xx_l2ctlr.c              |   8 +-
+ arch/powerpc/sysdev/fsl_lbc.c                      |   2 +-
+ arch/powerpc/sysdev/fsl_pci.c                      |   8 +-
+ arch/powerpc/sysdev/fsl_pmc.c                      |   2 +-
+ arch/powerpc/sysdev/fsl_rcpm.c                     |  74 ++--
+ arch/powerpc/sysdev/fsl_rio.c                      |   4 +-
+ arch/powerpc/sysdev/fsl_rmu.c                      |   8 +-
+ arch/powerpc/sysdev/mpic_timer.c                   |  12 +-
+ drivers/ata/ahci_sunxi.c                           |  51 +--
+ drivers/gpu/drm/meson/meson_crtc.c                 |  14 +-
+ drivers/gpu/drm/meson/meson_dw_hdmi.c              |  33 +-
+ drivers/gpu/drm/meson/meson_plane.c                |  13 +-
+ drivers/gpu/drm/meson/meson_registers.h            |   3 -
+ drivers/gpu/drm/meson/meson_venc.c                 |  13 +-
+ drivers/gpu/drm/meson/meson_venc_cvbs.c            |   4 +-
+ drivers/gpu/drm/meson/meson_viu.c                  |  65 +--
+ drivers/gpu/drm/meson/meson_vpp.c                  |  22 +-
+ .../net/ethernet/stmicro/stmmac/dwmac-meson8b.c    |  56 +--
+ drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c  |  62 +--
+ include/linux/setbits.h                            |  88 ++++
+ scripts/add_new_include_in_source.py               |  61 +++
+ scripts/coccinelle/misc/setbits32.cocci            | 487 +++++++++++++++++++++
+ scripts/coccinelle/misc/setbits32_relaxed.cocci    | 487 +++++++++++++++++++++
+ scripts/coccinelle/misc/setbits64.cocci            | 487 +++++++++++++++++++++
+ scripts/coccinelle/misc/setbits_dev.cocci          | 235 ++++++++++
+ 58 files changed, 2159 insertions(+), 377 deletions(-)
+ create mode 100644 include/linux/setbits.h
+ create mode 100755 scripts/add_new_include_in_source.py
+ create mode 100644 scripts/coccinelle/misc/setbits32.cocci
+ create mode 100644 scripts/coccinelle/misc/setbits32_relaxed.cocci
+ create mode 100644 scripts/coccinelle/misc/setbits64.cocci
+ create mode 100644 scripts/coccinelle/misc/setbits_dev.cocci
+
+-- 
+2.16.4
