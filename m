@@ -1,22 +1,26 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Thu, 27 Sep 2018 23:09:26 +0200 (CEST)
+From: lars@metafoo.de (Lars-Peter Clausen)
+Date: Sun, 30 Sep 2018 17:06:22 +0200
 Subject: [Cocci] =~ runtime improvements?
 In-Reply-To: <CAGXu5jLfBk6BAiQiKHJdxAFnP72xe_qtBDOizoSaAgYvsxTkVQ@mail.gmail.com>
 References: <CAGXu5jLfBk6BAiQiKHJdxAFnP72xe_qtBDOizoSaAgYvsxTkVQ@mail.gmail.com>
-Message-ID: <alpine.DEB.2.21.1809272306550.2386@hadrien>
+Message-ID: <c8d1021e-998c-2e55-e793-f787b2bca503@metafoo.de>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-
-
-On Thu, 27 Sep 2018, Kees Cook wrote:
-
+On 09/27/2018 08:51 PM, Kees Cook wrote:
 > Hi,
->
+> 
 > This .cocci takes a VERY long time to run against the kernel, and I'd
 > love to know what I could do to improve it. I assume it's related to
 > the use of the "=~" operand:
->
+> 
+
+Maybe I'm missing something, but do you need all of those variations? An
+expression should match an identifier. I'd expect ((ECOUNT)) *
+((ESTRIDE)) * ((ESIZE)) matches the superset of all the other statements
+with ICOUNT, ISIZE and ISTRIDE in them. So you only need two rules one
+for array_size and one for array3_size.
+
 > // Replace multi-factor out-of-line products with array_size() usage.
 > @@
 > identifier alloc =~ ".*alloc.*";
@@ -25,7 +29,7 @@ On Thu, 27 Sep 2018, Kees Cook wrote:
 > expression ESTRIDE, ESIZE, ECOUNT;
 > expression PRODUCT, OTHER;
 > @@
->
+> 
 > (
 >   PRODUCT = ((C1)) * ((C2)) * ((C3))
 > |
@@ -54,26 +58,8 @@ On Thu, 27 Sep 2018, Kees Cook wrote:
 > )
 >   ... when != PRODUCT = OTHER
 >   alloc(..., PRODUCT, ...)
-
-The rule contains ... and it doesn't contain anything much concrete.
-Regular expressions aren't used to select files, so you consider all
-files.  Big disjunctions are also costly.  You could consider making a
-series of 9 rules.  Do you need the double parentheses?  That adds more
-disjunctions.
-
-julia
-
-
->
+> 
 > Thanks!
->
+> 
 > -Kees
->
-> --
-> Kees Cook
-> Pixel Security
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+> 
