@@ -1,38 +1,44 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Mon, 8 Oct 2018 13:39:29 +0200 (CEST)
+From: garsilva@embeddedor.com (Gustavo A. R. Silva)
+Date: Mon, 8 Oct 2018 13:21:14 +0200
 Subject: [Cocci] uses of Coccinelle
-In-Reply-To: <192f5b0e-75ba-b399-c25f-14f3d322f735@users.sourceforge.net>
+In-Reply-To: <alpine.DEB.2.21.1810070800560.2347@hadrien>
 References: <alpine.DEB.2.21.1810070800560.2347@hadrien>
- <02211cb1-f41d-1752-80ae-41e5a950461c@users.sourceforge.net>
- <alpine.DEB.2.20.1810081249000.31095@hadrien>
- <192f5b0e-75ba-b399-c25f-14f3d322f735@users.sourceforge.net>
-Message-ID: <alpine.DEB.2.20.1810081338430.31095@hadrien>
+Message-ID: <ec787a03-2394-c3db-f439-f49131dc2853@embeddedor.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+Hi Julia,
 
+On 10/7/18 8:02 AM, Julia Lawall wrote:
+> Hello,
+> 
+> It would be helpful to me to have a list of some things that Coccinelle
+> has recently been used for.  A one sentence description, would be quite
+> sufficient.
+> 
 
-On Mon, 8 Oct 2018, SF Markus Elfring wrote:
+I have used Coccinelle for the following list of things:
 
-> > Anything is fine.
->
-> How do you think about to reconsider any change possibilities
-> which were registered in issue trackers or patchwork instances?
+- Fix duplicate code
+- Add NULL checks on function return values (like devm_kzalloc() and devm_kmemdup())
+- Fix error return codes
+- Fix NULL pointer dereferences
+- Replace open-code with the swap macro
+- Constification
+- Use true and false for boolean values
+- Remove unnecessary NULL checks
+- Replace open-code with the PTR_ERR_OR_ZERO macro
+- Replace PTR_RET with PTR_ERR_OR_ZERO
+- Fix inconsistent IS_ERR and PTR_ERR
+- Fix uninitialized variables
+- Replace open-code with the ARRAY_SIZE macro
+- Fix application of sizeof to pointer
+- Fix incorrect bit mask
+- Use BUG_ON instead of if condition followed by BUG
+- Compress return logic into one line
+- Remove unnecessary cast on kmalloc
+- Identify potential integer overflows during memory allocation
 
-I'm not interested in specific changes, but rather in more general
-applications.
-
-julia
-
->
->
-> > It's not really obvious what to search for, and such a comment might not
-> > be associated with a use of Coccinelle anyway.
->
-> Can any hits appear for SmPL scripts in areas which have not been
-> so popular that their transformation results were presented
-> on development conferences?
->
-> Regards,
-> Markus
->
+Thanks
+--
+Gustavo
