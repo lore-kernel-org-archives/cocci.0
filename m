@@ -1,34 +1,77 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Wed, 10 Oct 2018 18:10:03 +0200 (CEST)
-Subject: [Cocci] Dummy rule for simplifying "depends on" clauses?
-In-Reply-To: <CAOZdJXW8Ve+Rwhg_xjrQR49=0vt1xLfqWWmOp3Z5ieT0fFKnbw@mail.gmail.com>
-References: <CAOZdJXUWj-U87j6p-AK8wx_V4qRPD2ogyLyOgLE7pSFofzQ_Gw@mail.gmail.com>
- <alpine.DEB.2.21.1810100741210.2477@hadrien>
- <CAOZdJXXgW3SOgiVOKijaooPipwDNUqMm3ScZ0XUU2d3F4Yok8A@mail.gmail.com>
- <alpine.DEB.2.20.1810101735550.3396@hadrien>
- <CAOZdJXW8Ve+Rwhg_xjrQR49=0vt1xLfqWWmOp3Z5ieT0fFKnbw@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1810101807370.3396@hadrien>
+From: joel@joelfernandes.org (Joel Fernandes)
+Date: Wed, 10 Oct 2018 12:38:54 -0700
+Subject: [Cocci] First coccinelle script, need some help.
+Message-ID: <20181010193854.GA93016@joelaf.mtv.corp.google.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
 
+Hi!
 
-On Wed, 10 Oct 2018, Timur Tabi wrote:
+I am trying to determine if a function argument is used across the whole
+kernel for a certain kernel function.
 
-> On Wed, Oct 10, 2018 at 10:37 AM Julia Lawall <julia.lawall@lip6.fr> wrote:
-> > You can't put multiple @@'s at the beginning of a rule.  This should be
-> > just:
-> >
-> > @r depends on rules@
-> > ...
-> > @@
->
-> I'll admit, I don't really understand any of the @ syntax.  I must
-> have copy/pasted too aggressively.  Thanks, it works now.
+I mustered up enough courage to write my first coccinelle script after a few
+late nights of reading up about it :)
 
-You have one @@ before the metavariables and one after.  The one before
-can contain some other information.  The grammar is not completely
-correct, but youcan get an idea of what you can put between the initial @@
-on page 2 here: docs/manual/main_grammar.pdf
+Here is .cocci script. I am trying to find if address is used at all in any
+possible definitions of pte_alloc():
 
-julia
+$ cat ~/pte_alloc.cocci
+virtual report
+
+@pte_args depends on report@
+identifier E1, E2;
+type T1, T2;
+position p;
+@@
+
+ pte_alloc at p(T1 E1, T2 E2)
+ {
+...
+(
+...
+ E2
+...
+)
+...
+ }
+
+@script:python depends on report@
+p << pte_args.p;
+@@
+coccilib.report.print_report(p[0], "WARNING: found definition of
+apte_alloc_one with address used in the body")
+
+The above warning does fire on the following test.c program:
+
+struct page *pte_alloc(struct mm_struct *mm, unsigned long address)
+{
+        address++;
+         if (condition()) {
+                return NULL;
+        }
+}
+
+But, *not* if I move 'address' into the if block:
+
+struct page *pte_alloc(struct mm_struct *mm, unsigned long address)
+{
+         if (condition()) {
+              address++;
+              return NULL;
+        }
+}
+
+I could not understand why, In my view the "address" expression should be
+matched across the function body even within if blocks. But if I move
+"address" into the if block, then the match doesn't occur any longer.
+
+My coccicheck command is as follow:
+make coccicheck COCCI=~/pte_alloc.cocci MODE=report  M=test/test.c
+
+What am I missing? Thanks for any help.
+
+thanks,
+
+ - Joel
