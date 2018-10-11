@@ -1,5 +1,5 @@
 From: joel@joelfernandes.org (Joel Fernandes)
-Date: Thu, 11 Oct 2018 11:06:51 -0700
+Date: Thu, 11 Oct 2018 11:07:53 -0700
 Subject: [Cocci] Searching for parameter usages of pte_alloc()
 In-Reply-To: <alpine.DEB.2.20.1810111833410.3392@hadrien>
 References: <20181010211125.GA128537@joelaf.mtv.corp.google.com>
@@ -8,7 +8,7 @@ References: <20181010211125.GA128537@joelaf.mtv.corp.google.com>
  <alpine.DEB.2.20.1810111746210.3392@hadrien>
  <20181011162840.GA199386@joelaf.mtv.corp.google.com>
  <alpine.DEB.2.20.1810111833410.3392@hadrien>
-Message-ID: <20181011180651.GA247511@joelaf.mtv.corp.google.com>
+Message-ID: <20181011180753.GB247511@joelaf.mtv.corp.google.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
@@ -41,14 +41,5 @@ On Thu, Oct 11, 2018 at 06:40:22PM +0200, Julia Lawall wrote:
 > - #define i(a,b)@p e
 > + #define i(a) e
 
-So doing this gives me a parse error:
-
-parse error:
-  File "../pte_alloc_replace.cocci", line 40, column 17, charpos = 573
-  around = '@',
-  whole content = - #define i(a, b)@p e
-
-Also should that 'e' be a statement or an expression?
-
-Thanks!
- 
+Sorry, it works now. I had not defined 'position p' in the rule. Please
+ignore my noise.
