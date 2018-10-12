@@ -1,71 +1,57 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Fri, 12 Oct 2018 03:05:19 +0200 (CEST)
-Subject: [Cocci] Need help with Python again
-In-Reply-To: <CAOZdJXWj0Er2HrV3mzaDZz8fi9YB__zQ5U4pm6K4pjhm7R5c+Q@mail.gmail.com>
-References: <CAOZdJXWj0Er2HrV3mzaDZz8fi9YB__zQ5U4pm6K4pjhm7R5c+Q@mail.gmail.com>
-Message-ID: <alpine.DEB.2.21.1810120304050.2565@hadrien>
+From: timur@kernel.org (Timur Tabi)
+Date: Fri, 12 Oct 2018 16:28:05 -0500
+Subject: [Cocci] Problem with improper multi-line string literals
+Message-ID: <CAOZdJXWJLLZdttCJmZVbZU9EEjxxHGdvnRCmT+3=8O=Cv4yx-w@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+I've attached a test.c and nv_printf.cocci file that demonstrates the problem.
 
+It appears that Coccinelle sometimes cannot handle multi-line string
+literals that are syntactically correct but still improper.  For
+example:
 
-On Thu, 11 Oct 2018, Timur Tabi wrote:
+        DBG_PRINTF((DBG_MODULE_OS, DBG_LEVEL_ERRORS,
+                    "NVRM: %s: this is a test \
+                    of multiline " NvP64_fmt " strings %p\n",
+                    __FUNCTION__,
+                    p1,
+                    p2));
 
-> I'm trying to write a rule that will remove __FUNCTION__ from
-> printf-like statements.  That is:
->
-> NV_PRINTF(x, "%s: ...", __FUNCTION__, ...)
->
-> into
->
-> NV_PRINTF(x, "...", ...)
->
-> I have this, which is based on existing Python code that works, but I
-> can't even get it to compile:
->
-> @script:python s@
-> c << r.c;
-> c2;
-> @@
-> import re
->
-> print c, c.find('%s')
-> coccinelle.c2 = c
->
-> // Get rid of __FUNCTION__ at the beginning of the string
-> @@
-> expression list[r.n] r.es;
-> constant char[] r.c;
-> identifier s.c2;
-> @@
-> NV_PRINTF(es,
-> -c, __FUNCTION__
-> +c2
-> ,...);
->
-> This produces:
->
-> 23 24
-> Fatal error: exception Failure("scriptmeta: parse error: \n = File
-> \"/home/ttabi/nv_printf2.cocci\", line 2, column 5,  charpos = 23\n
-> around = 'r', whole content = c << r.c;\n")
+This is valid C, but technically the string literal should have
+quotation marks at the beginning of each line.  When Coccinelle
+attempts to process my script with this, it gets confused and mangles
+the parameters after the string literal:
 
-It always checks the metavariables when parsing the semantic patch.  That
-doesn't involve invoking the python code.  It looks like you are missing
-the rule r, although I don't know if you have given the complete semantic
-patch above.
+ void func(void)
+ {
+-        DBG_PRINTF((DBG_MODULE_OS, DBG_LEVEL_ERRORS,
+-                    "NVRM: %s: this is a test \
+-                    of multiline " NvP64_fmt " strings %p\n",
+-                    __FUNCTION__,
+-                    p1,
+-                    p2));
+-}
++        NV_PRINTF(DBG_LEVEL_ERRORS, "NVRM: %s: this is a test \
++                    of multiline " NvP64_fmt " strings %p\n", __FUNCTION__,
++                    of multiline "p1, p2);
++}"
 
-julia
-
->
-> Besides whatever is wrong with the script, I'm confused as to how
-> spatch knows to invoke the Python script in the first place.  What is
-> it about my unnamed rule that tells spatch to invoke the script?
->
-> Also, why is the first parameter (es) an expression list?  Can't I
-> just use "expression x;" instead?
-> _______________________________________________
-> Cocci mailing list
-> Cocci at systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+I added code into my Python script to combine the string into one
+line, but that doesn't really matter because Coccinelle doesn't even
+call my Python code.  In fact, it ignores many of my rules because the
+DBG_LEVEL_ERRORS should have been changed to "LEVEL_ERROR".
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: test.c
+Type: text/x-csrc
+Size: 267 bytes
+Desc: not available
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20181012/b8997b9c/attachment.bin>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: nv_printf.cocci
+Type: application/octet-stream
+Size: 4024 bytes
+Desc: not available
+URL: <https://systeme.lip6.fr/pipermail/cocci/attachments/20181012/b8997b9c/attachment.obj>
