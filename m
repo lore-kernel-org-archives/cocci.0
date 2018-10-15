@@ -1,48 +1,28 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Sat, 13 Oct 2018 23:19:44 +0200 (CEST)
+From: timur@kernel.org (Timur Tabi)
+Date: Mon, 15 Oct 2018 11:37:00 -0500
 Subject: [Cocci] Problem with improper multi-line string literals
-In-Reply-To: <CAOZdJXWJLLZdttCJmZVbZU9EEjxxHGdvnRCmT+3=8O=Cv4yx-w@mail.gmail.com>
+In-Reply-To: <alpine.DEB.2.21.1810132318330.15695@hadrien>
 References: <CAOZdJXWJLLZdttCJmZVbZU9EEjxxHGdvnRCmT+3=8O=Cv4yx-w@mail.gmail.com>
-Message-ID: <alpine.DEB.2.21.1810132318330.15695@hadrien>
+ <alpine.DEB.2.21.1810132318330.15695@hadrien>
+Message-ID: <CAOZdJXUJhwYkzJc6LLb_4Vm7nj_si8igx-fgs-q-PyRkOHr2Dw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
+On Sat, Oct 13, 2018 at 4:19 PM Julia Lawall <julia.lawall@lip6.fr> wrote:
+> This problem has been fixed.  Actually, it thought that "    of multiline " was the new amount to indent...
 
+When I try to build this on Ubuntu 18, I get the following error:
 
-On Fri, 12 Oct 2018, Timur Tabi wrote:
+OCAMLOPT  parsing_c/includes.ml
+File "parsing_c/includes.ml", line 159, characters 9-22:
+Error: Unbound module Parmap
+Makefile:424: recipe for target 'parsing_c/includes.cmx' failed
+make: *** [parsing_c/includes.cmx] Error 2
+rm parsing_cocci/lexer_cli.ml parsing_cocci/parser_cocci_menhir.ml.d
+parsing_cocci/parser_cocci_menhir.mli.d parsing_cocci/lexer_script.ml
+parsing_cocci/lexer_cocci.ml
 
-> I've attached a test.c and nv_printf.cocci file that demonstrates the problem.
->
-> It appears that Coccinelle sometimes cannot handle multi-line string
-> literals that are syntactically correct but still improper.  For
-> example:
->
->         DBG_PRINTF((DBG_MODULE_OS, DBG_LEVEL_ERRORS,
->                     "NVRM: %s: this is a test \
->                     of multiline " NvP64_fmt " strings %p\n",
->                     __FUNCTION__,
->                     p1,
->                     p2));
->
-> This is valid C, but technically the string literal should have
-> quotation marks at the beginning of each line.  When Coccinelle
-> attempts to process my script with this, it gets confused and mangles
-> the parameters after the string literal:
->
->  void func(void)
->  {
-> -        DBG_PRINTF((DBG_MODULE_OS, DBG_LEVEL_ERRORS,
-> -                    "NVRM: %s: this is a test \
-> -                    of multiline " NvP64_fmt " strings %p\n",
-> -                    __FUNCTION__,
-> -                    p1,
-> -                    p2));
-> -}
-> +        NV_PRINTF(DBG_LEVEL_ERRORS, "NVRM: %s: this is a test \
-> +                    of multiline " NvP64_fmt " strings %p\n", __FUNCTION__,
-> +                    of multiline "p1, p2);
-> +}"
+I installed all the packages listed in install.txt.
 
-This problem has been fixed.  Actually, it thought that "    of multiline " was the new amount to indent...
-
-julia
+I tried "./configure --disable-pcre-syntax" and "./configure
+--disable-ocaml", but neither helped.
