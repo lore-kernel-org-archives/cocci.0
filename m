@@ -1,19 +1,40 @@
 From: timur@kernel.org (Timur Tabi)
-Date: Tue, 16 Oct 2018 12:14:02 -0500
-Subject: [Cocci] Problem with improper multi-line string literals
-In-Reply-To: <alpine.DEB.2.20.1810161838450.3512@hadrien>
-References: <CAOZdJXWJLLZdttCJmZVbZU9EEjxxHGdvnRCmT+3=8O=Cv4yx-w@mail.gmail.com>
- <alpine.DEB.2.21.1810132318330.15695@hadrien>
- <CAOZdJXUJhwYkzJc6LLb_4Vm7nj_si8igx-fgs-q-PyRkOHr2Dw@mail.gmail.com>
- <20181016151052.GA26422@himanshu-Vostro-3559>
- <CAOZdJXXdbNO-S7iQgmV3nJ6q-1jjy0sJFGmJ7m2inZ3HLOOC3Q@mail.gmail.com>
- <alpine.DEB.2.20.1810161838450.3512@hadrien>
-Message-ID: <CAOZdJXVDqxHBsOKK=+M_oazwO5Hc3uR7EsgACeg+2H3QwcWo4w@mail.gmail.com>
+Date: Tue, 16 Oct 2018 17:49:11 -0500
+Subject: [Cocci] __asm statements confuse spatch
+Message-ID: <CAOZdJXWvGOK3M0w_2N3ZXoLWSeJaJfC-UeHhfo6cG_qyLOFxJw@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On 10/16/18 11:39 AM, Julia Lawall wrote:
-> I didn't find anything significant.  Maybe you can try disabling parmap,
-> like you disabled pcre.  There seems to be a config option for that.
+I'm trying to modify a Windows .c file, and it contains several __asm
+(or _asm or asm) statements that confuse spatch.  They look like this:
 
-"./configure --disable-parmap" fixed the problem for me.  Thanks.
+    _asm {mov ax, ss}
+    __asm mov uRetval,eax                // Just keep 32 bits.
+    __asm {
+        PAUSE
+        PAUSE
+    }
+
+And so on.  Is there a way to get spatch to ignore these statements?
+
+Another problem I've having with the source file is that it has
+inconsistent usage of braces, and sometimes spatch wants to add
+unnecessary braces that look off.  For example, this:
+
+        if (...)
+            DBG_PRINTF((...));
+        else
+            DBG_PRINTF((...));
+        }
+
+(the } belongs to some if-statement much earlier in code somewhere) becomes:
+
+        if (...) {
+            NV_PRINTF(...);
+        }
+        else {
+            NV_PRINTF(...);
+        }
+        }
+
+I really don't want spatch to add the braces.
