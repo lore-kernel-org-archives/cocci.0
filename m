@@ -1,36 +1,53 @@
-From: timur@kernel.org (Timur Tabi)
-Date: Mon, 15 Oct 2018 13:35:35 -0500
+From: himanshujha199640@gmail.com (Himanshu Jha)
+Date: Tue, 16 Oct 2018 20:40:52 +0530
 Subject: [Cocci] Problem with improper multi-line string literals
-In-Reply-To: <alpine.DEB.2.20.1810151853140.10109@hadrien>
+In-Reply-To: <CAOZdJXUJhwYkzJc6LLb_4Vm7nj_si8igx-fgs-q-PyRkOHr2Dw@mail.gmail.com>
 References: <CAOZdJXWJLLZdttCJmZVbZU9EEjxxHGdvnRCmT+3=8O=Cv4yx-w@mail.gmail.com>
  <alpine.DEB.2.21.1810132318330.15695@hadrien>
  <CAOZdJXUJhwYkzJc6LLb_4Vm7nj_si8igx-fgs-q-PyRkOHr2Dw@mail.gmail.com>
- <alpine.DEB.2.20.1810151839210.10109@hadrien>
- <CAOZdJXWgMZCaiE0y9PL3fc6NLdLNGLFUvN2v+EAE2tffXHe9_w@mail.gmail.com>
- <alpine.DEB.2.20.1810151853140.10109@hadrien>
-Message-ID: <CAOZdJXXg+su+OXjb15wnpwk1WNZY-MyVAE8oZxwRud2pgGOQyw@mail.gmail.com>
+Message-ID: <20181016151052.GA26422@himanshu-Vostro-3559>
 To: cocci@systeme.lip6.fr
 List-Id: cocci@systeme.lip6.fr
 
-On Mon, Oct 15, 2018 at 11:55 AM Julia Lawall <julia.lawall@lip6.fr> wrote:
-> Do you have parmap installed on your machine?  Try
->
-> ocamlfind query parmap
+On Mon, Oct 15, 2018 at 11:37:00AM -0500, Timur Tabi wrote:
+> On Sat, Oct 13, 2018 at 4:19 PM Julia Lawall <julia.lawall@lip6.fr> wrote:
+> > This problem has been fixed.  Actually, it thought that "    of multiline " was the new amount to indent...
+> 
+> When I try to build this on Ubuntu 18, I get the following error:
+> 
+> OCAMLOPT  parsing_c/includes.ml
+> File "parsing_c/includes.ml", line 159, characters 9-22:
+> Error: Unbound module Parmap
+> Makefile:424: recipe for target 'parsing_c/includes.cmx' failed
+> make: *** [parsing_c/includes.cmx] Error 2
+> rm parsing_cocci/lexer_cli.ml parsing_cocci/parser_cocci_menhir.ml.d
+> parsing_cocci/parser_cocci_menhir.mli.d parsing_cocci/lexer_script.ml
+> parsing_cocci/lexer_cocci.ml
+> 
+> I installed all the packages listed in install.txt.
+> 
+> I tried "./configure --disable-pcre-syntax" and "./configure
+> --disable-ocaml", but neither helped.
 
-$  ocamlfind query parmap
-/usr/lib/ocaml/parmap
+FYI coccinelle works fine on Ubuntu 18.04.1 when built through
+source code.
 
-> Then try which ocaml and see if they have the same prefix.  For example,
-> I have:
->
-> hadrien: ocamlfind query parmap
-> /home/jll/.opam/4.06.1/lib/parmap
-> hadrien: which ocaml
-> /home/jll/.opam/4.06.1/bin/ocaml
+There might be problem for the specific config you're targeting.
+But I'm curious as to how disabling pcre-syntax helps ?
 
-$ which ocaml
-/usr/bin/ocaml
-$ ocaml --version
-The OCaml toplevel, version 4.05.0
+I do understand the purpose of disabling ocaml scripting.
 
-I have a stock Ubuntu 18.04 installation.
+himanshu at himanshu-Vostro-3559:~$ spatch --version
+spatch version 1.0.7-00498-g41ec93a2 compiled with OCaml version 4.05.0
+Flags passed to the configure script: --with-bash-completion=/etc/bash_completion.d/
+OCaml scripting support: yes
+Python scripting support: yes
+Syntax of regular expresssions: PCRE
+
+
+Thanks
+-- 
+Himanshu Jha
+Undergraduate Student
+Department of Electronics & Communication
+Guru Tegh Bahadur Institute of Technology
