@@ -1,102 +1,92 @@
-From: julia.lawall@lip6.fr (Julia Lawall)
-Date: Tue, 30 Oct 2018 22:11:20 +0100 (CET)
-Subject: [Cocci] sending out trewide patches
-In-Reply-To: <20181030205413.GA13518@linux.ibm.com>
-References: <alpine.DEB.2.21.1810270831160.3588@hadrien>
- <20181027171438.GD4170@linux.ibm.com>
- <alpine.DEB.2.21.1810272008140.5204@hadrien>
- <20181030194553.GR4170@linux.ibm.com>
- <alpine.DEB.2.21.1810302053070.2949@hadrien>
- <20181030200430.GS4170@linux.ibm.com>
- <alpine.DEB.2.21.1810302108310.2949@hadrien>
- <20181030203533.GT4170@linux.ibm.com> <20181030205413.GA13518@linux.ibm.com>
-Message-ID: <alpine.DEB.2.21.1810302204370.2949@hadrien>
+Return-Path: <SRS0=wJq9=NX=systeme.lip6.fr=cocci-bounces@kernel.org>
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+	aws-us-west-2-korg-lkml-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A256C43441
+	for <cocci@archiver.kernel.org>; Mon, 12 Nov 2018 16:32:02 +0000 (UTC)
+Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPS id 7BA31223AE
+	for <cocci@archiver.kernel.org>; Mon, 12 Nov 2018 16:32:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7BA31223AE
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lip6.fr
+Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
+Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
+          by isis.lip6.fr (8.15.2/lip6) with ESMTP id wACGVK82011306
+          ; Mon, 12 Nov 2018 17:31:20 +0100 (CET)
+Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
+	by systeme.lip6.fr (Postfix) with ESMTP id 72D8A76E1;
+	Mon, 12 Nov 2018 17:31:20 +0100 (CET)
+Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
+ (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by systeme.lip6.fr (Postfix) with ESMTPS id C76E876C7
+ for <cocci@systeme.lip6.fr>; Mon, 12 Nov 2018 17:31:18 +0100 (CET)
+Received: from mail2-relais-roc.national.inria.fr
+ (mail2-relais-roc.national.inria.fr [192.134.164.83])
+ by isis.lip6.fr (8.15.2/lip6) with ESMTP id wACGVH75012095
+ for <cocci@systeme.lip6.fr>; Mon, 12 Nov 2018 17:31:18 +0100 (CET)
+X-pt: isis.lip6.fr
+X-Addr-Warning: ATTENTION - Votre correspondant a fourni une adresse
+ d'enveloppe @lip6.fr, mais ce message ne provient pas
+ de lip6.fr ! postmaster@lip6.fr.
+X-IronPort-AV: E=Sophos;i="5.54,495,1534802400"; d="scan'208";a="355283938"
+Received: from wnpgmb0903w-ds01-95-62.dynamic.bellmts.net (HELO hadrien)
+ ([142.161.95.62])
+ by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 12 Nov 2018 17:21:50 +0100
+Date: Mon, 12 Nov 2018 10:21:49 -0600 (CST)
+From: Julia Lawall <julia.lawall@lip6.fr>
+X-X-Sender: jll@hadrien
 To: cocci@systeme.lip6.fr
-List-Id: cocci@systeme.lip6.fr
+Message-ID: <alpine.DEB.2.21.1811121018520.2366@hadrien>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+MIME-Version: 1.0
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 12 Nov 2018 17:31:21 +0100 (CET)
+X-Greylist: Delayed for 00:09:27 by milter-greylist-4.4.3 (isis.lip6.fr
+ [132.227.60.2]); Mon, 12 Nov 2018 17:31:18 +0100 (CET)
+X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
+X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
+Subject: [Cocci] Coccinelle mailing list archives
+X-BeenThere: cocci@systeme.lip6.fr
+X-Mailman-Version: 2.1.13
+Precedence: list
+List-Id: <cocci.systeme.lip6.fr>
+List-Unsubscribe: <https://systeme.lip6.fr/mailman/options/cocci>,
+ <mailto:cocci-request@systeme.lip6.fr?subject=unsubscribe>
+List-Archive: <https://systeme.lip6.fr/pipermail/cocci>
+List-Post: <mailto:cocci@systeme.lip6.fr>
+List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
+List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
+ <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Sender: cocci-bounces@systeme.lip6.fr
+Errors-To: cocci-bounces@systeme.lip6.fr
 
+Hello,
 
+The Coccinelle mailing list is now archived here:
 
-On Tue, 30 Oct 2018, Paul E. McKenney wrote:
+https://lore.kernel.org/cocci/
 
-> On Tue, Oct 30, 2018 at 01:35:33PM -0700, Paul E. McKenney wrote:
-> > On Tue, Oct 30, 2018 at 09:09:27PM +0100, Julia Lawall wrote:
-> > >
-> > >
-> > > On Tue, 30 Oct 2018, Paul E. McKenney wrote:
-> > >
-> > > > On Tue, Oct 30, 2018 at 08:56:01PM +0100, Julia Lawall wrote:
-> > > > >
-> > > > >
-> > > > > On Tue, 30 Oct 2018, Paul E. McKenney wrote:
-> > > > >
-> > > > > > On Sat, Oct 27, 2018 at 08:08:33PM +0200, Julia Lawall wrote:
-> > > > > > >
-> > > > > > >
-> > > > > > > On Sat, 27 Oct 2018, Paul E. McKenney wrote:
-> > > > > > >
-> > > > > > > > On Sat, Oct 27, 2018 at 08:38:02AM +0200, Julia Lawall wrote:
-> > > > > > > > > Hello,
-> > > > > > > > >
-> > > > > > > > > At OSS Europe, I got some questions about how to send out large
-> > > > > > > > > Coccinelle-generated patches.  Coccinelle provides a tool tools/splitpatch
-> > > > > > > > > (go to the tools subdirectory of the Coccinelle distribution and run make)
-> > > > > > > > > that splits patches by set of maintainers (the default), by directory
-> > > > > > > > > (--dirmerge option), or by file (--nomerge option).  There is a file
-> > > > > > > > > tools/splitpatch.README that explains the various ways that it can be
-> > > > > > > > > used, but the simplest is to create a patch normally using
-> > > > > > > > > git format-patch -s, obtaining eg 0001-changes.patch, and then run
-> > > > > > > > >
-> > > > > > > > > splitpatch 0001-changes.patch
-> > > > > > > > >
-> > > > > > > > > The output will include a 0001-changes.cover file, a set of
-> > > > > > > > > 0001-changesN.patch files with the various split patches, and a
-> > > > > > > > > 0001-changes.cmd file for sending it off with git send-email.
-> > > > > > > > >
-> > > > > > > > > This is available in the latest github version of Coccinelle.  Comments
-> > > > > > > > > are welcome.
-> > > > > > > >
-> > > > > > > > Thank you, Julia!  I will give it a try.
-> > > > > >
-> > > > > > Does the following error message mean that I need a more up-to-date
-> > > > > > version of ocaml or some such?
-> > > > > >
-> > > > > > 							Thanx, Paul
-> > > > > >
-> > > > > > File "globals/config.ml", line 1:
-> > > > > > Error: The implementation globals/config.ml
-> > > > > >        does not match the interface globals/config.cmi:
-> > > > > >        The field `python_interpreter' is required but not provided
-> > > > > >        The field `ocaml_version' is required but not provided
-> > > > > >        The field `configure_flags' is required but not provided
-> > > > > >        The field `get_temp_dir_name' is required but not provided
-> > > > > > make: *** [globals/config.cmo] Error 2
-> > > > >
-> > > > > I'm not familiar with that.  I assume you started with the github version
-> > > > > of Coccinelle.  Then ./autogen and ./configure.  Then make.  A recent
-> > > > > version of OCaml would indeed be good.  Maybe running make distclean
-> > > > > before ./autogen would be good.  The inconsistencies suggest that you have
-> > > > > some old compiled code hanging around.  The build infrastructure has
-> > > > > changed a lot recently, so it might not be managing code that predates the
-> > > > > changes in a way that you would expect.
-> > > >
-> > > > Good point, that does work much better.  Now -this- error message
-> > > > seems to be me having an old ocaml:
-> > > >
-> > > > ocamlfind ocamlopt -c  -no-alias-deps stdcompat__weak.mli -o stdcompat__weak.cmi
-> > > > ocamlopt: unknown option `-no-alias-deps'.
-> > > >
-> > > > Will get a new one and see how it goes...  ;-)
-> > >
-> > > What version do you have?  I thought that the makefile would detect
-> > > unsupported versions, so perhaps that check needs to be improved.
-> >
-> > I am running 4.0.3 and now installing 4.0.5.
->
-> But, sad to say, I get the same coccinelle build error on v4.0.5 ocaml.
+This contains all of the archives that are also on the mailmain site,
+which goes back to September 2012.  Unfortunately the previous archives
+appear to be lost.  If anyone would like to help with retrieving them and
+was subscribed prior to that time with a gmail address, there are
+instructions on constructing archives from gmail here:
 
-I'm not so familiar with the OCaml version numbering system.  Mine is
-4.06.0.  I don't see anything like 4.0.5 at https://ocaml.org/releases/
+https://korg.wiki.kernel.org/userdoc/lore
 
-A buzilla entry suggests that this option has existed since OCaml 4.02.1.
+Thanks to Himanshu Jha for suggesting this and Konstantin Ryabitsev for
+setting it up very quickly.
 
 julia
+_______________________________________________
+Cocci mailing list
+Cocci@systeme.lip6.fr
+https://systeme.lip6.fr/mailman/listinfo/cocci
