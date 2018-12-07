@@ -2,72 +2,60 @@ Return-Path: <SRS0=vlGS=OQ=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DED82C07E85
-	for <cocci@archiver.kernel.org>; Fri,  7 Dec 2018 17:52:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F381CC07E85
+	for <cocci@archiver.kernel.org>; Fri,  7 Dec 2018 17:55:49 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 767D220838
-	for <cocci@archiver.kernel.org>; Fri,  7 Dec 2018 17:52:46 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="mFw3STx7"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 767D220838
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 888DE2082D
+	for <cocci@archiver.kernel.org>; Fri,  7 Dec 2018 17:55:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 888DE2082D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lip6.fr
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-          by isis.lip6.fr (8.15.2/lip6) with ESMTP id wB7HqRex004876
-          ; Fri, 7 Dec 2018 18:52:27 +0100 (CET)
+          by isis.lip6.fr (8.15.2/lip6) with ESMTP id wB7HtVYV028950
+          ; Fri, 7 Dec 2018 18:55:31 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id E283876D6;
-	Fri,  7 Dec 2018 18:52:26 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 88A3C76D6;
+	Fri,  7 Dec 2018 18:55:31 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 305B076D4
- for <cocci@systeme.lip6.fr>; Fri,  7 Dec 2018 18:52:25 +0100 (CET)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by isis.lip6.fr (8.15.2/lip6) with ESMTP id wB7HqOl2021628
- for <cocci@systeme.lip6.fr>; Fri, 7 Dec 2018 18:52:24 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 2036C76D4
+ for <cocci@systeme.lip6.fr>; Fri,  7 Dec 2018 18:55:30 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr
+ (mail3-relais-sop.national.inria.fr [192.134.164.104])
+ by isis.lip6.fr (8.15.2/lip6) with ESMTP id wB7HtSNQ005032
+ for <cocci@systeme.lip6.fr>; Fri, 7 Dec 2018 18:55:29 +0100 (CET)
 X-pt: isis.lip6.fr
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com
- [209.85.210.53])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id A45E220882
- for <cocci@systeme.lip6.fr>; Fri,  7 Dec 2018 17:52:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1544205143;
- bh=mNq4EDVtOfgRyUgD4uNiYC5TA/z+mXa3UXw+EmfxFYc=;
- h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=mFw3STx7r6f1goqHJX37j0ZFNUTriVoM6X9bKZbELjIMTluJWDZIbi4mN93/e/sMA
- SbMGZbzKhfvy0fVKonmEeEX03Ak0jeJdJAqNZ76EJ4032ADhChZ08FcOLHDRSyoxNk
- tJWcARwS8Sno55Q/kW0CHXVXy9O3T5eb5Sb+3x8o=
-Received: by mail-ot1-f53.google.com with SMTP id 40so4576623oth.4
- for <cocci@systeme.lip6.fr>; Fri, 07 Dec 2018 09:52:23 -0800 (PST)
-X-Gm-Message-State: AA+aEWYpZcbppmZjMj1Hk+sBRdFJjbmzYlOovvx0xZTbFpBsV0bIJda5
- qgcJfmVT6g9ySQHD4MP3ojm1jmtFkHw4i8WJmak=
-X-Google-Smtp-Source: AFSGD/WOuiLJCRLTVYLvr4NtOdOcqWYgY/U3zDBktqZOKquBpu4dxBL/Z+QYtG+GyZ/Q+xu7lI9kSQGt73iLpDGIGCo=
-X-Received: by 2002:a9d:6c11:: with SMTP id f17mr1961641otq.38.1544205142997; 
- Fri, 07 Dec 2018 09:52:22 -0800 (PST)
-MIME-Version: 1.0
+X-Addr-Warning: ATTENTION - Votre correspondant a fourni une adresse
+ d'enveloppe @lip6.fr, mais ce message ne provient pas
+ de lip6.fr ! postmaster@lip6.fr.
+X-IronPort-AV: E=Sophos;i="5.56,327,1539640800"; d="scan'208";a="288318169"
+Received: from vaio-julia.rsr.lip6.fr ([132.227.76.33])
+ by mail3-relais-sop.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 07 Dec 2018 18:55:28 +0100
+Date: Fri, 7 Dec 2018 18:55:27 +0100 (CET)
+From: Julia Lawall <julia.lawall@lip6.fr>
+X-X-Sender: jll@hadrien
+To: Timur Tabi <timur@kernel.org>
+In-Reply-To: <CAOZdJXX-_cVVTdvird2amhKRD-ywDgCxJopwof4ZovjU2zS-Yw@mail.gmail.com>
+Message-ID: <alpine.DEB.2.20.1812071853590.20798@hadrien>
 References: <CAOZdJXW9XmFAPbhiSsejhFZ+9me=kHc25A-Qk0e=CrCnkkFuhw@mail.gmail.com>
  <alpine.DEB.2.20.1812071837160.20798@hadrien>
-In-Reply-To: <alpine.DEB.2.20.1812071837160.20798@hadrien>
-From: Timur Tabi <timur@kernel.org>
-Date: Fri, 7 Dec 2018 11:51:46 -0600
-X-Gmail-Original-Message-ID: <CAOZdJXX-_cVVTdvird2amhKRD-ywDgCxJopwof4ZovjU2zS-Yw@mail.gmail.com>
-Message-ID: <CAOZdJXX-_cVVTdvird2amhKRD-ywDgCxJopwof4ZovjU2zS-Yw@mail.gmail.com>
-To: Julia Lawall <julia.lawall@lip6.fr>
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 07 Dec 2018 18:52:27 +0100 (CET)
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Fri, 07 Dec 2018 18:52:24 +0100 (CET)
+ <CAOZdJXX-_cVVTdvird2amhKRD-ywDgCxJopwof4ZovjU2zS-Yw@mail.gmail.com>
+User-Agent: Alpine 2.20 (DEB 67 2015-01-07)
+MIME-Version: 1.0
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 07 Dec 2018 18:55:32 +0100 (CET)
+X-Greylist: IP, sender and recipient auto-whitelisted, not delayed by
+ milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]);
+ Fri, 07 Dec 2018 18:55:29 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: cocci <cocci@systeme.lip6.fr>, Timur Tabi <timur@kernel.org>
+Cc: cocci <cocci@systeme.lip6.fr>
 Subject: Re: [Cocci] Fatal error: exception File
  "engine/ctlcocci_integration.ml", line 361,
  characters 4-10: Assertion failed
@@ -87,21 +75,31 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-On Fri, Dec 7, 2018 at 11:42 AM Julia Lawall <julia.lawall@lip6.fr> wrote:
-> Do you know which function in your C code causes the problem?  Does that
-> function have some dead code?  You can try
+
+
+On Fri, 7 Dec 2018, Timur Tabi wrote:
+
+> On Fri, Dec 7, 2018 at 11:42 AM Julia Lawall <julia.lawall@lip6.fr> wrote:
+> > Do you know which function in your C code causes the problem?  Does that
+> > function have some dead code?  You can try
+> >
+> > spatch --control-flow file.c
 >
-> spatch --control-flow file.c
+> That revealed the line number of the problem.  It's a goto tag in a macro:
+>
+> #define xxx(type, member) \
+> ...
+> member##_done:                                                               \
+> ...
+>
+> I can work around this by temporarily commenting-out that line, since
+> my script doesn't care about its contents.
 
-That revealed the line number of the problem.  It's a goto tag in a macro:
+Great to have identified the source of the problem.  It would probably be
+better for Coccinelle to skip the relevant top-level element rather than
+crashing in this case.
 
-#define xxx(type, member) \
-...
-member##_done:                                                               \
-...
-
-I can work around this by temporarily commenting-out that line, since
-my script doesn't care about its contents.
+julia
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
