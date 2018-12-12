@@ -2,91 +2,62 @@ Return-Path: <SRS0=XveF=OV=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=0.2 required=3.0 tests=DATE_IN_PAST_03_06,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4987C65BAF
-	for <cocci@archiver.kernel.org>; Wed, 12 Dec 2018 16:47:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F315EC65BAF
+	for <cocci@archiver.kernel.org>; Wed, 12 Dec 2018 22:52:30 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1B97C2084E
-	for <cocci@archiver.kernel.org>; Wed, 12 Dec 2018 16:47:17 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DZf80CZY"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1B97C2084E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 3532020851
+	for <cocci@archiver.kernel.org>; Wed, 12 Dec 2018 22:52:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3532020851
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=sysmocom.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-          by isis.lip6.fr (8.15.2/lip6) with ESMTP id wBCGl4n2021149
-          ; Wed, 12 Dec 2018 17:47:04 +0100 (CET)
+          by isis.lip6.fr (8.15.2/lip6) with ESMTP id wBCMqDvx013189
+          ; Wed, 12 Dec 2018 23:52:14 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 431DE76AB;
-	Wed, 12 Dec 2018 17:47:04 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id C466176AB;
+	Wed, 12 Dec 2018 23:52:13 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id CF6D060D7
- for <cocci@systeme.lip6.fr>; Wed, 12 Dec 2018 17:47:00 +0100 (CET)
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com
- [IPv6:2607:f8b0:4864:20:0:0:0:52f] (may be forged))
- by isis.lip6.fr (8.15.2/lip6) with ESMTP id wBCGkxTP006704
- for <cocci@systeme.lip6.fr>; Wed, 12 Dec 2018 17:47:00 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 0339560D7
+ for <cocci@systeme.lip6.fr>; Wed, 12 Dec 2018 23:52:12 +0100 (CET)
+Received: from mail.sysmocom.de (mail.sysmocom.de [144.76.43.93])
+ by isis.lip6.fr (8.15.2/lip6) with ESMTP id wBCMqBQO022015
+ for <cocci@systeme.lip6.fr>; Wed, 12 Dec 2018 23:52:11 +0100 (CET)
 X-pt: isis.lip6.fr
-Received: by mail-pg1-x52f.google.com with SMTP id s198so8589119pgs.2
- for <cocci@systeme.lip6.fr>; Wed, 12 Dec 2018 08:47:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to:user-agent;
- bh=BKexHWBSPBTwgHQ3TVsh4NUrQIerF2gMww+s2Yt8PRc=;
- b=DZf80CZY3ZSg8MNKSWUEb2WZm+H9h90sfk1FpqpNsM9jvL9OSwpO2cSmU1ElPDzJGv
- 7wompIKWprPG5pktbAXEX4qSlzwdXxAC6PxfEYCXz8Ro70FoJ39Pn9UdvG4wsWExjAHs
- pBhsy9Dz3kTxBquXsYV2+t/O2SLeAANacR0MFMedeyDU7Hf0w32nbkJzrukW3UlGy3tn
- YMK7kvr2OQFsiBeYMgEc5Ap9pqZgL6RNd/FRA3EqycCZLvqU/WOtyrq3zsvlDW8b27qd
- AM6Cu6YvjLNY0WqbhEXXHSpFXCqFeTJ/4iUaJQLQCwyxGMdQeK6P7f63KnYzzirUIR3y
- E1HQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to:user-agent;
- bh=BKexHWBSPBTwgHQ3TVsh4NUrQIerF2gMww+s2Yt8PRc=;
- b=T1lyRTZ0J+b3AgcAO+PAXd1LoqmcWYOZoBki7z8VlQB3pIeBtFK/uSYEn3m781IcmW
- 2SpCqaEOxIIaFT1QznFiuRw6+UqfkVzsfeRnHkTlT3Mqtyemi5Eaglcmy2PnXmsngAsy
- ElpfeBRnOm9hSfVctKrBU49lMVNgP1BVC19/QT+ZGXJaEidzVJiyOpNEAGvhxcpdyvX9
- rqmdH+GugBxV/Pp0cpaKEyq3HhFQbwGmQc41n/J0R7JBYSLvyzCC7kXFBPEoC+lo9rlJ
- SYPnNayij5DTMrie6cxt7P0wQjWuLxWVyzndWKgvFZagHjB/LIymMf6LmYxhKPsLQrzV
- XXfw==
-X-Gm-Message-State: AA+aEWYzIY6XWhjzpigeI6Zp8vCKBTs3RMxFNeUZZExlmMZgfg2Jk77e
- hQI2hNqzoCZcREPgyAvGjPI=
-X-Google-Smtp-Source: AFSGD/XE0M1tivgWU5+fyQCrHj8ldJLjuBLljhTwYGnI3029F91sD+L3/43flbcpk/9Ta3elU22ghg==
-X-Received: by 2002:a62:14d1:: with SMTP id 200mr21151444pfu.103.1544633219150; 
- Wed, 12 Dec 2018 08:46:59 -0800 (PST)
-Received: from himanshu-Vostro-3559 ([103.233.116.134])
- by smtp.gmail.com with ESMTPSA id x26sm22242652pfn.50.2018.12.12.08.46.55
- (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
- Wed, 12 Dec 2018 08:46:58 -0800 (PST)
-Date: Wed, 12 Dec 2018 22:16:52 +0530
-From: Himanshu Jha <himanshujha199640@gmail.com>
-To: Julia Lawall <Julia.Lawall@lip6.fr>, yamada.masahiro@socionext.com
-Message-ID: <20181212164651.GA12081@himanshu-Vostro-3559>
-References: <1544615757-19356-1-git-send-email-Julia.Lawall@lip6.fr>
+Received: from public-mail (mail.sysmocom.de [144.76.43.93])
+ by mail.sysmocom.de (Postfix) with ESMTP id 2CCE847C948
+ for <cocci@systeme.lip6.fr>; Wed, 12 Dec 2018 22:52:11 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at sysmocom.de
+Received: from mail.sysmocom.de ([144.76.43.93])
+ by public-mail (mail.sysmocom.de [144.76.43.93]) (amavisd-new, port 10024)
+ with ESMTP id 4SNWzysAPtOM; Wed, 12 Dec 2018 22:52:10 +0000 (UTC)
+Received: from [10.2.1.203] (port-92-195-24-223.dynamic.qsc.de [92.195.24.223])
+ by mail.sysmocom.de (Postfix) with ESMTPSA id 1496547C93B
+ for <cocci@systeme.lip6.fr>; Wed, 12 Dec 2018 22:52:10 +0000 (UTC)
+To: cocci@systeme.lip6.fr
+References: <a752b0e8-8ed0-1e86-eff7-3d91e87b11ae@sysmocom.de>
+ <alpine.DEB.2.20.1812121322240.4125@hadrien>
+From: Max <msuraev@sysmocom.de>
+Message-ID: <b9f9b797-8f26-8034-7958-6182f5813e26@sysmocom.de>
+Date: Wed, 12 Dec 2018 19:00:58 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.2.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <1544615757-19356-1-git-send-email-Julia.Lawall@lip6.fr>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 12 Dec 2018 17:47:04 +0100 (CET)
+In-Reply-To: <alpine.DEB.2.20.1812121322240.4125@hadrien>
+Content-Language: en-US
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 12 Dec 2018 23:52:14 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Wed, 12 Dec 2018 17:47:00 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Wed, 12 Dec 2018 23:52:11 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78
-Cc: Michal Marek <michal.lkml@markovi.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Nicolas Palix <nicolas.palix@imag.fr>, linux-kernel@vger.kernel.org,
-        "Paul E . McKenney" <paulmck@linux.ibm.com>, cocci@systeme.lip6.fr
-Subject: Re: [Cocci] [PATCH 0/2] scripts: coccinelle: Improve boolinit
+X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
+Subject: Re: [Cocci] replacing defines
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -98,38 +69,32 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-+Cc Masahiro Yamada
-
-On Wed, Dec 12, 2018 at 12:55:55PM +0100, Julia Lawall wrote:
-> Reduce the scope of the rule and improve the warning messages.
-> 
-> julia (2):
->   scripts: coccinelle: only suggest true/false in files that already use
->     them
->   scripts: coccinelle: Correct warning message
-> 
->  scripts/coccinelle/misc/boolinit.cocci | 43 +++++++++++++++++++++-------------
->  1 file changed, 27 insertions(+), 16 deletions(-)
-> 
-> -- 
-> 1.9.1
-> 
-> _______________________________________________
-> Cocci mailing list
-> Cocci@systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
-
--- 
-Himanshu Jha
-Undergraduate Student
-Department of Electronics & Communication
-Guru Tegh Bahadur Institute of Technology
-_______________________________________________
-Cocci mailing list
-Cocci@systeme.lip6.fr
-https://systeme.lip6.fr/mailman/listinfo/cocci
+U3BsZW5kaWQsIHdvcmtlZCBsaWtlIGEgY2hhcm0gb25jZSBJJ3ZlIGxlZnQgb25seSAiZXhwcmVz
+c2lvbiBhLCBiLCBjIiAKaW4gdGhlIGhlYWRlci4gVGhhbmsgeW91IGZvciBxdWljayBhbmQgZGV0
+YWlsZWQgcmVzcG9uc2UuCgpPbiBhIHJlbGF0ZWQgbm90ZTogd291bGQgaXQgYmUgcG9zc2libGUg
+dG8gcmVtb3ZlIG9sZCBtdWx0aS1saW5lICNkZWZpbmUgCnVzaW5nIHNwYXRjaCBhcyB3ZWxsPwoK
+VGhhdCdzIG9mIGNvdXJzZSBtb3JlIG9mIGEgbml0cGlja2luZyBidXQgd291bGQgYmUgbmljZSB0
+byBnZXQgcmlkIG9mIAp0aGUgb2xkIGRlZmluaXRpb24gb25jZSBpdCdzIG5vdCB1c2VkIGFueW1v
+cmUgYXMgd2VsbC4KCk15IGF0dGVtcHRzIGF0IHRoYXQgcmVzdWx0ZWQgb25seSBpbiAibm90aGlu
+ZyB0byBhdHRhY2ggcHJhZ21hIHRvIiBlcnJvciAKc28gaXQgc2VlbXMgbGlrZSAjZGVmaW5lIGl0
+c2VsZiBpcyBoYW5kbGVkIGFzIGEgc3BlY2lhbCBjYXNlIG9mIHNvbWUgCnNvcnQgd2hpbGUgdGhl
+IHVzZSBvZiBtYWNybyBhbmQgZnVuY3Rpb24gaXMgZXF1aXZhbGVudC4KCjEyLjEyLjE4IDEzOjI2
+LCBKdWxpYSBMYXdhbGwg0L/QuNGI0LXRgjoKPgo+IEFjdHVhbGx5LCB0aGUgZmFjdCB0aGF0IG9s
+ZF9qdW5rIGFuZCBuZXdfc3R1ZmYgYXJlIGRlZmluZWQgYXMgbWFjcm9zIGlzCj4gaXJyZWxldmFu
+dCBmb3IgdGhpcyBydWxlLiAgQ29jY2luZWxsZSB3aWxsIGp1c3QgbG9vayBhdCB0aGUgY2FsbHMu
+ICBJdAo+IGRvZXNuJ3QgZXhwbGFuZCBtYWNyb3MsIHNvIGl0IGRvZXNuJ3Qga25vdyB3aGV0aGVy
+IHRoZSBjYWxsIGlzIHRvIGEgbWFjcgo+IG9yIHRvIGEgZnVuY3Rpb24uCj4KPiBqdWxpYQoKLS0g
+Ci0gTWF4IFN1cmFldiA8bXN1cmFldkBzeXNtb2NvbS5kZT4gICAgICAgaHR0cDovL3d3dy5zeXNt
+b2NvbS5kZS8KPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT0KKiBzeXNtb2NvbSAtIHN5c3RlbXMgZm9yIG1vYmlsZSBj
+b21tdW5pY2F0aW9ucyBHbWJICiogQWx0LU1vYWJpdCA5MwoqIDEwNTU5IEJlcmxpbiwgR2VybWFu
+eQoqIFNpdHogLyBSZWdpc3RlcmVkIG9mZmljZTogQmVybGluLCBIUkIgMTM0MTU4IEIKKiBHZXNj
+aGFlZnRzZnVlaHJlciAvIE1hbmFnaW5nIERpcmVjdG9yczogSGFyYWxkIFdlbHRlCgpfX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpDb2NjaSBtYWlsaW5nIGxp
+c3QKQ29jY2lAc3lzdGVtZS5saXA2LmZyCmh0dHBzOi8vc3lzdGVtZS5saXA2LmZyL21haWxtYW4v
+bGlzdGluZm8vY29jY2kK
