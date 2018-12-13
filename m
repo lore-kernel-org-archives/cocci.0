@@ -3,59 +3,75 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-0.9 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A69B3C6786C
-	for <cocci@archiver.kernel.org>; Fri, 14 Dec 2018 08:08:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF6E2C67839
+	for <cocci@archiver.kernel.org>; Fri, 14 Dec 2018 08:11:09 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 131872080F
-	for <cocci@archiver.kernel.org>; Fri, 14 Dec 2018 08:08:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 131872080F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lip6.fr
+	by mail.kernel.org (Postfix) with ESMTPS id 508CE2080F
+	for <cocci@archiver.kernel.org>; Fri, 14 Dec 2018 08:11:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 508CE2080F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-          by isis.lip6.fr (8.15.2/lip6) with ESMTP id wBE88Bcw000594
-          ; Fri, 14 Dec 2018 09:08:11 +0100 (CET)
+          by isis.lip6.fr (8.15.2/lip6) with ESMTP id wBE8As5f008215
+          ; Fri, 14 Dec 2018 09:10:54 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id C411B76D8;
-	Fri, 14 Dec 2018 09:08:11 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 61C4376D8;
+	Fri, 14 Dec 2018 09:10:54 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 1D88E60D7
- for <cocci@systeme.lip6.fr>; Fri, 14 Dec 2018 09:08:11 +0100 (CET)
-Received: from mail2-relais-roc.national.inria.fr
- (mail2-relais-roc.national.inria.fr [192.134.164.83])
- by isis.lip6.fr (8.15.2/lip6) with ESMTP id wBE88AMN019083
- for <cocci@systeme.lip6.fr>; Fri, 14 Dec 2018 09:08:10 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id A2B1F76D5
+ for <cocci@systeme.lip6.fr>; Thu, 13 Dec 2018 19:06:34 +0100 (CET)
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by isis.lip6.fr (8.15.2/lip6) with ESMTP id wBDI6VTv006394
+ for <cocci@systeme.lip6.fr>; Thu, 13 Dec 2018 19:06:32 +0100 (CET)
 X-pt: isis.lip6.fr
-X-Addr-Warning: ATTENTION - Votre correspondant a fourni une adresse
- d'enveloppe @lip6.fr, mais ce message ne provient pas
- de lip6.fr ! postmaster@lip6.fr.
-X-IronPort-AV: E=Sophos;i="5.56,352,1539640800"; d="scan'208";a="360335709"
-Received: from vaio-julia.rsr.lip6.fr ([132.227.76.33])
- by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 14 Dec 2018 09:08:03 +0100
-Date: Fri, 14 Dec 2018 09:08:00 +0100 (CET)
-From: Julia Lawall <julia.lawall@lip6.fr>
-X-X-Sender: jll@hadrien
-To: "=?ISO-2022-JP?Q?=1B$BF#K\\B=404u=1B=28J?=" <fjtkut@gmail.com>
-In-Reply-To: <CADa4oMViD=7G5=54L9n2fK=2AdPQs14bBRMNRXxJjUWiZV6iLg@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1812140902120.3571@hadrien>
-References: <CADa4oMViD=7G5=54L9n2fK=2AdPQs14bBRMNRXxJjUWiZV6iLg@mail.gmail.com>
-User-Agent: Alpine 2.20 (DEB 67 2015-01-07)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+ by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 13 Dec 2018 10:06:31 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.56,349,1539673200"; d="scan'208";a="303602505"
+Received: from irsmsx151.ger.corp.intel.com ([163.33.192.59])
+ by fmsmga005.fm.intel.com with ESMTP; 13 Dec 2018 10:06:29 -0800
+Received: from irsmsx110.ger.corp.intel.com ([169.254.15.233]) by
+ IRSMSX151.ger.corp.intel.com ([169.254.4.32]) with mapi id 14.03.0415.000;
+ Thu, 13 Dec 2018 18:06:29 +0000
+From: "Flykt, Patrik" <patrik.flykt@intel.com>
+To: "schwahn@cs.tu-darmstadt.de" <schwahn@cs.tu-darmstadt.de>,
+        "himanshujha199640@gmail.com" <himanshujha199640@gmail.com>,
+        "Ceolin, Flavio" <flavio.ceolin@intel.com>
+Thread-Topic: [Cocci] Build issue after stdcompat upgrade
+Thread-Index: AQHUkw6Ry3DFZ5nIu0mzMiteJclU0g==
+Date: Thu, 13 Dec 2018 18:06:28 +0000
+Message-ID: <d94f90c42069e3fca6075fcff761d5070012daea.camel@intel.com>
+References: <ecaf70fe-1194-9457-ad0c-5f029343b2d4@cs.tu-darmstadt.de>
+ <alpine.DEB.2.20.1812101554470.3486@hadrien>
+ <9957435e-f4bc-92aa-0a9e-295c0d77345b@cs.tu-darmstadt.de>
+ <20181210174227.GA2063@himanshu-Vostro-3559>
+In-Reply-To: <20181210174227.GA2063@himanshu-Vostro-3559>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.30.2-1 
+x-originating-ip: [10.254.104.111]
+Content-ID: <0E242BAC5207D74089F61C892E7072B6@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1608859821=="
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 14 Dec 2018 09:08:12 +0100 (CET)
-X-Greylist: IP, sender and recipient auto-whitelisted, not delayed by
- milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]);
- Fri, 14 Dec 2018 09:08:10 +0100 (CET)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 14 Dec 2018 09:10:54 +0100 (CET)
+X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [132.227.60.2]); Thu, 13 Dec 2018 19:06:32 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: cocci@systeme.lip6.fr
-Subject: Re: [Cocci] how to use Coccinelle
+X-Mailman-Approved-At: Fri, 14 Dec 2018 09:10:52 +0100
+Cc: "cocci@systeme.lip6.fr" <cocci@systeme.lip6.fr>
+Subject: Re: [Cocci] Build issue after stdcompat upgrade
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -67,166 +83,47 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
---===============1608859821==
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+On Mon, 2018-12-10 at 23:12 +0530, Himanshu Jha wrote:
+> On Mon, Dec 10, 2018 at 04:42:05PM +0100, Oliver Schwahn wrote:
+> > > > Do you have any suggestion for a workaround?
+> > > 
+> > > Can you upgrade to 4.06?  I also have this problem with 4.05.
+> > 
+> > Thanks for the suggestion. OCaml 4.05 was indeed the problem. I
+> > upgraded to 4.07 and that worked fine.
+> > I also had the chance to check on configurations with OCaml 4.01.0
+> > and 4.02.3, which also work as expected.
+> 
+> FYI Patrik & Flavio,
+> 
+> You too need to Upgrade and try again.
+> 
+> https://lore.kernel.org/cocci/ecaf70fe-1194-9457-ad0c-5f029343b2d4@cs.tu-darmstadt.de/
 
+Debian testing with ocaml from stable, i.e. ocaml 4.02.3-9, stops with:
 
+OCAMLOPT  parsing_c/ast_c.ml
+OCAMLOPT  parsing_c/includes.ml
+File "parsing_c/includes.ml", line 159, characters 9-22:
+Error: Unbound module Parmap
+make: *** [Makefile:424: parsing_c/includes.cmx] Error 2
+rm parsing_cocci/parser_cocci_menhir.ml.d parsing_cocci/lexer_script.ml parsing_cocci/lexer_cocci.ml
 
-On Fri, 14 Dec 2018, 藤本太希 wrote:
+Here Ubuntu OCaml seems to have a difference against Debian. Ocaml
+4.05.0-10+b1 is unfortunately the latest in Debian testing and
+unstable. It seems I have to sit and wait until also Debian gets
+updated.
 
->
-> Hello. 
->
-> I am a student of Kochi University of Technology in Japan.
->
-> I have asked a question before.
->
-> Thank you for all your help on that occasion.
->
-> This time I have two questions about how to use Coccinelle.
->
->
->
-> This is the first question.
->
-> Identifiers can be declared in scripts.
->
-> Can you declare the type in same way?
->
-> For example, there are the following programs.
->
-> ———————————————————
->
-> @script:python pre@
->
-> alloc;
->
-> @@
->
-> coccinelle.alloc = “malloc”
->
->
-> @ rule1 @
->
-> type T={int, double};
->
-> identifier v, pre.alloc;
->
-> @@
->
-> T v;
->
-> …
->
-> alloc(...)
->
->
-> @ rule2 @
->
-> type T={int, double};
->
-> identifier v, pre.alloc;
->
-> @@
->
-> T v;
->
-> … when != alloc(…)
->
-> ———————————————————
->
-> In these two rules there is T of type with the same restriction.
->
-> Can you declare this like alloc?
->
-> Do you have to declare in each rule?
+Cheers,
 
-I think that you can say
-
-type T = {r1.type1, r1.type2};
-
-In your python rule, though, you should say eg
-
-coccinelle.type1 = make_type("int")
-
-It is necessary to make the list of possible types in each rule.  If you
-said type rule1.T; in rule2, that would only be the specific binding of T
-chosen in rule1.
-
-
->
->
->
-> Next is the second question.
->
-> In the previous answer you said
->
-> “Coccinelle rather focuses on the case where variables are all defined at the top of a function”.
->
-> Do you mean that we can not distinguish between the same name variables?
->
-> For example, there are the following programs.
->
-> ———————————————————
->
-> —c-program—
->
-> void foo() {
->
->   int a;
->
->   {
->
->     int a;
->
->     hoge(a);
->
->   }
->
-> }
->
->
-> —cocci—
->
-> @rule@
->
-> identifier v;
->
-> type T;
->
-> @@
->
-> T v;
->
-> …
->
-> hoge(v);
->
-> ———————————————————
->
-> matched first a and second a．
-
-An identifier is just a name.  It has no notion of scope.  If you want to
-be sure that the second one is not matched, then you should put
-
-T v;
-... when != T1 v;
-hoge(v);
-
-julia
---===============1608859821==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+	Patrik
 
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
 https://systeme.lip6.fr/mailman/listinfo/cocci
-
---===============1608859821==--
