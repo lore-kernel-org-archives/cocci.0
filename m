@@ -1,62 +1,84 @@
-Return-Path: <SRS0=UtEZ=PN=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=EO5m=PO=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05A2BC43387
-	for <cocci@archiver.kernel.org>; Sat,  5 Jan 2019 06:25:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE4B2C43387
+	for <cocci@archiver.kernel.org>; Sun,  6 Jan 2019 02:19:34 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 51C1221874
-	for <cocci@archiver.kernel.org>; Sat,  5 Jan 2019 06:25:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 51C1221874
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lip6.fr
+	by mail.kernel.org (Postfix) with ESMTPS id DB18C2229F
+	for <cocci@archiver.kernel.org>; Sun,  6 Jan 2019 02:19:33 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nifty.com header.i=@nifty.com header.b="bIR5BWhn"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DB18C2229F
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=socionext.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x056PfSY017928
-          ; Sat, 5 Jan 2019 07:25:41 +0100 (CET)
+          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x062JFCL000055
+          ; Sun, 6 Jan 2019 03:19:15 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id A1C9A76E0;
-	Sat,  5 Jan 2019 07:25:41 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id EF2A476E0;
+	Sun,  6 Jan 2019 03:19:14 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id DEAD46251
- for <cocci@systeme.lip6.fr>; Sat,  5 Jan 2019 07:25:39 +0100 (CET)
-Received: from mail2-relais-roc.national.inria.fr
- (mail2-relais-roc.national.inria.fr [192.134.164.83])
- by isis.lip6.fr (8.15.2/lip6) with ESMTP id x056PdVs013309
- for <cocci@systeme.lip6.fr>; Sat, 5 Jan 2019 07:25:39 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 0BEE16251
+ for <cocci@systeme.lip6.fr>; Sun,  6 Jan 2019 03:19:13 +0100 (CET)
+Received: from condef-02.nifty.com (condef-02.nifty.com [202.248.20.67])
+ by isis.lip6.fr (8.15.2/lip6) with ESMTP id x062JBrL026993
+ for <cocci@systeme.lip6.fr>; Sun, 6 Jan 2019 03:19:11 +0100 (CET)
 X-pt: isis.lip6.fr
-X-Addr-Warning: ATTENTION - Votre correspondant a fourni une adresse
- d'enveloppe @lip6.fr, mais ce message ne provient pas
- de lip6.fr ! postmaster@lip6.fr.
-X-IronPort-AV: E=Sophos;i="5.56,441,1539640800"; d="scan'208";a="362621298"
-Received: from abo-91-111-68.mrs.modulonet.fr (HELO hadrien) ([85.68.111.91])
- by mail2-relais-roc.national.inria.fr with
- ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Jan 2019 07:25:38 +0100
-Date: Sat, 5 Jan 2019 07:25:38 +0100 (CET)
-From: Julia Lawall <julia.lawall@lip6.fr>
-X-X-Sender: jll@hadrien
-To: Timur Tabi <timur@kernel.org>
-In-Reply-To: <CAOZdJXWUhEcm8HgJFE2L1dqgMRX51X+LF=b=Obzj55pU4gc3QA@mail.gmail.com>
-Message-ID: <alpine.DEB.2.21.1901050714330.2519@hadrien>
-References: <CAOZdJXWUhEcm8HgJFE2L1dqgMRX51X+LF=b=Obzj55pU4gc3QA@mail.gmail.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+Received: from conssluserg-06.nifty.com ([10.126.8.85])by condef-02.nifty.com
+ with ESMTP id x061h9s4027568
+ for <cocci@systeme.lip6.fr>; Sun, 6 Jan 2019 10:43:10 +0900
+Received: from mail-vk1-f174.google.com (mail-vk1-f174.google.com
+ [209.85.221.174]) (authenticated)
+ by conssluserg-06.nifty.com with ESMTP id x061ftsw010573
+ for <cocci@systeme.lip6.fr>; Sun, 6 Jan 2019 10:41:55 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com x061ftsw010573
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+ s=dec2015msa; t=1546738916;
+ bh=xFudEcZwUcMHAVkTucvrEEMuZDp9b36sey9gk7TgVrk=;
+ h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+ b=bIR5BWhnrlpKxud+OqwcJ/h3RsTbrI2UKRVosLCvdwVSBbPtG28ijWb8ufoYpod6G
+ 6QOGDzYTei2fnljRLS1r4AW9S3pG6MI3rasyW2/vBUmSCbqrCFL2WAX2EpWO5vL8GU
+ VH4JE7xnufLh+/iPBFfTOqA1YcWg4YRSkTeyt5TmoyujqawW1+n6OFG5UrlSL85KEb
+ f1ltBH0Ps4/EQxv00f4hK0J4bAJDd8CO8XS/sUyaS+GRXiBUbHnUB6FNKl76VN9U71
+ 99uC5hW7F5Cl5L3nsyLtyuOJemVUIPw5ki7ZrBBIyM5yBUgxlFo10dccsKC9j5GFRz
+ ML/Q4u0iWzCEg==
+X-Nifty-SrcIP: [209.85.221.174]
+Received: by mail-vk1-f174.google.com with SMTP id n126so8709527vke.12
+ for <cocci@systeme.lip6.fr>; Sat, 05 Jan 2019 17:41:55 -0800 (PST)
+X-Gm-Message-State: AJcUukdSKeCdOzlK9nUxq9p7/RGIltqCB1/52rIYcMKkeB1NFTrJ4XkI
+ okIM9cdlKL6EUkVGOXGAZ1YmI9Fde/yYrKseNoE=
+X-Google-Smtp-Source: ALg8bN79JUFfnyfEJZQbgPMj1g95RZ/VwMrq8W6vkTuGQSoNETATuNDqTCnpCJk3a4TVnZDO8zTqpMD+eYXkmiJDTQ4=
+X-Received: by 2002:a1f:9350:: with SMTP id v77mr19667050vkd.64.1546738914555; 
+ Sat, 05 Jan 2019 17:41:54 -0800 (PST)
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 05 Jan 2019 07:25:42 +0100 (CET)
-X-Greylist: IP, sender and recipient auto-whitelisted, not delayed by
- milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]);
- Sat, 05 Jan 2019 07:25:39 +0100 (CET)
+References: <1546064056-15569-1-git-send-email-Julia.Lawall@lip6.fr>
+In-Reply-To: <1546064056-15569-1-git-send-email-Julia.Lawall@lip6.fr>
+From: Masahiro Yamada <yamada.masahiro@socionext.com>
+Date: Sun, 6 Jan 2019 10:41:18 +0900
+X-Gmail-Original-Message-ID: <CAK7LNARH8-96wcZhMmgZCzxQCMQpQPaqmDHVSYbGkHnHhjQtCw@mail.gmail.com>
+Message-ID: <CAK7LNARH8-96wcZhMmgZCzxQCMQpQPaqmDHVSYbGkHnHhjQtCw@mail.gmail.com>
+To: Julia Lawall <Julia.Lawall@lip6.fr>
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 06 Jan 2019 03:19:15 +0100 (CET)
+X-Greylist: Delayed for 00:23:05 by milter-greylist-4.4.3 (isis.lip6.fr
+ [132.227.60.2]); Sun, 06 Jan 2019 03:19:12 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: cocci <cocci@systeme.lip6.fr>
-Subject: Re: [Cocci] Can I pass a variable from a Python script in one rule
- to another rule in the same .cocci file?
+Cc: Michal Marek <michal.lkml@markovi.net>, kernel-janitors@vger.kernel.org,
+        Nicolas Palix <nicolas.palix@imag.fr>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        cocci@systeme.lip6.fr
+Subject: Re: [Cocci] [PATCH] scripts: coccinelle: boolinit: drop warnings on
+	named constants
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -73,41 +95,47 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-
-
-On Fri, 4 Jan 2019, Timur Tabi wrote:
-
-> In one rule, I have some Python code that parses a string literal to
-> see what it looks like.  If I detect a specific pattern, then I want
-> another rule (that has no Python code) to act differently.
+On Sat, Dec 29, 2018 at 10:14 PM Julia Lawall <Julia.Lawall@lip6.fr> wrote:
 >
-> More specifically, if a string literal passed as a parameter to
-> DBG_PRINTF() starts with "NVRM: ", then I want my script to replace
-> DBG_PRINTF with NV_PRINTF.  This works today.
+> Coccinelle doesn't always have access to the values of named
+> (#define) constants, and they may likely often be bound to true
+> and false values anyway, resulting in false positives.  So stop
+> warning about them.
 >
-> If the string does not begin with "NVRM:", however, then I want
-> DBG_PRINTF changed to NV_PRINTF_EX instead.
+> Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+
+Applied to linux-kbuild. Thanks!
+
+
+> ---
+>  scripts/coccinelle/misc/boolinit.cocci |    5 +++++
+>  1 file changed, 5 insertions(+)
 >
-> If this can't work, an alternative would be to create a second script
-> that handles DBG_PRINTF to NV_PRINTF_EX.  However, it would need to
-> abort the change if the Python script detects that NVRM: doesn't
-> exist.  So is there a way for Python to return a value that says,
-> "Woah, stop and undo everything you just did!"
-
-I think that you want to use cocci.include_match(False)
-
-In your python script, make the checks that you want, and then if you are
-not satisfied with the results, use cocci.include_match(False) to get the
-curent match of the metavariables to disappear.  You may need to rematch
-something to get the information needed for the second change option.
-
-julia
-
-> _______________________________________________
-> Cocci mailing list
-> Cocci@systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
+> diff --git a/scripts/coccinelle/misc/boolinit.cocci b/scripts/coccinelle/misc/boolinit.cocci
+> index b0584a3..aabb581 100644
+> --- a/scripts/coccinelle/misc/boolinit.cocci
+> +++ b/scripts/coccinelle/misc/boolinit.cocci
+> @@ -136,9 +136,14 @@ position p1;
+>  @r4 depends on !patch@
+>  bool b;
+>  position p2;
+> +identifier i;
+>  constant c != {0,1};
+>  @@
+> +(
+> + b = i
+> +|
+>  *b@p2 = c
+> +)
 >
+>  @script:python depends on org@
+>  p << r1.p;
+>
+
+
+-- 
+Best Regards
+Masahiro Yamada
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
