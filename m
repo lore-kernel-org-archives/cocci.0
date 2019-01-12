@@ -1,61 +1,62 @@
-Return-Path: <SRS0=otX5=PT=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=Afiw=PU=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FDB6C43387
-	for <cocci@archiver.kernel.org>; Fri, 11 Jan 2019 22:24:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF6E4C43387
+	for <cocci@archiver.kernel.org>; Sat, 12 Jan 2019 06:15:01 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BCC952084C
-	for <cocci@archiver.kernel.org>; Fri, 11 Jan 2019 22:24:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BCC952084C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id DC5A32086C
+	for <cocci@archiver.kernel.org>; Sat, 12 Jan 2019 06:15:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DC5A32086C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lip6.fr
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x0BMONlR026759
-          ; Fri, 11 Jan 2019 23:24:24 +0100 (CET)
+          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x0C6EXrs014191
+          ; Sat, 12 Jan 2019 07:14:33 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id B732C76F3;
-	Fri, 11 Jan 2019 23:24:23 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 467B876E2;
+	Sat, 12 Jan 2019 07:14:33 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 2F09676F2
- for <cocci@systeme.lip6.fr>; Fri, 11 Jan 2019 23:24:22 +0100 (CET)
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
- by isis.lip6.fr (8.15.2/lip6) with ESMTP id x0BMOL0j014117
- for <cocci@systeme.lip6.fr>; Fri, 11 Jan 2019 23:24:21 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 0033976E1
+ for <cocci@systeme.lip6.fr>; Sat, 12 Jan 2019 07:14:30 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr
+ (mail3-relais-sop.national.inria.fr [192.134.164.104])
+ by isis.lip6.fr (8.15.2/lip6) with ESMTP id x0C6EUiu018474
+ for <cocci@systeme.lip6.fr>; Sat, 12 Jan 2019 07:14:30 +0100 (CET)
 X-pt: isis.lip6.fr
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com
- [10.5.11.12])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mx1.redhat.com (Postfix) with ESMTPS id 463ED792BA
- for <cocci@systeme.lip6.fr>; Fri, 11 Jan 2019 22:24:20 +0000 (UTC)
-Received: from redhat.com (ovpn-125-134.rdu2.redhat.com [10.10.125.134])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id D3EE46B467
- for <cocci@systeme.lip6.fr>; Fri, 11 Jan 2019 22:24:19 +0000 (UTC)
-Date: Fri, 11 Jan 2019 17:24:17 -0500
-From: Jerome Glisse <jglisse@redhat.com>
-To: cocci@systeme.lip6.fr
-Message-ID: <20190111222417.GE3190@redhat.com>
+X-Addr-Warning: ATTENTION - Votre correspondant a fourni une adresse
+ d'enveloppe @lip6.fr, mais ce message ne provient pas
+ de lip6.fr ! postmaster@lip6.fr.
+X-IronPort-AV: E=Sophos;i="5.56,468,1539640800"; d="scan'208";a="291668144"
+Received: from abo-91-111-68.mrs.modulonet.fr (HELO hadrien) ([85.68.111.91])
+ by mail3-relais-sop.national.inria.fr with
+ ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 12 Jan 2019 07:14:30 +0100
+Date: Sat, 12 Jan 2019 07:14:29 +0100 (CET)
+From: Julia Lawall <julia.lawall@lip6.fr>
+X-X-Sender: jll@hadrien
+To: Jerome Glisse <jglisse@redhat.com>
+In-Reply-To: <20190111222417.GE3190@redhat.com>
+Message-ID: <alpine.DEB.2.21.1901120714041.2837@hadrien>
+References: <20190111222417.GE3190@redhat.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: multipart/mixed; boundary="8323329-2143399712-1547273670=:2837"
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 12 Jan 2019 07:14:33 +0100 (CET)
+X-Greylist: IP, sender and recipient auto-whitelisted, not delayed by
+ milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]);
+ Sat, 12 Jan 2019 07:14:30 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 11 Jan 2019 23:24:25 +0100 (CET)
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Fri, 11 Jan 2019 23:24:21 +0100 (CET)
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
- (mx1.redhat.com [10.5.110.39]); Fri, 11 Jan 2019 22:24:20 +0000 (UTC)
-Subject: [Cocci] Adding a field to struct and new line issues
+Cc: cocci@systeme.lip6.fr
+Subject: Re: [Cocci] Adding a field to struct and new line issues
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -67,67 +68,94 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Hi,
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-I am trying to add a field to struct however coccinelle insist on
-adding it on the same line as struct name definition ie:
-
-spatch:
-@@
-@@
-struct foo {
-+int roto;
-...
-}
-
-original c code:
-struct foo {
-    int titi;
-};
-
-result:
-struct foo {int roto;
-    int titi;
-};
-
-
-This is kind of ugly and i am at loss trying to force a new line ie:
-struct foo {
-    int roto;
-    int titi;
-};
+--8323329-2143399712-1547273670=:2837
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
 
 
 
-Funny thing, trying to out smart coccinelle with:
-@@
-identifier I1;
-type T1;
-@@
-struct foo {
-T1 I1;
-+int roto;
-...
-}
+On Fri, 11 Jan 2019, Jerome Glisse wrote:
 
-Gives:
-struct foo {
-    int titi;int roto;
-};
+> Hi,
+>
+> I am trying to add a field to struct however coccinelle insist on
+> adding it on the same line as struct name definition ie:
+>
+> spatch:
+> @@
+> @@
+> struct foo {
+> +int roto;
+> ...
+> }
+>
+> original c code:
+> struct foo {
+>     int titi;
+> };
+>
+> result:
+> struct foo {int roto;
+>     int titi;
+> };
+>
+>
+> This is kind of ugly and i am at loss trying to force a new line ie:
+> struct foo {
+>     int roto;
+>     int titi;
+> };
+>
+>
+>
+> Funny thing, trying to out smart coccinelle with:
+> @@
+> identifier I1;
+> type T1;
+> @@
+> struct foo {
+> T1 I1;
+> +int roto;
+> ...
+> }
+>
+> Gives:
+> struct foo {
+>     int titi;int roto;
+> };
+>
+>
+> I am still scratching my head on how i can force a new line. There
+> does not seem to have \n or any escape sequence i can use to force
+> new line.
 
+Sorry, it seems to be a pretty printing problem.  I will fix it.
 
-I am still scratching my head on how i can force a new line. There
-does not seem to have \n or any escape sequence i can use to force
-new line.
+julia
 
-Thank you for any pointers toward that.
-J=E9r=F4me
+>
+> Thank you for any pointers toward that.
+> Jérôme
+> _______________________________________________
+> Cocci mailing list
+> Cocci@systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
+>
+--8323329-2143399712-1547273670=:2837
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
 https://systeme.lip6.fr/mailman/listinfo/cocci
+
+--8323329-2143399712-1547273670=:2837--
