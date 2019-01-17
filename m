@@ -1,90 +1,77 @@
-Return-Path: <SRS0=UzGm=PY=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=qCdB=PZ=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D17B2C43387
-	for <cocci@archiver.kernel.org>; Wed, 16 Jan 2019 21:45:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EB87C43387
+	for <cocci@archiver.kernel.org>; Thu, 17 Jan 2019 00:22:17 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 684BA20652
-	for <cocci@archiver.kernel.org>; Wed, 16 Jan 2019 21:45:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 76A80206C2
+	for <cocci@archiver.kernel.org>; Thu, 17 Jan 2019 00:22:16 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="szk9RcVT"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 684BA20652
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="ZUeK1EcU"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 76A80206C2
+Authentication-Results: mail.kernel.org; dmarc=fail (p=reject dis=none) header.from=google.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x0GLjfhc003389
-          ; Wed, 16 Jan 2019 22:45:41 +0100 (CET)
+          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x0H0Ltow008821
+          ; Thu, 17 Jan 2019 01:21:55 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 8E3DF76E1;
-	Wed, 16 Jan 2019 22:45:41 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 3A51F76E1;
+	Thu, 17 Jan 2019 01:21:55 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 95FAD7635
- for <cocci@systeme.lip6.fr>; Wed, 16 Jan 2019 22:45:40 +0100 (CET)
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com
- [IPv6:2607:f8b0:4864:20:0:0:0:442] (may be forged))
- by isis.lip6.fr (8.15.2/lip6) with ESMTP id x0GLjdAM021717
- for <cocci@systeme.lip6.fr>; Wed, 16 Jan 2019 22:45:39 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id CD2BE7635
+ for <cocci@systeme.lip6.fr>; Thu, 17 Jan 2019 01:21:52 +0100 (CET)
+Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:e43] (may be forged))
+ by isis.lip6.fr (8.15.2/lip6) with ESMTP id x0H0Lp97005951
+ for <cocci@systeme.lip6.fr>; Thu, 17 Jan 2019 01:21:52 +0100 (CET)
 X-pt: isis.lip6.fr
-Received: by mail-pf1-x442.google.com with SMTP id c73so3681300pfe.13
- for <cocci@systeme.lip6.fr>; Wed, 16 Jan 2019 13:45:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to:user-agent;
- bh=+6cu7Szyng11fZJcMoFfoAPi5B0sVDbHzLkXKvIkA8U=;
- b=szk9RcVTi7srhbGbaPaJfHvO9doPoQ7eE4Kan8CIyayT+9mK3CXjakjCZcHwMqXrtK
- qBn6191R5R3NpGruE1hm6448p7OQKsLY5cL5X/QP4wsUf72RBygm9CRaIwkorZazVsnn
- N6XaL8HPsGZxSqLPF7fHXqW1IkHEO4HQgkn4LC50dJ6FJ0Cgny9a2CX2AI0o4HeSULNG
- XsJYM2kxu1l9WP7zeP9SRa/TLe7/MRk7isMIaGv+nvnezj4eZjgQ0Hw2xsFdZkCVda1o
- wgx8W6uYE/ZIpHg0DHaHR4XzOBmSylxxniTIdI4UUowiw0ufHWRIN9ijbCfPI+I1EjFD
- KkmQ==
+Received: by mail-vs1-xe43.google.com with SMTP id x28so5108821vsh.12
+ for <cocci@systeme.lip6.fr>; Wed, 16 Jan 2019 16:21:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
+ h=mime-version:from:date:message-id:subject:to;
+ bh=2hUmBMH53mc/eXyTbx+sA3B1n7yb26Gavyl6y32QMgM=;
+ b=ZUeK1EcUvsVb1iRcuWPumg6d9J8GPN5t9wRReDIn7e/MW/4L8q7sn7DEC08fGMWBF7
+ PMBRKMpPsj+BPIy4S8LmDY5M1vKsrSVubCpcF1WXx8D8AvaFv3qFhEq3du/sQibxoLgb
+ csU/Q54g47CHuGeAXWiBoDWvXSRAb6acODDYdQpuoiFQPfq+6evP9Oh5mUI5wG75zJDl
+ VPjQv3YaEYyiEVd3hBijvpxmHbmVin93p8THvDeVUnwh7roKJjaFnqneDmyO4OTB4VFB
+ GA5VKFQrxZAKRQ4a3izKMaPx9dem/tKWGF/lv5HdwVn6hHM25NP6lXuivR0HTm45/YMV
+ /oew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to:user-agent;
- bh=+6cu7Szyng11fZJcMoFfoAPi5B0sVDbHzLkXKvIkA8U=;
- b=Fh6LadCn3UPuBjAgm7XbMLf5YHTNAJCzqfAYAlbNZKEKEs1xSdTt4A831ITnDDnyGa
- lpSwv7zHanM5rpE/itz2ZkEgorAwVn3gWujZTBVRdivTEBX9naSXeBaPxX/TboVz7HVJ
- +wJMhOdVfA0DIGSVPY49RHJrdzQvgUVosriSDq/M0ojDz2CVFrM3NUZBvCbvtaHeOxty
- DX0Z65gmhCJPK64f5HB+wFsfIld+mbLjOSXLu055E6qHtS/dhBck9dIJ5y4lmf5diimw
- vCH88Zo2HqRN+TBDUfQUkPTdZikUomhgDgXUlv59npKuOt3MfLrWPD+65OrID3BEw/oZ
- ueBA==
-X-Gm-Message-State: AJcUukduycBdlBu32eBaS+DJr1PpdzCa3WUp8eXYm9EKlV+/t68BuLmR
- lQGEx6gDRt1JtNbGsMxQpJYN4KxL
-X-Google-Smtp-Source: ALg8bN7eSjeCMaHXwZ5lRBGtU8OzljjdmCabg/IMYmg2oy4BZVfuNHect5adkKcXe4AO6VPWj1hKHw==
-X-Received: by 2002:a63:4456:: with SMTP id t22mr11061640pgk.0.1547675138770; 
- Wed, 16 Jan 2019 13:45:38 -0800 (PST)
-Received: from himanshu-Vostro-3559 ([103.233.116.134])
- by smtp.gmail.com with ESMTPSA id 12sm9343193pgt.33.2019.01.16.13.45.35
- (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
- Wed, 16 Jan 2019 13:45:37 -0800 (PST)
-Date: Thu, 17 Jan 2019 03:15:32 +0530
-From: Himanshu Jha <himanshujha199640@gmail.com>
-To: Julia.Lawall@lip6.fr
-Message-ID: <20190116214532.GA13641@himanshu-Vostro-3559>
-References: <20190116210455.1091-1-himanshujha199640@gmail.com>
+ h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+ bh=2hUmBMH53mc/eXyTbx+sA3B1n7yb26Gavyl6y32QMgM=;
+ b=o5jYQfsIiqc1/ViUJV9qUL268pH2Opr++qwH0DlW0zrKimifiqhzleQPhxsby8hkCE
+ MRwTEXXhLX4pyx8IGSd9/F+/NxonEV2zZEX369YLCJi2ahHCXmVEF437UZm/PRPnhYRb
+ yAvLWifeCAhc9hpvmOsaRn5qDcc656RaN6dSW+X0bpoB673R2E6pwFgqrYq8bXeXT52T
+ S1sPZ+LqgkeDSHfYwh4ynH9cnmxQP2YK3MGS+iwNHXgZKm1ePsTPdUAccM8h7OfVJNRp
+ hwMND465Na2mjXDqgjnF0SeREEBbJauGqr+6mIkJCIjdTwhp8LJl6kbHUz/xR56H6Yo3
+ 8U2w==
+X-Gm-Message-State: AJcUukejcicmlrSAOiovMsBR0CnoeCnHcHhVkbpc71W3a6nxp2nZpprE
+ 22tnMQBM6OPMeNb79lQnRbVjG1QAwqWAMtnPeH4b6g==
+X-Google-Smtp-Source: ALg8bN7RfOJiB6FeCnk1q7Bi3dbv/O67JA45f87uQ3F1QE5Xff/iaNhMWxONk+kljuCMtXDst1H8Sj3eu3qi/6cRspQ=
+X-Received: by 2002:a67:848a:: with SMTP id g132mr4871764vsd.222.1547684511370; 
+ Wed, 16 Jan 2019 16:21:51 -0800 (PST)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190116210455.1091-1-himanshujha199640@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 16 Jan 2019 22:45:42 +0100 (CET)
+From: Kees Cook <keescook@google.com>
+Date: Wed, 16 Jan 2019 16:21:40 -0800
+Message-ID: <CAGXu5jJCrGmkfzMfPUWKU3GUdScP_coze80sSwWs+jsubt9RHw@mail.gmail.com>
+To: Julia Lawall <julia.lawall@lip6.fr>, cocci@systeme.lip6.fr
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 17 Jan 2019 01:21:55 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
  (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Wed, 16 Jan 2019 22:45:39 +0100 (CET)
+ Thu, 17 Jan 2019 01:21:52 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78
-Cc: Flavio Ceolin <flavio.ceolin@intel.com>, cocci@systeme.lip6.fr,
-        Patrik Flykt <patrik.flykt@linux.intel.com>
-Subject: Re: [Cocci] [PATCH] standard.h: Add Z_SYSCALL_HANDLER macro
+Subject: [Cocci] Confused by regex usage
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -101,36 +88,71 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-On Thu, Jan 17, 2019 at 02:34:55AM +0530, Himanshu Jha wrote:
-> This patch allows coccinelle to parse the Z_SYSCALL_HANDLER
-> macro for transformation.
-> 
-> Cc: Patrik Flykt <patrik.flykt@linux.intel.com>
-> Cc: Flavio Ceolin <flavio.ceolin@intel.com>
-> Signed-off-by: Himanshu Jha <himanshujha199640@gmail.com>
-> ---
+Hi,
 
-Please drop this patch Julia.
+I have this .cocci:
 
-I misunderstood what you suggested and it works fine using
-`--macro-file` flag:
+/// Unchecked use of snprintf() return values can lead to bugs, especially
+/// when returned or used to increment a buffer position. This is because
+/// snprintf() can return how much it WOULD have written, had it not run out
+/// of space. Instead, use scnprintf() which will report only how much was
+/// actually written, keeping any overflows from happening.
+///
+// Confidence: Moderate
+// Copyright: (C) 2018 Kees Cook, Google. GPLv2.
+// URL: http://coccinelle.lip6.fr/
+// Options: --all-includes --include-headers
 
-himanshu@himanshu-Vostro-3559:~/zephyr$ cat mymacros.h; spatch --sp-file test.cocci drivers/dma/dma_handlers.c --macro-file mymacros.h
-#define Z_SYSCALL_HANDLER int xxx
-init_defs_builtins: /usr/local/bin/../lib/coccinelle/standard.h
-init_defs: mymacros.h
-HANDLING: drivers/dma/dma_handlers.c
-_impl_dma_start
-_impl_dma_stop
+virtual patch
 
+@sum_patch depends on patch exists@
+expression LEN, BUF, SIZE;
+identifier FUNC !~ "^\(snprintf\|scnprintf\)$";
+@@
 
-Sorry for the noise.
+(
+  LEN =
+-snprintf
++scnprintf
+  (BUF, SIZE, ...);
+|
+  LEN +=
+-snprintf
++scnprintf
+  (BUF + LEN, SIZE - LEN, ...);
+)
+  ... when != LEN > SIZE
+      when != LEN >= SIZE
+      when any
+(
+  return LEN;
+|
+  FUNC(..., <+...LEN...+>, ...)
+)
+
+It matches net/sunrpc/addr.c:
+
+--- net/sunrpc/addr.c
++++ /tmp/cocci-output-43547-394eff-addr.c
+@@ -79,7 +79,7 @@ static size_t rpc_ntop6(const struct soc
+        if (sin6->sin6_scope_id == 0)
+                return len;
+
+-       rc = snprintf(scopebuf, sizeof(scopebuf), "%c%u",
++       rc = scnprintf(scopebuf, sizeof(scopebuf), "%c%u",
+                        IPV6_SCOPE_DELIMITER, sin6->sin6_scope_id);
+        if (unlikely((size_t)rc > sizeof(scopebuf)))
+                return 0;
+
+But I can't figure out why. I was trying to exclude matches against
+sc?nprintf, but the FUNC line appears to make things crazy and break
+the "when" check. If I remove the FUNC portion of the pattern, it's
+fine, but then I miss a bunch of cases I *do* want to catch, etc.
+
+Thanks!
 
 -- 
-Himanshu Jha
-Undergraduate Student
-Department of Electronics & Communication
-Guru Tegh Bahadur Institute of Technology
+Kees Cook
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
