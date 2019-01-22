@@ -6,72 +6,67 @@ X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B66A3C282C3
-	for <cocci@archiver.kernel.org>; Tue, 22 Jan 2019 22:06:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DCDFC282C3
+	for <cocci@archiver.kernel.org>; Tue, 22 Jan 2019 22:31:51 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0982120870
-	for <cocci@archiver.kernel.org>; Tue, 22 Jan 2019 22:06:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 972B320866
+	for <cocci@archiver.kernel.org>; Tue, 22 Jan 2019 22:31:50 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="PESPNnEN"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0982120870
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="ST3GYk8v"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 972B320866
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x0MM6hh7026649
-          ; Tue, 22 Jan 2019 23:06:43 +0100 (CET)
+          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x0MMVcA3013213
+          ; Tue, 22 Jan 2019 23:31:38 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 29B0776F2;
-	Tue, 22 Jan 2019 23:06:43 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 9B3A176F2;
+	Tue, 22 Jan 2019 23:31:38 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 988EE76EA
- for <cocci@systeme.lip6.fr>; Tue, 22 Jan 2019 23:06:41 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id DFFB176EA
+ for <cocci@systeme.lip6.fr>; Tue, 22 Jan 2019 23:31:36 +0100 (CET)
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by isis.lip6.fr (8.15.2/lip6) with ESMTP id x0MM6eDQ005017
- for <cocci@systeme.lip6.fr>; Tue, 22 Jan 2019 23:06:40 +0100 (CET)
+ by isis.lip6.fr (8.15.2/lip6) with ESMTP id x0MMVZhm010781
+ for <cocci@systeme.lip6.fr>; Tue, 22 Jan 2019 23:31:36 +0100 (CET)
 X-pt: isis.lip6.fr
-Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com
- [209.85.210.52])
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com
+ [209.85.167.181])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id CD63E20870
- for <cocci@systeme.lip6.fr>; Tue, 22 Jan 2019 22:06:39 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 23EBF20866
+ for <cocci@systeme.lip6.fr>; Tue, 22 Jan 2019 22:31:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1548194799;
- bh=xEsQrwKfg43dDcK3k7q+m6E2cFmGJ/IqqsF5DyUodz8=;
- h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=PESPNnENEu5Ys5YCMskKKxSxxBgcjiXyleffuVd/rgy6SfgIlcpm3tLVVy3WMgtxD
- r4AxUEN0GlXyuIqu3Ym1m/yq57zxbGR5zzbYsbCeAOSFP19zV6poQrdLqQHViGZkQj
- CLzz9Uipjn+e1/g4YBZJIRLpcDKzC8cwjHsFsImc=
-Received: by mail-ot1-f52.google.com with SMTP id 81so133439otj.2
- for <cocci@systeme.lip6.fr>; Tue, 22 Jan 2019 14:06:39 -0800 (PST)
-X-Gm-Message-State: AJcUukcpf3G4mIBkI6FwVGhd1LcmYiPrDqSW4+iOY0acmdonA33Ohcw+
- 0tRxMI00yCjbANZ72vL3mpOz44jioER+ivJbC58=
-X-Google-Smtp-Source: ALg8bN5j+RTEODqgGA0Epy3GrQzoaEGjNsxf2bCT5/AJMFpiDi4vAxcZedMXBoiqdmhjX6gaSE4DUIBwjQMwSsLTAPE=
-X-Received: by 2002:a9d:6009:: with SMTP id h9mr1613280otj.349.1548194799162; 
- Tue, 22 Jan 2019 14:06:39 -0800 (PST)
+ s=default; t=1548196295;
+ bh=nPitLwu8SEhusulRa68QrCPZD+FS5NDngbeXpEl6VeI=;
+ h=From:Date:Subject:To:From;
+ b=ST3GYk8vse9DhfgZhLm2xejHJ4+f3rzwIpIwcRSy5A7YEivx5Ge2LOXvdvyDOD9kS
+ m1GZDpJ3Pk5qUE2SBpPRW23zaOtHTFUhndUb3WGVOMRbuffK/PjIAbda9RNXlcJ9Yv
+ MN0inBAi/UTdOTqoS+FrkcvU7ciF2AmO6w4dI94Y=
+Received: by mail-oi1-f181.google.com with SMTP id y1so133834oie.12
+ for <cocci@systeme.lip6.fr>; Tue, 22 Jan 2019 14:31:35 -0800 (PST)
+X-Gm-Message-State: AJcUukcHs6iqjMgKASlOlpndhZ5SqgUncFCY3ez5lQaLIKj0uPb1V0dc
+ ahvpZ6LweHtjY58xXKE61bG+Q9kp+e+XRhG68ok=
+X-Google-Smtp-Source: ALg8bN5uqLoPZoYx8prdJuYUOxOe/Otu37vdRCj31kaCGQiQbniYwRpdqvS+D4k4Y2ZA9xHwfpcHV+rV81ObEBO9UTE=
+X-Received: by 2002:aca:5117:: with SMTP id f23mr9851389oib.72.1548196294445; 
+ Tue, 22 Jan 2019 14:31:34 -0800 (PST)
 MIME-Version: 1.0
-References: <CAOZdJXUhfSskY8+i3Juf8t4-obp9nu=c0CXriNbPBoGj6ZMeVQ@mail.gmail.com>
- <alpine.DEB.2.21.1901222040260.2519@hadrien>
- <CAOZdJXVpZ4a0owZ1byCoU6_mRPwBjrn4Z5ZSQi93GHm+Wui_qA@mail.gmail.com>
- <alpine.DEB.2.21.1901222147550.2519@hadrien>
-In-Reply-To: <alpine.DEB.2.21.1901222147550.2519@hadrien>
 From: Timur Tabi <timur@kernel.org>
-Date: Tue, 22 Jan 2019 16:06:02 -0600
-X-Gmail-Original-Message-ID: <CAOZdJXWTzvTJFrdUnWD-YPPj6o=k2Xum5PR6enZKutv_+TRrEQ@mail.gmail.com>
-Message-ID: <CAOZdJXWTzvTJFrdUnWD-YPPj6o=k2Xum5PR6enZKutv_+TRrEQ@mail.gmail.com>
-To: Julia Lawall <julia.lawall@lip6.fr>
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 22 Jan 2019 23:06:43 +0100 (CET)
+Date: Tue, 22 Jan 2019 16:30:58 -0600
+X-Gmail-Original-Message-ID: <CAOZdJXUg+1M-ii-tEtYdjDyXuEUYbmHYSf-EqfzFh+OtuWLP7A@mail.gmail.com>
+Message-ID: <CAOZdJXUg+1M-ii-tEtYdjDyXuEUYbmHYSf-EqfzFh+OtuWLP7A@mail.gmail.com>
+To: cocci <cocci@systeme.lip6.fr>
+Content-Type: multipart/mixed; boundary="0000000000002c7aba0580138a62"
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 22 Jan 2019 23:31:39 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Tue, 22 Jan 2019 23:06:41 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Tue, 22 Jan 2019 23:31:36 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: cocci <cocci@systeme.lip6.fr>, Timur Tabi <timur@kernel.org>
-Subject: Re: [Cocci] Fatal exception in spatch when #include file does not
-	exist
+Subject: [Cocci] Blank space in front of function definition name confuses
+	spatch
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -83,21 +78,211 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-On Tue, Jan 22, 2019 at 2:48 PM Julia Lawall <julia.lawall@lip6.fr> wrote:
-> It finds type information.  It also matches your rules against the
-> definitions found in the header files, just like it matches the rules
-> against the definitions found in the .c files.
+--0000000000002c7aba0580138a62
+Content-Type: text/plain; charset="UTF-8"
 
-What happens when it matches a rule in a header file?  Does that mean
-that it will try to edit the header file as well?
+If I have a blank space in front of the return parameter and function
+name, spatch gets confused and rejects the file.  I've attached a
+test.c and my nv_printf.cocci.  If I remove the blank space before
+"NV_STATUS" and "mycrazyfunc", everything works.  But with the blank
+space, it causes this error:
 
-It seems to me for my DBG_PRINTF changes, I definitely want --no-includes.
+ERROR-RECOV: found sync '}' at line 14
+parsing pass2: try again
+ERROR-RECOV: found sync '}' at line 14
+parsing pass3: try again
+ERROR-RECOV: found sync '}' at line 14
+parse error
+ = File "/home/ttabi/test.c", line 1, column 1, charpos = 1
+  around = 'NV_STATUS',
+  whole content =  NV_STATUS
+badcount: 13
+BAD:!!!!!  NV_STATUS
+bad:  mycrazyfunc
+bad: (
+
+--0000000000002c7aba0580138a62
+Content-Type: application/octet-stream; name="nv_printf.cocci"
+Content-Disposition: attachment; filename="nv_printf.cocci"
+Content-Transfer-Encoding: base64
+Content-ID: <f_jr8c223c1>
+X-Attachment-Id: f_jr8c223c1
+
+LyoKICogQ29jY2luZWxsZSBmaWxlIHRvIHJlcGxhY2UgREJHX1BSSU5URigpIGNhbGxzIHdpdGgg
+TlZfUFJJTlRGKCkgCiAqCiAqIFRvIHdvcmsgYXJvdW5kIGFuIG9kZCBiZWhhdmlvciBvZiBDb2Nj
+aW5lbGxlLCB3ZSB0ZW1wb3JhcmlseSBjaGFuZ2UKICogdGhlIERCR19QUklOVHggc3RhdGVtZW50
+cyBpbnRvIE5WX1BSSU5UMiwgYW5kIGRvIGFsbCBvdXIgd29yayBvbiB0aGF0CiAqIG1hY3JvIG5h
+bWUuICBPbmx5IGF0IHRoZSB2ZXJ5IGVuZCBkbyB3ZSBjaGFuZ2UgTlZfUFJJTlQyIHRvIE5WX1BS
+SU5URi4KICogV2UgZG8gdGhpcyBzbyB0aGF0IENvY2NpbmVsbGUgd29uJ3QgdG91Y2ggZXhpc3Rp
+bmcgTlZfUFJJTlRGIHN0YXRlbWVudHMuCiAqCiAqIFB5dGhvbiBydWxlcyBjb21lIGluIHRocmVl
+IHBhcnRzOgogKiAgMS4gQSBydWxlIHRvIGRldGVybWluZSBpZiB0aGUgUHl0aG9uIGNvZGUgc2hv
+dWxkIGJlIHJ1bgogKiAgMi4gVGhlIFB5dGhvbiBjb2RlIGl0c2VsZiwgaW5zaWRlIGEgcnVsZQog
+KiAgMy4gQSBmaW5hbCBydWxlIHRoYXQgYXBwbGllcyB0aGUgb3V0cHV0IG9mIHRoZSBQeXRob24g
+c2NyaXB0CiAqLwoKLy8gUmVtb3ZlIHRoZSBkb3VibGUtcGFyZW50aGVzZXMgaW4gREJHX1BSSU5U
+RiBzdGF0ZW1lbnRzCkBydWxlMEAKQEAKREJHX1BSSU5URigKLSgKLi4uCi0pCiApOwoKLy8gUmVw
+bGFjZSBEQkdfUFJJTlRGIHdpdGggTlZfUFJJTlRGMgpAcnVsZTEgZGVwZW5kcyBvbiBydWxlMEAK
+ZXhwcmVzc2lvbiB4OwpleHByZXNzaW9uIGxpc3QgeTsKQEAKLURCR19QUklOVEYoeCwgeSk7CitO
+Vl9QUklOVEYyKHkpOwoKLy8gUmVwbGFjZSBEQkdfUFJJTlRfU1RSSU5HIHdpdGggTlZfUFJJTlRG
+MgpAcnVsZTJACmV4cHJlc3Npb24gbGlzdCB4OwpAQAotREJHX1BSSU5UX1NUUklORyh4KTsKK05W
+X1BSSU5URjIoeCk7CgovLyBSZXBsYWNlIERCR19QUklOVF9TVFJJTkdfVkFMVUUgd2l0aCBOVl9Q
+UklOVEYyCkBydWxlM0AKZXhwcmVzc2lvbiB4OwpleHByZXNzaW9uIGxpc3QgeTsKQEAKLURCR19Q
+UklOVF9TVFJJTkdfVkFMVUUoeCwgeSk7CitOVl9QUklOVEYyKHgsICIlcyAweCV4XG4iLCB5KTsK
+Ci8vIFJlcGxhY2UgREJHX1BSSU5UX1NUUklOR19QVFIgd2l0aCBOVl9QUklOVEYyCkBydWxlNEAK
+ZXhwcmVzc2lvbiB4OwpleHByZXNzaW9uIGxpc3QgeTsKQEAKLURCR19QUklOVF9TVFJJTkdfUFRS
+KHgsIHkpOworTlZfUFJJTlRGMih4LCAiJXMgJXBcbiIsIHkpOwoKLy8gUmVwbGFjZSBEQkdfUFJJ
+TlRfU1RSSU5HX1ZBTDY0IHdpdGggTlZfUFJJTlRGMgpAcnVsZTVACmV4cHJlc3Npb24geDsKZXhw
+cmVzc2lvbiBsaXN0IHk7CkBACi1EQkdfUFJJTlRfU1RSSU5HX1ZBTDY0KHgsIHkpOworTlZfUFJJ
+TlRGMih4LCAiJXMgMHglbGx4XG4iLCB5KTsKCi8vIENvbGxlY3QgYWxsIHRoZSBwcmV2aW91cyBy
+dWxlcyBhcyBhIGRlcGVuZGVjeSwgc28gdGhhdCB0aGUgcnVsZXMgYmVsb3cKLy8gY2FuIGRlcGVu
+ZCBvbmx5IG9uICJydWxlcyIgaW5zdGVhZCBvZiAicnVsZTEgfHwgcnVsZTIgfHwgLi4uIgpAcnVs
+ZXMgZGVwZW5kcyBvbiBydWxlMSB8fCBydWxlMiB8fCBydWxlMyB8fCBydWxlNCB8fCBydWxlNUAK
+QEAKTlZfUFJJTlRGMgoKLy8gUmVwbGFjZSB0aGUgREJHX3h4eCBvciBERUJVR0xFVkVMX3h4eCB3
+aXRoIExFVkVMX3h4eApAZGVwZW5kcyBvbiBydWxlc0AKQEAKTlZfUFJJTlRGMiguLi4sCi1EQkdf
+TEVWRUxfUkVHVFJBQ0UKK0xFVkVMX1NJTEVOVAosIC4uLik7CgpAZGVwZW5kcyBvbiBydWxlc0AK
+QEAKTlZfUFJJTlRGMiguLi4sCi1cKERCR19MRVZFTF9JTkZPIFx8IERFQlVHTEVWRUxfVFJBQ0VJ
+TkZPIFx8IERCR19MRVZFTF9TRVRVUElORk8gXHwgREVCVUdMRVZFTF9TRVRVUElORk9cKQorTEVW
+RUxfSU5GTwosIC4uLik7CgpAZGVwZW5kcyBvbiBydWxlc0AKQEAKTlZfUFJJTlRGMiguLi4sCi1c
+KERCR19MRVZFTF9VU0VSRVJST1JTIFx8IERFQlVHTEVWRUxfVVNFUkVSUk9SUyBcfCBEQkdfTEVW
+RUxfTk9USUNFXCkKK0xFVkVMX05PVElDRQosIC4uLik7CgpAZGVwZW5kcyBvbiBydWxlc0AKQEAK
+TlZfUFJJTlRGMiguLi4sCi1cKERCR19MRVZFTF9XQVJOSU5HUyBcfCBERUJVR0xFVkVMX1dBUk5J
+TkdTXCkKK0xFVkVMX1dBUk5JTkcKLCAuLi4pOwoKQGRlcGVuZHMgb24gcnVsZXNACkBACk5WX1BS
+SU5URjIoLi4uLAotXChEQkdfTEVWRUxfRVJST1JTIFx8IERFQlVHTEVWRUxfRVJST1JTXCkKK0xF
+VkVMX0VSUk9SCiwgLi4uKTsKCkBkZXBlbmRzIG9uIHJ1bGVzQApAQApOVl9QUklOVEYyKC4uLiwK
+LURCR19MRVZFTF9IV19FUlJPUgorTEVWRUxfSFdfRVJST1IKLCAuLi4pOwoKQGRlcGVuZHMgb24g
+cnVsZXNACkBACk5WX1BSSU5URjIoLi4uLAotREJHX0xFVkVMX0ZBVEFMCitMRVZFTF9GQVRBTAos
+IC4uLik7CgovLyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgovLyBVc2UgUHl0aG9u
+IHRvIGNsZWFuIHVwIHRoZSBzdHJpbmcgbGl0ZXJhbHMuCi8vIENvbW1lbnRzIGFyZSBzdGlsbCBD
+LXN0eWxlIHRob3VnaApAciBkZXBlbmRzIG9uIHJ1bGVzQApleHByZXNzaW9uIHg7CmNvbnN0YW50
+IGNoYXJbXSBjOwpwb3NpdGlvbiBwMTsKQEAKTlZfUFJJTlRGMih4LCBjQHAxLCAuLi4pCgpAc2Ny
+aXB0OnB5dGhvbiBzQApjIDw8IHIuYzsKYzI7CnAxIDw8IHIucDE7CkBACmltcG9ydCByZQppbXBv
+cnQgc3lzCgovLyBDb252ZXJ0IGEgbWFsZm9ybWVkIG11bHRpLWxpbmUgc3RyaW5nIGxpdGVyYWwg
+aW50byBvbmUgbGluZQovLyBDb2NjaW5lbGxlIHNvbWV0aW1lcyB0YWtlcyBjYXJlIG9mIHRoaXMg
+Zm9yIHVzLCBidXQgc29tZXRpbWVzIGl0IGRvZXNuJ3QKYyA9IHJlLnN1YihyJ1xcXG5bIF0qJywg
+JycsIGMsIHJlLkRPVEFMTCkKCi8vIENvbWJpbmUgInh4eCIgInl5eSIgaW50byAieHh4eXl5Igp3
+aGlsZSBUcnVlOgogICAgbSA9IHJlLm1hdGNoKHInKC4qKSIoW14iXSspIiAiKC4qKScsIGMpCiAg
+ICBpZiBub3QgbToKICAgICAgICBicmVhawogICAgYyA9ICclcyIlcyVzJyAlIChtLmdyb3VwKDEp
+LCBtLmdyb3VwKDIpLCBtLmdyb3VwKDMpKQoKICAgIC8vIFdhcm4gaWYgdGhlcmUncyBubyBkZWxp
+bWV0ZXIgYmV0d2VlbiB0d28gbWVyZ2VkIHN0cmluZ3MuICBUaGlzIGlzCiAgICAvLyB1c3VhbGx5
+IGEgc2lnbiB0aGF0IHNvbWVvbmUgZm9yZ290IHRvIHB1dCBhIGJsYW5rIHNwYWNlIGJldHdlZW4K
+ICAgIC8vIHR3byB3b3Jkcy4KICAgIGlmIG0uZ3JvdXAoMilbLTI6XSAhPSByJ1xuJyBhbmQgbS5n
+cm91cCgyKVstMV0uaXNhbHBoYSgpIGFuZCBtLmdyb3VwKDMpWzBdLmlzYWxwaGEoKToKICAgICAg
+ICBwcmludCA+PnN5cy5zdGRlcnIsICdXYXJuaW5nOiBzdHJpbmcgaW4gZnVuY3Rpb24gJXMgbWF5
+IGhhdmUgY29uY2F0ZW5hdGVkIHR3byB3b3JkczogIiVzIiBhbmQgIiVzIicgJSAocDFbMF0uY3Vy
+cmVudF9lbGVtZW50LCBtLmdyb3VwKDIpLnNwbGl0KClbLTFdLCBtLmdyb3VwKDMpLnNwbGl0KClb
+MF0pCgovLyBSZW1vdmUgYmxhbmsgc3BhY2VzIGJlZm9yZSBcbgovLyBJIGRvbid0IGtub3cgd2h5
+IHdlIG5lZWQgZm91ciBiYWNrc2xhc2hlcywgYnV0IHdlIGRvCmMgPSByZS5zdWIocidccytcXG4n
+LCAnXFxcXG4nLCBjKQoKLy8gUmVtb3ZlIHRoZSAiTlhYWDogIiBwcmVmaXgKYyA9IHJlLnN1Yihy
+JyJOW0EtWl0rKDogfDp8ICknLCAnIicsIGMsIDEpCgovLyBJZiB0aGUgc3RyaW5nIGVuZHMgd2l0
+aCBcbiAiIHRoZW4gcmVtb3ZlIHRoZSBzcGFjZXMgYmV0d2VlbiBcbiBhbmQgIgovLyBDaGFuY2Vz
+IGFyZSwgaXQncyB0eXBvIGluc3RlYWQgb2YgYW4gaW5kZW50YXRpb24gZm9yIHRoZSBuZXh0IGxp
+bmUKYyA9IHJlLnN1YihyJ1xcblxzKyIkJywgJ1xcXFxuIicsIGMsIDEpCgppZiBsZW4oYykgPiAz
+IGFuZCBjLnN0YXJ0c3dpdGgociciXG4nKToKICAgIHByaW50ID4+c3lzLnN0ZGVyciwgJ1dhcm5p
+bmc6IHN0cmluZyBpbiBmdW5jdGlvbiAlcyBiZWdpbnMgd2l0aCBhIG5ld2xpbmUnICUgcDFbMF0u
+Y3VycmVudF9lbGVtZW50CiAgICBwcmludCA+PnN5cy5zdGRlcnIsIGMKCmlmIGMuZW5kc3dpdGgo
+JyInKSBhbmQgbm90IGMuZW5kc3dpdGgocidcbiInKToKICAgIHByaW50ID4+c3lzLnN0ZGVyciwg
+J1dhcm5pbmc6IG1pc3NpbmcgXFxuIGluIGZ1bmN0aW9uICVzJyAlIHAxWzBdLmN1cnJlbnRfZWxl
+bWVudAogICAgcHJpbnQgPj5zeXMuc3RkZXJyLCBjCgovLyBGaW5hbGx5LCByZXR1cm4gdGhlIHN0
+cmluZwpjb2NjaW5lbGxlLmMyID0gYwoKQGRlcGVuZHMgb24gcnVsZXNACmV4cHJlc3Npb24geDsK
+Y29uc3RhbnQgY2hhcltdIHIuYzsKaWRlbnRpZmllciBzLmMyOwpwb3NpdGlvbiByLnAxOwpAQApO
+Vl9QUklOVEYyKHgsCi1jQHAxCitjMgosLi4uKQoKLy8gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLQoKLy8gUmVwbGFjZSBfX2Z1bmNfXyB3aXRoIF9fRlVOQ1RJT05fXwoKQHJ4IGRlcGVu
+ZHMgb24gcnVsZXNACnN5bWJvbCBfX2Z1bmNfXzsKQEAKTlZfUFJJTlRGMiguLi4KLSxfX2Z1bmNf
+XworLF9fRlVOQ1RJT05fXwosLi4uKQoKLy8gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LQoKLy8gTG9vayBmb3IgTlZfUFJJTlRGMiBjYWxscyB0aGF0IGhhdmUgX19GVU5DVElPTl9fIGFz
+IHRoZSBmaXJzdCBwYXJhbWV0ZXIKQHIyIGRlcGVuZHMgb24gcnVsZXNACmNvbnN0YW50IGNoYXJb
+XSBjOwpleHByZXNzaW9uIHg7CnN5bWJvbCBfX2Z1bmNfXzsKQEAKTlZfUFJJTlRGMih4LCBjLCBf
+X0ZVTkNUSU9OX18sIC4uLikKCi8vIEdldCByaWQgb2YgX19GVU5DVElPTl9fIGF0IHRoZSBiZWdp
+bm5pbmcgb2YgdGhlIHN0cmluZwpAc2NyaXB0OnB5dGhvbiBzMkAKYyA8PCByMi5jOwpjMjsKQEAK
+aW1wb3J0IHJlCmNvY2NpbmVsbGUuYzIgPSByZS5zdWIoJyVzWzpcKFwpXSpbIF0/JywgJycsIGMs
+IDEpCgpAZGVwZW5kcyBvbiBydWxlc0AKZXhwcmVzc2lvbiB4Owpjb25zdGFudCBjaGFyW10gcjIu
+YzsKaWRlbnRpZmllciBzMi5jMjsKQEAKTlZfUFJJTlRGMih4LAotYywgX19GVU5DVElPTl9fCitj
+MgosLi4uKTsKCi8vIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KCi8vIExvb2sgZm9y
+IE5WX1BSSU5URjIgY2FsbHMgdGhhdCBoYXZlIF9fRlVOQ1RJT05fXyBhcyB0aGUgbGFzdCBwYXJh
+bWV0ZXIKQHIzIGRlcGVuZHMgb24gcnVsZXNACmNvbnN0YW50IGNoYXJbXSBjOwpleHByZXNzaW9u
+IHg7CnN5bWJvbCBfX2Z1bmNfXzsKQEAKTlZfUFJJTlRGMih4LCBjLCAuLi4sIF9fRlVOQ1RJT05f
+XykKCi8vIEdldCByaWQgb2YgX19GVU5DVElPTl9fIGF0IHRoZSBlbmQgb2YgdGhlIHN0cmluZwpA
+c2NyaXB0OnB5dGhvbiBzM0AKYyA8PCByMy5jOwpjMjsKQEAKaW1wb3J0IHJlCi8vIEZpbmQgdGhl
+IGxhc3QgWzogXSolcywgYW5kIHJlbW92ZSBpdApwb3MgPSBbaS5zcGFuKCkgZm9yIGkgaW4gcmUu
+ZmluZGl0ZXIoJ1s6IF0qJXMnLCBjKV1bLTFdCmMgPSBjWzpwb3NbMF1dICsgY1twb3NbMV06XQoK
+Ly8gQWxzbyByZW1vdmUgdGhlIHdvcmQgImluIiBpZiBpdCdzIHRoZSBsYXN0IHdvcmQgaW4gdGhl
+IHN0cmluZywKLy8gYmVjYXVzZSB0aGF0J3Mgc3VwcG9zZWQgdG8gYmUgImluIDxmdW5jdGlvbj4i
+LCB3aGljaCBubyBsb25nZXIKLy8gbWFrZXMgc2Vuc2UuCmNvY2NpbmVsbGUuYzIgPSByZS5zdWIo
+JyBpbiBcXFxcbiIkJywgJ1xuIicsIGMpCgpAZGVwZW5kcyBvbiBydWxlc0AKZXhwcmVzc2lvbiB4
+Owpjb25zdGFudCBjaGFyW10gcjMuYzsKaWRlbnRpZmllciBzMy5jMjsKQEAKTlZfUFJJTlRGMih4
+LAotYworYzIKLC4uLgotLF9fRlVOQ1RJT05fXwogKTsKCi8vIC0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0KCi8vIExvb2sgZm9yIE5WX1BSSU5URjIgY2FsbHMgdGhhdCBoYXZlIHRoZSBm
+dW5jdGlvbiBuYW1lIGluIHRoZSBzdHJpbmcKQHI0IGRlcGVuZHMgb24gcnVsZXNACmV4cHJlc3Np
+b24geDsKY29uc3RhbnQgY2hhcltdIGM7CnBvc2l0aW9uIHAxOwpAQApOVl9QUklOVEYyKHhAcDEs
+IGMsIC4uLikKCi8vIEdldCByaWQgb2YgdGhlIGZ1bmN0aW9uIG5hbWUgYXQgdGhlIGJlZ2lubmlu
+ZyBvZiB0aGUgc3RyaW5nCkBzY3JpcHQ6cHl0aG9uIHM0QApjIDw8IHI0LmM7CmMyOwpwMSA8PCBy
+NC5wMTsKQEAKaW1wb3J0IHJlCgpmID0gcDFbMF0uY3VycmVudF9lbGVtZW50CmNvY2NpbmVsbGUu
+YzIgPSByZS5zdWIoJyIlc1s6XChcKV0qWyBdPycgJSBmLCAnIicsIGMsIDEpCgpAZGVwZW5kcyBv
+biBydWxlc0AKZXhwcmVzc2lvbiB4Owpjb25zdGFudCBjaGFyW10gcjQuYzsKaWRlbnRpZmllciBz
+NC5jMjsKcG9zaXRpb24gcjQucDE7CkBACk5WX1BSSU5URjIoeEBwMSwKLWMKK2MyCiwuLi4pOwoK
+Ly8gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoKLy8gUmV3cmFwIHRoZSBzdHJpbmcg
+bGl0ZXJhbCBpZiBpdCdzIHRvbyBsb25nCkByNSBkZXBlbmRzIG9uIHJ1bGVzQApleHByZXNzaW9u
+IHg7CmNvbnN0YW50IGNoYXJbXSBjOwpwb3NpdGlvbiBwMTsKQEAKTlZfUFJJTlRGMih4LCBjQHAx
+LCAuLi4pCgpAc2NyaXB0OnB5dGhvbiBzNUAKYyA8PCByNS5jOwpjMjsKcDEgPDwgcjUucDE7CkBA
+CmltcG9ydCByZQppbXBvcnQgdGV4dHdyYXAKaW1wb3J0IHNobGV4CmltcG9ydCBzeXMKCmMyID0g
+JycKbmwgPSByJ1xuJwoKLy8gQnJlYWsgdXAgdGhlIHBhcmFtZXRlciBpbnRvIGluZGl2aWR1YWwg
+c3RyaW5nIGxpdGVyYWxzIGFuZCBpdGVyYXRlIG92ZXIgdGhlbQovLyBTZWUgaHR0cHM6Ly9zdGFj
+a292ZXJmbG93LmNvbS9xdWVzdGlvbnMvNTM4NTc2NjkKLy9zdHJpbmdzID0gcmUubWF0Y2gociJc
+cyooKD86XFxbXFNcc118W15cIlxcXSkrfFwiW15cIlxcXSooPzpcXFtcU1xzXVteXCJcXF0qKSpc
+IilccyoiICwgYykKCmZvciBzdHJpbmcgaW4gcmUuZmluZGFsbChyJyJbXiJcXF0qKD86XFwuW14i
+XFxdKikqInxcUysnLCBjKToKICAgIC8vIEJyZWFrIHVwIGxvbmcgc3RyaW5ncyBsaXRlcmFscy4g
+IENvY2NpbmVsbGUgd2lsbCBwbGFjZSB0aGVtIG9uIHNlcGFyYXRlIGxpbmVzLgogICAgbGluZSA9
+IHN0cmluZy5zdHJpcCgpCiAgICBpZiBub3QgbGluZS5zdGFydHN3aXRoKCciJyk6CiAgICAgICAg
+YzIgKz0gbGluZSArICcgJwogICAgICAgIGNvbnRpbnVlCgogICAgbGluZSA9IGxpbmVbMTotMV0K
+ICAgIGxpbmVzID0gW3MrbmwgZm9yIHMgaW4gbGluZS5zcGxpdChubCldCgogICAgaWYgbGluZVst
+MjpdID09IG5sOgogICAgICAgIC8vIHNwbGl0KCkgYWRkcyBhbiBleHRyYSBibGFuayBzdHJpbmcg
+aWYgdGhlIGlucHV0IHN0cmluZyBlbmRzIGluIGEgXG4KICAgICAgICBkZWwgbGluZXNbLTFdCiAg
+ICBlbHNlOgogICAgICAgIGxpbmVzWy0xXSA9IGxpbmVzWy0xXVs6LTJdCgogICAgLy8gTWVyZ2Ug
+YSBzdGFuZC1hbG9uZSBcbiB3aXRoIHRoZSBhZGphY2VudCBzdHJpbmcKICAgIHdoaWxlIGxpbmVz
+WzBdID09IG5sIGFuZCBsZW4obGluZXMpID4gMToKICAgICAgICBsaW5lc1sxXSA9IG5sICsgbGlu
+ZXNbMV0KICAgICAgICBkZWwgbGluZXNbMF0KCiAgICBpID0gMQogICAgd2hpbGUgaSA8IGxlbihs
+aW5lcyk6CiAgICAgICAgaWYgbGluZXNbaV0gPT0gbmw6CiAgICAgICAgICAgIGxpbmVzW2ktMV0g
+Kz0gbmwKICAgICAgICAgICAgZGVsIGxpbmVzW2ldCiAgICAgICAgZWxzZToKICAgICAgICAgICAg
+aSArPSAxCgogICAgLy8gQWxsIHN0cmluZ3MgYXJlIG5vdyBwZXJmZWN0LCBzbyB3cmFwIGVhY2gg
+b25lLgogICAgZm9yIGwgaW4gbGluZXM6CiAgICAgICAgaWYgbGVuKGwpID4gODA6CiAgICAgICAg
+ICAgIGZvciBsMiBpbiB0ZXh0d3JhcC53cmFwKGwsIHdpZHRoID0gNzAsIGV4cGFuZF90YWJzID0g
+RmFsc2UsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICByZXBsYWNlX3doaXRlc3BhY2Ug
+PSBGYWxzZSwgZHJvcF93aGl0ZXNwYWNlID0gRmFsc2UsCiAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICBicmVha19sb25nX3dvcmRzID0gRmFsc2UsIGJyZWFrX29uX2h5cGhlbnMgPSBGYWxz
+ZSk6CiAgICAgICAgICAgICAgICBjMiArPSAnIiVzIiAnICUgbDIKICAgICAgICBlbHNlOgogICAg
+ICAgICAgICBjMiArPSAnIiVzIiAnICUgbAoKY29jY2luZWxsZS5jMiA9IGMyCgpAZGVwZW5kcyBv
+biBydWxlc0AKZXhwcmVzc2lvbiB4Owpjb25zdGFudCBjaGFyW10gcjUuYzsKaWRlbnRpZmllciBz
+NS5jMjsKcG9zaXRpb24gcjUucDE7CkBACk5WX1BSSU5URjIoeCwKLWNAcDEKK2MyCiwuLi4pCgov
+LyBSZW1vdmUgYW55IHVubmVjZXNzYXJ5IGJyYWNlcwovL0BkZXBlbmRzIG9uIHJ1bGVzQAovL2V4
+cHJlc3Npb24gbGlzdCB4OwovL0BACi8vLXsKLy9OVl9QUklOVEYyKHgpOwovLy19CgovLyBGaW5h
+bGx5LCBjaGFuZ2UgTlZfUFJJTlQyIHRvIE5WX1BSSU5URi4gIFRoaXMgaGFzIHRoZSBzaWRlLWVm
+ZmVjdCBvZgovLyBhbHNvIGNvbXByZXNzaW5nIGFsbCB0aGUgcGFyYW1ldGVycyBpbnRvIGFzIGZl
+dyBsaW5lcyBhcyBwb3NzaWJsZS4KQGRlcGVuZHMgb24gcnVsZXNACmV4cHJlc3Npb24gbGlzdCB4
+OwpAQAotTlZfUFJJTlRGMih4KQorTlZfUFJJTlRGKHgpCg==
+--0000000000002c7aba0580138a62
+Content-Type: text/x-csrc; charset="US-ASCII"; name="test.c"
+Content-Disposition: attachment; filename="test.c"
+Content-Transfer-Encoding: base64
+Content-ID: <f_jr8c222q0>
+X-Attachment-Id: f_jr8c222q0
+
+IE5WX1NUQVRVUwogbXljcmF6eWZ1bmMKKAogICAgUE9CSkdQVSBwTG9jYWxHcHUsCiAgICBQT0JK
+QlVTIHBMb2NhbEJ1cwopCnsKICAgICAgICBEQkdfUFJJTlRGKChEQkdfTU9EVUxFX09TLCBEQkdf
+TEVWRUxfRVJST1JTLAogICAgICAgICAgICAgICAgICAgICJOVlJNOiAlczogdGhpcyBpcyBhIHRl
+c3QgXAogICAgICAgICAgICAgICAgICAgIG9mIG11bHRpbGluZSAiIE52UDY0X2ZtdCAiIHN0cmlu
+Z3MgJXBcbiAiLAogICAgICAgICAgICAgICAgICAgIF9fRlVOQ1RJT05fXywKICAgICAgICAgICAg
+ICAgICAgICBwMSwKICAgICAgICAgICAgICAgICAgICBwMikpOwp9Cg==
+--0000000000002c7aba0580138a62
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
 https://systeme.lip6.fr/mailman/listinfo/cocci
+
+--0000000000002c7aba0580138a62--
