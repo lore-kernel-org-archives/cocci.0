@@ -4,50 +4,49 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-0.7 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD29AC43381
-	for <cocci@archiver.kernel.org>; Fri, 15 Feb 2019 07:12:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A944C43381
+	for <cocci@archiver.kernel.org>; Fri, 15 Feb 2019 07:51:39 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 508A42064C
-	for <cocci@archiver.kernel.org>; Fri, 15 Feb 2019 07:12:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 1D77020821
+	for <cocci@archiver.kernel.org>; Fri, 15 Feb 2019 07:51:11 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="WipQdTun"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 508A42064C
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="dvaWzyv3"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1D77020821
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1F7Biwq019049
-          ; Fri, 15 Feb 2019 08:11:45 +0100 (CET)
+          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1F7oqK9024966
+          ; Fri, 15 Feb 2019 08:50:53 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id D3AF476F7;
-	Fri, 15 Feb 2019 08:11:44 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id D43DF76F7;
+	Fri, 15 Feb 2019 08:50:52 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id BBA0676F3
- for <cocci@systeme.lip6.fr>; Fri, 15 Feb 2019 08:11:42 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 1A72376F3
+ for <cocci@systeme.lip6.fr>; Fri, 15 Feb 2019 08:50:51 +0100 (CET)
 Received: from mout.web.de (mout.web.de [212.227.17.11])
- by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1F7Bfo4026694
- ; Fri, 15 Feb 2019 08:11:41 +0100 (CET)
+ by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1F7onHM001265
+ ; Fri, 15 Feb 2019 08:50:49 +0100 (CET)
 X-pt: isis.lip6.fr
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1550214682;
- bh=l020NQrCXuoRcZwtBtQtTsHgRdJNFOd/yK+lhRk3/2k=;
+ s=dbaedf251592; t=1550217030;
+ bh=Mp1YKJjyFwpNLa2lYkucozRFX0Fh137UEplkaCv/rzI=;
  h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
- b=WipQdTunGvsIy4e44N06/DJe87GfJUdS0K41OgZx4q0lOslRUGLpC9+NW3lL/y98O
- SezyG+KLzfTtxnWDDMZh0sW4Y5EcVEdx2mgcXOj3YRWKqAzqreM8O8oBP6qPxnW0Kp
- H0hkH3Q5HLmtKdYIi0+tnncgEyxmu5dmjtrtDY3Y=
+ b=dvaWzyv3IlJD+uW7GFhysPqZz7ChDRwAk/ADCEr3SlhiKGuJl4/Amn/0HHj0fs8Ob
+ FP2lxJmZsfajeOEPePYnQOvC0CnPpUIE2XnD3jmnY4sIMfqmcUymm5/xw8bru5fptB
+ LT80/UxUZMCan5iqbb58fZNIeaPq/MIGZH4yCnEg=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
 Received: from [192.168.1.3] ([78.48.88.109]) by smtp.web.de (mrweb102
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0MWRzK-1ga77o0pyc-00XcKy; Fri, 15
- Feb 2019 08:11:22 +0100
-To: Julia Lawall <julia.lawall@lip6.fr>, Wen Yang <wen.yang99@zte.com.cn>
-References: <201902151422261425412@zte.com.cn>
- <alpine.DEB.2.21.1902150723110.2896@hadrien>
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0LoHgL-1halmJ1e8H-00gFV4; Fri, 15
+ Feb 2019 08:50:30 +0100
+To: Julia Lawall <julia.lawall@lip6.fr>
+References: <201902151452197117145@zte.com.cn>
+ <alpine.DEB.2.21.1902150754380.2896@hadrien>
 From: Markus Elfring <Markus.Elfring@web.de>
 Openpgp: preference=signencrypt
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
@@ -93,42 +92,43 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <c7fc1e2e-306f-9c2f-e271-0c8de9128720@web.de>
-Date: Fri, 15 Feb 2019 08:11:18 +0100
+Message-ID: <f4bc7f71-efee-5e0f-3209-82681ddc85be@web.de>
+Date: Fri, 15 Feb 2019 08:50:27 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.5.0
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.1902150723110.2896@hadrien>
+In-Reply-To: <alpine.DEB.2.21.1902150754380.2896@hadrien>
 Content-Language: en-US
-X-Provags-ID: V03:K1:RZhYdniQIpuJv7iWvgBrtYLWinXOmyaTKDIV4g/9ChfdNwj1q4I
- PHmNmA+TzQjaSXN+tjKybgbmrfqQ3KlGLudgHL47KxbrtOf07A5Q4ve8W2svko+jldPybRx
- WMqatVzBL5KE3o0YR7/w1t8xFN/vLPJTHs5XMr4zlO0W8FB/XJdmbIKHHOVcXotWQmDePRT
- hp54uoBkYSG4LJLd45IBg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:u1k8Tfc1OyQ=:5AeQHIQk4Y5kUeHECA59YM
- oaIUcMmhgzqU89e0UPC8xMJ20A594QfIRTzDH/iJ4s1vuas/OOKSQYfKi81qfmHyWtVvfRuMw
- +oFGCm/vFsmdeuZfdKZ4MZrJtHGb/NM2Znu2wVhLTl6l3mH1n4amH1hEwNvR0DUN9FItfllOU
- 8wfeI71aaluuJ1GENxx/7tPY+lQuySzLU7XvypvWyE7e3w76QmH7r0jahNT4kDG7PSL6eSyR+
- 04xu7829GJXC1H3U2PU3fRfgammQI0YsXrlATB+7vyLTNyqHzGoTnTbUXhOfxFGweAY5Ner7U
- 0Np8ngceTkW4t8EYH9PAVtxIVetT2p6AKOozMZNxrU84ORv60XdzqE+l27qNMwyXvZnDaWAgF
- eDpGDebEHKUv+OjJHiKfwWncRcO9AyI816fLQ0ufCRkFZyueF9GE0EQMOY1e/bbk8kPJxSQOs
- L3yo4OFRruYOtnN2PXu2vUvB+AMY3ZXWPwoDGaF7RnzDQSBBnjCT1LRIc8SDWnYdIH0I9sky3
- 9bAYmBfS7gBXrhAovaLg2LypJW7p1Fz6onh2+Cjx67nwd5FfeMI3nTeFkvHN9ymKSuDsbazX3
- jsBvPLjd33rOtKg3VcTFFwnWVaHr0J0QMTF2TRA+IMTV+fQP8nG77DK1f5lVaHX6Mm3oXIpOw
- sPmbBOfky0X2m36U0gYXmPjorNnvkIRJIY6r3jwM0iuCOJp4PCJLFdn90Wn6zqGJsw3Y5Iy8P
- 5+eA9FerenGmu/L2UaB34mc3p0m3/Jyg4Qp0AKLZLRoe9yI68bnXWSH4TW4S9kh5fS77ii8HP
- rEjF6sLTIn2jg7VNHaV5hTCnN2daKLdUQHV5cl9lN37Ogvgqo6lOOrF0Z8ASylHtpLJ6oajDV
- myZzQ1yqRt8RWi57GjIc2o94oM0f4ZvsR7MW8XrrTiE1Vlqi1ZydVtXk+DqRERUlaPjTW7MDj
- S2kv4levS1g==
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 15 Feb 2019 08:11:45 +0100 (CET)
+X-Provags-ID: V03:K1:7QwjKMrz5fwOOuUMEP9B3fkz/ZFsb0Xj8TBB24+W4IuoyvLE0mT
+ YcPRjuHKv6+TP0BTvMESilieiI0izIqOAHeQtH9n0PpN3qitzgM2s3WeJebb2CXAosdwXZ/
+ 5dqhO8YNL9Fe9AVKQcvtNLntrzyWgqmjtGp7o/w1JQiHk7k7Y/G3u9NgSAV1nL1da3gf9f0
+ +K5SyVqvKx79WlZj59yBQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:0SdTSi+OOL4=:wMXSXje3Re6yzBrZMT6zQ5
+ FqlmVpyT/qFPrxC0azIGZceANuCYI94VfZsGSQZphfE7kioPravhYIykfal2ovztqbSbgE5ow
+ 8RVGYoFS8EKSCUEZaz146zQcJx47dy2BQ7Ce6YVfS7XE/xZF8Ep+fDsAeIaBkvcuDH44OilpZ
+ L9KsSGWUZ4NTNDRcnr8mBxZUyH8yB3LP88FAmiS4HS9ocNfTHvbVGd/+MuRc3TTz9e2vwv+A/
+ pJuGpjjalIB7jXAvYn90CG8xF4Lr7vZ+fQP3TpOVfr/58DR+azvaoILJlBvpEptB0yNdQJYFm
+ sW37C5ZOvoCjoAGTqF5Dg1NW/ardPPsYwV1crYA1GV+BLkCjwnD4qMz1W4b+qvD6mOnJh3Ccv
+ CFd9kCW29zgQzi1Ah66HspvvPM5PAE+Bz2+IYKmb8KmTo3opOw9XaW9enH0NC2dSUQx0mx0OO
+ fd1zbLAjxFAw8ksco/etCeNUrf9pMMhTXCFJcFdgr9i6RdbPIT/LjYKIg0gmOGLaYkMXbwYiG
+ LiKV8u4GUU9jEV8q/Zp14jiwPzEYmxw0VXzf4nmmpTkAdBVqa4quz9P/JR8Hh66dXxDQjzLyA
+ SfCYzmHvkQTyvR1v4+q1vxy7fCaj+6hM6tD7PCLZLMFuwNZKHPw9flbCJKsOxJQ89grbnKQae
+ 3e61+6YAz9rSV8udA1neDlUxqVckiNSB+PKtU39jukS2mKxzvS0403ta8k31d0TCdJ1J42fvI
+ 5tU00V6Ga5m7d1/MOynUlznmg1rXiTy2TnbZCz0veQx7ZAnVQobPdb7XOlBniVSgHwvsZnNwF
+ bAL3gpKrCb/Vex4OfHMK94kl7g/lgQuBmLCFpp61fWni8W3v07jjgYz1HcyZk7z3HKl6QczAj
+ kAauMbyTp9pepaJK9AabE6g2GhkSYkrbhFQW9tOHFJbkhcC/n3jbmVUV7+ZKp71z04Utm9wnb
+ +Bro/jXG29w==
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 15 Feb 2019 08:50:53 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Fri, 15 Feb 2019 08:11:41 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Fri, 15 Feb 2019 08:50:49 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: Yi Wang <wang.yi59@zte.com.cn>, kernel-janitors@vger.kernel.org,
         Michal Marek <michal.lkml@markovi.net>,
         Wen Yang <yellowriver2010@hotmail.com>,
         Nicolas Palix <nicolas.palix@imag.fr>, linux-kernel@vger.kernel.org,
-        Cheng Shengyu <cheng.shengyu@zte.com.cn>, cocci@systeme.lip6.fr
+        cocci@systeme.lip6.fr, Cheng Shengyu <cheng.shengyu@zte.com.cn>,
+        Wen Yang <wen.yang99@zte.com.cn>
 Subject: Re: [Cocci] [v4] coccinelle: semantic patch for missing put_device()
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
@@ -146,61 +146,19 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
->>>> In a function, for variables returned by calling of_find_device_by_node(),
->>> Do variables really get returned?
->>> The provided pointer should usually be stored somewhere.
->>
->> Thank you very much, we will consider this situation and  submit a next version to fix it.
+>> So I plan to modify the following to capture both cases:
+>> -local idexpression id;
+>> +expression id;
 >
-> I don't know what Markus is talking about here,
+> I'm not sure that this is a good idea.
 
-I find that my feedback contained details for two items.
-
-1. I suggested another adjustment for a wording in the evolving
-   commit description.
-
-2. Should any more case distinctions be taken into account for the data
-   storage of function return values so that the shown source code search
-   approach can become safer?
+Why have you got doubts here?
 
 
-> so I'm not sure that a change is needed.
+> There is likely no need for a put in the latter case.
 
-I am curious if there is a need for further clarifications then.
-
-
->>>> + "ERROR: missing put_device;"
->>> Will change confidence considerations result in another fine-tuning for this message?
->>
->> Thank you, we will change "ERROR" to "WARNING".
->
-> I think ERROR is fine.
-
-I have got a different software development view for the possible
-severity information.
-
-
-> If it is a real positive than it is a real problem.
-
-I can agree to this information.
-
-You specified also a precondition.
-How should be achieved that the source code analysis will not point
-false positives out?
-
-
-> Warning is for things that look ugly,
-
-I am also curious on how views will evolve around such ugliness.
-
-
-> but don't have any impact on the execution.
-
-I find such a restriction questionable.
-
-
-Would you like to share any more ideas for safe data flow analysis
-(eventually also together with your software)?
+I have got understanding difficulties for such information.
+What did you try to express with this sentence finally?
 
 Regards,
 Markus
