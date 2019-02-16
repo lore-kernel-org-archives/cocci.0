@@ -4,51 +4,50 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 178EBC4360F
-	for <cocci@archiver.kernel.org>; Sat, 16 Feb 2019 06:01:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02710C43381
+	for <cocci@archiver.kernel.org>; Sat, 16 Feb 2019 06:33:58 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2770D222D9
-	for <cocci@archiver.kernel.org>; Sat, 16 Feb 2019 06:01:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 6134820675
+	for <cocci@archiver.kernel.org>; Sat, 16 Feb 2019 06:33:57 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="GtukOFd7"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2770D222D9
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="dFkD10Px"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6134820675
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1G60okT001496
-          ; Sat, 16 Feb 2019 07:00:50 +0100 (CET)
+          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1G6Xbds018474
+          ; Sat, 16 Feb 2019 07:33:37 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id E5FD876FA;
-	Sat, 16 Feb 2019 07:00:49 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 771DF76FA;
+	Sat, 16 Feb 2019 07:33:37 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id BF93476F4
- for <cocci@systeme.lip6.fr>; Sat, 16 Feb 2019 07:00:47 +0100 (CET)
-Received: from mout.web.de (mout.web.de [212.227.17.11])
- by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1G60lVq024777
- for <cocci@systeme.lip6.fr>; Sat, 16 Feb 2019 07:00:47 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 47E2176F4
+ for <cocci@systeme.lip6.fr>; Sat, 16 Feb 2019 07:33:36 +0100 (CET)
+Received: from mout.web.de (mout.web.de [217.72.192.78])
+ by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1G6XZeJ016377
+ for <cocci@systeme.lip6.fr>; Sat, 16 Feb 2019 07:33:35 +0100 (CET)
 X-pt: isis.lip6.fr
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1550296845;
- bh=TZWd+qcWqWi36HGDdMGtQUESzuT1azY3QM8LnSvGOFk=;
- h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
- b=GtukOFd79RkUb14Md5mvOb5ttHWbpI0IhEAmw1MuSeBpqJ6EuXVIs2anD2wtxOE9i
- Hf6DEW5zQ29SgdcFWG+M0pvjJCHmC2S79FHqQDr/Jp4gfEWg3bqdmisVEfhD/xvjYD
- GRAkv040q0QUQ9Ce6oxhE/l+GJuip6MLLAm++yMU=
+ s=dbaedf251592; t=1550298814;
+ bh=kQ/zMsGedrXOZGD1JGHBfgsbAY1/jPW1Tfy5gWkwLAM=;
+ h=X-UI-Sender-Class:Subject:To:References:Cc:From:Date:In-Reply-To;
+ b=dFkD10PxuyYaO+9DJNt3QE28dVlprepZaIRCJIZU9L0hP/52e3ESqHduZde5E970u
+ fNZhbqyaLGVblIORnpGz+XDpW17b60haJiTgTvrzD1opegre/aQKYU+/Uu5+9ATSJS
+ zDf1Cjmv8Hz8rjYSjTfRyn/83uNxRsH27Txg//QM=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
 Received: from [192.168.1.3] ([78.48.154.45]) by smtp.web.de (mrweb103
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0M0QgT-1hDFI01L6D-00ubCD; Sat, 16
- Feb 2019 07:00:45 +0100
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0M09hY-1hDVmj3WE0-00uKIJ; Sat, 16
+ Feb 2019 07:33:33 +0100
 To: Michael Stefaniuc <mstefani@mykolab.com>
 References: <fb42aa05-f4d0-53cb-7eda-4f0a5db6cd3c@mykolab.com>
- <5c9a7783-6345-3acc-0ffd-b5b5bc3c8fbc@web.de>
- <d6992b0c-a449-dc77-affc-442bd0727927@mykolab.com>
+ <alpine.DEB.2.21.1902152203380.2572@hadrien>
+ <0e8b1430-1538-cc24-8644-2ed8baa24276@mykolab.com>
 From: Markus Elfring <Markus.Elfring@web.de>
 Openpgp: preference=signencrypt
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
@@ -94,38 +93,38 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <831a2b76-a77f-0fad-4449-e47e6acf26d9@web.de>
-Date: Sat, 16 Feb 2019 07:00:34 +0100
+Message-ID: <16ab994d-afed-c5ff-b22a-c85a68349873@web.de>
+Date: Sat, 16 Feb 2019 07:33:33 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.5.1
 MIME-Version: 1.0
-In-Reply-To: <d6992b0c-a449-dc77-affc-442bd0727927@mykolab.com>
+In-Reply-To: <0e8b1430-1538-cc24-8644-2ed8baa24276@mykolab.com>
 Content-Language: en-US
-X-Provags-ID: V03:K1:Ww0R6/6+WS+O2PaG6+ANAhyGWX9KkluTRHxnQ3i1qDnDvc22TYj
- 4GgSQAzW2SWQnZi2zLW/q85XyywR/oT1HJBIxxXb3R6dejX6kwQ4nsyNVK7A8VnZTn96+N3
- mGRCMoBFHT847ik6Vy79viKYIcxzrUTnVpE62FvOePiYYtAGS4yFai+SDsKjv2ER0daF2FU
- WljUgZUY/quL/lAzbm0Fw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:s1Xej4YyP9A=:rhG3sTIKRKvdvDdR8yeV1g
- rF4x5MBEW+9jc0OIFueJBGWN8QgwnXbL0PXBmL0aVH4OnsMsPnTzTRfuwnBbu4nWaWGBfWcbu
- T7+3MeKAZa9+q/UT+JMx/Nmny+A2TNmh0QPQ12XqBBFYvBqeIG7/+a9LqnxUb5cSxh++0Lo21
- I4Jy0Nrbl2pUyL/sp2o4YyDVr7UliipQfV9JnzOG0TrRkcdlwtXlIIpLNRmNqSbCe5sEJgabL
- j6Tws0sJpzijFLYoP7GiEwb2CEL3sFhHniQILAU1k/ipWJxEVE3G5UT2LXdmbSEMcTD2SjgjP
- Sul2CT6TEWBOfz3ghzabhZXLOZ1LjTBirnET54O2rD+vsR537nPdiiCFomgS4yP+3gEh4YG+0
- DxoMWgCU+KkW4DqkENF5jDZ1b+7z4IFsQJiseL45FeGk7daEn/V9snbyl5gC4rEm3vAZnS2z1
- yAnn6/K5y9dz0Z1AeY0xAIIRNLQqiGqsKeAihklInMbRjXeJxe+hb1CQYJ+pvD9fyO9oAWj8c
- zBvIXBAkzzSUlO7HpnAd5i5fTVfrMl/jpPMgVh0+myd0N/pd8db96cybnzc4Iim1VpbMCuk3A
- 2VAzfjxXiGbQgOor9rTeOaPNY5qlwLOiE4Cr+czqsGkeQYOw5A7uw93oPj2qBIDn5Ts1K6m8Z
- IeFw8fe7mx569HjI/9eubSeA9aXwrNcyONzEkXLQm4GyPND1OOSBkvjxyWUGr/s/QtE+69TNB
- vFfXt1I5YYG5XuZfhjRLmY9d1R7HHupkVAPMZooWbmBVSOjQXBExkW/q1WIfDNPb1lG/8RcMx
- I6hxbecF3sHXDPS3z04I9PGE1JlW9hjzXCUu5bhMZCkk8E8U9qkSpe2YzTEWHxMb3lJLYNVTU
- TBx3RJfz5r8cQF3JBvfVAsZQAyevVu00nqJqFsTyv8EKyB6KWJwzvJa6f9YbZlul7GPqDjQYi
- 5ucL/95m0hw==
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 16 Feb 2019 07:00:51 +0100 (CET)
+X-Provags-ID: V03:K1:yNTX8FjiTTtxzC+0EheuJiMN77o4ifZ5F5oV1AaZBpH+os3WEzT
+ iYFitXWdwUs1fIz2TwXPM4TMxdbPzv84wBjqPJl5BnPZG0U1J2lD/GNeJUoEOhPwQO3NWCh
+ kWr9MX1m9VlficIvSvzZM9qcfGBJgufa7gI4o8gm/jV2cpNThxPyxydN+rLvQENHjDoYQKn
+ 50scFgU5hGWOmdzz1CNjg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:ozm/aMStlvk=:GOw9axewYUQm18bcNyYFXa
+ 8u0nWAwe96nJDG2DaKuFyUN8iFbocnRLfIl+OVOOHiZxhBn/3J8RUXLyk0LfqJxMo91g/+7Uy
+ iKNzGMfp7pF9/Fn+chOuVuxTN70YggECr83c3ijhCC8bYaXTN53ITnxXs6sJ0h8+K1hjizlWW
+ eWtMDfF3Vsfzmr9wTPVsqVq9WGn5wiHeBm3EaO6qh1SgR2yJwnn38TQOoYyrSfNdnKDqGlBZ5
+ RcX7fGMzC7JpMqbO3V09xljTzH3d0bvdOAhXA+ten/GHf/0njs8Mb+zvzBbGDb/Aqp2FF25wj
+ F6LcUn7N1g6s1XjvWg8K/xabpMO0PIH6ZrcHBSxZSlMfx8f/pE2oj2GAEHdWFAlZEt3j+Q/yX
+ k0I03uqepSAirun6vURbs4Nul6Ap+2bNmmxQaviF01BpBjSpYZXCJVH2Ey6yBt+k9DP+uHeal
+ 9GyloZ8E4SLtqHb/JQvLa/MK8Ifc83a7BRgi1PvS6DYPjwIbGHBnM/XdKp2chg7kGb6LxnqWb
+ eACq4TeZcz1vLGSnVTGwY9MjLT1mm7qPeSjQZawmq027vM6mIzT5EbnE0ciT3HZhlisBGOwoA
+ kWeSmMvTWNt0Au+qofqjHjZBw8Nd2qSV/yZl2oBC6U0uVLz6G+uYbEutV6Y1Gt3BLOJyw+nDC
+ 5OpNHxyEE65uF5y3wQoAgrcB8GCuGsUnagvClOMHXpWaSWlLGZ2WRNWrdMn4DgA6Z9EP00OEC
+ kMpCW9KS8KBiLnDAXNnLl28VD4IZ0cy53vIa3e7pofOPI3roJfEEabuYID1R2PwRq/MKOhcQT
+ D4Hb4P361ehTcIBFxiYoVaAL9DqYcAFEIfQAqwjRAGWfcE7zH/LC+dspmvGCKokEoNXQPQ/Qj
+ yvbZgmaUxn1XoO67yTRIBDtkh2PPROp0FCkuR2P39weBgogUvDzdwgTN2xI5TF4Sa7d8mkmyt
+ Dc6WgJR5pRw==
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 16 Feb 2019 07:33:38 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sat, 16 Feb 2019 07:00:47 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Sat, 16 Feb 2019 07:33:35 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: cocci@systeme.lip6.fr
+Cc: Coccinelle <cocci@systeme.lip6.fr>
 Subject: Re: [Cocci] Qualifiers for field types get lost
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
@@ -138,18 +137,27 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-PiBUaGUgZ2VuZXJpYyB0cmFuc2Zvcm1hdGlvbiBpcyBzaW1wbGUgYnV0IHBlcmZlY3QgYXQgdGhl
-IHNhbWUgdGltZSBhbmQKPiBzaG93Y2FzZXMgY29jY2luZWxsZXMgZXhwcmVzc2l2ZW5lc3MgYW5k
-IGJlYXV0eS4KCkFub3RoZXIg4oCcZmFsc2UgcG9zaXRpdmUgbGVmdG92ZXLigJ0gcG9pbnRlZCBm
-dXJ0aGVyIHNvZnR3YXJlIGRldmVsb3BtZW50Cm9wcG9ydHVuaXRpZXMgb3V0IGFjY29yZGluZyB0
-byB5b3VyIHN1Z2dlc3Rpb24g4oCcW1BBVENIXSBvbGVhdXQzMi90ZXN0czoKUHJvcGFnYXRlIHRo
-ZSBjb25zdCBpbnN0ZWFkIG9mIGNhc3RpbmcgaXQgYXdheeKAnSwgZGlkbid0IGl0PwpodHRwczov
-L3NvdXJjZS53aW5laHEub3JnL3BhdGNoZXMvZGF0YS8xNTg2MzEKClJlZ2FyZHMsCk1hcmt1cwpf
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpDb2NjaSBtYWls
-aW5nIGxpc3QKQ29jY2lAc3lzdGVtZS5saXA2LmZyCmh0dHBzOi8vc3lzdGVtZS5saXA2LmZyL21h
-aWxtYW4vbGlzdGluZm8vY29jY2kK
+> There's a qualifier propagation issue left in the case the field is an array.
+> I have attached a patch that extends the tests/qualifier.c test case
+> to demonstrate the problem.
+
+Can the desired functionality check be performed also with a bit less
+source code by using the conditional operator?
+
+-    return (int *)&b->i;
++    return b->i ? (int *)&b->i : (int *)&b->j[0];
+
+
+Will both test approaches be eventually needed?
+
+Regards,
+Markus
+_______________________________________________
+Cocci mailing list
+Cocci@systeme.lip6.fr
+https://systeme.lip6.fr/mailman/listinfo/cocci
