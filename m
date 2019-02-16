@@ -4,71 +4,70 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91F09C43381
-	for <cocci@archiver.kernel.org>; Sat, 16 Feb 2019 20:58:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CF01C43381
+	for <cocci@archiver.kernel.org>; Sat, 16 Feb 2019 21:02:27 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E7D0A21A4A
-	for <cocci@archiver.kernel.org>; Sat, 16 Feb 2019 20:58:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id D7A3521A4A
+	for <cocci@archiver.kernel.org>; Sat, 16 Feb 2019 21:02:26 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (4096-bit key) header.d=mykolab.com header.i=@mykolab.com header.b="jP4195/i"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E7D0A21A4A
+	dkim=fail reason="signature verification failed" (4096-bit key) header.d=mykolab.com header.i=@mykolab.com header.b="Wy7sihHM"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D7A3521A4A
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=mykolab.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1GKvh9d004415
-          ; Sat, 16 Feb 2019 21:57:43 +0100 (CET)
+          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1GL2A3b011545
+          ; Sat, 16 Feb 2019 22:02:10 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 5157F76FA;
-	Sat, 16 Feb 2019 21:57:43 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 2B56276FA;
+	Sat, 16 Feb 2019 22:02:10 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 0BC9176F4
- for <cocci@systeme.lip6.fr>; Sat, 16 Feb 2019 21:57:41 +0100 (CET)
-Received: from mx.kolabnow.com (mx.kolabnow.com [95.128.36.42])
- by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1GKvdoO002709
- for <cocci@systeme.lip6.fr>; Sat, 16 Feb 2019 21:57:40 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id B664176F4
+ for <cocci@systeme.lip6.fr>; Sat, 16 Feb 2019 22:02:08 +0100 (CET)
+Received: from mx.kolabnow.com (mx.kolabnow.com [95.128.36.40])
+ by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1GL27dI004671
+ for <cocci@systeme.lip6.fr>; Sat, 16 Feb 2019 22:02:08 +0100 (CET)
 X-pt: isis.lip6.fr
 Received: from localhost (unknown [127.0.0.1])
- by ext-mx-out001.mykolab.com (Postfix) with ESMTP id 60CF582A;
- Sat, 16 Feb 2019 21:57:39 +0100 (CET)
+ by ext-mx-out002.mykolab.com (Postfix) with ESMTP id 952104C8;
+ Sat, 16 Feb 2019 22:02:07 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mykolab.com; h=
  content-transfer-encoding:content-language:content-type
  :content-type:in-reply-to:mime-version:date:date:message-id:from
  :from:references:subject:subject:received:received:received; s=
- dkim20160331; t=1550350657; x=1552165058; bh=o2FM/oosdFHgXBUtVwW
- JW51yF27oioFE4QFBxjqMF3s=; b=jP4195/i/qCGTR5O8q/CFs1hkRFyqejjMHZ
- i9Ma/JIxIEWXFEQIWQYDpzQmxWAqy1jlEfcEfrrFoiEbcEc7YYL+5KMLN8kHnm2x
- YIVRxhneTQ9roSnoVkDz9bulXaPUbgPIQtpsMY3hqRKXT1z5O1G7VV1PDopMTIpT
- V/5DD5AGfSSIFYAT2uSjmCqfy6XxJ661V6sFcR7sy9aZHLXOwnINZ9wTVseoloqQ
- IyN3oeOPU1VBjYdKuLgdJuqrZW/TR+K4NxJ23ks1KQGDWfgMze5aYeQuNABj5Z9G
- jC/feG095y6/VQEIkZ53htB9aKoKD76ZUDy+bxyqTP/8XPcErJYG6wcsWCoJTH9o
- VrKsokkvRCFDIaV/ZhVsaNRUndKnTEyem0xmYKczcYXQrFBxzBDp5/9vF+3bmwP5
- 6aRKdlMYDT2vFnfvgjyGn1tTwKg5wGPtmhR8kBDWD/EpMzvAIs5viK3no5athmr4
- Tk/ZUe3S/zrvDrRbcMA4nFQlVG+AAyToEJ+9mV/zkgAFNovLOYmSD0n7GekEkTSn
- FLkkF8RitLAUXITvNS5yYp56QnYyd+UobRvkzDfS049aZn3gDv2uU1ooaHzNxgfV
- jS2RCnRCHYe0qgf1vN0r0ctAz8vrRoZZvk2ebf55uUeRngKElmdLQPPg3s4luKPP
- 9wu5jyK8=
+ dkim20160331; t=1550350926; x=1552165327; bh=Z9IVPNqaXNZ2Q2tQ5EG
+ 42R0fiikeUi0uzQHKiAJb1CQ=; b=Wy7sihHMuGpSb6BBJ5v8w/CVeFSR6uNn35k
+ KAU5Dq1iFpfGpDRcfnHkHt+3R9mUUZdWSb196glIy/xXrxORR1ZYJuN+YKJo4tAv
+ 1qfT4i+Q0ddS38xrjk6AH1MsEsh+xUoMNxGRznu4dy4Ay4jJX7NJX0epG5WtcPXt
+ aC640++Ds9an5oBP9g2E7+ffDSm556UY6LRVhhyjcPgVuqVV/xz8tsHc7J8kTYGH
+ N3b69n07xmt4awB4b3mdpKoGgnqfJgX+RvUtnzB5rgt7m5gyoUV/fakSi5KJb43b
+ dO90Wy+Cksmd/jZYkWxJK89+vIBcRGiLi1dAswFs+DXa9IN50UDmZVpEovUThOP1
+ YLW+IUILRwc+2PYfX5PCRfNup8sIJp1Guy8ChsTyi96Tco5huE4qOS32OSinmrHw
+ fCoF6EUwhYg6VVVcvXl3dowqmR09b+76mfODUpc61vyRW296pyZO4sO5IqYaktoZ
+ cuj3O8HsY2/jDquW6V/zi1d/vZcPOd0Pkq+BC8bTlDFELimZIwNgw5p3v4o0sj0o
+ G8ok6RpxMPCr5a3JB/tPtn5Fj6UbPtGxQ8mwp+egg7lo46G+Lsw5YDA1vyWnYzU3
+ eqdjiMQ83yDz3U6SHLh7PuKXtMEJ09uam1+np4FWHRDskelXdvKg4ylqJemInQPy
+ 6apCRA88=
 X-Virus-Scanned: amavisd-new at mykolab.com
 Received: from mx.kolabnow.com ([127.0.0.1])
- by localhost (ext-mx-out001.mykolab.com [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dqaPFC_Khd2W; Sat, 16 Feb 2019 21:57:37 +0100 (CET)
+ by localhost (ext-mx-out002.mykolab.com [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id rMyZursnS1IE; Sat, 16 Feb 2019 22:02:06 +0100 (CET)
 Received: from int-mx002.mykolab.com (unknown [10.9.13.2])
- by ext-mx-out001.mykolab.com (Postfix) with ESMTPS id 4D54D344;
- Sat, 16 Feb 2019 21:57:37 +0100 (CET)
+ by ext-mx-out002.mykolab.com (Postfix) with ESMTPS id AA1D3353;
+ Sat, 16 Feb 2019 22:02:06 +0100 (CET)
 Received: from ext-subm003.mykolab.com (unknown [10.9.6.3])
- by int-mx002.mykolab.com (Postfix) with ESMTPS id 0B1E025A0;
- Sat, 16 Feb 2019 21:57:36 +0100 (CET)
-To: Markus Elfring <Markus.Elfring@web.de>
+ by int-mx002.mykolab.com (Postfix) with ESMTPS id 716B72598;
+ Sat, 16 Feb 2019 22:02:06 +0100 (CET)
+To: Julia Lawall <julia.lawall@lip6.fr>
 References: <fb42aa05-f4d0-53cb-7eda-4f0a5db6cd3c@mykolab.com>
- <5c9a7783-6345-3acc-0ffd-b5b5bc3c8fbc@web.de>
- <d6992b0c-a449-dc77-affc-442bd0727927@mykolab.com>
- <831a2b76-a77f-0fad-4449-e47e6acf26d9@web.de>
+ <alpine.DEB.2.21.1902152203380.2572@hadrien>
+ <0e8b1430-1538-cc24-8644-2ed8baa24276@mykolab.com>
+ <alpine.DEB.2.21.1902160820260.3212@hadrien>
 From: Michael Stefaniuc <mstefani@mykolab.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=mstefani@mykolab.com; prefer-encrypt=mutual; keydata=
@@ -94,14 +93,14 @@ Autocrypt: addr=mstefani@mykolab.com; prefer-encrypt=mutual; keydata=
  T7U24WD4lRLCBjkNnV4izQHr9qwM6I/5/jP8mguRSL7HguxBLcyL7ZQ01aQALcc43v/p5Vw4
  96b3Et/nZrVw04xtwwvuhQARAQABiE8EGBECAA8CGwwFAlNET6oFCQlmA9sACgkQ0ei8kcpE
  1VGjvgCfWX5kaF0YptgUFItMH6U8kA6vnRsAoJkVZPLvJDyYi4TiEaZXyk+3DKPf
-Message-ID: <49aeed10-bcbf-ff0e-e877-0f708be61bd8@mykolab.com>
-Date: Sat, 16 Feb 2019 21:57:35 +0100
+Message-ID: <9459286c-3a16-b1b1-5778-f4793fbf5465@mykolab.com>
+Date: Sat, 16 Feb 2019 22:02:03 +0100
 MIME-Version: 1.0
-In-Reply-To: <831a2b76-a77f-0fad-4449-e47e6acf26d9@web.de>
+In-Reply-To: <alpine.DEB.2.21.1902160820260.3212@hadrien>
 Content-Language: en-US
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 16 Feb 2019 21:57:44 +0100 (CET)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 16 Feb 2019 22:02:10 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sat, 16 Feb 2019 21:57:40 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Sat, 16 Feb 2019 22:02:08 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: cocci@systeme.lip6.fr
@@ -117,25 +116,19 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-T24gMi8xNi8xOSA3OjAwIEFNLCBNYXJrdXMgRWxmcmluZyB3cm90ZToKPj4gVGhlIGdlbmVyaWMg
-dHJhbnNmb3JtYXRpb24gaXMgc2ltcGxlIGJ1dCBwZXJmZWN0IGF0IHRoZSBzYW1lIHRpbWUgYW5k
-Cj4+IHNob3djYXNlcyBjb2NjaW5lbGxlcyBleHByZXNzaXZlbmVzcyBhbmQgYmVhdXR5Lgo+IAo+
-IEFub3RoZXIg4oCcZmFsc2UgcG9zaXRpdmUgbGVmdG92ZXLigJ0gcG9pbnRlZCBmdXJ0aGVyIHNv
-ZnR3YXJlIGRldmVsb3BtZW50Cj4gb3Bwb3J0dW5pdGllcyBvdXQgYWNjb3JkaW5nIHRvIHlvdXIg
-c3VnZ2VzdGlvbiDigJxbUEFUQ0hdIG9sZWF1dDMyL3Rlc3RzOgo+IFByb3BhZ2F0ZSB0aGUgY29u
-c3QgaW5zdGVhZCBvZiBjYXN0aW5nIGl0IGF3YXnigJ0sIGRpZG4ndCBpdD8KPiBodHRwczovL3Nv
-dXJjZS53aW5laHEub3JnL3BhdGNoZXMvZGF0YS8xNTg2MzEKPz8/CgphLikgVGhhdCBwYXRjaCBp
-cyBub3QgYSBjYXN0IHRvIHNlbGYgc28gbm8gImZ1cnRoZXIgc29mdHdhcmUgZGV2ZWxvcG1lbnQK
-b3Bwb3J0dW5pdGllcyIgdG8gbXkgc2VsZmNhc3QuY29jY2kgc2NyaXB0LgoKYi4pIEFjdHVhbGx5
-IGRvaW5nIGNvZGUgY2xlYW51cCBpcyBhIGJldHRlciB3YXkgb2YgZmluZGluZyBuZXcKIm9wcG9y
-dHVuaXRpZXMiIGZvciBtb3JlIGNsZWFudXAuIFRoZSB2YWd1ZSBoaW50cyBmb3IgImZ1cnRoZXIg
-c29mdHdhcmUKZGV2ZWxvcG1lbnQgb3Bwb3J0dW5pdGllcyIgYXJlIGFjdHVhbGx5IGhhcm1mdWwg
-YXMgdGhleSBhZGQgbm9pc2UgYW5kCmRldHJhY3QgZnJvbSB0aGUgYnVnIHJlcG9ydC4KCmJ5ZQoJ
-bWljaGFlbApfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpD
-b2NjaSBtYWlsaW5nIGxpc3QKQ29jY2lAc3lzdGVtZS5saXA2LmZyCmh0dHBzOi8vc3lzdGVtZS5s
-aXA2LmZyL21haWxtYW4vbGlzdGluZm8vY29jY2kK
+On 2/16/19 8:20 AM, Julia Lawall wrote:
+> I have fixed the array issue.
+Thanks! Tested it and it looks good.
+
+bye
+	michael
+
+_______________________________________________
+Cocci mailing list
+Cocci@systeme.lip6.fr
+https://systeme.lip6.fr/mailman/listinfo/cocci
