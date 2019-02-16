@@ -2,58 +2,134 @@ Return-Path: <SRS0=17+G=QX=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_NEOMUTT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 069F1C43381
-	for <cocci@archiver.kernel.org>; Sat, 16 Feb 2019 09:07:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 217EFC43381
+	for <cocci@archiver.kernel.org>; Sat, 16 Feb 2019 09:21:22 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9C698222D9
-	for <cocci@archiver.kernel.org>; Sat, 16 Feb 2019 09:07:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9C698222D9
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=the-dreams.de
+	by mail.kernel.org (Postfix) with ESMTPS id 8C662222D0
+	for <cocci@archiver.kernel.org>; Sat, 16 Feb 2019 09:21:21 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="AjNPVpbm"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8C662222D0
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1G974Lw011255
-          ; Sat, 16 Feb 2019 10:07:04 +0100 (CET)
+          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1G9L1vI019630
+          ; Sat, 16 Feb 2019 10:21:01 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 2FCA976FA;
-	Sat, 16 Feb 2019 10:07:04 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 8FBED76FA;
+	Sat, 16 Feb 2019 10:21:01 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 1591576F4
- for <cocci@systeme.lip6.fr>; Sat, 16 Feb 2019 10:07:03 +0100 (CET)
-Received: from pokefinder.org (sauhun.de [88.99.104.3])
- by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1G972Xs010720
- for <cocci@systeme.lip6.fr>; Sat, 16 Feb 2019 10:07:02 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id D0A5B76F4
+ for <cocci@systeme.lip6.fr>; Sat, 16 Feb 2019 10:20:59 +0100 (CET)
+Received: from mout.web.de (mout.web.de [212.227.17.12])
+ by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1G9KwPY026395
+ ; Sat, 16 Feb 2019 10:20:58 +0100 (CET)
 X-pt: isis.lip6.fr
-Received: from localhost (unknown [195.52.228.164])
- by pokefinder.org (Postfix) with ESMTPSA id 01D5C2C0509;
- Sat, 16 Feb 2019 10:07:01 +0100 (CET)
-Date: Sat, 16 Feb 2019 10:06:58 +0100
-From: Wolfram Sang <wsa@the-dreams.de>
-To: Markus Elfring <Markus.Elfring@web.de>
-Message-ID: <20190216090658.lsfhvtllwnzj3675@ninjato>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+ s=dbaedf251592; t=1550308843;
+ bh=EH+17vM2pzr/NBvHE391GAdAuRQ2TcvnN88Kxz0zv1I=;
+ h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+ b=AjNPVpbmK2B/S9OJpHm1izYwHYbQymbcYlWHq6C/t2dQZbQXp+e/Nto6/pklIEBSs
+ eCirHqY46sdNM7gF+SsFwArW/y1FcBgx84ggNjc+DHlnIqTpnvBJNxExrfKATLM4EH
+ mwH33wEiVede5nLNqggvagus47GSDqX/RccEcKCA=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.3] ([78.48.154.45]) by smtp.web.de (mrweb101
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0MX0Q4-1gXmYh2dSW-00W1gX; Sat, 16
+ Feb 2019 10:20:43 +0100
+To: Wolfram Sang <wsa@the-dreams.de>
 References: <201902161633004137519@zte.com.cn>
  <alpine.DEB.2.21.1902160934400.3212@hadrien>
  <992b8c6f-614d-b379-6352-30b36ac9d0d8@web.de>
+ <20190216090658.lsfhvtllwnzj3675@ninjato>
+From: Markus Elfring <Markus.Elfring@web.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+Message-ID: <8ba4643b-496e-597f-32e1-c14b8e46880c@web.de>
+Date: Sat, 16 Feb 2019 10:20:41 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.5.1
 MIME-Version: 1.0
-In-Reply-To: <992b8c6f-614d-b379-6352-30b36ac9d0d8@web.de>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 16 Feb 2019 10:07:04 +0100 (CET)
+In-Reply-To: <20190216090658.lsfhvtllwnzj3675@ninjato>
+Content-Language: en-US
+X-Provags-ID: V03:K1:nrzBZBlgopxDKwrstj6Q/rJuw+Clt5b78Ns2ep8cooUWrZLcFAb
+ idR0B3LJGBNK5MeRkR6nWReNbMP6gvy/Ib8VO4kJ/GOdCnVDJYnEWzsayH25vO8QwP8JGz0
+ K30bzKvSnSFIIj9yc0CVEyp5MlMXmHny2WaPF1Arzb5gQmfbAmqiVjeeS813zzbjA2SUUOr
+ ZfnhXO2pZHgFpQDTgmzMA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:M9DtXFU6SZM=:305za60KRohbnNaigdjF/4
+ 7j/WsQCtX0TKK2m4VpZVDY2a1bO6dzNMMGAY76og5z31xA3epLf0AXbVVU32PG5Lu1qHmZueS
+ igS0sUuZpRvgM7Qzr+EIHqApOy2HSeZ7/s2Ladc67rXPlUUVlaSohiI4B6ULWBWvEgB/Z0Mf/
+ jehiGpvJJDr8rRnG960W95Jswh7cWWekGi7v8i+8CgKMkAeSH6pJN/NiGh5hAUL5TTPWEAx0A
+ I67OT0QndTCcJ755JdCKaSeSKMC8mROMW4kqbH9qthyeBxB+b/445W0HPD2LkZ0yhBoQRD3BE
+ soAwDrpZnMQP0FgiGiml8k7LWPz7x0IemFEA8fRc8n1ga4xZlmUQp0ZOZZj/QCaNYk7WEkn6m
+ SADdKW4TQj7yePRLSB6ZI4gH/16yztTganJKpF1gFOFMy9tfNSCfF4L76YyuiIBfHbCHU8ptH
+ F/SIvKzGGXwbxS1q5TH9Wthiro0tMInG3ujaWGvVWJV6l/0yjMNTGFaLz2RXsA+H/FWhduJPp
+ kpDypqwcG6hMlA80TY3GBjETvYeX0aFxjFLX8NKPnka/SeeOFwZrTtsjI/pVmCo+Ou2NuF4Qg
+ vQCANsh40lk+MxVuA1PqlGCqNP2p+efhpV1mMCguPOyZ5wItMkthygJjAbBieuEDeEWOSrZnp
+ u8zPljT92uzV//abF2xWbxk9zb3efmhKtHDu1G7Ydrn3WY1b5IADnKRpH2z7XTH4GaYZYkMD4
+ N7InrF83KBHiKVHC8iX5sqdAAS68IW4mRMFmMDFkxu4yXkHadnpoBS+LWangCT9x2Dn8KiLtg
+ gpe+tqwQsStX3qOmiMBN1rhMOLEW3isWSJ7rONiDYyBF1Er5yUno/p/zLn1cJgL7xPvJk/XZX
+ BaLcVIfS9jaGt1KGTn7gyvXP344kMt2jIs2oUkEb7eGYFWRXSMKfFgR2ybZhjnPnOYAbHWGbj
+ xfTeYumq3+g==
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 16 Feb 2019 10:21:02 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sat, 16 Feb 2019 10:07:02 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Sat, 16 Feb 2019 10:20:58 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Yi Wang <wang.yi59@zte.com.cn>, Michal Marek <michal.lkml@markovi.net>,
+Cc: Yi Wang <wang.yi59@zte.com.cn>, kernel-janitors@vger.kernel.org,
+        Michal Marek <michal.lkml@markovi.net>,
         Wen Yang <yellowriver2010@hotmail.com>,
-        Nicolas Palix <nicolas.palix@imag.fr>, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org, cocci@systeme.lip6.fr,
-        Cheng Shengyu <cheng.shengyu@zte.com.cn>,
+        Nicolas Palix <nicolas.palix@imag.fr>, linux-kernel@vger.kernel.org,
+        cocci@systeme.lip6.fr, Cheng Shengyu <cheng.shengyu@zte.com.cn>,
         Wen Yang <wen.yang99@zte.com.cn>
 Subject: Re: [Cocci] [v5] coccinelle: semantic code search for
  missingput_device()
@@ -68,78 +144,44 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============0292795928=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
+>>> We don't need perfection.
+>>
+>> I guess that you noticed in the meantime that I dare to propose
+>> more software development efforts in such a direction.
+>
+> Yes, this is noticable.
 
---===============0292795928==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="mpidk2alepylbuio"
-Content-Disposition: inline
+I am curious then if remaining change suggestions will be picked up
+by more software developers and reviewers.
 
 
---mpidk2alepylbuio
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> It is your choice, however, other people may have their reasons
+> for other choices...
 
-Hi,
+Yes, of course.
 
-On Sat, Feb 16, 2019 at 09:57:54AM +0100, Markus Elfring wrote:
-> > We don't need perfection.
->=20
-> I guess that you noticed in the meantime that I dare to propose
-> more software development efforts in such a direction.
 
-Yes, this is noticable. It is your choice, however, other people may
-have their reasons for other choices...
+>>> We need more to eliminate the memory leaks.
+>
+> ... like this one.
+>
+>> Will this view evolve into further helpful and constructive clarifications?
+>
+> Given my above, what is the evaluation of the same question to yourself?
 
-> > We need more to eliminate the memory leaks.
+* I hope that my contributions can improve the situation also
+  for this software area.
 
-=2E.. like this one.
-
-> Will this view evolve into further helpful and constructive clarification=
-s?
-
-Given my above, what is the evaluation of the same question to yourself?
+* Existing development tools will evolve further as usual.
 
 Regards,
-
-   Wolfram
-
-
---mpidk2alepylbuio
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAlxn0q4ACgkQFA3kzBSg
-Kba8qxAAje15NT5l07pf3Vrh13e+9aiL+22EMykTDGEPH9HgeOP58Dnw/DgFFo/W
-eoIuw7fR0cK33MI/L0yOyWkfWPa0Eg86acVtArgevil07PcObuT/2MGOXhN+MWKW
-2Ecy7yj/LzcUmT2f1p+NGF8DCggMZjscKvj3InRttSJlhMuCVxsT6gg+3LOMonl7
-L72gYrGdh+CMG+To7bkf0RCpwJbK4k3h11Ay7R0OUAr57yTJ3H1aYl+V7glXdBvm
-Oiw/BwyNPF9gRIzQBuAeBn2mI2VioU3/Cfj2dtwNxy6duAJb11KNKK8xWLpjbZFY
-bFswd5OGiCJY4EuVW3CofkPsQKo0eSPGQwB6whUsQYe4qAY5XwZr/FS2bczN1xtM
-u9Ya7zWHrFfmhc7b2lE4eO/Cw85kpNfnoy2SPi1Sn/8yjoPTvzvhinqlaWJido10
-zcMLc/pukHX/cOTK0Oqwqgq2Tp2C0Z2XdWAUDHfcKzSjkR4fW8FZs8a78TMAmBKX
-hlEseUygcYpq9QxBJIb7LMO7sv4WwY/Hq1Ac/EPw6rNzDSlAC/rFHVU/2uNHWTgi
-CsGt2twijdYlGEEbtIxi8MF6yCtGr8H5ARr4Uz6oyl+hmSrmWl0cMWJ/TuRGbkj0
-SnU4KkwP3GCZjm9RnmKyCLLE5sCvvxvd9ODDTcZ/wW0aYETGv7o=
-=IqtW
------END PGP SIGNATURE-----
-
---mpidk2alepylbuio--
-
---===============0292795928==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Markus
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
 https://systeme.lip6.fr/mailman/listinfo/cocci
-
---===============0292795928==--
