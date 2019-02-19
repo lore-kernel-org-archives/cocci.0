@@ -2,69 +2,76 @@ Return-Path: <SRS0=aura=Q2=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_PASS,UNPARSEABLE_RELAY
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47959C43381
-	for <cocci@archiver.kernel.org>; Tue, 19 Feb 2019 02:14:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BAC1C43381
+	for <cocci@archiver.kernel.org>; Tue, 19 Feb 2019 04:47:25 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6CEE82173C
-	for <cocci@archiver.kernel.org>; Tue, 19 Feb 2019 02:14:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6CEE82173C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=zte.com.cn
+	by mail.kernel.org (Postfix) with ESMTPS id 72FA0217D7
+	for <cocci@archiver.kernel.org>; Tue, 19 Feb 2019 04:47:24 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ibsgaard-io.20150623.gappssmtp.com header.i=@ibsgaard-io.20150623.gappssmtp.com header.b="DPN0TWA3"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 72FA0217D7
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ibsgaard.io
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1J2EZhX009089
-          ; Tue, 19 Feb 2019 03:14:35 +0100 (CET)
+          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1J4ktIg000610
+          ; Tue, 19 Feb 2019 05:46:55 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 1D66876F9;
-	Tue, 19 Feb 2019 03:14:35 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 5DF2976FB;
+	Tue, 19 Feb 2019 05:46:55 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 9245B764A
- for <cocci@systeme.lip6.fr>; Tue, 19 Feb 2019 03:14:32 +0100 (CET)
-Received: from mxct.zte.com.cn (out1.zte.com.cn [202.103.147.172])
- by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1J2ETFV023275
- for <cocci@systeme.lip6.fr>; Tue, 19 Feb 2019 03:14:31 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id D75D676F9
+ for <cocci@systeme.lip6.fr>; Tue, 19 Feb 2019 05:46:53 +0100 (CET)
+Received: from mail-it1-x134.google.com (mail-it1-x134.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:134] (may be forged))
+ by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1J4kqaw003228
+ for <cocci@systeme.lip6.fr>; Tue, 19 Feb 2019 05:46:52 +0100 (CET)
 X-pt: isis.lip6.fr
-Received: from mse01.zte.com.cn (unknown [10.30.3.20])
- by Forcepoint Email with ESMTPS id C47178EDB6371B0FC284;
- Tue, 19 Feb 2019 10:14:27 +0800 (CST)
-Received: from kjyxapp05.zte.com.cn ([10.30.12.204])
- by mse01.zte.com.cn with SMTP id x1J2EFeE002799;
- Tue, 19 Feb 2019 10:14:15 +0800 (GMT-8)
- (envelope-from wen.yang99@zte.com.cn)
-Received: from mapi (kjyxapp07[null]) by mapi (Zmail) with MAPI id mid14;
- Tue, 19 Feb 2019 10:14:15 +0800 (CST)
-Date: Tue, 19 Feb 2019 10:14:15 +0800 (CST)
-X-Zmail-TransId: 2b095c6b6677f784bc4e
-X-Mailer: Zmail v1.0
-Message-ID: <201902191014156680299@zte.com.cn>
-In-Reply-To: <ab463e94-287a-6188-6795-06eeb832e861@web.de>
-References: 201902181122502228026@zte.com.cn,
- ab463e94-287a-6188-6795-06eeb832e861@web.de
-Mime-Version: 1.0
-From: <wen.yang99@zte.com.cn>
-To: <Markus.Elfring@web.de>
-Content-Type: multipart/mixed;
-	boundary="=====_001_next====="
-X-MAIL: mse01.zte.com.cn x1J2EFeE002799
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 19 Feb 2019 03:14:35 +0100 (CET)
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Tue, 19 Feb 2019 03:14:31 +0100 (CET)
+Received: by mail-it1-x134.google.com with SMTP id v72so3328935itc.0
+ for <cocci@systeme.lip6.fr>; Mon, 18 Feb 2019 20:46:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=ibsgaard-io.20150623.gappssmtp.com; s=20150623;
+ h=mime-version:from:date:message-id:subject:to;
+ bh=+b1V/t2ZcQeUsJYsUcmPrJ+aDz3cWyNzbJi8jD68pM0=;
+ b=DPN0TWA3BXWtzJL7hRIa4Gm9WEYEPTmbgFnq6+Xypi7u+laiN3WEubvQEDOcf4U37k
+ xYIbrPrVVFpOJoIZSiS37JTmbjMls5w+gTOLZ/pGOFMk8aBB8jAQv5HA/tXMh0GrBHiF
+ KOvFVDipwBxs6YXWvvmTwlBrgjj9Bw17uN5mGe+/cFNRtq/5OC9eAj75xFdM2Q3aBnY3
+ QUA0aZnneFoFWs311z1vOwbKfC3tjk4Qgg/UZ1GXn9/4BAs2/hKGhCxb5iq3P1fzRTgW
+ Tu4TnUKZAvhZ/+fMNUslIm+/XvntQXeHYhG5u1G+ENuzgBGi4hc6W/r4VWRjmJ2upNxQ
+ btaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+ bh=+b1V/t2ZcQeUsJYsUcmPrJ+aDz3cWyNzbJi8jD68pM0=;
+ b=tT7e+Vfa7E/LT/eKoKGHkBU6R8051V/nfBpQjv4xwnljOJXb+1iVovXGaZTS8VBSGJ
+ 2cNoGEcvJ1PocEOjZcs95uTteGfarYMR3bbA45IVbzh9O2Oz2K4XJ7MpEBy5Zl3+cJcJ
+ jf7XyNTsIHpv5Z305FTcegzprun8hYMIwoZfB9TB0zKhXnzCBO3yOX1RiIw3e7Odvbro
+ Cb8rnkCkpqyeui+RUhN2WLtFAhEcMpvNRT2znR6er2eWc3PG1dY0xnOZSkrIrdvJ34fI
+ PxVY2D/7fFZ/vcdWNPH1L2ieHW+int60pNogHxzO5Uhs6kGMyHk3h+i6lAyo9gHdTLVh
+ HCNQ==
+X-Gm-Message-State: AHQUAuZcy/LGlH0Pzj2nkZbvdUH2USowBNEDg/vuY5QHXFOuTomJ6ky3
+ gMlMXwhnzhAGIl5wd6ckK4zy+dQfHBEg2uKceuA79VYi6w0=
+X-Google-Smtp-Source: AHgI3IaWjYFfQPy+2ZtsbZ5dmp88gAyHtqfMH00VIkhCYvis49gaBl8y8bA5EUq6Yk2Ki/fge3y6DVZU5pKG0a+rPCM=
+X-Received: by 2002:a5e:9412:: with SMTP id q18mr15257929ioj.233.1550541722281; 
+ Mon, 18 Feb 2019 18:02:02 -0800 (PST)
+MIME-Version: 1.0
+From: thomas pedersen <thomas@ibsgaard.io>
+Date: Mon, 18 Feb 2019 18:01:51 -0800
+Message-ID: <CABWD38=R3aZDpEvRTc-aidKuQ9QT1BhfN+h7Zo_PLu2SgvdBmw@mail.gmail.com>
+To: cocci@systeme.lip6.fr
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 19 Feb 2019 05:46:56 +0100 (CET)
+X-Greylist: Delayed for 02:39:22 by milter-greylist-4.4.3 (isis.lip6.fr
+ [IPv6:2001:660:3302:283c:0:0:0:2]); Tue, 19 Feb 2019 05:46:52 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: kernel-janitors@vger.kernel.org, michal.lkml@markovi.net,
-        yellowriver2010@hotmail.com, nicolas.palix@imag.fr,
-        linux-kernel@vger.kernel.org, cheng.shengyu@zte.com.cn,
-        cocci@systeme.lip6.fr
-Subject: Re: [Cocci]
-	=?utf-8?q?=5Bv6=5D_coccinelle=3A_semantic_code_search_for?=
-	=?utf-8?q?_missing_put=5Fdevice=28=29?=
+X-Scanned-By: MIMEDefang 2.78
+Subject: [Cocci] SmPL patch against C macro
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -76,58 +83,41 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
+Hello,
 
+I'm trying to write an SmPL patch which will modify C macro. The test files are:
 
---=====_001_next=====
-Content-Type: multipart/alternative;
-	boundary="=====_003_next====="
+# test_macro.c
+#define MYMACRO(adsf) { \
+        .foo = (asdf),\
+}
 
+# test_macro.cocci
+@@
+expression E;
+@@
 
---=====_003_next=====
-Content-Type: text/plain;
-	charset="UTF-8"
-Content-Transfer-Encoding: base64
+{
+.foo = E
++ * 1000
+}
 
-PiA+IEkgd291bGQgaGF2ZSBhIGhhcmQgdGltZSBzYXlpbmcgd2hpY2ggb25lIGlzIG1vcmUgcmVh
-c29uYWJsZSB0byB0ZXN0LCAKPiBJIHN1Z2dlc3QgdG8gcmVjb25zaWRlciB0aGUgaW50ZXJwcmV0
-YXRpb24gb2YgdGhpcyBzb2Z0d2FyZSBzaXR1YXRpb24gb25jZSBtb3JlLgo+ID4gc2luY2UgYm90
-aCBhcmUgZXh0cmVtZWx5IHVubGlrZWx5Lgo+IEkgZGlzYWdyZWUgdG8gdGhpcyB2aWV3IGJlY2F1
-c2UgdHdvIGVsbGlwc2VzIHdlcmUgaW50ZW50aW9uYWxseSBzcGVjaWZpZWQKPiBpbiBwdWJsaXNo
-ZWQgU21QTCBzY3JpcHRzLgo+IFNvIHNvbWUgc29mdHdhcmUgZGV2ZWxvcGVycyBmb3VuZCB0aGVz
-ZSDigJxzcGVjaWFsIHVzZSBjYXNlc+KAnSBpbXBvcnRhbnQgZW5vdWdoLgo+ID4+IEluIGFkZGl0
-aW9uLCB3ZSBmZWVsIHRoYXQgd2Ugc2hvdWxkIHByb2JhYmx5IGFjY2VwdCB0aGlzIHBhdGNoIGZp
-cnN0LAo+IEkgZGlzYWdyZWUgdG8gdGhpcyBpbWFnaW5hdGlvbiBiZWNhdXNlIEkgd291bGQgcHJl
-ZmVyIHRvIGludGVncmF0ZSBhIHNvdXJjZSBjb2RlIHZhcmlhbnQKPiB3aXRob3V0IGEgYnVnICh3
-aGljaCB3YXMgY29waWVkIGZyb20gYSB2ZXJzaW9uIG9uIDIwMTMtMDUtMDggYnkgUGV0ciBTdHJu
-YWQpLgo+IGh0dHBzOi8vZ2l0Lmtlcm5lbC5vcmcvcHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L3Rv
-cnZhbGRzL2xpbnV4LmdpdC90cmVlL3NjcmlwdHMvY29jY2luZWxsZS9mcmVlL3BjaV9mcmVlX2Nv
-bnNpc3RlbnQuY29jY2k/aWQ9ZjdiMTY3MTEzNzUzZTk1YWU2MTM4M2UyMzRmOGQxMDE0Mjc4MmFj
-ZSNuMTIKPiBJIGhvcGUgdGhhdCBuaWNlciBydW4gdGltZSBiZWhhdmlvdXIgY2FuIGJlY29tZSBh
-bHNvIHJlbGV2YW50IGhlcmUuCgpCb3RoIGNhc2VzIGFyZSBleHRyZW1lbHkgdW5saWtlbHkuCkFs
-dGhvdWdoIHdlIGhhdmUgdGVzdGVkIHRoZXNlIHR3byBtZXRob2RzIGluIHRoZSBleGlzdGluZyBr
-ZXJuZWwgY29kZSwKY29uc2lkZXJpbmcgdGhlIGV2b2x1dGlvbiBvZiB0aGUga2VybmVsIGNvZGUs
-IHRoZXNlIHNwZWNpYWwgY2FzZXMgbWF5IG9jY3VyLCBzbyB3ZSBhcmUgd2lsbGluZyB0byB0YWtl
-IHRoZW0gaW50byBhY2NvdW50LgpXZSBwbGFuIHRvIG1vZGlmeSB0aGUgY29kZSBsaWtlIHRoaXM6
-CgogaWQgPSBvZl9maW5kX2RldmljZV9ieV9ub2RlQHAxKHgpCi0uLi4gd2hlbiAhPSBlID0gaWQK
-Ky4uLiB3aGVuICE9IGUgPSAoVClpZAorICAgIHdoZW4gIT0gaWQgPSAoVCllCgpEbyB5b3UgaGF2
-ZSBhbnkgb3RoZXIgcXVlc3Rpb25zPwpUaGFua3MuCgpSZWdhcmRzLApXZW4=
+Running with:
+$ spatch --debug --sp-file test_macro.cocci test_macro.c
 
+Gives the output:
+Unsupported form of #define: File "test_macro.c", line 1
 
---=====_003_next=====--
+What's the correct syntax to match against a similar macro?
 
---=====_001_next=====
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Thanks,
+Thomas
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
 https://systeme.lip6.fr/mailman/listinfo/cocci
-
---=====_001_next=====--
-
