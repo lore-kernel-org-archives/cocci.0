@@ -7,124 +7,100 @@ X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED194C10F0B
-	for <cocci@archiver.kernel.org>; Wed, 20 Feb 2019 15:44:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9092EC43381
+	for <cocci@archiver.kernel.org>; Wed, 20 Feb 2019 19:46:51 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1705F2183F
-	for <cocci@archiver.kernel.org>; Wed, 20 Feb 2019 15:44:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id BEC852086A
+	for <cocci@archiver.kernel.org>; Wed, 20 Feb 2019 19:46:50 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="d4gGjcma"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1705F2183F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
+	dkim=fail reason="signature verification failed" (4096-bit key) header.d=mykolab.com header.i=@mykolab.com header.b="UnvpynbK"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BEC852086A
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=mykolab.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1KFhuGt006265
-          ; Wed, 20 Feb 2019 16:43:56 +0100 (CET)
+          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1KJkWgu006234
+          ; Wed, 20 Feb 2019 20:46:32 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id B6D5376FF;
-	Wed, 20 Feb 2019 16:43:56 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id B944376FF;
+	Wed, 20 Feb 2019 20:46:32 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 05488764A
- for <cocci@systeme.lip6.fr>; Wed, 20 Feb 2019 16:43:56 +0100 (CET)
-Received: from mout.web.de (mout.web.de [212.227.17.11])
- by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1KFhs42020079
- for <cocci@systeme.lip6.fr>; Wed, 20 Feb 2019 16:43:54 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 7C582764A
+ for <cocci@systeme.lip6.fr>; Wed, 20 Feb 2019 20:46:31 +0100 (CET)
+Received: from mx.kolabnow.com (mx.kolabnow.com [95.128.36.42])
+ by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1KJkUNb018267
+ for <cocci@systeme.lip6.fr>; Wed, 20 Feb 2019 20:46:30 +0100 (CET)
 X-pt: isis.lip6.fr
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1550677434;
- bh=iPtwlQZIVMM9LG8ZfSwzEv4PfeT/sBDxf4ZBJsnQFkg=;
- h=X-UI-Sender-Class:To:References:Subject:Cc:From:Date:In-Reply-To;
- b=d4gGjcmaptA/jqyEs2NO4lT5oaThbubLcrHNVITH+pIsW3jnjDbp3xJvb+b+K95lJ
- iy0fNSnsF5W846iZQ8H0JgmzxA3W6+p+x5I+DuVbpAZ8kLT82/hlZ7De5Kbxv+MIua
- 5hTxr9T+PnRNmP0xiBFCrJ0AgG/iWd8trFdhmJqw=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([78.49.123.75]) by smtp.web.de (mrweb101
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0Lfj2k-1hPjAO0tSM-00pLJr; Wed, 20
- Feb 2019 16:43:54 +0100
-To: cocci@systeme.lip6.fr
-References: <alpine.DEB.2.21.1902192245490.3935@hadrien>
-From: Markus Elfring <Markus.Elfring@web.de>
+Received: from localhost (unknown [127.0.0.1])
+ by ext-mx-out001.mykolab.com (Postfix) with ESMTP id 233683A5F
+ for <cocci@systeme.lip6.fr>; Wed, 20 Feb 2019 20:46:30 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mykolab.com; h=
+ content-language:content-type:content-type:mime-version:date
+ :date:message-id:subject:subject:from:from:received:received
+ :received; s=dkim20160331; t=1550691989; x=1552506390; bh=SLkthc
+ IeBpZfzExVSGPe7Do6hq5AZZS5Gc/Wi1bkXeU=; b=UnvpynbK0p2KTi8HRjJot0
+ PxYEypbwff/Ko+wrqKrQJFrJndHn9msPR1Le6ZkQ6+ORDf/2vWfTHm3g+icDxMAe
+ NeMVt1sra3QV4jBR542Q6vkZHkMe4/NchcwSKt4Umiz26/rnmB9ZdedXErKhf08V
+ tt/4V/r1jSQu6B+H9ld4StgvffS6/hpQbT116kp9cdV6gynXDND59uOw+sh/NNOT
+ tWs/z4NoSR/P29jmQ0AgQHk0PsrLLF3dOKe87IlB3NkIfnnuLfsnux+sNeeom5nT
+ t28bqHYQfwCHRauilfcbrXwNm/QM6owj2bMQSFsFCxrB+hszmBsm+amPks7e1SB6
+ wsdhEFO70d1Inl7iOZDTSVpCCgmyAfTigqsAowL5hf8WFjrMgR/XvT0sjYF6sHsK
+ 5nKkvTwjpHxKiwaVcQhVJA/QNxuaH9Inh3+ForB5dd83g4Kc0UNSexleu9hp+jcd
+ Tsq0oFcjprb9IGgzi4c5JjsGwTd+7YRg5xRSJq23WJB6UYCN96ICkzVosOumdObB
+ XTlGfD13bGdVxx5AIugAn0C6fqhAl8FO8pv0N/LrHqxptm0WwAPpr4q5ZcWcScqz
+ pUnKRjJJLzyg/7rFJIvMOC4KjOZEFlRdI+kgKLq3NEEY8Nn6y9MeCqtp/WWOCWin
+ VKUmG2iUGK9/DTD+3Rg38=
+X-Virus-Scanned: amavisd-new at mykolab.com
+Received: from mx.kolabnow.com ([127.0.0.1])
+ by localhost (ext-mx-out001.mykolab.com [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id rA82uEZri5M8 for <cocci@systeme.lip6.fr>;
+ Wed, 20 Feb 2019 20:46:29 +0100 (CET)
+Received: from int-mx003.mykolab.com (unknown [10.9.13.3])
+ by ext-mx-out001.mykolab.com (Postfix) with ESMTPS id 1DF903A5C
+ for <cocci@systeme.lip6.fr>; Wed, 20 Feb 2019 20:46:29 +0100 (CET)
+Received: from ext-subm001.mykolab.com (unknown [10.9.6.1])
+ by int-mx003.mykolab.com (Postfix) with ESMTPS id 0539DAB8
+ for <cocci@systeme.lip6.fr>; Wed, 20 Feb 2019 20:46:28 +0100 (CET)
+To: Coccinelle <cocci@systeme.lip6.fr>
+From: Michael Stefaniuc <mstefani@mykolab.com>
 Openpgp: preference=signencrypt
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- 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 FEE=
-Message-ID: <6d208b8a-cfd7-2bd9-d3e1-ec39dd03aa69@web.de>
-Date: Wed, 20 Feb 2019 16:43:47 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.5.1
+Autocrypt: addr=mstefani@mykolab.com; prefer-encrypt=mutual; keydata=
+ mQGiBEBzHYsRBACu8uw/xP4j/RYT/HBhw46jwNx9tJaHUADksKmmNRMVnpAX768sVFOMz+rO
+ 4Zfx0pGoaMrfw5yCh3v+fwh7hh8mMutZ6HmtOZho10hd/Kp+1JSpFDVP5b92ATr2Yexd+SXz
+ jSbCDGLjGGpPWEEtNzu4UhdRwIIymdQqVTx6aCvscwCgvsbD+M9kmUWdToQI/H6QYsNBmukD
+ /iPmBemMiw69xBzH+pLCpfdlnundj/ZXXdUO86Br6reg9q5m5Vv4ClyTHMIXcd6Dnm43S2Z9
+ OvCDwtBMm+Hu5H89/B6E0NSyknn7CMciD3bLklFGQl4isyF+6Gnd5MTr1cM1Pm0EtYmCAdhK
+ +h9SW2NWnPQOr2b3KRrn6rFRumTqA/0YDv8IvVRQZjv9DqK4YP7/va7GGUJHS44ksPyHuQXI
+ gZVvHgE5ntSjBeUULoTk6vY55JTdgj3w2BdW9zvjUD9O7kDCf/sx74YvInw3bHsTDo4C7mr3
+ QPWIVHKF63dElZwTNL+W0pzwDi6nBnu6RGpiQgI6gktIE13ySF1HjoKAjbQ1TWljaGFlbCBT
+ dGVmYW5pdWMgKGVuYyBwd2Qga2V5KSA8bXN0ZWZhbmlAcmVkaGF0LmNvbT6IXwQTEQIAHwQL
+ BwMCAxUCAwMWAgECHgECF4AFAlNET0gFCRw3Mz0ACgkQ0ei8kcpE1VFHMgCgtPjwlA34jJ2F
+ a1TPymfo6IGo9y4Anj05IAwUKKSPJez3LojfovAYMEryuQINBFNETU8BEAD2GkRuwYIX8RZt
+ rxtlr5m3mVvxeW4k+Zq7LfFDJ4tGFDDIQAGWPK1RfljVjvPSPxzsoj+KynXnIqw9e6PoSNg3
+ tDMQaKvaLpzAKRUZIRJrIdCNuXQxvVI6Jxgg3GVbFider//67y+8rBJE5+QZp5zaIS4ifm90
+ 9NnHtOvr0ddJ1r26IwOo8/Pyg7y+bTN/Xuu5qr/zOeTcdJMtaQ2kbBh3IU2FSRGvUZTG9UNg
+ aU54KKX7+Zu3cziEK87r89Y1fZTr0rZfdQNaUwivxHY4nOXN+EAFl3mfaHnYIsdSDG3mqza8
+ RgoqLJpOGvl0JVlyYI9jgOvi05q+kFzGlZj1raAgnImzXh3p2se1sxUuXrmYkQt9b9OrFiCf
+ XYuWEVgNoW6qpmzYHkjOGBcATANhv9JBoNbMQEsg7oeyeCZzI3se8yXkif89NLB3MmLFHcPV
+ ui8Pv/6Y9/MAHq6ohM7AVJtOKt21jsb8R+Me3k5BoHkdU3iUAviScLKqiR5v5eL084gZtijv
+ 2ZgGfw1bNcX3y7VYsw5omvw042uGxzA76tm9hRjxDKK9OA/GAtkv20gusA4fZXUSuy7RRJ8N
+ T7U24WD4lRLCBjkNnV4izQHr9qwM6I/5/jP8mguRSL7HguxBLcyL7ZQ01aQALcc43v/p5Vw4
+ 96b3Et/nZrVw04xtwwvuhQARAQABiE8EGBECAA8CGwwFAlNET6oFCQlmA9sACgkQ0ei8kcpE
+ 1VGjvgCfWX5kaF0YptgUFItMH6U8kA6vnRsAoJkVZPLvJDyYi4TiEaZXyk+3DKPf
+Message-ID: <9b04d689-5786-517b-afcc-30c71f5c687e@mykolab.com>
+Date: Wed, 20 Feb 2019 20:46:18 +0100
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.1902192245490.3935@hadrien>
+Content-Type: multipart/mixed; boundary="------------432718155F2B4030D944B619"
 Content-Language: en-US
-X-Provags-ID: V03:K1:VWSUf8C6uElWMtF01QMzmgvsm6n5Bo2r6TRfDckCREOuqWAT53H
- O6SoU946hYk25XJu87qkzb+rbkIh6UUjuEVt9c5uMqvJROhT0VaxuMLb/dcYrsRtTjxF+xY
- rBKclnp76eCMQIfQcA33vamAGdPRNmqcjGh0fNE2JyDnc7DvHn5ZG0nfka8PzPnx1IvpF1c
- o3NZjcNhWOC7u4GNNMmiw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Kucs8GvMsp8=:kwKLTtEYezFhkbajnhUcAM
- iK32QehBDX5LUxukjdxMsax5ax7wLjC20d9Xh3radvrDo3w657JCscPRpqBZjz4WFByk6wC50
- D8Lzwl4ranD5DX2FiueJU/0bNLvi5WvS8Z8WKgc4YP5T9qmb98nxVWSw/Gpn1scj+dEUhUtHA
- ksmzdDfetwY3K/lTyD3J0ow/zKlvS3gl4kEZX79ciK1nprFCDebM4EOouusOc0I9lWzHS85gj
- eiSuEHwk3Va9eNx23SZ4XcqHJtWqon8ZRmgophyxq2YG5PcRWmHfeNmbgb0Ogrk2vj37RqSoH
- S63m/nW4tXuVdOy2Fvuj+/F7m4WvggVGjI8mwSHR6WBhEDgQhyavzca5jfkKB6Ocfy5Yno7hq
- WNIZf9JubAHmfba9eZ0eodqV7Q+BRUipgPnMguK2vAQ/EyMhLEPJAv6NEDkVlNABpOsqoMU09
- Bxjf6wj5TL9KOu+FV4viJ6z5+b5Sg7TwIPXQjx09YyrqUallRFykVDSpPqbCFyh6nbAHwQ4q6
- /kWzd6ikHR6vyIfb9OdqgtLXLJ+Mm7tqKKGVTbxuPjOh41jCg9L07goQQ+WTT1DNQR2cMa2Cq
- DRZqob5HWo3E9nd19o7NTmBOhxZo6glaUJO/28lfoRgPRilkXNsPzV5XkAk+DHBKos+Doqv5X
- xaxlCA5IUqlkVL4ySDN3SxJEW2phwvy6Ucps4gGYEGivWtSbDCH/z3IyMo8k2ylXxYoQFqTnx
- dwe0I1KkRUSCA8Yqdh/WBisssAy04aT8UT3ttSmuMLiLvLkI68MCMoARzdWTrI7mAJ/ENTZpw
- X3OYcAiNVLPbI2+66wugEzD+eSVG8DIGD3W96OTvtgAwX03Gi2C6gSq8F2Hpt7+oWAlLOjYR3
- FzZAis2HhJvjRDM1dx+CKnN3Syeq0vfE4YCiiUe5n66ueZUUPPo1/qGmdVrMntcppPXeIit+1
- emAefrOnz+w==
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 20 Feb 2019 16:43:58 +0100 (CET)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 20 Feb 2019 20:46:34 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Wed, 20 Feb 2019 16:43:54 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Wed, 20 Feb 2019 20:46:30 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Timur Tabi <timur@kernel.org>
-Subject: Re: [Cocci] Specifying that an expression is a string constant?
+Subject: [Cocci] Capturing comments / whitespace with statement list?
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -136,33 +112,106 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
->> The following rule fails with an error on the last line:
->>
->> @rule3@
->> expression x, y, z;
->> @@
->> -DBG_PRINT_STRING_VALUE(x, y, z);
->> +NV_PRINTF2(x, y "0x%x\n", z);
->>
->> Presumably, cocci doesn't know that "y" is a string constant and so
->> the resulting expression is valid.  I'm guessing that I need to
->> specify that "y" is a string constant, but even after reading
->> http://coccinelle.lip6.fr/docs/main_grammar.html, I can't figure out
->> what that could be.
->
-> SmPL doesn't support this.
+This is a multi-part message in MIME format.
+--------------432718155F2B4030D944B619
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 
-Will any users (or contributors) become motivated enough to adjust involved
-software limitations also for wider applications of the semantic patch language?
+Hello,
 
-Regards,
-Markus
+is there a way to capture in a statement list the comments and empty
+lines between statements?
+
+I've got asked for scripting help to merge a ton of helper functions
+into their only caller.
+
+Of course it is trivial to do with coccinelle. But the comments and
+empty lines get lost in the process:
+
+  spatch merge.cocci -D func=foo_base merge.c > merge.diff
+
+
+It is not a big issue, only about 55 functions to merge. So I can either
+use the above script and add the comments and newlines back. Or copy the
+stuff manually.
+
+thanks
+bye
+	michael
+
+
+
+--------------432718155F2B4030D944B619
+Content-Type: text/plain; charset=UTF-8;
+ name="merge.cocci"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="merge.cocci"
+
+QGJhc2VACmlkZW50aWZpZXIgdmlydHVhbC5mdW5jOwpzdGF0ZW1lbnQgbGlzdCBib2R5Owp0
+eXBlIFQ7CkBACi0gVCBmdW5jKC4uLikgeyBib2R5IH0KCgpAQAppZGVudGlmaWVyIHZpcnR1
+YWwuZnVuYzsKc3RhdGVtZW50IGxpc3QgYmFzZS5ib2R5OwpAQAotIHJldHVybiBmdW5jKC4u
+Lik7CisgYm9keQo=
+--------------432718155F2B4030D944B619
+Content-Type: text/x-csrc;
+ name="merge.c"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="merge.c"
+
+int foo_base(int i, int j)
+{
+    i++;
+    /* Now increment j too */
+    j++;
+
+    return i + j;
+}
+
+int foo(int i, int j)
+{
+    return foo_base(i, j);
+}
+
+--------------432718155F2B4030D944B619
+Content-Type: text/x-patch;
+ name="merge.diff"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="merge.diff"
+
+--- /tmp/merge.c
++++ /tmp/cocci-output-18706-5610a6-merge.c
+@@ -1,13 +1,8 @@
+-int foo_base(int i, int j)
+-{
+-    i++;
+-    /* Now increment j too */
+-    j++;
+ 
+-    return i + j;
+-}
+ 
+ int foo(int i, int j)
+ {
+-    return foo_base(i, j);
++    i++;
++    j++;
++    return i + j;
+ }
+
+--------------432718155F2B4030D944B619
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
 https://systeme.lip6.fr/mailman/listinfo/cocci
+
+--------------432718155F2B4030D944B619--
