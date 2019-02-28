@@ -1,62 +1,62 @@
-Return-Path: <SRS0=+GE4=RB=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=q8l5=RD=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEF61C43381
-	for <cocci@archiver.kernel.org>; Tue, 26 Feb 2019 06:25:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACD6DC43381
+	for <cocci@archiver.kernel.org>; Thu, 28 Feb 2019 00:44:07 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3E6772173C
-	for <cocci@archiver.kernel.org>; Tue, 26 Feb 2019 06:25:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3E6772173C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lip6.fr
+	by mail.kernel.org (Postfix) with ESMTPS id 0CE2321850
+	for <cocci@archiver.kernel.org>; Thu, 28 Feb 2019 00:44:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0CE2321850
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1Q6PRFu024109
-          ; Tue, 26 Feb 2019 07:25:27 +0100 (CET)
+          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1S0hoCR005072
+          ; Thu, 28 Feb 2019 01:43:50 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id CEB6A7701;
-	Tue, 26 Feb 2019 07:25:26 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 0A3B47701;
+	Thu, 28 Feb 2019 01:43:50 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 4605876E1
- for <cocci@systeme.lip6.fr>; Tue, 26 Feb 2019 07:25:25 +0100 (CET)
-Received: from mail3-relais-sop.national.inria.fr
- (mail3-relais-sop.national.inria.fr [192.134.164.104])
- by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1Q6POPC005284
- for <cocci@systeme.lip6.fr>; Tue, 26 Feb 2019 07:25:24 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id C05B676FE
+ for <cocci@systeme.lip6.fr>; Thu, 28 Feb 2019 01:43:47 +0100 (CET)
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+ by isis.lip6.fr (8.15.2/lip6) with ESMTP id x1S0hjII015579
+ for <cocci@systeme.lip6.fr>; Thu, 28 Feb 2019 01:43:46 +0100 (CET)
 X-pt: isis.lip6.fr
-X-Addr-Warning: ATTENTION - Votre correspondant a fourni une adresse
- d'enveloppe @lip6.fr, mais ce message ne provient pas
- de lip6.fr ! postmaster@lip6.fr.
-X-IronPort-AV: E=Sophos;i="5.58,414,1544482800"; d="scan'208";a="297320043"
-Received: from abo-58-107-68.mrs.modulonet.fr (HELO hadrien) ([85.68.107.58])
- by mail3-relais-sop.national.inria.fr with
- ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 26 Feb 2019 07:25:24 +0100
-Date: Tue, 26 Feb 2019 07:25:23 +0100 (CET)
-From: Julia Lawall <julia.lawall@lip6.fr>
-X-X-Sender: jll@hadrien
-To: Timur Tabi <timur@kernel.org>
-In-Reply-To: <CAOZdJXW=Zivu348-fCuSDUSFYTNeKVuQMectJ8_tH0V-CCfpRQ@mail.gmail.com>
-Message-ID: <alpine.DEB.2.21.1902260720260.2655@hadrien>
-References: <CAOZdJXU3eTe7MS+_pb6ou4rXQFqM7P_ZYQAFd2F0P-aEGXVM7g@mail.gmail.com>
- <CAOZdJXWCvqVG52s3HiwH7e_yJ0ijeX41fGyv6hspXdY79wVMYw@mail.gmail.com>
- <CAOZdJXW=Zivu348-fCuSDUSFYTNeKVuQMectJ8_tH0V-CCfpRQ@mail.gmail.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com
+ [10.5.11.13])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mx1.redhat.com (Postfix) with ESMTPS id C0E37757EF
+ for <cocci@systeme.lip6.fr>; Thu, 28 Feb 2019 00:43:44 +0000 (UTC)
+Received: from redhat.com (ovpn-124-76.rdu2.redhat.com [10.10.124.76])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id 7497F6BF9C
+ for <cocci@systeme.lip6.fr>; Thu, 28 Feb 2019 00:43:44 +0000 (UTC)
+Date: Wed, 27 Feb 2019 19:43:42 -0500
+From: Jerome Glisse <jglisse@redhat.com>
+To: cocci@systeme.lip6.fr
+Message-ID: <20190228004342.GB11866@redhat.com>
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 26 Feb 2019 07:25:28 +0100 (CET)
-X-Greylist: IP, sender and recipient auto-whitelisted, not delayed by
- milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]);
- Tue, 26 Feb 2019 07:25:24 +0100 (CET)
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: cocci <cocci@systeme.lip6.fr>
-Subject: Re: [Cocci] Octal constants confuse spatch
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 28 Feb 2019 01:43:52 +0100 (CET)
+X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [132.227.60.2]); Thu, 28 Feb 2019 01:43:46 +0100 (CET)
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
+ (mx1.redhat.com [10.5.110.26]); Thu, 28 Feb 2019 00:43:44 +0000 (UTC)
+Subject: [Cocci] Coccinelle is confuse by extern __printf macro (ie
+	attribute)
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -68,56 +68,32 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
+Coccinelle get confuse with kernel extern __printf macro for instance:
 
+test.c:
+extern __printf(3, 4)
+int foo(int, int, char *, ...);
+void toto(int, long);
 
-On Mon, 25 Feb 2019, Timur Tabi wrote:
+test.sp:
+@@
+@@
+void toto(int, =
 
-> On Mon, Feb 25, 2019 at 5:06 PM Timur Tabi <timur@kernel.org> wrote:
-> > Sorry, bad copy-paste.  I meant
-> >
-> > #define FLD_SET_DRF(a, b, c, d, e)             1
->
-> Ok, now I found something weird.
->
-> If I put the #define on the top of the source file (test.c), it doesn't work.
->
-> But if I put it in a header file specified by --macro-file-builtins,
-> it does work.
->
-> So it seems to me that spatch is parsing the macros in the
-> --macro-file-builtins header file differently than the macros in the
-> source file itself.  That doesn't explain why it doesn't like 0080,
-> though.
++void *,
+long);
 
-It doesn't like 0080 because that's not an octal number.  Octal numbers
-should only have digits up to 7.
+The semantic patch will not work. But if extern is remove or if __printf
+macro is remove then it works. Also having extern and __printf on different
+line make it works.
 
-On the other hand, when I try to parse the function in isolation, it fails
-for a few parsing rounds, but then succeeds in the end.
-
-Coccinelle tries to avoid unfolding macros, because doing so means that
-the macro code can't be transformed.  --macro-file-builtins means use
-these definitions immediately when parsing.  --macro-file definitions are
-used in a later parsing attempt.  I think that macro definitions in the
-code are only used when they have an impact on control-flow, ie a macro
-definition that contains a return.  So what you see is the intended
-behavior.
-
-julia
-
->
-> Anyway, I seem to be unblocked for now, but this might be something to
-> look into.
-> _______________________________________________
-> Cocci mailing list
-> Cocci@systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+Cheers,
+J=E9r=F4me
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
