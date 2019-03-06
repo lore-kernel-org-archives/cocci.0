@@ -6,45 +6,45 @@ X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4183C43381
-	for <cocci@archiver.kernel.org>; Wed,  6 Mar 2019 09:41:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C731EC43381
+	for <cocci@archiver.kernel.org>; Wed,  6 Mar 2019 11:18:48 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0A19F20675
-	for <cocci@archiver.kernel.org>; Wed,  6 Mar 2019 09:41:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id EFB7620661
+	for <cocci@archiver.kernel.org>; Wed,  6 Mar 2019 11:18:47 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="CfkElrdP"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0A19F20675
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="gTgRimAd"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EFB7620661
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x269epHC001785
-          ; Wed, 6 Mar 2019 10:40:51 +0100 (CET)
+          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x26BIUTs018757
+          ; Wed, 6 Mar 2019 12:18:30 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 12FE6770F;
-	Wed,  6 Mar 2019 10:40:51 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 23176770F;
+	Wed,  6 Mar 2019 12:18:30 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id DACCA7702
- for <cocci@systeme.lip6.fr>; Wed,  6 Mar 2019 10:40:48 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 75D557702
+ for <cocci@systeme.lip6.fr>; Wed,  6 Mar 2019 12:18:28 +0100 (CET)
 Received: from mout.web.de (mout.web.de [212.227.15.3])
- by isis.lip6.fr (8.15.2/lip6) with ESMTP id x269emLG001257
- for <cocci@systeme.lip6.fr>; Wed, 6 Mar 2019 10:40:48 +0100 (CET)
+ by isis.lip6.fr (8.15.2/lip6) with ESMTP id x26BIRX8006980
+ ; Wed, 6 Mar 2019 12:18:27 +0100 (CET)
 X-pt: isis.lip6.fr
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1551865247;
- bh=OA99c/4xqDEOjELBq0mquZ9hftQ588EG2ml1SZi+zvQ=;
- h=X-UI-Sender-Class:To:From:Subject:Date;
- b=CfkElrdPAMbz2SUOLDKsrwutSfsFbMLCjP3NiEdTLzbyxp9K3O9tCAUpsQn8PYHzB
- UOuIgROah9UcttVtQ+XzX4TJCRhF3ssn5v3UbNn8m9zeluYecbQSR1cMVLyqI7yqSH
- 5nRv7+HStvq3wuUpsZSKBQMjEHr9lp4T3CNj1Qh8=
+ s=dbaedf251592; t=1551871093;
+ bh=dkC6c7XltdejrNRH4toIXc+41IHTqRrbUjK4KrfcU/0=;
+ h=X-UI-Sender-Class:Subject:Cc:References:From:To:Date:In-Reply-To;
+ b=gTgRimAd5gMe5x62bLDOfhWLTYCiMoPx6Mn3DeFjucMMCmoyrBCY5V/V/uYhlzC1x
+ JaNVbvLOgZafLI4Yyp/9/cf+MehoKNCS4vikipe4cHsLYQqRVa9S3ieZk+RdOVkSgF
+ Tc3QTfL4h3DpYwHyufh24Ko+WX+9ggXHJBbS+tEU=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
 Received: from [192.168.1.2] ([93.132.80.135]) by smtp.web.de (mrweb003
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0MOikY-1gvOlF31k6-00686a for
- <cocci@systeme.lip6.fr>; Wed, 06 Mar 2019 10:40:47 +0100
-To: Coccinelle <cocci@systeme.lip6.fr>
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0LvBJK-1h9dmJ0fLe-010LcN; Wed, 06
+ Mar 2019 12:18:13 +0100
+References: <201902191014156680299@zte.com.cn>
 From: Markus Elfring <Markus.Elfring@web.de>
 Openpgp: preference=signencrypt
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
@@ -90,38 +90,44 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <a92e39ec-4daa-0101-553e-21ca743c2df0@web.de>
-Date: Wed, 6 Mar 2019 10:40:36 +0100
+To: Wen Yang <wen.yang99@zte.com.cn>, Julia Lawall <julia.lawall@lip6.fr>
+Message-ID: <26dfa462-296c-6daf-5f22-30c20593c9cd@web.de>
+Date: Wed, 6 Mar 2019 12:18:10 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.5.2
 MIME-Version: 1.0
-Content-Language: en-US
-X-Provags-ID: V03:K1:6gFyv4TVhu0AUxAtm5PdmyrLZ+r2/fOfuJqrvbDKDI4+PzMVLlY
- Run1IACr6crwte1Q2+U0RYCqv2Ty5bto8zcS7ReBl0HI8F6rICtNuBZ1yMw1nL3lga/ruQ+
- tl4J0RjkFtNoS73eQR3M8vQykrfG9UmvI/ETB34wmAj+vJ61WsraXWovH1zFvFFKEPqqrJU
- ONlrLSAK2up8kG3NS4yAA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Z6s4+nPWuo0=:Xl7zXB5eg9F9ebNWQ7yuyt
- 2UL0gbyH2K+HLTH74xvmyeppJIpeYR+CwQZSsDxn/GS9/jSU0T2W6uB4exr5NpzIsWh99Etvn
- fV0AbmaIMPJMSbfHLS8Zej9xkY5d4oXf7qcLtP5cB4t6mgqVLhriG2OnrJv73CtV/T0dKmDgZ
- iVcowtmEBBqCQBa/N7imxL89F9wKrbmW+rk+mMJJHgPd8EJtaroMTIdgRciEzFcCRg26CTD5s
- esNvBwD6AQIwETL4aj5DubgEKqxzbAVzLxYnhMoWI3DCCBnAHxByeD+GMVoLrXYo8ybIjh5KX
- J1xQFefouOSTuWAnUHuH2gG2zqFWl0mLRgyYMbyR4sZN95xkR06WKL6f0YheQsAnIH3HLyJdD
- iYb4GDXzcWzYQ5l+4CvwePyqNPcVVUzQWQT6CfItCvMC3m1JnENszTql3QXFnSmjyQ9/p6Cd7
- Ofm3Yhdm/8+16PnsEyrZnjqzeCjNLoGCZhKkjhWGy7pRUGhCuHPkRad84UWe9aTWawLMV+Nsr
- 4V4D9DgX2b9iJQ3uyHrn8dQDY68Q5uI3UCrX723uXWxupiPWT/gpXfxMt3sB66F5/D0kN9kYy
- UiDXyfLA9kesQSwVoA1B9Otj5PGKr1AivlbUm6ikoJ8HwDJigTT8RjYNF2790EUp2pe43RQgj
- t+9Cjy/lSVZqf3JrqC+SRXRilxwohlzKUrCuOAafXBNh8azI2XDHpqcML8kMnNH5bBWiHJkOV
- ogmDfYWnOncZUnh5iEaSSUXo+wxkMvVAX4gSquEoVkV48wUkJrSp+sdsA0rba3mq9YPsBAb8h
- wYfevzgtXTQ+pnBRP7/YPGNVe4EeXrpzHbqVoCZTiFPo6rHTA+Q0ypkrkqguN/XdgytaXYNRA
- Cun6pQoX7V1IZB/aEhTUPdGfxfcemHNiiQ5yuAw9ALvvz+rg/BNtp+4yA1AA/DwSpJlhHzwby
- 1o0dj7FGqbg==
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 06 Mar 2019 10:40:51 +0100 (CET)
+In-Reply-To: <201902191014156680299@zte.com.cn>
+Content-Language: en-GB
+X-Provags-ID: V03:K1:zRt0TW4S+VgctpkkBMCnziMvTR2UdYKZxOBk8vsXqnDy5tmI32F
+ LxESADpU7g2Uv3JKpGu0GkYpJLgZtMejZofuzDOumutUkX6HpbFiKCcMu1e80UyBNpe28RG
+ QrK/c6SN09Y0btTYm4kIxQebmYnWUvX9l93Dcq/xWLFzPcKr1l8MYdiC1ydMersVps49ChR
+ E7kVinvXW7pG0/CCuBkdQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:xOQ5jjph6q0=:DaTtkJHzvU+D6XH/L4YxtV
+ c6A/copolht319FpZw9FRxLYbzBkWN4Cg6x+Edm60fieqQtFfT2reV41/i+nihORWLLwQgl9f
+ 8eTk0w8MJBbgDeRZByRlC5tkTyiqtX0H6AUCQ12CSuWbMoGuRaARAwz/p84uk3V5Y4Y+lRJ5e
+ cSmtvdxYLP1Xtst6vYPFmGoP67B12dARNX4M9wiWczg+n4FioPvhBr47e6BFg5lEh8Q5sOjXe
+ Yyy2YdXS6TAc2SZqV3W7qO04+SJtSQZTHHxYL8ngw6pm5X0eOnNNNx6pPFtsGTbV/5Kn22Dwa
+ duthj2VT/8n8HjPDRGUWRWqEdWHiloQoU1TkEy91uFCad8C7GCpGTjQOEKs6l7grjhlfGgVcp
+ gAd3c3jOIFs9E24vN4cpn2LjQf8vW9eX8Ld4d4RoDiStKQtU1kq01Ks9Mkam/SAKHLtkD4cVa
+ xg2cHuJeUZ2v7FZ0QO36yMAydBZQwaEYvzYyL5491LwdNfGHi0yJ+f3mqO5CNOcuf9YsFMLIP
+ 3H+H6S4fuwH5ai1FLnxjf7aVovebeq5pdsRQb/yF4D59EPVzI5Xsza24iWAe/oquX84EFiN0g
+ in5sMz5sM2ykAQLLPK6IMbK6gKxdd5NR3rzuu+6uDZuRid31nBO8F6Kk/u2/xT0GqD6yOU8dn
+ HFk6J9D96PKwsmhSohJWitaRt+sMWrfeNxBzNp+8wa8rSxcS1oPSOKsVBrC6rPJkkifkPqsiO
+ iY6YHaUoOv6yo0+YVSCSnZ6cd0OXpLQZz0/W7STpZMEnzQOblXx7h0OC5mihOai3bFkVqza2+
+ Ya1ZAaYgwCyhPgMAifgLueKuXGeebQAC3Q8WRfC1VRNrl1qrJLsCBaHzad/qfruB3LjJaFsPG
+ lsxQkDIaA7S+5yfh/Z8b2OZiyJIOANp1hlglvTs84V2tYujlYAr5+JokxN91x5KC2fnxzOhB8
+ M3ymKVyF6Jg==
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 06 Mar 2019 12:18:30 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Wed, 06 Mar 2019 10:40:48 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Wed, 06 Mar 2019 12:18:27 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Subject: [Cocci] Splitting a source code search specification from a SmPL
- rule into more rules?
+Cc: kernel-janitors@vger.kernel.org, Michal Marek <michal.lkml@markovi.net>,
+        Wen Yang <yellowriver2010@hotmail.com>,
+        Nicolas Palix <nicolas.palix@imag.fr>, linux-kernel@vger.kernel.org,
+        Cheng Shengyu <cheng.shengyu@zte.com.cn>, cocci@systeme.lip6.fr
+Subject: Re: [Cocci] [v6] coccinelle: semantic code search for missing
+	put_device()
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -138,24 +144,21 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Hello,
+> Do you have any other questions?
 
-The semantic patch language supports also to put longer code into SmPL rules.
-It might look convenient and appropriate to specify such code for a single
-SmPL rule. But it can happen also that you would like to reduce source code
-search efforts and present meaningful analysis reports.
+I would like to point another aspect out for further development considerations.
 
-Example:
-It can be specified that a specific function call should be found as
-a precondition.
+The initial assignment targets are (id)expressions in the discussed analysis
+approach so far.
+Would you like to care also for value (or pointer) initialisations by resource
+allocation calls at the following source code places?
 
-A corresponding hit can be additionally indicated in a variable for
-an embedded programming language (like OCaml or Python) in a subsequent script
-rule so that this variable can influence a message construction in a final rule.
+* Variable definition
+
+* Designated initialiser
 
 
-How are the chances to restart (or continue) the code search after found places
-(without repeating SmPL code from the precondition)?
+Will possible software extensions trigger interesting challenges?
 
 Regards,
 Markus
