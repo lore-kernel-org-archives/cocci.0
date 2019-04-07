@@ -2,94 +2,82 @@ Return-Path: <SRS0=K+oe=SJ=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5FB8C10F0E
-	for <cocci@archiver.kernel.org>; Sun,  7 Apr 2019 20:17:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48742C10F0E
+	for <cocci@archiver.kernel.org>; Sun,  7 Apr 2019 21:28:31 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4FFDC20896
-	for <cocci@archiver.kernel.org>; Sun,  7 Apr 2019 20:17:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 6304F2070D
+	for <cocci@archiver.kernel.org>; Sun,  7 Apr 2019 21:28:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Sm8NYCOe"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4FFDC20896
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
+	dkim=fail reason="signature verification failed" (4096-bit key) header.d=mykolab.com header.i=@mykolab.com header.b="cBFYtq/J"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6304F2070D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=mykolab.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x37KHW0T020374
-          ; Sun, 7 Apr 2019 22:17:32 +0200 (CEST)
+          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x37LSGZl005935
+          ; Sun, 7 Apr 2019 23:28:16 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 73DC47704;
-	Sun,  7 Apr 2019 22:17:32 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id B70307704;
+	Sun,  7 Apr 2019 23:28:16 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id A59ED7631
- for <cocci@systeme.lip6.fr>; Sun,  7 Apr 2019 22:17:30 +0200 (CEST)
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com
- [IPv6:2607:f8b0:4864:20:0:0:0:542] (may be forged))
- by isis.lip6.fr (8.15.2/lip6) with ESMTP id x37KHTLT002220
- for <cocci@systeme.lip6.fr>; Sun, 7 Apr 2019 22:17:30 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 42C007631
+ for <cocci@systeme.lip6.fr>; Sun,  7 Apr 2019 23:28:15 +0200 (CEST)
+Received: from mx.kolabnow.com (mx.kolabnow.com [95.128.36.40])
+ by isis.lip6.fr (8.15.2/lip6) with ESMTP id x37LSDq6028566
+ for <cocci@systeme.lip6.fr>; Sun, 7 Apr 2019 23:28:14 +0200 (CEST)
 X-pt: isis.lip6.fr
-Received: by mail-pg1-x542.google.com with SMTP id e6so6063832pgc.4
- for <cocci@systeme.lip6.fr>; Sun, 07 Apr 2019 13:17:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=sender:subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=XMNBI7Tah+rB6QNXynvd59WKcL3vPbcUgjqlcW8OTeI=;
- b=Sm8NYCOeo6mUTrMYfeL26eoT+DhTuGdvS6v9dOYF0riTi7mAPnchyz+RCxct13hcIg
- RnyxI9zQ5ST/0J+G9WFjE7cQjKIPevytgFwoVEF0p0K7V6++Q91hfNmURzWsQ0nKk5tr
- vwh/OZq2apQtgL+iii78kCcjK5f0wVyYPSoGj9E+SqjFkTNjb0k3quOhFyUaEkmcPX7n
- WDokdoTVox/bnJpQdXHWl2n5W6kdkzfZ9N7aVP0lKMk4KYSQRuywbOY9iv5iAFF+aKQS
- TBWGBSR3FGM8NVGpa18n1OVysIQTddqh6eBIIhmKaJCEAem4bjik2WX6fKE9QiHTIo5V
- kCYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
- :date:user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=XMNBI7Tah+rB6QNXynvd59WKcL3vPbcUgjqlcW8OTeI=;
- b=ElNyHJxjf/K4uCGlOlkgAI+zZhi3BmaZSApOd3o3Lw+MP/ZoBh3PZcHJCoDaU4+jhi
- Dobzv5htmHRStUF1xCK7SKELCUAgoPkjt0tvnyQx7iVQDDoyJEmIzFmiLcvJnqGHFydA
- xVXY5dvoKzsvCQf7cM2Yd8R5iAOPVcGb0EgcKCFyn92PA7vl1ACd/+cAW4J7jKQqL21o
- oSi0O568pmls2o23uWJdfzA9SzfNJTJb3m5ZBMW3IceAr3uC2OCZFvvFoY2NNbk2LLPQ
- 1pDa3qaqVPhood9GBPgeS1GaGgRAn+BTBh1dMZP8ibAbERgP0TCKV6lvkfXsvePEbpff
- zJbA==
-X-Gm-Message-State: APjAAAWSDsYD2jUpdlXaSf9gn1IcYY6LQVfZQsuF4cxxY84FLxBA0j78
- ldCGg6tyob6WJsEfrKaNqoN9P4Bs
-X-Google-Smtp-Source: APXvYqxK1ZL8kxX80P2Jj/pmngYBEYJeSkc0yHljlI7SpOVulUp1SB6nmmh0Mrnak6KMwdwvY5JgMg==
-X-Received: by 2002:a63:6844:: with SMTP id d65mr24869663pgc.393.1554668249070; 
- Sun, 07 Apr 2019 13:17:29 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
- by smtp.gmail.com with ESMTPSA id
- n26sm75894790pfi.165.2019.04.07.13.17.28
- (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
- Sun, 07 Apr 2019 13:17:28 -0700 (PDT)
-To: Julia Lawall <julia.lawall@lip6.fr>
-References: <4a22aba7-4983-3f17-a51e-7ad6d4f3eac2@roeck-us.net>
- <alpine.DEB.2.21.1904072108260.18180@hadrien>
- <769208bc-8298-314a-4ec4-0a2cb61ae1ae@roeck-us.net>
- <alpine.DEB.2.21.1904072205310.18180@hadrien>
-From: Guenter Roeck <linux@roeck-us.net>
-Message-ID: <940af84f-aa0c-c49b-bc94-d95eafbc6cbf@roeck-us.net>
-Date: Sun, 7 Apr 2019 13:17:27 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+Received: from localhost (unknown [127.0.0.1])
+ by ext-mx-out002.mykolab.com (Postfix) with ESMTP id 6D2E63167
+ for <cocci@systeme.lip6.fr>; Sun,  7 Apr 2019 23:28:13 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mykolab.com; h=
+ content-language:content-type:content-type:mime-version:date
+ :date:message-id:subject:subject:from:from:received:received
+ :received; s=dkim20160331; t=1554672492; x=1556486893; bh=eg9mCT
+ 1k9WTM3jXewB9lykQ9ztF3Puny1ieP3uFd6ns=; b=cBFYtq/JmK7PiW4FU2rksM
+ HrlTpRDoqCg/0TbzIws3yYa3C7stVeDdPUndIGyR0isk41qonlfIAnZZOO1SoOQ/
+ mPUAER+wc1Nmjp+Xvdsg+1Dqd1h0RHyRks0cHkJabhFi+L6qtAGRXCwggtKuube+
+ StucGvxsCg3xOQo8FCiDBD67YH44CkL2XKIKEO9ZAAK4sWG6jZs87d+ZbYJKjIvm
+ Klz3vIt0xAGhUFpUABKndK+5y+ZYqExihhSmnWGIVwds0+AWe3YMsfN14TFJPInp
+ JDmANM43Ilf/tWt/2zkbMwdPtx9LFLe40BxAzh6p9jyAx7EC/SuK8L02WN0iRq3c
+ xAxeLanAVTWX5Hn5I8B6jRgqhPyrEw7uVB+1eg8MFIq57Tavwxc1XFnNVtus7Sie
+ qFl7uvA7PIWqS5pjiLWX9f24FmcfTzDnn/Flf+H0qPk3Iwi/7CUFwqcpetueLTX4
+ 9+lTZiRpvMQbEMjnvIUQ0BbuQF3CX56js1yc9r077IVvYcWTFFu5nXfebpDolJg6
+ W9h/KPjY59221s0Y44vhuS65MCc4wJI02mXlFU5o4kpZStyMQs9hp7jeBPBzJ5Ek
+ ZaJ1/BnOb2dloQWa7kNQ5S/LHcktxanZRJJEIZsfLa1icYUdzshXTNFRkcqBrSyN
+ EtpWb9Xfo0/yYmdpEnlNQ=
+X-Virus-Scanned: amavisd-new at mykolab.com
+Received: from mx.kolabnow.com ([127.0.0.1])
+ by localhost (ext-mx-out002.mykolab.com [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id OBkY2O91LQhN for <cocci@systeme.lip6.fr>;
+ Sun,  7 Apr 2019 23:28:12 +0200 (CEST)
+Received: from int-mx001.mykolab.com (unknown [10.9.13.1])
+ by ext-mx-out002.mykolab.com (Postfix) with ESMTPS id 3C3B83163
+ for <cocci@systeme.lip6.fr>; Sun,  7 Apr 2019 23:28:12 +0200 (CEST)
+Received: from ext-subm003.mykolab.com (unknown [10.9.6.3])
+ by int-mx001.mykolab.com (Postfix) with ESMTPS id 287B53AB
+ for <cocci@systeme.lip6.fr>; Sun,  7 Apr 2019 23:28:12 +0200 (CEST)
+To: Coccinelle <cocci@systeme.lip6.fr>
+From: Michael Stefaniuc <mstefani@mykolab.com>
+Openpgp: preference=signencrypt
+Message-ID: <6ab872a3-d236-50d6-4627-64ff981c89ce@mykolab.com>
+Date: Sun, 7 Apr 2019 23:28:01 +0200
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.1904072205310.18180@hadrien>
+Content-Type: multipart/mixed; boundary="------------796DBCAF3BFD4B15907B77FE"
 Content-Language: en-US
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 07 Apr 2019 22:17:32 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 07 Apr 2019 23:28:17 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Sun, 07 Apr 2019 22:17:30 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Sun, 07 Apr 2019 23:28:14 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78
-Cc: cocci@systeme.lip6.fr
-Subject: Re: [Cocci] ormatting problems when introducing a function with
- coccinelle
+X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
+Subject: [Cocci] Type propagation of unknown field types in arithmetic
+	operations
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -101,73 +89,122 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-On 4/7/19 1:05 PM, Julia Lawall wrote:
-> 
-> 
-> On Sun, 7 Apr 2019, Guenter Roeck wrote:
-> 
->> Hi Julia,
->>
->> On 4/7/19 12:09 PM, Julia Lawall wrote:
->>>
->>>
->>> On Sun, 7 Apr 2019, Guenter Roeck wrote:
->>>
->>>> Hi Coccinelle experts,
->>>>
->>>> I am trying to introduce a new function with coccinelle.
->>>>
->>>> The semantic patch is something like
->>>>
->>>> @devm depends on prb@
->>>> identifier r.initfn;
->>>> identifier fname.clkfunc;
->>>> @@
->>>> + static void clkfunc(void *data) { clk_disable_unprepare(data); }
->>>>     initfn(...) { ... }
->>>
->>> You can do:
->>>
->>> + static void clkfunc(void *data)
->>> +{ clk_disable_unprepare(data); }
->>>     initfn(...) { ... }
->>>
->>> and then use the command line argument --smpl-spacing.
->>>
->>
->> That kind of works,
->>
->> +static void armada_clk_disable_unprepare(void *data)
->> +{
->> +       clk_disable_unprepare(data);
->> +}
->> +
->>   static int armada_37xx_wdt_probe(struct platform_device *pdev)
->>
->> but it doesn't line wrap the calling code.
->>
->> +       ret = devm_add_action_or_reset(&pdev->dev,
->> armada_clk_disable_unprepare, dev->clk);
->> +       if (ret)
->> +               return ret;
->>
->> This isn't really much better.
->>
->> I tried --max-width, but it looks like that doesn't work with --smpl-spacing.
-> 
-> Did you try the new version?
-> 
-No, that was with the old version. The new version does the trick.
+This is a multi-part message in MIME format.
+--------------796DBCAF3BFD4B15907B77FE
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 
-Again, thanks a lot!
+Hello,
 
-Guenter
+I've run into a new set of false positives in my quest to remove casts
+to self:
+
+If the type of a field is unknown then the cast to int will be kept
+  (int)s->unknown
+
+But if that field is involved in an arithmetic operation with a numeric
+constant and the result gets casted to int then the cast gets
+erroneously removed:
+  (int)(s->unknown / 1000)
+
+That happens only for fields as a the cast will be kept in for variables:
+  (int)(unknown / 1000)
+
+Also if the type of the field is known and doesn't matches then the cast
+is correctly kept.
+
+Test case is attached.
+
+
+thanks
+bye
+     michael
+
+
+
+
+--------------796DBCAF3BFD4B15907B77FE
+Content-Type: text/plain; charset=UTF-8;
+ name="selfcast.cocci"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="selfcast.cocci"
+
+QCBkaXNhYmxlIGRyb3BfY2FzdCBACnR5cGUgVDsKVCBFOwpAQAotIChUKQogICAgIEUK
+--------------796DBCAF3BFD4B15907B77FE
+Content-Type: text/x-csrc;
+ name="type.c"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="type.c"
+
+struct _sk {
+    int i;
+    long l;
+};
+
+int foo(int i, long l, bar b, struct _sk *sk, struct _su *su)
+{
+    int tmp = (int)i;
+    tmp += (int)(i / 1000);
+    tmp += (int)l;
+    tmp += (int)(l / 1000);
+    tmp += (int)b;
+    tmp += (int)(b / 1000);
+    tmp += (int)sk->i;
+    tmp += (int)(sk->i / 1000);
+    tmp += (int)sk->l;
+    tmp += (int)(sk->l / 1000);
+    tmp += (int)su->l;
+    tmp += (int)(su->l / 1000);
+    return tmp;
+}
+
+--------------796DBCAF3BFD4B15907B77FE
+Content-Type: text/x-patch;
+ name="type.diff"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="type.diff"
+
+--- type.c
++++ /tmp/cocci-output-10499-bbfa36-type.c
+@@ -5,17 +5,17 @@ struct _sk {
+ 
+ int foo(int i, long l, bar b, struct _sk *sk, struct _su *su)
+ {
+-    int tmp = (int)i;
+-    tmp += (int)(i / 1000);
++    int tmp = i;
++    tmp += (i / 1000);
+     tmp += (int)l;
+     tmp += (int)(l / 1000);
+     tmp += (int)b;
+     tmp += (int)(b / 1000);
+-    tmp += (int)sk->i;
+-    tmp += (int)(sk->i / 1000);
++    tmp += sk->i;
++    tmp += (sk->i / 1000);
+     tmp += (int)sk->l;
+     tmp += (int)(sk->l / 1000);
+     tmp += (int)su->l;
+-    tmp += (int)(su->l / 1000);
++    tmp += (su->l / 1000);
+     return tmp;
+ }
+
+--------------796DBCAF3BFD4B15907B77FE
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
 https://systeme.lip6.fr/mailman/listinfo/cocci
+
+--------------796DBCAF3BFD4B15907B77FE--
