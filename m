@@ -2,52 +2,53 @@ Return-Path: <SRS0=lRSE=SP=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3D3CC10F11
-	for <cocci@archiver.kernel.org>; Sat, 13 Apr 2019 15:36:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2361C10F11
+	for <cocci@archiver.kernel.org>; Sat, 13 Apr 2019 15:42:30 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CD981208E3
-	for <cocci@archiver.kernel.org>; Sat, 13 Apr 2019 15:36:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 22C632073F
+	for <cocci@archiver.kernel.org>; Sat, 13 Apr 2019 15:42:29 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="burYi7mn"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CD981208E3
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="gVjsMf3S"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 22C632073F
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x3DFadJ2015303
-          ; Sat, 13 Apr 2019 17:36:39 +0200 (CEST)
+          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x3DFgG58019852
+          ; Sat, 13 Apr 2019 17:42:16 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 16DD87727;
-	Sat, 13 Apr 2019 17:36:39 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id E51907727;
+	Sat, 13 Apr 2019 17:42:15 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 9EFF67725
- for <cocci@systeme.lip6.fr>; Sat, 13 Apr 2019 17:36:37 +0200 (CEST)
-Received: from mout.web.de (mout.web.de [212.227.15.4])
- by isis.lip6.fr (8.15.2/lip6) with ESMTP id x3DFaai1027042
- ; Sat, 13 Apr 2019 17:36:36 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 4BF387725
+ for <cocci@systeme.lip6.fr>; Sat, 13 Apr 2019 17:42:14 +0200 (CEST)
+Received: from mout.web.de (mout.web.de [212.227.15.3])
+ by isis.lip6.fr (8.15.2/lip6) with ESMTP id x3DFgDWb004818
+ ; Sat, 13 Apr 2019 17:42:13 +0200 (CEST)
 X-pt: isis.lip6.fr
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1555169796;
- bh=x0gXLqEak1qaC5gx5Dlj14gAD1lB1kNOW5W/8PUT1bM=;
+ s=dbaedf251592; t=1555170133;
+ bh=LbJChxLWnsWJSi9mPrk4Z9Ny7TdhgyOLJjshtMjjDzg=;
  h=X-UI-Sender-Class:Subject:To:References:Cc:From:Date:In-Reply-To;
- b=burYi7mnGSirrrXMxLXvQVaQgQdU+XUrvkoBxiitrBqFRtu02nSjM6PBl2AJy19NF
- gxYqfw2K8A19bcMjEZj5LHJf8G4lKmnuLDIfXT+DSjqyUVCGa/ZiHLglBkUFuzPVQ3
- xr5GuaohXBOfTUEPVon33a7JyQGwhcu9pfxXxa2I=
+ b=gVjsMf3SJ12UuzzK34ZUg65wRb00fyRVJnquXtoRlso/DOqz6zX2yUDwowluZA6MD
+ 6B033o8OEBTdVp15/cqalME+Nyw/ga5GJ6HSnr8q1OVaJHK8LlFTP3Pviq+CoMai7f
+ 7b1TaZj7X1XVM8Gyhankhc7xDN8ESzBgmNqbOaUM=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([78.48.84.186]) by smtp.web.de (mrweb002
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0MN47k-1hD9v21IFs-006itX; Sat, 13
- Apr 2019 17:36:36 +0200
+Received: from [192.168.1.2] ([78.48.84.186]) by smtp.web.de (mrweb004
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0Lm9T7-1ggY4b3irJ-00ZhC3; Sat, 13
+ Apr 2019 17:42:12 +0200
 To: Julia Lawall <julia.lawall@lip6.fr>
 References: <ce2b0c4c-bc85-0341-ca0a-9b158804943a@web.de>
  <alpine.DEB.2.20.1904111728380.3143@hadrien>
+ <88620f8c-3762-ac4e-5e0f-6115a21635fc@web.de>
+ <alpine.DEB.2.21.1904131737540.2536@hadrien>
 From: Markus Elfring <Markus.Elfring@web.de>
 Openpgp: preference=signencrypt
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
@@ -93,35 +94,35 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <88620f8c-3762-ac4e-5e0f-6115a21635fc@web.de>
-Date: Sat, 13 Apr 2019 17:36:35 +0200
+Message-ID: <ada8fea1-1b56-1c58-5a78-8fc95006d203@web.de>
+Date: Sat, 13 Apr 2019 17:42:12 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.20.1904111728380.3143@hadrien>
+In-Reply-To: <alpine.DEB.2.21.1904131737540.2536@hadrien>
 Content-Language: en-US
-X-Provags-ID: V03:K1:rz2WG+62KvLF1Fnlc5jPBLToDNH/pc+pJI6fswAMEgnfb9sxfrO
- vIc4M9ZDZFeq/EZ2D8Xmw/hwLaUX1WhMv1DFYRHbaNezSdKptJrWUMv3IoHN8Us5FRh2dSJ
- 0JbUiLtt/C/lijSybY6NiPMlmZv/dfSgGTi9gt3BbGKOP0spLjo67zkQxSPP70L/+xlLnG2
- uQgIPQ/TIPObNJLPqIWXA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:BAxz/R0DDXc=:M6Z1uESvl+p27Z+uR3pmD3
- SVE4ZR01hvyr1uUs/4Ol70GfVdWFePBpt2iLfXfiflK7XReeMtZ9grfhKWiTVXqWkf39WjC7f
- bTRg6rYUXAPKeDrScPDQzrRBnDDRge2sw4y09KLh8xLI1sm0qB7a1FulKm9tb7AzKcjwvnVcM
- s+7+ppVNn15dYYqTz4vgxbO2XSHkOOd2DPc5tl+IfHrY19MotNsL7Vmqdxbuac2q6y/JyZUqm
- vpHBq6pF3D3cpJNYh4oIhyLJPmN88m5lAcvgZEfI0r8e7orrC1MN1LTvkaSAqIRrk+R0uavim
- 3oazMF12olBV2SMBq4ZJ25nwvF97NtYGCBS7awy7pOj6uH62Luv9BuWrtetvTIeA2Wez63uav
- db7BIpqq3AECdcZdr6Ho8ZJGjlgHr1El8b9uzNU4mxdCrC82MnB6dM2MJMmx9cCaPktdJNvai
- zgklT68y1IHfY3SgXHubmmwO86ODgBQT9i0lot+94fgpd5mpeXQdpeRnmiIzKg7fkQ4w1rht1
- GO71fquvwRYp1WbNfrWyVQke23dQHSTxG9mMuRY2nZ6VW4KJmXlZsJu+7uHh+ZCxrAbs2HzXk
- qLwCAzCEDKPse3pPayDR2bWHZ0SeuXsnuKQTH+MriwsI39wn2q/6aZ2z36PeAxTn5grp7IBT6
- jegWOBi+sg2zGWuZymzYuozOxQz8tb15yvK8HDqwFgx+n3WcuAMpwJZhnE5qIjof2JGvZzbDL
- jnieKXcv8UgfSQAvJgQJufrgb3FWXn/eWV73G12fw8UnCaLZlUSYEr+OkKuOInS3aKzACgXd/
- iQ/FvmsQWTyeBbBByJsiO8YuTNZy6nH/qfyqYocBhR2VSu6mWovrvsOXocYGsaS18kMvYpa/G
- odEfCp5eL9EY04dY8sjU+5eph7JANNWtfhf2F6y8z6A/vsIlDgX9AKhqhZMgqhaX5XXa+WGNo
- rpqkSx8Vqbw==
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 13 Apr 2019 17:36:39 +0200 (CEST)
+X-Provags-ID: V03:K1:1lnYHTSn3a57wuXyxNBhcbxdpEXlpOUOg4KMUUKd8hPtyQQx9Nq
+ fX3V0TGOk3R/2hceGj8iAZI5LD5KtssZePrbOqyfSuL5PtrdwtQnC6kFYNl5ByfkMd6hTU0
+ C79Tz+T4TlbKCqVo2WVAgotNDHJBfpGoZD9O4YHsTtZM4Idnq6WvETc61qxvyUueGNlxQIg
+ OpyCr9r3oFoDuKOeZItLQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:VP0bMoF2XQY=:pDJoZvYyIqHu5HSv9PHi0K
+ /eZBFZCbO7shJgVB6kNwLgQjfdppAaDNqKokw8wXn8MrVitP0vLedICe7OlwFbgh5qzvGjPL6
+ Ca8JnAlEFM5e4rZmJWviJY/RMszKy6T0uOo1XYWUP7smE0lKloIxjiolGUv1hIi+NvULw/ifh
+ 5VU/yJLvn4Cv2j2gNXXt4WE6dm6ieOc14T5MMHlyWOrAafCFoqloTLll3QosQfj/VRfoUS2rh
+ +Yvp/F9kXNyzDW/vqvhUcC1I3uoRDlXHkOr3x+dhC3cBdHbAtuMWrdAYfNhl/YCSB/g74oAOm
+ +V7VO8cgESmGPE7+pEPzl/VlOGJN8fYYVWxzlAZyp4nXPtzr1zEsEQ/jCjiXkox4b9gSbfTm3
+ YtenmR/KtUDjVHq+ruHB/6AyZCn2rpqnqQyGzvOv3Sviw3uE6kTdN5pgzYL1jPdF1RYyj/gGN
+ Ao8Lju9IrRys9i7Aty8IXXn7HqAvm5ASBF164lMFo1snGZ1MWnuK07A4C5aaGp8RwUbIi7Wqa
+ unxZZ8R04DD1aTd6jMyMfElvDs/5+I/xdOQvzMnF/QWEzaOO+4Qg70opejvkpILwvy202vsJt
+ NYdumFKuP4UM6UIMeo7d/7OYp7DTnEst4gZCVNvTlcQ3MQEvLxeVbW3PNfuItmZsScZJuTQy5
+ aN1tnBAU2dnxvQ1yHsfqJse9yyEiFB+HFGCd8WKx/p464dPQ4XBjkWxhk0HxK4MC9iExZpYHs
+ TJpAzryvhtv1dttXD5D4cfJf5gMt14OjWip7knQM2tMBlHfBbRgSfta1Ph+GRgr9qZr9gTaz7
+ 8jqQqffZB0ZZ4aEDoOP2tNqf5x0Qf2qBK4uQoJsvR6s/BRd5sDo2Y3Ukm7kdCrlaTCGbkyx4m
+ HpngSOTwDEnWGy0NA5eCeI/Nhxv4UhSCRyMaQWSN07guIfho8EgStLrh9WZg9qpGlCWMTzr9B
+ jUC1JJIXqvg==
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 13 Apr 2019 17:42:16 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sat, 13 Apr 2019 17:36:36 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Sat, 13 Apr 2019 17:42:13 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: Coccinelle <cocci@systeme.lip6.fr>
@@ -142,9 +143,13 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-> Your ifs may be in a loop.
+>>> Your ifs may be in a loop.
+>>
+>> Does your technology treat this control flow in special ways?
+>
+> No.
 
-Does your technology treat this control flow in special ways?
+Would the quoted information be irrelevant then for the discussed use case?
 
 Regards,
 Markus
