@@ -4,47 +4,47 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72ABAC04AB1
-	for <cocci@archiver.kernel.org>; Mon, 13 May 2019 08:59:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77A7CC04AB1
+	for <cocci@archiver.kernel.org>; Mon, 13 May 2019 09:02:01 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E1A0C2146F
-	for <cocci@archiver.kernel.org>; Mon, 13 May 2019 08:59:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E28E32146F
+	for <cocci@archiver.kernel.org>; Mon, 13 May 2019 09:02:00 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="NkxlSAj3"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E1A0C2146F
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="pDdjZShU"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E28E32146F
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x4D8xLkE027552
-          ; Mon, 13 May 2019 10:59:21 +0200 (CEST)
+          by isis.lip6.fr (8.15.2/lip6) with ESMTP id x4D91kRs020463
+          ; Mon, 13 May 2019 11:01:46 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 4524A773E;
-	Mon, 13 May 2019 10:59:21 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 034E8773E;
+	Mon, 13 May 2019 11:01:46 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id C3709770C
- for <cocci@systeme.lip6.fr>; Mon, 13 May 2019 10:59:19 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id C18DE770C
+ for <cocci@systeme.lip6.fr>; Mon, 13 May 2019 11:01:44 +0200 (CEST)
 Received: from mout.web.de (mout.web.de [217.72.192.78])
- by isis.lip6.fr (8.15.2/lip6) with ESMTP id x4D8xE9Q010836
- ; Mon, 13 May 2019 10:59:14 +0200 (CEST)
+ by isis.lip6.fr (8.15.2/lip6) with ESMTP id x4D91hFt000689
+ ; Mon, 13 May 2019 11:01:43 +0200 (CEST)
 X-pt: isis.lip6.fr
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1557737944;
- bh=UE+2FKqrv92g/rPKtyy4eMWvESNWG2N1LkFCK3GsKfc=;
+ s=dbaedf251592; t=1557738091;
+ bh=96bUbooF3B+8sxLuYsK0EdpTwFO/C05prC37Xuu/ldo=;
  h=X-UI-Sender-Class:Subject:From:To:Cc:References:Date:In-Reply-To;
- b=NkxlSAj338EL0YmM5me+CxYd8yBl5+NSC4LzY//SG4KquLEq6KRmJCM4l9BxmcwZM
- KM0SEw2AZzcP+DMu4OkKuQurjQMcYeACM1pw+beFOjO02MV5NugRiZnovTKu/mf1kg
- N0b29t/9ERjHkWVfs9pnM3yehqFNsn+tWd3IPedg=
+ b=pDdjZShUPUb2gQTjw4buTsUbRVN4s/tQ89LefGeHVyRlNNI6nN9WOr5x3YCMOo9Bh
+ J9SaxhkJ5uUq1YSijXNJCeWdq0SzPWKnvUF87rK8iaU58ECgcqm6ga3v238cxym7EG
+ ZTIa8WilYareBbwhWlqZfsvxF6fwyMZ+uYdkLBJY=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
 Received: from [192.168.1.3] ([93.135.147.80]) by smtp.web.de (mrweb102
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0Ljrq1-1goa3N2kWX-00brCs; Mon, 13
- May 2019 10:59:04 +0200
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0MOAnY-1hMnSJ2y0q-005YJW; Mon, 13
+ May 2019 11:01:31 +0200
 From: Markus Elfring <Markus.Elfring@web.de>
 To: Julia Lawall <julia.lawall@lip6.fr>, Gilles Muller <Gilles.Muller@lip6.fr>,
         Masahiro Yamada <yamada.masahiro@socionext.com>,
@@ -98,41 +98,41 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <308f5571-68f3-7505-d5ad-59ee68091959@web.de>
-Date: Mon, 13 May 2019 10:59:01 +0200
+Message-ID: <07e17d87-09ff-311f-015c-d201df053f56@web.de>
+Date: Mon, 13 May 2019 11:01:30 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.6.1
 MIME-Version: 1.0
 In-Reply-To: <e34d47fe-3aac-5b01-055d-61d97cf50fe7@web.de>
 Content-Language: en-US
-X-Provags-ID: V03:K1:rwJwv4ETxr7FEwe200tk23kZPzjDIQpQf8O3ORayMX9Lzegsw9A
- TWNA/OBByvmoiAAmB8ZR/roAgooG67en2nU8ceRGXeJMcSywHwJKXG9Si8cL0WDH/trBwDZ
- y1/1oixRHrn+M85h+s81rwXTLXC7CqinrGmuXSeJWgqKf65k47qMt/DfiTkISSnMit67YgD
- BwckAbzPm1vQuGNawgxqw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Z2PTme9SsVI=:yAtGzHwM2mVWkVnNDTz5mv
- XLXP5+Hneka94/vRVbH9+PSkXODwnqTCz6wYqnL9hIcw2Xka4YgUs57fuX/X6+EQYjzie/ERj
- n9VG5Ya3u9EqEOkLi+/RrjfTysNkL1sM9mal2UDJphHtptNgRgbjbt+LbskrPATmHIzabHWJN
- FZzPf1r0oJhTs8Dqdf5kjMfUb0OUyOjpkaxlpaUuXqeDY9QyuE8e7qmy4AkNcbFmvheaDrYvQ
- zRtvGhWe69PUkm5oj4iGEBoo+9N3Ut3VQO3LhRUoxyTr8YxSraSgmfWTj9IsQXBktfVvjX5+Z
- y5QbCbhiLpDcrXrrWORdJbEubSg3wIk75/8O90IabTzWCrBBuG/QhmaAceNgVhYX6yJQtAFtY
- rsnaOixrFL0PystBAOp0gvTGN/YDdGvnxIFcignfFfgM3smLMFGgqDSAYKX5v2/YlSajtGgIN
- IOujir5CEjSNXftQmm/MmV1sS45hM00ewgnHj1ySKsHMUL+0lSEF5uapjB02piDc/FH3j+qD1
- x7f7BGNhhKIdMIWXFQQoU1y2/glKEmcW2/cofcBj6f5winIfxtB0S3oWkJY5NN+eFm0j4lHPh
- Bh35qOEedUMUGrDvxXvH8OeQn6MLEp0y7ntB596xVuBMSOej9leCucNy3cJWvR/Hl+aLCmYqe
- zyWqVmUCw/9YvZ92IXns0ixQK3JGhDSIfSvLqjLBJp7RtibKUWdLzbIxNmHxnUIM3tDzWavWP
- QRUg/CWt0XGKabGYuWvtPcNI/pTNrfGW0PQ8wNjEI91/XlUQOkFrvYq3dQdZXbDfc+GfRcdia
- 9RvPvFRyubw791sQFl9Vxtpt+GnGymUQnqDG+u5e9RKoaUcMFZQm//jfQqgNkPfh8Oi4w3ZFL
- 4Ber35kQYEl1vKHJIMAQKK7KPHBEQvzU/XwYv4FgeJJerfNj+9fzyxqwhrxvk4kz2sI9UpVpo
- EVY2g9WpnCA==
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 13 May 2019 10:59:21 +0200 (CEST)
+X-Provags-ID: V03:K1:Vo1rukVlSGnUbTQVJ3lRvPy0SUDu7tTrElvBlW1phdO7awQu0SJ
+ l0VOuqvgcUWZx+wZMH9hxPyiThpJSRRfykY/BK+95vofZ1PweZj/UAYndLr16t7ToPrek+D
+ N5ns2tzQFwHFqTN4nlnTJu2BKHpl2wna3fNRjE9Cpw2lFWWdFxqlfMBezr/2FDoa63PUWtC
+ pQeQZCeIHrmfnvYpgG5AA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:NKbfPHAGwVg=:8y3nQkjzAz8Xup55iVwCgv
+ mMOcm3xi+OokDga40dIlZ9yDMmkxVxCbL5x6OfBrBkVpWlErPHWT6ic6gPHUdaogfbC9S5oHu
+ ZChMlPVOJbScW8LNk/Jf47bZQ8+TpeQmfknIvqV9RjM6S3d5pGpQkoYMxSSH+QMgtbllIrpf4
+ qxS3IqE93r0EQIJwuuisO597KA27jV6pZ2paB4RALLc0h+0bCenztkRyRAsxRNfwRQ9uvdOEn
+ bchK2WQH2UQb6h6n9b1XN88rc5RpMxKxlKSOjRdAxmN9DPVAVVK4uzblnUG9nEWg3u6subn5W
+ yH3rUQAzGCMbZDDQOyOph7ggpPtwXlM6v2Do2L2oxb0WdXN0K6ot9mA8+FCNf7JQbacvJRoZX
+ zQCqRG+iMEOhN1UifVoQGKBMVkSUJw26lihdEimdCwAfquds2BSbz1uWFqM9USjPlCTjiqImC
+ gUu3tDsAmsGJ+oTBK45EZBDHr9ZceN+OPjlpE1Lnh0AZAVwkic8QdjzGicMjZ//wGmNlSXaFH
+ J+seXShlNaUQRERn5fdsPZLiMHHXvUzWojf/fjzi5KIrpeFPa6rsnlbbqtVkKJk8xQ+uMh7fl
+ HqCsLb2Xvf89Yq9JKJGkzFN//wUksJMukZp4kF0jZ5UpT8BA0I7FhE9z/m/p/I4A4l4Qj8DGB
+ uVaZSp9ZtLussBLL36uc7kvPA3XdVKobOUxgfobKdIfCDARhD6JqlVSy0CFKecA5h4UdHZmIc
+ x3oT4xTPgCumNrmtLexUcRETs6lhiil+TPgW+UKHj9B0ccX6HIhFPau4fX/VB/y31bMpuRUsn
+ fPFlapxny4urR4CuP6snL8weaYb1q49hUhRNl9N1E3WUIEgfBvEmfrwGm3gAFqpSiXM2GJ3Cy
+ sgvCdWbgPsEtnaHsjsCfGoO4/AfpaDZnA0pvaCXxq+50nVpcwMiXpjH7JzGyFZd1d2oMVtJvi
+ g60HGIaVGVw==
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 13 May 2019 11:01:46 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Mon, 13 May 2019 10:59:14 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Mon, 13 May 2019 11:01:43 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: Yi Wang <wang.yi59@zte.com.cn>, cocci@systeme.lip6.fr,
         linux-kernel@vger.kernel.org
-Subject: [Cocci] [PATCH 1/5] Coccinelle: put_device: Adjust a message
-	construction
+Subject: [Cocci] [PATCH 2/5] Coccinelle: put_device: Add a cast to an
+ expression for an assignment
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -150,39 +150,33 @@ Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Tue, 7 May 2019 11:20:48 +0200
+Date: Wed, 8 May 2019 13:50:49 +0200
 
-The Linux coding style tolerates long string literals so that
-the provided information can be easier found also by search tools
-like grep.
-Thus simplify a message construction in a SmPL rule by concatenating text
-with two plus operators less.
+Extend a when constraint in a SmPL rule so that an additional cast
+is optionally excluded from source code searches for an expression
+in assignments.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+Suggested-by: Julia Lawall <Julia.Lawall@lip6.fr>
+Link: https://lore.kernel.org/lkml/alpine.DEB.2.21.1902160934400.3212@hadrien/
+Link: https://systeme.lip6.fr/pipermail/cocci/2019-February/005592.html
 ---
- scripts/coccinelle/free/put_device.cocci | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ scripts/coccinelle/free/put_device.cocci | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/scripts/coccinelle/free/put_device.cocci b/scripts/coccinelle/free/put_device.cocci
-index c9f071b0a0ab..3ebebc064f10 100644
+index 3ebebc064f10..120921366e84 100644
 --- a/scripts/coccinelle/free/put_device.cocci
 +++ b/scripts/coccinelle/free/put_device.cocci
-@@ -42,11 +42,10 @@ p1 << search.p1;
- p2 << search.p2;
- @@
-
--coccilib.report.print_report(p2[0], "ERROR: missing put_device; "
--			      + "call of_find_device_by_node on line "
--			      + p1[0].line
--			      + ", but without a corresponding object release "
--			      + "within this function.")
-+coccilib.report.print_report(p2[0],
-+                             "ERROR: missing put_device; call of_find_device_by_node on line "
-+                             + p1[0].line
-+                             + ", but without a corresponding object release within this function.")
-
- @script:python depends on org@
- p1 << search.p1;
+@@ -24,7 +24,7 @@ if (id == NULL || ...) { ... return ...; }
+     when != of_dev_put(id)
+     when != if (id) { ... put_device(&id->dev) ... }
+     when != e1 = (T)id
+-    when != e1 = &id->dev
++    when != e1 = (T)(&id->dev)
+     when != e1 = get_device(&id->dev)
+     when != e1 = (T1)platform_get_drvdata(id)
+ (
 --
 2.21.0
 
