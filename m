@@ -1,57 +1,52 @@
-Return-Path: <SRS0=92ax=TU=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=7mCU=TV=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BB26C04AAC
-	for <cocci@archiver.kernel.org>; Mon, 20 May 2019 20:12:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6310C04AAF
+	for <cocci@archiver.kernel.org>; Tue, 21 May 2019 05:54:44 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 949BF20863
-	for <cocci@archiver.kernel.org>; Mon, 20 May 2019 20:12:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 168D120856
+	for <cocci@archiver.kernel.org>; Tue, 21 May 2019 05:54:43 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="X0rJDgs1"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 949BF20863
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="TmFD8X6D"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 168D120856
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x4KKCKp6021414;
-	Mon, 20 May 2019 22:12:20 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x4L5sURX000080;
+	Tue, 21 May 2019 07:54:30 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id AA11A7741;
-	Mon, 20 May 2019 22:12:20 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 7DBDC7747;
+	Tue, 21 May 2019 07:54:30 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id C6591768D
- for <cocci@systeme.lip6.fr>; Mon, 20 May 2019 22:12:19 +0200 (CEST)
-Received: from mout.web.de (mout.web.de [212.227.17.12])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x4KKCIAN025311;
- Mon, 20 May 2019 22:12:18 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id DEC177741
+ for <cocci@systeme.lip6.fr>; Tue, 21 May 2019 07:54:28 +0200 (CEST)
+Received: from mout.web.de (mout.web.de [212.227.17.11])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x4L5sRvx013403
+ for <cocci@systeme.lip6.fr>; Tue, 21 May 2019 07:54:27 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1558383122;
- bh=ff64PCuMJeBfpkk5ZZwdYDpdPR3e6g8dV4UJpwufT4Q=;
- h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
- b=X0rJDgs17KqFeTaibKUPyNLzp1cvO9x93ldqahpZxK08+Zb6xi2mjP84DJtbiIq2q
- 31Z4UY6YP9ONlWcMt0F/rMu1Cq9IYKJ3OQiYdcNM2FieqwB4puGPHvazyieyz1wX2/
- vS6QtgkY7e4Zh1Ac9x8yS9jkAjuNV0ZRHjpi+0OM=
+ s=dbaedf251592; t=1558418066;
+ bh=mZJEo5RINmZFFULqu+pu9HVWECJKSQ4EHIxrrgv+PMg=;
+ h=X-UI-Sender-Class:Subject:From:To:References:Date:In-Reply-To;
+ b=TmFD8X6DdqEKOAqjkx1rHgzyhVXtLp0KeGEo/jogMgMy/vZ3XLzX/0UuXjCXxEufW
+ yf2MaNqjA4MqInDkEc+J6um9AZTXgfH4Rlo2DCQ/uIsoNwkiNtPLqVwVosaDkyRj5i
+ t7wQ9LwVHJH1fCTlkBzba2hVZ/oxEp+vYEB4LJ4Q=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.3] ([78.49.172.132]) by smtp.web.de (mrweb101
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0LbrQm-1gm5yQ31e8-00jGoZ; Mon, 20
- May 2019 22:12:02 +0200
-To: Julia Lawall <julia.lawall@lip6.fr>
-References: <201905171432571474636@zte.com.cn>
- <alpine.DEB.2.20.1905170912590.4014@hadrien>
- <20190520093303.GA9320@atrey.karlin.mff.cuni.cz>
- <alpine.DEB.2.21.1905201152040.2543@hadrien>
- <20190520172041.GH11972@sasha-vm>
- <alpine.DEB.2.21.1905202151140.2561@hadrien>
+Received: from [192.168.1.3] ([93.135.93.135]) by smtp.web.de (mrweb102
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0MhUbO-1hFGMK35ow-00Mfve for
+ <cocci@systeme.lip6.fr>; Tue, 21 May 2019 07:54:26 +0200
 From: Markus Elfring <Markus.Elfring@web.de>
+To: Coccinelle <cocci@systeme.lip6.fr>
+References: <a639ce38-81a1-8825-73b0-2b7ba53e6588@web.de>
 Openpgp: preference=signencrypt
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
@@ -96,43 +91,38 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <60d87dff-3b4e-d77b-a4e5-e00b010d414b@web.de>
-Date: Mon, 20 May 2019 22:11:53 +0200
+Message-ID: <78de5a84-1651-c5eb-4fbd-35362c93abef@web.de>
+Date: Tue, 21 May 2019 07:54:15 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.1905202151140.2561@hadrien>
+In-Reply-To: <a639ce38-81a1-8825-73b0-2b7ba53e6588@web.de>
 Content-Language: en-US
-X-Provags-ID: V03:K1:MzYnUDWMSddPVS8EDeHy/BnJM/s4AmRJ/26NNrm2Vv49L+mbLdR
- GVrclo8i+4q8d75iwT8gp3gjZtcpV7zyAdXHjaa/7EYD4xd/7V743rRlQDa9HE87QDh5Gmj
- rs6ATqUTt/OK7IDepSWQ6KGDCl9Op/Syi8qTrL2sGEE7HiEjU7F8OI/vZHGGMRiW8HMqXSq
- t2QhCC3Lx+tOzr5TyJAFg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Ee762KM2lFk=:BlIMdCVXl9hw+8RJzrZ2A5
- 3OljbS3qotNWh/15GcfArxWYdm/D/4hBJgDBdfgMfvhn1aYJ+OJYzikYuWkqhloJeUpu9ITdI
- 6ENZNj5ilvvgJIJ2oh4ipk3HF3FblmvyUbAXqeaA+mjrHYaOGP3GS7425YSkiLbBIpElAQhli
- /fmggdvQLaHexN5ZM/TKBi1wP1jnXLgO0ZKezsPIZo9I/Ko2ZmzPrCZWDxhpxzDnt5stnkEHn
- qePJEjr6Y1VgmC3J3VvWVr0O1EOpE1mw4ptMNDExU6XN9R/dpbC/pRWCTw0yiNkr6vxCIoZpA
- cRnJ+9fuxN24UCUQac3fRHa3XN6wg+SABVBPBBWEo/krNdjAgAeI726sOdW6thZQG8MEGvEZd
- 93JkNL+YMNbbdJGtIGvC6ZuGNpdJIfVrMWyARY6hGvjiu7lcgXx1C40dsc0seFY5ltsuQhOQk
- 1y8Fa/dq1n3xjRZv6owaAeP4gK0pEAWY1K0SNRuGolLedIZJGMVdhMl4uybNTWjpbFSW1LseM
- kHw/ANWFqN2V0mh4WbI1uG7T0DzwqlGC9wK7fAazgLSg4YvF2OXekRlOoC9iXL5jhSplrm88S
- 5kB+0bnPeqshhtOgvK95qKaMJf+m0nnszWl+Yi8Na/QmwnrwIYyYG9kR7Cof/HrD49CoHHKrQ
- 8AOgcM1Qvskvo5zmQIWRb3+kOyM3eO0tpmLcq2eLsR1VIF1twqqZig6bOdnXY/kPggWtfIEhs
- HjOK1K1HMZBPnqxiuecL0L7hGG69pcPh7MKKq92yM9TwJiorEm0jd+nXjHUA/V/U4aRMdyhbQ
- t5G/5u7kQ34lYI0Gkv7zlR0m9t3e8Mj9BTcYPR68NXJtsRR18yMDcluWtYwBZB+juXMHErsX7
- RxsWCn6q3EiiM9WCxd2FIVuOpjxYMHJIQ7OYSJ4NkUHLMgxIIbisgwaF16dBiIYfX5LILTXE6
- mbp9ZE7SOqQqUvBDCqTETW0Pmh8qpIWdOth7pGFkP2uhbaoicjhbq
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 20 May 2019 22:12:21 +0200 (CEST)
+X-Provags-ID: V03:K1:P7rV7th44BsyNa1I1/omRl5SaEPyZUtSJy7Cn1D4cXHOOVZSHnQ
+ yt/72QfFVNote9W4bR8rRdAzFJSylcxaVekif0ddNLgQxsU6GJeaNpusYBkHpZQ+ilWlJya
+ LPtQ83zGAg3tuqy2yOE0sHQw4vbuWa35O9Opfu88c8VHVmqB2PuCtdzLvMj6GlIJ0LnG66q
+ sDATIhwOpsoyrRqay8TRA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:nZoyQYHEcJc=:5XiVivvJ/qUCsE7eP5wDdY
+ rjCd6YDB04FRvHbz4kQK4/8H01kA6W0+EKZAiZ/gb9BzEL1BjdVAeoSBdant6q3aV7Y6rN3D6
+ RXYqb4Vf+waiV8PerJzpguA6KkMNA5YKthule4qsqia2gmamCY8g7esHcDH9blq/AoIcBgx03
+ PkTbJ+GtPy0LBAhbttiv051v5cvTqBtABHzIbmH8fafJ5AmKfiNVmbkrtPTCZzFEAKdJ3jlQO
+ MEvT/8719/vR/GZf+EMRvzoC1i1V5zTqGvvlVI7skzccY4G3mUAf0iVNX0J33IGlmXcmVsIUx
+ sjK5P6te4k0dKZVnrx8kTruydc6ABrEItzK/Zf8X7Af9vsvVtjgqDG2FM3/pvuQ+ihBNnS+QE
+ a5navMuNp2JipQ1WoL2WQ5OajoWkLVjKMbUa/pbuPa4AuBP+siDE6GsGsE3YAjPR/ihF6/roH
+ 4J3v5MvTOnvCuADNfuXd2hl7u5jLCevpH/zZHWJO9UDal2EP2II9y1dm1uj/jKZ+7awLskROc
+ d3EfJarJEE3teYPl67oMzSsQ91Zvw+Pkklmqfv/nErg5+QH4gpyQZqlM3hXs3gdQw15NpHFs1
+ h2BWj6oJILwqPQrPjMr9Fjdn0J4LmMApIn/DKK2SnTwasu7gKwGSLNx1wkL72JMNOkxxeb51N
+ DRK2eGFavKrjlEAXlIvstghQHznGXnMwgR1toNe/Ig4jQarO+Z+dNWvEh4VhiQzdy1EFZ9pkm
+ u4PZjglQa1oyBlzI53ZkY7tdq19jIQqNSS4ItWZ0fwrTjeEX21SIJcnPX0JD5x+ZCBNm65TfQ
+ SVvcZPuUncOmpynXch0ol41xY+VldRjF6ftcGYzNUHsBETQhmcoyxVmCYjmrf2cVw7srL0XA6
+ bSygNsUvNT7qWGsrCFMx/8DYg9Wv/dAA6iD7lnADcq8vtP6LUEvMfe6HdY7u5lHy8q2pU28Jo
+ ERIMZ5pyMVSW7ruiUMnYmHuoI4+FyYT5FF05aD2tqBfyKj4iS46cc
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 21 May 2019 07:54:31 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Mon, 20 May 2019 22:12:18 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Tue, 21 May 2019 07:54:27 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Sasha Levin <sashal@kernel.org>, Michal Marek <michal.lkml@markovi.net>,
-        Nicolas Palix <nicolas.palix@imag.fr>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Coccinelle <cocci@systeme.lip6.fr>, Pavel Machek <pavel@ucw.cz>,
-        Wen Yang <wen.yang99@zte.com.cn>
-Subject: Re: [Cocci] Coccinelle: semantic patch for missing of_node_put
+Subject: [Cocci] Continuation for a code search after a common SmPL rule?
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -149,18 +139,46 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-> On the other hand, I don't know if the one that seemed to cause a crash
-> really caused a crash.  It was detected by syzkaller, and it is also
-> possible that git bisect ended up at the wrong place.
+Message repetition from 2019-05-16 because of a temporary technical difficulty
+with the mailing list services:
 
-Do you refer to any known bug report here?
+=====
+
+Hello,
+
+The semantic patch language can handle several rules which can contain
+remarkable amounts of source code search specifications.
+It can happen then that a few of these SmPL rules contain a bit of
+common specifications.
+
+Example:
+@one@
+@@
+code_area_1
+code_area_2
+
+@two@
+@@
+code_area_1
+code_area_3
 
 
-> In any case, forgetting an of_node_put will normally just waste a little
-> memory, so probably stable kernels don't care.
+Now I would like to clarify possibilities again to reduce unwanted
+code duplication at such places.
+The common code part can be moved to another SmPL rule.
 
-Will it be nice to achieve better exception handling also for these
-software versions over time?
+@start@
+@@
+code_area_1
+
+
+Subsequent SmPL rules can refer to metavariables from previous rules.
+But how can be achieved that the code search will be continued at a place
+after the position where a previous rule ended its search
+(without extra code repetition)?
+
+Can the splitting and recombination of such rules become more convenient
+with extensions for the Coccinelle software?
 
 Regards,
 Markus
