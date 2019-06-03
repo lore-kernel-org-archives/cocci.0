@@ -1,126 +1,88 @@
-Return-Path: <SRS0=ks6G=UB=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=vOXo=UC=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4CE2C282DC
-	for <cocci@archiver.kernel.org>; Sun,  2 Jun 2019 12:44:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D18D1C28CC6
+	for <cocci@archiver.kernel.org>; Mon,  3 Jun 2019 09:36:07 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 52A1D27904
-	for <cocci@archiver.kernel.org>; Sun,  2 Jun 2019 12:44:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2039428018
+	for <cocci@archiver.kernel.org>; Mon,  3 Jun 2019 09:36:06 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="LwGpKM47"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 52A1D27904
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linbit-com.20150623.gappssmtp.com header.i=@linbit-com.20150623.gappssmtp.com header.b="nU4cobFe"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2039428018
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linbit.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x52CieH7017568;
-	Sun, 2 Jun 2019 14:44:40 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x539Zlo5008950;
+	Mon, 3 Jun 2019 11:35:47 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 073A1657D;
-	Sun,  2 Jun 2019 14:44:40 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 0A5EB7684;
+	Mon,  3 Jun 2019 11:35:47 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 8FAE15852
- for <cocci@systeme.lip6.fr>; Sun,  2 Jun 2019 14:44:38 +0200 (CEST)
-Received: from mout.web.de (mout.web.de [212.227.17.12])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x52Cic5d028723
- for <cocci@systeme.lip6.fr>; Sun, 2 Jun 2019 14:44:38 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1559479477;
- bh=eDN7KQ1m3b0I2Y5tquIduy/eg/6Me65431FV2T0i9+M=;
- h=X-UI-Sender-Class:To:From:Subject:Date;
- b=LwGpKM47gT2l1zAazGoRWUO57gBNsenOntojJ8yMwFm/ZqgUPxlcL/ZqgSVUyz7Gx
- GvgI+nR7yQ3WenLjXZ4ek+SENIQIscVFQY3JhjUDbgL4wYsvlEuVa52/h975HXAmp2
- 9zPcTDsrW97QvTS+TZffPoL4sYkcXGIZqabaOEnU=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.4] ([93.131.86.186]) by smtp.web.de (mrweb103
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0MZUS9-1hImLY34ov-00LFnJ for
- <cocci@systeme.lip6.fr>; Sun, 02 Jun 2019 14:44:37 +0200
-To: Coccinelle <cocci@systeme.lip6.fr>
-From: Markus Elfring <Markus.Elfring@web.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- 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 FEE=
-Message-ID: <5591f13c-07b6-0123-1637-8d6d6460f4da@web.de>
-Date: Sun, 2 Jun 2019 14:44:37 +0200
+ by systeme.lip6.fr (Postfix) with ESMTPS id B88C83F9C
+ for <cocci@systeme.lip6.fr>; Mon,  3 Jun 2019 11:35:45 +0200 (CEST)
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com
+ [IPv6:2a00:1450:4864:20:0:0:0:32c] (may be forged))
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x539ZjYw021333
+ for <cocci@systeme.lip6.fr>; Mon, 3 Jun 2019 11:35:45 +0200 (CEST)
+Received: by mail-wm1-x32c.google.com with SMTP id f204so6397041wme.0
+ for <cocci@systeme.lip6.fr>; Mon, 03 Jun 2019 02:35:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=linbit-com.20150623.gappssmtp.com; s=20150623;
+ h=to:from:subject:message-id:date:user-agent:mime-version
+ :content-language:content-transfer-encoding;
+ bh=HPEg1Zzu0IhrVnJQThCbzcwJFdCr8b/IaoQtlEt6iQY=;
+ b=nU4cobFeyS5k2m//sm7DODzAHgxALjMw/Sjx18mg7fAx6KBdJjXiDdyMcMQXPCTOBu
+ T/U35fUDn5m7HdJwAwMPsEj6iA0BiXtNX9dlwi2hHMK2dDFeAEAVU+k4c4ph2JkShm4A
+ GBVfYvYhSnZIBDMcQwvVNbt/axEfdUvqQ7RKiI174lFrMytCbjxyIeKqhGYP5l0m7/mk
+ IDPgRB3vIbkEeL1rr0n9wX3WBPHn3whZT+sVW6QJR7zlK1tPxBluPTGxrokdBxwu5UPM
+ vG9xI+K05/SncBMWL1EPWVJskTQXFkdV1pYALi6qX8ZIVOkb/veoh5jp68fAywvmNZi5
+ ZzFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:to:from:subject:message-id:date:user-agent
+ :mime-version:content-language:content-transfer-encoding;
+ bh=HPEg1Zzu0IhrVnJQThCbzcwJFdCr8b/IaoQtlEt6iQY=;
+ b=pjfgyTLTJfMgjrdtsBLl6U85jkFoPXA68qTQyZGvKNULTSZnBVkdXQGZjn9DHJ6UeX
+ Xg3atB8G9yL8TYU7Mb1/Lb9Z/00CqPjys0+YOBvynRJa99TfL0sqeoXFLWUIPzpfrTt+
+ t/2X8VzGKHExTZntX7ic8Y1uhk8rjaV8t6CMlZko6Ru9H6nGCPV7TUQ/sWSUfm3IfOMw
+ NWQ5KBwRPTh1Tw64HrpnmbCnq9e36UaobarCZejLmhrfkK2pl73uMB1gwgTblJ/ycgix
+ YiQIJOjK2zqciR1rXhcu/GCv6N80eCFDjFZqIbG6Jo4IkHPxrGXQBt8XBemG/mTjgwkq
+ EhjQ==
+X-Gm-Message-State: APjAAAWw+y6/kqNonsmINl+pGxi/veQBXQhcExNIF18BH9nXE2aRwZe2
+ hxsCfMvNTvm/wZ3vi3ss4ZirlX/hnpY=
+X-Google-Smtp-Source: APXvYqwm/7PIfNUefe14ZrpZ27kWPEryoO/GNWv6zHgSsnXiRm5t3WXJZK57T+0N6iTe/n38JnVIxw==
+X-Received: by 2002:a1c:808b:: with SMTP id b133mr1530470wmd.160.1559554544800; 
+ Mon, 03 Jun 2019 02:35:44 -0700 (PDT)
+Received: from ?IPv6:2001:858:107:1:a4bd:fc8:9103:2bbc?
+ ([2001:858:107:1:a4bd:fc8:9103:2bbc])
+ by smtp.gmail.com with ESMTPSA id k66sm1330957wmb.34.2019.06.03.02.35.44
+ for <cocci@systeme.lip6.fr>
+ (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+ Mon, 03 Jun 2019 02:35:44 -0700 (PDT)
+To: cocci@systeme.lip6.fr
+From: =?UTF-8?Q?Christoph_B=c3=b6hmwalder?= <christoph.boehmwalder@linbit.com>
+Message-ID: <a2f5f688-c082-0b81-b7b7-5bbb83beae0d@linbit.com>
+Date: Mon, 3 Jun 2019 11:35:43 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Language: en-GB
-X-Provags-ID: V03:K1:BfztCG97B7wAjXgoWeWNyFsiX9zvreUuQ5nu8PDZroNqmwx4ySx
- cjcutJzsgttNrXz7tpmZ0nLbx4SlM2gYwkeWATuQ20HPnLscCRfYShLEMHC9Va+84lMayY/
- CYJKQ0pjBVkr0/8kmS2shc4I93bmuZh8UmU+SjuxlfwO/i6hfJVB+1vLliYIHYXJWtz+IH0
- lUVVR6woHpUptumDArIuA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:SmbW+P6KT8E=:GkcsYkapuuy1grHoOmdeK8
- DJZvavRov6Dop14YCwvbPEvf1WI2TOiJ/Ie7915HKmKFQTiSBnyt3k4EYnA8dgn20z03khoPB
- hPW6AFtuTz5aFmX2qQa8EKPnn7HQgtumOg0zQR/NaHFkR14cGf/ZZv58Ny50bkfsc7TtY/DFX
- mgju68V9fWIVWgn3Vqau878Rvo8/FDm05deLDkccARhHc5TGh1ncuXLYVe4xLEeqFjdUCUw3/
- jEzdO3GoyoAeNpX/jQv/mSFsNHELiTF1t4jU0T0LDXUN9nx5JNASyuykznj3RyEU0e8HQ2dGg
- sTpZVk4na7Uc9vWwx9qDzHLS7XDCmHh2eEng1IcxXzT7V9dTqTRIESxO7pGZZY62etzgQ0ZNU
- SNYQY8wJXGnzNThB4ngWSUctpnIs8nPeGId4uOFXvWnGo9LQeI2IOJfLWmhvCi14IRLfu3soy
- a+l7xb5DDdH+oA1M8b2Lhz7iGPS7Z7l6bvI2pUeIpKGZMDO5wdQsaqCRzcTikD54Up8VFIiVj
- rCzUPA7P903ux8LMLzcfQrEAgWPnbwT08Toq77GGEH/LOb00PB7j4y6C9gKgXRCtCh1ENmYrc
- Z4LSkWU8Mw3n/xCLEX/CSY0eOzSd6UQsxA7TrOX/VkzyE6EpAUESrAAY1sHXKgMZ4aOiKN47a
- XdeUHwfp/IJNt4/k4TMjR+C7YzrdAkjW24iWzfpFI3srn4xwrup1SH39MwJ4wXqrT9xgfJV+G
- BO2BS1JKrN3wNj4T55wuPdGA2fkGRqyYT2BPimlW7LRyXcOAWMNbwvicw7wP+GWYpYMzE7fLs
- r7VI52755/cUqYU6321hKzRkGP13dV2VVIX2dZHtYVjXaiA1TiwTVElR5pr1Xgm7+nOalFA7f
- ZKqMFI8TJEnbYtfMT6DWzfVW3gZ3wZFophLCLVn1lRuOJLQxN7NZjjhUOm+FAU+H2VkllMBta
- dmDFgltMwHXYkToxejnpQh7nLrRtYOLgA8yNDgo+yC+uuv77G7OBM
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 02 Jun 2019 14:44:40 +0200 (CEST)
+Content-Language: en-US
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 03 Jun 2019 11:35:47 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sun, 02 Jun 2019 14:44:38 +0200 (CEST)
+ (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
+ Mon, 03 Jun 2019 11:35:45 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Subject: [Cocci] Object-orientation for metavariables
+X-Scanned-By: MIMEDefang 2.78
+Subject: [Cocci] Indentation when adding an if
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -132,28 +94,68 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Hello,
+Hi,
 
-The metavariables of the semantic patch variables provide a programming
-interface for various information from source code.
-They were designed in the way so far that a single primary content is handled.
-The contents can refer also to more detailed data structures then.
-The system default is to return all structure members together.
+Consider the following C code and cocci patch:
 
-I imagine that advanced source code analysis will trigger the need to work
-only with parts on concrete demand.
-Thus I propose to delegate the selection of desired data sources to
-corresponding functions (or methods).
-How do you think about software extensions in such a direction?
-https://github.com/coccinelle/coccinelle/issues/22
+#include <stdio.h>
 
+int x;
+
+int main(int argc, char **argv)
+{
+     if (y)
+         do_something(x);
+}
+
+
+@@
+identifier x;
+@@
+- do_something(x);
++ if (x)
++	do_one_thing();
++ else
++	do_another_thing();
+
+
+For this input, spatch produces the following output:
+
+
+$ spatch --sp-file test.cocci test.c
+init_defs_builtins: /usr/lib/coccinelle/standard.h
+HANDLING: test.c
+diff =
+--- test.c
++++ /tmp/cocci-output-18011-a28e99-test.c
+@@ -5,5 +5,8 @@ int x;
+  int main(int argc, char **argv)
+  {
+      if (y)
+-        do_something(x);
++        if (x)
++            do_one_thing();
++    else
++        do_another_thing();
+  }
+
+
+Obviously it gets the indentation wrong there. Is this a bug?
+
+Adding curly braces around the outer if (in the C code) yields the 
+correct indentation, while adding the braces around the inner if (in the 
+cocci patch) does not.
+
+Adding an else branch to the outer if also produces the wrong indentation.
+
+--
 Regards,
-Markus
+Christoph
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
