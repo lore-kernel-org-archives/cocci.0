@@ -1,53 +1,52 @@
-Return-Path: <SRS0=vOXo=UC=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=Tsgg=UD=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4BC8C04AB5
-	for <cocci@archiver.kernel.org>; Mon,  3 Jun 2019 16:19:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33181C282CE
+	for <cocci@archiver.kernel.org>; Tue,  4 Jun 2019 05:09:22 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0B52326EEC
-	for <cocci@archiver.kernel.org>; Mon,  3 Jun 2019 16:19:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 6203224B60
+	for <cocci@archiver.kernel.org>; Tue,  4 Jun 2019 05:09:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="cjMfQ7X8"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0B52326EEC
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="KmwlRJfl"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6203224B60
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x53GJ3cL017399;
-	Mon, 3 Jun 2019 18:19:03 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x54596ta029872;
+	Tue, 4 Jun 2019 07:09:06 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id B5C9E7760;
-	Mon,  3 Jun 2019 18:19:02 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id BA1F67759;
+	Tue,  4 Jun 2019 07:09:05 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id A90F375F1
- for <cocci@systeme.lip6.fr>; Mon,  3 Jun 2019 18:18:59 +0200 (CEST)
-Received: from mout.web.de (mout.web.de [212.227.15.3])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x53GIx8Y027013;
- Mon, 3 Jun 2019 18:18:59 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 8FB3672F2
+ for <cocci@systeme.lip6.fr>; Tue,  4 Jun 2019 07:09:03 +0200 (CEST)
+Received: from mout.web.de (mout.web.de [212.227.17.12])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x54592aY027426;
+ Tue, 4 Jun 2019 07:09:02 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1559578737;
- bh=2ctzv2YYhObuqw1iqRex/h4s+xq6lJe4vMxrQEsUwBQ=;
+ s=dbaedf251592; t=1559624924;
+ bh=x/ZTtMl4KzW7mPCHtGOE5z5y2Afk0j8EdxXs9Lq03PI=;
  h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
- b=cjMfQ7X84uhgjK6wrhDgta7k0hnpLTwZBc/nnRa0hUvGO3ISMop4gagNszEgtmUjA
- ksZhBWsPos0mtVvtcfCPTZ1/rsyvpGjIXfJ5aJE+LqXfPD8ghKiti4k7bn+wVo1CSi
- zhfl+Le1eurZzyZ2HoUB9JHcCbi2WWpgQw2zbQXM=
+ b=KmwlRJflVZKkTL9iuhKCVlt89C9chMS9/GhQyFy5f2r2rAeb4HAxeaZRZU5TOe+Ln
+ DZAiv6GZfHk2ZVtbzcE199HiWp1pHmPkiHdBkvU3dJAYKlr4UlxZ9oqRn81nDH47qM
+ i/E27WXmkhWMexBiU0On6IAC4Ul5Mmh512lc7wq8=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.4] ([93.135.114.79]) by smtp.web.de (mrweb002
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0MWRoI-1h5lBy3zly-00Xdrf; Mon, 03
- Jun 2019 18:18:57 +0200
-To: Julia Lawall <julia.lawall@lip6.fr>
-References: <alpine.DEB.2.21.1905222114490.2618@hadrien>
- <81b409c6-5986-5961-5edf-843c6737d88c@web.de>
- <alpine.DEB.2.20.1905231500230.3573@hadrien>
+Received: from [192.168.1.4] ([78.49.105.210]) by smtp.web.de (mrweb103
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0MJCWU-1halmA1Fik-002lNU; Tue, 04
+ Jun 2019 07:08:44 +0200
+To: Wen Yang <wen.yang99@zte.com.cn>, Julia Lawall <julia.lawall@lip6.fr>,
+        linux-doc@vger.kernel.org
+References: <201905171432571474636@zte.com.cn>
 From: Markus Elfring <Markus.Elfring@web.de>
 Openpgp: preference=signencrypt
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
@@ -93,39 +92,41 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <1cc1190f-a3ed-2347-d846-4580502e6c99@web.de>
-Date: Mon, 3 Jun 2019 18:18:56 +0200
+Message-ID: <fa3b24ba-1c57-3115-6a01-ee98fd702087@web.de>
+Date: Tue, 4 Jun 2019 07:08:35 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.20.1905231500230.3573@hadrien>
-Content-Language: en-US
-X-Provags-ID: V03:K1:0gC3o13A7I7gFgme0dg2SEtJyg0bqOOFdEuffhXgIg3c1Zkk9tI
- R9ImPZD1i+QbXqiwL3gZFtSB3crcvQyDJimScwEScHlYUGYa2OG29OpHNNtagZcL8m34k6b
- GMOGBju7sFCYFSbRtm46fhut2EoXL2/fr/908g6M7kxvaQimfdNft+6+TCoQAs4iXYJ8vm6
- dv1AvwgG05MdQycgpp6XA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:gh07wT0x3NI=:izPr+bILGQygNiDX2nkJS5
- CYdcutgdCy7OIWeV4uHpT3xeGwmaWsB30QQ22WAOm15Tv4GLlLdPh/LAoCprNFb8Ui5PtZv8Y
- IdZ6O8ZrI2yi3rVXOMYtK2NGBTtGMmn8TJ8rAbyPKcUCCdV6lzPSHEL76AXLWv2A9VKOdtolO
- +qZndmAVCF9OnGp5UnbXYiYHnUf5TUHHua/IwEeUPFeQ5GxPNaq5ESYQ+CaPjjb+Rt/E3WeLY
- 3iQ4ixnxOLvbwKRmC9mIUHtUTwZgosIptxoDUS8+84FvB0Xgw9ToGBW0QEU82S4kCCZG0FSRy
- 2LXEYREXCSlCtT6RGV3WAwUQG0ebiCqVwuSpgxyQ/p77hQR+OrkgF3KcbKWQJYGdHRJbbaCVP
- 48zjTi7kmYm+kcf/Nd+73BbyGHnuoekULHvkP3wMXD+HhNDyCVLXKsxD2cLrpeECMBfTqyRFt
- T/EXhBFyCvDLbkLO+61/0ydl4ZWD7mTDUwEwtBez3t1DxoCjdoVObb9Yn9kW9e//a61H6/VIf
- sxA/jinaS2llwjGj7eodcqKlxCTyX87ZMn34YqmvNLGoLP+EwfVsocMHPSF+c2d0rYm0MAqr2
- w587XiBnJhCrYFgdC9CvJhOMs/dFnQBhY6e4W/CVbwHRHEIR5Tgr08BLw0vzFl+AEtL+l5xuq
- u2dw3nst+rDg2WB359DYAzihhpy0iVDqwnAXEv/OPsvFIV9FFr2Lymgh/vrJ/XGidyPb4qIGj
- OXgo/xB/1s50r/gu6uQm7d3NlXn0HpKsE9r3g91HU/dNTfyUUKY8Ftpx3Wsx+07EOkjwvLB5M
- iYhrkZZL9QUUnvhWSCq8ezNbMCfmr7uX9Unxky49x8BUsvV4ldypjwwDjNzMWiXfKIGmPkGxJ
- Pju24v+s6suoKG59mlKeNqfwjY7DnManwXsVpU2yppv3hHY+RO94tvuhgzOHbO2U/Uf4isK5W
- KPdYtdhJ+SA1CuIXvQ216kieXuAE30JMTFqO15mM5pGE8k4l8erPa
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 03 Jun 2019 18:19:03 +0200 (CEST)
+In-Reply-To: <201905171432571474636@zte.com.cn>
+Content-Language: en-GB
+X-Provags-ID: V03:K1:KUlu5FKPHL/GTSBDDFr+9lP0OqyqmXER/DI3IOMOjLieuxIKZN6
+ +fWOV0xTaklLO4P77yIZnCQDkiE5rgWPL5w8L/ADAADbK332bL0plD+NFU0LZ60aIuhJvOT
+ PFJgUQXU/lqQCEWAVb7CobrW0eHpVY1MnthajQvrevjS3O5cl1Bc3cXoVU+WNS+wio8PF0y
+ blIMq27kHD/suhk9oxA6A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:m285Zgw06a4=:iwJywvYU+dNCRrVKDlsKll
+ tVAYrQVt0GNDxz60B/zf68ibG8M3wCwH+o81Sv5FHViLWf5CicmvJfVmZ4x97fJnW2d77OWdk
+ uBFnMP6k9GGPqS5ZRvfNEoS7XarEO9N69bCGlr66JeI48qg/JZ9pI3o/puagCuDqhGCKNlEPL
+ /qLvbabe7B2c28vmKfO5nof44SKoERuH0Neq85hvCimdg7/YNcapI9Who1sjeI5PO2mQEwqIa
+ g6TzZ4BA3B2q32mIsY+nnlvKGgLAg8s8GAyc8JGXhnimIJdttKZ/sg8cp8FCZcvg5UYf2seId
+ EjBs6R389L94tQlPQBOO5u3DD2Q7cf3WjVl/l84CDImFE2LmJYHZrW8nRqgRPKKW82uDIM4Vz
+ 9qjrbWkfRtU9I02fUiSpDbAjKuCEOQyAzrg7rZU1MWqmtyQYVpuuDmksyY0qt/9SgZCJvr0dQ
+ ssW5P8+pdhCai5zXgBZjms5VmY/m610JOXKQ8rcNKg+XaZIjMySIrdYjirV4CXyS7tsLtF636
+ p6QvjKh5Umt4vBkcvx3D9wX0JNN3Scvy3oYqrkrSip1hpbC/HpKumyHa5x7b1MWK3OnewYX+6
+ hA2pEmTvd/ezZPHXppG0jmLraCBIVyPkrXoJF4q1Lkujiay3ppif4Cr642bXOYOXxKeTai5vS
+ xcPqCQGSotRYTKvyiPIF2wlfpMzWV+SK8MoA3yro/Pcy+S1o/7Bq0Kwf9WfIJRdfsBr8koW1Z
+ Qdekd+ddkehpM39bjhp2LVIzYpkqSEGArRFGiPOhrDN/MgpG8q0nWyYg/AycGRcbuPh0h6b9K
+ 3FkPnOgxfrFWG6ADido80g7ypO5jCpLoCxurH3VLLiN+RGEJKFzQ6IP+LvnOfv6JfJoeS0fym
+ z6/J5tygsC+bKgyPBcF8T/640P7Sg3gegVz5pflBXfrFvytwSeFd9IDG/9BEjcVrCRY9regb+
+ J5dFreRCzX1a7meP/zUI0JbEU5b8MFVRvjpHAzOjWblSIhIifCrPF
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 04 Jun 2019 07:09:06 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Mon, 03 Jun 2019 18:18:59 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Tue, 04 Jun 2019 07:09:02 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Wen Yang <yellowriver2010@hotmail.com>, cocci@systeme.lip6.fr
-Subject: Re: [Cocci] Setting the match result by SmPL script rule
+Cc: Michal Marek <michal.lkml@markovi.net>,
+        Nicolas Palix <nicolas.palix@imag.fr>, linux-kernel@vger.kernel.org,
+        cocci@systeme.lip6.fr
+Subject: Re: [Cocci] Coccinelle: semantic patch for missing of_node_put
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -137,24 +138,55 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Pj4gSG93IGRvIHlvdSB0aGluayBhYm91dCB0byBmaWx0ZXIgYW55IHRleHQgYnkgcmVndWxhciBl
-eHByZXNzaW9ucwo+PiBmb3Igc2VtYW50aWMgcGF0Y2ggbGFuZ3VhZ2UgY29uc3RyYWludHM/Cj4K
-PiBOb3Qgc3VwcG9ydGVkLgoKVGhpcyBzb2Z0d2FyZSBsaW1pdGF0aW9uIGFuZCBjdXJyZW50IGRl
-dmVsb3BtZW50IHN0YXR1cyBoYXMgZ290IGNvbnNlcXVlbmNlcwphcyB1c3VhbC4KCiogSXQgd291
-bGQgYmUgbmljZSBpZiBjb21tZW50IGNvbnRlbnRzIGNvdWxkIGJlIGRpcmVjdGx5IHJlc3RyaWN0
-ZWQgYWxzbyBieQogIHRoZSBtZWFucyBvZiBTbVBMIGNvbnN0cmFpbnRzLgogIEkgYW0gdW5zdXJl
-IGFib3V0IHRoZSBjaGFuY2VzIGZvciBleHRlbnNpb25zIGluIHRoaXMgYXJlYS4KCiogVGhlIHN1
-cHBvcnRlZCBsYW5ndWFnZXMg4oCcT0NhbWzigJ0gYW5kIOKAnFB5dGhvbuKAnSBvZmZlciBrbm93
-biBwcm9ncmFtbWluZyBpbnRlcmZhY2VzCiAgZm9yIHRoZSB3b3JrIHdpdGggcmVndWxhciBleHBy
-ZXNzaW9ucy4KICBUaGUgZXZhbHVhdGlvbiBvZiB0aGVzZSByZWdleGVzIGNhbiB0cmlnZ2VyIHVz
-ZWZ1bCBkYXRhIHByb2Nlc3NpbmcuCiAgQnV0IEkgYW0gbG9va2luZyBmb3Igd2F5cyBub3cgdG8g
-c2V0IHRoZSBtYXRjaCByZXN1bHQgZm9yIFNtUEwgc2NyaXB0IHJ1bGVzLgogIEhvdyBhcmUgdGhl
-IGNoYW5jZXMgdG8gZXh0ZW5kIENvY2NpbmVsbGUncyBzb2Z0d2FyZSBsaWJyYXJ5IGZvciB0aGlz
-IHB1cnBvc2U/CgpSZWdhcmRzLApNYXJrdXMKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX18KQ29jY2kgbWFpbGluZyBsaXN0CkNvY2NpQHN5c3RlbWUubGlwNi5m
-cgpodHRwczovL3N5c3RlbWUubGlwNi5mci9tYWlsbWFuL2xpc3RpbmZvL2NvY2NpCg==
+> 2, A general method.
+> We also try to get the list of functions to consider by writing a SmPL,
+> but this method is not feasible at present, because it is not easy to parse the comment
+> header information of these functions.
+
+The situation was improved once more also for the Coccinelle software.
+How do you think about to develop any more variants based on information
+from a script (like the following) for the semantic patch language?
+
+@initialize:python@
+@@
+import re, sys
+filter = re.compile(" when done")
+
+@find@
+comments c;
+identifier x;
+type t;
+@@
+ t@c x(...)
+ { ... }
+
+@script:python selection@
+input << find.c;
+@@
+if filter.search(input[0].before, 2):
+   sys.stderr.write(input[0].before + "\n=====\n")
+else:
+   cocci.include_match(False)
+
+@display@
+identifier find.x;
+type find.t;
+@@
+*t x(...)
+ { ... }
+
+
+Does such a source code analysis approach indicate any details
+which should be improved for the affected software documentation?
+
+Regards,
+Markus
+_______________________________________________
+Cocci mailing list
+Cocci@systeme.lip6.fr
+https://systeme.lip6.fr/mailman/listinfo/cocci
