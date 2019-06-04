@@ -7,44 +7,45 @@ X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFB47C28CC3
-	for <cocci@archiver.kernel.org>; Tue,  4 Jun 2019 09:08:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C2CFC282CE
+	for <cocci@archiver.kernel.org>; Tue,  4 Jun 2019 11:30:27 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4E9DF24CB3
-	for <cocci@archiver.kernel.org>; Tue,  4 Jun 2019 09:08:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 5D02B24BDC
+	for <cocci@archiver.kernel.org>; Tue,  4 Jun 2019 11:30:25 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="Vm6L7jiI"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4E9DF24CB3
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="mPDSv7WS"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5D02B24BDC
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x5498K8q019004;
-	Tue, 4 Jun 2019 11:08:20 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x54BU6LY025352;
+	Tue, 4 Jun 2019 13:30:06 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 5A6D57760;
-	Tue,  4 Jun 2019 11:08:20 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 411307765;
+	Tue,  4 Jun 2019 13:30:06 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 221377759
- for <cocci@systeme.lip6.fr>; Tue,  4 Jun 2019 11:08:19 +0200 (CEST)
-Received: from mout.web.de (mout.web.de [212.227.15.4])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x5498Ikb026527;
- Tue, 4 Jun 2019 11:08:18 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 688457760
+ for <cocci@systeme.lip6.fr>; Tue,  4 Jun 2019 13:30:04 +0200 (CEST)
+Received: from mout.web.de (mout.web.de [212.227.15.14])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x54BU2Lc020916;
+ Tue, 4 Jun 2019 13:30:03 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1559639284;
- bh=ETRve5vggXNZVMb7TbodxPApB4lLaMjH4ke8JjHZGo0=;
- h=X-UI-Sender-Class:Subject:Cc:References:From:To:Date:In-Reply-To;
- b=Vm6L7jiIlA4KP2P6lchFeSt9c7QbgwIMqG5OebQxjFiRYllyHBR2COe5QVTlDbTkZ
- OdTfjciTG2AdUR69Ojd2KMCVVWqLY+Ee90KWMF7yY0zbcnkbPjKUinGk0AlqsgGab+
- VH5SyNhBd7bxbU7+CAcjvdstvY3o86RIsId0XWQs=
+ s=dbaedf251592; t=1559647786;
+ bh=NnHgDDxEaUqkSvPWPX+0oQ/+pSBWZGwitzJheluK2Mw=;
+ h=X-UI-Sender-Class:Subject:Cc:References:To:From:Date:In-Reply-To;
+ b=mPDSv7WSZFG8dhLHsSyw5pOwaTEFX5bb+TIZqiSlb93aa5e4GTSotYzYIh2oVKQY0
+ AB75V8//fOmU/r9+gFs9Lx2u0kKrAJ1Annv+uMEAvAev0meV+O9b3Y/8qys7Ta4rxw
+ W+LcIpvp//hijcAPN6GDXX8a/+V5Ewyuug7PkV18=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.4] ([78.49.105.210]) by smtp.web.de (mrweb002
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0MKaDH-1hWi723k5n-001xlK; Tue, 04
- Jun 2019 11:08:04 +0200
-References: <201906041655048641633@zte.com.cn>
+Received: from [192.168.1.4] ([78.49.105.210]) by smtp.web.de (mrweb001
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0MRl2f-1hAAfj0ha5-00SzDt; Tue, 04
+ Jun 2019 13:28:42 +0200
+References: <201906041350002807147@zte.com.cn>
+To: Wen Yang <wen.yang99@zte.com.cn>
 From: Markus Elfring <Markus.Elfring@web.de>
 Openpgp: preference=signencrypt
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
@@ -90,39 +91,38 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-To: Wen Yang <wen.yang99@zte.com.cn>, linux-doc@vger.kernel.org
-Message-ID: <552e8e3a-918d-c1b4-c925-4e8fe7ddd307@web.de>
-Date: Tue, 4 Jun 2019 11:08:01 +0200
+Message-ID: <9169c754-17ef-f820-8335-2015e3c37782@web.de>
+Date: Tue, 4 Jun 2019 13:28:39 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <201906041655048641633@zte.com.cn>
+In-Reply-To: <201906041350002807147@zte.com.cn>
 Content-Language: en-US
-X-Provags-ID: V03:K1:nXpqdE5vJdwVlnTqiz6tTXpojorB9/hO3jI/uQ7hdE3ecds67Xs
- clkPBsTlSYWLCPAiw9C36UjR9icrnjuar7f2VmD0HRKZ0rVqwtQXdO1DIK4jOCP+vdhS8HY
- ovnEsDwWmNkOycw0v0w31RhcumztIqDuZC+lh66TPMPCtj4K7ekINdz1g8OTk9k0tqLUSxk
- 9G38X7ZpFbjiMCyHSmcZw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:SHkmWJH79ms=:J/OA+9CBs1gPLksUkIrA8j
- olcriVMj1qM/rl7sfdB0XnqdpT/mCONJTDPuOFm3v5r8LRpk+vErik40cejoAJGtGuoQ3KWzS
- vWn+DdYrw17b7amAwTsr4vlSNOGrqdSV+w8F1N8LKbEZUc01FmhjYWpoqCmHL+rkhTLur7eAs
- T0Is285B9HFLqYfptHkyvQaIM0fsxBm4lNMuDGKdZ5XgU4Kk0QxBF4Stf3urmzICwS+zAwgtF
- OQS6O0zWP6IiYKM65hspx3iNAT3tdy1klxG5Y19mxj2D2j3Az2xGV7ohW+ibclyFroa08tamL
- EoboshMg0wquzwSpU/yUoZUYX++PR+ll5hxzHVAsZDD1OqIxe7fyBcpvX0zJq1lYA42ZWtmvy
- O1YLOqWhrcz8OCs681KC6vqB3VpjvEQs388K5qD1IDt+UTbcT0NOtgktSXY4148Av9P7Di/Py
- qAmZyM0DMZ7yC6SlEQKiF6vcsh1c7VKgxNgwvvkWJb2rN4IabLxblCTqNjq8BKJNStnJEdd/5
- cT1xnUp+6mY7WwmQfjYGQzaOmq4PQOgHqH89aaBKpPNP6C2iyBtWQ77GynOJCmFPClBKfr3En
- VutPgjetU9lSHpvEZOTA1+KEkS5+AiNIkPEXF+iem2Q4rNZisnlv1gxZMrPjxmaXlDnL3+p1N
- ugZdJZJuj32OGIwjv/k10pASJ5vbEL2pnLN+A/SyIa0AyAuAidNUcie+Jb1tWqvCaeyEkT06k
- 8UJnAJP8oTsMAhMBgpxTp64TMm3PZniZUSxC323pLhsUJSIVD6VKRFDN/av/dphU5BWLDFphd
- 9NZZ0qXuB4MNETIJLT8RfRswgANlxNZrZZOybXHZrdgYdkP8s2GrO4sCCR90+1xJe+56ON65I
- OimS8NofDIOrVZO5WIouNUUO7kq1t4fYhJxUEaICkiHnYVmLW4ml4SKnUQNFznXcwrinSFflq
- VJq2ejT2Ew+pESkoSsDvX6UqHxv2SNIip2QQJqSLTHwhxejqVAyub
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 04 Jun 2019 11:08:20 +0200 (CEST)
+X-Provags-ID: V03:K1:AiQPmN/SaFFLT7vE/A+qNDQ75f3MT8Xf8s0QSGsW51uUcsctr5P
+ SFtxL3BMfLgv0QA9zqRFBxJ7/ijqKItmloPfrNL3Aj8jFbMoG7ViNS9KcWuXILwyqA1Rxmo
+ dQnG1nAhRyxLekLiP7wN9HgVuzWmShDiTg/ELctb2T6IJ6hb/r8SP1TS8Af1SvaCEp+Fv+t
+ ZkuFBieoP6YTbX9TazkXw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:JNG5G7F1lIY=:nWNYDV9VqBWdcg43nH/OOC
+ 5qfOVYDPL4wUjs1Q9/OWEm9wCvoJFQHFjnEv20vFd6X9Gt82l3zSCW51SazqlS4xrZU7rCBEm
+ WEECGC26PWF3XhqrizgVhv/EM2lWUmXzHNNKyJG2vCnWA2BLyZ1UTCeS+1kq+n9a2q09XmAwv
+ 6SoZ6YTnZlR4vU0sH5ab81h4lSRZKIIa0QqS3pQCOT6z+v3LW4IpN+3/6ZaZFA75XVgu1ZtCk
+ MRkB350kQ4H9AxpGqaR2K7vXHJkGqO8L/3Od74GV4tZvzqWX7rKrvl6rnE968ITghI6ZuiEA8
+ ea4bmWajVMTAXcYzo3D1qjSCe0hqDlmImRdkBBRK9kAmF8py8TyH+/uLN8mKwg1Zgot9qCrqf
+ Lg/mAZjfUmff2+35NL1YIbTTe+0X4T5cbcbgfGsXXr7Czi0DVY1YXZcE4k4C7yJB7uan5b1qt
+ hulbKK2MKMmhuZjF0vmqz+hAq6/s5uKRF8myqWxBTPQ1UukspQsYnTAju4WQFKeSXVxgKbdwY
+ 8zqkYJdQqqvZFGeL6nE+J7EUGRvlm+N/rgx3bz6RDUl3VhugPgqM4iB2JSiaFBui5ml3rJ87I
+ CS5ZtByqlnoVY3VNxlflxxIV0YpdqQ+cQYJt47AqyY8iGPjEKsbrPP+SL5J2GwuGkN2XrhBon
+ 0KuhO9p86EDpZMitGJm/umSGGnkAniONXQGEPAW4N1FNw2XJkVwM+Bvg6DRh3sZenjvs0WIyf
+ oeCYXamF8+/TOD4ESQNqrBiUjFwjuFTrB3DHBdLL7GWbn6+7iBPG/g6sOO+SEyGlzIb2rLTOB
+ wYpQZ4JvX3cinFzbOAflWnIwrPfoKv+5/jMI/lctwsFhicF4sCqvZ4zXuuq7Vro0DGfQKQkvX
+ I5VsNZjdQEowYkKEs1AzQA+HsuYDlOAX2VJ8RYmUWiEKhR2w73c+zZXQ0Lsr3LXBY3l1q59As
+ MLpQfGke7po5sNW7HlHCywxGt8B0aNgptelys/159rjwswm2LVIc0
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 04 Jun 2019 13:30:06 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Tue, 04 Jun 2019 11:08:18 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Tue, 04 Jun 2019 13:30:03 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Michal Marek <michal.lkml@markovi.net>,
+Cc: Michal Marek <michal.lkml@markovi.net>, linux-doc@vger.kernel.org,
         Nicolas Palix <nicolas.palix@imag.fr>, linux-kernel@vger.kernel.org,
         cocci@systeme.lip6.fr
 Subject: Re: [Cocci] Coccinelle: semantic patch for missing of_node_put
@@ -142,21 +142,51 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
->> Thus I imagine that an other documentation format would be safer
->> and more helpful for the determination of a corresponding API
->> system property.
+> let add_function f c =
+>     if not (List.mem f !relevant_functions)
+>     then
+>       begin
+>         let s = String.concat " "
+>           (
+>             (List.map String.lowercase_ascii
+> 	     (List.filter
+> 	       (function x ->
+> 	         Str.string_match
+> 	         (Str.regexp "[a-zA-Z_\\(\\)][-a-zA-Z0-9_\\(\\)]*$")
+> 	       x 0) (Str.split (Str.regexp "[ .;\t\n]+") c)))) in
+
+I would interpret one of these function calls in the way
+that text splitting is performed here also for space characters
+after a concatenation was performed.
+
+
+>              Printf.printf "comments: %s\n" s;
+>              if contains s relevant_str
+>              then
+>                Printf.printf "Found relevant function: %s\n" f;
+>                relevant_functions := f :: !relevant_functions;
+>       end
 >
-> Our script will remove '* ','\ n','\t' and so on from the comments in the function header
-> and then merge them into one line,
+> @r@
+> identifier fn;
+> comments c;
+> type T = struct device_node *;
+> @@
+>
+> T@c fn(...) {
+> ...
+> }
+>
+> @script:ocaml@
+> f << r.fn;
+> c << r.c;
+> @@
+>
+> let (cb,cm,ca) = List.hd c in
+> let c = String.concat " " cb in
+> add_function f c
 
-* Would you like to keep this adjustment approach (for a while)?
-
-* Will other data structures become nicer for the discussed data extraction?
-
-
-> so we can exactly match the target string 'use of_node_put() on it when done '
-
-Thanks for this clarification.
+Can an other data processing variant be more reasonable?
 
 Regards,
 Markus
