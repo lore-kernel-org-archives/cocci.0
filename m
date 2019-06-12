@@ -1,71 +1,56 @@
-Return-Path: <SRS0=MjcO=UK=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=sk5U=UL=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6266DC31E44
-	for <cocci@archiver.kernel.org>; Tue, 11 Jun 2019 21:59:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CBE5C31E46
+	for <cocci@archiver.kernel.org>; Wed, 12 Jun 2019 05:26:11 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E7EE7205ED
-	for <cocci@archiver.kernel.org>; Tue, 11 Jun 2019 21:59:13 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="RTAX2VIs"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E7EE7205ED
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 05E2F206E0
+	for <cocci@archiver.kernel.org>; Wed, 12 Jun 2019 05:26:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 05E2F206E0
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lip6.fr
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x5BLx11d026229;
-	Tue, 11 Jun 2019 23:59:01 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x5C5Ptoa014540;
+	Wed, 12 Jun 2019 07:25:55 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 7D241775F;
-	Tue, 11 Jun 2019 23:59:01 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 86AF1776B;
+	Wed, 12 Jun 2019 07:25:55 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 2CB9B775D
- for <cocci@systeme.lip6.fr>; Tue, 11 Jun 2019 23:59:00 +0200 (CEST)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x5BLwwt1024861
- for <cocci@systeme.lip6.fr>; Tue, 11 Jun 2019 23:58:59 +0200 (CEST)
-Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com
- [209.85.167.170])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 4B60C20874
- for <cocci@systeme.lip6.fr>; Tue, 11 Jun 2019 21:58:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1560290338;
- bh=+Q+DpiqjxMs67p5eCFvu/K8gC0BG9/+i1hnZwFFCe6k=;
- h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=RTAX2VIs5um/IiicgQdCg+oF+4Ra1X1gTvD9RRRsj9RdzYYYMwE2fbGun2vudusxp
- Ggj+grbqWLN/WroFcdPDWqRAu0g5XmXcDRb04M2Pdi9/gsDgxTPW4lyEvf7mQi3ED+
- 0XBCQDmH7peVOEAV2ed8SSYpTLTFHGwHHeu0zVXI=
-Received: by mail-oi1-f170.google.com with SMTP id e189so10144857oib.11
- for <cocci@systeme.lip6.fr>; Tue, 11 Jun 2019 14:58:58 -0700 (PDT)
-X-Gm-Message-State: APjAAAXNz0Vhk/473WXzP0GWjKQqivl/c5dPxqtihi9k8ooxWGsyJKGt
- WG1GaUSYFSQmMJL+PBlDMU4lMp56ijJFbzAm87s=
-X-Google-Smtp-Source: APXvYqwXclKRwgsEDRKoyy7OUtOkFhvGxVJ8pp6yDyw+cCDcnprz0qZJp0Z6VyRlBBouy0PZjrPmuyNwVRVEOpxQ2fw=
-X-Received: by 2002:aca:de44:: with SMTP id v65mr15713821oig.135.1560290337583; 
- Tue, 11 Jun 2019 14:58:57 -0700 (PDT)
-MIME-Version: 1.0
+ by systeme.lip6.fr (Postfix) with ESMTPS id 78EEE775F
+ for <cocci@systeme.lip6.fr>; Wed, 12 Jun 2019 07:25:53 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr
+ (mail2-relais-roc.national.inria.fr [192.134.164.83])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x5C5PrWd000423
+ for <cocci@systeme.lip6.fr>; Wed, 12 Jun 2019 07:25:53 +0200 (CEST)
+X-IronPort-AV: E=Sophos;i="5.63,363,1557180000"; d="scan'208";a="386976829"
+Received: from abo-12-105-68.mrs.modulonet.fr (HELO hadrien) ([85.68.105.12])
+ by mail2-relais-roc.national.inria.fr with
+ ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 12 Jun 2019 07:25:52 +0200
+Date: Wed, 12 Jun 2019 07:25:52 +0200 (CEST)
+From: Julia Lawall <julia.lawall@lip6.fr>
+X-X-Sender: jll@hadrien
+To: Timur Tabi <timur@kernel.org>
+In-Reply-To: <CAOZdJXVsdJHZyWSXzOsJTTOj8R=UZcD4yZVxXBB1TELJLT1wSA@mail.gmail.com>
+Message-ID: <alpine.DEB.2.21.1906120724230.2535@hadrien>
 References: <CAOZdJXWVyC3o6vVbNEakhr8p4vX4j3wkkSyJg77-hcQ7Nqhf=g@mail.gmail.com>
  <CAOZdJXWja4mBf-gKSZ-HQaPs3c3x1ur2=BgPh6MnPx+eN7EgYQ@mail.gmail.com>
  <alpine.DEB.2.21.1905242138280.2514@hadrien>
  <CAOZdJXVsdJHZyWSXzOsJTTOj8R=UZcD4yZVxXBB1TELJLT1wSA@mail.gmail.com>
-In-Reply-To: <CAOZdJXVsdJHZyWSXzOsJTTOj8R=UZcD4yZVxXBB1TELJLT1wSA@mail.gmail.com>
-From: Timur Tabi <timur@kernel.org>
-Date: Tue, 11 Jun 2019 16:58:21 -0500
-X-Gmail-Original-Message-ID: <CAOZdJXXrKJdD-wvrASVv1OY2z16n0UKwkWK26w+uQfkgqFORgw@mail.gmail.com>
-Message-ID: <CAOZdJXXrKJdD-wvrASVv1OY2z16n0UKwkWK26w+uQfkgqFORgw@mail.gmail.com>
-To: Timur Tabi <timur@kernel.org>
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 11 Jun 2019 23:59:01 +0200 (CEST)
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Tue, 11 Jun 2019 23:58:59 +0200 (CEST)
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+MIME-Version: 1.0
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 12 Jun 2019 07:25:56 +0200 (CEST)
+X-Greylist: IP, sender and recipient auto-whitelisted, not delayed by
+ milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]);
+ Wed, 12 Jun 2019 07:25:53 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: cocci <cocci@systeme.lip6.fr>
@@ -86,18 +71,74 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-On Tue, Jun 11, 2019 at 4:51 PM Timur Tabi <timur@kernel.org> wrote:
+
+
+On Tue, 11 Jun 2019, Timur Tabi wrote:
+
+> On Fri, May 24, 2019 at 2:38 PM Julia Lawall <julia.lawall@lip6.fr> wrote:
+> > On Fri, 24 May 2019, Timur Tabi wrote:
+> > > I figured it out:
+> > >
+> > > @@
+> > > identifier func;
+> > > fresh identifier label = func ## "_exit";
+> >
+> > Yes, that works too.  Simpler than my suggestion.
+>
+> I managed to break it somehow.  I suspect I ran into some other quirk
+> of coccinelle.  I'm trying to convert that looks like this:
+>
+> x = MACRO1(stuff);
+> if (x == NULL)
+> {
+>   BREAKPOINT();
+>   status = ERROR;
+>   goto myfunc_exit;
+> }
+>
+> into:
+> x = MACRO1(stuff);
+> CHECK_OR_BP_AND_GOTO(x == NULL, status, ERROR, _exit);
+>
+> I thought this would work:
+>
+> @@
+> type T;
+> expression y, z;
+> identifier x, s;
+> identifier func;
+> fresh identifier label = func ## "_exit";
+> @@
+> func(...) {
+> <+...
+>  x =
+>  (T)
+>  \(MACRO1\|MACRO2\)
+>  (...);
+> -if (y)
+> -{
+> -      BREAKPOINT();
+> -      s = z;
+> -      goto label;
+> -}
+> +CHECK_OR_BP_AND_GOTO(y, s, z, _exit);
+> ...
+>  label:
+> ...+>
+> }
+>
 > but I get this error:
 >
 > 18: unexpected use of a fresh identifier label
 >
 > What am I missing?
 
-Apparently I'm missing this obscure line in the documentation:
+Fresh identifiers are only for + code.
 
-"Fresh identifier metavariables must only be used in + code."
+You need to construct the identifier you want to match using python code,
+as illustrated in demos/pythontococci.cocci
 
-Any suggestions on how to work around this, other than use Python?
+julia
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
