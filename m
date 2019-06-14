@@ -1,51 +1,57 @@
-Return-Path: <SRS0=sk5U=UL=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=u2QG=UN=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-6.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A2B2C31E46
-	for <cocci@archiver.kernel.org>; Wed, 12 Jun 2019 07:13:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90D69C31E44
+	for <cocci@archiver.kernel.org>; Fri, 14 Jun 2019 09:23:33 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 64956205ED
-	for <cocci@archiver.kernel.org>; Wed, 12 Jun 2019 07:13:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id AE6002133D
+	for <cocci@archiver.kernel.org>; Fri, 14 Jun 2019 09:23:32 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="L3J3Z+fU"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 64956205ED
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="I2EvWM35"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AE6002133D
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x5C7CoO9012635;
-	Wed, 12 Jun 2019 09:12:50 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x5E9NEC2009025;
+	Fri, 14 Jun 2019 11:23:14 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 55DFB7774;
-	Wed, 12 Jun 2019 09:12:50 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 95C987777;
+	Fri, 14 Jun 2019 11:23:14 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 5361A776B
- for <cocci@systeme.lip6.fr>; Wed, 12 Jun 2019 09:12:48 +0200 (CEST)
-Received: from mout.web.de (mout.web.de [212.227.15.4])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x5C7ClxZ026606
- for <cocci@systeme.lip6.fr>; Wed, 12 Jun 2019 09:12:47 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 713937762
+ for <cocci@systeme.lip6.fr>; Fri, 14 Jun 2019 11:23:12 +0200 (CEST)
+Received: from mout.web.de (mout.web.de [212.227.17.12])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x5E9NBIJ008280;
+ Fri, 14 Jun 2019 11:23:11 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1560323567;
- bh=SLGxbddHGR1UuPPRx/AM7BOzLJbNmMHCQq8xhpywjpA=;
- h=X-UI-Sender-Class:To:References:Subject:Cc:From:Date:In-Reply-To;
- b=L3J3Z+fU4fWp8iLsbAjGuZz0uZ4x2sy8v/NyZnmB+x6+PGH0XAdeZAEW6eTKFx4D+
- toh24fFNbjmvLuMtqnBbca68XFNvPcXARYTGu9wDP3u4ShudWPh1AdXi1ivncLYHJ2
- Zu4+eXwNZoyx8q5kDFc/ZSC7m6pchrVlE2CRoZjQ=
+ s=dbaedf251592; t=1560504172;
+ bh=SpHQ3JrOfhzaQWP30ANX8/kssmYUbD+lEDsns4CrNWw=;
+ h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+ b=I2EvWM35gKnBnKmheBgq1jp/Ag+XzAy1ytbP/i7R/wzX4eIeY8pEpCK4SPTUKuiAD
+ h0pVXtzq9Af4rhZNaMtl5vnggAHHS+6F/2TeE+qJf8j838e0bOdrd75SY32nWm+/PR
+ C7CQ6L5aAf8C/mvui/03xvLCNx7me0aKykAZXOrw=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([78.48.21.30]) by smtp.web.de (mrweb001
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0M3Bv5-1iTbei1l0J-00svcU; Wed, 12
- Jun 2019 09:12:47 +0200
-To: Timur Tabi <timur@kernel.org>
-References: <CAOZdJXXrKJdD-wvrASVv1OY2z16n0UKwkWK26w+uQfkgqFORgw@mail.gmail.com>
+Received: from [192.168.1.2] ([93.133.126.132]) by smtp.web.de (mrweb101
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0MYf78-1i5sJl3FUA-00VPjw; Fri, 14
+ Jun 2019 11:22:51 +0200
+To: Enrico Weigelt <lkml@metux.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+References: <20190406061112.31620-1-himanshujha199640@gmail.com>
+ <f09006a3-691c-382a-23b8-8e9ff5b4a5f1@web.de>
+ <alpine.DEB.2.21.1906081925090.2543@hadrien>
+ <7b4fe770-dadd-80ba-2ba4-0f2bc90984ef@web.de>
+ <f573b2d3-11d0-92b5-f8ab-4c4b6493e152@metux.net>
 From: Markus Elfring <Markus.Elfring@web.de>
 Openpgp: preference=signencrypt
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
@@ -91,40 +97,46 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <f728dfb6-5df0-4bd3-f1fc-f11ed73a1830@web.de>
-Date: Wed, 12 Jun 2019 09:12:46 +0200
+Message-ID: <032e347f-e575-c89c-fa62-473d52232735@web.de>
+Date: Fri, 14 Jun 2019 11:22:40 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+ Thunderbird/60.7.1
 MIME-Version: 1.0
-In-Reply-To: <CAOZdJXXrKJdD-wvrASVv1OY2z16n0UKwkWK26w+uQfkgqFORgw@mail.gmail.com>
+In-Reply-To: <f573b2d3-11d0-92b5-f8ab-4c4b6493e152@metux.net>
 Content-Language: en-US
-X-Provags-ID: V03:K1:5Av6cWs9JTAUzNtLUfbiQSsSxEWE/JOxzG81mM0z8NK5oyjQSjT
- 9a7OdghO5nnG6TR8Wqf79pu305fvJs2SUJFTrnq+nXiFXnwQmffusAtP39ZRNzf+Tt5yhLB
- 99EJESu0VMWKpkTl7zCcOOqKL9G1ztADHKmwgk23mlN/fi34j3vB8wUkLm/w+UKqAuT8kJJ
- 8A12IaVNEYQt24TH1zRtQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:f6Y2jGi6WD0=:FmJpIGIwnXH2DNKHViAlu4
- Riu+S6BDRdwoKEXmptzsEewnFgRLQXLdMptt5HWtipK1ZE37xe/MWdLt1+zol5N26vJ4TbBto
- Gr0bcB7uOIMa1Od15m/YGRkMMToLv8tpGZFadexVNwT2Z7URUsp4zToT0Nq02YBwOsdrYsgur
- eCWIBsJWlhpN6In2v/t8Jn2T1ymwsDc1Y7keGUdsLf3GWHbnLXDqrdAixywqKWcF5PfmP9vq6
- ssnKDHiKu45Ta7HcXMbDfE1SyO5JfeCyBZV1i4kMz1SgTCaINULCS+L4tUVo1FCA4ED2TbtCB
- VvM/AVOVF2BhndT6PSZr+3zlrdICqcRBCKz1ayhtVZ0J9SL0hBNSG/zJUUa1bYOGzHBT1T4bE
- vBFsIwtkL3x/3s4d/W+hTnapm/tWqQcnoW2kC/qLlv4gkh6zY/gkY/YhnVK7tDT+ewlICkJgh
- 705TuOyYq3TRjamALhta0FnTCm8BpT7NSrqCXVwt5MqG/nz6zxxC29Vsw/3GW+FWIsMuv0T8q
- cD1o33iFLH9U9liHLuKmwcOHOgby+vzX374CDHExuicV3P6Y+GuAY/zQ/ponpHoEc41jNElSw
- ovdaVps3k0vlKx0Ox2RsUQIit5hA1l2F7C272iEyW/EtbW2fqel7jZ3dgoCYSqh6tZD0LCTcQ
- o8eJF54i2Tvl7J7hTrHDSXC9/E2aCjkGWESOnvXCn0IRDEzto17qTEfHOqug/RloBvYh69k7o
- vPT3UnEyatRzSn/Ze809AJWiLdmN2F4l1DtGbL4kMtnMOpzTnFLTC0l022CUVpn0FI/ik45iC
- Syh+VDXW7mBXvVDth/KoXeElXTdCMX/+ROa2KXo9+U8x74hCER73ZJfaJuawhPYTwl0mVLGuL
- Ep8iAhjJGsr/uxHLgIkocY3x6I+rOA0f9W8XyYCxIHcDnhkHQLh8rFVFBETq2ORxPPXLFm3aF
- /UuiWK3aQhg0N9heO66XHt0ntsiVweD7jYhQUZX29bSgqa9t25CJO
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 12 Jun 2019 09:12:50 +0200 (CEST)
+X-Provags-ID: V03:K1:oZZikr5812fm7qJo1EfkL7bt2J1oCpuqPgZapj83jUV/9DsNYsv
+ 0WUda4yE5NBVVkeDvjjHM/yj31jOesCycrxo6ktCIvL/R++Yo/ExkmczJqqTn5Lir/wlLKz
+ wsTHFsB/DMeZuPDjabwLZVefP72Udt+ag+lQvrU3Lz0nNLrNMEWsIxGhLaCG/apPMhgP6K2
+ +17hw5Y5hHKkX0GFgW5Qw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Dvvfi8LZ7AI=:/YZipzaeArtGwaFfdAJZrk
+ YKr0OxA4swcWy+/Yd5hu2nxVAjoW3ve1vOELQV6xw9zer9QtjMBZGfTQpJLj5Bq1/ykJOVVVm
+ hpqndrozTlu1FgdcpuhvYtxwLJ0kbHSmNfGJrkyzl/CuWSDPlLQbciNkldME9hXG9RIT4uAcD
+ dxf0lUpDmZPuwQfwGG1Taz5TXO3ymQLn+o1T9WSEH2ouINVsjoTyHvOIDU/iH6nAqQ4HPuYcg
+ ptYNmllSM3gHHVa0RVgEqUHy4jYEeCEsBmBuJ2qnkVHAIaBVDyZZAQh3+gO+yP3ddB6N63gZG
+ hVS0c26eCT9KX3B7kuzxW19dIRY+YeOOv5h4/x0CXIWzfYz5o1ycuyEz3P5aC9fryZPGyNpOa
+ QwRTJtZoykybi8Hz+D+sC4GlkXKBubmoJ1k4xRnGMBPD/unNCcws4Qxemq6GH0t5RReBEZ2Eg
+ qkJ/3kPhtjGP+2zwnKIS3MGcMb2EkYQeEuRou3fjQdrRXPqabqtBby3fFKmE60WlmdDEzEbbM
+ Bfk1q0zDUV9wltiOiycTgDMrKPS5Vw91yo1D/8xI3UX9q81kjY47NOX+ybZFm9cJAQNSuikkq
+ OuKMYi4KKN7im3QSCFxPoOKDUdilvMw9cn0Hn5gciPJAB039jYu6j6/Dt1/pPirm5ibCjiF1a
+ T9KJ04HeoHvqM7qGtXBnpZVjGFxJAqvGuj/iNwlwhizJaYuYX0J0el603yA8FKY4OFHAzFfFp
+ vnWgYQBjBUf4lKNnwgwjQSO44ex607ayICDFF6WfrACbe/s8Apd7xdTe4MFcECJpfdUyDcX4k
+ fB2oi0lLrNQ14iLXmSb7UZJsBWi6e2ZspUlgKWKdoSWGKZkgwMm7klVIbUdIDyij29XkM+9UR
+ uQfDU/hJBQMFGEizptpN0D2zqHDQPZd94jsQL/rFffDpPGT7XFOIpDUN4KEzIO9FTNgZJeGQP
+ Zkx0HrpZZIvS24eI4YiyHgD2xJUWcfJwcxenlD+iTCSBOfN4HmODD
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 14 Jun 2019 11:23:15 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Wed, 12 Jun 2019 09:12:47 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Fri, 14 Jun 2019 11:23:11 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: cocci@systeme.lip6.fr
-Subject: Re: [Cocci] =?utf-8?q?Wider_usage_of_=E2=80=9Cfresh_identifiers?=
- =?utf-8?b?4oCdPw==?=
+Cc: Michal Marek <michal.lkml@markovi.net>,
+        Nicolas Palix <nicolas.palix@imag.fr>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        cocci@systeme.lip6.fr
+Subject: [Cocci] [PATCH] drivers: Inline code in
+ devm_platform_ioremap_resource() from two functions
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -141,19 +153,78 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-> Apparently I'm missing this obscure line in the documentation:
->
-> "Fresh identifier metavariables must only be used in + code."
->
-> Any suggestions on how to work around this, other than use Python?
+From: Markus Elfring <elfring@users.sourceforge.net>
+Date: Fri, 14 Jun 2019 11:05:33 +0200
 
-Would you get into the mood to adjust this software situation any more?
-(Increase OCaml development?)
+Two function calls were combined in this function implementation.
+Inline corresponding code so that extra error checks can be avoided here.
 
-How do you think about to check the mentioned restriction in more detail?
+Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+---
+ drivers/base/platform.c | 39 ++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 34 insertions(+), 5 deletions(-)
 
-Regards,
-Markus
+diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+index 4d1729853d1a..baadca72f949 100644
+--- a/drivers/base/platform.c
++++ b/drivers/base/platform.c
+@@ -80,8 +80,8 @@ struct resource *platform_get_resource(struct platform_device *dev,
+ EXPORT_SYMBOL_GPL(platform_get_resource);
+
+ /**
+- * devm_platform_ioremap_resource - call devm_ioremap_resource() for a platform
+- *				    device
++ * devm_platform_ioremap_resource
++ * Achieve devm_ioremap_resource() functionality for a platform device
+  *
+  * @pdev: platform device to use both for memory resource lookup as well as
+  *        resource management
+@@ -91,10 +91,39 @@ EXPORT_SYMBOL_GPL(platform_get_resource);
+ void __iomem *devm_platform_ioremap_resource(struct platform_device *pdev,
+ 					     unsigned int index)
+ {
+-	struct resource *res;
++	u32 i;
+
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, index);
+-	return devm_ioremap_resource(&pdev->dev, res);
++	for (i = 0; i < pdev->num_resources; i++) {
++		struct resource *res = &pdev->resource[i];
++
++		if (resource_type(res) == IORESOURCE_MEM && index-- == 0) {
++			struct device *dev = &pdev->dev;
++			resource_size_t size = resource_size(res);
++			void __iomem *dest;
++
++			if (!devm_request_mem_region(dev,
++						     res->start,
++						     size,
++						     dev_name(dev))) {
++				dev_err(dev,
++					"can't request region for resource %pR\n",
++					res);
++				return IOMEM_ERR_PTR(-EBUSY);
++			}
++
++			dest = devm_ioremap(dev, res->start, size);
++			if (!dest) {
++				dev_err(dev,
++					"ioremap failed for resource %pR\n",
++					res);
++				devm_release_mem_region(dev, res->start, size);
++				dest = IOMEM_ERR_PTR(-ENOMEM);
++			}
++
++			return dest;
++		}
++	}
++	return IOMEM_ERR_PTR(-EINVAL);
+ }
+ EXPORT_SYMBOL_GPL(devm_platform_ioremap_resource);
+ #endif /* CONFIG_HAS_IOMEM */
+--
+2.22.0
+
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
