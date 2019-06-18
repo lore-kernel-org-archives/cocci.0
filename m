@@ -2,139 +2,88 @@ Return-Path: <SRS0=bRnq=UR=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E5C0C31E51
-	for <cocci@archiver.kernel.org>; Tue, 18 Jun 2019 08:10:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70D74C31E51
+	for <cocci@archiver.kernel.org>; Tue, 18 Jun 2019 09:36:04 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 341852147A
-	for <cocci@archiver.kernel.org>; Tue, 18 Jun 2019 08:10:54 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="QrECzH4V"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 341852147A
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
+	by mail.kernel.org (Postfix) with ESMTPS id A58A5206B7
+	for <cocci@archiver.kernel.org>; Tue, 18 Jun 2019 09:36:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A58A5206B7
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=metux.net
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x5I8Agmi004579;
-	Tue, 18 Jun 2019 10:10:42 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x5I9ZmYm019974;
+	Tue, 18 Jun 2019 11:35:49 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 8301D7779;
-	Tue, 18 Jun 2019 10:10:42 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id CDBD77779;
+	Tue, 18 Jun 2019 11:35:48 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id B65C27767
- for <cocci@systeme.lip6.fr>; Tue, 18 Jun 2019 10:10:40 +0200 (CEST)
-Received: from mout.web.de (mout.web.de [212.227.15.3])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x5I8AexA013732;
- Tue, 18 Jun 2019 10:10:40 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1560845436;
- bh=luV6ng6R5qVzhKd1r4Ri/NWqzzI0jCOF2KXvd5TbztA=;
- h=X-UI-Sender-Class:Subject:To:References:Cc:From:Date:In-Reply-To;
- b=QrECzH4VHkchti0Jx6ZsxdDG8bqRYYnqwlTEatjL/gveQaxOSpW2lDhuth7e/CHT8
- yyALkJWkQ5ULbVxjuHqGmQ/3o1ozgK/dBzh+BqNooLuLsGYIeL2esR56LHvMCLTo2j
- JboSsUP0Y2OT6/JM1ncLFwzA5cfOaKu0vrmFqXfE=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([93.133.86.175]) by smtp.web.de (mrweb002
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0Mg7Vd-1i0ZKg3NbR-00NUvb; Tue, 18
- Jun 2019 10:10:35 +0200
-To: Julia Lawall <julia.lawall@lip6.fr>
-References: <f9e28910-d42b-cdea-31f4-1b084db33023@web.de>
- <alpine.DEB.2.21.1906162214390.2537@hadrien>
- <bbf7e602-0a78-9595-31b1-b4dc70195df2@web.de>
- <alpine.DEB.2.21.1906170747030.2965@hadrien>
- <20258ea9-f69b-a0c2-01ed-e3ee8681bdf0@web.de>
- <alpine.DEB.2.21.1906170807290.2965@hadrien>
- <f66261cf-b6d1-5b2c-7756-a17585cc0ce6@web.de>
- <alpine.DEB.2.21.1906170830240.2965@hadrien>
- <c5a19a87-4948-196c-4f74-872c207061ed@web.de>
- <alpine.DEB.2.20.1906170938530.3699@hadrien>
- <edbc59ca-2c16-bd0c-df27-ec2b9983d0e7@web.de>
- <alpine.DEB.2.20.1906180936090.3707@hadrien>
-From: Markus Elfring <Markus.Elfring@web.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- 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 FEE=
-Message-ID: <fc4109fa-d6e6-c826-bc65-fa137c9cd6b0@web.de>
-Date: Tue, 18 Jun 2019 10:10:35 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.1
+ by systeme.lip6.fr (Postfix) with ESMTPS id 58BCC7767
+ for <cocci@systeme.lip6.fr>; Tue, 18 Jun 2019 11:35:47 +0200 (CEST)
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x5I9Zju2014629;
+ Tue, 18 Jun 2019 11:35:46 +0200 (CEST)
+Received: from [192.168.1.110] ([95.114.66.109]) by mrelayeu.kundenserver.de
+ (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis) id
+ 1MALql-1hkZRC0XyV-00Bwv7; Tue, 18 Jun 2019 11:35:37 +0200
+To: Markus Elfring <Markus.Elfring@web.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+References: <20190406061112.31620-1-himanshujha199640@gmail.com>
+ <f09006a3-691c-382a-23b8-8e9ff5b4a5f1@web.de>
+ <alpine.DEB.2.21.1906081925090.2543@hadrien>
+ <7b4fe770-dadd-80ba-2ba4-0f2bc90984ef@web.de>
+ <f573b2d3-11d0-92b5-f8ab-4c4b6493e152@metux.net>
+ <032e347f-e575-c89c-fa62-473d52232735@web.de>
+ <910a5806-9a08-adf4-4fba-d5ec2f5807ff@metux.net>
+ <efc38197-f846-142d-fbaf-93327c2669c9@web.de>
+From: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
+Organization: metux IT consult
+Message-ID: <714a38fe-a733-7264-bb06-d94bd58a245a@metux.net>
+Date: Tue, 18 Jun 2019 11:35:34 +0200
+User-Agent: Mozilla/5.0 (X11; Linux i686 on x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.2.1
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.20.1906180936090.3707@hadrien>
+In-Reply-To: <efc38197-f846-142d-fbaf-93327c2669c9@web.de>
 Content-Language: en-US
-X-Provags-ID: V03:K1:kkPEOCIabvs653qvPqHlEBh253CywQesqS0ViyvF90CZjBvPjpa
- vgIkjn74iJbJBaG+q7DkYu3/0+A6bbFFavOtOhHS6R0ONqxUxCY+8z5nas7in3LIgEMtY67
- XJmcwut3vxHESZ5sTeNrobjWP7esjDIy8QC+58I1RABcjrLPreGGFUC820qEfy6oB+2aSNR
- tx/fa4sFg8G8U4xf+Uabw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:uAKHoWq/mik=:mWHDs77CiFF9/UzoMP3ut2
- 0Pwm/e//oaDBBSuQR97vldeN4CrX+hH4Hd6pRwyYcu+1vjF8iBDlVp9nYCSH8VCz57ITFYOLx
- zuGCLd2tPrshPEWbTAfQSJ0m5kL6NmTtGawz+PWd8BicX2Av9FccYLXGgAA/TmtuGIYQE7HJU
- V2SghzJJDZYjYy78oWlICNL9238QzJhjIunrOUNjUe88H8rYZw1X3DIUmcsqpbOGViW1kYYRM
- +mLm2wM6qXH48fZrqyPcxPpmD4EMV5GvfVk4NFVvP2g+sWbyPbyM8SAMlslJdj7lpEfSbmPnc
- ckqPAbkCwQ6ntYrUrm/roxZZbouGlEPq8XCMiwJkPRVHzZwFtdLUQw19X3esgakwkHtMUXV6S
- 3iYxCHniUpVcD9x7vyZ418S+VV8PA22Ck+5cTGldG1Z90A/WMfWzuG1t3fhCPkX67rgaj4Ykn
- HR3zYM52lNm/YvFM3tzdA/9fNDaj+zMXMltvVH695geKJFuVRwLpdvhpF3GeMJad+ibaYEhCj
- ik25lt2z2tuaw++eJihQuEOoicx6JtCFMzkVjALQbo4ehmujE1gg1CFfaxRxzor1IJIhE/ixc
- bkzrpPhWIcwNwa/K7GUuw/NauyYHlT1cxmK1HmcPZjQKiSGUg+UV0vSNoiA1tHXTyI1Tkg5AF
- UphR4RxnMqOLOyi37ogYO1ha+FRfptkWeS5NLsz/WgNAtAV3gPmc63rwjmSucsCBqwaHiplFG
- wiHJ95TH5shnKsNmc29q3phrRGNQ6GB6bYtqAIsGlPMR3QmykoqgPduTJxaf/Yg6J8HkrujtK
- z6ii7wMiDwZv2t3S26CAjS1eIr+vMP4ZqFtdr4uBeDfwIbXTYTksAtEo0BfsCHSU5KBRZG2Hf
- LOmGS+EZeLaLzsxB/mvQJ95MLLVscUhF2VP6iXTmq/2BFE/YoaV6hOjCulZY6HxkcIRT2fyW2
- H12+laqYvOZeNL7a2HuQZbMjNjmNJJMICmVO5zw+At4f0RWxYqidj
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 18 Jun 2019 10:10:43 +0200 (CEST)
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Tue, 18 Jun 2019 10:10:40 +0200 (CEST)
+X-Provags-ID: V03:K1:QGOge7wGLS9wYOerll1EkGFgYhDGxxcXgNUpFw4ODbRJSI2IvQu
+ EgNQDoUgqQPHmht+B4xha2yiDDCKlybReidxeoCxJ+rwoIdIkF5oOJWDdQN/PLJCYmtwsdY
+ +k18JXBNva47Mqa/rQYAaiK0ltc20AueHqyQs7YbJfXMYwzLgf15a5PbvYUgkskfDAZUZwZ
+ fKheijEjcUDc9U6yv4onQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:D189xkVVdIU=:GM0TjioBmaopMMZ9spYJwQ
+ /GhJviRrSe4I/q2z8eiefDW9PTfL5f4N4KVWWRcVEqHG9mLc0DA99q6Y0ju2o0fUoCberydJX
+ 4BC4/bu3rJdvu/cP47IU4PTARHfFiUK45y6i7RwQYXgVZn9JoDM3W+XkPI5iPEPEATyCJTr48
+ HOHBKoIO3s8E1tB31GqfjnFmIvI+sfnyNErcJfWbPyz+lzk6bhrmAV9tWvWTElDitBNyMtcrE
+ /nw5ALsfbLExblh5UGhOHQ2uC6108yz0eUy7apSIDNa5rgX00meSVXZPR78zyD0uggmsY5ucD
+ VkoGTI2PltiXzWFHICPdnK3bkGqXL5Z0Vce6aLH6Vc9Zea+25eUhtIIP6A94NQTTFE8XAronH
+ WfI2YM+T6hbasa7Gmv/S412YZJot2Tgwz+Q2lwX1qIcdhTjVTbyjlDvjRWHQdsIhR2mICxgJE
+ Bw8X/o9kRGQaN3X9JC1CIYEHsuPZyPQnjYBH/4a80KApu/eVGNztSLllSfiGIX3mNFxnfKHOd
+ DHt36lWR3wnKxVUDh7DdQl/87N9x2X2O9Q6+JJ1QLTULsRtXOlRhT+TwSNhG2Ub0GGtTkZa3E
+ jyHeGe3ZBj+bR7qPT9nMsJtLr6/o3t26k1xbdQYYSowkC7oC+qFpz3cPNUwBIaukQsuKpSVoE
+ a6OxgLI13fyHWNRDnPsF+A7xdgMCyygZ+k/QSX3mWeb+TTNxLPtRvZA1YFE1kver6JbACU4If
+ wxOR78EAJ7zu1ExTKYfWAm57352UHhTpWexv9GOB2cuxephEghAJ7PqnbnA=
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 18 Jun 2019 11:35:49 +0200 (CEST)
+X-Greylist: IP, sender and recipient auto-whitelisted, not delayed by
+ milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]);
+ Tue, 18 Jun 2019 11:35:46 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Coccinelle <cocci@systeme.lip6.fr>
-Subject: Re: [Cocci] Checking for a null pointer with SmPL
+Cc: Michal Marek <michal.lkml@markovi.net>,
+        Nicolas Palix <nicolas.palix@imag.fr>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        cocci@systeme.lip6.fr
+Subject: Re: [Cocci] drivers: Inline code in
+ devm_platform_ioremap_resource() from two functions
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -146,22 +95,64 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-PiBJZiB5b3UgdHVybiBvZmYgaXNvbW9ycGhpc21zLCBpdCB3aWxsIG9ubHkgbWF0Y2ggZXhhY3Rs
-eSB3aGF0IHlvdSBoYXZlIHdyaXR0ZW4uCgpUaGlzIHNldHRpbmcgY2FuIG9jY2FzaW9uYWxseSBi
-ZSBhcHByb3ByaWF0ZS4KCgo+IElzb21vcnBoaXNtcyBoYXZlIGEgY29zdCwgc28gdGhlIHByb3Zp
-ZGVkIGlzb21vcnBoaXNtIG9ubHkgY29udmVydHMgIVggdG8KPiBYID09IE5VTEwgd2hlbiBYIGlz
-IGEgcG9pbnRlci4gIElmIHlvdSB3YW50IHRvIG1ha2UgYW4gaXNvbW9ycGhpc20gdGhhdAo+IGRv
-ZXMgc29tZXRoaW5nIGVsc2UsIHBsZWFzZSBmZWVsIGZyZWUuCgpJZiBkYXRhIHR5cGUgaW5mb3Jt
-YXRpb24gY2FuIG5vdCBiZSB0YWtlbiBpbnRvIGFjY291bnQgZm9yIHRoZSB0cmFuc2Zvcm1hdGlv
-bgpvZiBhIHNvdXJjZSBjb2RlIHNlYXJjaCBzcGVjaWZpY2F0aW9uIGF0IHRoaXMgcG9pbnQsIGl0
-IGNhbiBiZWNvbWUgaW50ZXJlc3RpbmcKdG8gcmVhY3RpdmF0ZSBzZWxlY3RlZCDigJxpc29tb3Jw
-aGlzbeKAnSBydWxlcyBvbiBkZW1hbmQgb25seSBhZnRlciB0eXBlIGluZm9ybWF0aW9uCmlzIGF2
-YWlsYWJsZSBhdCBhIGxhdGVyIGRhdGEgcHJvY2Vzc2luZyBzdGVwLgoKUmVnYXJkcywKTWFya3Vz
-Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCkNvY2NpIG1h
-aWxpbmcgbGlzdApDb2NjaUBzeXN0ZW1lLmxpcDYuZnIKaHR0cHM6Ly9zeXN0ZW1lLmxpcDYuZnIv
-bWFpbG1hbi9saXN0aW5mby9jb2NjaQo=
+On 18.06.19 07:37, Markus Elfring wrote:
+>>> Two function calls were combined in this function implementation.
+>>> Inline corresponding code so that extra error checks can be avoided here.
+>>
+>> What exactly is the purpose of this ?
+> 
+> I suggest to take another look at the need and relevance of involved
+> error checks in the discussed function combination.
+
+Sorry, don't have the time for guessing and trying to reproduce your
+thoughts. That's why we have patch descriptions / commit messages.
+It would be a lot easier for all of us if you just desribe the exact
+problem you'd like to solve and your approach to do so.
+
+>> Looks like a notable code duplication ...
+> 
+> This can be.
+
+I doubt that code duplication is appreciated, as this increases the
+maintenance overhead. (actually, we're usually trying to reduce that,
+eg. by using lots of generic helpers).
+
+>> I thought we usually try to reduce this, instead of introducing new ones.
+> 
+> Would you like to check the software circumstances once more
+> for the generation of a similar code structure by a C compiler
+> (or optimiser)?
+
+As said: unfortunately, I don't have the time to do that - you'd have to
+tell us, what exactly you've got in mind.
+
+If it's just about some error checks which happen to be redundant in a
+particular case, you'll have to show that this case is a *really* hot
+path (eg. irq, syscall, scheduling, etc) - but I don't see that here.
+
+What's the exact scenario you're trying to optimize ? Any actual
+measurements on how your patch improves that ?
+
+
+Look, I understand that you'd like to squeeze out maximum performance,
+but this has to be practically maintainable. I could list a lot of
+things that I don't need in particular use cases and would like to
+introduce build knobs for, but I have to understand that maintainers
+have to be pretty reluctant towards those things.
+
+
+--mtx
+
+-- 
+Enrico Weigelt, metux IT consult
+Free software and Linux embedded engineering
+info@metux.net -- +49-151-27565287
+_______________________________________________
+Cocci mailing list
+Cocci@systeme.lip6.fr
+https://systeme.lip6.fr/mailman/listinfo/cocci
