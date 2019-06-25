@@ -1,51 +1,52 @@
-Return-Path: <SRS0=9PSZ=UX=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=4esG=UY=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-5.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74DD7C43613
-	for <cocci@archiver.kernel.org>; Mon, 24 Jun 2019 12:51:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8125DC48BD5
+	for <cocci@archiver.kernel.org>; Tue, 25 Jun 2019 12:40:52 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B2CA1212F5
-	for <cocci@archiver.kernel.org>; Mon, 24 Jun 2019 12:51:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id A6232208CA
+	for <cocci@archiver.kernel.org>; Tue, 25 Jun 2019 12:40:51 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="HTiK4Zwi"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B2CA1212F5
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="gokfaP+g"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A6232208CA
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x5OCp8Qk021152;
-	Mon, 24 Jun 2019 14:51:08 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x5PCeatx026551;
+	Tue, 25 Jun 2019 14:40:37 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 9E18176AC;
-	Mon, 24 Jun 2019 14:51:08 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 046D87770;
+	Tue, 25 Jun 2019 14:40:36 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 073F27482
- for <cocci@systeme.lip6.fr>; Mon, 24 Jun 2019 14:51:07 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 67F1E76AC
+ for <cocci@systeme.lip6.fr>; Tue, 25 Jun 2019 14:40:34 +0200 (CEST)
 Received: from mout.web.de (mout.web.de [212.227.15.14])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x5OCp4Ip013737
- for <cocci@systeme.lip6.fr>; Mon, 24 Jun 2019 14:51:05 +0200 (CEST)
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x5PCeWoJ005365
+ for <cocci@systeme.lip6.fr>; Tue, 25 Jun 2019 14:40:33 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1561380664;
- bh=Xtu1fkRDH5hzHZDZOV9Y3m+aw3ChrpWa+1hOy/YonPY=;
- h=X-UI-Sender-Class:To:From:Subject:Date;
- b=HTiK4Zwifh0n9RS8OnyPcVM7KST3kgY50vworcsHv/RSOardRcAgZnO2yarsUamtr
- sIdX8bsJ3njbIhb6D2yUyOUCtiZmWAa68juDEg2WZm7JZh07ajR6WKehkAZuog0+DK
- /2SYlBd/kZ290vh2FdhWE9PZiv6q0wKTg3ivK6TI=
+ s=dbaedf251592; t=1561466431;
+ bh=2l4T7IuC9e91d5x7BltUJc/7V5uH94CR0Xwcr6bIyII=;
+ h=X-UI-Sender-Class:Subject:From:To:References:Date:In-Reply-To;
+ b=gokfaP+gtL82LhfAVZ/njGUCVXRauQuEnTMLBihcCzoqznHHztYW4Re7Jn+EEAnyW
+ tV+anbT88Ofm7kX0eXhbJBcBb+ZvWQXtAqCMT1ri8ngAFTVHB8SLJjzZeAxdS4rWc9
+ D6yuseGBhv49rxMLDZVn9PRzvII+ybVe5g1f2R/g=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([93.131.148.79]) by smtp.web.de (mrweb004
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0MODW0-1hc6dv3r1Q-005Wwv for
- <cocci@systeme.lip6.fr>; Mon, 24 Jun 2019 14:51:04 +0200
-To: Coccinelle <cocci@systeme.lip6.fr>
+Received: from [192.168.1.2] ([2.244.103.88]) by smtp.web.de (mrweb002
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0Lakoa-1iQ8Ax2ur2-00kMtS for
+ <cocci@systeme.lip6.fr>; Tue, 25 Jun 2019 14:40:31 +0200
 From: Markus Elfring <Markus.Elfring@web.de>
+To: Coccinelle <cocci@systeme.lip6.fr>
+References: <43dc8f93-4c20-32da-f5c2-6f26bc4ef627@web.de>
 Openpgp: preference=signencrypt
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
@@ -90,37 +91,39 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <43dc8f93-4c20-32da-f5c2-6f26bc4ef627@web.de>
-Date: Mon, 24 Jun 2019 14:51:03 +0200
+Message-ID: <eb86530e-4d1b-c080-fc7c-341d24acb8ef@web.de>
+Date: Tue, 25 Jun 2019 14:40:18 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Language: en-US
-X-Provags-ID: V03:K1:af1ixxH7XzrqYq8xq0wnAiqrupWgvFboBgbXL2mB0FT02B5bhmj
- W7FIEgA5D2+r45mvT+Arm9xNslQ19vll7RcUQfghTcWafk6DmVvJ7stbxWZREyLAqpluYZi
- 7zhBlZXD3cpoEtoJGEVgi9aw9LEpejp7R7va6RqBFECxSzdIl/Z5a5JQBXwKHLVmOAcdjy4
- wHh9TprYwZeQs2QoBvnTw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:kuMv0i9qocA=:WgmiHPCknlX2wa6aByG14i
- 2+jMoiCC5XkdmSXWzB8Bl8OhVsCBIoJGuMArF7TJtg2E6gBHjYKy+bTR75z3RiuAMWgZjMSpb
- 7CFyuF9dqsX8OfAhpCjqsmtTKUuffgKZIrYl97AbRbwJUWr5e7SrxYGOjudhwzQp49I8CZxE2
- GQdIrot42QlgMe5sQPvRdBl+dTUbBciJzTMjpIho5jSz52aOvLDQ50nCR6UjoE/Mxmqcd7TkZ
- 57q2as/FBi+1MfWoPoqMO0U9aOJ1yldpmN5XbzGyimY8W6tUGUXY459HgsmvF6nBNAB6CEd2g
- X2MGBJoPf/NkpyE/e9orMQwuka7ZQ7s1ad2CAa7OgSma9FrLTt0cfn3AwZpDaUqZKn8bAru0v
- vPQaNbe/f3cgUnc00x9pREejFkBfv1TWSWkDW2aCqB3KfXKWqV2o8QhcaBwLeudFR176dktVf
- uZnNH9QZ6hUtUMRQgG1EgIrIhgBXueoZqK23HvUS/e/I0gTxEXGe8WUUhNNYjJKcgxbmqdHU5
- sNlqhQgVi6codBhDduGejD+xtMRRL59tFa6ChVLm3RpwCQwxdme24aV/jT1LmqjGQg4zxrtbe
- ZabhbrL/ClZvEfG3/zGjwm+vryph01uo/yWQ5hRRmNtXHpn1PTypTthjoDZIQM/IM9thCUWZ+
- t5ZzRpssv3V3WrjfF71eLkmGNMu+xMnUuyiEkstsgeRyqgqDaYVeRcSLeV8m+v7p9P12C2oet
- ueHOXbqxF1KuCPXaeX4xpBj6P6e38/pF1TnSiDuuPYeZ+E7TwpnGWrgMTTUp+dnxvi1DqtTqJ
- 6a1chaYpdeEbBmPWdP9Ef4rTAGQEfHc4w5fY5ChNhMTHgzK84P5ATj2dICp8tBC5ANcdSmH+L
- DgDqm3z0/syjKr8fqjtvqxx1dAMuSFdnj+HoLkljIHZhgpKDdJmtTeRw+LnPLYjZLQUdkXlTd
- Q4NR57nSpwJU2427MKpofzhLtLxT8UUP6G2YOTBoCVm0kufrPhk7q
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 24 Jun 2019 14:51:09 +0200 (CEST)
+In-Reply-To: <43dc8f93-4c20-32da-f5c2-6f26bc4ef627@web.de>
+Content-Language: en-GB
+X-Provags-ID: V03:K1:q9CxuIahMeLxcrt48pr7trZmsQbbSwYs0sobN88UZOQoj8r/+aZ
+ oRfEus1IDG8QwlTD1YJm9BMQ0EK/8JHdj4RkHGy9hVcAVcwESkg5XHk/iKi1ehBJbk6Ig4a
+ fPnrEzuwE0XkI1weyJzWiT3m4HSV9SKD8rVsRodRz5NZLi/n3s5rKjyw+quwF2dIyHopOBA
+ r4PryG54o8q7utw7dQYrg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:RgZw3PA4QMY=:gy0UbrTAShrGMe40ftOXZk
+ taQC6+BSPwhJUYiLvknVflN+6iJdGoxAy3xnaJSR5G6LVc3bneuG+KVRnC3B9MdAx4yEBcjmv
+ PGwoQbKnzSsPnwwE5i6hgB4F+g/STpBGQqKzCrf9nRMCAIF24+ZqF8TqEatGBWUNLBaZb0Azz
+ K+PSr0j51Wbvjqn+2PGlnI6i3sz0kDPqA1IW/4kTXn3MreUZ5T91P4j1e4dJkMPxviITS5t6B
+ 10bT9TKBGKaB6elir/b11gXjJXl0e4vVExsXrtYBhchH8Fd2Jh224gxJQ74JGn4UnDIEpO3jm
+ aB8aTBk9dP5ejHbNLEAioZhoLCP1XMQguIPceRHcHlWLp5o0TTgV1JmDIuAcpM+/hD6X2NibP
+ /TQtIN80GglpcpwkwRPrWgqwx+mEXjoQtpqFV/Zl9aC6kypTxGW5KliTDGzCh05zji4uJIB3l
+ 41vlEzaLOgEW81/t+sFJenKaAO1P9AHIUgl7NABUf5Y8ccL3LjW71Sq55GnGvwCmm/nCid3Z9
+ rmRYInD9uFROX8ZNbvLvzEeYYVLeGIJT8D7yI7vnNb62uzhgvFFxJGm94aXiUJ8yQSBJxr/H/
+ yxENyl4QLx6+wIc7Km1cnICanix6jT5ZgLt8syGUoUPk8uQRTSwI6qRKhulhzbHCzSz7QMXkq
+ YW8lgL+6TaVuqvtAfDFiw5TmrOk2ArGPjkkdBQVYX5HrQHokXAS7sjZzxJW+QZ4xt8CAnSTaa
+ y7/ZFOYn2suOaABu9aCpnfHpPpYul/t10icD9qLqnED66dyEcvk20BewaKDDm5SCuY4WkFPZG
+ 7hD+k99YWU0/uBONlo09jcBff+KMlDxhAWbcYhKcYHT/nfeyZSk1bwv6XMJz+V+p6nPEv766B
+ yR/FbrFopXXKjZKRxC56+p5KEGPPbUEspKFTny0a7kMgw/Gqp+pSribr9fhlRyMx23y7ksiCR
+ qHZTDgZe53S4yHyNzy8bOstObhcDxxP0QeG0nIWIsxTsL+0KPT1Qj
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 25 Jun 2019 14:40:37 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Mon, 24 Jun 2019 14:51:05 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Tue, 25 Jun 2019 14:40:33 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Subject: [Cocci] More precise distinction of types for source code searches?
+Subject: Re: [Cocci] More precise distinction of types for source code
+	searches?
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -137,22 +140,22 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Hello,
+> The expected difference can trigger the need to express this detail
+> by the usage of two identifiers based on the same metavariable type.
 
-The semantic patch language supports metavariables.
-It can occur then that a source code search should be performed for items
-which should be different while they belong still to the same data type.
-(If these items would be identical, the software situation would provide
-opportunities to simplify corresponding source code.)
+I guess that this wording should be clarified a bit more according to
+the current software development status around the semantic patch language.
+A selection of different metavariable types is supported already.
+https://github.com/coccinelle/coccinelle/blob/c6d7554edf7c4654aeae4d33c3f040e300682f23/docs/manual/cocci_syntax.tex#L199
 
-The expected difference can trigger the need to express this detail
-by the usage of two identifiers based on the same metavariable type.
+So it seems to be occasionally appropriate to use metavariables with
+the same type while different names are chosen then for the corresponding
+variable declaration.
 
 
-SmPL script example:
-@display@
+Another SmPL script example:
+@test@
 constant c1, c2;
-identifier x;
 @@
  x =
 *    c1
@@ -162,29 +165,20 @@ identifier x;
  ;
 
 
-Source file example:
-int main(void)
-{
-int x;
-x = 1;
-x = 0;
-return x;
-}
+Such a source code search specification is too generic so far
+when you would really like to determine if these assignments (or its elements)
+are equivalent or even identical (or not).
 
+I am looking again for possibilities to improve language distinctions here.
 
-The used constants are integers and additional properties can be expressed
-for such numbers. These properties can eventually handled with scripted
-SmPL constraints.
-But I have got the impression that other metavariable types provide even more
-software development challenges for safe distinction of relevant items.
+* How can a single metavariable remember a mapping to a previous instance
+  from its type?
 
-I would like to point the detail out once more that also these metavariables
-can be of the same kind then with the consequence that it is not guaranteed
-that such metavariables will only match different source code.
-The support for the introduction of additional subtypes on demand might be
-too limited by the evolving software.
+* How will it become possible to match only a subset of a known base type?
 
-How do you think about this use case?
+* How often do you want to exclude something because of a previous match with
+  a similar type?
+
 
 Regards,
 Markus
