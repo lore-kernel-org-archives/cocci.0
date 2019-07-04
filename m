@@ -4,48 +4,48 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-2.2 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E17FEC06513
-	for <cocci@archiver.kernel.org>; Thu,  4 Jul 2019 05:41:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EED24C0650E
+	for <cocci@archiver.kernel.org>; Thu,  4 Jul 2019 06:29:00 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1C1F421882
-	for <cocci@archiver.kernel.org>; Thu,  4 Jul 2019 05:41:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 659A121850
+	for <cocci@archiver.kernel.org>; Thu,  4 Jul 2019 06:29:00 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="dy/Qns8r"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1C1F421882
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="nYqcSrWH"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 659A121850
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x645fESS020378;
-	Thu, 4 Jul 2019 07:41:15 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x646Sg8u018320;
+	Thu, 4 Jul 2019 08:28:42 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id DC37B777A;
-	Thu,  4 Jul 2019 07:41:14 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 9EEB4777A;
+	Thu,  4 Jul 2019 08:28:42 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 039C77777
- for <cocci@systeme.lip6.fr>; Thu,  4 Jul 2019 07:41:13 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 2A7FB7777
+ for <cocci@systeme.lip6.fr>; Thu,  4 Jul 2019 08:28:41 +0200 (CEST)
 Received: from mout.web.de (mout.web.de [212.227.17.11])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x645f93P004235;
- Thu, 4 Jul 2019 07:41:10 +0200 (CEST)
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x646SbLO000016;
+ Thu, 4 Jul 2019 08:28:39 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1562218854;
- bh=k9TYF9HKZzXLhRxDny7GgaR04jhBQklys5OUyA9vKOo=;
- h=X-UI-Sender-Class:Subject:Cc:References:To:From:Date:In-Reply-To;
- b=dy/Qns8rnU32Yh8aTamyG4X4xMplOHlbhE/tYUPzDPo7UKJ1Vu3+b0391sEOFbWan
- DAJxcALS2uO9nDahC3EshchTNXsHaQNWeYg/EhT2/8PF7GYn9XPQPeteHoanSDc1Op
- 4XZTPpYW1FawwdeWuirADpd03Ps1jollomQmtsS4=
+ s=dbaedf251592; t=1562221703;
+ bh=MbtNPvoRrPuFTPRe6+pxo/0XtjQ94KUGUFi3SFMVjcU=;
+ h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+ b=nYqcSrWHNo+a6sFgEayjcz4PJp7N9AkU0Q1dxJ9R1DMgfBMoat7v6e1mTOalLGcHB
+ dtgUajBX6Pj2Ufskjn7qblaUoUEpmIVhMjZVfFcIWt3sMT//AyrofgXoZrpZjFzk8e
+ DocmfFlUiSFFKdxJG0JKTadcJf4ejBkeqxXbpIII=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([93.135.138.50]) by smtp.web.de (mrweb101
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0Ljrdd-1iFVHj0fiz-00bvap; Thu, 04
- Jul 2019 07:40:54 +0200
-References: <201907041041053843118@zte.com.cn>
-To: Wen Yang <wen.yang99@zte.com.cn>, cocci@systeme.lip6.fr
+Received: from [192.168.1.2] ([93.135.138.50]) by smtp.web.de (mrweb102
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0MSads-1i8JsY4Bgi-00Rbl1; Thu, 04
+ Jul 2019 08:28:23 +0200
+To: Wen Yang <wen.yang99@zte.com.cn>, Julia Lawall <julia.lawall@lip6.fr>
+References: <201907041103003504524@zte.com.cn>
 From: Markus Elfring <Markus.Elfring@web.de>
 Openpgp: preference=signencrypt
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
@@ -91,41 +91,42 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <44be5924-26ca-5106-aa25-3cbc3343aa2c@web.de>
-Date: Thu, 4 Jul 2019 07:40:41 +0200
+Message-ID: <cb490cf4-425b-ad33-935a-22c6f3bcc1d2@web.de>
+Date: Thu, 4 Jul 2019 08:28:19 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <201907041041053843118@zte.com.cn>
-Content-Language: en-US
-X-Provags-ID: V03:K1:NUL6USSBmBUdj3c+K1ytqEqNyKEsNC0L9lewvJevzjoFCdcoDMy
- hmUvqTJvetGjOp2mz7Pcn081BmWJT1IU/cXPupJGIOlhGUEieB9dz1xh1neRPtUUUtBnrrg
- Luz/L0sfXG/lTRK6BpvFsZHRCM1HfS1u+bJFMuv+UZ85DmzSAzMzPBOSvOZxOI/5yCie4XT
- KKqqHARkWGSh1F4Fygy/A==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:2RkVUiY/UBM=:q4sMI+xPchVHDgt15IfcNi
- JUTP/KP61AXKb/5Mg3zCxhr7XT8w/8neyByZniGpQlKfguR5ggI8kDb+1JvRISb2Sp6G0+c15
- MICTUPzYwEcQlpUylcJp1cipY8RhbRIVaFmo0k5ebnyWSpjK7oSoPLJeMB1fEjenpz8U+VwUd
- ytjX8BzEfLmDqWoghP4xPoBttxJQVwE6IiNAGyuK5nDPTAODrMmNNjIOWy0RVyH5JTvgPfz6T
- z2C/utClYG59DQaD2YKXBrkE48LRE9sWAfYN2onVPT8J9wfjwiSABMfyEATkbwdodkdXH/ZxL
- 5ewDM1zyCGHpEDh3k3/Pha+uN8xlFggaqFq+cWPosT5Oj68XxGSReLCEQLxMoYKeooVO1piTp
- MkaLTH2UdbDHTrm6OZETGFSQQNaQfJVQkXpTH32GMGEWGsMWZmoeIptvkj2I/uxRruqK8FxKh
- IbbqUK2rDlLDvJ41uTzgLlMw2E5ocMxH0JrsH2JRUL/OY4XQOF3wve+uLjw6HZxeRaV4yfKdb
- zr1QXvexB/14kSdXJ+JRIB86ofuxm4jjA7+luvNQc9hTru/zE3iQ86BKdBKmKjXNlGbH2P9ko
- lgdX+fHebqGHRtHI1YrDp7d/jFwTkegV3Br9iXDXSlOFpUK8X89DljVTj7slJAXqVp+VLSuhm
- 1cONOFeVv7ioFWbqMdbFriBCnG2R4IOOTtyuQHt46I+BfGTAxX1p8yvw2rl2jlRmbSDysdBRa
- UI/0XlHuuY1YAIyHL215coSDDExh57B4oS4No9jSxHupyPg/BOwy8Wdt6SDy2eOWfR/FPq9DZ
- Zr8Dpof9kPDGb+fobOJIvK10Z5/xDole3vWl96Dep4AlQ2/ZBKkjqoSW/BSP7OBfsgqR4jibq
- hCaN9XYwImZtNGDyX4lh93DVObwWiTRkfNXGAE4m/RMO8MgabBaspBirIor9ltg14IDWIGzK2
- LYfRcgnxOls5iaay5oDSnjvPLhZpp1dozuJoQCxa0gTrxruGH23MgtVCCBdb+qSXXNf0A37Ve
- dZV54oJLKOZLMlcxCrCBmJhh+bVrj9QiXJaxhrctfW8bhDif5Rf1tk0pso4FzEnrZAhhl9T5v
- QdA9RSfAqRUx72YW8neauhPGBK72mF/iyda
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 04 Jul 2019 07:41:15 +0200 (CEST)
+In-Reply-To: <201907041103003504524@zte.com.cn>
+Content-Language: en-GB
+X-Provags-ID: V03:K1:4vzGtNu0aMQBqWCg84JVzbwm0RsbOvQJ6nPp/XgA4k/llTJb7Jl
+ xVvqooyMYKV4KM+8NX0aDO2gRc1NUXp1ZfyFN6H1DERXK5syHBakhJaPxAwY4A+ymr7Hk2+
+ TcviAEy/DE0SF2hu9YS+QF14aYLVKNn3eUPpZNhjqv944tihjPFSN/jM3W1PGdTi+vAOD7q
+ WPX7qPoxKulkh2Aod3RvA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:fFq3V7cdEB0=:tT88dkszW18PN05YKj02w7
+ s/vDyHX6Y46LPJsVa8mtjAghzfgIoKj9+CF+8mkttX+8J21Fe1JbYyXDJWoyIk1XfhZTHbASg
+ +dLN28q/GpG54Pphkdu20dAe1KguAWf28KDo+7U5ITkPMm8e8aSkTSqSL5SlFyw5C5Zsj3Q+X
+ bijy+QHU8Id6mEOXyUi/6w/VMQz3MPnNxw8wX0PM3rob3+9yDGhzV8/ySBnu6JEewYvTXGxNk
+ cLpqNLVKCJf/mWBmTnLdoIM2+/1l6OV++7cCBcqOtOGW7zavItPqB3rUsgakOx8Wcdwdbhea8
+ kS5TJIRzfNOQLK9CgapO6xHxueos/LgBM0Jc+UfmdLxg2lWT9KvzAC7cY6YI6nTmjCfLQdqOs
+ gRuKCpEkqhP1xyGPk+I0sRbfLNJamu2onnLJkdhqhql/ZmkZ38brAQa0DA9FtLTwD/JdKWwHd
+ KT6MO8URWLDqEQ5DvRx8HuACUNK2nuh1Xm4+EdbPG402os6D+Y4HxGy8xmmBnLwER7St/u1EE
+ gZoXXn/CI4i58OVJkMlA/7AHpM2+VXoAhz5yfuSgvc13PhVdr9OJu25emcUHUzVpNlsc5WtHl
+ Hf2xLUs3C1GDo2gZ2MwuqOfAxSiys3JVQiBqA0+KNS/IodEPj5vw7UzOy7wSwzr7cs8euBUsS
+ jQSkIrjKok4fF1Tga2lloSMLZb9nQfyoUen895ftSOzNDv6orqB+qaAU82OPr3TCXH4C1hhcJ
+ eyj9E44AZlUOOtxk9CCkDkBJFLA5ZCDUhWzOBOElPeIub7teH0lNSht+Vod+gjA340X21GPqS
+ tpanaYlGn+OMIapM/7rkcGGkt3onFoIOSMf/yB2bxiEx9tr2C/wpoVEc42iiYgnLKbDOK/k4S
+ 6NisZQcVoZ2vDXeuzstq5mNWe6dreyYpKTZNxelCEbRKWlot0+PzZBWhXdMT9zHJHQ7JDPqfz
+ /PzEt1GAtI3NJxq4IAfFYj18cJNCPTmunRatQoldiErkSjAYXeuvVatIZgDYKSkNJOtmNvTwj
+ R8eQvchrlyB9UkMPbNOGeGOVMnMZb3T8G/BvvI83OHO52VlyO09kFqlldzIiu79QYLOPDx1EF
+ G226tORwUhpQ7b/Yeypt8QheDBYrpMd2uGC
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 04 Jul 2019 08:28:43 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Thu, 04 Jul 2019 07:41:10 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Thu, 04 Jul 2019 08:28:39 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: Yi Wang <wang.yi59@zte.com.cn>, Michal Marek <michal.lkml@markovi.net>,
-        Nicolas Palix <nicolas.palix@imag.fr>, linux-kernel@vger.kernel.org
+        Nicolas Palix <nicolas.palix@imag.fr>, linux-kernel@vger.kernel.org,
+        cocci@systeme.lip6.fr
 Subject: Re: [Cocci] [v2] coccinelle: semantic code search for missing
 	of_node_put
 X-BeenThere: cocci@systeme.lip6.fr
@@ -139,41 +140,32 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-PiBXZSB3aWxsIGFsc28gcHJvdmlkZSBhbiBleGFtcGxlIHdyaXR0ZW4gaW4gUHl0aG9uIGxhdGVy
-LgoKV2lsbCB0aGUgY29kZSBtb3ZlIGZyb20gdGhlIGNvbW1pdCBkZXNjcmlwdGlvbiBpbnRvIGEg
-ZmlsZQpmb3IgeW91ciBuZXh0IHBhdGNoIHZlcnNpb24/CgoKPiBXZSBmaXJzdCB1c2UgdGhpcyBz
-Y3JpcHQgdG8gZmluZCBvdXQgYWxsIHRoZSBmdW5jdGlvbiBuYW1lcyB0byBiZSBwcm9jZXNzZWQs
-CgpJIGFtIHN0aWxsIGN1cmlvdXMgb24gaG93IHRoZSBvdXRwdXQgZm9ybWF0IHNlbGVjdGlvbiB3
-aWxsIGJlY29tZSBjbGVhcmVyCmZvciB0aGUgcG90ZW50aWFsbHkgZGVzaXJlZCBhdXRvbWF0aWMg
-ZGF0YSBjb252ZXJzaW9uLgoKCj4gYW5kIHRoZW4gY29weSB0aGVzZSBmdW5jdGlvbiBuYW1lcyBp
-bnRvIHIxLgoKV291bGQgdGhpcyBhY3Rpb24gYmUgcGVyZm9ybWVkIGJ5IGFub3RoZXIgc29mdHdh
-cmUgYnVpbGQgc2NyaXB0PwoKCj4+PiArQGluaXRpYWxpemU6cHl0aG9uQAo+Pj4gK0BACj4+PiAr
-Cj4+PiArc2VlbiA9IHNldCgpCj4+PiArCj4+PiArZGVmIGFkZF9pZl9ub3RfcHJlc2VudCAocDEs
-IHAyKToKPj4KPj4gSXQgc2VlbXMgdGhhdCB5b3Ugd291bGQgbGlrZSB0byB1c2UgaXRlcmF0aW9u
-IGZ1bmN0aW9uYWxpdHkuCgpJIGFtIHdhaXRpbmcgb24gYW5vdGhlciBjb25zdHJ1Y3RpdmUgYW5z
-d2VyIGZvciB0aGlzIGltcGxlbWVudGF0aW9uIGRldGFpbC4KCgo+Pj4gK3ggPSBAcDFcKG9mX2Zp
-bmRfYWxsX25vZGVzXHwKPj4KPj4gSSB3b3VsZCBmaW5kIHRoaXMgU21QTCBkaXNqdW5jdGlvbiBl
-YXNpZXIgdG8gcmVhZCB3aXRob3V0IHRoZSB1c2FnZQo+PiBvZiBleHRyYSBiYWNrc2xhc2hlcy4K
-Pj4KPj4gK3ggPQo+PiArKG9mX+KApgo+PiArfG9mX+KApgo+PiArKUBwMSguLi4pOwo+Pgo+Pgo+
-PiBXaGljaCBzb3J0IGNyaXRlcmlhIHdlcmUgYXBwbGllZCBmb3IgdGhlIGdlbmVyYXRpb24gb2Yg
-dGhlIHNob3duCj4+IGZ1bmN0aW9uIG5hbWUgbGlzdD8KPgo+IEFzIGp1bGlhIHBvaW50ZWQgb3V0
-LCB5b3VyIGN1cnJlbnQgd3JpdGluZyBpcyBub3QgY29tcGlsZWQuCgoqIEl0IGNhbiBiZSBuZWVk
-ZWQgZm9yIGEgd2hpbGUgdG8gc3BlY2lmeSB0aGUgbWVudGlvbmVkIHBvc2l0aW9uIHZhcmlhYmxl
-CiAgYXQgYW4gb3RoZXIgcGxhY2UuCgoqIFdvdWxkIHlvdSBsaWtlIHRvIGFkanVzdCB0aGUgU21Q
-TCBjb2Rpbmcgc3R5bGUgaGVyZT8KCiogV2lsbCB0aGUgYXBwbGljYXRpb24gb2Ygc29ydCBjcml0
-ZXJpYSBiZSBjbGFyaWZpZWQgZm9yIHN1Y2ggaWRlbnRpZmllciBsaXN0cz8KCgo+Pj4gK2lmICh4
-ID09IE5VTEwgfHwgLi4uKSBTCj4+PiArLi4uIHdoZW4gIT0gZSA9IChUKXgKPj4+ICsgICAgd2hl
-biAhPSB0cnVlIHggPT0gTlVMTArigKYKPiBPdXIgcHJldmlvdXMgdmVyc2lvbiB1c2VkIHRoZSAi
-d2hlbiBhbnkiIGNsYXVzZSwgc28gd2UgbmVlZAo+ICJ3aGVuICE9IHRydWUgeCA9PSBOVUxMIi4K
-Ckkgc3VnZ2VzdCB0byByZWNvbnNpZGVyIGZ1cnRoZXIgYXNwZWN0cyBmb3Igc3VjaCBjb25zdHJh
-aW50cy4KCgo+IFdlIGNhbiBkZWxldGUgdGhpcyBjb2RlIGV4Y2x1c2lvbiBzcGVjaWZpY2F0aW9u
-ICBmb3IgdGhpcyB2ZXJzaW9uLgoKSSB3b3VsZCBmaW5kIGFub3RoZXIgYXNzaWdubWVudCBleGNs
-dXNpb24gbW9yZSBhcHByb3ByaWF0ZSBhdCB0aGlzIHBsYWNlLgoKUmVnYXJkcywKTWFya3VzCl9f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCkNvY2NpIG1haWxp
-bmcgbGlzdApDb2NjaUBzeXN0ZW1lLmxpcDYuZnIKaHR0cHM6Ly9zeXN0ZW1lLmxpcDYuZnIvbWFp
-bG1hbi9saXN0aW5mby9jb2NjaQo=
+> We tested and found that both <...x...> and <+... x ...+> variants work fine.
+
+Is the difference in the functionality from this SmPL construct clear already?
+
+
+> We use <... x ...> instead of <+... x ...+> here to eliminate the following false positives:
+
+Do we stumble on another software design challenge?
+
+For which function parameter will the specified variable be required finally?
+
+
+> 486 asd = v4l2_async_notifier_add_fwnode_subdev(
+> 487 &camss->notifier, of_fwnode_handle(remote), ---> v4l2_async_notifier_add_fwnode_subdev will pass remote to camss->notifier.
+> 488 sizeof(*csd));
+
+Should any more special cases be taken better into account?
+
+Regards,
+Markus
+_______________________________________________
+Cocci mailing list
+Cocci@systeme.lip6.fr
+https://systeme.lip6.fr/mailman/listinfo/cocci
