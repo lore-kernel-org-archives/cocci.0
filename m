@@ -2,80 +2,68 @@ Return-Path: <SRS0=JAIf=VD=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.5 required=3.0
+	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 359EEC0650E
-	for <cocci@archiver.kernel.org>; Sat,  6 Jul 2019 13:18:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1358C0650E
+	for <cocci@archiver.kernel.org>; Sat,  6 Jul 2019 13:39:28 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 74BEE20843
-	for <cocci@archiver.kernel.org>; Sat,  6 Jul 2019 13:18:33 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nifty.com header.i=@nifty.com header.b="MyY4GQM5"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 74BEE20843
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=socionext.com
+	by mail.kernel.org (Postfix) with ESMTPS id 054B72075B
+	for <cocci@archiver.kernel.org>; Sat,  6 Jul 2019 13:39:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 054B72075B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lip6.fr
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x66DIHqJ002368;
-	Sat, 6 Jul 2019 15:18:17 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x66DdFg5002763;
+	Sat, 6 Jul 2019 15:39:15 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 24D87777B;
-	Sat,  6 Jul 2019 15:18:17 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 551DB777B;
+	Sat,  6 Jul 2019 15:39:15 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id EFC5D777A
- for <cocci@systeme.lip6.fr>; Sat,  6 Jul 2019 15:18:14 +0200 (CEST)
-Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com
- [210.131.2.81])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x66DIDrN016371
- for <cocci@systeme.lip6.fr>; Sat, 6 Jul 2019 15:18:13 +0200 (CEST)
-Received: from mail-ua1-f49.google.com (mail-ua1-f49.google.com
- [209.85.222.49]) (authenticated)
- by conssluserg-02.nifty.com with ESMTP id x66DHt8H011689
- for <cocci@systeme.lip6.fr>; Sat, 6 Jul 2019 22:17:55 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com x66DHt8H011689
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
- s=dec2015msa; t=1562419076;
- bh=lkt34pKxsLaqteqRnzNAHUoXLSqpNK8tuJBHhve1u6k=;
- h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=MyY4GQM5U+waAw/qOsyaOyYkcwODHnlxFShswOqRKR0z44ld3On+auS3zxi2CDTQB
- GUdCEHZLU/ca6BSMogpLYFGVQlaAByl0rzLRbukxeVo8LbLYU5vniKeodIexx8VrNo
- RbHUzb1M550rQgYegVaHtiG6zLBqEA4lrkbFNg00Y1Kr80uJmxMk47DEdo7GH3xT3e
- yDz/wQQoqPK8v86pD5QGB+H/gWexV/ErNw6DJH8Uvl+99EhteWvKrXnajCWiGJz32w
- u4p+tc/B5i9Mruzdeoq1khaTT0BPdoFwlDrU8OX7q+C7TBWst5wqGahxmGK/Y60vvf
- qJZGWpvgGQ12g==
-X-Nifty-SrcIP: [209.85.222.49]
-Received: by mail-ua1-f49.google.com with SMTP id v18so3178873uad.12
- for <cocci@systeme.lip6.fr>; Sat, 06 Jul 2019 06:17:55 -0700 (PDT)
-X-Gm-Message-State: APjAAAXefwX05A9StLqo5qFvAIt58M6S4ye67DkeHjdXIP/A7V/5EzTG
- SroPSiILTAqGjM3NwxGZdfWlTpG7AjxjoKC+HY8=
-X-Google-Smtp-Source: APXvYqzQZ4eOtd5x95ZKMUQ/9lCpzBAvI2GlNaD5CsdRO8+OU8zEPPF96/7ZpZ/ZQ5xa0EdEP2X7DRb9nRyg5wps5io=
-X-Received: by 2002:ab0:70d9:: with SMTP id r25mr4487674ual.109.1562419074733; 
- Sat, 06 Jul 2019 06:17:54 -0700 (PDT)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 9918E777A
+ for <cocci@systeme.lip6.fr>; Sat,  6 Jul 2019 15:39:13 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr
+ (mail3-relais-sop.national.inria.fr [192.134.164.104])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x66DdC0g004830
+ for <cocci@systeme.lip6.fr>; Sat, 6 Jul 2019 15:39:12 +0200 (CEST)
+X-IronPort-AV: E=Sophos;i="5.63,458,1557180000"; d="scan'208";a="312640623"
+Received: from abo-12-105-68.mrs.modulonet.fr (HELO hadrien) ([85.68.105.12])
+ by mail3-relais-sop.national.inria.fr with
+ ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 Jul 2019 15:39:12 +0200
+Date: Sat, 6 Jul 2019 15:39:11 +0200 (CEST)
+From: Julia Lawall <julia.lawall@lip6.fr>
+X-X-Sender: jll@hadrien
+To: Masahiro Yamada <yamada.masahiro@socionext.com>
+In-Reply-To: <CAK7LNARTJpxRmQzx+vQGfOC5YFuw8QsRQ=_9=9E=g5p62UUf6g@mail.gmail.com>
+Message-ID: <alpine.DEB.2.21.1907061538580.2523@hadrien>
+References: <20190406061112.31620-1-himanshujha199640@gmail.com>
+ <alpine.DEB.2.21.1904060831120.4486@hadrien>
+ <alpine.DEB.2.21.1904060833160.4486@hadrien>
+ <CAK7LNARTJpxRmQzx+vQGfOC5YFuw8QsRQ=_9=9E=g5p62UUf6g@mail.gmail.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-References: <20190623072838.31234-1-kirr@nexedi.com>
-In-Reply-To: <20190623072838.31234-1-kirr@nexedi.com>
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Date: Sat, 6 Jul 2019 22:17:18 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAT2tt+pCX54=L9qN9pzZ+rCOQ5-9p-o1jMLa3GD9jhG8A@mail.gmail.com>
-Message-ID: <CAK7LNAT2tt+pCX54=L9qN9pzZ+rCOQ5-9p-o1jMLa3GD9jhG8A@mail.gmail.com>
-To: Kirill Smelkov <kirr@nexedi.com>
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 06 Jul 2019 15:18:17 +0200 (CEST)
-X-Greylist: Delayed for 00:58:40 by milter-greylist-4.4.3 (isis.lip6.fr
- [132.227.60.2]); Sat, 06 Jul 2019 15:18:14 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 06 Jul 2019 15:39:16 +0200 (CEST)
+X-Greylist: IP, sender and recipient auto-whitelisted, not delayed by
+ milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]);
+ Sat, 06 Jul 2019 15:39:12 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Logan Gunthorpe <logang@deltatee.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Bjorn Helgaas <helgaas@kernel.org>, cocci@systeme.lip6.fr,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [Cocci] [PATCH 1/2] coccinelle: api/stream_open: treat all
- wait_.*() calls as blocking
+Cc: kernel-janitors@vger.kernel.org, Michal Marek <michal.lkml@markovi.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Nicolas Palix <nicolas.palix@imag.fr>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        cocci@systeme.lip6.fr
+Subject: Re: [Cocci] [PATCH] coccinelle: api: add
+ devm_platform_ioremap_resource script
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -92,89 +80,184 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-On Sun, Jun 23, 2019 at 4:29 PM Kirill Smelkov <kirr@nexedi.com> wrote:
->
-> Previously steam_open.cocci was treating only wait_event_.* - e.g.
-> wait_event_interruptible - as a blocking operation. However e.g.
-> wait_for_completion_interruptible is also blocking, and so from this
-> point of view it would be more logical to treat all wait_.* as a
-> blocking point.
->
-> The logic of this change actually came up for real when
-> drivers/pci/switch/switchtec.c changed from using
-> wait_event_interruptible to wait_for_completion_interruptible:
->
->         https://lore.kernel.org/linux-pci/20190413170056.GA11293@deco.navytux.spb.ru/
->         https://lore.kernel.org/linux-pci/20190415145456.GA15280@deco.navytux.spb.ru/
->         https://lore.kernel.org/linux-pci/20190415154102.GB17661@deco.navytux.spb.ru/
->
-> For a driver that uses nonseekable_open with read/write having stream
-> semantic and read also calling e.g. wait_for_completion_interruptible,
-> running stream_open.cocci before this patch would produce:
->
->         WARNING: <driver>_fops: .read() and .write() have stream semantic; safe to change nonseekable_open -> stream_open.
->
-> while after this patch it will report:
->
->         ERROR: <driver>_fops: .read() can deadlock .write(); change nonseekable_open -> stream_open to fix.
->
-> Cc: Julia Lawall <Julia.Lawall@lip6.fr>
-> Cc: Logan Gunthorpe <logang@deltatee.com>
-> Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> Cc: Bjorn Helgaas <helgaas@kernel.org>
-> Signed-off-by: Kirill Smelkov <kirr@nexedi.com>
-> ---
 
-Applied to linux-kbuild. Thanks.
 
->  scripts/coccinelle/api/stream_open.cocci | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+On Sat, 6 Jul 2019, Masahiro Yamada wrote:
+
+> On Sat, Apr 6, 2019 at 3:34 PM Julia Lawall <julia.lawall@lip6.fr> wrote:
+> >
+> >
+> >
+> > On Sat, 6 Apr 2019, Julia Lawall wrote:
+> >
+> > >
+> > >
+> > > On Sat, 6 Apr 2019, Himanshu Jha wrote:
+> > >
+> > > > Use recently introduced devm_platform_ioremap_resource
+> > > > helper which wraps platform_get_resource() and
+> > > > devm_ioremap_resource() together. This helps produce much
+> > > > cleaner code while removing local `struct resource` declaration.
+> > > >
+> > > > Signed-off-by: Himanshu Jha <himanshujha199640@gmail.com>
+> > >
+> > > Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+> > >
+> > > Thanks for taking up this issue.
+> >
+> > Maybe this should be
+> >
+> > Signed-off-by: Julia Lawall <julia.lawall@lip6.fr>
+> >
+> > since I contributed two lines to the script :)
 >
-> diff --git a/scripts/coccinelle/api/stream_open.cocci b/scripts/coccinelle/api/stream_open.cocci
-> index 350145da7669..12ce18fa6b74 100644
-> --- a/scripts/coccinelle/api/stream_open.cocci
-> +++ b/scripts/coccinelle/api/stream_open.cocci
-> @@ -35,11 +35,11 @@ type loff_t;
->  // a function that blocks
->  @ blocks @
->  identifier block_f;
-> -identifier wait_event =~ "^wait_event_.*";
-> +identifier wait =~ "^wait_.*";
->  @@
->    block_f(...) {
->      ... when exists
-> -    wait_event(...)
-> +    wait(...)
->      ... when exists
->    }
+> I will apply with Julia's Signed-off-by instead of Acked-by.
+> I will also add SPDX tag.
 >
-> @@ -49,12 +49,12 @@ identifier wait_event =~ "^wait_event_.*";
->  // XXX currently reader_blocks supports only direct and 1-level indirect cases.
->  @ reader_blocks_direct @
->  identifier stream_reader.readstream;
-> -identifier wait_event =~ "^wait_event_.*";
-> +identifier wait =~ "^wait_.*";
->  @@
->    readstream(...)
->    {
->      ... when exists
-> -    wait_event(...)
-> +    wait(...)
->      ... when exists
->    }
+> Is this OK?
+
+Yes, thanks.
+
+julia
+
+>
+>
+>
+> > julia
+> >
+> > >
+> > > julia
+> > >
+> > > > ---
+> > > >
+> > > > Tree wide changes has been tested through 0-day test service
+> > > > with build success.
+> > > >
+> > > > BUILD SUCCESS 74ebaaca5d14d3d9b03e911f0b4995b78a4d60f0
+> > > > tree/branch: https://github.com/himanshujha199640/linux-next  20190401-devm_platform_ioremap_resource-final
+> > > > branch HEAD: 74ebaaca5d14d3d9b03e911f0b4995b78a4d60f0  Coccinelle: api: Add devm_platform_ioremap_resource.cocci
+> > > >
+> > > > elapsed time: 385m
+> > > > configs tested: 162
+> > > >
+> > > >
+> > > > Stats:
+> > > > 916 files changed, 1028 insertions(+), 2921 deletions(-)
+> > > >
+> > > > Note: cases where the `struct resource *res` variable is
+> > > > used subsequently in the function have been ignored out because
+> > > > those cases produce:
+> > > >
+> > > > eg., drivers/bus/da8xx-mstpri.c
+> > > >
+> > > > warning: 'res' may be used uninitialized in this function [-Wmaybe-uninitialized]
+> > > >
+> > > > due to:
+> > > >     if (prio_descr->reg + sizeof(u32) > resource_size(res)) {
+> > > >
+> > > > which seems correct as `res` isn't initialized in the scope of
+> > > > the function(da8xx_mstpri_probe) and instead initialized inside:
+> > > >
+> > > >    void __iomem *devm_platform_ioremap_resource(struct platform_device *pdev,
+> > > >                                                 unsigned int index)
+> > > >    {
+> > > >            struct resource *res;
+> > > >
+> > > >            res = platform_get_resource(pdev, IORESOURCE_MEM, index);
+> > > >            return devm_ioremap_resource(&pdev->dev, res);
+> > > >    }
+> > > >    EXPORT_SYMBOL_GPL(devm_platform_ioremap_resource);
+> > > >
+> > > >
+> > > >  .../api/devm_platform_ioremap_resource.cocci  | 63 +++++++++++++++++++
+> > > >  1 file changed, 63 insertions(+)
+> > > >  create mode 100644 scripts/coccinelle/api/devm_platform_ioremap_resource.cocci
+> > > >
+> > > > diff --git a/scripts/coccinelle/api/devm_platform_ioremap_resource.cocci b/scripts/coccinelle/api/devm_platform_ioremap_resource.cocci
+> > > > new file mode 100644
+> > > > index 000000000000..a28274af14df
+> > > > --- /dev/null
+> > > > +++ b/scripts/coccinelle/api/devm_platform_ioremap_resource.cocci
+> > > > @@ -0,0 +1,63 @@
+> > > > +/// Use devm_platform_ioremap_resource helper which wraps
+> > > > +/// platform_get_resource() and devm_ioremap_resource() together.
+> > > > +///
+> > > > +// Confidence: High
+> > > > +// Copyright: (C) 2019 Himanshu Jha GPLv2.
+> > > > +// Copyright: (C) 2019 Julia Lawall, Inria/LIP6. GPLv2.
+> > > > +// Keywords: platform_get_resource, devm_ioremap_resource,
+> > > > +// Keywords: devm_platform_ioremap_resource
+> > > > +
+> > > > +virtual patch
+> > > > +virtual report
+> > > > +
+> > > > +@r depends on patch && !report@
+> > > > +expression e1, e2, arg1, arg2, arg3, arg4;
+> > > > +identifier id;
+> > > > +@@
+> > > > +
+> > > > +(
+> > > > +- id = platform_get_resource(arg1, arg2, arg3);
+> > > > +|
+> > > > +- struct resource *id = platform_get_resource(arg1, arg2, arg3);
+> > > > +)
+> > > > +  ... when != id
+> > > > +- e1 = devm_ioremap_resource(arg4, id);
+> > > > ++ e1 = devm_platform_ioremap_resource(arg1, arg3);
+> > > > +  ... when != id
+> > > > +? id = e2
+> > > > +
+> > > > +@r1 depends on patch && !report@
+> > > > +identifier r.id;
+> > > > +type T;
+> > > > +@@
+> > > > +
+> > > > +- T *id;
+> > > > +  ...when != id
+> > > > +
+> > > > +// ----------------------------------------------------------------------------
+> > > > +
+> > > > +@r2 depends on report && !patch@
+> > > > +identifier id;
+> > > > +expression e1, e2, arg1, arg2, arg3, arg4;
+> > > > +position j0;
+> > > > +@@
+> > > > +
+> > > > +(
+> > > > +  id = platform_get_resource(arg1, arg2, arg3);
+> > > > +|
+> > > > +  struct resource *id = platform_get_resource(arg1, arg2, arg3);
+> > > > +)
+> > > > +  ... when != id
+> > > > +  e1@j0 = devm_ioremap_resource(arg4, id);
+> > > > +  ... when != id
+> > > > +? id = e2
+> > > > +
+> > > > +// ----------------------------------------------------------------------------
+> > > > +
+> > > > +@script:python depends on report && !patch@
+> > > > +e1 << r2.e1;
+> > > > +j0 << r2.j0;
+> > > > +@@
+> > > > +
+> > > > +msg = "WARNING: Use devm_platform_ioremap_resource for %s" % (e1)
+> > > > +coccilib.report.print_report(j0[0], msg)
+> > > > --
+> > > > 2.17.1
+> > > >
+> > > >
+> > >
+> > _______________________________________________
+> > Cocci mailing list
+> > Cocci@systeme.lip6.fr
+> > https://systeme.lip6.fr/mailman/listinfo/cocci
+>
+>
 >
 > --
-> 2.20.1
-> _______________________________________________
-> Cocci mailing list
-> Cocci@systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+> Best Regards
+> Masahiro Yamada
+>
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
