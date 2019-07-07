@@ -2,96 +2,85 @@ Return-Path: <SRS0=SdPp=VE=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D5A0C48BDC
-	for <cocci@archiver.kernel.org>; Sun,  7 Jul 2019 12:40:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25493C48BDB
+	for <cocci@archiver.kernel.org>; Sun,  7 Jul 2019 18:20:38 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C5E6B206A3
-	for <cocci@archiver.kernel.org>; Sun,  7 Jul 2019 12:40:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2EF882082E
+	for <cocci@archiver.kernel.org>; Sun,  7 Jul 2019 18:20:36 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nifty.com header.i=@nifty.com header.b="BiKpB7J5"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C5E6B206A3
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=socionext.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=nexedi.com header.i=kirr@nexedi.com header.b="eOkYYoEn";
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mandrillapp.com header.i=@mandrillapp.com header.b="bO66F2uY"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2EF882082E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=nexedi.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x67CeU2r029771;
-	Sun, 7 Jul 2019 14:40:30 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x67IKDUA013748;
+	Sun, 7 Jul 2019 20:20:13 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 5455E76B5;
-	Sun,  7 Jul 2019 14:40:30 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 0EC3076B5;
+	Sun,  7 Jul 2019 20:20:13 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 4A30A76B2
- for <cocci@systeme.lip6.fr>; Sun,  7 Jul 2019 14:40:29 +0200 (CEST)
-Received: from shiva.jussieu.fr (shiva.jussieu.fr [134.157.0.129])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x67CeSAa028386
- for <cocci@systeme.lip6.fr>; Sun, 7 Jul 2019 14:40:28 +0200 (CEST)
-Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com
- [210.131.2.80])
- by shiva.jussieu.fr (8.15.2/jtpda-5.4) with ESMTP id x67CdXBq041907
- for <cocci@systeme.lip6.fr>; Sun, 7 Jul 2019 14:40:05 +0200 (CEST)
-X-Ids: 164
-Received: from mail-ua1-f46.google.com (mail-ua1-f46.google.com
- [209.85.222.46]) (authenticated)
- by conssluserg-01.nifty.com with ESMTP id x67CcrTQ026994
- for <cocci@systeme.lip6.fr>; Sun, 7 Jul 2019 21:38:54 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com x67CcrTQ026994
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
- s=dec2015msa; t=1562503134;
- bh=nrjqtdWdKb0YLVBdENA2teXagV7cGddSi8G95bRLscQ=;
- h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=BiKpB7J5guJX5/CaJ/CbFoeiUw3+khQRO4J3pOIoiTgpF5vFS6w0QUBrohHHdEiZw
- xMynpNvLy89WJqBQxCMATaulMcBu+6OfJPk42IbjjFMv8gkmboT1cqR2vgfKupqtFh
- n8JYKAf+9D2l0+Xqeq06N87CfLCmbbZ3E12GVUTfTcybzpdQy0RriWR68NbYvulvpH
- QcuKN4SHY95sVr7jUVKz1qbBdFigC9B68ZvkEhCw5hnuRkoE2zTLlp6LHGtIexF5jq
- PE5xhE90rB/PC6rQVndhnMpxuGiyVP65yjNYh2Fyyx3FeluoOu6EK3XbrLpDT/l3+j
- f2NpIMOl9JJVA==
-X-Nifty-SrcIP: [209.85.222.46]
-Received: by mail-ua1-f46.google.com with SMTP id a97so3865858uaa.9
- for <cocci@systeme.lip6.fr>; Sun, 07 Jul 2019 05:38:54 -0700 (PDT)
-X-Gm-Message-State: APjAAAVWy2OOa60FF5YdvtKUGD8VgmX3tTfeAAHanYLMoGyMBGEyu7zw
- rG075zzyEB/tgY0kepMZ7SwQO4QNLN467o1eNkM=
-X-Google-Smtp-Source: APXvYqy+su+SSqSwTlKPdJzW478US2CzEGH5+iDXkwg6uKSJwTmNd+jUZi0lJI3seXTNN+i5ii+Piloj6ymqN1HNcnQ=
-X-Received: by 2002:a9f:25e9:: with SMTP id 96mr7134067uaf.95.1562503133020;
- Sun, 07 Jul 2019 05:38:53 -0700 (PDT)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 35CEB76B2
+ for <cocci@systeme.lip6.fr>; Sun,  7 Jul 2019 20:20:10 +0200 (CEST)
+Received: from mail180-22.suw31.mandrillapp.com
+ (mail180-22.suw31.mandrillapp.com [198.2.180.22])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x67IK7jt010154
+ for <cocci@systeme.lip6.fr>; Sun, 7 Jul 2019 20:20:07 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; s=mandrill; d=nexedi.com;
+ h=From:Subject:To:Cc:Message-Id:References:In-Reply-To:Date:MIME-Version:Content-Type:Content-Transfer-Encoding;
+ i=kirr@nexedi.com; 
+ bh=IEkfr4YRUhLQp/HsBY74d4iNJyE2lakZV4Jo08VmuaA=;
+ b=eOkYYoEnGUWqIB0dbm6nCcKDIIjoxM4d+HhRgGETEvjlGfW7UgggueEiV4ZKgBm8ASPzz58BSXeN
+ IlmkkOBadR4II4eSBitdArJdpwPS/iD390IQP8SzJQQpZSq5HN0pZhZLS1Ya/MLN88HkPISXXNaV
+ qKalsjTLIFxcUuHIVbU=
+Received: from pmta03.mandrill.prod.suw01.rsglab.com (127.0.0.1) by
+ mail180-22.suw31.mandrillapp.com id h48rte22sc05 for <cocci@systeme.lip6.fr>;
+ Sun, 7 Jul 2019 18:20:06 +0000 (envelope-from
+ <bounce-md_31050260.5d2237d6.v1-78b079d6b41646bcbb6601139bb316a7@mandrillapp.com>)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandrillapp.com; 
+ i=@mandrillapp.com; q=dns/txt; s=mandrill; t=1562523606; h=From : 
+ Subject : To : Cc : Message-Id : References : In-Reply-To : Date : 
+ MIME-Version : Content-Type : Content-Transfer-Encoding : From : 
+ Subject : Date : X-Mandrill-User : List-Unsubscribe; 
+ bh=IEkfr4YRUhLQp/HsBY74d4iNJyE2lakZV4Jo08VmuaA=; 
+ b=bO66F2uYOXuv1h/WHJ+zyPIP0BmHtwh52THKQzlyoBeVJYgYEiyH2vKJe1xixzJMj+HUSH
+ i1ANXEJCPJgzylWHcGjxBZfFSG+5eR/vzKlLngs/6dGthQ8yIbvjM62NW4MqG15eTGOZSmTY
+ fBbQP5AV4cCTWK4SH/rwXwZu/9V9Q=
+From: Kirill Smelkov <kirr@nexedi.com>
+Received: from [87.98.221.171] by mandrillapp.com id
+ 78b079d6b41646bcbb6601139bb316a7; Sun, 07 Jul 2019 18:20:06 +0000
+To: Masahiro Yamada <yamada.masahiro@socionext.com>
+Message-Id: <20190707182002.GB25031@deco.navytux.spb.ru>
+References: <20190623072838.31234-1-kirr@nexedi.com>
+ <CAK7LNAT2tt+pCX54=L9qN9pzZ+rCOQ5-9p-o1jMLa3GD9jhG8A@mail.gmail.com>
+In-Reply-To: <CAK7LNAT2tt+pCX54=L9qN9pzZ+rCOQ5-9p-o1jMLa3GD9jhG8A@mail.gmail.com>
+X-Report-Abuse: Please forward a copy of this message, including all headers,
+ to abuse@mandrill.com
+X-Report-Abuse: You can also report abuse here:
+ http://mandrillapp.com/contact/abuse?id=31050260.78b079d6b41646bcbb6601139bb316a7
+X-Mandrill-User: md_31050260
+Date: Sun, 07 Jul 2019 18:20:06 +0000
 MIME-Version: 1.0
-References: <alpine.DEB.2.21.1907061538580.2523@hadrien>
- <de953581-7ae6-952c-3922-3d5b25f48e17@web.de>
-In-Reply-To: <de953581-7ae6-952c-3922-3d5b25f48e17@web.de>
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Date: Sun, 7 Jul 2019 21:38:17 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAT0kxA53k894sfRXOjcbyjj_mmY60JbKy5Lhi2qHJcC9g@mail.gmail.com>
-Message-ID: <CAK7LNAT0kxA53k894sfRXOjcbyjj_mmY60JbKy5Lhi2qHJcC9g@mail.gmail.com>
-To: Markus Elfring <Markus.Elfring@web.de>
-X-Miltered: at jchkmail2.reseau.jussieu.fr with ID 5D21E805.000 by Joe's
- j-chkmail (http : // j-chkmail dot ensmp dot fr)!
-X-j-chkmail-Enveloppe: 5D21E805.000 from
- conssluserg-01.nifty.com/conssluserg-01.nifty.com/210.131.2.80/conssluserg-01.nifty.com/<yamada.masahiro@socionext.com>
-X-Scores-Stats: 5D21E805.000 B=0.50000 L=0.20817 G=0.20817 Disagree Winner=PH
-X-Label-Query: YES
-X-j-chkmail-Score: MSGID : 5D21E805.000 on shiva.jussieu.fr : j-chkmail score
- : X : R=. U=. O=. B=0.208 -> S=0.208
-X-j-chkmail-Status: Ham
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 07 Jul 2019 14:40:31 +0200 (CEST)
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sun, 07 Jul 2019 14:40:29 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 07 Jul 2019 20:20:13 +0200 (CEST)
+X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [132.227.60.2]); Sun, 07 Jul 2019 20:20:07 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Nicolas Palix <nicolas.palix@imag.fr>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        kernel-janitors@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Coccinelle <cocci@systeme.lip6.fr>
-Subject: Re: [Cocci] Coccinelle: api: add devm_platform_ioremap_resource
-	script
+Cc: Logan Gunthorpe <logang@deltatee.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Bjorn Helgaas <helgaas@kernel.org>, cocci@systeme.lip6.fr,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [Cocci] [PATCH 1/2] coccinelle: api/stream_open: treat all
+	wait_.*() calls as blocking
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -103,24 +92,99 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-T24gU3VuLCBKdWwgNywgMjAxOSBhdCA2OjU2IFBNIE1hcmt1cyBFbGZyaW5nIDxNYXJrdXMuRWxm
-cmluZ0B3ZWIuZGU+IHdyb3RlOgo+Cj4gPj4gSSB3aWxsIGFwcGx5IHdpdGggSnVsaWEncyBTaWdu
-ZWQtb2ZmLWJ5IGluc3RlYWQgb2YgQWNrZWQtYnkuCj4KPiA+PiBJIHdpbGwgYWxzbyBhZGQgU1BE
-WCB0YWcuCj4KPiA+Pgo+Cj4gPj4gSXMgdGhpcyBPSz8KPgo+Cj4gPgo+ID4gWWVzLCB0aGFua3Mu
-Cj4KPgo+IFdpbGwgdGhlIGNsYXJpZmljYXRpb24gZm9yIGZvbGxvd2luZyBpbXBsZW1lbnRhdGlv
-biBkZXRhaWxzIGdldCBhbnkgbW9yZQo+IHNvZnR3YXJlIGRldmVsb3BtZW50IGF0dGVudGlvbj8K
-PiBodHRwczovL3N5c3RlbWUubGlwNi5mci9waXBlcm1haWwvY29jY2kvMjAxOS1KdW5lLzAwNTk3
-NS5odG1sCj4gaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGttbC83YjRmZTc3MC1kYWRkLTgwYmEt
-MmJhNC0wZjJiYzkwOTg0ZWZAd2ViLmRlLwo+Cj4gKiBUaGUgZmxhZyDigJxJT1JFU09VUkNFX01F
-TeKAnQo+Cj4gKiBFeGNsdXNpb24gb2YgdmFyaWFibGUgYXNzaWdubWVudHMgYnkgU21QTCB3aGVu
-IGNvbnN0cmFpbnRzCgoKT0ssIGZvciB0aGlzIHJlZmFjdG9yaW5nIHRvIGhhcHBlbiwKdGhlIHNl
-Y29uZCBhcmd1bWVudCBzaG91bGQgYmUgSU9SRVNPVVJDRV9NRU0KaW5zdGVhZCBvZiBnZW5lcmlj
-ICdhcmcyJy4KCkhpbWFuc2h1LApXaWxsIHlvdSBzZW5kIHYyPwoKCgotLSAKQmVzdCBSZWdhcmRz
-Ck1hc2FoaXJvIFlhbWFkYQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fXwpDb2NjaSBtYWlsaW5nIGxpc3QKQ29jY2lAc3lzdGVtZS5saXA2LmZyCmh0dHBzOi8v
-c3lzdGVtZS5saXA2LmZyL21haWxtYW4vbGlzdGluZm8vY29jY2kK
+On Sat, Jul 06, 2019 at 10:17:18PM +0900, Masahiro Yamada wrote:
+> On Sun, Jun 23, 2019 at 4:29 PM Kirill Smelkov <kirr@nexedi.com> wrote:
+> >
+> > Previously steam_open.cocci was treating only wait_event_.* - e.g.
+> > wait_event_interruptible - as a blocking operation. However e.g.
+> > wait_for_completion_interruptible is also blocking, and so from this
+> > point of view it would be more logical to treat all wait_.* as a
+> > blocking point.
+> >
+> > The logic of this change actually came up for real when
+> > drivers/pci/switch/switchtec.c changed from using
+> > wait_event_interruptible to wait_for_completion_interruptible:
+> >
+> >         https://lore.kernel.org/linux-pci/20190413170056.GA11293@deco.navytux.spb.ru/
+> >         https://lore.kernel.org/linux-pci/20190415145456.GA15280@deco.navytux.spb.ru/
+> >         https://lore.kernel.org/linux-pci/20190415154102.GB17661@deco.navytux.spb.ru/
+> >
+> > For a driver that uses nonseekable_open with read/write having stream
+> > semantic and read also calling e.g. wait_for_completion_interruptible,
+> > running stream_open.cocci before this patch would produce:
+> >
+> >         WARNING: <driver>_fops: .read() and .write() have stream semantic; safe to change nonseekable_open -> stream_open.
+> >
+> > while after this patch it will report:
+> >
+> >         ERROR: <driver>_fops: .read() can deadlock .write(); change nonseekable_open -> stream_open to fix.
+> >
+> > Cc: Julia Lawall <Julia.Lawall@lip6.fr>
+> > Cc: Logan Gunthorpe <logang@deltatee.com>
+> > Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> > Cc: Bjorn Helgaas <helgaas@kernel.org>
+> > Signed-off-by: Kirill Smelkov <kirr@nexedi.com>
+> > ---
+> 
+> Applied to linux-kbuild. Thanks.
+
+Thanks.
+
+
+> >  scripts/coccinelle/api/stream_open.cocci | 8 ++++----
+> >  1 file changed, 4 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/scripts/coccinelle/api/stream_open.cocci b/scripts/coccinelle/api/stream_open.cocci
+> > index 350145da7669..12ce18fa6b74 100644
+> > --- a/scripts/coccinelle/api/stream_open.cocci
+> > +++ b/scripts/coccinelle/api/stream_open.cocci
+> > @@ -35,11 +35,11 @@ type loff_t;
+> >  // a function that blocks
+> >  @ blocks @
+> >  identifier block_f;
+> > -identifier wait_event =~ "^wait_event_.*";
+> > +identifier wait =~ "^wait_.*";
+> >  @@
+> >    block_f(...) {
+> >      ... when exists
+> > -    wait_event(...)
+> > +    wait(...)
+> >      ... when exists
+> >    }
+> >
+> > @@ -49,12 +49,12 @@ identifier wait_event =~ "^wait_event_.*";
+> >  // XXX currently reader_blocks supports only direct and 1-level indirect cases.
+> >  @ reader_blocks_direct @
+> >  identifier stream_reader.readstream;
+> > -identifier wait_event =~ "^wait_event_.*";
+> > +identifier wait =~ "^wait_.*";
+> >  @@
+> >    readstream(...)
+> >    {
+> >      ... when exists
+> > -    wait_event(...)
+> > +    wait(...)
+> >      ... when exists
+> >    }
+> >
+> > --
+> > 2.20.1
+> > _______________________________________________
+> > Cocci mailing list
+> > Cocci@systeme.lip6.fr
+> > https://systeme.lip6.fr/mailman/listinfo/cocci
+> 
+> 
+> 
+> -- 
+> Best Regards
+> Masahiro Yamada
+_______________________________________________
+Cocci mailing list
+Cocci@systeme.lip6.fr
+https://systeme.lip6.fr/mailman/listinfo/cocci
