@@ -2,73 +2,77 @@ Return-Path: <SRS0=sEpD=VR=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,HTML_MESSAGE,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D58CC76195
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BD24C76188
 	for <cocci@archiver.kernel.org>; Sat, 20 Jul 2019 09:55:33 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 86E9D217F5
+	by mail.kernel.org (Postfix) with ESMTPS id 84A5A2085A
 	for <cocci@archiver.kernel.org>; Sat, 20 Jul 2019 09:55:32 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=uber.com header.i=@uber.com header.b="8lEmHclv"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 86E9D217F5
-Authentication-Results: mail.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=uber.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Oho7A7+w"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 84A5A2085A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x6K9tHI0025687;
-	Sat, 20 Jul 2019 11:55:17 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x6K9tG1M016061;
+	Sat, 20 Jul 2019 11:55:16 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 1275677A0;
-	Sat, 20 Jul 2019 11:55:17 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 850FF7780;
+	Sat, 20 Jul 2019 11:55:16 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 88E73777C
- for <cocci@systeme.lip6.fr>; Wed, 17 Jul 2019 09:34:26 +0200 (CEST)
-Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com
- [IPv6:2607:f8b0:4864:20:0:0:0:336] (may be forged))
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x6H7YPPn005710
- for <cocci@systeme.lip6.fr>; Wed, 17 Jul 2019 09:34:26 +0200 (CEST)
-Received: by mail-ot1-x336.google.com with SMTP id j19so23995365otq.2
- for <cocci@systeme.lip6.fr>; Wed, 17 Jul 2019 00:34:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uber.com; s=google;
+ by systeme.lip6.fr (Postfix) with ESMTPS id 16A17749D
+ for <cocci@systeme.lip6.fr>; Tue, 16 Jul 2019 04:36:14 +0200 (CEST)
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com
+ [IPv6:2a00:1450:4864:20:0:0:0:530] (may be forged))
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x6G2aDqW023965
+ for <cocci@systeme.lip6.fr>; Tue, 16 Jul 2019 04:36:13 +0200 (CEST)
+Received: by mail-ed1-x530.google.com with SMTP id i11so17454206edq.0
+ for <cocci@systeme.lip6.fr>; Mon, 15 Jul 2019 19:36:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=mime-version:from:date:message-id:subject:to;
- bh=iRCHXc0WjtHlars04sjnhcGsphGrZpOTdp2fzPvM1Zo=;
- b=8lEmHclvHmJf0KmrbBt6jSKXwaKLjPhs0rLAOXLAIo4+WWOLPfM2jC12TpskDyrUbI
- 6e4mBqwiJsXF8J3GPKrXAdnNDqIkSKBJFnDyAWK+tWCdgpUsrmFOBc5nLxYRMKLdOyXv
- htCOcwVSiwNVXwQaczFW2hb/l7d5pj4h/w6Yo=
+ bh=Yi6MD/C0mLdc/IsS/hiXLySGwlw6MYsMPyRVuGabrl0=;
+ b=Oho7A7+wcWNb3fpOD6SevXYg0UKpvElFCTH/nkh8Fqgi5g8fMKxfyE8l1as40Xt+Fv
+ G/QSw9f2Dihj4NCS9Iey1GCLqety3HKE/qGn8AZA2kX3nb5BEWbZKAskPWeYVzPCAniM
+ 3ESmIdbAVKzuHyMQ5DKH36jiBSL2+Cer1EzQR6y9MD8anm/PbBxwmYO8nyVtQKE/f2GL
+ EefGYs95K01uV6dakt/W1CJHq0QKQbxL0mj2gcPAuYr9Ft/aGoN1Bwbt6pgSF+OUixGj
+ +Vv4yMuFou+mbCs7PF62xT4y237ZAlTO24IGvS8UQYpxjkx0YKLCxuCHK/0p36ZWf8FY
+ wqAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
- bh=iRCHXc0WjtHlars04sjnhcGsphGrZpOTdp2fzPvM1Zo=;
- b=s6R04YHDorJRZe2JXIJbbFaoHBYdrWoFiC0pyPzb/Qt9l1SD9Bha5l9QciZBwMmHCp
- 5gRUaSoEJwxD8ajre3eFlQkU7NktudeOB2lNz5SZ81DPXkbi/toQzF7BwTnCjI3an/Y1
- Vsh853X6DpCGvKQtBD+igjMJFy32NKe7Tf3HKB4qze2ob3rCo5MCQ2584l7pxVHYtw1g
- 8qbYE4c3XeCMFweUlOkwlGpgBi+Tt+7j0ZBUbBhbr/6u/5zyDaKJCOvoZCeixm/vMGds
- acqkyeHSVXkC27wXonGoYrA2S9qFloy3yqJEXLp6BdaW4jjDFB+V6tVAN3Oeftq6401h
- eavA==
-X-Gm-Message-State: APjAAAWL5VPLPeXuJglTxfUcdErgpLIm9ZE3DVvaQkIXTZgaZH3KrgsG
- XiL6GJBv44GXPGxREHIwH6ov2/oEfCpWm2RxxLeZrw5B
-X-Google-Smtp-Source: APXvYqxom0IzH5RukRwv74m2XBto9cIjTPmBSxi+9nU70BWzVaZHPvWCz8ZFXiAuXLs5qg+5tyKSkCxm+XWI7JlxCRw=
-X-Received: by 2002:a9d:7c8f:: with SMTP id q15mr2528054otn.24.1563348864915; 
- Wed, 17 Jul 2019 00:34:24 -0700 (PDT)
+ bh=Yi6MD/C0mLdc/IsS/hiXLySGwlw6MYsMPyRVuGabrl0=;
+ b=ldwYF0Z359Ti4iEOB1NZFotSxi0ygvJhmNLTpgfpuJVEJhi1D+9CNledl8J0kO6qJB
+ BKylmuNOLnxcyN07i+fh506/6aVn0w0awcI0dNAXtbS6u9+tNnGoJ6hcgoShYngpVy3D
+ BQYdlu207nkCqbcf/M4hcF4qmLT0sHZEVGuH133EgW3SPy7qf2927PfYF5EhtFpsc1gI
+ /VoljbojoEUgFG2YBxM1qDix5+poiCOjiC/bwtV35TGL7pRaaAKIqZNS8SNufeqb7ldy
+ DWRehuoZ1I9/mvkiLfbhJw8DAgtpu8O3tFFOXjjD9x8oHBKbnXImWKxoHPdbJ8lRCGVB
+ XoLw==
+X-Gm-Message-State: APjAAAVg9EgWTsd0Nxe8tSZzWowtXEvXJ+JqJnpBU3Ei9ylRdy2JVcve
+ /N8e8ecUCxpe/Fi7pzdpF0dr9cIbYUpIojH13pSuGFog
+X-Google-Smtp-Source: APXvYqzuZjpnIK1ws6s/yi5mGFGPTnnBmzo2Z77j4siWKL54Qja416NBzWMLfMrUsYTs/RDEQHCMv9q37q+0gxI+9JQ=
+X-Received: by 2002:aa7:ca41:: with SMTP id j1mr27275320edt.149.1563244573423; 
+ Mon, 15 Jul 2019 19:36:13 -0700 (PDT)
 MIME-Version: 1.0
-From: Raghavan Raman <ragr@uber.com>
-Date: Wed, 17 Jul 2019 00:34:14 -0700
-Message-ID: <CAEgVsn4+aMn_3pXo1fex6_3oWmHbQERhmr42dO0igdFT1u67nA@mail.gmail.com>
+From: Will Lester <hslester96@gmail.com>
+Date: Tue, 16 Jul 2019 10:36:02 +0800
+Message-ID: <CANhBUQ3cx0Vr5XCBbYnuwvDR5G0BqV6o3rocmP_HWeTwEW__7g@mail.gmail.com>
 To: cocci@systeme.lip6.fr
 X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 20 Jul 2019 11:55:17 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
  (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Wed, 17 Jul 2019 09:34:26 +0200 (CEST)
+ Tue, 16 Jul 2019 04:36:13 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78
 X-Mailman-Approved-At: Sat, 20 Jul 2019 11:55:14 +0200
-Subject: [Cocci] Coccinelle for Go
+Subject: [Cocci] How to write a pattern which crosses two functions?
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -80,48 +84,63 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============1164980134=="
+Content-Type: multipart/mixed; boundary="===============0323882737=="
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
---===============1164980134==
-Content-Type: multipart/alternative; boundary="000000000000c14a9e058ddb852e"
+--===============0323882737==
+Content-Type: multipart/alternative; boundary="0000000000007efc73058dc33dc2"
 
---000000000000c14a9e058ddb852e
+--0000000000007efc73058dc33dc2
 Content-Type: text/plain; charset="UTF-8"
 
-Hi,
-
-I am part of the Programming Systems group
-<https://www.uber.com/us/en/about/science/> at Uber. We are looking into
-using Coccinelle for refactoring in Go <https://golang.org/>.
-
-Does Coccinelle include support for Go?
-
-If not:
-  * Is there any plan to add support for the same?
-  * What would it take to add this support? Any documentation regarding
-this?
+Hello,
+I want to write a script to solve problems of such pattern.
+func_a () {
+    x = .*alloc();
+}
+func_b () {
+    foo(..., x, ...);
+}
+That is, a variable x is allocated by func_a and used by func_b in a file.
+I wrote a script like this:
+fn_a (...) {
+...
+- X = fn1(...);
+...
+}
+...
+fn_b (...) {
+...
+- fn2 (..., X, ...);
+...
+}
+But an error was reported between two functions, "..." cannot be used there.
+Therefore, what is the correct solution to this problem?
 
 Thanks,
-Raghavan
+Will
 
---000000000000c14a9e058ddb852e
+--0000000000007efc73058dc33dc2
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">Hi,<div><br></div><div>I am part of the <a href=3D"https:/=
-/www.uber.com/us/en/about/science/">Programming Systems group</a> at Uber. =
-We are looking into using Coccinelle for refactoring in <a href=3D"https://=
-golang.org/">Go</a>.</div><div><br></div><div>Does Coccinelle include suppo=
-rt for Go?=C2=A0</div><div><br></div><div>If not:</div><div>=C2=A0 * Is the=
-re any plan to add support for the same?</div><div>=C2=A0 * What would it t=
-ake to add this support? Any documentation regarding this?</div><div><br></=
-div><div>Thanks,</div><div>Raghavan</div><div><br></div></div>
+<div dir=3D"ltr"><div>Hello,</div><div>I want to write a script to solve pr=
+oblems of such pattern.</div><div>func_a () {</div><div>=C2=A0=C2=A0=C2=A0 =
+x =3D .*alloc();<br></div><div>}</div><div>func_b () {</div><div>=C2=A0=C2=
+=A0=C2=A0 foo(..., x, ...);<br></div><div>}</div><div>That is, a variable x=
+ is allocated by func_a and used by func_b in a file. <br></div><div>I wrot=
+e a script like this:</div><div>fn_a (...) {</div><div>...</div><div>- X =
+=3D fn1(...);</div><div>...<br></div><div>}</div><div>...</div><div>fn_b (.=
+..) {</div><div>...</div><div>- fn2 (..., X, ...);</div><div>...<br></div><=
+div>}</div><div>But an error was reported between two functions, &quot;...&=
+quot; cannot be used there.</div><div>Therefore, what is the correct soluti=
+on to this problem?</div><div><br></div><div>Thanks,</div><div>Will<br></di=
+v></div>
 
---000000000000c14a9e058ddb852e--
+--0000000000007efc73058dc33dc2--
 
---===============1164980134==
+--===============0323882737==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -132,4 +151,4 @@ Cocci mailing list
 Cocci@systeme.lip6.fr
 https://systeme.lip6.fr/mailman/listinfo/cocci
 
---===============1164980134==--
+--===============0323882737==--
