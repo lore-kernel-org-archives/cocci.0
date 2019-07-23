@@ -2,66 +2,76 @@ Return-Path: <SRS0=qX47=VU=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6E6AC7618B
-	for <cocci@archiver.kernel.org>; Tue, 23 Jul 2019 13:42:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5275C7618B
+	for <cocci@archiver.kernel.org>; Tue, 23 Jul 2019 16:00:24 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 09638218D4
-	for <cocci@archiver.kernel.org>; Tue, 23 Jul 2019 13:42:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 09638218D4
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=perches.com
+	by mail.kernel.org (Postfix) with ESMTPS id 3CDDA21738
+	for <cocci@archiver.kernel.org>; Tue, 23 Jul 2019 16:00:24 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QE2YF1ub"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3CDDA21738
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x6NDgN8a005438;
-	Tue, 23 Jul 2019 15:42:23 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x6NG0Bjd013342;
+	Tue, 23 Jul 2019 18:00:11 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 04A26777C;
-	Tue, 23 Jul 2019 15:42:23 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 2E72C777C;
+	Tue, 23 Jul 2019 18:00:11 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 31A8B76BF
- for <cocci@systeme.lip6.fr>; Tue, 23 Jul 2019 15:42:21 +0200 (CEST)
-Received: from smtprelay.hostedemail.com (smtprelay0176.hostedemail.com
- [216.40.44.176])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x6NDgJWI014564
- for <cocci@systeme.lip6.fr>; Tue, 23 Jul 2019 15:42:20 +0200 (CEST)
-Received: from smtprelay.hostedemail.com (10.5.19.251.rfc1918.com
- [10.5.19.251])
- by smtpgrave02.hostedemail.com (Postfix) with ESMTP id 980581800D64C
- for <cocci@systeme.lip6.fr>; Tue, 23 Jul 2019 00:46:33 +0000 (UTC)
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net
- [216.40.38.60])
- by smtprelay02.hostedemail.com (Postfix) with ESMTP id B525F40D3;
- Tue, 23 Jul 2019 00:46:30 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-HE-Tag: cent57_72f1b01a7b963
-X-Filterd-Recvd-Size: 8794
-Received: from XPS-9350.home (cpe-23-242-196-136.socal.res.rr.com
- [23.242.196.136]) (Authenticated sender: joe@perches.com)
- by omf07.hostedemail.com (Postfix) with ESMTPA;
- Tue, 23 Jul 2019 00:46:29 +0000 (UTC)
-Message-ID: <66fcdbf607d7d0bea41edb39e5579d63b62b7d84.camel@perches.com>
-From: Joe Perches <joe@perches.com>
-To: Julia Lawall <julia.lawall@lip6.fr>, cocci <cocci@systeme.lip6.fr>
-Date: Mon, 22 Jul 2019 17:46:27 -0700
-References: <7ab8957eaf9b0931a59eff6e2bd8c5169f2f6c41.1563841972.git.joe@perches.com>
-Content-Type: multipart/mixed; boundary="=-PQzEZXvpk5qvk1Zhvstk"
-User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
+ by systeme.lip6.fr (Postfix) with ESMTPS id E3F0D76BF
+ for <cocci@systeme.lip6.fr>; Tue, 23 Jul 2019 18:00:08 +0200 (CEST)
+Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:32d] (may be forged))
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x6NG08Dm016864
+ for <cocci@systeme.lip6.fr>; Tue, 23 Jul 2019 18:00:08 +0200 (CEST)
+Received: by mail-ot1-x32d.google.com with SMTP id d17so44591647oth.5
+ for <cocci@systeme.lip6.fr>; Tue, 23 Jul 2019 09:00:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:from:date:message-id:subject:to;
+ bh=E5EkzpkDJGF3gu/CHElt13ntpBFB2xq4uoBw6H2DbE8=;
+ b=QE2YF1ubgdFK9ysvMZlq+kX2tnObnDriPQFzP/s0diM8IPTQ8eJFSf3PA25h8PHX0E
+ UUoNe7LfYoRR8PmJu4Lqen0O90rTDimTlUEpqx9m1v1GoNyGPQ1DuJxl9O8n40D88hBs
+ t9A3jfUUXVGaVK/s6b3ZBclvSDloJfQZclmqxPstPwkXZjNNbZSUxmZu7MX+OBC4IYwT
+ H2ezrSdgEncNqSaxqH3Se7dvewxgYYHqB8MQj+E/8P2cQt0mPWI+Cnb3zYJc2sKbnjy+
+ xIfhobPYgNB7G8KCeObZcVoplolpBZwFMFyalj+HXITaBMm99lVEtnFruY+25z3ZwNev
+ WPkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+ bh=E5EkzpkDJGF3gu/CHElt13ntpBFB2xq4uoBw6H2DbE8=;
+ b=Fl8vsdeCOiXRNyYtc1sGo+u3wjb4rXb1P63ojdxfzAYxld5a7y6RiahV2GdVbIWwtl
+ p+MsvUwW0HazVYVgv3aoctem7fTo9+EqTSgYOvgNJiL3yT/9FUl5cKfD4sen50/Ml26X
+ +vDKNmnBdKqBMz/7K5GmdXABi9f+tRxGCKUEtPytuY7mepgJ3dS84xIUZrKMBUAX9sT9
+ PGW4LHe2H57MRzb9aEeUjkfjSCzPUoobGD/vS4P287nqGG1CqHxwH7xsWdm7jv2ilLfg
+ wmxL+wd6qCY+XxhHEPG4zog0kCRAA0aaIUF76eDi1sGid+S+6heZPLBlatcOb2hGE/Vh
+ SnkA==
+X-Gm-Message-State: APjAAAXxwiayhc2hZiCKiWTurM3kQVdBlP1eiCxmOTBLvN/bcrjt9vSJ
+ kmhgVCLex4i1Ig+e1rxtsJOOgfZRZO1l2+vD88aOpdW/
+X-Google-Smtp-Source: APXvYqylmWDc6UONFQVojzCIUDX0TPrltw7TZiEEQz2aCqeOmY8r9bJPOsyBJkYM2rlzWH0pZ/izP+gUmTeTAnHO24M=
+X-Received: by 2002:a9d:4103:: with SMTP id o3mr47761776ote.134.1563897607381; 
+ Tue, 23 Jul 2019 09:00:07 -0700 (PDT)
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 23 Jul 2019 15:42:23 +0200 (CEST)
-X-Greylist: Delayed for 01:09:59 by milter-greylist-4.4.3 (isis.lip6.fr
- [132.227.60.2]); Tue, 23 Jul 2019 15:42:20 +0200 (CEST)
+From: ron minnich <rminnich@gmail.com>
+Date: Tue, 23 Jul 2019 08:59:56 -0700
+Message-ID: <CAP6exY+zaafb6os8X5uhteVMgyu2+HVL5keOs-yFWOF-QRuLrQ@mail.gmail.com>
+To: cocci@systeme.lip6.fr
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 23 Jul 2019 18:00:11 +0200 (CEST)
+X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
+ Tue, 23 Jul 2019 18:00:08 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: LKML <linux-kernel@vger.kernel.org>
-Subject: [Cocci] [Fwd: [PATCH 1/2] string: Add stracpy and stracpy_pad
-	mechanisms]
+X-Scanned-By: MIMEDefang 2.78
+Subject: [Cocci] force usage of stdbool in C programs
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -73,210 +83,23 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
+I apologize if this has been asked.
 
---=-PQzEZXvpk5qvk1Zhvstk
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+In the coreboot project, due to its long history, we have lots of
+conditionals and such with old school ints as conditional, and the
+question was raised about fixing this.
 
-Hello Julia.
+Has this been done with spatch and is there an example I can loo for?
 
-I just sent a patch to add yet another string copy mechanism.
+thanks
 
-This could help avoid misuses of strscpy and strlcpy like this
-patch set:
-
-https://lore.kernel.org/lkml/cover.1562283944.git.joe@perches.com/T/
-
-A possible cocci script to do conversions could be:
-
-   $ cat str.cpy.cocci
-   @@
-   expression e1;
-   expression e2;
-   @@
-
-   - strscpy(e1, e2, sizeof(e1))
-   + stracpy(e1, e2)
-
-   @@
-   expression e1;
-   expression e2;
-   @@
-
-   - strlcpy(e1, e2, sizeof(e1))
-   + stracpy(e1, e2)
-
-This obviously does not match the style of all the
-scripts/coccinelle cocci files, but this might be
-something that could be added improved and added.
-
-This script produces:
-
-$ spatch --in-place -sp-file str.cpy.cocci .
-$ git checkout tools/
-$ git diff --shortstat
- 958 files changed, 2179 insertions(+), 2655 deletions(-)
-
-The remainder of strlcpy and strscpy uses in the
-kernel would generally have a form like:
-
-	strlcpy(to, from, DEFINE)
-
-where DEFINE is the specified size of to
-
-Could the cocci script above be updated to find
-and correct those styles as well?
-
-cheers, Joe
-
---=-PQzEZXvpk5qvk1Zhvstk
-Content-Disposition: inline
-Content-Description: Forwarded message =?UTF-8?Q?=E2=80=94?= [PATCH 1/2]
- string: Add stracpy and stracpy_pad mechanisms
-Content-Type: message/rfc822
-
-Return-Path: linux-kernel-owner@vger.kernel.org
-Delivered-To: joe@perches.com
-X-FDA: 75739338654.01.hot66_2cb38a9397152
-X-Spam-Summary:  2,0,0,14da73eccbb67bae,d41d8cd98f00b204,linux-kernel-owner@vger.kernel.org,:torvalds@linux-foundation.org:linux-kernel@vger.kernel.org:corbet@lwn.net:steve@sk2.org:keescook@chromium.org:nitin.r.gote@intel.com:jannh@google.com:kernel-hardening@lists.openwall.com:rasmus.villemoes@prevas.dk:akpm@linux-foundation.org,RULES_HIT:41:355:379:541:800:899:904:960:973:988:989:997:1260:1345:1359:1437:1535:1542:1711:1730:1747:1777:1792:2198:2199:2393:2553:2559:2562:2915:3138:3139:3140:3141:3142:3355:3865:3866:3867:3868:3871:3874:4321:5007:6261:7875:8603:10004:11026:11473:11658:11914:12043:12291:12296:12297:12555:12683:12895:13141:13161:13229:13230:14181:14394:14721:21080:21451:21627:30012:30034:30054:30069:30079:30090,0,RBL:209.132.180.67:@vger.kernel.org:.lbl8.mailshell.net-62.8.0.100
- 66.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not
- bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:24,LUA_SUMMARY:none
-X-HE-Tag: hot66_2cb38a9397152
-X-Filterd-Recvd-Size: 5346
-Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by imf13.hostedemail.com (Postfix) with ESMTP
-	for <joe@perches.com>; Tue, 23 Jul 2019 00:38:27 +0000 (UTC)
-Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733116AbfGWAi0 (ORCPT <rfc822;joe@perches.com>);
-        Mon, 22 Jul 2019 20:38:26 -0400
-Received: from smtprelay0192.hostedemail.com ([216.40.44.192]:50395 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728573AbfGWAiY (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Jul 2019 20:38:24 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net
- [216.40.38.60]) by smtprelay03.hostedemail.com (Postfix) with ESMTP id
- 33C9A83777ED; Tue, 23 Jul 2019 00:38:23 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary:  2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::::::::,RULES_HIT:41:355:379:541:800:960:973:988:989:1260:1345:1359:1437:1534:1542:1711:1730:1747:1777:1792:2198:2199:2393:2553:2559:2562:2915:3138:3139:3140:3141:3142:3355:3865:3866:3867:3868:3871:3874:4321:5007:6261:7875:8603:10004:10848:11026:11473:11658:11914:12043:12291:12296:12297:12555:12683:12895:13141:13161:13229:13230:14181:14394:14721:21080:21451:21627:30012:30034:30054:30069:30079:30090,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.8.0.180
- 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not
- bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:17,LUA_SUMMARY:none
-X-HE-Tag: wheel67_2bd70514adf25
-X-Filterd-Recvd-Size: 3459
-Received: from joe-laptop.perches.com (cpe-23-242-196-136.socal.res.rr.com
- [23.242.196.136]) (Authenticated sender: joe@perches.com) by
- omf13.hostedemail.com (Postfix) with ESMTPA; Tue, 23 Jul 2019 00:38:21
- +0000 (UTC)
-From: Joe Perches <joe@perches.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org
-Cc: Jonathan Corbet <corbet@lwn.net>, Stephen Kitt <steve@sk2.org>,
-        Kees Cook <keescook@chromium.org>,
-        Nitin Gote <nitin.r.gote@intel.com>, jannh@google.com,
-        kernel-hardening@lists.openwall.com,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 1/2] string: Add stracpy and stracpy_pad mechanisms
-Date: Mon, 22 Jul 2019 17:38:15 -0700
-Message-Id: <7ab8957eaf9b0931a59eff6e2bd8c5169f2f6c41.1563841972.git.joe@perches.com>
-X-Mailer: git-send-email 2.15.0
-In-Reply-To: <cover.1563841972.git.joe@perches.com>
-References: <cover.1563841972.git.joe@perches.com>
-Sender: linux-kernel-owner@vger.kernel.org
-Precedence: bulk
-List-ID: <linux-kernel.vger.kernel.org>
-X-Mailing-List: linux-kernel@vger.kernel.org
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-
-Several uses of strlcpy and strscpy have had defects because the
-last argument of each function is misused or typoed.
-
-Add macro mechanisms to avoid this defect.
-
-stracpy (copy a string to a string array) must have a string
-array as the first argument (to) and uses sizeof(to) as the
-size.
-
-These mechanisms verify that the to argument is an array of
-char or other compatible types like u8 or unsigned char.
-
-A BUILD_BUG is emitted when the type of to is not compatible.
-
-Signed-off-by: Joe Perches <joe@perches.com>
----
- include/linux/string.h | 41 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 41 insertions(+)
-
-diff --git a/include/linux/string.h b/include/linux/string.h
-index 4deb11f7976b..f80b0973f0e5 100644
---- a/include/linux/string.h
-+++ b/include/linux/string.h
-@@ -35,6 +35,47 @@ ssize_t strscpy(char *, const char *, size_t);
- /* Wraps calls to strscpy()/memset(), no arch specific code required */
- ssize_t strscpy_pad(char *dest, const char *src, size_t count);
- 
-+/**
-+ * stracpy - Copy a C-string into an array of char
-+ * @to: Where to copy the string, must be an array of char and not a pointer
-+ * @from: String to copy, may be a pointer or const char array
-+ *
-+ * Helper for strscpy.
-+ * Copies a maximum of sizeof(@to) bytes of @from with %NUL termination.
-+ *
-+ * Returns:
-+ * * The number of characters copied (not including the trailing %NUL)
-+ * * -E2BIG if @to is a zero size array.
-+ */
-+#define stracpy(to, from)					\
-+({								\
-+	size_t size = ARRAY_SIZE(to);				\
-+	BUILD_BUG_ON(!__same_type(typeof(*to), char));		\
-+								\
-+	strscpy(to, from, size);				\
-+})
-+
-+/**
-+ * stracpy_pad - Copy a C-string into an array of char with %NUL padding
-+ * @to: Where to copy the string, must be an array of char and not a pointer
-+ * @from: String to copy, may be a pointer or const char array
-+ *
-+ * Helper for strscpy_pad.
-+ * Copies a maximum of sizeof(@to) bytes of @from with %NUL termination
-+ * and zero-pads the remaining size of @to
-+ *
-+ * Returns:
-+ * * The number of characters copied (not including the trailing %NUL)
-+ * * -E2BIG if @to is a zero size array.
-+ */
-+#define stracpy_pad(to, from)					\
-+({								\
-+	size_t size = ARRAY_SIZE(to);				\
-+	BUILD_BUG_ON(!__same_type(typeof(*to), char));		\
-+								\
-+	strscpy_pad(to, from, size);				\
-+})
-+
- #ifndef __HAVE_ARCH_STRCAT
- extern char * strcat(char *, const char *);
- #endif
--- 
-2.15.0
-
-
---=-PQzEZXvpk5qvk1Zhvstk
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+ron
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
 https://systeme.lip6.fr/mailman/listinfo/cocci
-
---=-PQzEZXvpk5qvk1Zhvstk--
-
