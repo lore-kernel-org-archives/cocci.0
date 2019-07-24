@@ -7,49 +7,44 @@ X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C28BFC7618B
-	for <cocci@archiver.kernel.org>; Wed, 24 Jul 2019 09:31:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7F26C7618B
+	for <cocci@archiver.kernel.org>; Wed, 24 Jul 2019 11:18:42 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F03C620651
-	for <cocci@archiver.kernel.org>; Wed, 24 Jul 2019 09:31:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id D56C42190F
+	for <cocci@archiver.kernel.org>; Wed, 24 Jul 2019 11:18:41 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="gc9Fn+D2"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F03C620651
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="k7wwSlLr"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D56C42190F
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x6O9UpvD019495;
-	Wed, 24 Jul 2019 11:30:51 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x6OBIOYO026613;
+	Wed, 24 Jul 2019 13:18:24 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 81D1A777C;
-	Wed, 24 Jul 2019 11:30:51 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 5053C777C;
+	Wed, 24 Jul 2019 13:18:24 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 0D4D3420D
- for <cocci@systeme.lip6.fr>; Wed, 24 Jul 2019 11:30:50 +0200 (CEST)
-Received: from mout.web.de (mout.web.de [212.227.15.4])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x6O9UkEc016699;
- Wed, 24 Jul 2019 11:30:47 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 0CFD1420D
+ for <cocci@systeme.lip6.fr>; Wed, 24 Jul 2019 13:18:23 +0200 (CEST)
+Received: from mout.web.de (mout.web.de [212.227.15.3])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x6OBIHFB007807;
+ Wed, 24 Jul 2019 13:18:18 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1563960632;
- bh=SyheEE4mTCHAKERmFibC4B8V4srPs1I08MSz+S5/dO4=;
- h=X-UI-Sender-Class:To:Cc:References:Subject:From:Date:In-Reply-To;
- b=gc9Fn+D2o643SKOGsG7FR+3k3BRobz6iRTobFNKD6Yo8vSmk7pM7/Eh8B6+ZLyAdg
- RqPurAjIbiwQLyiI9h/vMlbGSz4MWJjl2k+pQrEl6FYat96Qo9tUXb2YZCYIkbLS5j
- B7Zmk88CtdWguiCG2Ebcc+7OwJhajqNuyLUD0LnQ=
+ s=dbaedf251592; t=1563967064;
+ bh=SsNI5tmVo7N3wZC/sePrJbc8RodzxSrTUghETIx26Jg=;
+ h=X-UI-Sender-Class:Cc:References:Subject:From:To:Date:In-Reply-To;
+ b=k7wwSlLrZIQ1Y6GT5gSHPcLGClty9BhPHyKXQTShW0C7EiuaC2fIhM4d+nk8OPZle
+ P8wOHiAgsaZe0DwibUP7s+rVIc3oOIeGSYMfu7OB1C9AKoGeY823PaBgRc1AwUEXas
+ rr28LNTTJXi44W/fxJgZZzt/pWO7BtbQWPKxmYsg=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([93.133.51.56]) by smtp.web.de (mrweb001
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0LhvUI-1iCtE53FEg-00n8pJ; Wed, 24
- Jul 2019 11:30:31 +0200
-To: Stephen Boyd <swboyd@chromium.org>, cocci@systeme.lip6.fr,
-        kernel-janitors@vger.kernel.org,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nicolas Palix <nicolas.palix@imag.fr>
-References: <20190723181624.203864-4-swboyd@chromium.org>
+Received: from [192.168.1.2] ([93.133.51.56]) by smtp.web.de (mrweb004
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0MRiZt-1hx99d0vMn-00SsFL; Wed, 24
+ Jul 2019 13:17:44 +0200
+References: <5d3788cf.1c69fb81.44f27.5907@mx.google.com>
 From: Markus Elfring <Markus.Elfring@web.de>
 Openpgp: preference=signencrypt
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
@@ -95,50 +90,53 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <c98b8f50-1adf-ea95-a91c-ec451e9fefe2@web.de>
-Date: Wed, 24 Jul 2019 11:30:16 +0200
+To: Stephen Boyd <swboyd@chromium.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>, cocci@systeme.lip6.fr,
+        kernel-janitors@vger.kernel.org
+Message-ID: <a69aeff9-338c-a763-3a25-3ff767e5401d@web.de>
+Date: Wed, 24 Jul 2019 13:17:39 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190723181624.203864-4-swboyd@chromium.org>
-Content-Language: en-US
-X-Provags-ID: V03:K1:h3uGTxvoka6FJzcsaW1+c+MOCdTgPVPq4eeDSKpeLxNRxNAG99L
- Eskdzrm7XPJQcRB7ghNsxAfij474SiVAVMLc6ilPSenqu+faindFx8b3OhFVVAwuwDHN38d
- S/B0lsKo6GMVUomfAEtCmx9uMAFKG0kjw7bd+2cr+Uc/OGgWxi16f/4jXUcNiZPne3bD5QO
- ZuoQjF5Ercjgg27P1i/GQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:MSSJnV4GNxM=:vC1JGF5Mm0SZsbcWnFAoh8
- hzzHzP9Q0NYzV2opxD+rl4IGEC6aqToLzkPm5ZH86vv/+3AcZPUfLTriyBdAw06P14rMZBS5c
- F/8RC7T/g0wyMylS7w9J8T7ETK3cDebU4CzXza42gZ7rVI1eMa76S05TQ/uTOHlF+EvScDF8Q
- YzWZpHffOt5baJ9uliAW0ZHg4/12gYVsE8fIaaoshLk45obTsRIW/EWr8OG4RPaTJWRvClvzs
- lBgGqkRFZZyLkHlEiVrVuIn32nRSiF7QNzpseW+NnY3SE4P2+/psbKn86rEPC5f8GFlTB/hVl
- XJZ8ACXw6H4I5y/GpTss/fblAjpAU8v7+nq5HwLDzrhsAhR10FiEXe+rJ6PLFfcS85ppqfdPI
- OhgcftEU1E27ZMe0av1g02Q/bXK4YHcWoes5JnSVaB6oyY8vPiU3vX6B0qNSKx3LFUo1mj3K0
- C3ZlzbfXoEggxZD07y6AnnuqfwCSE0GTdRaD7ze+fpb0r+qhyb4rpWkXvU/sZsLqeQW1VqPKu
- Zt1Sy/UHpr+KC7ycvvkqzRKkw03HyWiDOxNFp6m9G01X2u7EsH3NuVVLqXXDaLADO1S3Q1ZlA
- iMCvUz4OIeeavFhD1zRdDMcCcG4EEAep3hDEJXNhsTOsOwb+HJunHkneQZSmTZ8AP0G1v7B9Y
- BeN1GJcFJRzt4awwN9T5Aw24+7X8q2V2mA+217VFk9b1BOfBq1XKBMEmakFNcgA6UwQPmeZ8x
- D7OpffoNyFq7wkUTNDe7NWTcbLZHLb7d7JeU/NJnNyTEJD+GgnrsfKJM035Mo++srq8Mj6/TV
- 04Wkn8BrN8uzYy23y4HpT+2xZbaIt7aDIrmJsa793FcpOmotWcK9lh14ZrKm3umJxiV0GS2+J
- Mff7de65/uRi6W7NgOYz8tMTaCgkxm//4gWrTA6M+W2tVqHYUwr6AScpiTri2a7LBye3oiFRx
- 3WpbaSyzNtnsEBDUbA/nqmbfxLE9eOLGvi+9XK4M45YWs4m7z4ZtpTRADu/WHyqk1xySibS4m
- g2LBENLkOn6K8wlyzf1v1jtr6H/qjqHSI8BvcRq0WaIIew72NdS6REYrTCajU7zeknsCMm1i4
- 6JYos/ryg4irIvlUHqU2L1j3WaGPE/DWyq7
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 24 Jul 2019 11:30:52 +0200 (CEST)
+In-Reply-To: <5d3788cf.1c69fb81.44f27.5907@mx.google.com>
+Content-Language: en-GB
+X-Provags-ID: V03:K1:aXiqUYly+c/GU8T3Pl/fxwP3g5OJeD4hs4TT2qggjuZxAtJfRr9
+ Zgtarybvlpk1hf7Oq53wK/hNF0fumbBe6L8a1S25mt9uVZB4JsdVGB11fVma9RKDheMqGUX
+ IO3/kTDHjLYlMDxtnMO+0Y5+M/CBCKnzSanDc+TCd8h5h4kSpFck9Zp0ko/f6lfm7GSOvsg
+ eY2l06UgibKhMndQscbSQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:bDZBNbXBObQ=:yytbZroNvm1OibfAJylpQb
+ p4qqBiQ1rrqQIFGqU32UWjg41rRRjGi6x0AeR4Hj92lHRvFQNc0oZyjFar3aFcdlwQJct1OSQ
+ mIjpfLOALmx4rJTDOq3mGr/eWbsgEA9MNoQNCJ8E3EjbUP7HMoEbHp4Bl14drPskLOHmDsMHt
+ /ZdDgMW5w04ECbkTcftvHWR5JYM4LZ8zVzntonVF3mJFvy+3J4h6e55Alw7gfkLfVj3mUupA2
+ zNZHWIAWkhKG4tSSH4E8DNFDAZRvAoj17HiRESW9dtIdOzuKbdoL3KDn66nPGWh+EXiiQ/QVx
+ gHJhPwmHRnL2XCvElD5WVFQl4/svSNVt5MkiNdaTRlU1A06wE/D7LL0Zwk/ZGJ4vzqkjSHBLk
+ ZBacfsAkejynMztCncKYkwiSSzHpieSRkGqAeTH1bQYzHH+ToT0T1pFfLx1BJ+rw1gfcIDVIV
+ h6aaYq/sUNq2UZUDS2YU5S1VP/Q1RmfJ8wah9BhZhstamOroHA7iWr77JEvdMU3vcg1yYdc7j
+ Xze3A30lq+yAxbEFa48ULZGpUhe8wG6bxjXasEMXnD/xtLBMCiyh1Aj7LTFlogawrqAa8tN/A
+ C4Q0R3iZeAYS+7yO6kIUIOHBgisDIX2/nzUM4rY4jiY+pkdT5dQTcyIdt7Ej9EptcwgyZGymd
+ mnzRHWzvId1RaCutRfIM44L1gl272NIHC8OSZQ08lQi+l0tUnqpwarXynXpHFtO+DV2kfPdIw
+ RK2Tr0lZJaW6rSFOhmXFyKYKe7PAGS01RxBijnyL1sMeRQxkORdQaRybtf/TiuwtX6rrtEMSH
+ 1pWK6q+lcFy2qIgzesYIvMvHPaWGBinL9uMVbo3feWXtrk0YMlUtmjWWQ2hVMnL/7yApYcgIj
+ 6SolO1/5+9kRKIvZKMJEAihNhz78kDVJpXdkhHjPqKljlzWuJs9aPVsIKt6mvX0lqEvBnhGA2
+ UtJ4K+6vVgBbRdogRYa7VV8ivJv7v+1vmtm62L1ZY4F7rMl/fBhX9nUfv5mRUyTtAN9mM3fbS
+ CV687j+jfGvDnllbU0o3MXA6JjgJz82LQ9ZYjn30TnoZ52AKxZI77MKgmdYARuARQWwq/mP64
+ rK4yC8QVeRBSuORVGhwZkLGnQiBE8iBSr7e
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 24 Jul 2019 13:18:24 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Wed, 24 Jul 2019 11:30:47 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Wed, 24 Jul 2019 13:18:18 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Rob Herring <robh@kernel.org>,
+Cc: Rob Herring <robh@kernel.org>, Michal Marek <michal.lkml@markovi.net>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
         linux-kernel@vger.kernel.org,
         Javier Martinez Canillas <javierm@redhat.com>,
         Andrzej Hajda <a.hajda@samsung.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
         Mark Brown <broonie@kernel.org>, Russell King <linux@armlinux.org.uk>,
         Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [Cocci] [PATCH v4 3/3] coccinelle: Add script to check for
- platform_get_irq() excessive prints
+Subject: Re: [Cocci] [v4 2/3] treewide: Remove dev_err() usage after
+ platform_get_irq()
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -155,36 +153,26 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-I would prefer to concentrate the usage of SmPL disjunctions on changing
-implementation details so that the specification of duplicate code
-can be avoided.
+> > > struct platform_device *E;
+
+How much does this specification matter for the parameters
+of the mentioned functions (in the SmPL script)?
+Will the selection of function names be sufficient for the discussed
+source code search pattern?
 
 
-> +(
-> +platform_get_irq(E, ...)
-> +|
-> +platform_get_irq_byname(E, ...)
-> +);
+> > Can you teach it to remove curly braces when it's appropriate?
+> > (see below for examples)
+>
+> I don't know if that works.
 
-Function names:
-
-+(platform_get_irq
-+|platform_get_irq_byname
-+)(E, ...);
+Such an adjustment depends on additional development efforts.
 
 
-> +if ( \( ret < 0 \| ret <= 0 \) )
+> Is there some sort of tidy script I can run on my patches to do this?
 
-Comparison operators:
-
-+if (ret \( < \| <= \) 0)
-
-
-> +if (ret != -EPROBE_DEFER)
-
-Is it appropriate to treat this error code check as optional
-by the shown transformation approach?
-Can this case distinction be omitted?
+You can add corresponding case distinctions to your transformation approach
+for the semantic patch language (on demand), can't you?
 
 Regards,
 Markus
