@@ -4,50 +4,49 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B09AC7618B
-	for <cocci@archiver.kernel.org>; Thu, 25 Jul 2019 12:41:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97305C7618B
+	for <cocci@archiver.kernel.org>; Thu, 25 Jul 2019 13:46:15 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 48F5722BED
-	for <cocci@archiver.kernel.org>; Thu, 25 Jul 2019 12:41:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C393B22C7C
+	for <cocci@archiver.kernel.org>; Thu, 25 Jul 2019 13:46:14 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="qdeLOGQa"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 48F5722BED
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="VyJfNmae"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C393B22C7C
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x6PCf6iI005735;
-	Thu, 25 Jul 2019 14:41:06 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x6PDk0an029209;
+	Thu, 25 Jul 2019 15:46:00 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 1AEB0777C;
-	Thu, 25 Jul 2019 14:41:06 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id A56B5777C;
+	Thu, 25 Jul 2019 15:46:00 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 7CB0D76BF
- for <cocci@systeme.lip6.fr>; Thu, 25 Jul 2019 14:41:04 +0200 (CEST)
-Received: from mout.web.de (mout.web.de [212.227.17.12])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x6PCf1B5006053;
- Thu, 25 Jul 2019 14:41:02 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 9F17D76BF
+ for <cocci@systeme.lip6.fr>; Thu, 25 Jul 2019 15:45:58 +0200 (CEST)
+Received: from mout.web.de (mout.web.de [217.72.192.78])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x6PDjtH9025845;
+ Thu, 25 Jul 2019 15:45:56 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1564058457;
- bh=Hw27FxLaYi5ffFA7g+fgj355c4ti6LrH7CfmS8MEk9g=;
- h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
- b=qdeLOGQafB+Ou6qsfsfY7LYh8/+7RimVgyWMWxTmAjmpB0Qbq2quobID3j0ynhnOQ
- N1QNyJ5hZMJKAsln/N4b7+v0OyJkfG+vCwW3go6eQIFoUwnPtfjoIQMdTtBWmyec20
- FfCk8mCxQO+nlUr7qF9NuVLoTTn8M0ekoejJ3tYM=
+ s=dbaedf251592; t=1564062349;
+ bh=HS2CegOvxlPgJ5vXFkqseabejjCcZR/TjDMmIPRn+gM=;
+ h=X-UI-Sender-Class:Cc:References:Subject:To:From:Date:In-Reply-To;
+ b=VyJfNmaePf4utHlaKWIY1h7ATlLgnZJcTcG+f6WS4iccOWRwhpsm6/pz07meANl3B
+ WXv4vwgCSvD0U+DOKkf2SWzhNObaa1XYv5Nz+ccWdayIzQbdur6Qw6rLLuDbREkK1v
+ UiOqyJxY6PibOaOD/qMWYHdks3iPs8+dquKyJbPI=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([93.132.39.22]) by smtp.web.de (mrweb103
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0MLxwG-1hl9vx1TFE-007oTB; Thu, 25
- Jul 2019 14:40:57 +0200
-To: Julia Lawall <julia.lawall@lip6.fr>
+Received: from [192.168.1.2] ([93.132.39.22]) by smtp.web.de (mrweb101
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0M2uj4-1ij1bO3jLK-00scQ6; Thu, 25
+ Jul 2019 15:45:49 +0200
 References: <alpine.DEB.2.21.1907242040490.10108@hadrien>
- <e3a37d93-0353-ebed-948a-991add184616@web.de>
- <alpine.DEB.2.21.1907250632500.2535@hadrien>
+To: Julia Lawall <julia.lawall@lip6.fr>, cocci@systeme.lip6.fr,
+        kernel-janitors@vger.kernel.org
 From: Markus Elfring <Markus.Elfring@web.de>
 Openpgp: preference=signencrypt
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
@@ -93,43 +92,43 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <42a3af53-e349-6c5b-fa0f-0113fccbe9eb@web.de>
-Date: Thu, 25 Jul 2019 14:40:43 +0200
+Message-ID: <7e489aa8-95ea-b3b0-9023-ba284212977f@web.de>
+Date: Thu, 25 Jul 2019 15:45:46 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.1907250632500.2535@hadrien>
+In-Reply-To: <alpine.DEB.2.21.1907242040490.10108@hadrien>
 Content-Language: en-US
-X-Provags-ID: V03:K1:V8yVvRyx3HvDzlv9nkqUqzKC6COo35nwhRAN4A9IW4JgDZJcTPS
- tiXXpsTxxiB0bOUW4chfrdFgDxN/h888HSO2Qku7J2bgy6cUuMDhqN0i+tMH78rVRHqVJDZ
- dIYAU501zurwMCOt2+mX+1BiZophbENbzFApX8IxMHHQcPV/8g8gdlERcYg2nkxclMOdHVl
- NuY8iLkkZ9nvA0tMM5a/w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:fGkDaJ0qqIc=:2HcU0AiEzrotcPgaHLeu9V
- ni0RznqRBetURaKPY2VhUxQxk+B0h+TKeTnsaPJlD90/zuiI26c5CyDeVEeFD2I2BMxQbDIaD
- 9DSCrACfhjVQxBJMSgVHf2YTkTgDzR21Sbrd2RgNpChERmjhvTZ6+y8e7pD624dgP7D7dS6Tm
- ZwzSLeMsDhHt73E1bXCqTXalc5y8mm3xPqAM1dbUF4Y6miqLKoXnsgUDzfNFt7upZA9hD32hH
- EDt+lmv9acVYIrBHPhZeMJw1xaekI19aJlZdqyfc0dlwjjVCnKK4g7CLAdEhACZ32Htqt3XtD
- tlTlRF6Kf4EzRJAZXpcMNjFNZUrjrtNcLEPbCSS0UxIOc/E2JxpUaMvVRHmJFxNOLNNDiWSlE
- HVfwpGrOmaQfh84mMHyvN0pfK5+uwOuT0+Tm/LP8v0Hh/Cyk+6Q7jPF5HExl6MImJtgr8IlEC
- QeRGvOcAVfPF7YZAJgbEV9uj8kQ426uhkb3kGMeVHFHOTU1UVDzCXE0JU41AgZ3teLATaowHs
- 9/JI8xDiP1iZOfdeex9Vcr/YmR7ep6z38mP5Csf5MBkObq3IKCZ9c2RVY7hb16pwJBV2ue2pd
- 8RMOaT1oWWLu9yOUft5CPpXVgCw3Xg6NKcuEzbHLSpoXDorHnDL4ibUARgnEcENKhECVqiab5
- Pwe2dIQTOU0Q4h7zFUT2VK8ArzhWxZ9lw7USbDsLTHWp/IjZAZEewLCSERcvOTnUFZLl11zoJ
- +8Ny0RiQRdQMpS3cva3Qp/Q3rqOhr+cDCyN/nbI7Frn/lv46fa+VMU24puYtlyQK+GY2aQ7XG
- aGO/J1VA1Bvy9EJ3GHAhsssI/xN+Vvu/2O44qsGVK+vxfgbuR+LxtQYCLrP21GBIQsndtJvXk
- FZAgSUrvRPvuyut3xSCRvLntcXZI1yEa9f2nsUXPlEgD61TjTnToKIWCadVm1TbCtVw0869rz
- P/gc9e8OzqCs4IARNQyPsHhLNId4iNvniPRf5VjG/QNgdDQJ0+JJikv75FboS8XZqCP3vYWJN
- rVcDqfBPn3c9cnQzEi+QlrGqddMJFaC69/XtO3luHoiGMJBzCb+Lp1I6RoWNIqrM/oxzykaoe
- l/zRleSATcqpt1vqrLhe3AwCXLta2GQqn4U
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 25 Jul 2019 14:41:06 +0200 (CEST)
+X-Provags-ID: V03:K1:ndfrH5CqMIoq3zy1DzunVAspWk0eO8ALJ2w/7vFHXVLxVjrWb/D
+ 04tDzGk4/U4jHjmAH6zOuBxDQSRLM1VIL2+H+VCHzQpUC2LDUU/oKypCUpnR1MGUE86OP4t
+ rBfKn1CvSwj+OkXrWWuq9baxlytv5oy/MebjC5Ht09lT+Iu1hme2CPdO5tzNGs9ngIYX0aJ
+ KHrG5J5vn05UYOEvVY3vA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:a06CFJwBmpY=:xhYN6JaFETn2JWDBRzA/J6
+ 7QWR8XOwnxi1wH8ydRUaG4pH93EV0KW7ThKuupS+y7hl8lPJqKpHnJHCjSmdhX4Hp8d+JGxbF
+ 9pwry7UYaZmLp6Yh3fZd3jaCDxWS7hiES2z5BaknBoO1Eb8sd6k9l3h449Ias4OAroMWO8klP
+ 4lLx7RCnVojtP6F8BmYJK6MP3rI1LsvLQfZdMrj1cm+3AYC8sd7OzrDOM6Bo/ERzkERfGFjEd
+ RrkZjhd1RXERfzdyDWZKezK4siwhgk0HplJ6XXO+yFgFQ8RyN1MV7Ta56RuFbGDtsMOMqTpwt
+ 2YRp2RyusdWVVSmzXaqQXHl63Qu3mPVA4msxZnEUMWSuve2OJSTJxYrv662L/lVOYdIVX7xbo
+ IqY2bXiAWOqcbRIpwuxTc7C/c/5bkn9sJpufVscIvmCtc2mSEMigmNJBXVSkal9ZnFeFZ8/pm
+ VaYZ9PP8NveZvVCUZrlMeR0W0BKuC5U5CdowQ/2hgUyOssIPt3HwRzboPwDtAKT62+2Jl69wz
+ 5QTs4bb6AoFHPgBLNe7OXnYm8/5I0aoknLnQ1YlblniTDkVJpokl/NjL5bg0rLaSVxjiHUhhh
+ F/FcjIwBB1auew3YbYsVKHVrrc6AzjEvs67Dbrb1+XFkxZI4X43ldclpI56sQCkAYbTAvoSlk
+ PqwDDRUHYGxRcVuhEeig+bsgTtQI3bJEysw3hSK4wlTRI66ZxrC+4R89S3to6ieBVnQ2a1Hlv
+ Q8uYl08rX+YPAo3bfZYIkz+1QwcF1AXhQDjad2Zw7/p/LxNXljDiZFrRMIH30a4EQak5MDZBY
+ SeV2+Jx33xmPFivytRhuZ6vI5HTfs2bfpGLFmPOutvQsy+aA0ukdKTaTJiFOJ4Ey1LrLw0K3t
+ ems1fd+4e67sV/oknrKrB2Tls0476hfoSOoiMP+jjriAZhO5A/FxZIZeHKwTR/igXniiSR6md
+ OlYlomawS8JSDZPRWP6OX3wir/7UHtjhufYH4PCkT88j5Y/6rUiQlzXgkLTX3lQplVMs/jTp3
+ LyfPuKAQs2RGJ+4ZnBeF2qtLso9gXYa6MwUWE89ch9RdV+0UpfiSMDB8y5umK6pOANeDTjhCR
+ N+BH16vpmYrvWf532KUzTYQ6N11aT5iQQn/
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 25 Jul 2019 15:46:01 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Thu, 25 Jul 2019 14:41:02 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Thu, 25 Jul 2019 15:45:56 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: Joe Perches <joe@perches.com>, David Laight <David.Laight@ACULAB.COM>,
-        kernel-janitors@vger.kernel.org, cocci@systeme.lip6.fr,
         linux-kernel@vger.kernel.org
-Subject: Re: [Cocci] [1/2] string: Add stracpy and stracpy_pad mechanisms
+Subject: Re: [Cocci] [PATCH 1/2] string: Add stracpy and stracpy_pad
+	mechanisms
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -146,31 +145,19 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
->>> @@
->>> (
->>> -x = strlcpy
->>> +stracpy
->>>   (e1.f, e2
->>> -    , i2
->>>   )@p;
->>>   ... when != x
->>>
->>> |
->>
->> I wonder about the deletion of the assignment target.
->> Should the setting of such a variable be usually preserved?
->
-> If it is a local variable and never subsequently used, it doesn't seem
-> very useful.
+> @r@
+> identifier f,i1,i2;
+> struct i1 e1;
+> expression e2;
+> position p;
+> @@
+> \(strscpy\|strlcpy\)(e1.f, e2, i2)@p
 
-Such an explanation is easier to understand.
+I have got the impression that the replacement can work also
+without an inherited position variable at the end.
+How do you think about to omit this SmPL rule then?
 
-* How do you think about the possibility that it was (accidentally)
-  forgotten to use such a local variable?
-
-* Your transformation can result in an intentionally unused return value.
-  Would you like point any more source code places out
-  where values are unused so far?
+Can it be nicer to reduce duplicate SmPL code a bit?
 
 Regards,
 Markus
