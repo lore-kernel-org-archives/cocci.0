@@ -1,57 +1,54 @@
-Return-Path: <SRS0=eZ18=V3=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=Pi+n=V4=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAE02C433FF
-	for <cocci@archiver.kernel.org>; Tue, 30 Jul 2019 08:49:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FE92C433FF
+	for <cocci@archiver.kernel.org>; Wed, 31 Jul 2019 06:45:45 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0052F206A2
-	for <cocci@archiver.kernel.org>; Tue, 30 Jul 2019 08:49:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 3C423206A2
+	for <cocci@archiver.kernel.org>; Wed, 31 Jul 2019 06:45:43 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="R67zYE6Z"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0052F206A2
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="UMm5bFrH"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3C423206A2
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x6U8naY4021278;
-	Tue, 30 Jul 2019 10:49:36 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x6V6jMUa019422;
+	Wed, 31 Jul 2019 08:45:22 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 64F8F777C;
-	Tue, 30 Jul 2019 10:49:36 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id B2E0E7781;
+	Wed, 31 Jul 2019 08:45:22 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id A1125768E
- for <cocci@systeme.lip6.fr>; Tue, 30 Jul 2019 10:49:34 +0200 (CEST)
-Received: from mout.web.de (mout.web.de [212.227.17.11])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x6U8nUDQ006120;
- Tue, 30 Jul 2019 10:49:31 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 8957D777C
+ for <cocci@systeme.lip6.fr>; Wed, 31 Jul 2019 08:45:20 +0200 (CEST)
+Received: from mout.web.de (mout.web.de [212.227.17.12])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x6V6jFBS026730;
+ Wed, 31 Jul 2019 08:45:16 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1564476542;
- bh=udk/4DiKcVzXKfu8rZxOBGfmVl1dsR4NnNq0mHljcLg=;
- h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
- b=R67zYE6Zv/FsW8uMTVzATrlebMsiCosyd/GuRAirzvSf9yO3V1s+wzgCS2PevCOXc
- RGPl6glYrp61Hp4xmjsPscxNMRL+0+9n6DrAdyGoa7mf//cLgH/kB13Igyz2eHmTTY
- wpQK+01iSpTAP1x4lNth0MX0e6aT1L+Tq6G6PGHU=
+ s=dbaedf251592; t=1564555495;
+ bh=Kc2lJglxBeibyF9vhLafDnzZiAHverCXaTrJlWT2zg4=;
+ h=X-UI-Sender-Class:Subject:To:References:From:Cc:Date:In-Reply-To;
+ b=UMm5bFrHu1ORQExz3uo17Ww9BmCc4U8HHr6QIvXgaG+LHzR8buVSrjpne+ulNZl5/
+ ziky/0ehDl+Acz561pZLiD3wUwgYXjQPuGa9C1CmYHM152lt11OQvPbkD8z/V2VWjP
+ VxyMy2icuCIv9l3lzV7klKDBIy8bdNnsiaO4J7o0=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([2.243.24.141]) by smtp.web.de (mrweb102
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0MV4fx-1hrgQa3paH-00YQ4y; Tue, 30
- Jul 2019 10:49:02 +0200
-To: Stephen Boyd <swboyd@chromium.org>, Julia Lawall <Julia.Lawall@lip6.fr>,
-        Gilles Muller <Gilles.Muller@lip6.fr>,
-        Michal Marek
- <michal.lkml@markovi.net>,
+Received: from [192.168.1.2] ([93.135.180.205]) by smtp.web.de (mrweb101
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0M5fsK-1iH5nq42jA-00xaP1; Wed, 31
+ Jul 2019 08:44:55 +0200
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Stephen Boyd <swboyd@chromium.org>,
         Masahiro Yamada <yamada.masahiro@socionext.com>,
-        kernel-janitors@vger.kernel.org
-References: <20190730053845.126834-1-swboyd@chromium.org>
- <20190730053845.126834-4-swboyd@chromium.org>
+        kernel-janitors@vger.kernel.org, cocci@systeme.lip6.fr
+References: <156455237123959@kroah.com>
 From: Markus Elfring <Markus.Elfring@web.de>
 Openpgp: preference=signencrypt
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
@@ -97,51 +94,52 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <7debc03d-0bed-e0d7-a793-089fcc85c9ee@web.de>
-Date: Tue, 30 Jul 2019 10:49:00 +0200
+Message-ID: <00bc6fea-f505-56d2-3803-1ac0882436b7@web.de>
+Date: Wed, 31 Jul 2019 08:44:29 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190730053845.126834-4-swboyd@chromium.org>
-Content-Language: en-US
-X-Provags-ID: V03:K1:OCF3C0lcfWYjWEDBmfvnDA8RhhJEy91vMb12hxaIrorlbWRJARm
- k6totR05fNL3BcvN8pKBvus3rJ3PixEhWewY8RqxsLtm18CaQvX0hwV5pxt5Pi3/WvuvMbm
- WEBkhGKXh6dCUqu585QfLAMj6uqd0qIdGrseb6dEeJyctQJOSn1vubh0ftCDZm2e0D1EN+/
- zAMO6CTJ+AGhdb4ASzEoA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:buCdTcSCens=:lWBFEtRNfzg3ZAf7voRRLm
- 7orqc/iPa0X4hquPqsqO8hyFsE2qsaxxCVjwjzWr4AGLbqySmL2HoxAbBUHRNR3v36HYo5XcE
- NkG4Kwnz0an0JWRkLTAw/GQrds4MU+9ffh4W/rsOaoRi3JQJ4ZcjWORtl+n86M9CXsUjFLbdI
- TWvEuKx5wXqOrYZw01u/0cQB/jOafImHlYEnnSFDq67B+1Na13731t0+1FN12o0lqg3jM3Z49
- w2kowoyr1J9IkdHrvxpTVa9//ieJpHqrL2ktM8OO5at7CSQX9aFKXWIWt6woPVmmDiWZPo8IS
- 5UdiB2bY0bS3JUttcGpUgO5azKB+AUC8/bWKzkBA4fzk2ObXZDWSt0BH3gdG6yDyVWyO7wX1b
- 30T8bkSzmr7mgIswIKR++ePz3+k7hODILwl1vlE5imZj4wm9DTM1ZE00K8iQXubgfpGIiDmXM
- 7Hbf7D5O0/UFVN3s0dH+tfbiEVmouHdZ4S3EzHUqTMXcoapBky7B4P+sxt/7V0B6B/gU5ZUW7
- UJme3XAxnoZfXbV3C5/NrqnKzRDouMbYKJtjSCeeLh4MbGYKEx+WGScAVzt9u3I69HWIUiGvk
- UdLnOtGkPQQKTLAyWcA/csaUHXkFBc78+lxKalkn2ebKxuGIGPYTUmSU/klZphno+Md0xZqOU
- E4+iPqjwtEqah2bb4eXa0wpP9q4PtQCqBS3ICzHSv+BHArlTvgVEfCITt1RJDiz0ZckParSkG
- w8ZXOgvKmyJEuRJeXDMaZwNDkiAgDoGi61hoG73Wvw85+RyTzFgzkO2n9Kw65CvEU/UyzI2dd
- +6j6UxTd/wOMzB2FwF4joa8AOQ3NBPOQD6qjR3p01d+5uLs8FxQ9ctTRlaYpmINge8IRBG2aC
- uKOsTrkFdsWCKevT4OnrwuPPudREQdSfIEdFoWR5OPmmnOb5MCjf6K9NJE2yUyfC54HPwXt2i
- +VDvSI0uz7NS3JypOz7YFZ+kVirLaSkTpPquSnxr0daf8rWwNXBoWSlsmRkMhqyAb2J6MyCb/
- grfp32QqvRcXgXFvT5I8/Haz+nAf55F8P2PE18HFXXRcteMNMJCl3vuJDtt0vtCk0dyoCBEZR
- nN+RffGHtyMl+fjFBCkhtvRZPmFgmWYoDo0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 30 Jul 2019 10:49:36 +0200 (CEST)
+In-Reply-To: <156455237123959@kroah.com>
+Content-Language: en-GB
+X-Provags-ID: V03:K1:ui++1DX+81fq8mlmhBlGylfsX9LPs3RoUHUA2iHD+YfDzOBIxrq
+ 5tm9WX+ZOsMTGHlOd/KKbzcOkTAtPZ8K42WI/QPCCSOnfyJutzOSgUm97ZHYsMMwjVb+GXB
+ K/70N/AO3If/beWfO2ORAVA6gggXloxRKPiLmwAZiibliRefDC0KXrQntGQIe33fmxUJsnA
+ 1P+/YDJXjZyx232Kyd9RA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:iINreL36Bv0=:9FZ7KTYEBI0TAmPt89fUWl
+ P1EcC1cd6F43qNnx7gFtThai4sj2XRSLXc3LVNia/af/C2luNb/CuVzpdz8pH+bwcXpMAvDMv
+ n7Spjiz6RFypxplWyI7mew96uofSIaBJ04vPKrn/9VPHJQpEWTBSKkRl/juQnVecq+sUWDNFk
+ JSXaLxmvB1/6zAw1DDtBZIBWZdjPhm/qB8SxhWWt4pWWsVNq8hxuTQ8zB/G1mxgZ9KxsDi28Z
+ c6nAQs7VMaryRr0DG7FbI6zMEbaygxzW6/eiYFncN8hkHTZGSoFGTWpyAaoUEFMb2uL+w+lDF
+ DkdsbUy25rD5rWglniyb7p0vceI7KCghP12FIBmqEmcj1M38Kwckt+CjTnlvJVFBBoEnP4U+I
+ vSwG2J8/OrL1yRNET2wU5g4pgBOD86HcRMRaJLwR+bfYR6njPVUn83MZYWujj56h7wzXjp35f
+ 80imUOhpO7gmTsA7OMcZi7t2ptfK7deLxV60EBqXhd+zTZ45SJChlc06mijcEthaSxbWjw0vl
+ 5E0RpBAJp/jk8B7mNL00Z/vrOz5tN1g4nsWKMFf4zh22PlX+sbnY3CqNsNRlm3kkuqkHcAmog
+ 0fRWWNrRGozaTAGooqRuAhUKO6gXbMizGmShEMlBemcV+15iX7cyDFhnXGViSvKeOhmF3ak2y
+ C0K61c5TfEFmvEQzK+U1TIRDoD0uLMRbTaX7mL550tWmipUTftd52OXEdey5xFMdRD6wIkqRh
+ Cfo2jYMuEmnl0aUKfvv+37nx+ZmKDnWCWwGV08QdzUOQs1qYhkgp1+bsmS3RP672+ZqdXkORI
+ pESp/CW0DEd8mkmPGZ2bPPWQfaHELzq3ibMXDgqb5vkchL9adDYfEwFzA8RZ2m7HJA3IDHUph
+ EZid97Ph92GYkhm5JDyupWFzn05I0RFClKXub3s85LlnpTFA/vEsKp1NtAZ+zR81qgQobeA+G
+ idaVUgg7H55K5rE/omTZRwGO3Sn6QPgG4Uw7+4XFqztrPCRfCylC6dMVRzgaTLEPN/+oMKD2K
+ TDZvWJGzYXMi1je50VbKY4vFRIk+X22VDteOUxP+Qn03mTcE9ny9trKVeu7K0Atx/70/F6ipu
+ zm5KiekQV6+RAojvhKMc7rW2Bf8WKEOuU5e
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 31 Jul 2019 08:45:23 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Tue, 30 Jul 2019 10:49:31 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Wed, 31 Jul 2019 08:45:16 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Rob Herring <robh@kernel.org>,
+Cc: Rob Herring <robh@kernel.org>, Michal Marek <michal.lkml@markovi.net>,
         Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
         linux-kernel@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Nicolas Palix <nicolas.palix@imag.fr>,
+        Russell King <linux@armlinux.org.uk>,
         Javier Martinez Canillas <javierm@redhat.com>,
         Andrzej Hajda <a.hajda@samsung.com>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Mark Brown <broonie@kernel.org>, Russell King <linux@armlinux.org.uk>,
-        cocci@systeme.lip6.fr, Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [Cocci] [PATCH v5 3/3] coccinelle: Add script to check for
- platform_get_irq() excessive prints
+        Mark Brown <broonie@kernel.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [Cocci] patch "coccinelle: Add script to check for
+ platform_get_irq() excessive" added to driver-core-next
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -153,50 +151,32 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-PiBJJ20gbm90IHN1cmUgdGhpcyB3aWxsIGJlIGFjY2VwdGVkIG9yIG5vdAoKVGhlIHBhdGNoIHJl
-dmlldyBhbmQgY29ycmVzcG9uZGluZyBjbGFyaWZpY2F0aW9uIHdpbGwgYmVjb21lIG1vcmUgaW50
-ZXJlc3RpbmcsCndvbid0IGl0PwoKSSBhbSBtaXNzaW5nIG1vcmUgY29uc3RydWN0aXZlIGZlZWRi
-YWNrIHRvIHJlbWFpbmluZyBzb2Z0d2FyZSBkZXZlbG9wbWVudCBjb25jZXJucy4KaHR0cHM6Ly9s
-b3JlLmtlcm5lbC5vcmcvcGF0Y2h3b3JrL2NvbW1lbnQvMTMwMTE5NC8KaHR0cHM6Ly9sb3JlLmtl
-cm5lbC5vcmcvbGttbC8zYmFhM2UzYy1jMTIyLWU4NjgtNTVhMC01OTdlMjc5NDk2YWNAd2ViLmRl
-LwpodHRwczovL3N5c3RlbWUubGlwNi5mci9waXBlcm1haWwvY29jY2kvMjAxOS1KdWx5LzAwNjE0
-My5odG1sCmh0dHBzOi8vbGttbC5vcmcvbGttbC8yMDE5LzcvMjQvODg2CgoKPiBnaXZlbiB0aGF0
-IE1hcmt1cyBpbmRpY2F0ZXMgYSBzaW1pbGFyIHBhdGNoIHdhcyBtYWRlIGZvciBvdGhlciBlcnJv
-ciBtZXNzYWdlcwoKSSBhbSBhbHNvIGN1cmlvdXMgaG93IHRoZSBhY2NlcHRhbmNlIHdpbGwgZXZv
-bHZlIGFyb3VuZCBzdWNoIGNoYW5nZSBwb3NzaWJpbGl0aWVzLgpEaWQgeW91IGdldCBhbnkgdXNl
-ZnVsIGRldmVsb3BtZW50IGlkZWFzIGZyb20gdGhpcyBhcHByb2FjaD8KCgo+IHRoYXQgdGhpcyBt
-YXkgYmUgYWJsZSB0byBiZSBtZXJnZWQgaW50by4KCkkgZmluZCBpdCB1bmxpa2VseSB0aGF0IGEg
-bWVyZ2Ugd2lsbCBiZSB1c2VmdWwgaW4gdGhpcyBjYXNlIGJlY2F1c2Ugb2Ygc3BlY2lmaWMKcHJv
-cGVydHkgZGlmZmVyZW5jZXMgaW4gU21QTCBzcGVjaWZpY2F0aW9ucy4KQnV0IEkgaW1hZ2luZSB0
-aGF0IGltcHJvdmVkIFNtUEwgc2NyaXB0IHZhcmlhbnRzIHdpbGwgYmUgaGVscGZ1bC4KCgo+ICBj
-cmVhdGUgbW9kZSAxMDA2NDQgc2NyaXB0cy9jb2NjaW5lbGxlL2FwaS9wbGF0Zm9ybV9nZXRfaXJx
-LmNvY2NpCgpPbiB3aGljaCBzdG9yYWdlIGxvY2F0aW9ucyB3b3VsZCB3ZSBsaWtlIHRvIGFncmVl
-PwoKCj4gK0BkZXBlbmRzIG9uIGNvbnRleHRACj4gK2V4cHJlc3Npb24gcmV0Owo+ICtzdHJ1Y3Qg
-cGxhdGZvcm1fZGV2aWNlICpFOwoKSG93IG11Y2ggZG9lcyB0aGlzIHNwZWNpZmljYXRpb24gbWF0
-dGVyIGZvciB0aGUgcGFyYW1ldGVycwpvZiB0aGUgbWVudGlvbmVkIGZ1bmN0aW9ucyAoaW4gdGhl
-IFNtUEwgc2NyaXB0KT8KV2lsbCB0aGUgc2VsZWN0aW9uIG9mIGZ1bmN0aW9uIG5hbWVzIGJlIHN1
-ZmZpY2llbnQgZm9yIHRoZSBkaXNjdXNzZWQKc291cmNlIGNvZGUgc2VhcmNoIHBhdHRlcm4/CgoK
-PiArQEAKPiArCj4gK3JldCA9Cj4gKygKPiArcGxhdGZvcm1fZ2V0X2lycQo+ICt8Cj4gK3BsYXRm
-b3JtX2dldF9pcnFfYnluYW1lCj4gKykoRSwgLi4uKTsKCiogV291bGQgeW91IGV2ZW50dWFsbHkg
-bGlrZSB0byBleHRlbmQgdGhlIGZ1bmN0aW9uIG5hbWUgc2VsZWN0aW9uPwoKKiBXaWxsIHRoZSBT
-bVBMIGVsbGlwc2lzIGJlIGFwcHJvcHJpYXRlIHdpdGhvdXQgdGhlIG1ldGF2YXJpYWJsZSDigJxF
-4oCdPwoKCj4gK2lmICggcmV0IFwoIDwgXHwgPD0gXCkgMCApCj4gK3sKPiArKAo+ICtpZiAocmV0
-ICE9IC1FUFJPQkVfREVGRVIpCj4gK3sgLi4uCj4gKypkZXZfZXJyKC4uLik7Cj4gKy4uLiB9Cj4g
-K3wKPiArLi4uCj4gKypkZXZfZXJyKC4uLik7Cj4gKykKPiArLi4uCj4gK30KCkkgc3VnZ2VzdCB0
-byByZWNvbnNpZGVyIFNtUEwgaW1wbGVtZW50YXRpb24gZGV0YWlscyBvbmNlIG1vcmUuCgoqIENh
-c2UgZGlzdGluY3Rpb24gZm9yIGN1cmx5IGJyYWNrZXRzIG9mIGNvbXBvdW5kIHN0YXRlbWVudHMK
-CiogQXBwbGljYXRpb24gb2YgdGhlIFNtUEwgY29uc3RydWN0IOKAnDwrLi4uIOKApiAuLi4rPuKA
-nQoKCj4gK0BzY3JpcHQ6cHl0aG9uIGRlcGVuZHMgb24gb3JnQAo+ICtwMSA8PCByLnAxOwo+ICtA
-QAo+ICsKPiArY29jY2kucHJpbnRfbWFpbihwMSkKPiArCj4gK0BzY3JpcHQ6cHl0aG9uIGRlcGVu
-ZHMgb24gcmVwb3J0QAo+ICtwMSA8PCByLnAxOwo+ICtAQAo+ICsKPiArbXNnID0gImxpbmUgJXMg
-aXMgcmVkdW5kYW50IGJlY2F1c2UgcGxhdGZvcm1fZ2V0X2lycSgpIGFscmVhZHkgcHJpbnRzIGFu
-IGVycm9yIiAlIChwMVswXS5saW5lKQo+ICtjb2NjaWxpYi5yZXBvcnQucHJpbnRfcmVwb3J0KHAx
-WzBdLG1zZykKCldpbGwgdGhlIG1lc3NhZ2UgY29uc3RydWN0aW9ucyBiZSBhZGp1c3RlZD8KClJl
-Z2FyZHMsCk1hcmt1cwpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fXwpDb2NjaSBtYWlsaW5nIGxpc3QKQ29jY2lAc3lzdGVtZS5saXA2LmZyCmh0dHBzOi8vc3lz
-dGVtZS5saXA2LmZyL21haWxtYW4vbGlzdGluZm8vY29jY2kK
+> This is a note to let you know that I've just added the patch titled
+>
+>     coccinelle: Add script to check for platform_get_irq() excessive
+>
+> to my driver-core git tree which can be found at
+>     git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git
+> in the driver-core-next branch.
+
+I find it interesting somehow that this version of a script for
+the semantic patch language can be integrated already in this
+development branch.
+
+
+> The patch will also be merged in the next major kernel release
+> during the merge window.
+
+How much will questionable implementation details influence this process?
+
+Regards,
+Markus
+_______________________________________________
+Cocci mailing list
+Cocci@systeme.lip6.fr
+https://systeme.lip6.fr/mailman/listinfo/cocci
