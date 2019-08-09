@@ -2,61 +2,62 @@ Return-Path: <SRS0=EuJX=WI=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF4C8C433FF
-	for <cocci@archiver.kernel.org>; Mon, 12 Aug 2019 06:12:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BDAFC31E40
+	for <cocci@archiver.kernel.org>; Mon, 12 Aug 2019 06:12:11 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 50AA9208C2
-	for <cocci@archiver.kernel.org>; Mon, 12 Aug 2019 06:12:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 50AA9208C2
+	by mail.kernel.org (Postfix) with ESMTPS id F0B322087B
+	for <cocci@archiver.kernel.org>; Mon, 12 Aug 2019 06:12:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F0B322087B
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x7C6BnjU009116;
-	Mon, 12 Aug 2019 08:11:49 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x7C6Bp2K027381;
+	Mon, 12 Aug 2019 08:11:51 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 1FDA576C5;
-	Mon, 12 Aug 2019 08:11:49 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 91E6977B3;
+	Mon, 12 Aug 2019 08:11:50 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 9D2357788
- for <cocci@systeme.lip6.fr>; Fri,  9 Aug 2019 15:36:57 +0200 (CEST)
-Received: from mail-lf1-f65.google.com (mail-lf1-f65.google.com
- [209.85.167.65])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x79DauYs006629
- for <cocci@systeme.lip6.fr>; Fri, 9 Aug 2019 15:36:56 +0200 (CEST)
-Received: by mail-lf1-f65.google.com with SMTP id v16so15676445lfg.11
- for <cocci@systeme.lip6.fr>; Fri, 09 Aug 2019 06:36:56 -0700 (PDT)
+ by systeme.lip6.fr (Postfix) with ESMTPS id B65D37788
+ for <cocci@systeme.lip6.fr>; Fri,  9 Aug 2019 17:05:24 +0200 (CEST)
+Received: from mail-lj1-f196.google.com (mail-lj1-f196.google.com
+ [209.85.208.196])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x79F5O0a022759
+ for <cocci@systeme.lip6.fr>; Fri, 9 Aug 2019 17:05:24 +0200 (CEST)
+Received: by mail-lj1-f196.google.com with SMTP id k18so92357508ljc.11
+ for <cocci@systeme.lip6.fr>; Fri, 09 Aug 2019 08:05:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:reply-to:subject:to:cc:references:from:openpgp
  :autocrypt:message-id:date:user-agent:mime-version:in-reply-to
  :content-language:content-transfer-encoding;
- bh=W/e3FaKnyiiHnPYNMIM+3ocFb3MozK25GrlOTfW37lE=;
- b=EVQboVnP0ZaJ5hmiZ24LYXycOrenIvPj7q/l07NTOaVPBlgZCfS59u5rkjxFD/H8pk
- cJJWGaXB+y/4m0QAB1tUfhkDRFGenjUcVMLS+66HmB/LPNPw23lu1GyB/pJWnbuQv6Fb
- 8JGJkpNhIZmxOrFXfKkPB/TRFKpJdcauvorHX9QGEXdgTn2DJ0ZZVoX9HH4JTqcq8A34
- mXqWWUlymvuluWubmLAVsphu6VNZGlQ/EioEDGMBkLAHq7+n9uPf0lL4SkwDmpuh5ge3
- MaQj3xn9Cp570Il+pKNfR+WlujHLC0d1HHlYqZpxyqZ0+8kx7kilwQacw8SjQo/3WWob
- 7mqg==
-X-Gm-Message-State: APjAAAVTRHkYR1iIiIYP0V/dUb23XlPQPkBqPmrxpd+Y9OOECMgAUxZH
- hGbn5s5cfQjbCi8R2Ne/Xrxz5IwOM70=
-X-Google-Smtp-Source: APXvYqy8kM4WZJhFhhgNKZ0v33EjUbjFKiHw3L61zhVj+IgMT7WanUaTrOMeuGJ3cvIngDqLgpP8wQ==
-X-Received: by 2002:a19:a419:: with SMTP id q25mr13024216lfc.136.1565357815476; 
- Fri, 09 Aug 2019 06:36:55 -0700 (PDT)
-Received: from [192.168.42.52] ([213.87.147.2])
- by smtp.gmail.com with ESMTPSA id a70sm19395997ljf.57.2019.08.09.06.36.53
+ bh=acZurH2HTDYCaTPNUYlalmeHoQEO9y92gUKscv1e/o0=;
+ b=rwYwxLempGiKaNnK/4w/tAQKl3hPPne9UaNeO1Kcmh6dkq751zh5ieWXb0f8QdV4Ix
+ xfkS8soO18V7xExFCqAdc8qbp0rShjxYVlnxuUzLmGo9kbb60X0kKGcMOBqo1gBK6Uk+
+ HQXHU3qTUDi5cRsdYWTj0nuYvGeG78DTvYzRn5rc0jUNN2Vrh9mdxyZo8WcAJZt1j/1d
+ GJ8itkMeb/zmvBf6WkpL+FGP3oTEFEZTw971WQOUPzdTPW8Q7ziocJm1a5wgvdSgWYPy
+ j5zwlXvvEWPaH6MaqEEAafeqt47HQ2A35QKv1N8VUgQJD/3oOEWwcwXYZ9bAZqwcdH/u
+ CkWQ==
+X-Gm-Message-State: APjAAAVgYR01Yms6/wKCdjjz5O8VLg0FkFa6rEHtqdwDO42tKOsy/t9h
+ P2lJCEXbzCGeVwNcj1FEwwzW3WoYyFg=
+X-Google-Smtp-Source: APXvYqw/8JKXd595yLew1u3FlnwtDQcs/cyjuJUM2DbnkpQQztctd2qcDEG8y0mcnBZdbhE8ducF3A==
+X-Received: by 2002:a2e:3211:: with SMTP id y17mr11193004ljy.86.1565363123091; 
+ Fri, 09 Aug 2019 08:05:23 -0700 (PDT)
+Received: from [192.168.42.38] ([213.87.147.2])
+ by smtp.gmail.com with ESMTPSA id z17sm19364949ljc.37.2019.08.09.08.05.18
  (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
- Fri, 09 Aug 2019 06:36:54 -0700 (PDT)
-To: Jann Horn <jannh@google.com>, Jens Axboe <axboe@kernel.dk>
+ Fri, 09 Aug 2019 08:05:20 -0700 (PDT)
+To: Julia Lawall <julia.lawall@lip6.fr>, Jann Horn <jannh@google.com>
 References: <20190326220348.61172-1-jannh@google.com>
+ <9ced7a06-5048-ad1a-3428-c8f943f7469c@linux.com>
+ <alpine.DEB.2.21.1908091555090.2946@hadrien>
 From: Alexander Popov <alex.popov@linux.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=alex.popov@linux.com; prefer-encrypt=mutual; keydata=
@@ -112,20 +113,20 @@ Autocrypt: addr=alex.popov@linux.com; prefer-encrypt=mutual; keydata=
  ydgbcFEkNjqz4OtbrSwEHMy/ADsUWksYuzVbw7/pQTc6OAskESBr5igP7B/rIACUgiIjdOVB
  ktD1IQcezrDcuzVCIpuq8zC6LwLm7V1Tr6zfU9FWwnqzoQeQZH4QlP7MBuOeswCpxIl07mz9
  jXz/74kjFsyRgZA+d6a1pGtOwITEBxtxxg==
-Message-ID: <9ced7a06-5048-ad1a-3428-c8f943f7469c@linux.com>
-Date: Fri, 9 Aug 2019 16:36:52 +0300
+Message-ID: <3ee24295-6d63-6da9-774f-f1a599418685@linux.com>
+Date: Fri, 9 Aug 2019 18:05:17 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190326220348.61172-1-jannh@google.com>
+In-Reply-To: <alpine.DEB.2.21.1908091555090.2946@hadrien>
 Content-Language: en-US
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 12 Aug 2019 08:11:50 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 12 Aug 2019 08:11:51 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Fri, 09 Aug 2019 15:36:56 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Fri, 09 Aug 2019 17:05:24 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Mailman-Approved-At: Mon, 12 Aug 2019 08:11:47 +0200
-Cc: Michal Marek <michal.lkml@markovi.net>,
+Cc: Jens Axboe <axboe@kernel.dk>, Michal Marek <michal.lkml@markovi.net>,
         "kernel-hardening@lists.openwall.com"
  <kernel-hardening@lists.openwall.com>,
         Mukesh Ojha <mojha@codeaurora.org>, Jiri Kosina <jikos@kernel.org>,
@@ -150,146 +151,71 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Hello everyone!
-
-On 27.03.2019 1:03, Jann Horn wrote:
-> As sparse points out, these two copy_from_user() should actually be
-> copy_to_user().
-
-I've spent some time on these bugs, but it turned out that they are already public.
-
-I think Jann's patch is lost, it is not applied to the mainline.
-So I add a new floppy maintainer Denis Efremov to CC.
-
-These bugs on x86_64 cause memset for the userspace memory from the kernelspace.
-That is funny:
- - access_ok for the copy_from_user source (2nd argument) returns zero;
- - copy_from_user tries to erase the destination (1st argument);
- - but the destination is in the userspace instead of kernelspace.
-
-So we have:
-[   40.937098] BUG: unable to handle page fault for address: 0000000041414242
-[   40.938714] #PF: supervisor write access in kernel mode
-[   40.939951] #PF: error_code(0x0002) - not-present page
-[   40.941121] PGD 7963f067 P4D 7963f067 PUD 0
-[   40.942107] Oops: 0002 [#1] SMP NOPTI
-[   40.942968] CPU: 0 PID: 292 Comm: d Not tainted 5.3.0-rc3+ #7
-[   40.944288] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-Ubuntu-1.8.2-1ubuntu1 04/01/2014
-[   40.946478] RIP: 0010:__memset+0x24/0x30
-[   40.947394] Code: 90 90 90 90 90 90 0f 1f 44 00 00 49 89 f9 48 89 d1 83 e2 07
-48 c1 e9 03 40 0f b6 f6 48 b8 01 01 01 01 01 01 01 01 48 0f af c6 <f3> 48 ab 89
-d1 f3 aa 4c 89 c8 c3 90 49 89 f9 40 88 f0 48 89 d1 f3
-[   40.951721] RSP: 0018:ffffc900003dbd58 EFLAGS: 00010206
-[   40.952941] RAX: 0000000000000000 RBX: 0000000000000034 RCX: 0000000000000006
-[   40.954592] RDX: 0000000000000004 RSI: 0000000000000000 RDI: 0000000041414242
-[   40.956169] RBP: 0000000041414242 R08: ffffffff8200bd80 R09: 0000000041414242
-[   40.957753] R10: 0000000000121806 R11: ffff88807da28ab0 R12: ffffc900003dbd7c
-[   40.959407] R13: 0000000000000001 R14: 0000000041414242 R15: 0000000041414242
-[   40.961062] FS:  00007f91115c4440(0000) GS:ffff88807da00000(0000)
-knlGS:0000000000000000
-[   40.962603] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   40.963695] CR2: 0000000041414242 CR3: 000000007c584000 CR4: 00000000000006f0
-[   40.965004] Call Trace:
-[   40.965459]  _copy_from_user+0x51/0x60
-[   40.966141]  compat_getdrvstat+0x124/0x170
-[   40.966781]  fd_compat_ioctl+0x69c/0x6d0
-[   40.967423]  ? selinux_file_ioctl+0x16f/0x210
-[   40.968117]  compat_blkdev_ioctl+0x21d/0x8f0
-[   40.968864]  __x32_compat_sys_ioctl+0x99/0x250
-[   40.969659]  do_syscall_64+0x4a/0x110
-[   40.970337]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-
-I haven't found a way to exploit it.
-
-> Fixes: 229b53c9bf4e ("take floppy compat ioctls to sodding floppy.c")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Jann Horn <jannh@google.com>
-> Reviewed-by: Mukesh Ojha <mojha@codeaurora.org>
-> ---
-> compile-tested only
-
-Acked-by: Alexander Popov <alex.popov@linux.com>
-
->  drivers/block/floppy.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+On 09.08.2019 16:56, Julia Lawall wrote:
+> On Fri, 9 Aug 2019, Alexander Popov wrote:
+>> On 27.03.2019 1:03, Jann Horn wrote:
+>>> As sparse points out, these two copy_from_user() should actually be
+>>> copy_to_user().
+>>
+>> I also wrote a coccinelle rule for detecting similar bugs (adding coccinelle
+>> experts to CC).
+>>
+>>
+>> virtual report
+>>
+>> @cfu@
 > 
-> diff --git a/drivers/block/floppy.c b/drivers/block/floppy.c
-> index 95f608d1a098..8c641245ff12 100644
-> --- a/drivers/block/floppy.c
-> +++ b/drivers/block/floppy.c
-> @@ -3749,7 +3749,7 @@ static int compat_getdrvprm(int drive,
->  	v.native_format = UDP->native_format;
->  	mutex_unlock(&floppy_mutex);
->  
-> -	if (copy_from_user(arg, &v, sizeof(struct compat_floppy_drive_params)))
-> +	if (copy_to_user(arg, &v, sizeof(struct compat_floppy_drive_params)))
->  		return -EFAULT;
->  	return 0;
->  }
-> @@ -3785,7 +3785,7 @@ static int compat_getdrvstat(int drive, bool poll,
->  	v.bufblocks = UDRS->bufblocks;
->  	mutex_unlock(&floppy_mutex);
->  
-> -	if (copy_from_user(arg, &v, sizeof(struct compat_floppy_drive_struct)))
-> +	if (copy_to_user(arg, &v, sizeof(struct compat_floppy_drive_struct)))
->  		return -EFAULT;
->  	return 0;
->  Eintr:
-> 
+> You can replace the above line with @cfu exists@.  You want to find the
+> existence of such a call, not ensure that the call occurs on every
+> control-flow path, which is the default.
 
-I also wrote a coccinelle rule for detecting similar bugs (adding coccinelle
-experts to CC).
+Thanks Julia, I see `exists` allows to drop `<+ +>`, right?
 
+> Do you want this rule to go into the kernel?
 
-virtual report
+It turned out that sparse already can find these bugs.
+Is this rule useful anyway? If so, I can prepare a patch.
 
-@cfu@
-identifier f;
-type t;
-identifier v;
-position decl_p;
-position copy_p;
-@@
-
-f(..., t v@decl_p, ...)
-{
-<+...
-copy_from_user@copy_p(v, ...)
-...+>
-}
-
-@script:python@
-f << cfu.f;
-t << cfu.t;
-v << cfu.v;
-decl_p << cfu.decl_p;
-copy_p << cfu.copy_p;
-@@
-
-if '__user' in t:
-  msg0 = "function \"" + f + "\" has arg \"" + v + "\" of type \"" + t + "\""
-  coccilib.report.print_report(decl_p[0], msg0)
-  msg1 = "copy_from_user uses \"" + v + "\" as the destination. What a shame!\n"
-  coccilib.report.print_report(copy_p[0], msg1)
-
-
-The rule output:
-
-./drivers/block/floppy.c:3756:49-52: function "compat_getdrvprm" has arg "arg"
-of type "struct compat_floppy_drive_params __user *"
-./drivers/block/floppy.c:3783:5-19: copy_from_user uses "arg" as the
-destination. What a shame!
-
-./drivers/block/floppy.c:3789:49-52: function "compat_getdrvstat" has arg "arg"
-of type "struct compat_floppy_drive_struct __user *"
-./drivers/block/floppy.c:3819:5-19: copy_from_user uses "arg" as the
-destination. What a shame!
-
-
-Best regards,
-Alexander
+>> identifier f;
+>> type t;
+>> identifier v;
+>> position decl_p;
+>> position copy_p;
+>> @@
+>>
+>> f(..., t v@decl_p, ...)
+>> {
+>> <+...
+>> copy_from_user@copy_p(v, ...)
+>> ...+>
+>> }
+>>
+>> @script:python@
+>> f << cfu.f;
+>> t << cfu.t;
+>> v << cfu.v;
+>> decl_p << cfu.decl_p;
+>> copy_p << cfu.copy_p;
+>> @@
+>>
+>> if '__user' in t:
+>>   msg0 = "function \"" + f + "\" has arg \"" + v + "\" of type \"" + t + "\""
+>>   coccilib.report.print_report(decl_p[0], msg0)
+>>   msg1 = "copy_from_user uses \"" + v + "\" as the destination. What a shame!\n"
+>>   coccilib.report.print_report(copy_p[0], msg1)
+>>
+>>
+>> The rule output:
+>>
+>> ./drivers/block/floppy.c:3756:49-52: function "compat_getdrvprm" has arg "arg"
+>> of type "struct compat_floppy_drive_params __user *"
+>> ./drivers/block/floppy.c:3783:5-19: copy_from_user uses "arg" as the
+>> destination. What a shame!
+>>
+>> ./drivers/block/floppy.c:3789:49-52: function "compat_getdrvstat" has arg "arg"
+>> of type "struct compat_floppy_drive_struct __user *"
+>> ./drivers/block/floppy.c:3819:5-19: copy_from_user uses "arg" as the
+>> destination. What a shame!
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
