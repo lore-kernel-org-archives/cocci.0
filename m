@@ -2,82 +2,105 @@ Return-Path: <SRS0=BekO=WK=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-4.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FA8AC0650F
-	for <cocci@archiver.kernel.org>; Wed, 14 Aug 2019 08:27:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EB91C433FF
+	for <cocci@archiver.kernel.org>; Wed, 14 Aug 2019 08:27:04 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2E49920843
-	for <cocci@archiver.kernel.org>; Wed, 14 Aug 2019 08:27:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id ACAED20843
+	for <cocci@archiver.kernel.org>; Wed, 14 Aug 2019 08:27:03 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="XP2ar++x"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2E49920843
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linuxfoundation.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Gr/yUIA7"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ACAED20843
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x7E8Qkxn017882;
-	Wed, 14 Aug 2019 10:26:46 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x7E8Qljb026400;
+	Wed, 14 Aug 2019 10:26:47 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id ABD7A76C5;
-	Wed, 14 Aug 2019 10:26:46 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 1BEC077A2;
+	Wed, 14 Aug 2019 10:26:47 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 471D87778
- for <cocci@systeme.lip6.fr>; Tue, 13 Aug 2019 14:44:36 +0200 (CEST)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x7DCiZ7m024834
- for <cocci@systeme.lip6.fr>; Tue, 13 Aug 2019 14:44:35 +0200 (CEST)
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl
- [83.86.89.107])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 350A720578;
- Tue, 13 Aug 2019 12:44:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1565700274;
- bh=4lux6yzclVlNzDLsmndEIT6hVCOxBFLTgWTeazzHxYM=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=XP2ar++xOgoTzbdf3R0qY7+PRC7JV/s1rpD5lsEk2BH7d8XouLHwH1qwwkysDnxTp
- BCdvvqDfNMCxqqvVkA7kRt1FMSuFaaeCvQmI0E8RHZJTcbPrhFgRZD6SAnE1Xb0qWx
- tHxPXYbnoM/KJ5ZCx0APTUWSC/Z5ckgIjnIrYXUc=
-Date: Tue, 13 Aug 2019 14:44:32 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
+ by systeme.lip6.fr (Postfix) with ESMTPS id 478ED768E
+ for <cocci@systeme.lip6.fr>; Wed, 14 Aug 2019 08:36:31 +0200 (CEST)
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:441] (may be forged))
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x7E6aTEM026645
+ for <cocci@systeme.lip6.fr>; Wed, 14 Aug 2019 08:36:30 +0200 (CEST)
+Received: by mail-pf1-x441.google.com with SMTP id d85so2495140pfd.2
+ for <cocci@systeme.lip6.fr>; Tue, 13 Aug 2019 23:36:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to:user-agent;
+ bh=V2ZJmMM7eBUrb1Y12nRIIaugrWodscFeaE9AP4JG/Zg=;
+ b=Gr/yUIA7h/3eBDYc9/YH3PmK0TnssS6CO/9hFNunLAWWczG3OiVHN4WIIgL3E9ZCpt
+ lxw0s7tI4ERoXSIwh3JMsdgc8zNzPjnA6BXgqeWAmqEyh+LbCMXm65+O4nT6k1c31e4G
+ 72a+RzjyGS+EkSW5x52rptXOtidXTsKAuxWhyJ3b6xCpOT6ucihhvpEg52ywhW82gF/O
+ HmWN/pIGHF5t5B5reCnO/nsCfzeJAwUmX5rfj3UfluGG3M6/UTPt0Rx+R75a3hwPVGGS
+ CEB7dg3ncNyljnIstqsOyQ3HSCSlywswvj4u3icgmk4pUqxyXQc3S7rYfldNhw5/Vge5
+ lm7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to:user-agent;
+ bh=V2ZJmMM7eBUrb1Y12nRIIaugrWodscFeaE9AP4JG/Zg=;
+ b=EO9vFo61EcYTWXEM19Yp3UktGs6xPAITgetihadQMS7m65O9JXimtnCQw52tqJbsK1
+ T4BWrHV0JiB+4PDAOqwVWIicXPSKqyMQErXURATBZq8emMG7ldoO0Xz2A0i6eedbxP72
+ 28qSU3X98iVcoo1zAOKnymS84RmUrKeQz7Ab9plKYDfUdLd/+MH3JfyJ5uHSWaYpTGu5
+ aqZyMLuswJkSKNMynLzbhtUaruqFhbRHTxBeeuLnjfCnrC3T30pO9i0Y+YVnByY98scB
+ tCfeA3deBMjbetOmYh5ARREtXLmCjGJugueUPykKwS9Uo11dd142Lj+DDL1KGEAQenfi
+ +Lfg==
+X-Gm-Message-State: APjAAAUBpoVexJuKoO+98cVPpoLBkAost29ICen/nmgsTTY6OU69FVic
+ t1F8UyxFzqyk3oAM/sUB8z4=
+X-Google-Smtp-Source: APXvYqw/2y0dZHWefWOjTwta+m4FUhziJYRwexQISdGldO7ge/xr1KdLXo0S4VRw57w8u++ZXvSuxA==
+X-Received: by 2002:a63:89c2:: with SMTP id
+ v185mr37393202pgd.241.1565764588977; 
+ Tue, 13 Aug 2019 23:36:28 -0700 (PDT)
+Received: from himanshu-Vostro-3559 ([103.77.43.147])
+ by smtp.gmail.com with ESMTPSA id j15sm109471223pfr.146.2019.08.13.23.36.15
+ (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+ Tue, 13 Aug 2019 23:36:27 -0700 (PDT)
+Date: Wed, 14 Aug 2019 12:06:11 +0530
+From: Himanshu Jha <himanshujha199640@gmail.com>
 To: Matthias Maennich <maennich@google.com>
-Message-ID: <20190813124432.GA12475@kroah.com>
+Message-ID: <20190814063611.GA22387@himanshu-Vostro-3559>
 References: <20180716122125.175792-1-maco@android.com>
  <20190813121733.52480-1-maennich@google.com>
  <20190813121733.52480-9-maennich@google.com>
 MIME-Version: 1.0
 Content-Disposition: inline
 In-Reply-To: <20190813121733.52480-9-maennich@google.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+User-Agent: Mutt/1.9.4 (2018-02-28)
 X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 14 Aug 2019 10:26:47 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Tue, 13 Aug 2019 14:44:35 +0200 (CEST)
+ (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
+ Wed, 14 Aug 2019 08:36:30 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
+X-Scanned-By: MIMEDefang 2.78
 X-Mailman-Approved-At: Wed, 14 Aug 2019 10:26:44 +0200
-Cc: kstewart@linuxfoundation.org, linux-m68k@vger.kernel.org, oneukum@suse.com,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        usb-storage@lists.one-eyed-alien.net,
-        Nicolas Ferre <nicolas.ferre@microchip.com>, hpa@zytor.com,
+Cc: kstewart@linuxfoundation.org, linux-m68k@vger.kernel.org,
+        linux-usb@vger.kernel.org, usb-storage@lists.one-eyed-alien.net,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>, hpa@zytor.com,
         joel@joelfernandes.org, sam@ravnborg.org, cocci@systeme.lip6.fr,
         linux-arch@vger.kernel.org, linux-scsi@vger.kernel.org, x86@kernel.org,
         lucas.de.marchi@gmail.com, mingo@redhat.com, geert@linux-m68k.org,
         stern@rowland.harvard.edu, kernel-team@android.com, sspatil@google.com,
-        arnd@arndb.de, linux-kbuild@vger.kernel.org, jeyu@kernel.org,
+        arnd@arndb.de, linux-kbuild@vger.kernel.org, pombredanne@nexb.com,
         Nicolas Palix <nicolas.palix@imag.fr>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>, tglx@linutronix.de,
-        maco@android.com, michal.lkml@markovi.net, linux-usb@vger.kernel.org,
-        sboyd@codeaurora.org, linux-kernel@vger.kernel.org, maco@google.com,
-        pombredanne@nexb.com, "David S. Miller" <davem@davemloft.net>,
-        linux-modules@vger.kernel.org
+        maco@android.com, michal.lkml@markovi.net, gregkh@linuxfoundation.org,
+        oneukum@suse.com, sboyd@codeaurora.org, linux-kernel@vger.kernel.org,
+        maco@google.com, jeyu@kernel.org,
+        "David S. Miller" <davem@davemloft.net>, linux-modules@vger.kernel.org
 Subject: Re: [Cocci] [PATCH v2 08/10] scripts: Coccinelle script for
  namespace dependencies.
 X-BeenThere: cocci@systeme.lip6.fr
@@ -117,10 +140,33 @@ On Tue, Aug 13, 2019 at 01:17:05PM +0100, Matthias Maennich wrote:
 > Signed-off-by: Matthias Maennich <maennich@google.com>
 > ---
 
-I really can't express just how cool this patch is.  I was amazed when I
-first saw it in action a long time ago, and still am.
+[]
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>  MAINTAINERS                                 |  5 ++
+>  Makefile                                    | 12 +++++
+>  scripts/Makefile.modpost                    |  4 +-
+>  scripts/coccinelle/misc/add_namespace.cocci | 23 +++++++++
+>  scripts/nsdeps                              | 54 +++++++++++++++++++++
+>  5 files changed, 97 insertions(+), 1 deletion(-)
+>  create mode 100644 scripts/coccinelle/misc/add_namespace.cocci
+>  create mode 100644 scripts/nsdeps
+
+[]
+
+> +if [ "$SPATCH_VERSION_NUM" -lt "$SPATCH_REQ_VERSION_NUM" ] ; then
+> +    echo 'spatch needs to be version 1.06 or higher'
+
+Nitpick: 1.0.6
+
+> +    exit 1
+> +fi
+
+
+-- 
+Himanshu Jha
+Undergraduate Student
+Department of Electronics & Communication
+Guru Tegh Bahadur Institute of Technology
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
