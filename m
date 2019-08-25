@@ -1,77 +1,64 @@
-Return-Path: <SRS0=RP4p=WV=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=MHZk=WW=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,PLING_QUERY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,PLING_QUERY,SPF_HELO_NONE,SPF_PASS
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11809C3A5A1
-	for <cocci@archiver.kernel.org>; Sun, 25 Aug 2019 21:19:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98BB5C3A5A1
+	for <cocci@archiver.kernel.org>; Mon, 26 Aug 2019 03:16:28 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8668A20679
-	for <cocci@archiver.kernel.org>; Sun, 25 Aug 2019 21:19:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8668A20679
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux.com
+	by mail.kernel.org (Postfix) with ESMTPS id C495D2173E
+	for <cocci@archiver.kernel.org>; Mon, 26 Aug 2019 03:16:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C495D2173E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=perches.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x7PLJdMb027252;
-	Sun, 25 Aug 2019 23:19:39 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x7Q3GC02000737;
+	Mon, 26 Aug 2019 05:16:12 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 0429876C5;
-	Sun, 25 Aug 2019 23:19:39 +0200 (CEST)
-Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
+	by systeme.lip6.fr (Postfix) with ESMTP id 71FA774B3;
+	Mon, 26 Aug 2019 05:16:12 +0200 (CEST)
+Received: from osiris.lip6.fr (osiris.lip6.fr [132.227.60.30])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 74A757694
- for <cocci@systeme.lip6.fr>; Sun, 25 Aug 2019 23:19:36 +0200 (CEST)
-Received: from mail-lj1-f196.google.com (mail-lj1-f196.google.com
- [209.85.208.196])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x7PLJaFl021322
- for <cocci@systeme.lip6.fr>; Sun, 25 Aug 2019 23:19:36 +0200 (CEST)
-Received: by mail-lj1-f196.google.com with SMTP id m24so13232011ljg.8
- for <cocci@systeme.lip6.fr>; Sun, 25 Aug 2019 14:19:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:from:to:cc:references:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=XAGbIDdFga1X2HlsM3DdDuO+5VUileKxN3AsXn36/xY=;
- b=ebnBd/ueqxtuimj4DNWsRh+oMQkXBSOeGWPsomWGqXR/usIwP41GDKpVmOhF0IqMFF
- X81Xb2kkfFnhkt5HOoAmQ8vMWDsPE+jfW4/BzDLd35kXqpMdehOXg8eoqpErXeTutery
- izn3ENnds7oxWiTt61EMiLfBpYfVQxt6lSAjf3D+R/fuAWmVF90of9nKbCnVLYb/kYCe
- BCJnat2BHdsruBxiDHhrYY8LN2Uwe+wB3QLOharHJa2iSv5sHK8bh7Pnokz3Hg2N7kbl
- iArpKkvfg1DdYX3Q0dhZGR9lKX7MGQw8+Iwc/yY8e0Z3+OxfAt0UJMuXthB+Q1s/KZ86
- Tkzw==
-X-Gm-Message-State: APjAAAU6aPgiEomcKoIDRcMMgd/5wkVyfBeE8+siiU8X4utPbyfPANRJ
- qjvPh8180zc0f0BhZnaYnP8=
-X-Google-Smtp-Source: APXvYqy8P4V6TzHzyfGdKLQHZ8Clh8NRX1pSFmfp2r760J2XBalgrBjfT6OhBC7Fdns2DUts2xzEQQ==
-X-Received: by 2002:a2e:875a:: with SMTP id q26mr8656162ljj.107.1566767975775; 
- Sun, 25 Aug 2019 14:19:35 -0700 (PDT)
-Received: from [10.68.32.192] (broadband-188-32-48-208.ip.moscow.rt.ru.
- [188.32.48.208])
- by smtp.gmail.com with ESMTPSA id f28sm1516386lfp.28.2019.08.25.14.19.35
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Sun, 25 Aug 2019 14:19:35 -0700 (PDT)
-From: Denis Efremov <efremov@linux.com>
-To: Joe Perches <joe@perches.com>, cocci@systeme.lip6.fr
+ by systeme.lip6.fr (Postfix) with ESMTPS id 650094317
+ for <cocci@systeme.lip6.fr>; Mon, 26 Aug 2019 05:16:09 +0200 (CEST)
+Received: from smtprelay.hostedemail.com (smtprelay0219.hostedemail.com
+ [216.40.44.219])
+ by osiris.lip6.fr (8.15.2/8.15.2) with ESMTP id x7Q3G7Wa017022
+ for <cocci@systeme.lip6.fr>; Mon, 26 Aug 2019 05:16:07 +0200 (CEST)
+Received: from smtprelay.hostedemail.com (10.5.19.251.rfc1918.com
+ [10.5.19.251])
+ by smtpgrave06.hostedemail.com (Postfix) with ESMTP id 35857800CAE5
+ for <cocci@systeme.lip6.fr>; Sun, 25 Aug 2019 16:37:39 +0000 (UTC)
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net
+ [216.40.38.60])
+ by smtprelay05.hostedemail.com (Postfix) with ESMTP id 5AFFB18029122;
+ Sun, 25 Aug 2019 16:37:36 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-HE-Tag: shock46_80224e1ebd25
+X-Filterd-Recvd-Size: 3578
+Received: from XPS-9350 (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
+ (Authenticated sender: joe@perches.com)
+ by omf16.hostedemail.com (Postfix) with ESMTPA;
+ Sun, 25 Aug 2019 16:37:34 +0000 (UTC)
+Message-ID: <b5bae2981e27d133b61d99b08ee60244bf7aabe3.camel@perches.com>
+From: Joe Perches <joe@perches.com>
+To: Denis Efremov <efremov@linux.com>, cocci@systeme.lip6.fr
+Date: Sun, 25 Aug 2019 09:37:32 -0700
+In-Reply-To: <20190825130536.14683-1-efremov@linux.com>
 References: <20190825130536.14683-1-efremov@linux.com>
- <b5bae2981e27d133b61d99b08ee60244bf7aabe3.camel@perches.com>
- <88f6e48e-1230-9488-a973-397f4e6dfbb5@linux.com>
-Message-ID: <25032fea-bda4-a491-def3-05bb5f569875@linux.com>
-Date: Mon, 26 Aug 2019 00:19:34 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+User-Agent: Evolution 3.32.1-2 
 MIME-Version: 1.0
-In-Reply-To: <88f6e48e-1230-9488-a973-397f4e6dfbb5@linux.com>
-Content-Language: en-US
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 25 Aug 2019 23:19:39 +0200 (CEST)
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sun, 25 Aug 2019 23:19:36 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 26 Aug 2019 05:16:13 +0200 (CEST)
+X-Greylist: Delayed for 05:50:00 by milter-greylist-4.4.3 (osiris.lip6.fr
+ [132.227.60.30]); Mon, 26 Aug 2019 05:16:08 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
+X-Scanned-By: MIMEDefang 2.78 on 132.227.60.30
 Cc: Michal Marek <michal.lkml@markovi.net>,
         Nicolas Palix <nicolas.palix@imag.fr>, linux-kernel@vger.kernel.org
 Subject: Re: [Cocci] [PATCH] scripts: coccinelle: check for !(un)?likely
@@ -92,50 +79,80 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-> I think it's incorrect to say so in general. For example, on x86/64:
-> 
-> $ make mrproper
-> $ make allyesconfig
-> $ make && mv vmlinux vmlinux-000
-> $ make coccicheck MODE=patch COCCI=scripts/coccinelle/misc/unlikely.cocci | patch -p1
-> $ make 
-> $ ./scripts/bloat-o-meter ./vmlinux-000 ./vmlinux
-> add/remove: 0/0 grow/shrink: 3/4 up/down: 41/-35 (6)
-> Function                                     old     new   delta
-> dpaa2_io_service_rearm                       357     382     +25
-> intel_pmu_hw_config                         1277    1285      +8
-> get_sigframe.isra.constprop                 1657    1665      +8
-> csum_partial_copy_from_user                  605     603      -2
-> wait_consider_task                          3807    3797     -10
-> __acct_update_integrals                      384     373     -11
-> pipe_to_sendpage                             459     447     -12
-> Total: Before=312759461, After=312759467, chg +0.00%
-> 
-> It definitely influence the way the compiler optimizes the code.  
+On Sun, 2019-08-25 at 16:05 +0300, Denis Efremov wrote:
+> This patch adds coccinelle script for detecting !likely and !unlikely
+> usage. It's better to use unlikely instead of !likely and vice versa.
 
-Small addition:
+Please explain _why_ is it better in the changelog.
 
-Results with allyesconfig and KCOV, KASAN, KUBSAN, FTRACE, TRACE_BRANCH_PROFILING,
-PROFILE_ALL_BRANCHES disabled:
-./scripts/bloat-o-meter ./vmlinux-000 ./vmlinux
-add/remove: 0/0 grow/shrink: 2/3 up/down: 22/-22 (0)
-Function                                     old     new   delta
-i40e_xmit_xdp_ring                           457     477     +20
-__acct_update_integrals                      127     129      +2
-csum_partial_copy_from_user                  208     207      -1
-dpaa2_io_service_rearm                       180     177      -3
-wait_consider_task                          1338    1320     -18
+btw: there are relatively few uses like this in the kernel.
 
-For defconfig:
-./scripts/bloat-o-meter ./vmlinux-000 ./vmlinux 
-add/remove: 0/0 grow/shrink: 3/1 up/down: 16/-5 (11)
-Function                                     old     new   delta
-do_signal                                   1513    1521      +8
-wait_consider_task                          2151    2157      +6
-__acct_update_integrals                      127     129      +2
-csum_partial_copy_from_user                  223     218      -5
+$ git grep -P '!\s*(?:un)?likely\s*\(' | wc -l
+40
 
-Denis
+afaict: It may save 2 bytes of x86/64 object code.
+
+For instance:
+
+$ diff -urN kernel/tsacct.lst.old kernel/tsacct.lst.new|less
+--- kernel/tsacct.lst.old       2019-08-25 09:21:39.936570183 -0700
++++ kernel/tsacct.lst.new       2019-08-25 09:22:20.774324886 -0700
+@@ -24,158 +24,153 @@
+   15:  48 89 fb                mov    %rdi,%rbx
+        u64 time, delta;
+ 
+-       if (!likely(tsk->mm))
++       if (unlikely(tsk->mm))
+   18:  4c 8d ab 28 02 00 00    lea    0x228(%rbx),%r13
+   1f:  e8 00 00 00 00          callq  24 <__acct_update_integrals+0x24>
+                        20: R_X86_64_PLT32      __sanitizer_cov_trace_pc-0x4
+   24:  4c 89 ef                mov    %r13,%rdi
+   27:  e8 00 00 00 00          callq  2c <__acct_update_integrals+0x2c>
+                        28: R_X86_64_PLT32      __asan_load8_noabort-0x4
+-  2c:  4c 8b bb 28 02 00 00    mov    0x228(%rbx),%r15
+-  33:  4d 85 ff                test   %r15,%r15
+-  36:  74 34                   je     6c <__acct_update_integrals+0x6c>
++  2c:  48 83 bb 28 02 00 00    cmpq   $0x0,0x228(%rbx)
++  33:  00 
++  34:  75 34                   jne    6a <__acct_update_integrals+0x6a>
+                return;
+
+And here's a possible equivalent checkpatch test.
+---
+ scripts/checkpatch.pl | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
+index 287fe73688f0..364603ad1a47 100755
+--- a/scripts/checkpatch.pl
++++ b/scripts/checkpatch.pl
+@@ -6529,6 +6529,24 @@ sub process {
+ 			     "Using $1 should generally have parentheses around the comparison\n" . $herecurr);
+ 		}
+ 
++# !(likely|unlikely)(condition) use should be (unlikely|likely)(condition)
++		if ($perl_version_ok &&
++		    $line =~ /(\!\s*((?:un)?likely))\s*$balanced_parens/) {
++			my $match = $1;
++			my $type =  $2;
++			my $reverse;
++			if ($type eq "likely") {
++				$reverse = "unlikely";
++			} else {
++				$reverse = "likely";
++			}
++			if (WARN("LIKELY_MISUSE",
++				 "Prefer $reverse over $match\n" . $herecurr) &&
++			    $fix) {
++				$fixed[$fixlinenr] =~ s/\Q$match\E\s*\(/$reverse(/;
++			}
++		}
++
+ # whine mightly about in_atomic
+ 		if ($line =~ /\bin_atomic\s*\(/) {
+ 			if ($realfile =~ m@^drivers/@) {
+
+
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
