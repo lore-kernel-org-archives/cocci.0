@@ -6,52 +6,70 @@ X-Spam-Status: No, score=-2.1 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,PLING_QUERY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3740C3A5A1
-	for <cocci@archiver.kernel.org>; Wed, 28 Aug 2019 12:34:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B520C3A5A1
+	for <cocci@archiver.kernel.org>; Wed, 28 Aug 2019 12:42:02 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 97AAE22CED
-	for <cocci@archiver.kernel.org>; Wed, 28 Aug 2019 12:34:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 97AAE22CED
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lip6.fr
+	by mail.kernel.org (Postfix) with ESMTPS id 0DE342173E
+	for <cocci@archiver.kernel.org>; Wed, 28 Aug 2019 12:42:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0DE342173E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x7SCY6lG017776;
-	Wed, 28 Aug 2019 14:34:07 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x7SCflr5025327;
+	Wed, 28 Aug 2019 14:41:47 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id B396D778B;
-	Wed, 28 Aug 2019 14:34:06 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 26053778B;
+	Wed, 28 Aug 2019 14:41:47 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id CACED74B3
- for <cocci@systeme.lip6.fr>; Wed, 28 Aug 2019 14:34:03 +0200 (CEST)
-Received: from mail2-relais-roc.national.inria.fr
- (mail2-relais-roc.national.inria.fr [192.134.164.83])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x7SCY3Hw015364
- for <cocci@systeme.lip6.fr>; Wed, 28 Aug 2019 14:34:03 +0200 (CEST)
-X-IronPort-AV: E=Sophos;i="5.64,441,1559512800"; d="scan'208";a="399185289"
-Received: from unknown (HELO hadrien) ([101.5.35.205])
- by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 28 Aug 2019 14:33:54 +0200
-Date: Wed, 28 Aug 2019 20:33:51 +0800 (CST)
-From: Julia Lawall <julia.lawall@lip6.fr>
-X-X-Sender: julia@hadrien
-To: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-In-Reply-To: <95c32d19-eb4d-a214-6332-038610ec3dbd@rasmusvillemoes.dk>
-Message-ID: <alpine.DEB.2.21.1908282033350.2325@hadrien>
+ by systeme.lip6.fr (Postfix) with ESMTPS id AA14174B3
+ for <cocci@systeme.lip6.fr>; Wed, 28 Aug 2019 14:41:45 +0200 (CEST)
+Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com
+ [209.85.208.50])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x7SCfjIn005735
+ for <cocci@systeme.lip6.fr>; Wed, 28 Aug 2019 14:41:45 +0200 (CEST)
+Received: by mail-ed1-f50.google.com with SMTP id x19so2818203eda.12
+ for <cocci@systeme.lip6.fr>; Wed, 28 Aug 2019 05:41:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:reply-to:subject:to:cc:references:from
+ :message-id:date:user-agent:mime-version:in-reply-to
+ :content-language:content-transfer-encoding;
+ bh=XQb3z9P4gf099Mugft8AnZzlB0sXTeRvVgkGP0skJyk=;
+ b=OYrAekqDgEB+oAu2fSFuHywDtug8MH12UQneWsDV5Cvuw44jzl1WTlSyc90qQvTl+m
+ UW/6PWX1mu95IBj65rdDRGwh0wGE8Syw4MpfuGwt88pFy7ynQ3V6nPzQJFM+/QrkpbSp
+ q8Ovgpm4VlY0vXXYo5i0WcRW7eGhm42xBvPKOAQtcGflp495U3R8EXzGJTxG7IPHOsdr
+ u2fUCJC3oNEDJuFGPuR5rBzTRgKMw8kgqdpa3UXsJlW0yErdwCjugfQJ7VgcLFhKPss5
+ kYwDql62Ms76ia4uM8Wh3tIIg+H05kmizqmSo0nAx8lQuHnPnvX3pBYI36lCIGIuLL/a
+ GW9g==
+X-Gm-Message-State: APjAAAV2bTZpyV3razgNtATMuCuYD6nMB4BEP4xBOzS+3NASYi8adfOm
+ /rabPn8HbP56Gmw+5rjqWEM=
+X-Google-Smtp-Source: APXvYqz57QeeTvorHo5cXarpWRCeQpcGtAf1c3aKwtJlruwTu/+crGW/L46mB112EyJC75bvpTlxgw==
+X-Received: by 2002:a50:fd10:: with SMTP id i16mr3650722eds.97.1566996105050; 
+ Wed, 28 Aug 2019 05:41:45 -0700 (PDT)
+Received: from [10.10.2.174] (bran.ispras.ru. [83.149.199.196])
+ by smtp.gmail.com with ESMTPSA id 59sm440043edg.44.2019.08.28.05.41.44
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Wed, 28 Aug 2019 05:41:44 -0700 (PDT)
+To: Julia Lawall <julia.lawall@lip6.fr>
 References: <20190825130536.14683-1-efremov@linux.com>
  <b5bae2981e27d133b61d99b08ee60244bf7aabe3.camel@perches.com>
  <88f6e48e-1230-9488-a973-397f4e6dfbb5@linux.com>
  <4E9DDF9E-C883-44F0-A3F4-CD49284DB60D@lip6.fr>
- <95c32d19-eb4d-a214-6332-038610ec3dbd@rasmusvillemoes.dk>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+From: Denis Efremov <efremov@linux.com>
+Message-ID: <496b3d09-47a2-3836-2899-d964267993d3@linux.com>
+Date: Wed, 28 Aug 2019 15:41:43 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 28 Aug 2019 14:34:07 +0200 (CEST)
-X-Greylist: IP, sender and recipient auto-whitelisted, not delayed by
- milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]);
- Wed, 28 Aug 2019 14:34:03 +0200 (CEST)
+In-Reply-To: <4E9DDF9E-C883-44F0-A3F4-CD49284DB60D@lip6.fr>
+Content-Language: en-US
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 28 Aug 2019 14:41:47 +0200 (CEST)
+X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [132.227.60.2]); Wed, 28 Aug 2019 14:41:45 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: Michal Marek <michal.lkml@markovi.net>,
@@ -62,6 +80,7 @@ Subject: Re: [Cocci] [PATCH] scripts: coccinelle: check for !(un)?likely
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
+Reply-To: efremov@linux.com
 List-Id: <cocci.systeme.lip6.fr>
 List-Unsubscribe: <https://systeme.lip6.fr/mailman/options/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=unsubscribe>
@@ -76,41 +95,27 @@ Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
 
+> 
+> As a human I am confused. Is !likely(x) equivalent to x or !x?
+> 
+> Julia
+> 
 
-On Wed, 28 Aug 2019, Rasmus Villemoes wrote:
+As far as I could understand it:
 
-> On 25/08/2019 21.19, Julia Lawall wrote:
-> >
-> >
-> >> On 26 Aug 2019, at 02:59, Denis Efremov <efremov@linux.com> wrote:
-> >>
-> >>
-> >>
-> >>> On 25.08.2019 19:37, Joe Perches wrote:
-> >>>> On Sun, 2019-08-25 at 16:05 +0300, Denis Efremov wrote:
-> >>>> This patch adds coccinelle script for detecting !likely and !unlikely
-> >>>> usage. It's better to use unlikely instead of !likely and vice versa.
-> >>>
-> >>> Please explain _why_ is it better in the changelog.
-> >>>
-> >>
-> >> In my naive understanding the negation (!) before the likely/unlikely
-> >> could confuse the compiler
-> >
-> > As a human I am confused. Is !likely(x) equivalent to x or !x?
->
-> #undef likely
-> #undef unlikely
-> #define likely(x) (x)
-> #define unlikely(x) (x)
->
-> should be a semantic no-op. So changing !likely(x) to unlikely(x) is
-> completely wrong. If anything, !likely(x) can be transformed to
-> unlikely(!x).
+# define likely(x)	__builtin_expect(!!(x), 1)
 
-Thanks.  Making the change seems like a good idea.
+!likely(x)
+!__builtin_expect(!!(x), 1)
+!((!!(x)) == 1)
+(!!(x)) != 1, since !! could result in 0 or 1
+(!!(x)) == 0
+!(!!(x))
+!!!(x)
+!(x)
 
-julia
+Thanks,
+Denis
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
