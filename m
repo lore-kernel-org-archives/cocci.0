@@ -2,50 +2,53 @@ Return-Path: <SRS0=qZnA=XC=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E734C43331
-	for <cocci@archiver.kernel.org>; Sat,  7 Sep 2019 16:20:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAF00C43331
+	for <cocci@archiver.kernel.org>; Sat,  7 Sep 2019 16:41:22 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 062E72178F
-	for <cocci@archiver.kernel.org>; Sat,  7 Sep 2019 16:20:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 4108F20692
+	for <cocci@archiver.kernel.org>; Sat,  7 Sep 2019 16:41:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="g5Nr5ka4"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 062E72178F
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="UZLzI+22"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4108F20692
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x87GKQDb018076;
-	Sat, 7 Sep 2019 18:20:26 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x87Gf6JQ004958;
+	Sat, 7 Sep 2019 18:41:07 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 03C427799;
-	Sat,  7 Sep 2019 18:20:26 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id C501A7799;
+	Sat,  7 Sep 2019 18:41:06 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id AE29B7797
- for <cocci@systeme.lip6.fr>; Sat,  7 Sep 2019 18:20:23 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id D297A7797
+ for <cocci@systeme.lip6.fr>; Sat,  7 Sep 2019 18:41:05 +0200 (CEST)
 Received: from mout.web.de (mout.web.de [212.227.17.12])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x87GKMWt019013;
- Sat, 7 Sep 2019 18:20:22 +0200 (CEST)
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x87Gf3fO011410;
+ Sat, 7 Sep 2019 18:41:04 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1567873207;
- bh=wXNswxiUWDzAYlHRespzTzLruEhvGvoajDxluCATqIU=;
+ s=dbaedf251592; t=1567874446;
+ bh=jkBQA4DLw0+UDt6az2KZdOlsXluulvG+gsfQmf1KZQM=;
  h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
- b=g5Nr5ka48Xto+E61MW4DR/OoTt/PTUJmZjA3kVSZWmrAapH5JeMV/TXevh/zLzG5t
- 7XQmzmPt8aXRtce52VYMAStFRfuuNtQwKkEhzhwLqbVzGyQ2HJKlo4EIJot3ga5y3h
- CKMzFwdxC38RE4U+pD0+69qAeyGPs4vm/Xfo6jAQ=
+ b=UZLzI+22PdkhR31xkvtlaSyxZ50/l+a01kdHXYCqrSAXss2gyccTQcFeYrdsCFihs
+ uscQ8fYBhg9MRrkV0b+SMy3jIou1GCDNYVkJBy14QlYZBvne8FqMa9FNqFc2xGDyQP
+ i28AZvemQ3GYxR46ZJbtpFE5+TyKodduUzHKLupA=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([2.243.16.142]) by smtp.web.de (mrweb103
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0Le4Tw-1iVoAk41Fs-00puf1; Sat, 07
- Sep 2019 18:20:07 +0200
+Received: from [192.168.1.2] ([2.243.16.142]) by smtp.web.de (mrweb101
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0LhNjo-1iSWCM2IlM-00mdBl; Sat, 07
+ Sep 2019 18:40:46 +0200
 To: Julia Lawall <julia.lawall@lip6.fr>, Coccinelle <cocci@systeme.lip6.fr>,
-        kernel-janitors@vger.kernel.org
+        kernel-janitors@vger.kernel.org, Gilles Muller <Gilles.Muller@lip6.fr>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nicolas Palix <nicolas.palix@imag.fr>
 References: <c8e0db8a-1f96-dac0-791c-43e2d1e1cf05@web.de>
  <alpine.DEB.2.21.1909071804090.2562@hadrien>
 From: Markus Elfring <Markus.Elfring@web.de>
@@ -92,50 +95,48 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <a50cebe5-4aae-ea93-1920-d5743435cd1d@web.de>
-Date: Sat, 7 Sep 2019 18:20:02 +0200
+Message-ID: <23823c18-9f22-e107-81dc-a03dbaf0e0b0@web.de>
+Date: Sat, 7 Sep 2019 18:40:44 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.0
 MIME-Version: 1.0
 In-Reply-To: <alpine.DEB.2.21.1909071804090.2562@hadrien>
 Content-Language: en-US
-X-Provags-ID: V03:K1:Izz7eOeSOxtdWmotLLiw4IXW4L17VWDDla2x6EDB74umCH3A2li
- fMznnhyL8YD1E80qzbq40u1qMWPLUiLFNxc+6qFDpA7/BE5ol6QieiEZMPrThr0XD8VhCE1
- hifGhKvIBDwNiq3WcKL7XYxn85xuJz6ihhZOK5RcEbTeNmf16z64QA/sDcstGTHgNeyC00L
- BNY3ZE5wipbm1a+efl2mA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:cXCUOA0JvIw=:IE1hjIY+B9OjqtP9962mws
- UcoMNfVvN+aESglaXBrhla9oCdYkcM7Xnie57DB5ozvgSPOb63Ne+tBQyUex+ZWGObo2g4fQc
- 3aIqXfev7GTT4d0INj18D+66p4P1GrjiOjqwoPx7bf68c58w4KeKTUHSlx22Ac2mx+9qpuKue
- KutlzJ1qhEE29d7GkTyKz8+ca14qTpV8Db8TY24yvIhp5BtfmFgPlScOc8LLndOOPxSuvoF/U
- aR/1OEJop1vsYXdnR9ZpUlt+j+f5H7NDa7WX/63oTEtlkcHaQrhXtlZmhN52K7hgq4XVjp3mm
- W9WXgqfyoLqVFmSd0u9Sc1+9wq0+ped/RdbSHabp+JlrwQJdsqrOz9UtuYf2L0LQD1gTWbnuS
- rQcHjuSziCYwtls2l2UM14Ums/ZzVec/O0nE9Z54KpItuB9BBDns2xTzy1Cljj4OZdGOUYxOa
- 02IgA/xFo35QQpntJcbfyqDt7n9SWmwl5o10ECljWpJLCmDb/ciQSLM0FlQznxcCtF0lY7V8J
- 4PI3LThfnRoMkFiFELUCmTvigr63Wr4pWAXbe9+PbppcTstWe0SepiRfLuR68DPgTpkm7hTCY
- JNoQfg9Zar3JgPW7qFyz3zDiuPGzt5kmOk4yOu5VgyGz1V3YGDUScpXconTfTzrxFMuQntlAF
- PfuR3h1J2yP/9+9tXWT/QDWWxWYC6bdhpzORANXxinMwZSk6YVO4uA+qSTa+1ssR5GmR3vLM9
- TAYBk9fkDrDvokZ8ZNCo+H3yigyyddGDQ2J7Ly/rMv4MihzOv6xG/U8YifBgt46rg1jValkSE
- DDnJ8w8n+t2yH9DPvR5jLnrTpw/d7EKplMgobST/P12/1LTJbdfGIvg/l1s/UvnrG7gHGztBw
- G1ahzaRj/pn6Z3mozhsvurf70u2FdZhDvFgmqA54oc4a2wq1jM8c00RCkh0+LyLjnlpUYoofs
- HoAQUfsPskLQDCGV7oAFuidFSXO4oYALtCeIRANVDOjWAjkO+r0fZTKFAshewDcYevxr9EaRr
- jixSpXm0Mg13vPV1jijYYoOrVzOGgwgWKzwfwzt3MmjJRJUf2xFA25exhvd0/kzh70z5Qm2KM
- 7u37Dv+Z516qrJNzQm5dh+B2OzMDBjs/KemIffrgb+tqoCgWHVWyVcyVbCHPjS/tjwVWZV2Ok
- KePXINcgUm4PCFdM0R/UF6SR3UL85eEkR7qAC/ke/0S4lZzYwEkpa6T0XnOvcTI/gX4UGpkpF
- 803cCKvYJJlK8nw+7
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 07 Sep 2019 18:20:26 +0200 (CEST)
+X-Provags-ID: V03:K1:6kW3bwLtOXgKvRKoOFiv+ruGVwXCpqPwdJdvzYqz21y+9jtP/9q
+ LmDPPyF+TwX5Y8s+7ZG0dBVBucUmZKD1KG+g1eLlz8p04Yx+uhhMx/pzrw7mfdroEXUlp/D
+ +kAhVwdHfDUN295v/MmcpGeZvUN3ZoOgWDqFxmsAXERwDFmJwneKpz6j4hTjtVN/icAslUo
+ IoL7PFQ9RfAKK1RThT5Kw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:7SS/SKdNJbM=:lPrhO7+lkTdjWxOfARAfcz
+ G8ZnAO9DVLJhHbc9gRfCQtyGdHkiWqoBSSjJ23LF72PfxSW+PFP+LwWu4egl33F3MswGAAwq/
+ PdXNxynEqjpWkV9gM88XN6zwWQwJfMADW7rOOfCNbklBfSfRLQPefiQV4tr/RtUx373QPR4n9
+ HnlT3B1stw5UOTZ/ukxip7MeKZ0agIn5e9bDhMdHE+apYWYtHFiRFLxsZLT0XenhiLh8qzGlX
+ zsIYrPS4ysvrowXgy+fHwSr7/iGcsTnND0QNOV6p3k9i/C3+s0edDYOgHkIhcN8PVt9ReAFiM
+ U5Nu/FMHRrwQNjUuxJe8yArM4SZ00+/qrxMis15UGLsbwNK+Y1WaQhVzS75zfHV38vNLgUkLm
+ jra9KmkK2rhMmHFaHc3BPpw6kmbXr98xdp2nAySoS1vwZjiVSF9714KCyHQ2auWO+f8b64axc
+ u9JOhWiFc/Xfh9Pc+wlbxIXTbk+R/hVSxbGt1NrQxYO2HcglW0E7on0ghk3j/J/feocYMtrHy
+ NC0Kd3psV0J2gO8ifOnRKlveZ7kpuQn2F4GJU8pks2TqBJGXQk8YE4p/dFBVxnHcIOrqSTuNm
+ mrFDDs6VX8CfBn33gk2TOL/BbNSNuk3Hp1oT0BICs7OU+9NjlptZyBVt5rSqAmrFwlNaUwBER
+ j19jfqtUQszCgfVMrAT8snHD8xpLwPOOsjX1BtzQxO+Rn8m/jh8iyEVjBRGE4722TVK2Ciz0E
+ YaHurfrNFyPhl6HSchY3RVpEhkT+mH23cOfkRmLmmjHJK7nhfhjYXsZMduSHECikP25U8x+Yj
+ Ek4aqz4gFHuJUGjlNTUQF+j/Zq492JiB+Kh1ZyqfCYo2AcB/FFXa8kkDh2m655eAy34P2gSWs
+ UnthR/Z7MghVd0xj3kfbGyH2rd4Kc7JN3+TZZgQbYQ0R13RgQEnIPcB+CPPglOz34deH3J8Rj
+ 6nqYBKryzIqEat5q8Ne5JIZpcUobvrMyGL7ERn/NmOhg7bpMTwQSZgiatW/fE2o+gxIHOMAYt
+ Jj1380c/m3iIrQwO6Wc5E0J7FEIdwX6fJRbpxEHL8a8U5NefEKranuQYXPGFEJQ/qqJZAIlTW
+ b3AX+DeJla9jtMWJ2lw25TPmOMG10vnKBUehA+hhAHpUjakCfOHwbIhAWVZb2CY2UdsxWyG/0
+ a9CeGPAZZk3676uv7AAKUDojACuZz3B5Y+fECmx/RopYyk3SPKSPbWb4xAP5syC7o6fcb/qpA
+ CAhW7Vkup2zP142os
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 07 Sep 2019 18:41:07 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sat, 07 Sep 2019 18:20:22 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Sat, 07 Sep 2019 18:41:04 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: Kate Stewart <kstewart@linuxfoundation.org>,
-        Michal Marek <michal.lkml@markovi.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nicolas Palix <nicolas.palix@imag.fr>,
         LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
         Allison Randal <allison@lohutok.net>
-Subject: Re: [Cocci]
- =?utf-8?q?Adjusting_SmPL_script_=E2=80=9Cptr=5Fret=2Ecocc?=
- =?utf-8?b?aeKAnT8=?=
+Subject: [Cocci] =?utf-8?q?=5BPATCH=5D_Coccinelle=3A_Reduce_rules_in_SmPL_?=
+ =?utf-8?b?c2NyaXB0IOKAnHB0cl9yZXQuY29jY2nigJ0=?=
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -152,28 +153,114 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
->> How do you think about to reduce subsequent SmPL rules also according to
->> a possible recombination of affected implementation details?
->
-> There is not going to be any change with respect to this issue.
+From: Markus Elfring <elfring@users.sourceforge.net>
+Date: Sat, 7 Sep 2019 18:30:32 +0200
 
-I am curious if the software situation will be reconsidered any further
-under other circumstances.
+This SmPL script contains duplicate code.
+Thus reduce it to the required source code search functionality
+by the means of the semantic patch language.
 
+Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+---
+ scripts/coccinelle/api/ptr_ret.cocci | 61 +++++-----------------------
+ 1 file changed, 10 insertions(+), 51 deletions(-)
 
-> It's fine when replacing one statement by another, but introduces complexity
-> when removing something more complex.
+diff --git a/scripts/coccinelle/api/ptr_ret.cocci b/scripts/coccinelle/api/ptr_ret.cocci
+index e76cd5d90a8a..f4b1ce4a06d0 100644
+--- a/scripts/coccinelle/api/ptr_ret.cocci
++++ b/scripts/coccinelle/api/ptr_ret.cocci
+@@ -20,44 +20,28 @@ virtual report
+ @depends on patch@
+ expression ptr;
+ @@
+-
++(
+ - if (IS_ERR(ptr)) return PTR_ERR(ptr); else return 0;
+ + return PTR_ERR_OR_ZERO(ptr);
+-
+-@depends on patch@
+-expression ptr;
+-@@
+-
++|
+ - if (IS_ERR(ptr)) return PTR_ERR(ptr); return 0;
+ + return PTR_ERR_OR_ZERO(ptr);
+-
+-@depends on patch@
+-expression ptr;
+-@@
+-
++|
+ - (IS_ERR(ptr) ? PTR_ERR(ptr) : 0)
+ + PTR_ERR_OR_ZERO(ptr)
++)
 
-Thanks for such information.
+ @r1 depends on !patch@
+ expression ptr;
+ position p1;
+ @@
+-
++(
+ * if@p1 (IS_ERR(ptr)) return PTR_ERR(ptr); else return 0;
+-
+-@r2 depends on !patch@
+-expression ptr;
+-position p2;
+-@@
+-
+-* if@p2 (IS_ERR(ptr)) return PTR_ERR(ptr); return 0;
+-
+-@r3 depends on !patch@
+-expression ptr;
+-position p3;
+-@@
+-
+-* IS_ERR@p3(ptr) ? PTR_ERR(ptr) : 0
++|
++* if@p1 (IS_ERR(ptr)) return PTR_ERR(ptr); return 0;
++|
++* IS_ERR@p1(ptr) ? PTR_ERR(ptr) : 0
++)
 
+ @script:python depends on org@
+ p << r1.p1;
+@@ -65,33 +49,8 @@ p << r1.p1;
 
-> And there's not point to have something that works in only one special case.
+ coccilib.org.print_todo(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
 
-Will corresponding software development concerns be eventually discussed
-a bit more?
+-
+-@script:python depends on org@
+-p << r2.p2;
+-@@
+-
+-coccilib.org.print_todo(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
+-
+-@script:python depends on org@
+-p << r3.p3;
+-@@
+-
+-coccilib.org.print_todo(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
+-
+ @script:python depends on report@
+ p << r1.p1;
+ @@
 
-Regards,
-Markus
+ coccilib.report.print_report(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
+-
+-@script:python depends on report@
+-p << r2.p2;
+-@@
+-
+-coccilib.report.print_report(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
+-
+-@script:python depends on report@
+-p << r3.p3;
+-@@
+-
+-coccilib.report.print_report(p[0], "WARNING: PTR_ERR_OR_ZERO can be used")
+--
+2.23.0
+
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
