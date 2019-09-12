@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32BB6C4CEC6
-	for <cocci@archiver.kernel.org>; Thu, 12 Sep 2019 13:38:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2468BC4CEC5
+	for <cocci@archiver.kernel.org>; Thu, 12 Sep 2019 14:33:30 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 37D262075C
-	for <cocci@archiver.kernel.org>; Thu, 12 Sep 2019 13:38:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 7615B2081B
+	for <cocci@archiver.kernel.org>; Thu, 12 Sep 2019 14:33:29 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="osV15Qhv"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 37D262075C
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="scSPwiig"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7615B2081B
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x8CDbsxA014304;
-	Thu, 12 Sep 2019 15:37:54 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x8CEXE8c016805;
+	Thu, 12 Sep 2019 16:33:14 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id EF18D7798;
-	Thu, 12 Sep 2019 15:37:53 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 7DD027798;
+	Thu, 12 Sep 2019 16:33:14 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id C6F067797
- for <cocci@systeme.lip6.fr>; Thu, 12 Sep 2019 15:37:51 +0200 (CEST)
-Received: from mout.web.de (mout.web.de [217.72.192.78])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x8CDbpBB029330
- for <cocci@systeme.lip6.fr>; Thu, 12 Sep 2019 15:37:51 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id D813B7797
+ for <cocci@systeme.lip6.fr>; Thu, 12 Sep 2019 16:33:12 +0200 (CEST)
+Received: from mout.web.de (mout.web.de [212.227.17.11])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x8CEXCPa024976
+ for <cocci@systeme.lip6.fr>; Thu, 12 Sep 2019 16:33:12 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1568295470;
- bh=NoG0Gw/1/vJOS6g+/pwbe7rZ+RpkN5IgXDVnJazfw1c=;
- h=X-UI-Sender-Class:To:References:Subject:From:Date:In-Reply-To;
- b=osV15QhvyghpxT2htnXK9g0Ke61vhRMcG8SwkPQDwKhk0ObCck4vPpAZfC1IDqAx5
- N4WeR2D4YH5fJGPAFkHw9Qa5RopdocXfwUgvTmSHDDCAmaJk1JQnh6gs+J0gQgAlcC
- 1KBp9yD3ukeMpYd8KFBywODz4ILLGNXl2XXeIfYA=
+ s=dbaedf251592; t=1568298791;
+ bh=AtI27DjKuVWgbASlNR4o2nfy3dTJLaFArJ6BDsfIniM=;
+ h=X-UI-Sender-Class:Cc:References:Subject:To:From:Date:In-Reply-To;
+ b=scSPwiig9VIDsra/i5IVln08dOdafPPWmnVvqLWvo4LYAQ4XYenrc/5+ONt8Sfetq
+ ibVRC9GgVLN5QsOB87A6acvBE4B01XJhdFT7IaFvFDfiDDKJVwlNBaiIKttVkHS8GM
+ OpWyNU7M3v8tvq5GFMX0zoqNrwVF8Y2XT8lCZrEk=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([2.244.130.119]) by smtp.web.de (mrweb102
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0MPpE6-1i3TLg2UmA-004zk1; Thu, 12
- Sep 2019 15:37:50 +0200
-To: cocci@systeme.lip6.fr, David Young <dyoung@netbsd.org>
-References: <20190912015155.GE26691@pobox.com>
+Received: from [192.168.1.2] ([2.244.130.119]) by smtp.web.de (mrweb101
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0LtWo4-1iIQ5L1u0C-010wPW; Thu, 12
+ Sep 2019 16:33:11 +0200
+References: <20190912123435.ztwsymd7m4s4n6hq@gintonic.linbit>
+To: =?UTF-8?Q?Christoph_B=c3=b6hmwalder?= <christoph.boehmwalder@linbit.com>
 From: Markus Elfring <Markus.Elfring@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
@@ -90,42 +90,43 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <30bb4d7a-5adc-8294-e343-04a3b534f56c@web.de>
-Date: Thu, 12 Sep 2019 15:37:42 +0200
+Message-ID: <9ba987e2-c6a2-cf6a-5a94-8bf841a6e195@web.de>
+Date: Thu, 12 Sep 2019 16:33:10 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.0
 MIME-Version: 1.0
-In-Reply-To: <20190912015155.GE26691@pobox.com>
+In-Reply-To: <20190912123435.ztwsymd7m4s4n6hq@gintonic.linbit>
 Content-Language: en-US
-X-Provags-ID: V03:K1:YjlsBKMm6gasJtZcl09k/eGniMb7MSQTCT8XMIwdFfePQll/13a
- u3VCYb2LlN6XnJWEUXUtRcdx19a/6V9NrsiFEK5kvzv4YCQe4+0nZaVJKQimWApOwzPMRsL
- 9KxG6upD5TXQRp2dvgLhrb2finctcb77UPELyTjPescglcaj6tHJJmxJyQ6O4vLD2ASKBvL
- OEZQrtihrEXzgBg8vFZSQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:S6gJkmC0KCg=:1k0r0l+EXb4lMQmo+q6DWD
- XRHEQcYCPsbmohjzASJlxMES1blgMxswUaPRbOb6ihijvbigso1WdLzkQgsHp98puS3XhFEwk
- efhBtuXdwTeILavUuctfHDvOqseYO7f8gNFWiXQ933ogVwD/PBz5BQh6lY+dMUR3dTUAy/RQK
- 0Z17T/v1GbspneSR83s/RGtjatucsat6odnIs7yfrKaJwt8dmB90Um0CLOP9VEgfgadk0mHkE
- 3x6f3s+tXTdU+RnDoCz5xSAYfkylasYIdimpijTfmqFwUbqM/MWXN+MjoYvWuznhySf1lXwfX
- L3I4OM3OC6KjmLq5r0JjvAObYDZ5uaU0rfw/G8IYaN9NXLH0qaGmzb3RqgzanR5MPT4+swES6
- cgSfaQma9fl1Xt7UwnF1kRFBX8lrtvWjwtICHjR68SGeQIKEBlgl8umgKdhp4KOBFPBxPaRzT
- P5+p6S2SN3V91W+SjPcMNIFk3r1YmWzQp2J/S+8h3QIlp8TO5EyRMGP4TWYhc1z2/woIJDQfY
- cBA1aHkwjQbv1HYR8KjEfYtkitpwEcjm/YuU1jPSo8dakYjqnNMcLWAcevtbHA23rDXv5r3wS
- 8uvfUT1h68Iuag1F6H6PPL6jRluruxfJpshQsZ5ZUtOY+iY1pmQssQUPg057Lj+fdlVcAJeAk
- PfK+xt0IpYRuWSGoiE/bAUmBURkqzejEhaQi02W/iGXzK8TApzrQROYYzuvo7VeqifUBykgGa
- GCukAOlubkmGr+Olrhxu2HyfpUneUrTvW2sa4+OtfYBSszCKlZuA6hMJz6VteIvNy9tORB23i
- EIUF9XmUWjZESU1eYiZR5Sz5dtZh/lm1CcASBlfMqmCoGzBSJVxOL5xWsjV2H00ASH1tZA+3K
- Ao4jcLRNE03HtCaJj6zYTjcTBdzJxXZ4E8WPyGs8znBokJ3wTfBZcQ6NcKs0UIaHW+mpSBWoP
- aNqrHl95B7Lb65xFVQYfHv8sm4+KBHlqe4ZqIKpVD2zIP+qojgRSmz+z9p7UUI1G9nEBNd9QE
- GBkqRpj3Dlu1hBKG9IgNdNp4Nx59uv6WUg3mgc82HS5yqST7thBfls0MKFLOmWwxOPB837YvY
- bikxC6pcZXQMMAFAZZtxJql4mBcdR4VCFgfNdhEItZVntTVgU6DMPUDWa+tvlM4MpVstPIy6+
- oPPADldqa6oiKvxCdEe3FEqVu9ZSTUxywSp21FV8c7V0Zlmr90AmgkWVpS/4ys6wh7xh6pjih
- kk55GZcuBWR9hJcywuCz7o2gE0K2nDA8215XSEU/T4hj4cHcyjTKngvzYiEs=
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 12 Sep 2019 15:37:54 +0200 (CEST)
+X-Provags-ID: V03:K1:CzyYnq7N1kuUhRv9GNU+Vea8u/XZs5gFyM3XtU/zTRXcAl7FZpS
+ uV+BIOdNRx78dejDOm1mKGHhlo1tBUaCNqN6H27z63W73ioDEkznyqWNxiHWk5fPBdJgYLS
+ RM46dYEmxKmE9swrVqE3N4lfWGI0clZGzTKEETe6e/tqdcWxphMehs+D2YPMh2tjXjHx4EJ
+ nrJB1ooSjGWSQPja7X0FA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:vjgzPtkBnXI=:jJygLXbNzvFIVjv4Lii2am
+ GGsAIipD5cUOJsLsIp3rory2Flp96l++B2sbC/7brn3EXR3k/2XOJ+V35p/fThuIlNaMfQOwn
+ 150+dSV/X+uqFkelnQkpoOjfuzoQIOLArTKXC0RWm8tDaj81OKNkdomy9TgosLLiNwvwa1u+H
+ RzHwHHPDpZOINo7Txz1caaxYfOp7+BBBuuGTDdbfnGmAe9+CLbGiAt2YY5f8D6vsY0w9iOurw
+ HCFxNjVbx3kIocmaZUEPMtEGKA/3S66ioSnGEmiUoZCWi72n0oOAo0BRszL1XJb46nKoCYbEm
+ xSl+G4CIBWrcK+S9i98oJo4drSzWssAJw2WvXcVU7vhn52rnMefWyYUK6V0MXQOyOHZ+KDl47
+ IlEr7xS3jv5eH2BLhgxRLamM6kIsHn5+uRRDHpFhV/bGtFkdLt+Fa7cFz9LVnGhXHeH6W0Qjt
+ l0uNcSb9HU7H3SDys0TBI7GxBcarMAgd/Ybe1F3vOi+aOBqyzmYAiKLNFPyRCOlfgSncmH4lR
+ 6vUa7zbrqZrplV07FvslDkN0NnyukJS3YnHTb/EwP+8lChqDc0R6a0Pthoa6NXgGIkuYCEpDR
+ hAxvY69vZIlF/rhFZC4QlseGqKiwagxVukFG5IhHOfu1CfeMBWVPTxagFV8WhsGUtyINRfzZ7
+ W0O+1cA9iIU+AeKB/+oPy3EtuKWGzGS77a3xSwg0QFJu/93MpNSU7RoSNB1P4nR47VXpq+k9h
+ wMUwo1dvleZxJi0pSQbKVU/bCqd+RJab7b1cet+zNu3FdpKxhKZMuRjOgVZHmmOCCfFqXGVR9
+ y/CF5FR8rUkf+T7hb3fH7pJEGxK8HS3iFa+7nmWkKACg+x75itLuJ9fdYL7tKM163yM37ngY6
+ FuY06ZsPyWpJyUuItjB/v0I66+lBPeWf3jSMEcu+NKv0lRAtCaCeVDmXks7msaF2ABv/cweM0
+ IyyASfGRfVYf7seJDpbIo/HGoQY7F9I6XVntwwVsHmj4/9tEEMmVknb4fAZlfjfTsIEsTIvJA
+ vNClS28LVYAHIny5K2KhpqSuwWFnRzG589WUr9c27ZQG5MOFxhVxpkHPaGO6qYBztT4bNByFh
+ pAGiHhIxsM8P1smpR/GDi54eMS+RE58nCmAxb9Xwlti4fuYyDYcjF9HgL2jSEQp+3mRI/v5bX
+ hbVQ0L3n8SIF9GUAG3u41sQFoyLXUr5pmmy5bK/fOEmAqBefxqQAMCMwU+9jnAvsMx0wWI4pm
+ cZoHHnJPn9Y1DDJYtcCOvyjinHorOqpCYS2sttiv3nG/Mw/JpfofL3B3wwv0=
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 12 Sep 2019 16:33:15 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Thu, 12 Sep 2019 15:37:51 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Thu, 12 Sep 2019 16:33:12 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Subject: Re: [Cocci] continue statement of death?
+Cc: cocci@systeme.lip6.fr
+Subject: Re: [Cocci] const in parameter lists
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -142,15 +143,25 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
->  - for (I = TAILQ_FIRST(H); I != NULL; I = TAILQ_NEXT(I, N)) S
->  + TAILQ_FOREACH(I, H, N) S
+> drbd_submit_peer_request(...
+> -    , const unsigned op, const unsigned op_flags
+> +    , const unsigned rw
+>  ,...)
+> {
+> ...
+> }
 
-Can it make sense to avoid touching the (compound) statement at the end
-so that only the loop header would be replaced?
+How do you think about the following SmPL change specification?
 
--for (I = TAILQ_FIRST(H); I != NULL; I = TAILQ_NEXT(I, N))
-+TAILQ_FOREACH(I, H, N)
- S
+ drbd_submit_peer_request(...,
+-                         const unsigned op,
+                          const unsigned
+-                                        op_flags
++                                        rw
+                          , ...)
+ {
+ ...
+ }
 
 
 Regards,
