@@ -1,59 +1,131 @@
-Return-Path: <SRS0=oroW=XJ=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=kAMJ=XK=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE16EC4CEC9
-	for <cocci@archiver.kernel.org>; Sat, 14 Sep 2019 20:00:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45515C4CECC
+	for <cocci@archiver.kernel.org>; Sun, 15 Sep 2019 11:39:19 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 04E3720678
-	for <cocci@archiver.kernel.org>; Sat, 14 Sep 2019 20:00:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 04E3720678
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lip6.fr
+	by mail.kernel.org (Postfix) with ESMTPS id 75E042054F
+	for <cocci@archiver.kernel.org>; Sun, 15 Sep 2019 11:39:18 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="nAsif/Nk"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 75E042054F
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x8EK0jY5023350;
-	Sat, 14 Sep 2019 22:00:45 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x8FBcwmo003991;
+	Sun, 15 Sep 2019 13:38:58 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 7E68F7797;
-	Sat, 14 Sep 2019 22:00:45 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id B3E0376DF;
+	Sun, 15 Sep 2019 13:38:58 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 7655376D9
- for <cocci@systeme.lip6.fr>; Sat, 14 Sep 2019 22:00:43 +0200 (CEST)
-Received: from mail3-relais-sop.national.inria.fr
- (mail3-relais-sop.national.inria.fr [192.134.164.104])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x8EK0gmL023799
- for <cocci@systeme.lip6.fr>; Sat, 14 Sep 2019 22:00:43 +0200 (CEST)
-X-IronPort-AV: E=Sophos;i="5.64,506,1559512800"; d="scan'208";a="319412408"
-Received: from 81-65-53-248.rev.numericable.fr (HELO hadrien) ([81.65.53.248])
- by mail3-relais-sop.national.inria.fr with
- ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Sep 2019 22:00:42 +0200
-Date: Sat, 14 Sep 2019 22:00:42 +0200 (CEST)
-From: Julia Lawall <julia.lawall@lip6.fr>
-X-X-Sender: jll@hadrien
-To: =?ISO-8859-15?Q?Christoph_B=F6hmwalder?= <christoph.boehmwalder@linbit.com>
-In-Reply-To: <20190912123435.ztwsymd7m4s4n6hq@gintonic.linbit>
-Message-ID: <alpine.DEB.2.21.1909142158560.2490@hadrien>
-References: <20190912111304.2fu3lcqmtgbnolpx@gintonic.linbit>
- <alpine.DEB.2.21.1909121330300.2876@hadrien>
- <20190912123435.ztwsymd7m4s4n6hq@gintonic.linbit>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+ by systeme.lip6.fr (Postfix) with ESMTPS id CC38B76D9
+ for <cocci@systeme.lip6.fr>; Sun, 15 Sep 2019 13:38:57 +0200 (CEST)
+Received: from mout.web.de (mout.web.de [212.227.15.3])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x8FBcvnu009725;
+ Sun, 15 Sep 2019 13:38:57 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+ s=dbaedf251592; t=1568547536;
+ bh=T00Nar2nA39u171os0ZEhgtXHNqgSwh2TVjdT/ECLyc=;
+ h=X-UI-Sender-Class:Cc:References:Subject:To:From:Date:In-Reply-To;
+ b=nAsif/NkS6pc4qpMFzFRKqPIyBMzVvJtn5qH/Snuo7sJqHT9LdHIZBSJatu3AU/B6
+ KudFlXw4ulBoLx8RjlN6Gk0Y9GnpAlXQbIVGEMJ+YDY9FIfofEBBtq4pZK+ND7Qkck
+ P8K4PI4zLR8mOEMY7CJ/cthlqduWtcXqRWSK0tQ4=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([93.135.135.21]) by smtp.web.de (mrweb001
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0LtoGb-1iHcEX1H2j-011CG2; Sun, 15
+ Sep 2019 13:38:56 +0200
+References: <alpine.DEB.2.21.1909142158560.2490@hadrien>
+To: Julia Lawall <julia.lawall@lip6.fr>
+From: Markus Elfring <Markus.Elfring@web.de>
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+Message-ID: <44eed855-492e-46c7-ac0b-352d2c1e680a@web.de>
+Date: Sun, 15 Sep 2019 13:38:49 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.0
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-411413525-1568491242=:2490"
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 14 Sep 2019 22:00:46 +0200 (CEST)
-X-Greylist: IP, sender and recipient auto-whitelisted, not delayed by
- milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]);
- Sat, 14 Sep 2019 22:00:43 +0200 (CEST)
+In-Reply-To: <alpine.DEB.2.21.1909142158560.2490@hadrien>
+Content-Language: en-US
+X-Provags-ID: V03:K1:1fGdzIx+YolDdnkAxQBacHuBlrN2NZZXZcoO8ilorcXFFyLAXhP
+ OS/c9rjc54NS5j0qZdob//8dEfxREF9dXRxSJgmQ9W3ZZ1CPFdLIAWTR9p2bdCw9HsdGjVj
+ FzCt7PkgjteayBRAIpJTy43J459J8hlNBCAleFtnawq6ZCWBscms61h0MkZbIBwerUJ36pR
+ S0ZoP/X19Vvn62j7YjdDQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:H7qH/Gb9Gew=:uHNXstY1LWUMqtB6mY+iuq
+ bGT5q0jN7xvC6xfHpLBJIDzNr0J+SGGsE6hauZgW9mdBbeDLDpUjarCzgqHAbKpH5orhhFJ3b
+ GhFAQVWcDKJ8E0X+CurLQng31sJmXKc3+jQpEqJbe7GVdeydIQTN8kQf3pkeyeDWwqEipJGBL
+ dTAbiL1T4VcQPmb7xcNE9/orQYyLhSmRYRITbiUVqL7o+m+zBmdeVNoiTCHTJ6qfAuG4TBAgs
+ V1CWgxiPb8P9yGl7IREW/N/6I8l9OxrOioStDVf7CN6dJX/jIYCwCXQGUhav9PMluF0YlUc/X
+ 0GCe7OglIFII8iWUZ1J+t0pBJL4WHkLM7J5gErJmIJKA7DK5zsqVF/hs6u0alX0sLjlSR5fBc
+ uXHW8nkmOT9Cku9TQDBgGStfarPW7ow6ncNIil1YoOVDWPdlHJilBe4RRzmBkW07JwGZjgvEm
+ Xj52oSyYqYLr1i516LPyGjBLvUpokkJd4Ho1pcOiGDEYu9cQ2hqiP+nde6tK2XsNFpjovQ4Et
+ aEEESYHF2ytatVw3/Xp/CwQ2T0gKapXJdLXZtUSOGe3BDSUgW6oPG5hTELRP4WEtaGR/Aa2pB
+ C05TnGbdkj0qxacIbIacMWOetBLDEorJOIRq6amMilg+kXwZaIDdGbgd+ZRuMX3GrcOUaPVkb
+ t3TN9PJEpsIUCh8VPXIfaXlRz2NcSC8/KpLk06pyG0pZvjl3763trhhAW/2KgcVhXWzHdxvzI
+ z3aPnQXfTmLsB1wBdIDeDsFxVqRiWILh7L2AvA1CDFSR6/ac0nN3doDb2KNac00AvBKVnkB1R
+ UM7GThJqFpHTB2tNZECNkGHNjf/3XHskvIH2CE64MECaSMYK2c2OtPl3GH0MCGjUCnWDYQ0hu
+ EJbxL8+MNR7G1etffqe18vIIsl+ipRTE0uwhov10dVWDneE2YuEcQzbmCm1fopT8fx8qKRIbO
+ KcS9gyoqRLCBYniaLeuSJru+e91BH0dXCH9SolisC+C7oCBV/Cjk3W99kUFc7TnYnl4Qj+ypy
+ RXnkBVz2BIdJwW5+hN4O5nAzeCW7Q1dIvIZ+JP7TWIpZcfw1PybfvZNIZGpKhNBuI2Ly721k8
+ pWtCn+GQlX6brCByEmNS/LifOqC3b+Rzg0LvqkAPzHCk7UQrpnYP/b3k8Fb/8X3N9JhxEBsyQ
+ j2bcelM3dI44yBjWvUcXe39KXcfaBMDOTEZ11ci+eu/CU5OcvVaD9vSc+sID3tnrzpSpmKVvO
+ fdaO8pbdxnO5dooi0by8ipbvRrdvcWKvqW7HPH6BwVH4r51VBkvOlPPs0YoU=
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 15 Sep 2019 13:38:59 +0200 (CEST)
+X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [132.227.60.2]); Sun, 15 Sep 2019 13:38:57 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Coccinelle <cocci@systeme.lip6.fr>
+Cc: cocci@systeme.lip6.fr
 Subject: Re: [Cocci] const in parameter lists
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
@@ -66,117 +138,19 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-411413525-1568491242=:2490
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-
-
-
-On Thu, 12 Sep 2019, Christoph Böhmwalder wrote:
-
-> On Thu, Sep 12, 2019 at 01:31:52PM +0200, Julia Lawall wrote:
-> >
-> > Sorry, it's not clear to me what you want to do.  Do you want to verify
-> > that there is a const before renaming the parameter?  Could you do
-> >
-> > const unsigned
-> > -a
-> > +b
-> >
-> > ?
-> >
-> > julia
->
-> I'll try and outline what I'm actually trying to do.
->
-> Here's what I have:
->
-> int drbd_submit_peer_request(struct drbd_device *device,
-> 			     struct drbd_peer_request *peer_req,
-> 			     const unsigned op, const unsigned op_flags,
-> 			     const int fault_type)
-> {
-> // ...
-> }
->
-> This is what I want:
->
-> int drbd_submit_peer_request(struct drbd_device *device,
-> 			     struct drbd_peer_request *peer_req,
-> 			     const unsigned rw,
-> 			     const int fault_type)
-> {
-> // ...
-> }
->
-> And this is my cocci patch:
->
-> @@
-> identifier op, op_flags;
-> struct bio *b;
-> @@
-> drbd_submit_peer_request(...
-> -    , const unsigned op, const unsigned op_flags
-> +    , const unsigned rw
-
-Const was not supported in front of signed or unsigned (as opposed to
-signed int or unsigned int).  I have fixed this, but am not able to
-update github due to a build issue.  But your semantic patch will work if
-you put unsigned int in each case.  It will not require the int to be
-present in the C code.
-
-julia
-
->  ,...)
-> {
-> ...
-> }
->
-> This gives an error:
->
-> minus: parse error:
->   File "drbd/drbd-kernel-compat/cocci/req_write__yes_present.cocci", line 35, column 22, charpos = 548
->   around = 'op',
->   whole content = -    , const unsigned op, const unsigned op_flags
->
->
-> Doing it without the consts yields this:
->
->  int drbd_submit_peer_request(struct drbd_device *device,
-> -                            struct drbd_peer_request *peer_req,
-> -                            const unsigned op, const unsigned op_flags,
-> +                            struct drbd_peer_request *peer_reqconst,
-> +                            unsigned rw,
->                              const int fault_type)
->  {
->
-> Notice the stray "const" behind "peer_req".
->
-> So -- to answer your question -- my priority here is to get the code
-> compiling; I don't actually care about any of the consts. Best case
-> scenario would be to have it remove whether or not the consts are there
-> and always add the new parameter with a const.
->
-> --
-> Christoph Böhmwalder
-> LINBIT | Keeping the Digital World Running
-> DRBD HA —  Disaster Recovery — Software defined Storage
->
---8323329-411413525-1568491242=:2490
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-Cocci mailing list
-Cocci@systeme.lip6.fr
-https://systeme.lip6.fr/mailman/listinfo/cocci
-
---8323329-411413525-1568491242=:2490--
+PiBDb25zdCB3YXMgbm90IHN1cHBvcnRlZCBpbiBmcm9udCBvZiBzaWduZWQgb3IgdW5zaWduZWQg
+KGFzIG9wcG9zZWQgdG8KPiBzaWduZWQgaW50IG9yIHVuc2lnbmVkIGludCkuCgpUaGFua3MgZm9y
+IHRoaXMgZXhwbGFuYXRpb24uCgoKPiBJIGhhdmUgZml4ZWQgdGhpcywKCldpbGwgdGhlIHNvZnR3
+YXJlIGV4dGVuc2lvbiB0cmlnZ2VyIGFueSBjb25zZXF1ZW5jZXMgZm9yIGZlYXR1cmUgcmVxdWVz
+dHMKbGlrZSDigJxTdXBwb3J0IGZvciB2YXJ5aW5nIG9yZGVyIG9mIHR5cGUgcXVhbGlmaWVyc+KA
+nT8KaHR0cHM6Ly9naXRodWIuY29tL2NvY2NpbmVsbGUvY29jY2luZWxsZS9pc3N1ZXMvNDkKCgo+
+IGJ1dCBhbSBub3QgYWJsZSB0b3VwZGF0ZSBnaXRodWIgZHVlIHRvIGEgYnVpbGQgaXNzdWUuCgpD
+YW4gYW55IGNvbnRyaWJ1dG9ycyBoZWxwIGFueSBtb3JlIGhlcmU/CgpSZWdhcmRzLApNYXJrdXMK
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KQ29jY2kgbWFp
+bGluZyBsaXN0CkNvY2NpQHN5c3RlbWUubGlwNi5mcgpodHRwczovL3N5c3RlbWUubGlwNi5mci9t
+YWlsbWFuL2xpc3RpbmZvL2NvY2NpCg==
