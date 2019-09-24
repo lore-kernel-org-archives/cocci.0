@@ -7,52 +7,50 @@ X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 190D7C432C1
-	for <cocci@archiver.kernel.org>; Tue, 24 Sep 2019 20:55:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B1FBC432C1
+	for <cocci@archiver.kernel.org>; Tue, 24 Sep 2019 21:00:29 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7EE0C207FD
-	for <cocci@archiver.kernel.org>; Tue, 24 Sep 2019 20:55:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id CD2EA207FD
+	for <cocci@archiver.kernel.org>; Tue, 24 Sep 2019 21:00:28 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="UDG3PR/C"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7EE0C207FD
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="bbUBqQ0o"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CD2EA207FD
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x8OKtA8o014092;
-	Tue, 24 Sep 2019 22:55:10 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x8OL0GsP003951;
+	Tue, 24 Sep 2019 23:00:16 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id BE91777AB;
-	Tue, 24 Sep 2019 22:55:10 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 7E04377AB;
+	Tue, 24 Sep 2019 23:00:16 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 93E24779E
- for <cocci@systeme.lip6.fr>; Tue, 24 Sep 2019 22:55:09 +0200 (CEST)
-Received: from mout.web.de (mout.web.de [212.227.17.11])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x8OKt8SV015581;
- Tue, 24 Sep 2019 22:55:08 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 22B2C779E
+ for <cocci@systeme.lip6.fr>; Tue, 24 Sep 2019 23:00:15 +0200 (CEST)
+Received: from mout.web.de (mout.web.de [217.72.192.78])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x8OL0DX8008957;
+ Tue, 24 Sep 2019 23:00:13 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1569358508;
- bh=cmqag9GiVfX8vJozw1to6XfoHuPR1COVTIvjPluUtlE=;
+ s=dbaedf251592; t=1569358813;
+ bh=TAupxNrRSrpLIz1YPAPnLjfHGra+izETjU9Puci+uSY=;
  h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
- b=UDG3PR/CPSf0i0boXnLeq1+wf2SHS6Z8xt0zikGW1BUxnRyQd+O7GBxwe6ZqpjXGT
- X5bVqZBLDS8nktCLekEff9d9iKK5c6r+/7nsE2L0ebTauCbo0WHYNldnOsnSlvybkm
- dTPsF4D7wBOGuma1Y5Q1MN54NAPtnaG7UhEdFWZQ=
+ b=bbUBqQ0oXXbq2qzRfNNOS+H/HSh3RGgvyVhqixCXttF58lLBu0xmzTbvNs6ZAUx4/
+ wtPnC9H9N3O48JeBKhZXBy/AQW6rSKz9mNAYB3XBoWSG2ETi9NSNOerV7QHyY1CWlg
+ BhS87cb6IHfGV7Vz/+Y2TTtjsUfY7LfZhptm46yA=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([93.131.71.162]) by smtp.web.de (mrweb102
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0MhDkj-1iZEDN0UvB-00MP4n; Tue, 24
- Sep 2019 22:55:08 +0200
+Received: from [192.168.1.2] ([93.131.71.162]) by smtp.web.de (mrweb101
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0M3SxQ-1hvCTV16i8-00qzKH; Tue, 24
+ Sep 2019 23:00:13 +0200
 To: Julia Lawall <julia.lawall@lip6.fr>
 References: <e07ce253-8a13-0f90-3ee0-79c1a0e78b38@web.de>
  <alpine.DEB.2.21.1909231058380.2283@hadrien>
- <c4437d9b-8795-fdfa-7914-fc30ead14cf7@web.de>
- <alpine.DEB.2.21.1909241729310.2282@hadrien>
- <f41b8e72-9a79-e65a-a652-8a257d5fac71@web.de>
- <alpine.DEB.2.21.1909242215440.2589@hadrien>
- <b22031b2-2382-e629-a11a-09be7fc8e9c3@web.de>
- <alpine.DEB.2.21.1909242249150.2589@hadrien>
+ <e3e922ef-fab2-ee5c-57f1-0f36ccc682fd@web.de>
+ <alpine.DEB.2.21.1909242219450.2589@hadrien>
+ <3628f3d4-b9c2-d42a-b1a9-d5e7fe32f171@web.de>
+ <alpine.DEB.2.21.1909242249540.2589@hadrien>
 From: Markus Elfring <Markus.Elfring@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
@@ -97,39 +95,39 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <f4f105d7-6cd9-882e-a3e9-3debf6857dcb@web.de>
-Date: Tue, 24 Sep 2019 22:55:07 +0200
+Message-ID: <d77d6c40-d148-540b-3071-dd2bce76c158@web.de>
+Date: Tue, 24 Sep 2019 23:00:12 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.1.0
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.1909242249150.2589@hadrien>
+In-Reply-To: <alpine.DEB.2.21.1909242249540.2589@hadrien>
 Content-Language: en-US
-X-Provags-ID: V03:K1:/5XBymZuOF9hmzUs+lTSInm4VwcIkFVTyJidKjOoh8T5wUOxrcX
- UUQ18eHJjTEEy3w8fQp4vWq9TUtd8y6yZF9CFtjZ24rrY9j0xVs9leU7Vejm9MR2JnI6a6X
- 2FVny1+SR5CEohDztwEL0R8RmwkiwkjRoPwaxvS98Kd2nZH/K0ZseRE25zI76bxFQYlk5FT
- MT1gjK/KHLcMgVM17XMWg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:OUhnsYcGeMk=:I9jokrORGV9Ks5mVIg27Fb
- kcLr7v414yUTID0ynfXrRkHNSiJ197c6nabuZN2GR+QJaCsbq36TOP6lLyjQWph8Fs4rEphvm
- 3HLPCzYjOowrDGrjtdbB71U6IJ3LzN2UKTVwxeLgvyJ7Oex37vKNLEpU4f0mJ+Dv3UEHKnPGK
- MQW8Uc/FWsAzqhwlnfgz2eSTiyve7uF7eKXZrfgohyLnCODNCxc6/7xbcW+nMQlzdnRQbkVnL
- 3M3iNxDq+GNWcZmpaNmZ7NAjAw3E/OiJSAXPYbJwifBRFDf0E2g/RhkoPG0JWS2KY9PnToWAF
- o2St9RY6H6EcyJKII+bN82EkxZXu8kt5t3ysfc1fhubYB8zB8sPmvspW5K6BoRdKiSImcA5wM
- pSiDvWXs7WmunTPmr4Aj8jZUNBKwc6fsVtSCjNh3zWkxFRmz1BYTChlrN4dCIhZlargNkMiyn
- XiSWg1zwYKw7HOyAFxRhTYG2Pig9cA3Pq3a2D+clsn3z0KWvKINsVxShFnAKHLWPOIJz8Ss4U
- N3Jbn6tbu2BDt3f6tnKkZJEA+ETUxhe+DURzY2E5ve9k7/xt7oJxhgcedxqtGWmVA7MG1TH+w
- NrY8qW2mY9HAsP4Gd0HULBf9aaUdBmNaaioVtiR0E0tjC6whTrrwvoFNuneBjNxEQp8rzAE1X
- tr9LHyQFSXgndp5xAvoTjXHV+NPeSGamGSD1T+7c5wRQzvhOKZXptEOgizyBR3EmblqyNoFQO
- K/+lPS/W7x11DH82c1ZNmtvHvHS5s7zjal/w9TGnz/lsi8yw2utgfsYmVmhewU5St5ouyEuGB
- dhApotQqLk7oNJPITO8kSt0ya256PpTduD3cRBlYE0caEpn7WcKsT5lirJ4o4jhF6cJ8VMNdm
- 3zBocI3Vso5ixhCtK2LfKtTkMM/VqVlgS9jh0OkEoHVlADVvjw5M9NW/ZBsJcklYaxQy6sa1k
- 5aLhR7t7cQQ3uMOYIQZiGX+pN5HAt/BhZc9NE5/vE3PoiDcSBTqhquGwovfNYea1ifUi0yfkA
- c5hZOEcItMLUCRbph8YVyzUHpxZXQE0sHB6oSbmNS7bGnaoynJi8nn4FDmtt7Q1y8P0GzMAi5
- 9sNG0vA0NQJbhhniEWl7vDmMYVtHnut9crcpZIFAg4IbdgiCJEs9B1rhvhfh1LoAE6P6edJVk
- +nlhI5e96Ld47STXz5q6ykXuMCNkps+08d+/JkgsRJ4YBpsBf+2suv2mU6tw8JeOEpYXmRkI8
- 75+Jqniv8Qqj7CGVFMaJ4zy/MJz29N4+JIqDjFk8xzxiex0dmSD2DoUgSkq8=
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 24 Sep 2019 22:55:10 +0200 (CEST)
+X-Provags-ID: V03:K1:K21LobuUJj04QaZswiMUhbEFULK2utn8Cpflel2UDkxKFZMrlvX
+ 8aOPa1du0qeXP8h5o3pub+OTYJMwJ35eczN5jd4GTZIrWp7dJXKJDNK5r1trNwIx9kYtoaO
+ KFD03/zlFp55Nqd/Mhj/Egs1CGlOZpVkevzqhT50EiYVMe24X4iyVjGO3a2r19AxNcKgxVe
+ MPs/xR3xzPb909jeYmsXA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:B0CkmeIVx5I=:fsSk6m/yHCKnj2GUAfonHO
+ kxwrl1rDDigeTN26EC2tVj7IOZrVYnXp3mc4dD5FMiTU5wg99gdUuh6Xm3/X8RKnH1VhXf7qV
+ T6ABZTlc11ci35w6PL1rlw86xPpqapP/dcrj32Ij8fModD72fOVNwJRM57xsrr+zKC9TWTbFy
+ x/ksXlaCyngJXaX0CLLSsUFVWBnZbVhlf4QzqnUvNDQzf/prmjgMAYI7pMqm6qK0kQ/fvaqPM
+ NcsaJUJpbcgBvf4W02yy0Q+602OFbqNoCco6lm8ygPYYnTvZopc+hb9K1kdQCoWS4QSSe5q04
+ DTiTgmn7iJZIw3ozQhwSWRi692Fmc6WRLqcFNyUoGQcpF9So6cbR2Og7FfQOg0ZDTwptjrt6L
+ IELy0cxOh4jyeRjDVr1zdBKMgGc4Z9h9PQyuQtzvxy2/qJOEEfi51hAwKhkcg0MNWbLXHeShJ
+ vPLEpnCRK2MCWVpHdGoX1s0Nylkd1PtQ7dRYYSed0qHI1X9K8NxOrpNDCKe0O1pkk3oy9cxvT
+ 6GLRMnWNYkz7kZLi4zYUOcI+2NTT+LHsh+sWymp8gYwpS/b5KFuLUVVPchBj5+dH2o91lVHu0
+ RKOC10LX3Ui0zlv0+WF9SRy0eFn64882OTICzzV3nL2i+EsCQtUwZr9JmGwIkvBU9TkBGW9lD
+ 5c+NFdD7d7nM4F9Ze5xK3Ek2RttCCj84qcXbiNdA3w6Duxu2+t7Kua7kt9iuonvfDnY1lP8oS
+ JqJkXmHnDqnMHbA/X9IT1OO4hfbQcpqBKFaYmHZ6wPBZEbn5TmhqfTR/zipUXbkmDlEua6UxK
+ FhkYZH07eUjjxvfEYRgnFXIhC0alO/NzViZKznDos2fbvzYBh/c1jV+lJlAIXZYM5o/5lznMS
+ FbSxT8+4BluG9D91TKlixGuhbCOfK9mlj1kYCI7Yj2R7alOUKAEj63NSoRPEcseaoem0wGoAB
+ DWFabL18tpPa+d2mqw6ZZFHBNNUfP1YKWVE1P2sveTKJMVPTuMLGL72NuEm8Jvz7cYeIDjcm5
+ Mu1ZXOkRubPgTtYgHM0sZOR2CksJUfGO98Uva9jVkeFa5gCogctJZzQ1PMWuCpCCD2AvWohdA
+ RkrpdQCo4W6BmkNspm4R7yUgAwmYdaD1IyzabvEyH5c8p4ztUMX9YMuiTTEmVKDxwJX4UjGkb
+ HrPdCzoI0iZQM5c3//0gtNjXSSYBEvuHlrtITka4Zc10pocR25752Pb9kFp8759C2CQFJu0VC
+ WNL4JHnHarYEdmO9vD0DATxXRhlK4NsgZJ2EDkbJJIc+Q3uQZl5LJJu7HThY=
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 24 Sep 2019 23:00:16 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Tue, 24 Sep 2019 22:55:08 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Tue, 24 Sep 2019 23:00:13 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: Coccinelle <cocci@systeme.lip6.fr>
@@ -150,12 +148,16 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-> What is causing the previous uses to be removed?
+>> I would expect that the selected identifier should refer to the same scope
+>> of the enclosing function implementation.
+>
+> It doesn't.  Identifier metavariables have no scope, and scope is only
+> taken into account within a rule, not beterrn rules.
 
-Thanks for your reminder.
+Will this information become relevant also for further improvements
+of the software documentation?
 
-Now I see that I need to repeat the deletion specification from
-other SmPL script variants.
+Which object references can refer to items in an unique way?
 
 Regards,
 Markus
