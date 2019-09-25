@@ -4,46 +4,46 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E265C432C1
-	for <cocci@archiver.kernel.org>; Wed, 25 Sep 2019 06:40:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24B76C432C1
+	for <cocci@archiver.kernel.org>; Wed, 25 Sep 2019 07:01:13 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 792D621D7E
-	for <cocci@archiver.kernel.org>; Wed, 25 Sep 2019 06:40:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 74C2A21D7C
+	for <cocci@archiver.kernel.org>; Wed, 25 Sep 2019 07:01:12 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="dHo96a8F"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 792D621D7E
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="HfuYTUxk"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 74C2A21D7C
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x8P6eGF6011077;
-	Wed, 25 Sep 2019 08:40:16 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x8P70sm9020947;
+	Wed, 25 Sep 2019 09:00:54 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id A05AA779A;
-	Wed, 25 Sep 2019 08:40:16 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 8874B779A;
+	Wed, 25 Sep 2019 09:00:54 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id B014F76D9
- for <cocci@systeme.lip6.fr>; Wed, 25 Sep 2019 08:40:15 +0200 (CEST)
-Received: from mout.web.de (mout.web.de [212.227.17.12])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x8P6eFpV003724;
- Wed, 25 Sep 2019 08:40:15 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 2D90F76D9
+ for <cocci@systeme.lip6.fr>; Wed, 25 Sep 2019 09:00:53 +0200 (CEST)
+Received: from mout.web.de (mout.web.de [212.227.17.11])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x8P70qXV009069;
+ Wed, 25 Sep 2019 09:00:52 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1569393615;
- bh=6ld4Gcjc6LipGevR3CwrymVhfQACojyFKAy5SQorSak=;
+ s=dbaedf251592; t=1569394850;
+ bh=PHBkHSsIVdSEaYBekryp+eOCmcgCF0GSnYhLIIZvZh0=;
  h=X-UI-Sender-Class:Subject:To:References:Cc:From:Date:In-Reply-To;
- b=dHo96a8FmvfdOVZ+H3TPsHuao3LGrCswskasApmllFLSMHto3gKXfoKSff2OMmqRh
- c9bsjTvs5/oXme5wxPEdWwqWvAG9pPvVQL9Ope26tv7jqkeeQP82DWVJo9X7ZhZ5Me
- EevMlv09bF0svib05jRaGsEiqYh/n9L0n/vIqTq8=
+ b=HfuYTUxk7GPIJ6JF+haX7IiTLU7BEFpdO1S1LlNheyCOyKWhSgMcixoYNgUE3zLgw
+ Zf8SKJklsrmOmRy3sm6kK5s/EWjhG5XKn4/8YDJfblP0kK/Oi4mwVuEHJReEQ7fT+X
+ ZXePlIj5IflLxVPIOsYJqGMmu5IWfXnwylIi/bwM=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([2.244.110.103]) by smtp.web.de (mrweb102
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0LxfKp-1i5prR3HeV-017FJm; Wed, 25
- Sep 2019 08:40:14 +0200
+Received: from [192.168.1.2] ([2.244.110.103]) by smtp.web.de (mrweb101
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0MAvCS-1iMxRW0s9U-009zWe; Wed, 25
+ Sep 2019 09:00:50 +0200
 To: Julia Lawall <julia.lawall@lip6.fr>
 References: <e07ce253-8a13-0f90-3ee0-79c1a0e78b38@web.de>
  <alpine.DEB.2.21.1909231058380.2283@hadrien>
@@ -57,6 +57,8 @@ References: <e07ce253-8a13-0f90-3ee0-79c1a0e78b38@web.de>
  <alpine.DEB.2.21.1909250822040.2482@hadrien>
  <362dc557-b90d-e3df-e56f-f7ef283b6f01@web.de>
  <alpine.DEB.2.21.1909250837140.2482@hadrien>
+ <8f5e6fc3-e2ac-3098-9724-0958a869e92e@web.de>
+ <alpine.DEB.2.21.1909250854190.2482@hadrien>
 From: Markus Elfring <Markus.Elfring@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
@@ -101,39 +103,39 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <8f5e6fc3-e2ac-3098-9724-0958a869e92e@web.de>
-Date: Wed, 25 Sep 2019 08:40:14 +0200
+Message-ID: <77eb7949-b16b-ee07-be24-5dadccb25cb9@web.de>
+Date: Wed, 25 Sep 2019 09:00:49 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.1.0
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.1909250837140.2482@hadrien>
+In-Reply-To: <alpine.DEB.2.21.1909250854190.2482@hadrien>
 Content-Language: en-US
-X-Provags-ID: V03:K1:Nuk//JIxeSLJ84cXn7HSBfJh9IDLBV4jW47sOjjGOhFqKiGokYK
- DnxBXvmSSu/9cwo4N7rDEs9bI8XxF52P1xa8BvPW8lSf3uhnIUt8eKZ7xykN+Qqm18pLD1K
- ih/NbD/w/0PZvFHAHuNyzbtevQn1mjMk+KHnDVRyV+LoL8RLEiQjNle+GLVeaOm+eUTDbhr
- gzGCh7hD6wBaqMgEhevPQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:a3fuiubkSas=:XopSYKGZGd6z1jiTnI9I+w
- qiCFeht29CCLrdzIzm+9qZDw8jCR0ak8o98/U4nP3lZxROZlhZgltsH8fVCC4/iwSOyEIoQ8u
- 85wcuejsHunj/9dSZrHJJqoas0QguMqtx/ACCO8VH2/NX++my5RRQcsJoNXB736cY7oV1IrlI
- jiImIGdeor+4nGJyknS3BPLGNdu6xbpZiAHQt3yQjL4rDHweZVIrSx0nUIMQM/I0hvyPYwSOd
- +Aewbp/CRxFeWN2dNJmeRq32dIBI7hcJX3oOdU4xlXuWdqWWBK6EWG+8fUdcuQmxQybv++rxZ
- ADMc72SxQBjd1dsRv/f96mAFFprpF5jww3jy0eXN+ZMGfyDali3yYBXesZJxhZFIJKhEerlnm
- IsGLyGz/4cw83t42wSGeVuzyAwne+TdD4/RYfK7KQ/iMjrFoETuONDRT/nXH7aWjw69pjQHdl
- FZL4wtTknNfS/LxGCrlHtWP9FetrQVFKphIg/ePbuj9d2PA/Sbtk6IoHIOPHpmHRL+XY2svvE
- 8PiVgA6/Cly3IZ/aiZRnbt6OvT3QHgCwdTIMAtEGHQPRsz5qaINTtbkaHRe6WqDeCAsaIdDbM
- T89xNgzmocXhvOvUQKMnBR+UPyByuMIoqMeLL987BWp8BK5Bjwpk3wB2WGRmHnYkFpLzRiSLp
- H6LjKdwutMLdsjD6u9BB22fd1tKa2+zvR/Nv354qNnQKsZrWlCDtNW3CDwfiqT9v4rtPzf+1m
- FGhakwc30gUR55KEWgBL2k8Ep6wSSBYibSxPDyUDnni1UFC+/1X1MI1ePGvQBGQEwXClIoQS1
- 5fg8Ddhn7gFb/b6mgrvBdeHR8vxk4rD26xs5jGp3RiByHXFdc7oT641tG1m/7xlkoWk1t3Iio
- LLRxI9zv9rzPBZt7E5wz3bGUKel7Ab8GxMoX85UOLXFA5hXWeuF6FXADM5pxftIFWL+J8Afps
- yxbrP1AvNo4/jMFsDHUF/kiJ4uOF+KeH1HLVO1iK3fSKo6DEGa0qkGGNb5/1bdTijxr9AnLQL
- Raz7hlffp0PyoVIcPpk28h+0MUtk1P1PUy0RpG3UHbVf+KykcqHKzw6rHr8MtxyBImxtgRxuf
- r0soo98UAqaa9bTKR0f8dYZZcMlibQG8RbXS72EZXb/cr2Np4xyrA99eRd7pe+Az6v3P3hvp/
- LfEVzlE2maDKhPdnkDWRwD9WLiOSTLiD6EsABRvIif4TJTsG3VEVtj4a4n2k/51YS1x1z9WJu
- OZUqCwsoHxgFqbIx9Pf54oY8ENH1oLgF2jsyxrVJ8jHq+nwB3KCxW+2q8GDQ=
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 25 Sep 2019 08:40:17 +0200 (CEST)
+X-Provags-ID: V03:K1:o7nVzhd25pHJ0/AmU72w3pVNrS2vUR87C7a7kv23H85bHhQ9CBV
+ EJhfjY+t5Id1zmMoW6k4K6VycxR666uiw4jCwt3ye78Betd/OoaaN1iZFt4pWHuS0NeDpPI
+ ckT0KnwQNy0+dZ8Uq9nbTfz0CICUfSJePEJe8d3goy5UHIrV7nLXAAyMWk5SZ3oUofx1ZN6
+ +y+URo+JZiWXe7ON0PjWQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:5cbF6kt7v1E=:krXuKg3O4VVHMRHWoymXlR
+ YjpOtPqQVy3/2zm0lRxO3hByAnfAbV9c9eyyqEegbHyDn0PWLXErct2ogOnlyxtL/4dmz7IXS
+ nBp7t9uk9PSermIgOFC860A3PISuyJBja/82W7JtattzRWBRdL0/PYzn9cdp18ae8Uy7PaIWQ
+ c+smbLstDQudpOQ/ps78/NmvvGTzDVlecsOtoj2yf9i1CdeIINYwaza1wBOU4GFS1mQGhrEPw
+ eFsVjpEE94CNlTAayIhf5BEIeIxDh1YMMiVIxpFnKvySvy9AwHR8gT1dKbfEQ7fOKqW/EmePp
+ cCh5bgBh8aV22JAz8Vkd2KqdjNAQpBLi1Gu/CPUAYzGp6KZP5/8oPOscuZPCOnZXUFN+dBmEc
+ VQDWFBqt2p33XKf6Y/SYbmVxvUQyyprc7KhkQJllFlyA07LmaM/TPAzvSiB0D38Le3MaF84Hk
+ J6AkqhfBIBRCoy10fFZJ1JB5pP6TbNr7ODMyqyzaof0fNgUepDOsmF7B8pq1/Wfehl72ae992
+ bam3e55avqzxSUbzmToqhoXqvtHXctd1THoS6cnjeOKA3boDZNJVmmw2s84ABaUGBpxHHgVkq
+ a0fV8eX/aaqMMmWIu3t+ZAPbai6ZGfNcWXu1V1Wj7tv13DiTNAwZVr+tpthV52YuNnLN7RwP9
+ E5r+JAdKVdib01AVNX38kosLsyuOVIgXGsI+SGpXIIN+e+1TY95mlXYA4ZeHmVOSc1HwiEq2I
+ YU4uo71RLHq/l98SUUqRwjbLg6et1ARZWcOLQ0iXgDq43Bas91BeZ1H5ke2t8f7hAk356sa51
+ bXwGTTu0OFGgYHTgq6YTBu2cVOh+jw/msvNcTpt0p7QbINSHGsswMxT2yAJDbnDydvo4Ut8UJ
+ e0NV+wHNxo9dHYRUNkKeCxM+uMQLdT31QzMAdG2kfYubg2rzpwEmT6CtpVQZm/iNTfiwPqP60
+ CY+KR4k7a2DCdKUfc1NyijvFyR6l5+ppFRwOznU/iigWZuChDNioWLqCFVn7nmRk6OChLrR6o
+ 2T9n2fp++6+rNR9JKAb7NDXvZc9+TuoiSN0nrEeSFL3ByfhHE9vaWO4PYxinBq1tge0cx8mmf
+ RnYDVaEp6Jl6DmRCdAjd+6sIk+QDROholKH7xXAhwtcN+DQ91yR80q45Mnv6QPYcsVGAJTYSD
+ EPrKC9Mb6CAelDBqjJXW7nO9glUj2ovKUmwVz6MyPzdna8Z1aIg5Tp85tEExCoE6VD2//DigX
+ KgWbCibPJh4+caH8rlIJ2jlpSgRccbJ2oApt2pthwa14gGbw7qrMLu64+riU=
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 25 Sep 2019 09:00:54 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Wed, 25 Sep 2019 08:40:15 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Wed, 25 Sep 2019 09:00:52 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: Coccinelle <cocci@systeme.lip6.fr>
@@ -154,12 +156,21 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
->> * I would like to choose this setting for the execution of selected SmPL rules
->>   (instead of referring to a known command line parameter).
+>>>> * I would like to choose this setting for the execution of selected SmPL rules
+>>>>   (instead of referring to a known command line parameter).
+>>>
+>>> This option is not offered.
+>>
+>> How are the chances to extend the Coccinelle software for this purpose?
 >
-> This option is not offered.
+> None.
 
-How are the chances to extend the Coccinelle software for this purpose?
+It's a pity.
+
+
+> I think you could use ( & ) to do what you want without this functionality.
+
+I wonder how the usage of SmPL conjunctions can help more for the discussed use case.
 
 Regards,
 Markus
