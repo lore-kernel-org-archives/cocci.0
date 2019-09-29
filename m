@@ -7,45 +7,53 @@ X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD9AEC4360C
-	for <cocci@archiver.kernel.org>; Sun, 29 Sep 2019 08:21:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9EF1C4360C
+	for <cocci@archiver.kernel.org>; Sun, 29 Sep 2019 13:13:50 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EE87320815
-	for <cocci@archiver.kernel.org>; Sun, 29 Sep 2019 08:21:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 278B82082F
+	for <cocci@archiver.kernel.org>; Sun, 29 Sep 2019 13:13:49 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="s8uZYHPW"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EE87320815
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="Fro7vvXo"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 278B82082F
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x8T8LRx1018245;
-	Sun, 29 Sep 2019 10:21:27 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x8TDDWJH007500;
+	Sun, 29 Sep 2019 15:13:32 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 0FE5576E8;
-	Sun, 29 Sep 2019 10:21:27 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 55E6876E8;
+	Sun, 29 Sep 2019 15:13:32 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 0B7F276D9
- for <cocci@systeme.lip6.fr>; Sun, 29 Sep 2019 10:21:25 +0200 (CEST)
-Received: from mout.web.de (mout.web.de [212.227.17.11])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x8T8LNro023254;
- Sun, 29 Sep 2019 10:21:23 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 7005576D9
+ for <cocci@systeme.lip6.fr>; Sun, 29 Sep 2019 15:13:30 +0200 (CEST)
+Received: from mout.web.de (mout.web.de [212.227.15.4])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x8TDDSaK014155;
+ Sun, 29 Sep 2019 15:13:28 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1569745260;
- bh=DHF/4geK6xw2vD/UIcjw/AAJtKWKszcVCMuRfroX1gc=;
- h=X-UI-Sender-Class:Cc:References:Subject:To:From:Date:In-Reply-To;
- b=s8uZYHPWfbZKd8hh0vRpe3yKupw25hU0FG0S5UdcbcmN30hH1CNSi0SNLfQGykgNE
- 7NvCSwzAJYmp73Ab+GnM/p1xFbcfoKBrgb3rhCekeQHXPhcBwU9VkHPCUbMWeaimMC
- lM8kMLB0qWKB+iHHKYD8russs8P/+0lcISxwmq1U=
+ s=dbaedf251592; t=1569762787;
+ bh=dSp57Oa8v9ZZeJqzmn8tjEApN8VU8saj/sUmtIa+GLY=;
+ h=X-UI-Sender-Class:To:References:Subject:From:Cc:Date:In-Reply-To;
+ b=Fro7vvXoFslY6TRUVHhNAoZSTlH/l4Uj4npe+yHgCMrkL/CzUW9Fz0HYT3c3gCpqb
+ 7IzIb9D7Gc5Suy0xeQVCEWh8atbnhIMKIr4W7QylQJ2UQ6SVLOwvNFjtizyFGVk4j9
+ b28wUozpjFZaBHXk1u+PLuoGVwLXPBJ/3gp9CKfM=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([93.131.99.91]) by smtp.web.de (mrweb103
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0LuLt5-1i7ehP2K2h-011mzi; Sun, 29
- Sep 2019 10:21:00 +0200
+Received: from [192.168.1.2] ([93.131.99.91]) by smtp.web.de (mrweb002
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0MNt4V-1iDCMz3zY3-007SlJ; Sun, 29
+ Sep 2019 15:13:07 +0200
+To: Coccinelle <cocci@systeme.lip6.fr>, Gilles Muller <Gilles.Muller@lip6.fr>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jessica Yu <jeyu@kernel.org>, Julia Lawall <julia.lawall@lip6.fr>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Matthias Maennich <maennich@google.com>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nicolas Palix
+ <nicolas.palix@imag.fr>,
+        Yue Haibing <yuehaibing@huawei.com>
 References: <20190928094245.45696-1-yuehaibing@huawei.com>
-To: Yue Haibing <yuehaibing@huawei.com>, cocci@systeme.lip6.fr
 From: Markus Elfring <Markus.Elfring@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
@@ -90,46 +98,43 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <42fcde1f-288e-0fbe-12db-750deb15f14b@web.de>
-Date: Sun, 29 Sep 2019 10:20:46 +0200
+Message-ID: <7664d59f-78cf-7644-0ee8-304b3d78d752@web.de>
+Date: Sun, 29 Sep 2019 15:12:47 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.1.1
 MIME-Version: 1.0
 In-Reply-To: <20190928094245.45696-1-yuehaibing@huawei.com>
 Content-Language: en-US
-X-Provags-ID: V03:K1:LlB4/quSlqZCAGOg9Em7Zau5E8OTrcR3YE6U0GHAumRMPkOfm4E
- cvO5ahRGhIrIrKPtd7cXgi0uUxI47J6b0IxJrkckPSTVqs7u9BM+58qFLE4JwLsXpgeV6qe
- NOSWurCt82KBH6ue/zTAzinI/3nzFXJcuhD8UFt30rAqjDo+dY9S5kN2+Ok7HndSZAaHEik
- K3u+uON1ZmLNhIgJdkG8w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:tBC0Q32EGIc=:zm2KyEUKEaBWvICBxaA19K
- +2bGiJyhzahRsmwNVUGqBDmoO0gXdd1+YnMrGjCCD08H2LDSR6GL4BHcxeGzHCCx72n9GUyqa
- a5i8ijYrJnkzy8XRYydYWmyieoyIQr5aUWyT5ZmOu2ON8s08EvAIF3IpUbRG+7OEUADT8w/11
- sSXpf3WOLCAtfeF7qCySrlfupJUPk12jbG2rXvrX0+PVQz/PBM5ObSgUQNjScbyFe8Bx35mhX
- unz+oarRQqj/tF0Kkb67Kp+9hwdMeWlYzWdrAi0YL9sQHKVIqA498NML56TZSaCV0lzxgnMca
- T6OygSoBpKmYOzDUgY1qweaLmtM4MIiOgWYeVO9WIEfNA2ApgU6LbeFUx7oL/aHhcjgGTRpqm
- bEPpqbmyFDDBuDP6KYhIaOcyzzy3+w314V0aUh72fLbePh2Q1AR/vvXUtVPIDZOhPF3/zgYRR
- VmqG8Yj9ybImc5QLaLwW4RIHf8hNijnWhjDxJXJcCxpWfLt3s+5XCm7lPi1+O7z+biJiTA0p9
- B+iXaOxOIQzfyrn6lPpO/5awuG2yjOwiqc9H8+rQta6qGgsNCodw1Y4gpOvfEoANlYBbjlqND
- 508MaoghiSiv5WCDAmIWIZMADsJnrb5J2lpDWHSVyH2BqR3w8haqsWaML+M+AsFOBlzoWfD4+
- 5DAimV8i2OKYSXs9HIx7lCuwF3qn9KO1OvDJ6kAyYOmfw8v52SRlMKAYbarX3+GOaIPoVeygh
- D6nQJoyDlb7ImTCtvBAlfreLuHCWK63rvVl4ullQfNEnBuat6uHrOSyaKKocnY3B9BYTrzsDv
- ekv5wioNzSKadzyZaOOddw61VO/SaSzQxVhAxL76UTHVemNLR5aZuae3bnfcPEzb9cLNkSgoW
- M4s7873m7lTT/MTjpIjM0sRUvc/y6hUgZNtKGyUI5ocb84rQQOcJFavUfrxpTnRvQg7stDqTO
- FS/0qyctshVASbzR6CEgNcoFT30FpBUxCcacr2DmRlNb9aGS28D5OgMYNnI83LQNtRegE4hW7
- Td24Sy1zQjAA6WTreL8FeBhIHDresnTWnVBwLDgf1EIIVbAPv2GTPXFd9mAs6gXepQed/Tojg
- yAdqcR18DEu5Dv2ei4r1Xn1Z23TXMegJdUC8wJkke9MrXBy/P9WY8BMrq8ZTPaL2wWH4fW576
- DgRPFMkCZRFelHwwn+3Qa8XC1txOfoPeV7IyMKOi2GZOiR3RIZiCHKA0a9y2NyoMJaleBSZLW
- sRp8iUSpzXdFdZymQ41Z4M51rk5bZ2/vSWjwrB08ipfZSejwPZNPbAshH1dg=
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 29 Sep 2019 10:21:28 +0200 (CEST)
+X-Provags-ID: V03:K1:PwQo5qCzTegsEBms1RpHKmRjCEpW0EqLwQTqtSi6tReF4EJ9Fku
+ XShnV38l98JkzFH3MlDIsvGyx8Y2LFgqJohS31H6IetwS4HDE36Lo4tIk+pE0psj15VkPFR
+ 4YKMPd/rJqRhtHAQ7bEcO8+pX+6x/7krh0vv/ooupoalf/dy3CxeuYHN8rTcoujKMxeDD4Z
+ s5IdUcSy1NjqinUbuhOpg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:sEtkCVBulQ4=:D9aUJ4qjB7WtHeLCnZpwi6
+ g16cI2dR76u+RyX2fJSlEukCtMRz7mEmx11G6aqQdBAjlIF3ZXXgB1fE6NA1sLhNN+1qxH5Mj
+ BDFRctl0sfjjx4uIvPmFl82iGtSJJ6ZNxiuBGgo9OiO7gc3W1dvBpe+Vd0XN/p+kUbfKwipA0
+ H/kcNltCGzKAyEmwfwa8YW1Fz970MRph765/PXssznqhkRRypK37bG54a1bzy4205nJtY6nLd
+ 867nRFiS6tYoS+q+MLQR4WSHImeFZDshAjqpVRFLJqE17kmvy82Xi6UOOXh+z98YUSBr/tA0q
+ LyzizyqpAOrvZJRtND4E5UTRSVzb4PhixCdk4XHSw5eVIIgcGRfW3V0WsvgNfSIJG9A5HfUOU
+ zbxC+noGkHiIOD5R9jnydAe6zK2OEkJZeQUEn6YLHJGyYWzGe21+iTwRmzB3oqB+UNxq8/V5g
+ iBBkxS6rmDotOG+a2aWs2PREs5lbnDU555NxjZjegAqJfRbRnN88NLR1eOOJOBUbBrSYl9Cun
+ xQIEqEgz0Jwgfe+wHo7ZgubJ5E1ZMO/pGkn3yHWCCpPER++ra1hv/ZBq3d83XBh3jc+JSKjae
+ lhxNAoxPTbhrhZwk5WjLBW0zvcDDKSmRLd47Qorf6do/p/93i3F67etxVVq5GtQJHfCIliHkz
+ g6qrJC81Pjdw8fgZQZJPFBNg126twBv39bkLKiGF+Y0M+x9jAAqqxwJ3n3UViGCJ2Cfmfr3Ng
+ f5FoIlgj7kC8EeF9h6ppHzX8kNF5Nz2sIdCT3G4TfpKz6aS+R2oY9NTVn17UuDfgCfj+EloWc
+ wW38z6CbPas72QHmns2aTnSdjyWnOxAxJr7tYKx3OkowS+pi/ZN2LcDCjajijFyt7l6CYRpJX
+ /TuqmADIPU9FHTyiVXS4OHiaskKQifzTuP1bXJMq9pKDQUz+0pT+HWnM0c6tzYTyqw1uhMh68
+ ebXzt2zMUFrIzELO3fjRsvTC4dkzwwQ6aSS6YuGKUjclMqSEMqa+FdcuW8STMJSEslQ/vR4jf
+ XWupAJQ1uuudzWsbPuv4yPOnlmu1jArEN9Rnb8vz7lfRca0nK4oIOkaMYlPjiGoDXk535z9Yh
+ ZLS+QVQE0yBtYktToWPM5Gdr+uInVrVXrmwlNlcbTqO4zQ5AWlb7AvdE0QvpT9Yy+DVzopzsr
+ gNuRW6lpBTe413qs+tsN1Y31hUZDq2JKWhdMhu+8ccPrG8rAICxc0E6XBoijhSlycAnfNGvPU
+ 0Q4MHA38YnGdwzewiRZ+TfthYBqoVFOiNGuHNSrv3uOJDvWUwm0IAcMZ0d6M=
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 29 Sep 2019 15:13:33 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sun, 29 Sep 2019 10:21:23 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Sun, 29 Sep 2019 15:13:28 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Michal Marek <michal.lkml@markovi.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nicolas Palix <nicolas.palix@imag.fr>,
-        Matthias Maennich <maennich@google.com>, linux-kernel@vger.kernel.org,
-        Martijn Coenen <maco@android.com>
+Cc: Martijn Coenen <maco@android.com>, kernel-janitors@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
 Subject: Re: [Cocci] [RFC PATCH] scripts: Fix coccicheck failed
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
@@ -142,21 +147,24 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-> It seems add_namespace.cocci cannot be called in coccicheck.
-
-Probably, because this SmPL script was designed in the way that no corresponding
-operation modes are supported.
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/scripts/coccinelle/misc/add_namespace.cocci?id=eb8305aecb958e8787e7d603c7765c1dcace3a2b
-https://bottest.wiki.kernel.org/coccicheck#modes
-
-Regards,
-Markus
-_______________________________________________
-Cocci mailing list
-Cocci@systeme.lip6.fr
-https://systeme.lip6.fr/mailman/listinfo/cocci
+PiAgcmVuYW1lIHNjcmlwdHMve2NvY2NpbmVsbGUvbWlzYyA9PiB9L2FkZF9uYW1lc3BhY2UuY29j
+Y2kgKDEwMCUpCgpJIGhvcGUgdGhhdCBzdWNoIGEgU21QTCBzY3JpcHQgY2FuIGJlIGFsc28gaW5k
+ZXBlbmRlbnRseSB1c2VkIGZyb20KdGhlIG90aGVyIGtub3duIGNhbGwgaW50ZXJmYWNlLgoKSSBz
+dWdnZXN0IHRvIHRoaW5rIGEgYml0IG1vcmUgYWJvdXQgdGhlIGRlc2lyZWQgZGlyZWN0b3J5IGhp
+ZXJhcmNoeS4KSWYgeW91IHdvdWxkIGxpa2UgdG8ga2VlcCB0aGVzZSBmaWxlcyBnZW5lcmFsbHkg
+d2l0aGluIGEgKHN1Yilmb2xkZXIKb2Yg4oCcc2NyaXB0cy9jb2NjaW5lbGxl4oCdLCBvdGhlciBz
+b2x1dGlvbnMgc2hvdWxkIGJlIHRha2VuIGludG8gYWNjb3VudC4KSG93IGRvIHlvdSB0aGluayBh
+Ym91dCB0byBhZGp1c3QgdGhlIGZpbHRlciBjb21tYW5kPwpodHRwczovL2dpdC5rZXJuZWwub3Jn
+L3B1Yi9zY20vbGludXgva2VybmVsL2dpdC90b3J2YWxkcy9saW51eC5naXQvdHJlZS9zY3JpcHRz
+L2NvY2NpY2hlY2s/aWQ9MDJkYzk2ZWY2YzI1Zjk5MDQ1MmMxMTRjNTlkNzVjMzY4YTFmNGM4ZiNu
+MjU3CgoqIFdoaWNoIGNyaXRlcmlhIHNob3VsZCBiZSBmaW5hbGx5IGNob3NlbiBmb3IgYXV0b21h
+dGljIHNjcmlwdCBleGVjdXRpb24/CgoqIFdvdWxkIHlvdSBsaWtlIHRvIHJlY29uc2lkZXIgYW55
+IG1vcmUgY29uc2VxdWVuY2VzIGFyb3VuZCBjb2xsYXRlcmFsIGV2b2x1dGlvbj8KClJlZ2FyZHMs
+Ck1hcmt1cwpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpD
+b2NjaSBtYWlsaW5nIGxpc3QKQ29jY2lAc3lzdGVtZS5saXA2LmZyCmh0dHBzOi8vc3lzdGVtZS5s
+aXA2LmZyL21haWxtYW4vbGlzdGluZm8vY29jY2kK
