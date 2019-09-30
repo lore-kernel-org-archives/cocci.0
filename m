@@ -2,86 +2,63 @@ Return-Path: <SRS0=jkZ/=X4=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E92BC10F14
-	for <cocci@archiver.kernel.org>; Thu,  3 Oct 2019 12:15:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9426CC32792
+	for <cocci@archiver.kernel.org>; Thu,  3 Oct 2019 12:22:28 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4756A20700
-	for <cocci@archiver.kernel.org>; Thu,  3 Oct 2019 12:15:29 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nifty.com header.i=@nifty.com header.b="jxSl5GBY"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4756A20700
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=socionext.com
+	by mail.kernel.org (Postfix) with ESMTPS id E403C20830
+	for <cocci@archiver.kernel.org>; Thu,  3 Oct 2019 12:22:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E403C20830
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x93CFDe4021100;
-	Thu, 3 Oct 2019 14:15:13 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x93CMCZr009750;
+	Thu, 3 Oct 2019 14:22:12 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 26DD077B4;
-	Thu,  3 Oct 2019 14:15:13 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id A2ED077C3;
+	Thu,  3 Oct 2019 14:22:11 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 1001777A9
- for <cocci@systeme.lip6.fr>; Thu,  3 Oct 2019 14:15:10 +0200 (CEST)
-Received: from condef-10.nifty.com (condef-10.nifty.com [202.248.20.75])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x93CF7WS016398
- for <cocci@systeme.lip6.fr>; Thu, 3 Oct 2019 14:15:08 +0200 (CEST)
-Received: from conssluserg-01.nifty.com ([10.126.8.80])by condef-10.nifty.com
- with ESMTP id x93Bxi7G018685
- for <cocci@systeme.lip6.fr>; Thu, 3 Oct 2019 20:59:44 +0900
-Received: from mail-vk1-f182.google.com (mail-vk1-f182.google.com
- [209.85.221.182]) (authenticated)
- by conssluserg-01.nifty.com with ESMTP id x93BwLVA030942
- for <cocci@systeme.lip6.fr>; Thu, 3 Oct 2019 20:58:22 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com x93BwLVA030942
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
- s=dec2015msa; t=1570103902;
- bh=zCd51wQccV5gCP/s+G8hMogXPErk6qWPCtDB4gKUwAg=;
- h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=jxSl5GBYZ47LoeuI94u7/1pbamdvKCjWyxwIPVR7GQDRLs1SwBT51qQOYHt4DeCWJ
- ci4+Gvecenow8EXNQ4ZhG6rbMB0hsD2GcogNnkl3FAzeN0jG7iNVTvssEjI3oBJQKm
- lqeoq476TsoWYldR0irpAm0inuNMqJxtD9GvwcEvAlJAphYk8xAvOpde0H7F16ZKBZ
- OvXQRqFaNoQ3/vuJ7hflU+vuyeIj385S9xurGq2FKy1hHQtPa94mM7XOD1pMcLos2t
- YCrIlsmWwZMtbGt0aEN6B7DCTl2vf4eQ0F+GDDBEmufK13jkqfF/sPErKHn8XlJCwD
- qmqJ36Jw9ehCg==
-X-Nifty-SrcIP: [209.85.221.182]
-Received: by mail-vk1-f182.google.com with SMTP id j21so539636vki.11
- for <cocci@systeme.lip6.fr>; Thu, 03 Oct 2019 04:58:22 -0700 (PDT)
-X-Gm-Message-State: APjAAAWsdr8hpgMakm5K7b/0d3w/wghzDdVFjp8VXfu067U6QPlSpj4N
- dhS+5F8drUrZC91HOxsM/ZkN+7PNyX9vNvvQD5E=
-X-Google-Smtp-Source: APXvYqzZHz8CSCVCVlLQNQD0edqz1ZrjTUCeWnebM1P72kAuAJyMwfOJJKqkQ8DvnM8O25hZbWzEXqQJs7TrE0eVaGE=
-X-Received: by 2002:a1f:2343:: with SMTP id j64mr4670136vkj.84.1570103901321; 
- Thu, 03 Oct 2019 04:58:21 -0700 (PDT)
-MIME-Version: 1.0
+ by systeme.lip6.fr (Postfix) with ESMTPS id 14E4F76E8
+ for <cocci@systeme.lip6.fr>; Mon, 30 Sep 2019 04:32:28 +0200 (CEST)
+Received: from huawei.com (szxga04-in.huawei.com [45.249.212.190])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x8U2WQum027051
+ for <cocci@systeme.lip6.fr>; Mon, 30 Sep 2019 04:32:27 +0200 (CEST)
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.59])
+ by Forcepoint Email with ESMTP id 68D437E31D355E6E3DF1;
+ Mon, 30 Sep 2019 10:32:23 +0800 (CST)
+Received: from [127.0.0.1] (10.133.213.239) by DGGEMS404-HUB.china.huawei.com
+ (10.3.19.204) with Microsoft SMTP Server id 14.3.439.0;
+ Mon, 30 Sep 2019 10:32:19 +0800
+To: Julia Lawall <julia.lawall@lip6.fr>
 References: <20190928094245.45696-1-yuehaibing@huawei.com>
  <alpine.DEB.2.21.1909280542490.2168@hadrien>
  <2c109d6b-45ad-b3ca-1951-bde4dac91d2a@huawei.com>
  <alpine.DEB.2.21.1909291810300.3346@hadrien>
- <ac79cb42-1713-8801-37e4-edde540f101c@huawei.com>
- <alpine.DEB.2.21.1910011500470.13162@hadrien>
-In-Reply-To: <alpine.DEB.2.21.1910011500470.13162@hadrien>
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Date: Thu, 3 Oct 2019 20:57:45 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATAqM9QHRqotFQsmh64rww_AxNm4gdV2t5TuYxHA++zSg@mail.gmail.com>
-Message-ID: <CAK7LNATAqM9QHRqotFQsmh64rww_AxNm4gdV2t5TuYxHA++zSg@mail.gmail.com>
-To: Julia Lawall <julia.lawall@lip6.fr>
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 03 Oct 2019 14:15:14 +0200 (CEST)
-X-Greylist: Delayed for 00:08:20 by milter-greylist-4.4.3 (isis.lip6.fr
- [132.227.60.2]); Thu, 03 Oct 2019 14:15:08 +0200 (CEST)
+From: Yuehaibing <yuehaibing@huawei.com>
+Message-ID: <ac79cb42-1713-8801-37e4-edde540f101c@huawei.com>
+Date: Mon, 30 Sep 2019 10:32:18 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
+MIME-Version: 1.0
+In-Reply-To: <alpine.DEB.2.21.1909291810300.3346@hadrien>
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 03 Oct 2019 14:22:12 +0200 (CEST)
+X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [132.227.60.2]); Mon, 30 Sep 2019 04:32:27 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Michal Marek <michal.lkml@markovi.net>, Yuehaibing <yuehaibing@huawei.com>,
-        Nicolas Palix <nicolas.palix@imag.fr>,
-        Matthias Maennich <maennich@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Coccinelle <cocci@systeme.lip6.fr>
+X-Mailman-Approved-At: Thu, 03 Oct 2019 14:22:09 +0200
+Cc: michal.lkml@markovi.net, nicolas.palix@imag.fr, maennich@google.com,
+        linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
+        cocci@systeme.lip6.fr
 Subject: Re: [Cocci] [RFC PATCH] scripts: Fix coccicheck failed
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
@@ -99,36 +76,76 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-On Tue, Oct 1, 2019 at 10:01 PM Julia Lawall <julia.lawall@lip6.fr> wrote:
-> > diff --git a/scripts/coccinelle/misc/add_namespace.cocci b/scripts/coccinelle/misc/add_namespace.cocci
-> > index c832bb6445a8..99e93a6c2e24 100644
-> > --- a/scripts/coccinelle/misc/add_namespace.cocci
-> > +++ b/scripts/coccinelle/misc/add_namespace.cocci
-> > @@ -6,6 +6,8 @@
-> >  /// add a missing namespace tag to a module source file.
-> >  ///
-> >
-> > +virtual report
-> > +
-> >  @has_ns_import@
-> >  declarer name MODULE_IMPORT_NS;
-> >  identifier virtual.ns;
-> >
-> >
-> >
-> > Adding virtual report make the coccicheck go ahead smoothly.
->
-> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
->
+On 2019/9/30 0:32, Julia Lawall wrote:
+> 
+> 
+> On Sun, 29 Sep 2019, Yuehaibing wrote:
+> 
+>> On 2019/9/28 20:43, Julia Lawall wrote:
+>>>
+>>>
+>>> On Sat, 28 Sep 2019, YueHaibing wrote:
+>>>
+>>>> Run make coccicheck, I got this:
+>>>>
+>>>> spatch -D patch --no-show-diff --very-quiet --cocci-file
+>>>>  ./scripts/coccinelle/misc/add_namespace.cocci --dir .
+>>>>  -I ./arch/x86/include -I ./arch/x86/include/generated
+>>>>  -I ./include -I ./arch/x86/include/uapi
+>>>>  -I ./arch/x86/include/generated/uapi -I ./include/uapi
+>>>>  -I ./include/generated/uapi --include ./include/linux/kconfig.h
+>>>>  --jobs 192 --chunksize 1
+>>>>
+>>>> virtual rule patch not supported
+>>>> coccicheck failed
+>>>>
+>>>> It seems add_namespace.cocci cannot be called in coccicheck.
+>>>
+>>> Could you explain the issue better?  Does the current state cause make
+>>> coccicheck to fail?  Or is it just silently not being called?
+>>
+>> Yes, it cause make coccicheck failed like this:
+>>
+>> ...
+>> ./drivers/xen/xenbus/xenbus_comms.c:290:2-8: preceding lock on line 243
+>> ./fs/fuse/dev.c:1227:2-8: preceding lock on line 1206
+>> ./fs/fuse/dev.c:1232:3-9: preceding lock on line 1206
+>> coccicheck failed
+>> make[1]: *** [coccicheck] Error 255
+>> make: *** [sub-make] Error 2
+> 
+> Could you set the verbose options to see what the problem is?  Maybe the
+> problem would be solved by putting virtual report at the top of the rule.
+> But it might still fail because nothing can happen without a value for the
+> virtual metavariable ns.
+
+diff --git a/scripts/coccinelle/misc/add_namespace.cocci b/scripts/coccinelle/misc/add_namespace.cocci
+index c832bb6445a8..99e93a6c2e24 100644
+--- a/scripts/coccinelle/misc/add_namespace.cocci
++++ b/scripts/coccinelle/misc/add_namespace.cocci
+@@ -6,6 +6,8 @@
+ /// add a missing namespace tag to a module source file.
+ ///
+
++virtual report
++
+ @has_ns_import@
+ declarer name MODULE_IMPORT_NS;
+ identifier virtual.ns;
 
 
-Was this patch posted somewhere?
 
+Adding virtual report make the coccicheck go ahead smoothly.
 
+> 
+> Should the coccinelle directory be only for things that work with make
+> coccicheck, or for all Coccinelle scripts?
+> 
+> julia
+> 
+> .
+> 
 
--- 
-Best Regards
-Masahiro Yamada
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
