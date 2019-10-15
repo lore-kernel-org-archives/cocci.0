@@ -7,53 +7,49 @@ X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A5E7ECE58E
-	for <cocci@archiver.kernel.org>; Tue, 15 Oct 2019 08:20:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51410C10F14
+	for <cocci@archiver.kernel.org>; Tue, 15 Oct 2019 08:35:04 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C041A2064B
-	for <cocci@archiver.kernel.org>; Tue, 15 Oct 2019 08:20:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C39692064B
+	for <cocci@archiver.kernel.org>; Tue, 15 Oct 2019 08:35:03 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="Bp01W74Z"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C041A2064B
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="lVE23K6f"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C39692064B
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x9F8Kdhn018264;
-	Tue, 15 Oct 2019 10:20:39 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x9F8YoPQ027653;
+	Tue, 15 Oct 2019 10:34:50 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 3563F77B2;
-	Tue, 15 Oct 2019 10:20:39 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id B867E77B2;
+	Tue, 15 Oct 2019 10:34:50 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 855D644B2
- for <cocci@systeme.lip6.fr>; Tue, 15 Oct 2019 10:20:37 +0200 (CEST)
-Received: from mout.web.de (mout.web.de [212.227.15.4])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x9F8Ka9U014204;
- Tue, 15 Oct 2019 10:20:36 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id C29C044B2
+ for <cocci@systeme.lip6.fr>; Tue, 15 Oct 2019 10:34:48 +0200 (CEST)
+Received: from mout.web.de (mout.web.de [212.227.15.3])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id x9F8Yldr028946;
+ Tue, 15 Oct 2019 10:34:47 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1571127612;
- bh=UIFhoJjsAoIYjCSSJjCMWtAmj1ilxj31R/cV2JGNhPU=;
+ s=dbaedf251592; t=1571128482;
+ bh=aM7KBlYFh42X7NA4s9WIttxiOQYYkwHpl5twc2GJ9o4=;
  h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
- b=Bp01W74ZVS0g3Jw0he1ywW7M+O6o2Vr/Y76tv/EjAAppKffrmzTxvf8EgB2YKQdda
- Vb/uzp82IYL9v/Nxr/exuvfeOhSehgxmlCWP+cphoiQQN7OEcdv/JvCU9mSyEMDPWt
- kbEIyczMMqb6aF2i8zDVce9rUXKiVs6WNuZJVKNg=
+ b=lVE23K6fOsOIc8xQPPi89AieUiACNIxFPSCiqdiDD92pyUlrQbHEl62trfwXYAu4L
+ JjhhnApz4XPxWmcCOVHyFdJ56C7GHRQF96IJY8yHgl532sHfxwGOG7+EYxrj63Ldg2
+ vx9JsP0nLaBSlzMnRfU4AArNTp48ALuKmaNo/dpU=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([93.132.79.11]) by smtp.web.de (mrweb003
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0LbrTY-1hb5wG18Im-00jEqc; Tue, 15
- Oct 2019 10:20:12 +0200
-To: Julia Lawall <julia.lawall@lip6.fr>,
-        =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?=
- <jgross@suse.com>
-References: <alpine.DEB.2.21.1910112200230.3284@hadrien>
- <11a68d96-ace6-889b-596b-e34590b7b965@web.de>
- <alpine.DEB.2.21.1910131806400.2565@hadrien>
- <21abdc24-95d3-be59-0a93-4b60e790a239@web.de>
- <alpine.DEB.2.21.1910131836530.2565@hadrien>
- <e6b2ca0d-1477-2528-afc1-34272e48b89a@web.de>
- <alpine.DEB.2.21.1910141223120.2330@hadrien>
+Received: from [192.168.1.2] ([93.132.79.11]) by smtp.web.de (mrweb001
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0MTxxp-1iSvGy3T4D-00Qmf4; Tue, 15
+ Oct 2019 10:34:41 +0200
+To: Julia Lawall <julia.lawall@lip6.fr>
+References: <56e7bd73-5b50-ddeb-9a56-62daf93eb015@suse.com>
+ <56102ab5-b633-7e14-1fd3-3f43fb0770b9@web.de>
+ <alpine.DEB.2.21.1910141740580.2330@hadrien>
+ <aa8de6c2-7baf-321a-2447-29f6b107eb9c@web.de>
+ <alpine.DEB.2.21.1910151004110.3774@hadrien>
 From: Markus Elfring <Markus.Elfring@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
@@ -98,43 +94,44 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <504eec3c-1aaf-804e-ab4a-fe64d9bdcd60@web.de>
-Date: Tue, 15 Oct 2019 10:20:10 +0200
+Message-ID: <41f111b4-657d-3897-c2c0-c43c9e1d2395@web.de>
+Date: Tue, 15 Oct 2019 10:34:40 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.1.2
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.1910141223120.2330@hadrien>
+In-Reply-To: <alpine.DEB.2.21.1910151004110.3774@hadrien>
 Content-Language: en-US
-X-Provags-ID: V03:K1:DLOCMv1Fg0ADwFI7kJK9m/AK0baU3nEzGyjyzdee4Vu/EmzN1px
- K9lL9EabtqFVTIMYElzIcL+RvfeA/Pj5Lm7Ib0vRybkcEImD4ECbalRYRRAhgihRSPnFBpO
- bEKlwUt4im7uau26jHgmsllecQK13PgvbFkF23I5HZoXPR916QanV/fFX0inO33qIIfbvqK
- fCF3pq5f1hJSZPIBb/wfA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:csOiwoH5nZI=:I/7Uz07DiKdp59ukeESnYI
- szaiOEPlOJepaTOmab6e9Rd9O48jRMVInyZz9EHFZEKC1w00pnm3xDRmC+0SwK3nv4dsGkFky
- P4ggTIcnpeOHtVeSz4BAorSZalXDXU8eVfLyQLeKXyweW8IA0wo+09lEEqjmypoLMTUtDUw3m
- REQ/lItJjoEIpSfBJr5zJ3pf4pbHI1UvUD/kHIjPdeQ8zxPu9c5y14zD3Bu2d2pXjwQbWMq+H
- EN/WuWebkTr5JM0VbRMyvfiIV7v+AEeKxk8T0mapPXhZGCLzvo6sHC16NxYSBqrsddBrUfVnM
- aYASGUQpYm1P4j+WbVRijJMUDEEunRHqKos0hIvB3AD3Ji6/dN/TIZJS0HfFRKLEBlIOYzXpO
- FiSJ6l7IzPmns8fx5Qb9Uc9f1dH4jJyjdFVsp0WI7Dtr2zudDUfmeLFywn71C/clNS9hvuXbF
- 1ySk8vMdJwjBKiug0ko6ywby4W1nFmf+q3SAXiFaVeMbi3hIMI1NBPnJ3o02Y5Mf+XrCXhdbi
- sMtdamOdNAE7WVh/bY8f+YqgGTmgvaxf+lh08LKaeQ1ouUjYOFM9UNnOkKNUy88UC7m8SLAD/
- y5J/Jcgwa5fwAxPltdFysnRdcOQazWjm3nBwW18mIMLneuhIkwB7kCrcYOR3OqAGIvBUY9cvD
- 4mGHbz5gprZLJhceTiWcnL82rDTTaY16AxFxVCM+KphTf4kE03/ERRsr7U62U426RftGeAJ1I
- cKwh9jaa4eNnUkPnMbnaRPEct1hapEgSosKqMNRIKdy2fwNfjsG2Ok2h+PXq64L6ze7TifgIs
- buhIP7KlqBvg1YQN/1LCvLM90Mm4yaUgNpbP5xqLoLYv+HT1zxitd1gpQt+S77WisXkiJIG/p
- Oepi8Jgz+6QoerC6dI9kpbgk2ghAJ2rF0k8HlnoFptvv+vM4GH95SlqiCm5+8h03NGaGFtoiv
- Q2j+IQDeCfYzSMLwhiZy5b4FMuyz6hnplGu0Uj1FTu8IoY7t1fl0Y/wJER7bqfu8AztWNOMez
- SXuWPFtrCP8iUgOKg2E6URMqZfUCYT2OwpKCvsVCYEa+H9rckGYwlaRMuRCstQUTnHIzckhUH
- wr2eI7BDITNpDVbA08HhWEvOlN1bYXmM/XqGBjx6n3Ja0r867QtXzOGtfA1BgX3NauWPBBfb+
- cIBSND7MUM/QyL4KRnRwTYBnDpZrFXsyIxqImz15yJX8BV5QUwn3nLW3Ugyz5lS244nBoCM03
- N6eCgRt+WzLjRK68axt84OMuzc3hfNxhPBasQIr+HbIY1OquLa9LCcP2iWy4=
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 15 Oct 2019 10:20:39 +0200 (CEST)
+X-Provags-ID: V03:K1:ca9qcaN8E8dFMj2naiYR4PXzxDcMAQDyr/IFKivTTDg0+urk/U9
+ VSER3O8NlQIU+nA5+uW+wUeccre9wzaok4L9BpbD/08olYNPMg4s7OdjWN3pBRYMjlYdxmh
+ F31hpgRXncvat+RCn1m4Ctu72tjeHiFP6W/sNCN4npuSerdOr5daqf9E3JZDmSBn1LcSVWV
+ JRnVLaRdPW1fnoZHov0wg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:EQkMCfRNCJ8=:GjoqYPX8x8yjOnjQcknFo1
+ c+yt/t8VTfGfvKGAX9Ixozlcq/NNnmxW+jsXTjxTc7cEi2/bMtfQxg2/DKEerL7is0N2LZN2P
+ BfOlB3IJcgkpWKJSH/Z4JK5Mp5yZgafPJAdIMHvxe5k63YCCp8WdOtiHpc16PStt2WHTVlPb0
+ jl6Or5A2KrBF9dtLsJN0bNiVAkTSbujPgMjT9RRBciuPjiCbBYm/mVwTpEX44Z07FDSQM4ReM
+ zJq2wJoy4ExcWtQwQkOAe6AGw1A6LBIb4dXf8YXIqB1UG1QJHmepENyFsc9itO8Hg+UmkbwVH
+ XFNyMBwuKd4X/nS435STh0lTC4JdXjpf/NKqiLWsTRHxb+tqZLlkWZRaObX0CgvPPnR9wi81a
+ MbIJl7H0cyOyf+EVJJppgcExyZ8xeUIhL/zvjGGMTpHEL2py2HFNfQQFPd8afRQRUBBKBVE59
+ glbno3WusFKP/aeUcU1Gb0bhwERogCHrCtDTIYb1ab85NG1NhJpnknf0vvBQSFzIo9ku2mf/D
+ bHsnnrt8w4NyE+5nRMIT0B7RHfGaRW4pu3CZhybK4jdyXk1BgBDn0ME6//bHliumECX/mXkBx
+ 5bOtb9dh5mtrH3r4JgWV3efzzX3N6qubr/PeR2ZNoLN2+Huq0X0N0n9+jaa/wj/SGXgoIUOgz
+ dpGGJ9Ucp+qrIBoS3NFZZdRNdFu+PQt2m7QR6XYW6JTupjfXACj8JPpF9hlXHjjke26gEDHZL
+ qSJpJUZsT4c2gN44FKQvD+QEzlEwx43X7FqRnPboQlfzGX3pLQObQuxhflkaX6gT6bM05jPgt
+ 74Bsn0sQvGyvIB8atqVYMxN8h9K58Xbfd0J7HMmVlk1gnFywSOUoQ+WfXd3Zsp0LaOsizzizh
+ 3f9NCtwYJ3+5dKKtODz/MVaLRcblV+3JJ7JsXTBTnrQm7qPgLq9TNPtXvm1FGmqiwRU22htqx
+ 1lPulBLgCJ+hyqQhYJKeAxE16v9YP1sbA13V1XPepbETudzvYdoU2M5wy+4UZNQex01/opAto
+ 9JBYneNueMelx3sFtxTu0xUiddJpQjdwUtCQUUxDnDRyFfK1YrfBxHULCkhqcvjhUQokEZ7Eo
+ pHU9l6xDHCuaxUKnitOVfef83Q8pug03zHRLton5yIeEOLYitcGVfTwbhrOeHaK04iEwfp90K
+ j+kJH1QUzttR081tRtU2pnZwndTRPCnzPO/rOHQkZ9o8M5Mlrmy+BG1sRCQ1KT8MehJ1BbxO8
+ t/w448hnb3u8yYNwtc0lENJ2FxlBDMTK7Ki7oVyc3dMSqyWQy+f62R5kecb0=
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 15 Oct 2019 10:34:51 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Tue, 15 Oct 2019 10:20:36 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Tue, 15 Oct 2019 10:34:47 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Coccinelle <cocci@systeme.lip6.fr>
-Subject: Re: [Cocci] Adjusting macros with SmPL?
+Cc: =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>,
+        Coccinelle <cocci@systeme.lip6.fr>
+Subject: Re: [Cocci] macro parameters and expressions?
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -151,28 +148,33 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-> Macros are supposed to be written on one line.
+>> BAD:!!!!! #define MACRO(name)    snprintf(pg, PAGE_SIZE, %u\n", ptr->name)
+>
+> If a " is missing then the code can't be parsed and Coccinelle won't do anything.
 
-I guess that you refer to a logical source line.
-https://en.cppreference.com/w/c/language/translation_phases#Phase_2
-
-I am looking for better support around changing contents from physical text lines
-also by the means of the semantic patch language.
+I would appreciate if the error reporting will become nicer.
 
 
-> Anyway, to my understanding the goal was not to modify the #define part,
-> but rather only the code part.
+> But I don't know if this was a bug in the original code
 
-The following transformation approach can produce an usable result
-together with another small source file example.
+You should probably know also this detail from the initial clarification request.
+https://systeme.lip6.fr/pipermail/cocci/2019-October/006413.html
 
-@replacement@
-expression buffer, x;
-identifier macro;
-@@
--#define macro(name) snprintf(buffer, PAGE_SIZE, "%u\n", (x)->name)
-+#define macro(name) spgprintf_d(buffer, (x)->name)
 
+> or something you have modified;
+
+I copied a bit of questionable source code also for my test approaches.
+
+
+> you sent another message that did not have this problem.
+
+I needed also further moments to notice related glitches.
+
+
+> What software situation?
+
+There are various open issues to consider around safe transformations
+also around preprocessor code (replacement lists), aren't there?
 
 Regards,
 Markus
