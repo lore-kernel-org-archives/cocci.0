@@ -7,46 +7,49 @@ X-Spam-Status: No, score=-1.9 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8019FA372C
-	for <cocci@archiver.kernel.org>; Fri,  8 Nov 2019 13:05:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A59F2FA372C
+	for <cocci@archiver.kernel.org>; Fri,  8 Nov 2019 15:41:18 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DC6E4206A3
-	for <cocci@archiver.kernel.org>; Fri,  8 Nov 2019 13:05:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id BD78D21D6C
+	for <cocci@archiver.kernel.org>; Fri,  8 Nov 2019 15:41:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="arW8tKLz"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DC6E4206A3
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="WcwLtNQ5"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BD78D21D6C
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xA8D5Oq9017254;
-	Fri, 8 Nov 2019 14:05:24 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xA8Ff0Gc011897;
+	Fri, 8 Nov 2019 16:41:00 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 8BCF377D0;
-	Fri,  8 Nov 2019 14:05:24 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 6AC4277D0;
+	Fri,  8 Nov 2019 16:41:00 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 2E94877C6
- for <cocci@systeme.lip6.fr>; Fri,  8 Nov 2019 14:05:23 +0100 (CET)
-Received: from mout.web.de (mout.web.de [212.227.17.12])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xA8D5Mp6021396;
- Fri, 8 Nov 2019 14:05:22 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 7FC3E77C6
+ for <cocci@systeme.lip6.fr>; Fri,  8 Nov 2019 16:40:57 +0100 (CET)
+Received: from mout.web.de (mout.web.de [212.227.17.11])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xA8Feugp006610
+ for <cocci@systeme.lip6.fr>; Fri, 8 Nov 2019 16:40:56 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1573218321;
- bh=HS+dWRPKtjyQgrg83Af43m55+PzVKF39pZtQuZ5mWc8=;
- h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
- b=arW8tKLzaMoMQHDcg4ln+1O0nWgiTPSpa5pG9ob0Qy0kPptqW1fsjfyoOJdkBV+pj
- wNMFEHPZRHvwlBmnCsCs7c8b405LwIgf/wmSbWo0jzhCxBsrL1vaP5lifOvSMc3Klq
- Nev1I7RD2oPWLIgpKGzfDiAqr/F9lOOJWHpnlzWI=
+ s=dbaedf251592; t=1573227625;
+ bh=2ywaOwHDVLlh9ifZ286y03cpxtest5b0HN74fYFRzAQ=;
+ h=X-UI-Sender-Class:To:From:Subject:Cc:Date;
+ b=WcwLtNQ5ac4KUjSHIGAomiXlEPw7oOXrjpeXIRtJ8PeV1sj1Om7nofL07GyNmGJpO
+ 0DGm6J1wzeK2IWNj0FLh4rf1j4+37cv0T4xNMxEEW41bd3faLtVhCVa+qYu0umhRSL
+ ZRb7d+EzssUE6bo5RpuPpJ9QlWa8sZPufwUMMlZ8=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
 Received: from [192.168.1.2] ([78.49.72.105]) by smtp.web.de (mrweb101
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0MQvsg-1iLoBL2VjS-00UJj3; Fri, 08
- Nov 2019 14:05:21 +0100
-To: Julia Lawall <julia.lawall@lip6.fr>
-References: <bfd990c8-1c1d-a6ee-7b05-e9f80160712b@web.de>
- <alpine.DEB.2.21.1911081350350.2465@hadrien>
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0M3jwL-1hbxkn3SID-00rKDl; Fri, 08
+ Nov 2019 16:40:24 +0100
+To: linux-rdma@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Coccinelle <cocci@systeme.lip6.fr>,
+        Dennis Dalessandro <dennis.dalessandro@intel.com>,
+        Doug Ledford <dledford@redhat.com>, Gal Pressman <galpress@amazon.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Leon Romanovsky <leonro@mellanox.com>,
+        Lijun Ou <oulijun@huawei.com>, Wei Hu <xavier.huwei@huawei.com>
 From: Markus Elfring <Markus.Elfring@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
@@ -91,44 +94,43 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <9809f7a9-3a61-c926-2c81-eb31be07394a@web.de>
-Date: Fri, 8 Nov 2019 14:05:20 +0100
+Message-ID: <0e7f1ff5-eb17-530e-45e9-920ce183a10d@web.de>
+Date: Fri, 8 Nov 2019 16:40:21 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.1
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.1911081350350.2465@hadrien>
 Content-Language: en-US
-X-Provags-ID: V03:K1:iVhLTD8IYGaoSQMioIOfCf0irtHLsh9wb/zsuFRTKzMmox9JzLL
- CxGD0Vrdpw93/wrtRyR012rOaKrupzOXOkx3Z7BwO0j2BzxNmXF8dL07mPCDDWd8sHbWkeO
- yBx/5XOze7D8gffPrP9aUOi74Xk+XD4eBsRod7T5Rlrcc7lRmMbIx/r65WRXSGquUSsIFiY
- Sh6IGrsGZc+1+SqjqWLeA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:CbYSX+trFx4=:wvJpM+hvQHCJefNm44oasD
- UeDmhIJ+HR/EE2jrji5Oz00XkcUiWdCsmyeWomeSmLEQ3WC8MAcnmE+Rd19z++PqAGI62Z5l+
- MufWkP4E0TDLqH+CbZSxsgMA+KReD18O3bvb7mDErHP1DkxEEy43rTdDyjBLNiHXY1eBFLUk6
- hV+SOq2UtR1oUXNcCQrRXFv+Duyf1qCd7n3MGcAprv0XPOVCB5/oqPOSDklbtUFJfX3VQvxf3
- Hy1Q/qenpRzirLKgxcYqNnJMmviqRF3n0MoSWm7MtB1rXcKHqD9TFR3GBXnGp46l3K6x/iqr+
- vIc+vToJwI1Qaf1NZrSmWK5qwMemiO+2Il5UOIelwwTB9OiLbYZ06Of1fEUyYeDxujsi60RS8
- hF83lIeb/aE92axYO7xYrxeGrYobGrr0Y+jbmHanL7jrcRVX9Rs8IXleATexwx+zxwlTTPLAJ
- p0Q/HfFYIgylYvzPuFnm/Oq0gkSJ+bEy1H+8AKET4Cnu6/PLAfK0UpyRBNQKF/32iL0T6c5F4
- ulXVCuH8UbgPH2a7GoaxRTRX4Spo6bqF9fI/gLjbPmP/7V9WiDonNx1SS1RRkCqNQtmulNlhX
- aiQLVVFMB+P5sODwQoNoGmbgVZxHis10y7cLTJBXWjGBNuNdNBahTGD7WoBdHJTXRDeQzjoRb
- 5/x6IO1kucq64C7qRWc/ikkAjQTQiK0ceOnFQZlU99GUbPZEdmZ4+ZxrGSGFCjxkRAmeHDuFY
- kzB+JxBTx3s6oyPOEwC4RwKMbdSonsu4fDLXTjOJAWxtCTTzoC/MDOt7gp65HhoQRCTPKf9Yk
- l5KhRB+6XqjfYdS7zAcDUgWO5SpxVOuFpRmg2Ji7aouyD5E9eL43ngXixyF40oP9tVbWbsy7x
- Tz7N7l0k0pbrgWcUGtlzkv49bQnvb/vAzzJIq7eAsFb4m2566Ys7eIKc5DbSjj+gJCQoMiwvl
- t3Ce5UfuwljotZyD3Gqr9Cwm0qY+GhhEGozQCz6nB/s3f8Nn430rRmHnizI1PFuQkRki4AD7k
- PHrYYkUN81Ywb23J9g2/5syqsagm1JBQ3uM9N3kI+5ap/ZrX16g25OyWGfsWmP+ruW9Pg2grD
- zO54Od1/bRlgwEAIn6sMEOX4Q3BmNfwOIv+7rVZ+/4fsty8t2ZYYbQ9oJ4WighJZ+0SkbITwU
- jXxfgh+y2v/qAQfx4jLZkTG5cujxIrhVLenjx9MkcTLSltsM6x/OmLVt9fXsmlLNrC0i0ZEGA
- Y927Pde4vrjbuMZVrcRw0sv3aSGPxoTVKqCFCT+TH3xECzgHfRkrFtkEZdug=
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 08 Nov 2019 14:05:25 +0100 (CET)
+X-Provags-ID: V03:K1:TT3P7eKfUrbKNROoCKeVghsllQXgcUMYfmCYC34e8vbSD3yPPM6
+ ckF+xddQPOr6eC9Gd5u7na/L+FK9qEroyR7s4H6In6hXdxk7rJ+xBq3mlePagfqTCh5Qtpb
+ lzjrrifmAGVzfxXe+pA1/bqJ8TxI9vagG0e840ISkP2xMfDmJXnfKBzp7143QIAhXiYYJXM
+ RoFB30GY9qQqsMhWdc5UQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:b51CUjWZVdM=:rCwsWWto5ES7cthTQZgnmj
+ +wV45eF+3FafRLZxbmqDPZdzEeoUYbY4kZYQD2fOhYC0L+e4SE6nxLEKdwOWxQ3VrjYs0biU/
+ BsG2PIsoFTgmLOOYvZHlXF9hh2OY6sqh2hgb6F8J2cfSmw3acYuQJEF9hePXoOVNLAC5hfUIK
+ D++bfREgZYg65/cMKoNvwpNlB3yeuKeMuQbUkFAoee3gv4hg5Qryz2EHyyyIia/Bqyk5dOqmN
+ SlAQmq3EQ5Q9wwL6CH/oSNCV5zhB7oO2QMYSD/AM3iTviHXU2EI6uX7aTE62+D1w9xam8mKFl
+ lQjp4T495+nqQQhWju18d0DpAEb9LkaJH1HddoHyGM/cjSqLxp7C/KPkjFvKusitjuVd5EsgQ
+ n9z1tVhCVGjI5pPj87jUMSFo+d/KLtaNcUbq0b9llIRSxlfSjZn1l2OuOFUW5Ab8KDIovkw4a
+ /f9pzAF72OBm3xHL923KJhJH/BDrJVEBYyHRw1eIYfdP4ee/wdXaAbum0rRO984nHpgW4OQCW
+ q16loScsDQzfg4TOI0aoViKWhjZW3RaaN8FfOYf2o4VVHvmvUJ0YT/onOJdZjOnG/6v0GlKNS
+ 9M+CveW1fjoNHlvitxDLYBt1Q58G1dDaESoIItMuO2utkLqkAdI4JJa6S9VxcGbgEd4WbNBIc
+ KU9wvrEI1VYbMWHKvZ+wQNkovr6cMrUU9jGhyZIkRt6voZ9CdptNoiyT5uuMmBwo7LK688mE2
+ l0mW8+NXVDg8lLM3zLoc01X1pMwtjK0AiNWz+2BxGu5wSneNqu5gmIOHp9vPgX137YdsjYlxn
+ La2st376gSI/HP+bgzgcp1DjHFkpaLmxXoNCXRwPTvH/XgLvT3kmiAM6D5rsJhQL2VTBO93td
+ regjx8mmFkoI6I0c4yCKvadB8AWEwTNrHDIMM7iiJ9TTvVLM8l+LhPXTjD5laoTKcXXaYykcN
+ p+1N634YiLTF36nCZ4nm9xk6WQbflW61e5KzzI6o6Omz+MNv1IydNKQwp9zeTNbO8dNxXtQkP
+ Sy9N4FfIZx4JSEHdcDTiPpEXXjfPDwRjd0F9NWv4QyWnJDTRulpN7lCb9BMrHDSNIYDQl+y/G
+ qPfWSsgMeLm9/fhC57/lDUTdzHfpeBwmiUO7VLItXrA4MXeuO0fYOzW9y8gYN1qGvSku7LoGb
+ crAX61+h6YWqC0lthSIKpQ4wxiwZG4QWcolmmU2x0GY8DXtrx6zKX5jSe0UnL8Q2NLv2buWB0
+ Ux+7zonCEGo8QHq3YWywJlrgeTZKIXjNYBpke3ciDbUoHbay+QodiSIjx7t8=
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 08 Nov 2019 16:41:01 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Fri, 08 Nov 2019 14:05:22 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Fri, 08 Nov 2019 16:40:57 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Coccinelle <cocci@systeme.lip6.fr>
-Subject: Re: [Cocci] Fixing SmPL scripts for data output according to
- structured file formats
+Cc: LKML <linux-kernel@vger.kernel.org>
+Subject: [Cocci] RDMA/hns: Checking two kfree() calls in
+	hns_roce_v1_release_lp_qp()
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -145,14 +147,24 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-> make coccicheck uses --no-show-diff at the approrpiate place so that the *
-> have no effect if the context option is not chosen.
+Hello,
 
-Thanks for your reminder on this command option.
+A coccicheck run provided information like the following.
 
-How do you think about to look at possibilities around the redirection of output
-to files so that diff hunks from matched source code fragments (according to
-SmPL asterisk functionality) could be directly used from corresponding variables?
+./drivers/infiniband/hw/hns/hns_roce_hw_v1.c:901:1-6: ERROR: invalid free of structure field
+./drivers/infiniband/hw/hns/hns_roce_hw_v1.c:903:1-6: ERROR: invalid free of structure field
+
+Generated by: scripts/coccinelle/free/kfreeaddr.cocci
+
+See also:
+* Commit e39afe3d6dbd908d8fd189571a3c1561088a86c2
+  ("RDMA: Convert CQ allocations to be under core responsibility" from 2019-06-11)
+
+* Commit 619122be3d40c835eb5fad9e326780909926495d
+  ("RDMA/hns: Fix PD memory leak for internal allocation" from 2019-05-21)
+
+
+How would you like to handle such details further?
 
 Regards,
 Markus
