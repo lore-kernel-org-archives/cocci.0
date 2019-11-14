@@ -4,49 +4,47 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-1.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F53FC432C3
-	for <cocci@archiver.kernel.org>; Thu, 14 Nov 2019 07:13:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 928C6C432C3
+	for <cocci@archiver.kernel.org>; Thu, 14 Nov 2019 14:43:00 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A0EB9206C0
-	for <cocci@archiver.kernel.org>; Thu, 14 Nov 2019 07:13:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 61EFF206D8
+	for <cocci@archiver.kernel.org>; Thu, 14 Nov 2019 14:42:58 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="SwNqmT7f"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A0EB9206C0
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="gDNcIici"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 61EFF206D8
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xAE7D2hW019767;
-	Thu, 14 Nov 2019 08:13:02 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xAEEgXQf000599;
+	Thu, 14 Nov 2019 15:42:34 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 80B8777D4;
-	Thu, 14 Nov 2019 08:13:02 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 2DF7E77DB;
+	Thu, 14 Nov 2019 15:42:33 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id A641F77C2
- for <cocci@systeme.lip6.fr>; Thu, 14 Nov 2019 08:13:00 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 2236777D4
+ for <cocci@systeme.lip6.fr>; Thu, 14 Nov 2019 15:42:31 +0100 (CET)
 Received: from mout.web.de (mout.web.de [212.227.15.4])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xAE7D0IZ004316
- for <cocci@systeme.lip6.fr>; Thu, 14 Nov 2019 08:13:00 +0100 (CET)
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xAEEgSD6002237
+ for <cocci@systeme.lip6.fr>; Thu, 14 Nov 2019 15:42:29 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1573715580;
- bh=WGmXHzCSzxoDuNLtdzBqqJ/DynDg5hU7cKyqYx6NiEU=;
- h=X-UI-Sender-Class:Subject:To:References:From:Date:In-Reply-To;
- b=SwNqmT7fjlpy2ihl2kZx17/6OkiizTfuK8x/f9/mPj5oA689jStf7+GcCTIIQ4H3t
- rkVHRq+j1dhkanKWkC9HKKHJVa36P5EJ0xD5OenSrX3CUXKtTan7+YHd3x02PHJPED
- UtjFpQifhGehVkNhlxU9Gv3pa06cTxhTAamRT4Bg=
+ s=dbaedf251592; t=1573742547;
+ bh=OUP2byyI30Q84lq/qYJW19CHzyOXe1nOIWmy/uYPUus=;
+ h=X-UI-Sender-Class:To:From:Subject:Date;
+ b=gDNcIiciTKNStw3Roso+HvJpZoA8J8HZkorxtqa7+Aby80A/2Q2RBE0zJ1K18McQU
+ wYr73w5PlzOkMXgVy6Hjp3nyWInx119uZ6X99NUm4oXMoo9X+Ig+J6Yuhl5fafNy31
+ zkfAPjryIYWIKTvY+4WLNKHCfo3vQgymCJTG4YME=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.3] ([93.131.120.12]) by smtp.web.de (mrweb002
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0M6ml2-1hhQP13NZM-00wYFN for
- <cocci@systeme.lip6.fr>; Thu, 14 Nov 2019 08:12:59 +0100
+Received: from [192.168.1.3] ([93.131.120.12]) by smtp.web.de (mrweb001
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0MK2JZ-1iTskY1V2L-001U1W for
+ <cocci@systeme.lip6.fr>; Thu, 14 Nov 2019 15:42:27 +0100
 To: Coccinelle <cocci@systeme.lip6.fr>
-References: <12ee1bd3-9849-ce84-f03b-104b1c1cc86e@web.de>
- <alpine.DEB.2.21.1911120524180.2536@hadrien>
 From: Markus Elfring <Markus.Elfring@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
@@ -91,42 +89,41 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <162df2a3-b989-c244-0fa7-f26596df7722@web.de>
-Date: Thu, 14 Nov 2019 08:12:52 +0100
+Message-ID: <94469840-64e2-8189-db8f-c25b7efde2fa@web.de>
+Date: Thu, 14 Nov 2019 15:42:26 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.1911120524180.2536@hadrien>
 Content-Language: en-US
-X-Provags-ID: V03:K1:9J3u4ocy8/i0st87ubLTj2kCuMYxwcbpFjGA93TIKwqPuYIbLNU
- CJcuhSarxL+iIJyrksfz2X4TH7ghCr/6zbbQhDCqpBuUv0T0jWo636/COLD8OhrggiPCt3O
- XOeljRFUhXjdAjrkyNqoFbjfitFWjfHz26BeuXnLXgkt8YkyrrC4gWGn5+H3bTK2NEFwG62
- IAzl0XO4WvkifnzSeGDsQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:CgqZ2lGpVVk=:EPADX7vpkCfFZQiBBSp9Wz
- rxStEnK0+g3h4AmNpo0BSSGXMlEWfpzD1K2rwy4E1zCnLEJVSS8UNFDN1IJ02dbzPP1E8UsFi
- 5ue00P2vmNEQv/a3UUsl5h7Scu3e68AGn6DaLhWTlTU5Ue4CkLNPJ8czrtz8NluX+i57CietN
- 6TqHf5flVDAEU3Q08LADUBl/OdTAUovS4m6mWylOPcUsZm5BmcQm7BqI4JPkVu9MC6zHFr8p4
- Hw/tzeSt8jmt2uIPqYx6GswrUouCoVfbYf4vE2s88PirzN4gGB0q/7fxeP1aoLBspLTX1iAnj
- V3F2A3aUdMIWU7HN4z8fk+IV/rNWB0JOVkmYobdvF1DKI6pGMmLusrM2vsbGQGgv72eaxfRug
- btQ/SGEfIicdJNxV39gx66C/HxlbJpzNziP16wrpRcVhsn2/8ZiP8v6jkjCY21o46lu1XN8Kb
- /c2+IRgc0cO6Wt4SjyzqbhXBpMMZ3/BFZvifn7wzK3+uZuQsS9AGjQsh0cdj97kGa+fvjHbJv
- WT4mzL0Jr4aC1QSBJqS8ezlEnPwz3RmJsWXRDBlHJ0bH8RAUUY6DV62BjdSCZC/XCpRpgfRhZ
- o5JJxnFdN1iklMe27GcdILnjsAv/GX6IWuM4gsfuj9j3vSdNyQ+lecqknPbZ+V4N5cv1wM28e
- hwLuP3jp1zVlLnFERTU9YSDGkTcwZN+d4Dhr+Xk8QkZ7u+/QorLLsIt/F7/lCXjIqlxY04txE
- 1Takg0m1aO2BPClpOtcaXtuJNT7UGG/OCM2PoBAT/4ta3J8r6O0duhiAGAPFLqRpEHE3zOcwh
- KdjSnB7YyeCTvSsfzIuGa3slrOMFqVlCg4xJdTGwkpJ62JUcd2KnahOkSixaRImndYCXi4riC
- /NUBTs3B+XDKdt0OK9Q4EEZdkeB1ER5PQz966seZsmClzvQMv6zN6OpOHqnepV+Ovmw2uVfe6
- cUrgl/fqQWTrJSG8Imj2fgVTAYXcCG9iB8IOB5HttF0jRWSVPfeweAVHLRwGPwJojjJhOLZzQ
- quXN4I6byEC5FoJ0OHHjID1A4kS7MSVS+aSN9UOP0bbFxh1b8w2encZeqhckGW2oKgpYxEtID
- Ts1DHbL2tm7XiKGrllRxb8J6kW+9SVHtpwk/BVai0E0KdwsVbis2clOSjvY50Pp0tjUORcjgt
- oFhLMZsg/X6JTRB2d/JNrPt978UWtKpXwrB6GBsTGLNmXIVIeG2aljRstUUvOiRt2nIF0ywTR
- axT96B3IMzSZrPKF5DOptAY5Jgbd1++NhoH2Kjfsfad1IT5imq36Vs+WWIRo=
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 14 Nov 2019 08:13:03 +0100 (CET)
+X-Provags-ID: V03:K1:uWOA3TnO3kX1uCTUk3n1Zf9WvGS8UYHZ8RvpHHIHwO5RhdKOegU
+ 6bnYMSX3kA98LhQ5vpMh31KrIeUohc2PAQUSlNj0B8bx+rzqrJAChtcYOfYIrAf6YA5zQes
+ TpnIQaecZoMs9dvE/GssM3J+Igpyda1JFFK7tMrTMkmjOsad1g0Op80y2nSLly+7kNRiTC0
+ 8wwzIu3eddPpktb26nA1A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:4fQw4GHuwcY=:m3FKpb5i/rlbngK3a7c1kY
+ plhPrOVtjvp9YLQD6I6WAtJdmgIEiIwR0Z3RMDje5OmuookZ/E+pPKha7t+1uwe2wTGbon8lF
+ FzzeyK5FBPne4xcagMEpiryf/td2aBGi6NYyeMyF9PdlBA8wuewJ4n6dmsBCJr+1q8PTYQol8
+ yKy6+w0zEQKtxa+ATHTaqTaCVD6H6jb2yvUWZGpFnBtnYNULa1vVuxIavvUE2aawawatw0/fW
+ I+k3NehjDJybbUAOHlaCHxwZ6O9mdZTX3BVCEhdF8ZQSIYsVqcA3ogo/krRwcyzWDuPVpR5Bg
+ fUf+KtxPmawmqi4b9Z32BeK5L/4XiYCtnx+pw2mv+EMxgoluFmBgVg2/M4RIAujVYUq0TvN5R
+ hw/7O7c/3GgMI8xQHDA+FjSge80rCjtycAc0Lirb238moJwknAWXLKta9h7MJ1P9Wl0OIWm9j
+ QLDHdZypSxV3bR1BQBpD9XBq9AaSEiSR0ItTeQpPUt9GciBhqORW5S+RlOTm3qF747byqVxVc
+ CzQT3hy0xhFZ/PBrx0lrMZxuGhEA0DZmnMAUH538s45+zc1mgOTeWG0J4f8muvOjaKg7LFm1V
+ jk1O4KY6NVXWdJBXLru5zl5MiqiaB2lovmycxhDesx9mloF7DxKPOzkTHRwmOQlwvba2ieRlw
+ u477bTWjbJ7RiadkvjuH6t/W2o5S8Edkq/++0Np9++aK2yumf0PY2pGElYw1Zx2U7LgfMQkNn
+ tUDfWqLcNBztUOEWosIsmXwHwotcliXrPsj5w4Q+fcky4bG3riVsTuI0xhz+OAyoMTCw41uLX
+ qgqSydQTEm502ndJCckqfAGgXg4K30lmjGHEkTvItNYha55yTBnfJ3ehseYqogzX/vehu2B6R
+ YsZU2XrB+r4TFReDS8EHkUhIUqSaOLKJHcK5xR0CTH528S+uCw+qGqq5UMcGhv1EWenC9FmVu
+ xeRVB8QLRcAw7GAcJylZPuaEuOgYT+hbIJoBA2d/qMcu7WzSyFPvgr3RQIuGVG9adR/k29tfG
+ GHPX2DI68EQr0jH1YkqGXhU65kGEUJ31TBSFhqz/vzvaxLNsggbWUwKOAUmH5juJyO+lvCgp6
+ 2MXT8ZCZZ/vgYjxc5kzjjH1v/5srydrQnjOIGKwYKiV4n58Gt8zJERxA54RMEmfivkU5dLZkm
+ xienY+VSHtwkruMNbBB0lmhwnsGgAzSMKERpNtz3C/D6pC07wi6u/CmV2mTDpS5fzyHBmAkbu
+ KbnlMe1RfBhiUK4xrcVzoZ3/IUzb9bMaNt3e4vyNJd94PU8jU/3ylKkQ4PaE=
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 14 Nov 2019 15:42:35 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Thu, 14 Nov 2019 08:13:00 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Thu, 14 Nov 2019 15:42:29 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Subject: Re: [Cocci] Using the same replacement for different source code
+Subject: [Cocci] Using a metavariable type for function calls?
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -143,23 +140,11 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-I am looking for possibilities to reduce undesirable code duplication
-also for applications of the semantic patch language.
-How much common code can be put into SmPL constraints for this purpose
-(when the usage of SmPL disjunctions shows limitations so far)?
+Hello,
 
-Example:
-@replacement@
-binary operator bo = { +, * };
-expression x, y;
-@@
-+compute(
-         x
--        bo
-+        ,
-         y
-+       )
-
+Some metavariable types are supported by the semantic patch language so far.
+Can it become helpful to let a customised function determine the concrete
+value which should be used for a source code transformation specification?
 
 Regards,
 Markus
