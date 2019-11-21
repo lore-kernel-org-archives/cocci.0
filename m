@@ -2,57 +2,73 @@ Return-Path: <SRS0=3gGd=ZN=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD5E4C432C3
-	for <cocci@archiver.kernel.org>; Thu, 21 Nov 2019 20:06:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 131B6C432C0
+	for <cocci@archiver.kernel.org>; Thu, 21 Nov 2019 20:24:22 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 120F020672
-	for <cocci@archiver.kernel.org>; Thu, 21 Nov 2019 20:06:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 120F020672
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lip6.fr
+	by mail.kernel.org (Postfix) with ESMTPS id 38E9520643
+	for <cocci@archiver.kernel.org>; Thu, 21 Nov 2019 20:24:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 38E9520643
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xALK6hkC023989;
-	Thu, 21 Nov 2019 21:06:43 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xALKO9ep006175;
+	Thu, 21 Nov 2019 21:24:09 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id A07DF77CF;
-	Thu, 21 Nov 2019 21:06:43 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 308D577CF;
+	Thu, 21 Nov 2019 21:24:09 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 1D8A277CE
- for <cocci@systeme.lip6.fr>; Thu, 21 Nov 2019 21:06:42 +0100 (CET)
-Received: from mail2-relais-roc.national.inria.fr
- (mail2-relais-roc.national.inria.fr [192.134.164.83])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xALK6fJM009020
- for <cocci@systeme.lip6.fr>; Thu, 21 Nov 2019 21:06:41 +0100 (CET)
-X-IronPort-AV: E=Sophos;i="5.69,227,1571695200"; d="scan'208";a="412932504"
-Received: from abo-228-123-68.mrs.modulonet.fr (HELO hadrien) ([85.68.123.228])
- by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 21 Nov 2019 21:06:41 +0100
-Date: Thu, 21 Nov 2019 21:06:40 +0100 (CET)
-From: Julia Lawall <julia.lawall@lip6.fr>
-X-X-Sender: jll@hadrien
-To: =?ISO-8859-2?Q?Ond=F8ej_Sur=FD?= <ondrej@sury.org>
-In-Reply-To: <7FB3DF60-DEFB-434B-9A84-33575D34576E@sury.org>
-Message-ID: <alpine.DEB.2.21.1911212057420.2902@hadrien>
-References: <7FB3DF60-DEFB-434B-9A84-33575D34576E@sury.org>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 9BCC777CE
+ for <cocci@systeme.lip6.fr>; Thu, 21 Nov 2019 14:38:20 +0100 (CET)
+Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xALDcJlw022298
+ for <cocci@systeme.lip6.fr>; Thu, 21 Nov 2019 14:38:20 +0100 (CET)
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+ by mx1.suse.de (Postfix) with ESMTP id DB831B19F;
+ Thu, 21 Nov 2019 13:38:18 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+ id 22A6EE03A4; Thu, 21 Nov 2019 14:38:17 +0100 (CET)
+Date: Thu, 21 Nov 2019 14:38:17 +0100
+From: Michal Kubecek <mkubecek@suse.cz>
+To: Dan Carpenter <dan.carpenter@oracle.com>
+Message-ID: <20191121133817.GF29650@unicorn.suse.cz>
+References: <1572076456-12463-1-git-send-email-zhang.lin16@zte.com.cn>
+ <c790578751dd69fb1080b355f5847c9ea5fb0e15.camel@perches.com>
+ <bc150c6a-6d3e-ff01-e40e-840e8a385bda@metux.net>
+ <20191121111917.GE29650@unicorn.suse.cz>
+ <20191121120733.GF5604@kadam>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1206647461-1574366801=:2902"
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 21 Nov 2019 21:06:44 +0100 (CET)
-X-Greylist: IP, sender and recipient auto-whitelisted, not delayed by
- milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]);
- Thu, 21 Nov 2019 21:06:41 +0100 (CET)
+Content-Disposition: inline
+In-Reply-To: <20191121120733.GF5604@kadam>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 21 Nov 2019 21:24:09 +0100 (CET)
+X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [132.227.60.2]); Thu, 21 Nov 2019 14:38:20 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: cocci@systeme.lip6.fr
-Subject: Re: [Cocci] "already tagged token" error?
+X-Mailman-Approved-At: Thu, 21 Nov 2019 21:24:08 +0100
+Cc: jakub.kicinski@netronome.com, ast@kernel.org, natechancellor@gmail.com,
+        jiang.xuexin@zte.com.cn, cocci <cocci@systeme.lip6.fr>,
+        f.fainelli@gmail.com, daniel@iogearbox.net, john.fastabend@gmail.com,
+        lirongqing@baidu.com, maxime.chevallier@bootlin.com,
+        vivien.didelot@gmail.com, pablo@netfilter.org, wang.yi59@zte.com.cn,
+        hawk@kernel.org, arnd@arndb.de, jiri@mellanox.com,
+        xue.zhihong@zte.com.cn, zhanglin <zhang.lin16@zte.com.cn>,
+        Thomas Gleixner <tglx@linutronix.de>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linyunsheng@huawei.com, Joe Perches <joe@perches.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>, davem@davemloft.net
+Subject: Re: [Cocci] [PATCH] net: Zeroing the structure ethtool_wolinfo in
+ ethtool_get_wol()
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -64,201 +80,69 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Thu, Nov 21, 2019 at 03:07:33PM +0300, Dan Carpenter wrote:
+> On Thu, Nov 21, 2019 at 12:19:17PM +0100, Michal Kubecek wrote:
+> > On Thu, Nov 21, 2019 at 11:23:34AM +0100, Enrico Weigelt, metux IT consult wrote:
+> > > On 26.10.19 21:40, Joe Perches wrote:
+> > > > On Sat, 2019-10-26 at 15:54 +0800, zhanglin wrote:
+> > > >> memset() the structure ethtool_wolinfo that has padded bytes
+> > > >> but the padded bytes have not been zeroed out.
+> > > > []
+> > > >> diff --git a/net/core/ethtool.c b/net/core/ethtool.c
+> > > > []
+> > > >> @@ -1471,11 +1471,13 @@ static int ethtool_reset(struct net_device *dev, char __user *useraddr)
+> > > >>  
+> > > >>  static int ethtool_get_wol(struct net_device *dev, char __user *useraddr)
+> > > >>  {
+> > > >> -	struct ethtool_wolinfo wol = { .cmd = ETHTOOL_GWOL };
+> > > >> +	struct ethtool_wolinfo wol;
+> > > >>  
+> > > >>  	if (!dev->ethtool_ops->get_wol)
+> > > >>  		return -EOPNOTSUPP;
+> > > >>  
+> > > >> +	memset(&wol, 0, sizeof(struct ethtool_wolinfo));
+> > > >> +	wol.cmd = ETHTOOL_GWOL;
+> > > >>  	dev->ethtool_ops->get_wol(dev, &wol);
+> > > >>  
+> > > >>  	if (copy_to_user(useraddr, &wol, sizeof(wol)))
+> > > > 
+> > > > It seems likely there are more of these.
+> > > > 
+> > > > Is there any way for coccinelle to find them?
+> > > 
+> > > Just curios: is static struct initialization (on stack) something that
+> > > should be avoided ? I've been under the impression that static
+> > > initialization allows thinner code and gives the compiler better chance
+> > > for optimizations.
+> > 
+> > Not in general. The (potential) problem here is that the structure has
+> > padding and it is as a whole (i.e. including the padding) copied to
+> > userspace. While I'm not aware of a compiler that wouldn't actually
+> > initialize the whole data block including the padding in this case, the
+> > C standard provides no guarantee about that so that to be sure we cannot
+> > leak leftover kernel data to userspace, we need to explicitly initialize
+> > the whole block.
+> 
+> GCC will not always initialize the struct holes.  This patch fixes a
+> real bug that GCC on my system (v7.4)
 
---8323329-1206647461-1574366801=:2902
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Just checked (again) to be sure. No matter if the function is inlined or
+not, gcc 7.4.1 initializes the structure by one movl (of 0x5) and two
+movq (of 0x0), i.e. initializes all sizeof(struct ethtool_wolinfo) = 20
+bytes including the padding.
 
+One could certainly construct examples where a real life compiler would
+only initialize the fields. That's why I said "in this case".
 
+Michal Kubecek
 
-On Wed, 20 Nov 2019, Ondřej Surý wrote:
-
-> Hi,
->
-> this is the error we started getting with upgrade to 1.0.7 (from 1.0.6).
->
-> EXN: Failure("rule starting on line 1: already tagged token:\nC code context\nFile \"./lib/dns/client.c\", line 1342, column 1, charpos = 33224\n  around = 'if',\n  whole content = \tif (rctx == NULL)“)
->
-> EXN: Failure("rule starting on line 1: already tagged token:\nC code context\nFile \"./lib/ns/tests/nstest.c\", line 704, column 1, charpos = 15998\n  around = 'if',\n  whole content = \tif (qctx != NULL) {")
->
-> The minimal reproducer is:
->
-> @@
-> statement S1, S2;
-> expression V;
-> @@
->
-> V = isc_mem_get(...);
-> - if (V == NULL) S1 else { S2 }
-> + S2
-
-I would need the C code as well.  Maybe it would help to write:
-
-- if (V == NULL) S1 else {
-  S2
-- }
-
->
-> --
->
-> On related note, what would be the correct way to write a rule for:
->
-> foo = isc_mem_get(…);
-> bar = isc_mem_get(…);
->
-> if (foo == NULL || bar == NULL) { … };
->
-> my naive approach:
->
-> @@
-> statement S;
-> expression V, E;
-> @@
->
-> V = isc_mem_get(...);
-> ...
-> - if (V == NULL || E) S
-> + if (E) S
->
-> doesn’t really work (it matches only a simple case, but not when there’s more than two memory allocations).
-
-Try replacing E by ...
-
-Then reorganize the pattern so that there is only - code, not + code.
-I'm not sure this will actually work for transformation though.  You may
-have to be resigned to just searching for the problem, ie
-
-V = isc_mem_get(...);
-...
-* if (V == NULL || E) S
-
-and not actually doing the update.
-
-
-> I thought something like this might work:
->
-> @@
-> statement S;
-> expression V, E;
-> @@
->
-> V = isc_mem_get(...);
-> ...
-> if (...
-> -|| V == NULL
-> ...) S
-
-The ... right after NULL doesn't work.  It could be || ...
-
-> @@
-> statement S;
-> expression V, E;
-> @@
->
-> V = isc_mem_get(...);
-> ...
-> if (...
-> - V == NULL ||
-> ...) S
->
-> would work, but it says:
->
-> minus: parse error:
->   File "x", line 10, column 0, charpos = 86
->   around = '...',
->   whole content = ...) S
-
-Likewise, you would need ... ||
-
->
-> --
->
-> And one last question:
->
-> Is there a simple way how to merge these these rules together?  It seems
-> like it should be possible, but I wasn’t able to decipher the syntax for
-> making parts of the match to be remove to be optional (but if you point
-> me to an example in the base files or coccinellery, I would try harder).
->
-> @@
-> statement S1, S2;
-> expression V;
-> @@
->
-> V = isc_mem_get(...);
-> - if (V == NULL) S1 else { S2 }
-> + S2
->
-> @@
-> statement S;
-> expression V;
-> @@
->
-> V = isc_mem_get(...);
-> - if (V == NULL) S
->
-> @@
-> type T;
-> statement S;
-> expression V;
-> @@
->
-> V = (T *)isc_mem_get(...);
-> - if (V == NULL) S
-
-If you had just (T) rather than (T*), then this rule would also cover
-everything covered by the previous rule.  But if you want to specify that
-it has to be a pointer type then a specific rule is needed.
-
->
-> @@
-> statement S;
-> expression V;
-> @@
->
-> if (V == NULL) V = isc_mem_get(...);
-> - if (V == NULL) S
->
-> @@
-> type T;
-> expression V, E1, E2;
-> @@
->
-> - V = (T)isc_mem_get(E1, E2);
-> + V = isc_mem_get(E1, E2);
-
-If you put this rule first, then the other rules would not have to
-consider the type case.
-
-julia
-
->
-> Thank you,
-> --
-> Ondřej Surý
-> ondrej@sury.org
->
->
->
-> _______________________________________________
-> Cocci mailing list
-> Cocci@systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
---8323329-1206647461-1574366801=:2902
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
 https://systeme.lip6.fr/mailman/listinfo/cocci
-
---8323329-1206647461-1574366801=:2902--
