@@ -3,56 +3,61 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D7B4C432C0
-	for <cocci@archiver.kernel.org>; Wed, 27 Nov 2019 06:01:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E78A9C432C0
+	for <cocci@archiver.kernel.org>; Wed, 27 Nov 2019 14:34:57 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9954C20684
-	for <cocci@archiver.kernel.org>; Wed, 27 Nov 2019 06:01:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9954C20684
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
+	by mail.kernel.org (Postfix) with ESMTPS id 0CFEC20674
+	for <cocci@archiver.kernel.org>; Wed, 27 Nov 2019 14:34:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0CFEC20674
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=knosof.co.uk
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xAR60qhJ025369;
-	Wed, 27 Nov 2019 07:00:52 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xAREYcHq011139;
+	Wed, 27 Nov 2019 15:34:38 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 3ECA377D2;
-	Wed, 27 Nov 2019 07:00:52 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 5F0BD77D4;
+	Wed, 27 Nov 2019 15:34:38 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id C9ADF7705
- for <cocci@systeme.lip6.fr>; Wed, 27 Nov 2019 07:00:50 +0100 (CET)
-Received: from mail2-relais-roc.national.inria.fr
- (mail2-relais-roc.national.inria.fr [192.134.164.83])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xAR60oTO017221
- for <cocci@systeme.lip6.fr>; Wed, 27 Nov 2019 07:00:50 +0100 (CET)
-X-IronPort-AV: E=Sophos;i="5.69,248,1571695200"; d="scan'208";a="413689341"
-Received: from abo-228-123-68.mrs.modulonet.fr (HELO hadrien) ([85.68.123.228])
- by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 27 Nov 2019 07:00:50 +0100
-Date: Wed, 27 Nov 2019 07:00:49 +0100 (CET)
-From: Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
-To: David Frey <dpfrey@gmail.com>
-In-Reply-To: <ce221377-e841-aef4-720d-0ea5a51102c6@gmail.com>
-Message-ID: <alpine.DEB.2.21.1911270659540.2670@hadrien>
-References: <c156dbfc-8c3d-4750-fa90-2bbd11060130@gmail.com>
- <alpine.DEB.2.21.1911252208260.2656@hadrien>
- <ce221377-e841-aef4-720d-0ea5a51102c6@gmail.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 0BD4E77D2
+ for <cocci@systeme.lip6.fr>; Wed, 27 Nov 2019 15:34:36 +0100 (CET)
+Received: from know-smtprelay-omc-6.server.virginmedia.net
+ (know-smtprelay-omc-6.server.virginmedia.net [80.0.253.70])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xAREYYsU011017
+ for <cocci@systeme.lip6.fr>; Wed, 27 Nov 2019 15:34:34 +0100 (CET)
+Received: from [192.168.1.201] ([82.2.1.89]) by cmsmtp with ESMTPA
+ id ZyOniUDlhwdwAZyOoiVtCm; Wed, 27 Nov 2019 14:34:34 +0000
+X-Originating-IP: [82.2.1.89]
+X-Authenticated-User: dmjones@ntlworld.com
+X-Spam: 0
+X-Authority: v=2.3 cv=f85m+t6M c=1 sm=1 tr=0 a=WPUjqzW0G8tv1tco57yGEQ==:117
+ a=WPUjqzW0G8tv1tco57yGEQ==:17 a=IkcTkHD0fZMA:10 a=P_6feOwDAAAA:8
+ a=pxdNzhGcAAAA:8 a=wKC-sUEZuKkF5-w_Kl4A:9 a=QEXdDO2ut3YA:10 a=VxAk22fqlfwA:10
+ a=F0XCbrXZiZCSCgNq0P85:22 a=6UCLHkHsjq5DW36378aM:22 a=Z5ABNNGmrOfJ6cZ5bIyy:22
+ a=SsAZrZ5W_gNWK9tOzrEV:22
+To: cocci@systeme.lip6.fr
+From: Derek M Jones <derek@knosof.co.uk>
+Organization: Knowledge Software, Ltd
+Message-ID: <9481f942-7740-502a-e3a1-4bbe63740b54@knosof.co.uk>
+Date: Wed, 27 Nov 2019 14:34:32 +0000
+User-Agent: Mozilla/5.0 (Windows NT 5.1; rv:52.0) Gecko/20100101
+ Thunderbird/52.9.0
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 27 Nov 2019 07:00:52 +0100 (CET)
+Content-Language: en-US
+X-CMAE-Envelope: MS4wfEZJllwd/3GIgb2GcJirhlE9eJ7mqaIFYgmIJyODSCGnR5nBxaa21O2wTmBbCI6a2BwOu63AYQi6uq957eHjexLwowt7vRZj8zMvBxHwNdmipJ83LbSU
+ icXISDWCHpjansOymiv96SPQExPAG4D9oWoW2fLIpz3lTz6487VUGv+f
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 27 Nov 2019 15:34:38 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Wed, 27 Nov 2019 07:00:50 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Wed, 27 Nov 2019 15:34:35 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: cocci@systeme.lip6.fr
-Subject: Re: [Cocci] Problem writing simple patch
+Subject: [Cocci] Coccinelle has some competition
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -64,95 +69,23 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
+All,
 
+Coccinelle has some competition:
+https://comby.dev/
 
---- Please note the new email address ---
+The market must be hotting up.
 
+Will we be seeing Julia making IPO plans ;-)
 
-On Tue, 26 Nov 2019, David Frey wrote:
-
-> On 11/25/2019 1:10 PM, Julia Lawall wrote:
-> > On Mon, 25 Nov 2019, David Frey wrote:
-> >
-> >> Hi,
-> >>
-> >> I'm trying to write a .cocci file to transform all calls to a function
-> >> "f(ex)" to something like this:
-> >>
-> >> #ifdef USE_F
-> >> f(ex)
-> >> #else
-> >> g(ex)
-> >> #endif
-> >>
-> >> The function has this signature:
-> >> bool f(int x);
-> >>
-> >> This is the patch that I tried to use:
-> >> @@
-> >> expression ex;
-> >> @@
-> >> +#ifdef USE_F
-> >>  f(ex)
-> >> +#else
-> >> +g(ex)
-> >> +#endif
-> >>
-> >>
-> >> This is the result of running it:
-> >> $ spatch --show-c --sp-file test.cocci test.c
-> >> init_defs_builtins: /usr/bin/../lib/coccinelle/standard.h
-> >> plus: parse error:
-> >>   File "test.cocci", line 7, column 1, charpos = 50
-> >>   around = 'g',
-> >>   whole content = +g(ex)
-> >>
-> >> What is wrong with the patch above?
-> >
-> > Coccinelle doesn't currently support adding ifdefs on expressions, only on
-> > statements.
-> >
-> > You could try for some typical usage contexts, like
-> >
-> > +ifdef...
-> > x = f(ex);
-> > +#else
-> > +x = g(ex);
-> > +#endif
-> >
-> > julia
-> >
->
->
-> Hi Julia,
->
-> Thanks for your explanation and your suggestion.  I ended up creating a
-> new header that was like this:
->
-> #ifdef SOMETHING
-> #define foo_backport_x(_arg) bar_x(_arg)
-> #define foo_backport_y(_arg) bar_y(_arg)
-> #else
-> #define foo_backport_x(_arg) foo_x(_arg)
-> #define foo_backport_y(_arg) foo_y(_arg)
-> #endif
->
-> and then I defined coccinelle rules to change:
-> foo_x -> foo_backport_x
-> foo_y -> foo_backport_y
->
-> It's not the most elegant solution, but it works.
-
-Persoally, I would find lots of ifdefs around expressions in the code
-rather ugly too, so I'm not sure that it is such a bad solution, although
-the name is not pretty...
-
-julia
+-- 
+Derek M. Jones           Software analysis
+tel: +44 (0)1252 520667  blog:shape-of-code.coding-guidelines.com
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
