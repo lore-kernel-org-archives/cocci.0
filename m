@@ -6,51 +6,53 @@ X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94FD7C43215
-	for <cocci@archiver.kernel.org>; Wed, 27 Nov 2019 20:43:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25B19C43141
+	for <cocci@archiver.kernel.org>; Wed, 27 Nov 2019 20:44:07 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1ED93217AB
-	for <cocci@archiver.kernel.org>; Wed, 27 Nov 2019 20:43:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1ED93217AB
+	by mail.kernel.org (Postfix) with ESMTPS id C15F7217F5
+	for <cocci@archiver.kernel.org>; Wed, 27 Nov 2019 20:44:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C15F7217F5
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xARKgr6C029997;
-	Wed, 27 Nov 2019 21:42:53 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xARKhuxS014006;
+	Wed, 27 Nov 2019 21:43:56 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 7037F77D4;
-	Wed, 27 Nov 2019 21:42:53 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 0A7AB77D4;
+	Wed, 27 Nov 2019 21:43:56 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id E50A477D2
- for <cocci@systeme.lip6.fr>; Wed, 27 Nov 2019 21:42:51 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id DAABA77D2
+ for <cocci@systeme.lip6.fr>; Wed, 27 Nov 2019 21:43:53 +0100 (CET)
 Received: from mail3-relais-sop.national.inria.fr
  (mail3-relais-sop.national.inria.fr [192.134.164.104])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xARKgn8s012797
- for <cocci@systeme.lip6.fr>; Wed, 27 Nov 2019 21:42:49 +0100 (CET)
-X-IronPort-AV: E=Sophos;i="5.69,250,1571695200"; d="scan'208";a="328269428"
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xARKhqbS004312
+ for <cocci@systeme.lip6.fr>; Wed, 27 Nov 2019 21:43:52 +0100 (CET)
+X-IronPort-AV: E=Sophos;i="5.69,250,1571695200"; d="scan'208";a="328269542"
 Received: from abo-228-123-68.mrs.modulonet.fr (HELO hadrien) ([85.68.123.228])
  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 27 Nov 2019 21:42:49 +0100
-Date: Wed, 27 Nov 2019 21:42:48 +0100 (CET)
+ 27 Nov 2019 21:43:52 +0100
+Date: Wed, 27 Nov 2019 21:43:52 +0100 (CET)
 From: Julia Lawall <julia.lawall@inria.fr>
 X-X-Sender: jll@hadrien
-To: Derek M Jones <derek@knosof.co.uk>
-In-Reply-To: <9481f942-7740-502a-e3a1-4bbe63740b54@knosof.co.uk>
-Message-ID: <alpine.DEB.2.21.1911272140120.2559@hadrien>
-References: <9481f942-7740-502a-e3a1-4bbe63740b54@knosof.co.uk>
+To: Jaskaran Singh <jaskaransingh7654321@gmail.com>
+In-Reply-To: <20191127173815.24988-1-jaskaransingh7654321@gmail.com>
+Message-ID: <alpine.DEB.2.21.1911272143410.2559@hadrien>
+References: <20191127173815.24988-1-jaskaransingh7654321@gmail.com>
 User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 27 Nov 2019 21:42:53 +0100 (CET)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 27 Nov 2019 21:43:56 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Wed, 27 Nov 2019 21:42:49 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Wed, 27 Nov 2019 21:43:52 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: cocci@systeme.lip6.fr
-Subject: Re: [Cocci] Coccinelle has some competition
+Cc: linux-kernel-mentees@lists.linuxfoundation.org, cocci@systeme.lip6.fr,
+        skhan@linuxfoundation.org
+Subject: Re: [Cocci] [PATCH 0/2] cocci: Fix continue statement of death and
+ similar cases
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -72,38 +74,28 @@ Errors-To: cocci-bounces@systeme.lip6.fr
 --- Please note the new email address ---
 
 
-On Wed, 27 Nov 2019, Derek M Jones wrote:
+On Wed, 27 Nov 2019, Jaskaran Singh wrote:
 
-> All,
+> The following patch series is for fixing the "continue statement of
+> death" report here:
 >
-> Coccinelle has some competition:
-> https://comby.dev/
+> https://www.mail-archive.com/cocci@systeme.lip6.fr/msg06199.html
 >
-> The market must be hotting up.
->
-> Will we be seeing Julia making IPO plans ;-)
+> Changes include removing circular references that cause the crash
+> and adding a corresponding test case.
 
-I believe that it is based on this paper (same person, same [] notation
-for metavariables):
-
-Rijnard van Tonder, Claire Le Goues:
-Lightweight multi-language syntax transformation with parser parser
-combinators. PLDI 2019: 363-378
-
-The most obvious difference is that as far as I can see there is no ...
-On the other hand, it is multi-language.
+Applied, thanks.
 
 julia
 
-
 >
-> --
-> Derek M. Jones           Software analysis
-> tel: +44 (0)1252 520667  blog:shape-of-code.coding-guidelines.com
-> _______________________________________________
-> Cocci mailing list
-> Cocci@systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
+>  engine/transformation_c.ml         |    2 +-
+>  tests/stmt_removed_and_added.c     |    8 ++++++++
+>  tests/stmt_removed_and_added.cocci |    7 +++++++
+>  tests/stmt_removed_and_added.res   |    8 ++++++++
+>  4 files changed, 24 insertions(+), 1 deletion(-)
+>
+>
 >
 _______________________________________________
 Cocci mailing list
