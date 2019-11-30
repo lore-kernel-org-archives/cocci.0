@@ -7,44 +7,44 @@ X-Spam-Status: No, score=-1.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33228C432C0
-	for <cocci@archiver.kernel.org>; Sat, 30 Nov 2019 08:46:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4672C432C0
+	for <cocci@archiver.kernel.org>; Sat, 30 Nov 2019 15:11:35 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2B84A20732
-	for <cocci@archiver.kernel.org>; Sat, 30 Nov 2019 08:46:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id F290820732
+	for <cocci@archiver.kernel.org>; Sat, 30 Nov 2019 15:11:34 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="CI7aJb03"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2B84A20732
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="qBs6d5uE"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F290820732
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xAU8kRZ8019757;
-	Sat, 30 Nov 2019 09:46:27 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xAUFBFXD001714;
+	Sat, 30 Nov 2019 16:11:15 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 5397477D3;
-	Sat, 30 Nov 2019 09:46:27 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 7EC7877D3;
+	Sat, 30 Nov 2019 16:11:15 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 0596377CC
- for <cocci@systeme.lip6.fr>; Sat, 30 Nov 2019 09:46:26 +0100 (CET)
-Received: from mout.web.de (mout.web.de [212.227.15.4])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xAU8kPua005947
- for <cocci@systeme.lip6.fr>; Sat, 30 Nov 2019 09:46:25 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id AB5AF77CC
+ for <cocci@systeme.lip6.fr>; Sat, 30 Nov 2019 16:11:13 +0100 (CET)
+Received: from mout.web.de (mout.web.de [212.227.15.14])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xAUFBDoY018915
+ for <cocci@systeme.lip6.fr>; Sat, 30 Nov 2019 16:11:13 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1575103583;
- bh=YnPvIHisfQhss/SmPQEbr1vbUvIw79kv650gdPO2VjY=;
+ s=dbaedf251592; t=1575126671;
+ bh=BYxXGLWJf9h+DF+P71bAj8/cszWRtF1loYRjigypZtE=;
  h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
- b=CI7aJb03UYBF8FCWCIJFbXiBRvhW7ybLLabFRNLBsPu+tIRX3lo1pbclv7jN05INf
- ZOpVjM05aIl6yTMokP8ZNHsKQk4GYydlChMUFFk6062t/DBfRgLvhfj7QpR3SQVmzR
- /nHr4+91bMOwTk+6DBlNB+ftYkzzMTG5sgGRlIQk=
+ b=qBs6d5uEJtobkrikWcAn9POna9y8IOvBMM5GFkIHNvmy6C6JQ6keioP49P4/L3XFG
+ vzfOs+WvsNXLr7FFefZJYBt4K2dQe0EPWjW+GpBUccZPGQni9imxDFQWV3YRsneyBE
+ VFOS2ZpeJiw/w/v4/ppNAdpXQLuDdDuToA1lRAfE=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.3] ([78.49.18.41]) by smtp.web.de (mrweb001
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0Lvk56-1hjFkR2LBE-017Th8; Sat, 30
- Nov 2019 09:46:23 +0100
-To: stracelabs@gmail.com, Julia Lawall <julia.lawall@inria.fr>
+Received: from [192.168.1.3] ([78.49.18.41]) by smtp.web.de (mrweb002
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0LhNaa-1hxO0d2lnc-00maX0; Sat, 30
+ Nov 2019 16:11:11 +0100
+To: Julia Lawall <julia.lawall@inria.fr>, stracelabs@gmail.com
 References: <CABvP5W1W=p1-n_831VaiJyNsHrepFS0CNJSDQqmfPkrC1rx=Ww@mail.gmail.com>
  <a64ca4bf-4d00-6d8f-19cf-0667d9b1ca83@web.de>
  <CY4PR1801MB200527E64CB2C5ECF218EFF4A3460@CY4PR1801MB2005.namprd18.prod.outlook.com>
@@ -53,7 +53,6 @@ References: <CABvP5W1W=p1-n_831VaiJyNsHrepFS0CNJSDQqmfPkrC1rx=Ww@mail.gmail.com>
  <02fa7455-e76e-7d7d-0d64-41b2803a8025@web.de>
  <CABvP5W0kVE+yBYa7gWLfsegb75fMyMcLSDbsnFUGRnnVoRLtDQ@mail.gmail.com>
  <alpine.DEB.2.21.1911292154450.3140@hadrien>
- <CABvP5W3hmmovw09n6gJQ5m=Cps2YAYJFFfOPmKY6Zu_SJOU=NQ@mail.gmail.com>
 From: Markus Elfring <Markus.Elfring@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
@@ -98,39 +97,39 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <7f588b8e-8a0f-e7f1-3025-3acf82d755a0@web.de>
-Date: Sat, 30 Nov 2019 09:46:16 +0100
+Message-ID: <345f973e-6597-3dfb-7dd3-7790a982c152@web.de>
+Date: Sat, 30 Nov 2019 16:11:03 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <CABvP5W3hmmovw09n6gJQ5m=Cps2YAYJFFfOPmKY6Zu_SJOU=NQ@mail.gmail.com>
+In-Reply-To: <alpine.DEB.2.21.1911292154450.3140@hadrien>
 Content-Language: en-US
-X-Provags-ID: V03:K1:zPUzJT6gfDBkdsujeGqGvLVIUFBBIJvEiEERykM0wQPcwX4/5j/
- EhgYzo5nekzky7ygsppuuZw8hrdXxTtVFC7yiYoas+bOscrQ6kmowqB6Ejlx5p414xmZbeh
- /75EVAYnUNnqwFbyrO1v0AIAl6iUiqfoT5AqocAAsP7y2TVDYewgTl1K1x1v/qJn1vmXD4n
- ZEy8PKIrfyeEuzNDZvrRQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:sAcs71akaDo=:0N8FxxXGV4IkMwkS+TXlT7
- KcQBs3SrKCKfZjrBGj+DZruFL/2YbPw3ALkjzWo6xu+u4NOXC7/nxrSGE0DNq8Oqcdt2dcLN7
- MyLdvACnO1oZdvSzmlOQO1ovPn7+ZLSjbaIS30ljRUspnDh+clXKaDK3B6Xl9PzeMWbogUrWK
- RaXF6tY3rNXckkd4+szsekqXRlW4YtGnrcQefR2NoZqYd88iihsNN5gMChjmr5E7F/mCAJoyS
- PxQQeddDxWCfiFOjaGeLfMXbF7ujjKSyHHyHhDFcxsl3A+hvvZi+6j0bLbXXgPfDkSfq2Kffh
- BxJ+Jcds1wLweJloOBBn9xVod9yKvfzFlvj2nsum63dmEb+aIizzw0m3VhLNGEYlrHUaCIIkE
- P5DxurI3/GtCCckpTrhkkTlgYStaq75zdwXqFBPhxL2JwoTmSvC06Two7J1lmA785K6fISSyQ
- YJbNp7olYBY/8t+4EjkQ949xpSFuO4IQvcCPQYQ3RUT7FbjmfNhc/GlllJdJ6b02hJi4NZrAJ
- G/QmxI2JkLO8gt8f6yX4UIEJwGx5L0WJn6dm52yzVuNMO8X5RbYYnjvthX1L2SUzZ/lEmhBa3
- CNnZto+NV25EQgqpKlWlkWt1sX7V3C2vpMLJGOgrf9m/rDThF5r4Hbly02Bq0zglH5mK9eTFC
- B0eql8Eb543pYQp5nXHvIpDyenCaGjQT/gaQl55VgCRYMYDXRPqjfjO66yA4ioJ8t637HgcUt
- edckec662jZyxXaFmtP19aGmx+ljuVRLbx5/vL0GzcfeYClNjSIeZu84KMki+YvFAaWd3G9Rr
- EiXH7x26vrCcvnrCOskGmlRD2wVdsH0mCG2bQ0Y51Ge5t6CmwMtjY36CPbF316wl/Vpj2IwXa
- JnzMJUeTZZiACGed5zoOLA+hNujJe/ro1T/EXDsnLxDgsoQDvvQdp/cjUGc/GNwwz5UFLFsNR
- W7ic3EKqV92NqodZnlLBaO8WuKBa31JslBC5hAdDdogaD5cy8NkjtAUbzKjKV4C1FKH8JgNYq
- KJ3JIriprATL83bCL3wZObgWWAl7tNOnq8s4UoWi9fKmfNo1FpCF2RDbJ9xTPRLx0VJVoIYbD
- EZp02MnHhA/FlSkr0Di7idUuo3YtsePaN0fcxfg4htTeiBD5wqx34HoS2BOAWp5xiS8hRmORI
- r/Brlw7GerUYUNrlbGDV3t6uN5XLlBNa9YQH6jqCDimSq3ny6+by1oD42Ex9D/rjg53W4ku9F
- uXscW+mMKykBTfDRFPOTIfFsDr2PmNR1KbxAMjOe3ls/sb0oxR3Pd12QtoQo=
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 30 Nov 2019 09:46:28 +0100 (CET)
+X-Provags-ID: V03:K1:lrTNtTDA7iDEz9GtZNU84k2sQ4YZ2acD2AyxiPMI2b4NWIUiTZ4
+ q+3Oc7B31R9BvjY+Xi3OM5HHoZqNoaVRZo/JZEvI2jKkJi/M5JMDkehrDZzh9cORu7h+UMR
+ xm1peMtZaMhhjp6sPJCTEC7LxeP73UlCWIfqp3sGLJtawsgSngf6GDJyc6f1am5OeDjnFsw
+ KGN1QdPlsy2B1+AkQnp+w==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:hOAVzzNTiPs=:AFtUi3YTCYt5C3nXAS5CWA
+ DCnAZG8CIAchR8hyaVkJKjh5N6ui+pTQ33c4yNYsucnRZEpRDKS8F9DCYv9FupNYIwW+jYzDE
+ 16Yco+ikETeuXqzaFJD02H3Tbrl8yoy7e/qLjpTYfUCBmGDlzEYfaTuubkTIXiwachmWB056s
+ 3Hg0gOoQTULkLyeyKK0kh5+Spej4a4Dx8JJs8AMqJ/tF4rLYvBnH/05pLjEtcPovQxxxbg6oC
+ cTT6x53i0nLkxwiDJ70Q4gOkqE5vrvjvlj0U8XvJ0AjVBsy95oIsGyfIm2Jg5ocjqVV2JbufT
+ GjC7UvAajL1oX1s41Hujcj5SzbQGJ3+dE1T9xj8vGuzQyUXaSRzRWrruknUvppuvpkrZraAb0
+ 4xtLMZForW1Fw1KJoj5VaiPWVn++ZZ8ogiOkzTOUK/qG8o5TI7UnwPs0DTPiIhCAeoT5DdDwY
+ J6h244tY2xhqc3JkgmwuAkqOw6FkjI3TalTwzbNs17VAEBSgVCqtVKnJDktF9+K8i7lcQrfXK
+ EOrhu5thVI4bySu0t06sDJIj3NtjkCG4mZiX4PWFMLvzf9hp0BmBCbKZSctna/bu3rmc7w5Ue
+ 1ymb9J+w1NWAVBSZy5jhkucGTByST1nYvARxYv4GSSafF4hFUJKrANTGL9BPHtb/k54SlyuFu
+ a4RktCI3ci359u9L6bhJSN70ulEpW3OC4WREoop5QZwWQ9FPUpLvG1gzj7jsDtc90lrK6Fq8s
+ pOkA8mE3LjFBV3wqK5kkqqif+A2Fa/DrBf/Qo24KspyhRI730nuhY7ZDRwGc91zcWFoIprmCS
+ 2tjyetSE6RYxYLTxhd4tsZOvQJwn60Wqyv7cMA63wQi0d4M0wJMMldPy7K6n/YdGEGVoo8v81
+ +8pzRVg8pgmnltMp39JqPQWF2k87ig/adkh0UtLpQtGffKaftSy7TZ9hZf3wxWpmx5Isfqu97
+ DOUAQGef6ivk4WOJnendb1FDrzeXWoWYPMxVhtK2biKNmmuk3Q4fehNSWgfym2S+dd0eUMlqC
+ jerPMqpfVVzVyQZWz8CBJ+h2ktaLay2NTFJ/FTNwUAmtkgt6E+OtqD9y04Yj+HbjwAZiapFZ+
+ HjqWtfgvxVp/jSF6eYordJxvd4VDq/HGy+gBtkcYT3jltzK3BJ4+CSAvDcXN4GmZ7sSchSNdt
+ /kasZuJuaACBrU4jXmHW+Ji+b3ALtsw3XWW1r5DyvD3vR6HBaW3/pGbi3jlf6/i9tCGIQPd3Q
+ Xl7PirNba0iBRd4dBsoBl9xhVpnvW2K10fUleSJasAiB0KoWEieufe0mAxJM=
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 30 Nov 2019 16:11:16 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sat, 30 Nov 2019 09:46:25 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Sat, 30 Nov 2019 16:11:13 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: cocci@systeme.lip6.fr
@@ -152,22 +151,29 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-> I am not sure if Coccinelle is able to filter the %fmt e.g: %s only called with
-> a parameter of specific data-type.
+> Maybe this will help you:
+>
+> @r@
+> format list d;
+> @@
+>
+> "%@d@"
+>
+> @script:ocaml s@
+> d << r.d;
+> res;
+> @@
+> res := make_expr ("\""^(String.concat "%s" (Str.split_delim
+> (Str.regexp_string "%d") d))^"\"")
 
-I would expect general support for such a task by the semantic patch language.
+Such a replacement approach might look promising.
+But I got the impression that another aspect can be more important
+for the safe data processing of format strings.
+The passed function parameters should fit to the specified
+data conversions in the string.
 
-
-> Basically, I intend to replace alls "%s" called with "mydata->name" by "%m" with "mydata" or "&mydata"
-
-I find that this is a succinct description for your source code transformation goal.
-
-
-The usage of the other SmPL code seems to indicate that your understanding
-grew for the application of previously mentioned syntax elements in significant ways.
-We will probably be more curious then how the data processing for SmPL ellipses
-(triple dots) within format strings can become better together with a different
-selection of metavariables for possible SmPL disjunctions.
+Can the Coccinelle software help any more to group or mark
+update candidates from the expression list in appropriate ways?
 
 Regards,
 Markus
