@@ -7,48 +7,45 @@ X-Spam-Status: No, score=-1.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AA82C432C0
-	for <cocci@archiver.kernel.org>; Tue,  3 Dec 2019 10:02:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0CC9C432C0
+	for <cocci@archiver.kernel.org>; Tue,  3 Dec 2019 13:28:56 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 027D4206DF
-	for <cocci@archiver.kernel.org>; Tue,  3 Dec 2019 10:02:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 0C67C2073B
+	for <cocci@archiver.kernel.org>; Tue,  3 Dec 2019 13:28:55 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="CnwnVpY1"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 027D4206DF
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="ML/rXqLV"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0C67C2073B
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xB3A1uUT015280;
-	Tue, 3 Dec 2019 11:01:56 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xB3DSeeY016966;
+	Tue, 3 Dec 2019 14:28:40 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id B283477D7;
-	Tue,  3 Dec 2019 11:01:56 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 89BFA77D7;
+	Tue,  3 Dec 2019 14:28:40 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 25D7E4386
- for <cocci@systeme.lip6.fr>; Tue,  3 Dec 2019 11:01:55 +0100 (CET)
-Received: from mout.web.de (mout.web.de [212.227.15.14])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xB3A1sTQ026509
- for <cocci@systeme.lip6.fr>; Tue, 3 Dec 2019 11:01:54 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 73E024386
+ for <cocci@systeme.lip6.fr>; Tue,  3 Dec 2019 14:28:38 +0100 (CET)
+Received: from mout.web.de (mout.web.de [212.227.17.12])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xB3DSb4g026388
+ for <cocci@systeme.lip6.fr>; Tue, 3 Dec 2019 14:28:38 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1575367313;
- bh=VNr7sxAWqEnw0du9HQCCaJ9JUZ/V9lVrQeNomv6m7Mc=;
+ s=dbaedf251592; t=1575379716;
+ bh=Gc14Ee7I7KVxCFf+qlFiITqCNLuPGCZqRDD3qMUiBvA=;
  h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
- b=CnwnVpY1FRGiEKilIevkjsLDDYOYwe0dmXHUj+8OKeHH7rXFZq+7RTe9VwuseHKOr
- OI+Bc6LjD/FwT0Brb/UCMAXznlOfmYRTi7LwtARbhiZZpYI+0VxzC2skcXwFta5Yyi
- uIolLZjlofPUannLask5tKS/rFf//uK7aDiw1Dos=
+ b=ML/rXqLV/Ng5S1dVwhC1qKczU+x8/iqFZC2t6bPOUAIplixOpgflZVFHQ2suVwOPo
+ hvAxftGSXt5P91REpWM9DVBl2Fc+uEGinqN474UYUH5pTcfZKtFVlpDzTs+V1cVmlZ
+ 6h845NdiIAaD0De3KSPF1rg9rrCymtSVTs9Dsu0Q=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.3] ([93.132.47.193]) by smtp.web.de (mrweb003
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0Lu4qk-1hb0XH0BmQ-011VVl; Tue, 03
- Dec 2019 11:01:53 +0100
-To: stracelabs@gmail.com, Julia Lawall <julia.lawall@inria.fr>
+Received: from [192.168.1.3] ([93.132.47.193]) by smtp.web.de (mrweb103
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0Lu4uA-1havIo1NZO-011T1M; Tue, 03
+ Dec 2019 14:28:36 +0100
+To: Julia Lawall <julia.lawall@inria.fr>, stracelabs@gmail.com
 References: <CABvP5W1W=p1-n_831VaiJyNsHrepFS0CNJSDQqmfPkrC1rx=Ww@mail.gmail.com>
- <a64ca4bf-4d00-6d8f-19cf-0667d9b1ca83@web.de>
- <CY4PR1801MB200527E64CB2C5ECF218EFF4A3460@CY4PR1801MB2005.namprd18.prod.outlook.com>
- <509ffde0-ec26-a58c-d424-6910bc8e7473@web.de>
  <CABvP5W0d-MErjsS5yqfDtPu4OyiHzdurBDHrwJX4iNzzWjSgwA@mail.gmail.com>
  <02fa7455-e76e-7d7d-0d64-41b2803a8025@web.de>
  <CABvP5W0kVE+yBYa7gWLfsegb75fMyMcLSDbsnFUGRnnVoRLtDQ@mail.gmail.com>
@@ -56,6 +53,7 @@ References: <CABvP5W1W=p1-n_831VaiJyNsHrepFS0CNJSDQqmfPkrC1rx=Ww@mail.gmail.com>
  <CABvP5W3hmmovw09n6gJQ5m=Cps2YAYJFFfOPmKY6Zu_SJOU=NQ@mail.gmail.com>
  <0c03f84d-a05b-2811-96aa-6f82541fb8a3@web.de>
  <CABvP5W3E3zP28kUsmrvUOqv-Tu1YT3zvi6c=mqx+ahbMTycqAQ@mail.gmail.com>
+ <1865799483.10870980.1575350298758.JavaMail.zimbra@inria.fr>
 From: Markus Elfring <Markus.Elfring@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
@@ -100,39 +98,39 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <efbd9ebe-d437-d172-1c9a-96662abb3bd7@web.de>
-Date: Tue, 3 Dec 2019 11:01:46 +0100
+Message-ID: <aaf4d9fa-0ee1-8163-9244-e02cd62aaa2e@web.de>
+Date: Tue, 3 Dec 2019 14:28:29 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <CABvP5W3E3zP28kUsmrvUOqv-Tu1YT3zvi6c=mqx+ahbMTycqAQ@mail.gmail.com>
+In-Reply-To: <1865799483.10870980.1575350298758.JavaMail.zimbra@inria.fr>
 Content-Language: en-US
-X-Provags-ID: V03:K1:kjjzzrG3dEjCV7qrHHXTz9+g2JWHtumuIs/u5Du5Lyz/ejvMfex
- a1+qiKkRv9ix6JbifumbXmePIhz9UWsUZzlvW4cKANLHWwwgbkpmLbT/N10PhxahotB8OQZ
- J+j2DtqRxVlLJzd+Q8mUKfh88cAzJqZGj+it7jJNp8CcN4gMfNlarVR+ezZgW3dH8WfcHaE
- 2z/+l+bGHiIB6CCFWSuvA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:qLloq5LRMiI=:CQ482uTm4d76RaZAPZYgjR
- glT2iWem/hmqIaTxO0xfneFxsq6WV7g2LqvETno4X9bTuT9NHOBWDnxXfqmPYAspq2vpnCfd7
- f8Y9KFEaA4gSHZIvAlGjQm1KCUSoWsw1Mk0IwpKkl7qr/ItCDdsRq9ULmdRGlEc5M8O4McPkr
- zfCPlVHMyssZDyHL8YvIBX85k6h1bcj91zZux3Eduk9kn3ooUVp4yaSXRTpTaivOe16Q8L184
- ZQ1zacn3Trr45c4F7Vf5KXqb9T8ueYpGRj0mcC/Ykam1a/PRpir3QkhNWnX+BQCWy2ofrtzNZ
- blxoGI8Kc+hi8YvojvgsPlmimP52H95vnaNoCMNGwbENrVgHF2fOWFMKfXg2yGJU+mI9rfTDp
- WRO7lfslaWODkhBwp73n0d81nTmiRjfgrVilmHPQphDo2VYybI74fX7GNlcs6yrT9y/pGL0lH
- gXlq/ouL0FWSuUYp+ZodY87QZIUUMvwVENnspC//lNwkpD9vwJBY2YhvbaSocT+Whhjgq2wUV
- BEBPQDcfgVsZPULvCA1lo1Sm8IFePMwyp1cwQmCjguWMi7IeF1F5A9VwqOdg5DGKXKv+AEZqK
- h7/oCYUNzLc8yfTYNbbWHMqM1xXxadsqOVgKC+LKd/OQt+t0ERVyCMfSwL+iWngoq+EsKtEuH
- BWkcCBnX2gn4JepFmdzUntsuJw0R7sODFpf78cc/7Y0H/l7ko/WufGPds2h4kSC4dzqpnbeYs
- cEf4Uw7E0veJ4GB9N9fjS2n0+v7YD0gJgUI1JswGfIrbzc9qp2gbl6OUmuAaue48BItneF5tO
- Uzq38mMx7w56i7ek2jH1jQpDCOzsjU1KZgjKJmLzLc6np8I0w+PYTOs8adF1fd1hoclLyjdKt
- +5ADJUuYNEqsgLUCQWyPeRuYkS1QowmhIjDhpTlnTc7wnX7kF/bdKVOScSRpcKD1hStecaKSM
- ZgbrZy0FLF3pEGulGXJIR3BEALt84fbwAYYh8myQ7KCjWVGTm2BBb0W0K6Yg0b9vHA3Y71kuG
- WxBbbnUJ1Y59p2E73saqgdQALDgrZGGvZvqK+xEUnelyiN5WPZOGDYT0Lvj9x0ZAHAne88ZBD
- kU4tk1Cv++3erUn0YajnG7R0Uu66p94Wzm1LTszMqVo5DxVgdut5qaqkPhodDbptP9+WfNoGx
- cQMc/7PiylcxCDlU2wrpK0aa33a7aIZIeiMrod++j8ZzJweo/xUyred7m0ViEUAunCqKrQWG4
- 6uDB/Pwb/iT553bUArgXVeRb1NyVLJEew8ENm9UIBngx4QYXFP/7CNcc8A8M=
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 03 Dec 2019 11:01:57 +0100 (CET)
+X-Provags-ID: V03:K1:JUvGRi398hi64tSHnWwo62ypSpxnkfHPSWvVpr8OXUBI91YWbkK
+ cR27FEN0vuIJRIOml9ZWg8493fBKj/eNp2D2nJE0U6BA7y4387p3zEIUTmA2OFbKxeNPhua
+ 1e0XpbIzWD+N0o4ucIWs5QDx9OIuxZk0sXt4mInI6PRVFTRC7ykrfs0iW7EBwzlt0o6yLND
+ NwYj4hNf99KnziFJA1Jcw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:XJIoAimnGxw=:h5oEJCkBQkn1mf4/2nIP6y
+ zhLt+LABb3AqANqxhtoDiOC7R+xg6o7W5OYktEyUBtYz7CbV1L2VR72iH7yHePLIHAQ2phweF
+ 8Isyz6yuI50JFZrkCAds8u0sCwecW7s8wXwP2bx+d+1PIAbNzT8KiqUBlffGhjFBQYhjN8K0d
+ mAVOHwpEtiFEqe8vNLAiB2u1EsE0Jh1rX7NJ6HT8YXZl7KwmZ5bIefA6bt4mJKP+hkljYzMI/
+ lnGlrsaDcG7VJivJiv6CU6+7t01d2adcs/cg/eCQMFW+cbi/kvRMFoGl5iwI03v0gX9RHIc5d
+ dEjnCRiCfH/g2LBnZjV5qgdrci9a0dn0qYP1HLk+w2LlaWEKzNEsXjqGHHfB6d2k+5uRnuBIG
+ K3T1IqWWbrQfYi73voqwF2o4P8WhAZGuD1ovk5v3YZv39D/q8sYTbcJHYcFUg9N3e85A1f4bv
+ PIDTyebpfnH88I0HJHmIKTeGtgIYHIGf3LqHupdbXBtfLFXG1Ue/Xv8V/9e2Qlh7upkyKH+co
+ kMR40Y4NJMFkCZFEX45c/uTz5nJg6Xzi/+eHh1IyvagQrWfl4v135gw9ZO5EYveuCKjD7uel5
+ rQNRUFKdz9fofbjvmExvga4AGwx+GKDKJRjii2O6GDCQuIl7Nmfc2YuAeVzaw5T0cGnOFuQZ4
+ bUzeLiqqVFKNrxJH2rV7Sa4xiBM2IvKrWbccktt0c075RkyHUqrHrUbDO7FY+OSfWqpUTZlOl
+ 8a0lRladSGL/Krfq9M51xdsY3V2nL0ZMeaJ+xWUnIECZD6/foOIR0+ZXgzMlERACSXZTqEd0b
+ ztLFS4+rzuLo9TLkLyc5imZ+8O5SjSyg477Lxl3xbExdT6MZ5wCrqfJcVtCABxpDtJJnDm6Y0
+ BbZt+jysObVtt6CEtFW5S720CTFFjaYE5VngG+XI1JABfljzbwU+6uSamR0XUbhK5816fRa0L
+ uoNcYmmIWvum9UtevFwLCakkLV+fw6Wbqna5wS8NvSemKgbKbHuHBvJRLTzoWMmoO0i3s6wf/
+ LQW/eelFWA4xXrVgXI2L10iyq3Ynw4aYXTKHAzc5mlWo7XF5Ju9o4mywTfx8xlpKR6tHoHx8R
+ SRY08u2YMDAQkW38TLnheh+yUDnGszPjz9uCz5XRqWog2keH0xUI3oeH4K6aCNjFP3HeAvVXK
+ XKeLfWkioHn5EBsGqW3OXLGZy93uGe7Fbuv3q8chAd/ghbgE8SmyLXVAB5IWUedUD+KC/LFgp
+ ZJasiyfCQOh+OSNaSdiAmKsBA6VFO7bfmbz2uCpADKc/oNKGVpn2/6DvDqCc=
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 03 Dec 2019 14:28:40 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Tue, 03 Dec 2019 11:01:54 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Tue, 03 Dec 2019 14:28:38 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: cocci@systeme.lip6.fr
@@ -148,69 +146,67 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-> > Which algorithm will become sufficient for your data processing needs
-> > around the usage of functions with variadic arguments because of format strings?
+> OK, if you may have more than one argument to your print,
+> then you can find the offset using an expression list metavariable:
 >
-> Actually, I really didn't get why you're asking about that.
+> @r@
+> expression list[n] between;
+> @@
+>
+> print(s,between,h2->name,...)
+>
+> Then you can use r.n in your python rule to figure out where is the %s to=
+ change.
 
-I suggest to take another look at affected software aspects.
-
-
-> because we are talking about X and you're asking for Y.
-
-I presented another approach to tackle your use case.
-
-
-> the point is because I am studying about the Coccinelle
-
-This is nice.
+This data processing approach sounds promising.
 
 
-> and I am just trying to figure out if the tool could detect "%s"
-> called with "mydata->name" and then replace by "%m" and remove the "->name"
+> Unfortunately, this will not work well if there are multiple name referen=
+ces in the argument list.
 
-It can be achieved for such format string parameters.
-But I hope that the software development attention will grow
-for the handling of multiple data conversions for several arguments.
-
-
-> But, I've read again the other samples and the documentation.
-> therefore, I didn't figure out how it should be.
-
-Would you like to help to improve this area also for your needs?
+I hope that the Coccinelle software can help more with the analysis
+for format strings.
 
 
-> btw, thank you Julia for the suggestion performing the /Ocalm/make_expr/replace/.
-> (Due to something wrong with the Coccinelle distributed by Brew/Osx.
-> I just rewrote your sample using Python and the result was the same.
+> Because you will be trying to change the format string in multiple ways,
+> eg once where between has length 2 and once where between has length 4.
 
-Both programming languages can perform string replacements as usual.
-
-
-> But, I can't just replace all "%s" by "%m".
-
-Will you become aware of more temporary software limitations
-because mentioned implementation details can refer also to work in progress?
+This can probably happen.
 
 
-> As I said, it should be only if the "%s" was declared to use "mydata->name".
+> Substantial hacks would be required to deal with this.
 
-Such a requirement seems to be clear.
+How can corresponding collateral evolution be better supported?
 
 
-> so, I still fighting yet.
+> It would be nice if you could do
+>
+> @r@
+> expression list[bn] between;
+> expression list[an] after;
+> position p;
+> @@
+> print@p(s,between,name,after)
+>
+> @@
+> format list[r.bn] f1;
+> format list[r.an] f2;
+> position r.p;
+> @@
+> print@p(
+> -=A0=A0=A0 "%@f1@%s%@f2@"
+> +=A0=A0 "%@f1@%m%@f2@"
+> , l)
+>
+> I don't know if that would work, though.
 
-Can it be that your design imaginations are too limited
-for the discussed use case so far?
-
-How do you think about to develop a few corresponding SmPL script variants
-which can handle more concrete function calls besides searching for a solution
-according to the desired general source code transformation?
+I find this information interesting.
+How will the clarification be continued for affected open issues?
 
 Regards,
 Markus
