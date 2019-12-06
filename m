@@ -1,68 +1,131 @@
-Return-Path: <SRS0=12Zs=Z2=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=/zSI=Z4=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	HTML_MESSAGE,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no
+X-Spam-Status: No, score=-1.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5569AC43603
-	for <cocci@archiver.kernel.org>; Wed,  4 Dec 2019 06:49:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3C1BC43603
+	for <cocci@archiver.kernel.org>; Fri,  6 Dec 2019 19:20:47 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6591A20661
-	for <cocci@archiver.kernel.org>; Wed,  4 Dec 2019 06:48:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6591A20661
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
+	by mail.kernel.org (Postfix) with ESMTPS id 17C3A2464E
+	for <cocci@archiver.kernel.org>; Fri,  6 Dec 2019 19:20:46 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="ZdHEIkjM"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 17C3A2464E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xB46lkLo022124;
-	Wed, 4 Dec 2019 07:47:46 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xB6JKTlv011352;
+	Fri, 6 Dec 2019 20:20:29 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 31C2877D7;
-	Wed,  4 Dec 2019 07:47:46 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 8B4C577D9;
+	Fri,  6 Dec 2019 20:20:29 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id A60A77708
- for <cocci@systeme.lip6.fr>; Wed,  4 Dec 2019 07:47:44 +0100 (CET)
-Received: from mail2-relais-roc.national.inria.fr
- (mail2-relais-roc.national.inria.fr [192.134.164.83])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xB46lhuO013414
- for <cocci@systeme.lip6.fr>; Wed, 4 Dec 2019 07:47:43 +0100 (CET)
-X-IronPort-AV: E=Sophos;i="5.69,276,1571695200"; 
- d="scan'208,217";a="417586219"
-X-MGA-submission: =?us-ascii?q?MDFZUn4RnCCft3xaCQV3XSEbDyuIklAKZZhHUl?=
- =?us-ascii?q?hV9zJ6DkVm82xkTotITnytbqVfmXZ/ZvG6fC3yFx06dkuYJ4/GomXq+7?=
- =?us-ascii?q?UWUXZeYXdJkQoDbwu3C97yJMPN8JcMXRRfrk0STnvwR08QRtI1H5O0jY?=
- =?us-ascii?q?cdqw70yEYofLGA33iLWaRA+A=3D=3D?=
-Received: from zcs-store9.inria.fr ([128.93.142.36])
- by mail2-relais-roc.national.inria.fr with ESMTP; 04 Dec 2019 07:47:43 +0100
-Date: Wed, 4 Dec 2019 07:47:43 +0100 (CET)
-From: Julia Lawall <julia.lawall@inria.fr>
-To: Strace Labs <stracelabs@gmail.com>
-Message-ID: <1624931283.11188831.1575442063589.JavaMail.zimbra@inria.fr>
-In-Reply-To: <CABvP5W2+fUip+jEAO-G+ZyUPJhx5iCHcTRxkiYsiok_a3zTuRw@mail.gmail.com>
-References: <CABvP5W1W=p1-n_831VaiJyNsHrepFS0CNJSDQqmfPkrC1rx=Ww@mail.gmail.com>
- <CABvP5W0kVE+yBYa7gWLfsegb75fMyMcLSDbsnFUGRnnVoRLtDQ@mail.gmail.com>
- <alpine.DEB.2.21.1911292154450.3140@hadrien>
- <CABvP5W3hmmovw09n6gJQ5m=Cps2YAYJFFfOPmKY6Zu_SJOU=NQ@mail.gmail.com>
- <0c03f84d-a05b-2811-96aa-6f82541fb8a3@web.de>
- <CABvP5W3E3zP28kUsmrvUOqv-Tu1YT3zvi6c=mqx+ahbMTycqAQ@mail.gmail.com>
- <1865799483.10870980.1575350298758.JavaMail.zimbra@inria.fr>
- <CABvP5W2+fUip+jEAO-G+ZyUPJhx5iCHcTRxkiYsiok_a3zTuRw@mail.gmail.com>
+ by systeme.lip6.fr (Postfix) with ESMTPS id 940D677D8
+ for <cocci@systeme.lip6.fr>; Fri,  6 Dec 2019 20:20:27 +0100 (CET)
+Received: from mout.web.de (mout.web.de [212.227.17.12])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xB6JKRr1013214
+ for <cocci@systeme.lip6.fr>; Fri, 6 Dec 2019 20:20:27 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+ s=dbaedf251592; t=1575660026;
+ bh=/mIquFLjCLzjncLIYsYr9PN9EQX2me02doKl/v6DLDA=;
+ h=X-UI-Sender-Class:To:References:Subject:From:Cc:Date:In-Reply-To;
+ b=ZdHEIkjM5BW2tF7doYDR3VXXBBAtPHnGsKwNtSwoZIzF9Gg0tqFU9XuIZWptIsrX6
+ 4mVDOl9cC4Po4l1KcPBr4eGjVJOJIDeSswaA1t8tuaPMphosT780JhmiX9Pr394fmo
+ kvKNVlxWSxRHLYR0y1kQEsBM/xVu9kRJt/0JnAuM=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.3] ([2.243.146.60]) by smtp.web.de (mrweb101
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0MKrLo-1idJ9N40LA-0002OY; Fri, 06
+ Dec 2019 20:20:26 +0100
+To: stracelabs@gmail.com
+References: <CABvP5W2+fUip+jEAO-G+ZyUPJhx5iCHcTRxkiYsiok_a3zTuRw@mail.gmail.com>
+From: Markus Elfring <Markus.Elfring@web.de>
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+Message-ID: <f23fcf2f-c0be-ac86-ca7e-398ad2d7996f@web.de>
+Date: Fri, 6 Dec 2019 20:20:25 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-X-Originating-IP: [202.161.33.40]
-X-Mailer: Zimbra 8.7.11_GA_3800 (ZimbraWebClient - FF70 (Linux)/8.7.11_GA_3800)
-Thread-Topic: Changing format string usage with SmPL?
-Thread-Index: 75yuBvJhUIXp1YzZ9OGJI38KC6y1RQ==
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 04 Dec 2019 07:47:46 +0100 (CET)
+In-Reply-To: <CABvP5W2+fUip+jEAO-G+ZyUPJhx5iCHcTRxkiYsiok_a3zTuRw@mail.gmail.com>
+Content-Language: en-US
+X-Provags-ID: V03:K1:FO/co/cFDTeYV1DC9GeEbYT9rFlysewpXzwn1Jub89H90fSZtIj
+ pEsMs/HCOJ9eXhsznFVSxC/NcKOQD27TA7Kv0yIpdq2okvsXemupq8ijnpIl1AsMIlbyDWd
+ TW5xakcj2qCYcPoIF9SBX5Y+KlNcDW6j2ch3uoDGticM84Sknv2BYwMjEqKkJ+mNJIJegp2
+ 187IzUgWtG8WoOa+h/6CQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:PeJDsJqzPLU=:p7FFsLyoGsEAPDGBzDotVR
+ bASvzbXn5A7FA7eizLdhEyIpDchtUqRxDa4yKCqWoMlHh7jaqgrYYfJoAdLikKLnZ9k4Z+GHn
+ 72DeC1QN1iLsLMtUkrKesnfsZXW7XUaUHf4jlAHpXkw7oxZ0n7w+4JBPPBuQZE9RQTy3eE+s5
+ 10q7no/rbs/gFDWaynCEBZzLo0lVnndsHRd6zqG3NrBbEa0W/TEZUZrVcu4ke+xX8/XRFybHh
+ +gxLf9Yl0b0x8n8yNlmCo+lTBfUi9kU64rcYwQnJiWzqPV0yc3MeBtBqrNXvzIgwybmfOjmEt
+ STTt5Zp+zYexVNgLGw4VxhwHCEwPq1v1Guix6R47EjLSbEVVpKW2jT/7p0oioXNC2Y2KD7B+S
+ LQKF/DDoAGVgmAVnYSVSp1w2kraYXlbjKkKG93nkOfOGljQY54BPZAKPV+m3OiEQbSAPjATVe
+ IRW1lh5+CVa+9zbrgjhwGBuP28gtiFv7lFGpYxkqwrLtYy/ZZiUUFY4dTluMkzwiKtOahdLPm
+ d6hma6yyFOn48eS7gdNdbrXcpRaoA7Uk+fbJyphADJ5fOBu/i1/RYPKUSgtLjhUyoqhHg7EJW
+ 4On2MLg484+zt8WbvxyqvSvRB/E+0oQ+oW8HKg99Dgu1ugpDShtanDrkwK2J8zxhO0ABO0y6m
+ m8BO3yIgD1brBcfOAi1WE8OCuGxQsJK/zeBo1U7/aw6J2ICHBZyfuqfwIkToHcfr1w7v9itjm
+ E1Po8DrtFffv98Clro8MqKaLLHlB+bUtDo+2EUT2l2AiG1+FdXkpWg+3nMGK37Kw/hNljOA6A
+ i1qPNbsgOAKAuJCVu01B7L6MRNd6mJ8i0ye1deyRDZKN4LKY5n5j5OLFKTrtPg4s1N3GmDyTR
+ WSGUIx2Ey2lck6gSRKfLzfcTNz8DOrwWgmAnpiofMsXU1npEUdeMsvO5WWlLCdO3/mQMTFat7
+ e7EIclzjrw3fXZ3sS2tgNniTwUR70CfYafVWcnD9xVVJlJKUXQJoIuFCe9p1yqtAqq/aPsn0+
+ umDth3Kkdr60T3Wurr49/PH1X4iT1eLpl+ehBsBzU3wapgbfwniAOXlkcd2RcS6cQSB53T0U9
+ xuUeeRK8NAoF+LyYEtFm4WtEyE99yP7+eVX3jvOBXEsTj0AjpxfWlvr02cKtu3Wr50aeusE9I
+ Q0hAA7Uo5WmnTbQ1jbV0qtKJn8qmATTZTxGLCZ+HpiHgioddpplSh/fhTi5AQKjfkWce2eS1y
+ KfrATfGaRWef/cTXcRXGki5CdU4XGqxI1ulm3yNTD0eGg5nX+FgMBmrvaN88=
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 06 Dec 2019 20:20:30 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Wed, 04 Dec 2019 07:47:43 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Fri, 06 Dec 2019 20:20:27 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: cocci <cocci@systeme.lip6.fr>
+Cc: cocci@systeme.lip6.fr
 Subject: Re: [Cocci] Changing format string usage with SmPL?
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
@@ -75,323 +138,32 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============0225182260=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
---===============0225182260==
-Content-Type: multipart/alternative; 
-	boundary="=_2ec7c5fa-703b-471e-86e6-aae00c4996de"
+> Unfortunately, it doesn't work.
 
---=_2ec7c5fa-703b-471e-86e6-aae00c4996de
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+A bit more information would be nice for the explanation of the failure reason.
 
-> De: "Strace Labs" <stracelabs@gmail.com>
-> =C0: "Julia Lawall" <julia.lawall@inria.fr>
-> Cc: "cocci" <cocci@systeme.lip6.fr>
-> Envoy=E9: Mercredi 4 D=E9cembre 2019 01:28:22
-> Objet: Re: [Cocci] Changing format string usage with SmPL?
+I assume that you are still looking for better support of format strings
+with several conversion parameters.
 
-> Unfortunately, it doesn't work. But, I am working on some solutions using
-> Python.
 
-> therefore, once we have something like:
+> But, I am working on some solutions using Python.
 
-> ...
-> @r1@
-> format list fl;
-> identifier fn;
-> expression list e;
-> position p;
-> @@
+I am curious how corresponding approaches will evolve further.
 
-> fn("%@fl@", e@p)
-> ....
 
-> Then, I could handle the format list using make_expr() as well. But, Is i=
-t
-> possible to rename/handle the expression list?
+> But, Is it possible to rename/handle the *expression list?*
 
-Could you fix up the expression list first? Then you can write a rule like=
-=20
+Renaming can not be performed for the list. Data processing can become more
+interesting for the managed elements, can't it?
 
-char[] s;=20
-
-fn(s, ...,=20
-- oldcode=20
-+ newcode=20
-,...)=20
-
-julia=20
-
-> On Tue, Dec 3, 2019 at 3:18 AM Julia Lawall < [ mailto:julia.lawall@inria=
-.fr |
-> julia.lawall@inria.fr ] > wrote:
-
->>> De: "Strace Labs" < [ mailto:stracelabs@gmail.com | stracelabs@gmail.co=
-m ] >
->>> =C0: "Markus Elfring" < [ mailto:Markus.Elfring@web.de | Markus.Elfring=
-@web.de ] >
->>> Cc: "Julia Lawall" < [ mailto:julia.lawall@inria.fr | julia.lawall@inri=
-a.fr ] >,
->>> [ mailto:cocci@systeme.lip6.fr | cocci@systeme.lip6.fr ]
->>> Envoy=E9: Mardi 3 D=E9cembre 2019 11:30:14
->>> Objet: Re: [Cocci] Changing format string usage with SmPL?
-
->>> On Sun, Dec 1, 2019 at 6:00 AM Markus Elfring < [ mailto:Markus.Elfring=
-@web.de |
->>> Markus.Elfring@web.de ] > wrote:
-
->>>>> Basically, I intend to replace alls "%s" called with "mydata->name" b=
-y "%m" with
->>>> > "mydata" or "&mydata"
-
->>>> How far would you get the desired source code transformation based on
->>>> software extensions around a search pattern like the following.
->>>> ..........
->>>> Which algorithm will become sufficient for your data processing needs
->>>> around the usage of functions with variadic arguments because of forma=
-t strings?
-
->>> Actually, I really didn't get why you're asking about that. because we =
-are
->>> talking about X and you're asking for Y. but, either way. that is not t=
-he
->>> point. the point is because I am studying about the Coccinelle and I am=
- just
->>> trying to figure out if the tool could detect "%s" called with "mydata-=
->name"
->>> and then replace by "%m" and remove the "->name"
-
->>> e.g: Once if we have:
-
->>> int foo() {
->>> int id;
->>> struct mydata h1, *h2, s1, *s2;
->>> char *city =3D "Hello";
->>> my_printf("%s", s2->name);
->>> my_printf("hi hi %s gggg", [ http://h1.name/ | h1.name ] );
->>> my_printf("1234 %d %s @ %d %s | %s -> city=3D%s", id, [ http://s1.name/=
- | s1.name
->>> ] , 12, (*h2).name , h2->name , city);
->>> my_printf("aaaa %s hhhhh", h2->name);
->>> my_printf("%s", city);
->>> }
-
->>> Then, replace by:
-
->>> int foo() {
->>> int id;
->>> struct mydata h1, *h2, s1, *s2;
->>> char *city =3D "Hello";
->>> my_printf("%m", s2);
->>> my_printf("hi hi %s gggg", &h1);
->>> my_printf("1234 %d %m @ %d %m | %m -> city=3D%s", id, [ http://s1.name/=
- | s1.name
->>> ] , 12, (*h2).name , h2->name , city);
->>> my_printf("aaaa %s hhhhh", h2);
->>> my_printf("%s", city);
->>> }
-
->>> But, I've read again the other samples and the documentation. therefore=
-, I
->>> didn't figure out how it should be. btw, thank you Julia for the sugges=
-tion
->>> performing the Ocalm/make_expr/replace . (Due to something wrong with t=
-he
->>> Coccinelle distributed by Brew/Osx. I just rewrote your sample using Py=
-thon and
->>> the result was the same. But, I can't just replace all "%s" by "%m". As=
- I said,
->>> it should be only if the "%s" was declared to use "mydata->name".
-
->>> so, I still fighting yet. thanks in Advance.
-
->> OK, if you may have more than one argument to your print, then you can f=
-ind the
->> offset using an expression list metavariable:
-
->> @r@
->> expression list[n] between;
->> @@
-
->> print(s,between,h2->name,...)
-
->> Then you can use r.n in your python rule to figure out where is the %s t=
-o
->> change. Unfortunately, this will not work well if there are multiple nam=
-e
->> references in the argument list. Because you will be trying to change th=
-e
->> format string in multiple ways, eg once where between has length 2 and o=
-nce
->> where between has length 4. Substantial hacks would be required to deal =
-with
->> this.
-
->> It would be nice if you could do
-
->> @r@
->> expression list[bn] between;
->> expression list[an] after;
->> position p;
->> @@
->> print@p(s,between,name,after)
-
->> @@
->> format list[ [ http://r.bn/ | r.bn ] ] f1;
->> format list[ [ http://r.an/ | r.an ] ] f2;
->> position r.p;
->> @@
->> print@p(
->> - "%@f1@%s%@f2@"
->> + "%@f1@%m%@f2@"
->> , l)
-
->> I don't know if that would work, though.
-
->> julia
-
->>>> Regards,
->>>> Markus
-
---=_2ec7c5fa-703b-471e-86e6-aae00c4996de
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-<html><body><div style=3D"font-family: arial, helvetica, sans-serif; font-s=
-ize: 12pt; color: #000000"><div><br></div><div><br></div><hr id=3D"zwchr" d=
-ata-marker=3D"__DIVIDER__"><div data-marker=3D"__HEADERS__"><blockquote sty=
-le=3D"border-left:2px solid #1010FF;margin-left:5px;padding-left:5px;color:=
-#000;font-weight:normal;font-style:normal;text-decoration:none;font-family:=
-Helvetica,Arial,sans-serif;font-size:12pt;"><b>De: </b>"Strace Labs" &lt;st=
-racelabs@gmail.com&gt;<br><b>=C0: </b>"Julia Lawall" &lt;julia.lawall@inria=
-.fr&gt;<br><b>Cc: </b>"cocci" &lt;cocci@systeme.lip6.fr&gt;<br><b>Envoy=E9:=
- </b>Mercredi 4 D=E9cembre 2019 01:28:22<br><b>Objet: </b>Re: [Cocci] Chang=
-ing format string usage with SmPL?<br></blockquote></div><div data-marker=
-=3D"__QUOTED_TEXT__"><blockquote style=3D"border-left:2px solid #1010FF;mar=
-gin-left:5px;padding-left:5px;color:#000;font-weight:normal;font-style:norm=
-al;text-decoration:none;font-family:Helvetica,Arial,sans-serif;font-size:12=
-pt;"><div dir=3D"ltr"><div dir=3D"ltr">Unfortunately, it doesn't work. But,=
- I am working on some solutions using Python.&nbsp;</div><div dir=3D"ltr"><=
-br></div><div>therefore, once we have something like:</div><br><div>...</di=
-v><div>@r1@<br>format list fl;<br>identifier fn;<br>expression list e;<br>p=
-osition p;<br>@@<br><br>fn("%@fl@", e@p)<br></div><div>....</div><br><div>T=
-hen, I could handle the <b>format list</b>&nbsp;using&nbsp;<b>make_expr()</=
-b>&nbsp;as well. But, Is it possible to rename/handle the <b>expression lis=
-t?</b></div></div></blockquote><div><br></div><div>Could you fix up the exp=
-ression list first?&nbsp; Then you can write a rule like<br data-mce-bogus=
-=3D"1"></div><div><br data-mce-bogus=3D"1"></div><div>char[] s;<br data-mce=
--bogus=3D"1"></div><div><br data-mce-bogus=3D"1"></div><div>fn(s, ...,<br d=
-ata-mce-bogus=3D"1"></div><div>- oldcode<br data-mce-bogus=3D"1"></div><div=
->+ newcode<br data-mce-bogus=3D"1"></div><div>&nbsp;&nbsp; ,...)<br data-mc=
-e-bogus=3D"1"></div><div><br data-mce-bogus=3D"1"></div><div>julia<br data-=
-mce-bogus=3D"1"></div><div><br data-mce-bogus=3D"1"></div><div><br data-mce=
--bogus=3D"1"></div><div><br data-mce-bogus=3D"1"></div><div><br data-mce-bo=
-gus=3D"1"></div><div><br data-mce-bogus=3D"1"></div><div><br data-mce-bogus=
-=3D"1"></div><div><br data-mce-bogus=3D"1"></div><blockquote style=3D"borde=
-r-left:2px solid #1010FF;margin-left:5px;padding-left:5px;color:#000;font-w=
-eight:normal;font-style:normal;text-decoration:none;font-family:Helvetica,A=
-rial,sans-serif;font-size:12pt;"><div dir=3D"ltr"><div class=3D"gmail_quote=
-"><div dir=3D"ltr" class=3D"gmail_attr">On Tue, Dec 3, 2019 at 3:18 AM Juli=
-a Lawall &lt;<a href=3D"mailto:julia.lawall@inria.fr" target=3D"_blank">jul=
-ia.lawall@inria.fr</a>&gt; wrote:</div><blockquote class=3D"gmail_quote" st=
-yle=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padd=
-ing-left:1ex"><div><div style=3D"font-family:arial,helvetica,sans-serif;fon=
-t-size:12pt;color:rgb(0,0,0)"><hr id=3D"gmail-m_5206298212494274740zwchr"><=
-div><blockquote style=3D"border-left:2px solid rgb(16,16,255);margin-left:5=
-px;padding-left:5px;color:rgb(0,0,0);font-weight:normal;font-style:normal;t=
-ext-decoration:none;font-family:Helvetica,Arial,sans-serif;font-size:12pt">=
-<b>De: </b>"Strace Labs" &lt;<a href=3D"mailto:stracelabs@gmail.com" target=
-=3D"_blank">stracelabs@gmail.com</a>&gt;<br><b>=C0: </b>"Markus Elfring" &l=
-t;<a href=3D"mailto:Markus.Elfring@web.de" target=3D"_blank">Markus.Elfring=
-@web.de</a>&gt;<br><b>Cc: </b>"Julia Lawall" &lt;<a href=3D"mailto:julia.la=
-wall@inria.fr" target=3D"_blank">julia.lawall@inria.fr</a>&gt;, <a href=3D"=
-mailto:cocci@systeme.lip6.fr" target=3D"_blank">cocci@systeme.lip6.fr</a><b=
-r><b>Envoy=E9: </b>Mardi 3 D=E9cembre 2019 11:30:14<br><b>Objet: </b>Re: [C=
-occi] Changing format string usage with SmPL?<br></blockquote></div><div><b=
-lockquote style=3D"border-left:2px solid rgb(16,16,255);margin-left:5px;pad=
-ding-left:5px;color:rgb(0,0,0);font-weight:normal;font-style:normal;text-de=
-coration:none;font-family:Helvetica,Arial,sans-serif;font-size:12pt"><div d=
-ir=3D"ltr"><div dir=3D"ltr">On Sun, Dec 1, 2019 at 6:00 AM Markus Elfring &=
-lt;<a href=3D"mailto:Markus.Elfring@web.de" target=3D"_blank">Markus.Elfrin=
-g@web.de</a>&gt; wrote:<br></div><div class=3D"gmail_quote"><blockquote cla=
-ss=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid =
-rgb(204,204,204);padding-left:1ex">&gt; Basically, I intend to replace alls=
- "%s" called with "mydata-&gt;name" by "%m" with "mydata" or "&amp;mydata"<=
-br><br>
-How far would you get the desired source code transformation based on<br>
-software extensions around a search pattern like the following.<br>........=
-..<br>
-Which algorithm will become sufficient for your data processing needs<br>
-around the usage of functions with variadic arguments because of format str=
-ings?<br><br></blockquote><br><div>Actually, I really didn't get why you're=
- asking about that. because we are talking about X and you're asking for Y.=
- but, either way. that is not the point. the point is because I am studying=
- about the Coccinelle and I am just trying to figure out if the tool could =
-detect "%s" called with "mydata-&gt;name" and then replace by "%m" and remo=
-ve the "-&gt;name"</div><br><div>e.g: Once if we have:</div><br><div>int fo=
-o() {<br>&nbsp; int id;<br>&nbsp; struct mydata h1, *h2, s1, *s2;<br>&nbsp;=
- char *city =3D "Hello";<br>&nbsp; my_printf("%s", s2-&gt;name);<br>&nbsp; =
-my_printf("hi hi %s gggg", <a href=3D"http://h1.name" target=3D"_blank">h1.=
-name</a>);<br>&nbsp; my_printf("1234 %d <b>%s</b> @ %d <b>%s</b>&nbsp;| <b>=
-%s</b> -&gt; city=3D%s", id, <b><a href=3D"http://s1.name" target=3D"_blank=
-">s1.name</a></b>, 12, <b>(*h2).name</b>, <b>h2-&gt;name</b>, city);<br>&nb=
-sp; my_printf("aaaa %s hhhhh", h2-&gt;name);<br>&nbsp; my_printf("%s", city=
-);<br></div><div>}</div><br><div>Then, replace by:</div><br><div><div>int f=
-oo() {<br>&nbsp; int id;<br>&nbsp; struct mydata h1, *h2, s1, *s2;<br>&nbsp=
-; char *city =3D "Hello";<br><b>my_printf("%m", s2);</b><br><b>my_printf("h=
-i hi %s gggg", &amp;h1);</b><br>&nbsp; my_printf("1234 %d <b>%m</b>&nbsp;@ =
-%d <b>%m</b>&nbsp;| <b>%m</b>&nbsp;-&gt; city=3D%s", id, <b><a href=3D"http=
-://s1.name" target=3D"_blank">s1.name</a></b>, 12, <b>(*h2).name</b>, <b>h2=
--&gt;name</b>, city);<br><b>&nbsp; my_printf("aaaa %s hhhhh", h2);</b><br>&=
-nbsp; my_printf("%s", city);<br></div><div>}</div></div><br><div>But, I've =
-read again the other samples and the documentation. therefore, I didn't fig=
-ure out how it should be. btw, thank you Julia for the suggestion performin=
-g the <i>Ocalm/make_expr/replace</i>. (Due to something wrong with the Cocc=
-inelle distributed by Brew/Osx. I just rewrote your sample using Python and=
- the result was the same. But, I can't just replace all "%s" by "%m". As I =
-said, it should be only if the "%s" was declared to use "mydata-&gt;name".<=
-/div><br><div>so, I still fighting yet. thanks in Advance.</div></div></div=
-></blockquote><div>OK, if you may have more than one argument to your print=
-, then you can find the offset using an expression list metavariable:<br></=
-div><br><div>@r@<br></div><div>expression list[n] between;<br></div><div>@@=
-<br></div><br><div>print(s,between,h2-&gt;name,...)<br></div><br><div>Then =
-you can use r.n in your python rule to figure out where is the %s to change=
-.&nbsp; Unfortunately, this will not work well if there are multiple name r=
-eferences in the argument list.&nbsp; Because you will be trying to change =
-the format string in multiple ways, eg once where between has length 2 and =
-once where between has length 4.&nbsp; Substantial hacks would be required =
-to deal with this.<br></div><br><div>It would be nice if you could do<br></=
-div><br><div>@r@<br></div><div>expression list[bn] between;<br></div><div>e=
-xpression list[an] after;<br></div><div>position p;<br></div><div>@@<br></d=
-iv><div>print@p(s,between,name,after)<br></div><br><div>@@<br></div><div>fo=
-rmat list[<a href=3D"http://r.bn" target=3D"_blank">r.bn</a>] f1;<br></div>=
-<div>format list[<a href=3D"http://r.an" target=3D"_blank">r.an</a>] f2;<br=
-></div><div>position r.p;<br></div><div>@@<br></div><div>print@p(</div><div=
->-&nbsp;&nbsp;&nbsp; "%@f1@%s%@f2@"<br></div><div>+&nbsp;&nbsp; "%@f1@%m%@f=
-2@"<br></div><div>, l)<br></div><br><div>I don't know if that would work, t=
-hough.<br></div><br><div>julia<br></div><br><blockquote style=3D"border-lef=
-t:2px solid rgb(16,16,255);margin-left:5px;padding-left:5px;color:rgb(0,0,0=
-);font-weight:normal;font-style:normal;text-decoration:none;font-family:Hel=
-vetica,Arial,sans-serif;font-size:12pt"><div dir=3D"ltr"><div class=3D"gmai=
-l_quote"><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8e=
-x;border-left:1px solid rgb(204,204,204);padding-left:1ex">
-Regards,<br>
-Markus<br></blockquote></div></div></blockquote></div></div></div></blockqu=
-ote></div></div><br></blockquote></div></div></body></html>
---=_2ec7c5fa-703b-471e-86e6-aae00c4996de--
-
---===============0225182260==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Regards,
+Markus
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
 https://systeme.lip6.fr/mailman/listinfo/cocci
-
---===============0225182260==--
