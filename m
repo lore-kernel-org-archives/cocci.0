@@ -1,4 +1,4 @@
-Return-Path: <SRS0=/zSI=Z4=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=riUD=Z5=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-1.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C232AC43603
-	for <cocci@archiver.kernel.org>; Fri,  6 Dec 2019 19:44:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46073C43603
+	for <cocci@archiver.kernel.org>; Sat,  7 Dec 2019 07:49:29 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3D9F42173E
-	for <cocci@archiver.kernel.org>; Fri,  6 Dec 2019 19:44:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 657B1217BA
+	for <cocci@archiver.kernel.org>; Sat,  7 Dec 2019 07:49:28 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="CiadqBxT"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3D9F42173E
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="eT24T+YI"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 657B1217BA
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xB6Jil2u013538;
-	Fri, 6 Dec 2019 20:44:47 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xB77nBp7011672;
+	Sat, 7 Dec 2019 08:49:11 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 1551477D9;
-	Fri,  6 Dec 2019 20:44:47 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 1A6E277D9;
+	Sat,  7 Dec 2019 08:49:11 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 84EF577D8
- for <cocci@systeme.lip6.fr>; Fri,  6 Dec 2019 20:44:45 +0100 (CET)
-Received: from mout.web.de (mout.web.de [212.227.17.11])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xB6Jii32011684
- for <cocci@systeme.lip6.fr>; Fri, 6 Dec 2019 20:44:44 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id E691677D7
+ for <cocci@systeme.lip6.fr>; Sat,  7 Dec 2019 08:49:08 +0100 (CET)
+Received: from mout.web.de (mout.web.de [217.72.192.78])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id xB77n8EO010586
+ for <cocci@systeme.lip6.fr>; Sat, 7 Dec 2019 08:49:08 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1575661483;
- bh=pgeV7fN24vleFgFPoDCMyB7UuwyPV3WP8YZwr4R/udc=;
+ s=dbaedf251592; t=1575704947;
+ bh=WJLcLtjizf0Iz8fzEAmimaQYPrcHjzdB3ENOy8shsQ8=;
  h=X-UI-Sender-Class:To:References:Subject:Cc:From:Date:In-Reply-To;
- b=CiadqBxT/jEvT1qidz+L/F3yp0u5+TF3XASqW9835GLfR90cevOBpRDuANBUplKQS
- si4rYJW4cIwN3apVVKi7rpzEP2aXbc238bTTl3UcMoq+WbYjj2IOf4sw+n5GdOh4/I
- MYUoS1ViN1UmqKZ8EY+ic2upIdGrprXr605yXvaA=
+ b=eT24T+YItx2XYEbia6aXrr6IycfFVgy9B6LoVhUxTE3NbzEVmntScd7Zj6dtwuRkk
+ HsUKVe/tprorC8cGk0T7JjJGvfKH+UoqGKlAPJlAicwqWDff1QJ3v4edztGNtxYFSO
+ gw0lTbNfm8Ll+QMZSr9OOuQLJNq39Kwh/e1q8ENA=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.3] ([2.243.146.60]) by smtp.web.de (mrweb102
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0Lhev7-1hzpqF3c93-00mvaV; Fri, 06
- Dec 2019 20:44:42 +0100
-To: Julia Lawall <julia.lawall@inria.fr>, stracelabs@gmail.com
-References: <1624931283.11188831.1575442063589.JavaMail.zimbra@inria.fr>
+Received: from [192.168.1.3] ([93.135.121.63]) by smtp.web.de (mrweb103
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0MLPRu-1icws521fW-000aW2; Sat, 07
+ Dec 2019 08:49:07 +0100
+To: stracelabs@gmail.com
+References: <CABvP5W0QkSgJRZRL4xu-DdtQ0RKkQuR-5wVn2QhvjUZCZVooUA@mail.gmail.com>
 From: Markus Elfring <Markus.Elfring@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
@@ -90,39 +90,39 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <cedae0df-9cc4-b81b-25e9-a38c800af6b5@web.de>
-Date: Fri, 6 Dec 2019 20:44:42 +0100
+Message-ID: <b59b7b32-98bb-c7cb-72a8-1abdca835c05@web.de>
+Date: Sat, 7 Dec 2019 08:49:00 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <1624931283.11188831.1575442063589.JavaMail.zimbra@inria.fr>
+In-Reply-To: <CABvP5W0QkSgJRZRL4xu-DdtQ0RKkQuR-5wVn2QhvjUZCZVooUA@mail.gmail.com>
 Content-Language: en-US
-X-Provags-ID: V03:K1:FPTcyFXs5mxfqUav8L6EwfXgacROaCkcZYQVLbml9elJEslasfc
- e3d2jzPLB3KAyi8hlkzswhjYpotjFq3S4p7kFLghWrBb8luO4OCircoRVpAxPppoQOvrW26
- THZch/EcxZP06HrzmnwYxnVAAoT2R6uM5cqMFTjQ4C0a5Q0OXTMzK0/HL8v7iBaKJ3GHVuE
- MAFBTWeMgrt4o+GQj3wSg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:O96htWJcrx4=:nqowwShfR0ILKuiYlE9D9R
- MHugP5rFm0+d8uXcpTb/Mjmo2rs7mM9+NdzYhqysQyrlbkhKQ5/Ix0xIU1pI4Lrd+T6dolEcv
- F3XoYjtzXySjeXisw4xePKrit6n4Ib5iXnUhr7eVIXv9176kKVq1C0n5O9Kg5Tqi4v+KbS7cc
- u+ddf+bpSAZdQ4+2pbJ0iptD7aPWQPymraK9paEgms6+hK5wIUUD1di/qHDrpKzkdcjW0b4kl
- 5uCXPw9pOK/74QyKfiDqWhB/nII9yEbJAidegvpXW34WxhWH/awzWf+b8InIdoRe4rguiy3XU
- TW4Fdr5OhdGj9vSCzUq1PStwzEfwiKrcJHfmvzFW7MdQcrbS0dRTkRKYcC9B93mrR5M+CBSG0
- ErloDFg3nrgNUelSsm1u6uRiWVOrzYKRmem9xpPPzlDXmRoPP3mTm9uyNec+wViadckonxcjO
- wnZ9b5bupuz0Ux9ZvMAtmbPPGW6uuGnzSsgWMiuWYyAYHmQ0rKy69M6M87XN3xoaex4fwb4Ql
- EUS2M01TDcLgCjr6LUmfAwNMNS7y6NSfmr/FJ/yi0RmkAVXxu6RgCWel4kHNQmJhov57PQlCS
- aPbRnR1NM01rQ1MVIIreKm0aQTXxFhLmjR/PfdyteUrmxDprncaG+zUS1urimWo171bOtjaVx
- xwqMkCrJTvteczrcfWMkT41cGeKRK7OLL1yJ+QdaQfT5HyA6zqds+D2pD23FoZJBPDjRWyc6e
- yPnFXIwl9bAijZHpVkdggYMt3QrGY6bZHlUDN/0FPu5WtP5CSS7H/OKwoIO2SfQhoaNXZ4wEW
- XAy6NXWWlbnSAGx9RQyBiVVWJe1PgYWd/Tq/6hry1PcAsutqvKwH1ZFFAfB9OCJ96bmI5dwQf
- pQ5zZg4IEvf8orWxxKBnpn7mE3ZfYAq8sAuU9cxuo5ym2T7Ed4Pq0ZnojBRuhO4TnN0CjHlUp
- eZZIXl/1gea8hcpNdwRyA4V0yaz68o20V6oIgJKX0c6IoqvE2/xIxg/0GU8ayQstl9BYUP7oE
- PnmEPlhsTDGOzjRxuuz5wXl5rvBWFbjX1wKCealA75ZFM/XdV0ZbmkYdTk7IZPrNpC+XJnP8S
- 5lflCF+bmPBd5jL+k92eIARJUo/uCDuzxqjY2eQvcHBanslM9CbP/EdbtlQYWzfN/Pmu5x5ak
- 8ys6fNKdkf6gsaDkiK2RBqRjkHsrlEU9/Cr5oBUZyw+yzO1k1mFWwm4xPzk+R2uboLl5d4LPT
- o53SDL7dCh6fxpfbS3L90VrBmFgKLWKHQ6bAbbzx3pOvY++xzQ+imiRoA4Ns=
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 06 Dec 2019 20:44:47 +0100 (CET)
+X-Provags-ID: V03:K1:XWlJeWKkwnaHZzvwc1MmuFILmHPhG/t14V+pilflejAtOGXBdw+
+ fCSLLJaqjt3MRZzrYF+TM8s/eqb36gKvZsBzVVz+XHco0BcSu7lEI3m97gVb7y4PjGA2yfM
+ wijeyws6cEg0B8FHeiZG7uZnbBLBLI2CMEM+kmppwkF4eeFgz3kdcIYnzTQ6cxZQkqP/OMX
+ Kdld2KamSCxjRN1vQk7TQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:9+ziaebRDYo=:stNceGlRJhwlyzdu4np4AO
+ gwo2yOTiz3HPjGkvc7t3lVXKhdOj+Tcv77GVtnCXrKv8r/jZTmuBidTjQrJPT/NosH75WIyto
+ K00SCScM0YlhvPYJCJ8dKWP5cnwqi7DCIts7TiSZ/pvd0DNN5+mC+DFl43JyEv87YF788myK0
+ s6/AmM8Yr5WICtPlQW/nE1RrJSw6xX59UJiBh+p3fMcf8tcKRU2x7knFwxUgYWapxq4rA5/8f
+ CCPz7dFDducQZU6zFOwzWeqvGif1qrwoddaUDWufJc9b+3A9+NF1t2ktpUZeJKdpU2+pSc1wk
+ oCAXToc9U1nhDnXl5RE5mnxmKS4M2Y+jnKWl6vLWdj4uDs4XwlCExbnikckQUjnB+oqhw9NUC
+ CSyHxbG6az1oGw9uVynnUowmKO3SkW6lGocN5XXIeaTS03rwWftlhgTwxnMFGGQ1IoU6LTX80
+ j71j5rrl7T8P62nLm0WIdXraiVWG+FcW6fmcXyNVGQ7D/szltW/QOornkvxZYklFzdr/uKN7M
+ bXh7jyPeS0TZRB5jZPvx1GbOdchR2bOSCTnA8uS/ZoHE0SN/sYqkr39jJZMpDTDItFcfnyFs9
+ bvIKdKvaUIZo7fPA1Enn7AAiWiOXg+Y7A/O7TCzFnTI3N2Vf5SsEop76N420BSc9/uCszalOn
+ aZr460iR1Y3u/uyp1AJwKvR+ROF5Vec+2zT/jn9UyqtbQmO9hStdxGGjMuX4ORdM70i2vs8Kc
+ mv1MVqw9E2JRrR/zLYUhTLaepFr9yaNGpEZaSeUWNzLrI4GaZKGuGmqNSqPajLKNYUqtOTqC2
+ ywMGq83y0Co4HME4rTzY4kdLxXzhj8oX6Me5jymwWNKr0cWkdzoleAt7Cmf5uNuYuh2YL8t7b
+ TkkXDfGo9KpfN0ImwdN6PZy/iMdQhPZt5CzAJN5eXpQxq34PSse+DOQEXKjhbIDeY3fhntk8u
+ D22tBR94qoO80O1rf1DVOUasG4MwCcgBx/XGcM4BSkd8jg9ge8f6c/0ZhSQ4+uG7lpVbeilnW
+ 7XY0yhpwp2CPO+pq1w+vfB2zNcB65Q691sxwDqspZRPVD2SKY72H+x24urPxp1ayA2h9lcpNo
+ QeE6Dg42q0U8mZedTohYPIoYRy//je53RfLT0G5crLJ9ui8cQSNoyvwTXKleriwa9L06hHvSZ
+ mSJQwjPPPF1xL+oYBSf23okNkcdaZb63urASks1yQBjwiNeVX8eXQ9jBqWhsqbonM6YPi4X3U
+ nzCF0mgzy8hpMLDY0Y061+MIF40TiiY5yKFlaHhj63EIMYQxoGr9pW5F9/LA=
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 07 Dec 2019 08:49:11 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Fri, 06 Dec 2019 20:44:44 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Sat, 07 Dec 2019 08:49:08 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: cocci@systeme.lip6.fr
@@ -138,28 +138,29 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-> Could you fix up the expression list first? Then you can write a rule like
->
-> char[] s;
->
-> fn(s, ...,
-> - oldcode
-> + newcode
-> ,...)
-
-Can it be that such a transformation approach will only work if the number
-of passed function parameters will be fixed?
-
-How should the data processing work with variable arguments?
-
-Regards,
-Markus
-_______________________________________________
-Cocci mailing list
-Cocci@systeme.lip6.fr
-https://systeme.lip6.fr/mailman/listinfo/cocci
+PiBBZnRlciBzb21lIHJlc2VhcmNoLCBJIGNvdWxkIGNyZWF0ZSBhIFB5dGhvbiBmdW5jdGlvbiBj
+YWxsZWQKPiBmbXRfcmVwbGFjZV9ieV9wb3MoKSB0byByZXBsYWNlIHRoZSAlZm10IGJ5IHRoZSBJ
+bmRpY2UgcG9zaXRpb24uCgpJIGltYWdpbmUgdGhhdCB0aGlzIGRldmVsb3BtZW50IGRpcmVjdGlv
+biBjYW4gYmVjb21lIG1vcmUgaW50ZXJlc3RpbmcuCgpOb3cgSSB3b3VsZCBsaWtlIHRvIHBvaW50
+IGEgZmV3IGltcGxlbWVudGF0aW9uIGRldGFpbHMgb3V0CndoaWNoIGNhbiBiZSBpbXByb3ZlZCBp
+biB0aGUgc2hvd24gU21QTCBzY3JpcHQuCgoKPiBSRUcgPSByZS5jb21waWxlKCcoW14lXXwlJSkq
+KCVbXiVdKScpCgoqIEkgc3VnZ2VzdCB0byBtb3ZlIHRoZSBjb21waWxhdGlvbiBmb3Igc3VjaCBh
+IHJlZ3VsYXIgZXhwcmVzc2lvbgogIGludG8gdGhlIGluaXRpYWxpc2F0aW9uIHJ1bGUuCgoqIEkg
+ZmluZCB0aGUgbmVlZCBmb3IgdGhlIGFsdGVybmF0aW9uIHVuY2xlYXIuCgoqIFRoZSBkYXRhIHBy
+b2Nlc3NpbmcgYXBwcm9hY2ggY2FuIGJlY29tZSBuaWNlciBpZiBDb2NjaW5lbGxlJ3MgcHJvZ3Jh
+bW1pbmcgaW50ZXJmYWNlCiAgd291bGQgc3VwcG9ydCBhbHNvIGZvcm1hdCBsaXN0cyBkaXJlY3Rs
+eS4KCgo+IHJldHZhbFtpXSA9IHsgJ2lkeCc6IGlkeCwgJ2ZtdCc6IGZtdCB9CgpJIHdvbmRlciBh
+Ym91dCB0aGUgbmVlZCBmb3IgYSBzZXBhcmF0ZSBQeXRob24gZGljdGlvbmFyeSBoZXJlLgoKCj4g
+cHJpbnQoIioqIEVSUk9SOiBTb21ldGhpbmcgd3JvbmcgaW4gZm10X3JlcGxhY2VfYnlfcG9zKCk6
+XG4KPiB7fVxuIi5mb3JtYXQoc3RyKGUpKSkKCldvdWxkIHlvdSBsaWtlIHRvIHVzZSB0aGUgb3V0
+cHV0IGNoYW5uZWwg4oCcc3RhbmRhcmQgZXJyb3LigJ0gaW5zdGVhZD8KCgo+IEBtYWluIGRlcGVu
+ZHMgb24gczEgJiYgcjFACgpUaGUgZXhwbGljaXQgZGVwZW5kZW5jeSBzcGVjaWZpY2F0aW9uIGNh
+biBwcm9iYWJseSBiZSBvbWl0dGVkLgoKUmVnYXJkcywKTWFya3VzCl9fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCkNvY2NpIG1haWxpbmcgbGlzdApDb2NjaUBz
+eXN0ZW1lLmxpcDYuZnIKaHR0cHM6Ly9zeXN0ZW1lLmxpcDYuZnIvbWFpbG1hbi9saXN0aW5mby9j
+b2NjaQo=
