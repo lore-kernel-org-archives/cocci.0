@@ -4,53 +4,56 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-13.2 required=3.0
 	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77BCAC32770
-	for <cocci@archiver.kernel.org>; Sat,  4 Jan 2020 08:55:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8D35C2D0C2
+	for <cocci@archiver.kernel.org>; Sat,  4 Jan 2020 13:51:37 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 28CC8215A4
-	for <cocci@archiver.kernel.org>; Sat,  4 Jan 2020 08:55:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 28CC8215A4
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
+	by mail.kernel.org (Postfix) with ESMTPS id 7BF44215A4
+	for <cocci@archiver.kernel.org>; Sat,  4 Jan 2020 13:51:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7BF44215A4
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0048tBWF000338;
-	Sat, 4 Jan 2020 09:55:11 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 004Dp6Ch016937;
+	Sat, 4 Jan 2020 14:51:06 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id EEE6377DE;
-	Sat,  4 Jan 2020 09:55:10 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 849C777DE;
+	Sat,  4 Jan 2020 14:51:06 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id B9A3873E2
- for <cocci@systeme.lip6.fr>; Sat,  4 Jan 2020 09:55:08 +0100 (CET)
-Received: from mail2-relais-roc.national.inria.fr
- (mail2-relais-roc.national.inria.fr [192.134.164.83])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0048t7bN010177
- for <cocci@systeme.lip6.fr>; Sat, 4 Jan 2020 09:55:07 +0100 (CET)
-X-IronPort-AV: E=Sophos;i="5.69,394,1571695200"; d="scan'208";a="429859307"
-Received: from abo-154-110-68.mrs.modulonet.fr (HELO hadrien) ([85.68.110.154])
- by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 04 Jan 2020 09:55:07 +0100
-Date: Sat, 4 Jan 2020 09:55:07 +0100 (CET)
-From: Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
-To: Wen Yang <wenyang@linux.alibaba.com>
-In-Reply-To: <7d9d8f10-7eb6-ffc3-5084-5ed1a08d4bcb@linux.alibaba.com>
-Message-ID: <alpine.DEB.2.21.2001040951450.2636@hadrien>
+ by systeme.lip6.fr (Postfix) with ESMTPS id 07C8F73E2
+ for <cocci@systeme.lip6.fr>; Sat,  4 Jan 2020 14:51:05 +0100 (CET)
+Received: from out30-43.freemail.mail.aliyun.com
+ (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 004Dom3F003393
+ for <cocci@systeme.lip6.fr>; Sat, 4 Jan 2020 14:50:50 +0100 (CET)
+X-Alimail-AntiSpam: AC=PASS; BC=-1|-1; BR=01201311R861e4; CH=green; DM=||false|;
+ DS=||; FP=0|-1|-1|-1|0|-1|-1|-1; HT=e01e04423; MF=wenyang@linux.alibaba.com;
+ NM=1; PH=DS; RN=11; SR=0; TI=SMTPD_---0TmoWX7W_1578145843; 
+Received: from IT-C02W23QPG8WN.local(mailfrom:wenyang@linux.alibaba.com
+ fp:SMTPD_---0TmoWX7W_1578145843) by smtp.aliyun-inc.com(127.0.0.1);
+ Sat, 04 Jan 2020 21:50:45 +0800
+To: Julia Lawall <julia.lawall@inria.fr>
 References: <20200104064448.24314-1-wenyang@linux.alibaba.com>
  <alpine.DEB.2.21.2001040759360.2636@hadrien>
  <7d9d8f10-7eb6-ffc3-5084-5ed1a08d4bcb@linux.alibaba.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+ <alpine.DEB.2.21.2001040951450.2636@hadrien>
+From: Wen Yang <wenyang@linux.alibaba.com>
+Message-ID: <b98d1f9e-a32f-7c85-996c-2c604a014af2@linux.alibaba.com>
+Date: Sat, 4 Jan 2020 21:50:43 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.1.1
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-600731979-1578128107=:2636"
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 04 Jan 2020 09:55:11 +0100 (CET)
+In-Reply-To: <alpine.DEB.2.21.2001040951450.2636@hadrien>
+Content-Language: en-US
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 04 Jan 2020 14:51:06 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sat, 04 Jan 2020 09:55:07 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Sat, 04 Jan 2020 14:51:03 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: Michal Marek <michal.lkml@markovi.net>,
@@ -73,187 +76,100 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-600731979-1578128107=:2636
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-
-On Sat, 4 Jan 2020, Wen Yang wrote:
-
->
->
-> On 2020/1/4 3:00 下午, Julia Lawall wrote:
-> > On Sat, 4 Jan 2020, Wen Yang wrote:
-> >
-> > > do_div() does a 64-by-32 division.
-> > > When the divisor is unsigned long, u64, or s64,
-> > > do_div() truncates it to 32 bits, this means it
-> > > can test non-zero and be truncated to zero for division.
-> > > This semantic patch is inspired by Mateusz Guzik's patch:
-> > > commit b0ab99e7736a ("sched: Fix possible divide by zero in avg_atom()
-> > > calculation")
-> > >
-> > > Signed-off-by: Wen Yang <wenyang@linux.alibaba.com>
-> > > Cc: Julia Lawall <Julia.Lawall@lip6.fr>
-> > > Cc: Gilles Muller <Gilles.Muller@lip6.fr>
-> > > Cc: Nicolas Palix <nicolas.palix@imag.fr>
-> > > Cc: Michal Marek <michal.lkml@markovi.net>
-> > > Cc: Matthias Maennich <maennich@google.com>
-> > > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
-> > > Cc: Thomas Gleixner <tglx@linutronix.de>
-> > > Cc: cocci@systeme.lip6.fr
-> > > Cc: linux-kernel@vger.kernel.org
-> > > ---
-> > >   scripts/coccinelle/misc/do_div.cocci | 66
-> > > ++++++++++++++++++++++++++++++++++++
-> > >   1 file changed, 66 insertions(+)
-> > >   create mode 100644 scripts/coccinelle/misc/do_div.cocci
-> > >
-> > > diff --git a/scripts/coccinelle/misc/do_div.cocci
-> > > b/scripts/coccinelle/misc/do_div.cocci
-> > > new file mode 100644
-> > > index 0000000..f1b72d1
-> > > --- /dev/null
-> > > +++ b/scripts/coccinelle/misc/do_div.cocci
-> > > @@ -0,0 +1,66 @@
-> > > +// SPDX-License-Identifier: GPL-2.0-only
-> > > +/// do_div() does a 64-by-32 division.
-> > > +/// When the divisor is unsigned long, u64, or s64,
-> > > +/// do_div() truncates it to 32 bits, this means it
-> > > +/// can test non-zero and be truncated to zero for division.
-> > > +///
-> > > +//# This makes an effort to find those inappropriate do_div () calls.
-> > > +//
-> > > +// Confidence: Moderate
-> > > +// Copyright: (C) 2020 Wen Yang, Alibaba.
-> > > +// Comments:
-> > > +// Options: --no-includes --include-headers
-> > > +
-> > > +virtual context
-> > > +virtual org
-> > > +virtual report
-> > > +
-> > > +@depends on context@
-> > > +expression f;
-> > > +long l;
-> > > +unsigned long ul;
-> > > +u64 ul64;
-> > > +s64 sl64;
-> > > +
-> > > +@@
-> > > +(
-> > > +* do_div(f, l);
-> > > +|
-> > > +* do_div(f, ul);
-> > > +|
-> > > +* do_div(f, ul64);
-> > > +|
-> > > +* do_div(f, sl64);
-> > > +)
-> > > +
-> > > +@r depends on (org || report)@
-> > > +expression f;
-> > > +long l;
-> > > +unsigned long ul;
-> > > +position p;
-> > > +u64 ul64;
-> > > +s64 sl64;
-> > > +@@
-> > > +(
-> > > +do_div@p(f, l);
-> > > +|
-> > > +do_div@p(f, ul);
-> > > +|
-> > > +do_div@p(f, ul64);
-> > > +|
-> > > +do_div@p(f, sl64);
-> > > +)
-> > > +
-> > > +@script:python depends on org@
-> > > +p << r.p;
-> > > +@@
-> > > +
-> > > +msg="WARNING: WARNING: do_div() does a 64-by-32 division, which may
-> > > truncation the divisor to 32-bit"
-> > > +coccilib.org.print_todo(p[0], msg)
-> > > +
-> > > +@script:python depends on report@
-> > > +p << r.p;
-> > > +@@
-> > > +
-> > > +msg="WARNING: WARNING: do_div() does a 64-by-32 division, which may
-> > > truncation the divisor to 32-bit"
-> > > +coccilib.report.print_report(p[0], msg)
-> >
-> > A few small issues: You have WARNING: twice in each case, and truncation
-> > should be truncate.
-> >
->
-> Thanks for your comments, we will fix it soon.
->
-> > Is there any generic strategy for fixing these issues?
-> >
->
-> We have done some experiments, such as:
-> https://lkml.org/lkml/2020/1/2/1354
-
-Thanks.  Actually, I would appreciate knowing about such experiments when
-the semantic patch is submitted, since eg in this case I am not really an
-expert in this issue.
-
->
-> -	avg = rec->time;
-> -	do_div(avg, rec->counter);
-> +	avg = div64_ul(rec->time, rec->counter);
->
-> --> Function replacement was performed here,
->     and simple code cleanup was also performed.
->
->
-> -		do_div(stddev, rec->counter * (rec->counter - 1) * 1000);
-> +		stddev = div64_ul(stddev,
-> +				  rec->counter * (rec->counter - 1) * 1000);
->
-> --> Only the function replacement is performed here (because the variable
-> ‘stddev’ corresponds to a more complicated equation, cleaning it will reduce
-> readability).
-
-Would it be reasonable to extend the warning to say "consider using
-div64_ul instead"?  Or do you think it is obvious to everyone?
-
-> In addition, there are some codes that do not need to be modified:
-> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/drivers/net/can/dev.c#n263
-
-Would it be worth having a special case for constants and checking whether
-the value is obviously safe and no warning is needed?
-
-thanks,
-julia
-
-> So we just print a warning.
-> As for how to fix it, we need to analyze the code carefully.
->
-> --
-> Best Wishes,
-> Wen
->
->
->
---8323329-600731979-1578128107=:2636
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-Cocci mailing list
-Cocci@systeme.lip6.fr
-https://systeme.lip6.fr/mailman/listinfo/cocci
-
---8323329-600731979-1578128107=:2636--
+CgpPbiAyMDIwLzEvNCA0OjU1IOS4i+WNiCwgSnVsaWEgTGF3YWxsIHdyb3RlOgo+IE9uIFNhdCwg
+NCBKYW4gMjAyMCwgV2VuIFlhbmcgd3JvdGU6Cj4gCj4+Cj4+Cj4+IE9uIDIwMjAvMS80IDM6MDAg
+5LiL5Y2ILCBKdWxpYSBMYXdhbGwgd3JvdGU6Cj4+PiBPbiBTYXQsIDQgSmFuIDIwMjAsIFdlbiBZ
+YW5nIHdyb3RlOgo+Pj4KPj4+PiBkb19kaXYoKSBkb2VzIGEgNjQtYnktMzIgZGl2aXNpb24uCj4+
+Pj4gV2hlbiB0aGUgZGl2aXNvciBpcyB1bnNpZ25lZCBsb25nLCB1NjQsIG9yIHM2NCwKPj4+PiBk
+b19kaXYoKSB0cnVuY2F0ZXMgaXQgdG8gMzIgYml0cywgdGhpcyBtZWFucyBpdAo+Pj4+IGNhbiB0
+ZXN0IG5vbi16ZXJvIGFuZCBiZSB0cnVuY2F0ZWQgdG8gemVybyBmb3IgZGl2aXNpb24uCj4+Pj4g
+VGhpcyBzZW1hbnRpYyBwYXRjaCBpcyBpbnNwaXJlZCBieSBNYXRldXN6IEd1emlrJ3MgcGF0Y2g6
+Cj4+Pj4gY29tbWl0IGIwYWI5OWU3NzM2YSAoInNjaGVkOiBGaXggcG9zc2libGUgZGl2aWRlIGJ5
+IHplcm8gaW4gYXZnX2F0b20oKQo+Pj4+IGNhbGN1bGF0aW9uIikKPj4+Pgo+Pj4+IFNpZ25lZC1v
+ZmYtYnk6IFdlbiBZYW5nIDx3ZW55YW5nQGxpbnV4LmFsaWJhYmEuY29tPgo+Pj4+IENjOiBKdWxp
+YSBMYXdhbGwgPEp1bGlhLkxhd2FsbEBsaXA2LmZyPgo+Pj4+IENjOiBHaWxsZXMgTXVsbGVyIDxH
+aWxsZXMuTXVsbGVyQGxpcDYuZnI+Cj4+Pj4gQ2M6IE5pY29sYXMgUGFsaXggPG5pY29sYXMucGFs
+aXhAaW1hZy5mcj4KPj4+PiBDYzogTWljaGFsIE1hcmVrIDxtaWNoYWwubGttbEBtYXJrb3ZpLm5l
+dD4KPj4+PiBDYzogTWF0dGhpYXMgTWFlbm5pY2ggPG1hZW5uaWNoQGdvb2dsZS5jb20+Cj4+Pj4g
+Q2M6IEdyZWcgS3JvYWgtSGFydG1hbiA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc+Cj4+Pj4g
+Q2M6IE1hc2FoaXJvIFlhbWFkYSA8eWFtYWRhLm1hc2FoaXJvQHNvY2lvbmV4dC5jb20+Cj4+Pj4g
+Q2M6IFRob21hcyBHbGVpeG5lciA8dGdseEBsaW51dHJvbml4LmRlPgo+Pj4+IENjOiBjb2NjaUBz
+eXN0ZW1lLmxpcDYuZnIKPj4+PiBDYzogbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZwo+Pj4+
+IC0tLQo+Pj4+ICAgIHNjcmlwdHMvY29jY2luZWxsZS9taXNjL2RvX2Rpdi5jb2NjaSB8IDY2Cj4+
+Pj4gKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrCj4+Pj4gICAgMSBmaWxlIGNo
+YW5nZWQsIDY2IGluc2VydGlvbnMoKykKPj4+PiAgICBjcmVhdGUgbW9kZSAxMDA2NDQgc2NyaXB0
+cy9jb2NjaW5lbGxlL21pc2MvZG9fZGl2LmNvY2NpCj4+Pj4KPj4+PiBkaWZmIC0tZ2l0IGEvc2Ny
+aXB0cy9jb2NjaW5lbGxlL21pc2MvZG9fZGl2LmNvY2NpCj4+Pj4gYi9zY3JpcHRzL2NvY2NpbmVs
+bGUvbWlzYy9kb19kaXYuY29jY2kKPj4+PiBuZXcgZmlsZSBtb2RlIDEwMDY0NAo+Pj4+IGluZGV4
+IDAwMDAwMDAuLmYxYjcyZDEKPj4+PiAtLS0gL2Rldi9udWxsCj4+Pj4gKysrIGIvc2NyaXB0cy9j
+b2NjaW5lbGxlL21pc2MvZG9fZGl2LmNvY2NpCj4+Pj4gQEAgLTAsMCArMSw2NiBAQAo+Pj4+ICsv
+LyBTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogR1BMLTIuMC1vbmx5Cj4+Pj4gKy8vLyBkb19kaXYo
+KSBkb2VzIGEgNjQtYnktMzIgZGl2aXNpb24uCj4+Pj4gKy8vLyBXaGVuIHRoZSBkaXZpc29yIGlz
+IHVuc2lnbmVkIGxvbmcsIHU2NCwgb3IgczY0LAo+Pj4+ICsvLy8gZG9fZGl2KCkgdHJ1bmNhdGVz
+IGl0IHRvIDMyIGJpdHMsIHRoaXMgbWVhbnMgaXQKPj4+PiArLy8vIGNhbiB0ZXN0IG5vbi16ZXJv
+IGFuZCBiZSB0cnVuY2F0ZWQgdG8gemVybyBmb3IgZGl2aXNpb24uCj4+Pj4gKy8vLwo+Pj4+ICsv
+LyMgVGhpcyBtYWtlcyBhbiBlZmZvcnQgdG8gZmluZCB0aG9zZSBpbmFwcHJvcHJpYXRlIGRvX2Rp
+diAoKSBjYWxscy4KPj4+PiArLy8KPj4+PiArLy8gQ29uZmlkZW5jZTogTW9kZXJhdGUKPj4+PiAr
+Ly8gQ29weXJpZ2h0OiAoQykgMjAyMCBXZW4gWWFuZywgQWxpYmFiYS4KPj4+PiArLy8gQ29tbWVu
+dHM6Cj4+Pj4gKy8vIE9wdGlvbnM6IC0tbm8taW5jbHVkZXMgLS1pbmNsdWRlLWhlYWRlcnMKPj4+
+PiArCj4+Pj4gK3ZpcnR1YWwgY29udGV4dAo+Pj4+ICt2aXJ0dWFsIG9yZwo+Pj4+ICt2aXJ0dWFs
+IHJlcG9ydAo+Pj4+ICsKPj4+PiArQGRlcGVuZHMgb24gY29udGV4dEAKPj4+PiArZXhwcmVzc2lv
+biBmOwo+Pj4+ICtsb25nIGw7Cj4+Pj4gK3Vuc2lnbmVkIGxvbmcgdWw7Cj4+Pj4gK3U2NCB1bDY0
+Owo+Pj4+ICtzNjQgc2w2NDsKPj4+PiArCj4+Pj4gK0BACj4+Pj4gKygKPj4+PiArKiBkb19kaXYo
+ZiwgbCk7Cj4+Pj4gK3wKPj4+PiArKiBkb19kaXYoZiwgdWwpOwo+Pj4+ICt8Cj4+Pj4gKyogZG9f
+ZGl2KGYsIHVsNjQpOwo+Pj4+ICt8Cj4+Pj4gKyogZG9fZGl2KGYsIHNsNjQpOwo+Pj4+ICspCj4+
+Pj4gKwo+Pj4+ICtAciBkZXBlbmRzIG9uIChvcmcgfHwgcmVwb3J0KUAKPj4+PiArZXhwcmVzc2lv
+biBmOwo+Pj4+ICtsb25nIGw7Cj4+Pj4gK3Vuc2lnbmVkIGxvbmcgdWw7Cj4+Pj4gK3Bvc2l0aW9u
+IHA7Cj4+Pj4gK3U2NCB1bDY0Owo+Pj4+ICtzNjQgc2w2NDsKPj4+PiArQEAKPj4+PiArKAo+Pj4+
+ICtkb19kaXZAcChmLCBsKTsKPj4+PiArfAo+Pj4+ICtkb19kaXZAcChmLCB1bCk7Cj4+Pj4gK3wK
+Pj4+PiArZG9fZGl2QHAoZiwgdWw2NCk7Cj4+Pj4gK3wKPj4+PiArZG9fZGl2QHAoZiwgc2w2NCk7
+Cj4+Pj4gKykKPj4+PiArCj4+Pj4gK0BzY3JpcHQ6cHl0aG9uIGRlcGVuZHMgb24gb3JnQAo+Pj4+
+ICtwIDw8IHIucDsKPj4+PiArQEAKPj4+PiArCj4+Pj4gK21zZz0iV0FSTklORzogV0FSTklORzog
+ZG9fZGl2KCkgZG9lcyBhIDY0LWJ5LTMyIGRpdmlzaW9uLCB3aGljaCBtYXkKPj4+PiB0cnVuY2F0
+aW9uIHRoZSBkaXZpc29yIHRvIDMyLWJpdCIKPj4+PiArY29jY2lsaWIub3JnLnByaW50X3RvZG8o
+cFswXSwgbXNnKQo+Pj4+ICsKPj4+PiArQHNjcmlwdDpweXRob24gZGVwZW5kcyBvbiByZXBvcnRA
+Cj4+Pj4gK3AgPDwgci5wOwo+Pj4+ICtAQAo+Pj4+ICsKPj4+PiArbXNnPSJXQVJOSU5HOiBXQVJO
+SU5HOiBkb19kaXYoKSBkb2VzIGEgNjQtYnktMzIgZGl2aXNpb24sIHdoaWNoIG1heQo+Pj4+IHRy
+dW5jYXRpb24gdGhlIGRpdmlzb3IgdG8gMzItYml0Igo+Pj4+ICtjb2NjaWxpYi5yZXBvcnQucHJp
+bnRfcmVwb3J0KHBbMF0sIG1zZykKPj4+Cj4+PiBBIGZldyBzbWFsbCBpc3N1ZXM6IFlvdSBoYXZl
+IFdBUk5JTkc6IHR3aWNlIGluIGVhY2ggY2FzZSwgYW5kIHRydW5jYXRpb24KPj4+IHNob3VsZCBi
+ZSB0cnVuY2F0ZS4KPj4+Cj4+Cj4+IFRoYW5rcyBmb3IgeW91ciBjb21tZW50cywgd2Ugd2lsbCBm
+aXggaXQgc29vbi4KPj4KPj4+IElzIHRoZXJlIGFueSBnZW5lcmljIHN0cmF0ZWd5IGZvciBmaXhp
+bmcgdGhlc2UgaXNzdWVzPwo+Pj4KPj4KPj4gV2UgaGF2ZSBkb25lIHNvbWUgZXhwZXJpbWVudHMs
+IHN1Y2ggYXM6Cj4+IGh0dHBzOi8vbGttbC5vcmcvbGttbC8yMDIwLzEvMi8xMzU0Cj4gCj4gVGhh
+bmtzLiAgQWN0dWFsbHksIEkgd291bGQgYXBwcmVjaWF0ZSBrbm93aW5nIGFib3V0IHN1Y2ggZXhw
+ZXJpbWVudHMgd2hlbgo+IHRoZSBzZW1hbnRpYyBwYXRjaCBpcyBzdWJtaXR0ZWQsIHNpbmNlIGVn
+IGluIHRoaXMgY2FzZSBJIGFtIG5vdCByZWFsbHkgYW4KPiBleHBlcnQgaW4gdGhpcyBpc3N1ZS4K
+PiAKPj4KPj4gLQlhdmcgPSByZWMtPnRpbWU7Cj4+IC0JZG9fZGl2KGF2ZywgcmVjLT5jb3VudGVy
+KTsKPj4gKwlhdmcgPSBkaXY2NF91bChyZWMtPnRpbWUsIHJlYy0+Y291bnRlcik7Cj4+Cj4+IC0t
+PiBGdW5jdGlvbiByZXBsYWNlbWVudCB3YXMgcGVyZm9ybWVkIGhlcmUsCj4+ICAgICAgYW5kIHNp
+bXBsZSBjb2RlIGNsZWFudXAgd2FzIGFsc28gcGVyZm9ybWVkLgo+Pgo+Pgo+PiAtCQlkb19kaXYo
+c3RkZGV2LCByZWMtPmNvdW50ZXIgKiAocmVjLT5jb3VudGVyIC0gMSkgKiAxMDAwKTsKPj4gKwkJ
+c3RkZGV2ID0gZGl2NjRfdWwoc3RkZGV2LAo+PiArCQkJCSAgcmVjLT5jb3VudGVyICogKHJlYy0+
+Y291bnRlciAtIDEpICogMTAwMCk7Cj4+Cj4+IC0tPiBPbmx5IHRoZSBmdW5jdGlvbiByZXBsYWNl
+bWVudCBpcyBwZXJmb3JtZWQgaGVyZSAoYmVjYXVzZSB0aGUgdmFyaWFibGUKPj4g4oCYc3RkZGV2
+4oCZIGNvcnJlc3BvbmRzIHRvIGEgbW9yZSBjb21wbGljYXRlZCBlcXVhdGlvbiwgY2xlYW5pbmcg
+aXQgd2lsbCByZWR1Y2UKPj4gcmVhZGFiaWxpdHkpLgo+IAo+IFdvdWxkIGl0IGJlIHJlYXNvbmFi
+bGUgdG8gZXh0ZW5kIHRoZSB3YXJuaW5nIHRvIHNheSAiY29uc2lkZXIgdXNpbmcKPiBkaXY2NF91
+bCBpbnN0ZWFkIj8gIE9yIGRvIHlvdSB0aGluayBpdCBpcyBvYnZpb3VzIHRvIGV2ZXJ5b25lPwo+
+IAoKVGhhbmsgeW91IGZvciB5b3VyIGNvbW1lbnRzLgpXZSBwbGFuIHRvIG1vZGlmeSBpdCBhcyBm
+b2xsb3dzOgptc2c9IldBUk5JTkc6IGRvX2RpdigpIGRvZXMgYSA2NC1ieS0zMiBkaXZpc2lvbiwg
+cGxlYXNlIGNvbnNpZGVyIHVzaW5nIApkaXY2NF91bCwgZGl2NjRfbG9uZywgZGl2NjRfdTY0IG9y
+IGRpdjY0X3M2NCBpbnN0ZWFkLiIKCj4+IEluIGFkZGl0aW9uLCB0aGVyZSBhcmUgc29tZSBjb2Rl
+cyB0aGF0IGRvIG5vdCBuZWVkIHRvIGJlIG1vZGlmaWVkOgo+PiBodHRwczovL2dpdC5rZXJuZWwu
+b3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC9uZXh0L2xpbnV4LW5leHQuZ2l0L3RyZWUvZHJp
+dmVycy9uZXQvY2FuL2Rldi5jI24yNjMKPiAKPiBXb3VsZCBpdCBiZSB3b3J0aCBoYXZpbmcgYSBz
+cGVjaWFsIGNhc2UgZm9yIGNvbnN0YW50cyBhbmQgY2hlY2tpbmcgd2hldGhlcgo+IHRoZSB2YWx1
+ZSBpcyBvYnZpb3VzbHkgc2FmZSBhbmQgbm8gd2FybmluZyBpcyBuZWVkZWQ/Cj4KVGhhbmtzLgpU
+aGlzIGlzIHZlcnkgdmFsdWFibGUgaW4gcmVkdWNpbmcgZmFsc2UgcG9zaXRpdmVzLCBhbmQgd2Un
+bGwgdHJ5IHRvIAppbXBsZW1lbnQgaXQuCgotLQpCZXN0IFdpc2hlcywKV2VuCgo+PiBTbyB3ZSBq
+dXN0IHByaW50IGEgd2FybmluZy4KPj4gQXMgZm9yIGhvdyB0byBmaXggaXQsIHdlIG5lZWQgdG8g
+YW5hbHl6ZSB0aGUgY29kZSBjYXJlZnVsbHkuCj4+Cj4+IC0tCj4+IEJlc3QgV2lzaGVzLAo+PiBX
+ZW4KPj4KPj4KPj4KPiAKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX18KQ29jY2kgbWFpbGluZyBsaXN0CkNvY2NpQHN5c3RlbWUubGlwNi5mcgpodHRwczovL3N5
+c3RlbWUubGlwNi5mci9tYWlsbWFuL2xpc3RpbmZvL2NvY2NpCg==
