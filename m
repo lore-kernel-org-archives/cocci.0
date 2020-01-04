@@ -4,56 +4,55 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C357C32767
-	for <cocci@archiver.kernel.org>; Sat,  4 Jan 2020 07:01:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DCA3C32767
+	for <cocci@archiver.kernel.org>; Sat,  4 Jan 2020 07:17:25 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AAD2720848
-	for <cocci@archiver.kernel.org>; Sat,  4 Jan 2020 07:01:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AAD2720848
+	by mail.kernel.org (Postfix) with ESMTPS id C1DFD222C4
+	for <cocci@archiver.kernel.org>; Sat,  4 Jan 2020 07:17:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C1DFD222C4
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 004711vt015880;
-	Sat, 4 Jan 2020 08:01:01 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0047H1xO012226;
+	Sat, 4 Jan 2020 08:17:01 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 1111977DE;
-	Sat,  4 Jan 2020 08:01:01 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 7568E77DE;
+	Sat,  4 Jan 2020 08:17:01 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id B758673E2
- for <cocci@systeme.lip6.fr>; Sat,  4 Jan 2020 08:00:58 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 0F64F73E2
+ for <cocci@systeme.lip6.fr>; Sat,  4 Jan 2020 08:17:00 +0100 (CET)
 Received: from mail3-relais-sop.national.inria.fr
  (mail3-relais-sop.national.inria.fr [192.134.164.104])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 00470uKx009141
- for <cocci@systeme.lip6.fr>; Sat, 4 Jan 2020 08:00:56 +0100 (CET)
-X-IronPort-AV: E=Sophos;i="5.69,393,1571695200"; d="scan'208";a="334727571"
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0047GxRr002090
+ for <cocci@systeme.lip6.fr>; Sat, 4 Jan 2020 08:16:59 +0100 (CET)
+X-IronPort-AV: E=Sophos;i="5.69,393,1571695200"; d="scan'208";a="334728961"
 Received: from abo-154-110-68.mrs.modulonet.fr (HELO hadrien) ([85.68.110.154])
  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 04 Jan 2020 08:00:56 +0100
-Date: Sat, 4 Jan 2020 08:00:55 +0100 (CET)
+ 04 Jan 2020 08:16:58 +0100
+Date: Sat, 4 Jan 2020 08:16:58 +0100 (CET)
 From: Julia Lawall <julia.lawall@inria.fr>
 X-X-Sender: jll@hadrien
 To: Wen Yang <wenyang@linux.alibaba.com>
 In-Reply-To: <20200104064448.24314-1-wenyang@linux.alibaba.com>
-Message-ID: <alpine.DEB.2.21.2001040759360.2636@hadrien>
+Message-ID: <alpine.DEB.2.21.2001040815230.2636@hadrien>
 References: <20200104064448.24314-1-wenyang@linux.alibaba.com>
 User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 04 Jan 2020 08:01:01 +0100 (CET)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 04 Jan 2020 08:17:01 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sat, 04 Jan 2020 08:00:56 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Sat, 04 Jan 2020 08:16:59 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: Michal Marek <michal.lkml@markovi.net>,
         Gilles Muller <Gilles.Muller@lip6.fr>,
         Nicolas Palix <nicolas.palix@imag.fr>,
         Matthias Maennich <maennich@google.com>, linux-kernel@vger.kernel.org,
-        Julia Lawall <Julia.Lawall@lip6.fr>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Thomas Gleixner <tglx@linutronix.de>, cocci@systeme.lip6.fr
 Subject: Re: [Cocci] [PATCH] coccinelle: semantic patch to check for
@@ -74,12 +73,25 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
+
+
+--- Please note the new email address ---
+
+
 On Sat, 4 Jan 2020, Wen Yang wrote:
 
 > do_div() does a 64-by-32 division.
 > When the divisor is unsigned long, u64, or s64,
 > do_div() truncates it to 32 bits, this means it
 > can test non-zero and be truncated to zero for division.
+
+Would it be worth having a specific warning message for the long/unsigned
+long case?  If the target architecture has 32 bit longs then the warning
+can be immediately ignored.
+
+julia
+
+
 > This semantic patch is inspired by Mateusz Guzik's patch:
 > commit b0ab99e7736a ("sched: Fix possible divide by zero in avg_atom() calculation")
 >
@@ -171,13 +183,10 @@ On Sat, 4 Jan 2020, Wen Yang wrote:
 > +
 > +msg="WARNING: WARNING: do_div() does a 64-by-32 division, which may truncation the divisor to 32-bit"
 > +coccilib.report.print_report(p[0], msg)
-
-A few small issues: You have WARNING: twice in each case, and truncation
-should be truncate.
-
-Is there any generic strategy for fixing these issues?
-
-julia
+> --
+> 1.8.3.1
+>
+>
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
