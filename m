@@ -1,4 +1,4 @@
-Return-Path: <SRS0=TLPZ=22=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=FPmR=23=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
@@ -7,43 +7,43 @@ X-Spam-Status: No, score=-1.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56BE8C33C8C
-	for <cocci@archiver.kernel.org>; Sun,  5 Jan 2020 13:55:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADBB4C33C8C
+	for <cocci@archiver.kernel.org>; Mon,  6 Jan 2020 12:07:32 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9CA38207FD
-	for <cocci@archiver.kernel.org>; Sun,  5 Jan 2020 13:55:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 118802072E
+	for <cocci@archiver.kernel.org>; Mon,  6 Jan 2020 12:07:31 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="CCmEJeku"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9CA38207FD
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="TQ2HWmYd"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 118802072E
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 005Dsk5u015287;
-	Sun, 5 Jan 2020 14:54:46 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 006C7DLA016700;
+	Mon, 6 Jan 2020 13:07:13 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 252A77718;
-	Sun,  5 Jan 2020 14:54:46 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id B21F577DB;
+	Mon,  6 Jan 2020 13:07:13 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 47B7A73E2
- for <cocci@systeme.lip6.fr>; Sun,  5 Jan 2020 14:54:44 +0100 (CET)
-Received: from mout.web.de (mout.web.de [212.227.15.4])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 005DshHj023140
- for <cocci@systeme.lip6.fr>; Sun, 5 Jan 2020 14:54:43 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 9A4967718
+ for <cocci@systeme.lip6.fr>; Mon,  6 Jan 2020 13:07:11 +0100 (CET)
+Received: from mout.web.de (mout.web.de [212.227.15.14])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 006C7BLC025135
+ for <cocci@systeme.lip6.fr>; Mon, 6 Jan 2020 13:07:11 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1578232482;
- bh=Tp5Ahb79HFtyW4rnw000dfEQLcOpEidNgeu6xSJRlH8=;
+ s=dbaedf251592; t=1578312429;
+ bh=Bfyf3Fg2fzRQJSxqfxXGNlnyHr2Z4EkOikN/L3kfBRg=;
  h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
- b=CCmEJekuVcyuTN7naAc9MmBQ7WEr+sNQHiT8hIG9BCaoyJ/e9hK7dWsRUHm+JOfK2
- TTrjrodJZCNmdXXauO9HlB5Zdsfq1xexdYCpyAFmeemD5Us4edWIicMTAEM04mu0g0
- Gwl0qFo9zunhi6028/VlaBQvctoYjsV7eeuRLEpM=
+ b=TQ2HWmYdJEuwDe/wzflK9U4LXyqM3pBNTi0z6KAJe4lvSrHuo8do95hl+JfdEqHuQ
+ hSoywGa0VLA+cSfWTty3MlpVUKAB2WtXGwGV9Su987OXFJneQEmgx45t4Hp+YXnvYm
+ vJwgqB+GHNkG2dfdwSVfjSfV525DULigO8cHGjaE=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([93.133.187.152]) by smtp.web.de (mrweb003
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0Lcxw8-1jVvUY1UTg-00iFNo; Sun, 05
- Jan 2020 14:54:42 +0100
+Received: from [192.168.1.2] ([93.135.154.111]) by smtp.web.de (mrweb004
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0Lm9T7-1jNUvk2PPV-00ZjEc; Mon, 06
+ Jan 2020 13:07:09 +0100
 To: Julia Lawall <julia.lawall@inria.fr>
 References: <20200103160304.GG17258@pobox.com>
  <08d3a32e-7adc-ff5b-52d0-9e67ed03ae42@web.de>
@@ -92,43 +92,43 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <58ae2bb2-45f1-49b0-d271-515434d048eb@web.de>
-Date: Sun, 5 Jan 2020 14:54:41 +0100
+Message-ID: <7ddf003e-956c-b146-55f5-7a68f263d5c8@web.de>
+Date: Mon, 6 Jan 2020 13:07:01 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.3.1
 MIME-Version: 1.0
 In-Reply-To: <alpine.DEB.2.21.2001051100550.2579@hadrien>
 Content-Language: en-US
-X-Provags-ID: V03:K1:B8GiLm6cNWYsTpAtIz+3lQ+6t20zfsnGmAI8sbrMAFcezICDQ96
- BEod8ErF6Hr0XSBC/QwouNM43TMi1LH1GmRGNZOOvEdu3Tg3iOjk5rXh89t1pSjYrCj8/Kn
- u92KqjwdQVGEtx2Addo82w1pVm2pH+5NZ1L819SzKwhjWAgFLRVzLOfmVs7M6Z4rt4x/FU1
- 6Iy5a91WDJ2XzjYVbKK4g==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:FFCyx+FRREg=:Bz7ykk8wHVh5jBZGRrDqzq
- x2uqVDnuVeQJoIMOYfog4Q3EoRMH4Ejt3GGYCpFcgXX+F2eyyPZIGdLd2t4r4EIMlgWXCoSrZ
- hiaADkhttYlFG885JeshDh0WxEpIIHRno2/62qesjacGKxhvnQABN5QRhP5tCNjY6+1TiB2c/
- 9GDse0iw6QBdAO5f2c7U92nDA/iX0tvJr9h2QbLUm8VU/sLkBtoF4zseJm9KSU90zfomJSBcL
- lWjEtyRut9COrrP2PQic8LJxyfPi9cF7tlQazcaV37CaoR4haMdIbltfAfYvYxEaPyhwK2smW
- miZixUpdIyovmagVaH7uDbdD56R6y+eol/JS3Sd8ccfwUSYmuimKizVT0aMU7I702cmY5kYBr
- zR5l3P0mEVyRoXcqHj0mH8sRa80I7qvOlkcUAONWhkKRhwD6Q0XrSot6Cc94XAMYAwDBt8CbJ
- zMcTeXJO5H+skRPJLchPofHF6wncUtJHzdLqGsBqsfnjOkN3QQgQLQxrk4t3aEDeSzOzpxp+Z
- Iv3Ggi7ftZRddi8X/fPcyvRQlPDfezYvd/RVYli9J710+W4E4E7vEoSzyYmgGoKfRzYbMje/m
- rX5lDb5XU8fkJ+TazYEtrQV5El0OUFOk61MI4/l4Y1bOaa9xVkyPZoqYBDP6n/knt6vTNBPPQ
- f3qpdo7z43mf1X7wsTRnlhwpoL8kNUDI6uJD32nGv9EmWvhtAw1KFh+S42MP2ATSXW4/tb/J7
- yVV6f8bT9ZS5PC7DCSApvO98flwc2lNfCVq+c2cr55xOeLDKxRZBgUiwSwmOLGOBjLdMchqOT
- pU68tVn9Xs5uK6ltd9R7LGgI5SYU4Uo6gScLmkRYM7UnCdvmmyabHMhA3z3yWXy+Db1AyDb6I
- JuOoln9GDjSZrKge3CqoAXkg/PD1cODppYe03xvuDBetcNTvZ81LGC3SE34/sfl7p2dwrxNNe
- mYkOS6zxCIodnyT9Sl+Lak8gvU8SihAKfdPi+NKcupG3Dhv6lFgIScTrps0vneqs0toUdg3wn
- tai4YpPN0O8/PQm3lwkurg2mlkXucYy6JsUtvTCckatwraaEeHPAdNRcbMIcYk2HkxsitLxWN
- d2YQFgeFMmGTXc0U7x/MjBkq/tcQTH7UCJiNmYcrXJ5wrQ95eLaXjRVzQFUHclKDGgicmXkb3
- LsvA18p23vc78o/LkrofLvtMq3ffRH663e/F9Ormn7er9wyxyDPI0ScSktVFBYf/ghb22vl+B
- X2QBTyONDbdzq9KxFSyxM69KFaXz3BAlCGIn02px8mfTVkQG5O1vrqWLr2kk=
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 05 Jan 2020 14:54:46 +0100 (CET)
+X-Provags-ID: V03:K1:xPizyaAWBbXCOGV50WfGXa3q8nyl88fpVEaYokj7XUmsFNyTj70
+ AFTYPKj9uz/i8GSMI+1xxi5LB5Ix9DPLnb/plRjSFMtAWWah8AMqAsrYLz4+h3okFPzA9FL
+ LEcb6MRHBv2SWpbbezlwTenA6RIxBoVsE2khLu0DUXd9MQc1VqCwAfmZyK70JgB7VpW3WRj
+ MZQG38XgorL2wqB8k+EVQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:2vOnBT4KMkU=:4T43A12WpMjoS4LHbPKXSX
+ fMASlwchsrBrHB0ikOZTjQmkxTBujRTvl+HG3rVsf5hsV6WCxTROsRTKI0aNFCH0pLKbWMqo1
+ /1amWyaetSzCR5MKVgZvgWvEkduPrDvR7cpfbR4EenbSqGrEBpJ2jHoW47rvlo3OdlDtTb2jL
+ +pe6A2MyLlbpKXqMhvOLmpy76cdJc7p3ZIIcXl4GPbe9VIe2kkH33jmat3EsjpNKqbFHlaINE
+ GdO6neqYR3meAbzQAKY/BdA1E1n3DPT3PzlyVBhlxczAvxqqhyRAUw0V/jlCYgmzaVC91mUMy
+ 6SBIGH3MFSJ2zYTuFEv5qVhhmN4QM5PWFweUwI9to42T9JGMwFiY+KRJR5JhKVKAIktiSXF2w
+ vM1UDah7SoSwGhdwKioGbY/w0S+Uyu6uO+iwpIUmOlFpa2sCKTBL/RQXlzVFhtsMRFbE8Uazu
+ U79gh2yB+pZnp94UHTL/KHxqS8DrGJK9nFbBQCcsoNRNj3FlFVvpiA0hqCeGNUVlhXl3gPOTF
+ AdVe83VXl3I/5gPxSza3bWRpCcsxQgsYqHOmUG67QO0fR+elTEBtNb0yuaksfWPnGJ8QvxuBP
+ dVAnu5O++oJYNa72GIr7z/a8eX8C53I0XUT9N2ZRo3KNG0u28Tq8Sz2FgHUpNvc/t0wW3cc0m
+ kRlbzVz7G32w2ux6PTT5av4t/QnhYohqbzcfaERfLZ5W/LLDsT/8Mjr5wzbhlBeJPoXiMzr9u
+ 47s9Th2GcI3mJQk8kPTkCMvrdMYa8TipZmc5xq+3k+fUeLc6/ZBT/5uEJLnjpWDEhSIP5LO+V
+ Q9HHJuRIO82z6EoiE5eX+wh6gSIueMV2Ur0QLw8MK6H1eHDfF9JKaS9wuSTlKtres1AhVIDZY
+ LZPbEWVtrnQV7+p/VZBlOZqcnnClEEZdMwHaDlbQjzunf3Ciu+yRkmb0HD9XYT+BG5XwZBzYk
+ g00ahyMmWP/trMLbMNu6GHz3awmbeHmVx1NdETvRQZ5luKjzQ+qv03cHWVU7GGcZ+TVFcyWc6
+ qFNP0Bj7D1KqBDPghx/6gGWwgDwB+CfDrEXd61F+D/BLtdHNxNEBQNxl9nD7WZ6uJaTnkl8wn
+ cKPQeRjzrNxENeskc5IC+q75L6q6rZj2vgkH7lDBOaFHYX94MZIIc1pohsTv5MFa31BOWgQd+
+ AulLAlWqqEqJnq5gUPNXTr/PrFZd90OqZ6ycdenpd4YcxKP5S2+926Qxznl78K3NxjyT36NPE
+ K+IJ6MxOiokKn9MpXAQJ+CYmIGZbUsbVNZHK+y8rijLO/dqh4AGjESEMwMWU=
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 06 Jan 2020 13:07:14 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sun, 05 Jan 2020 14:54:43 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Mon, 06 Jan 2020 13:07:11 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: cocci@systeme.lip6.fr
-Subject: Re: [Cocci] transforming arguments to statement macros?
+Subject: Re: [Cocci] Adding semicolons after macro calls
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -140,24 +140,42 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-PiBJdCB1c2VzIGEgcmVndWxhciBleHByZXNzaW9uIHRvIGRldGVjdCB0aGF0IGEgc3RhdGVtZW50
-IHN0YXJ0cyB3aXRoIHRoZQo+IHdvcmQgQVNTRVJULCBhbmQgbWF0Y2hlcyB0aGUgbmV4dCBzdGF0
-ZW1lbnQgYXMgd2VsbCwgYW5kIHRoZW4gaW4gYW5vdGhlcgo+IHJ1bGUgYWRkcyBhIDsgYmVmb3Jl
-IHRoZSBzdWJzZXF1ZW50IHN0YXRlbWVudC4KCkNhbiByZWxhdGVkIGltcHJvdmVtZW50cyBmb3Ig
-dGhlIHN1cHBvcnRlZCBwcm9ncmFtbWluZyBpbnRlcmZhY2VzIGhlbHAKdG8gc3BsaXQgdGhlIGF2
-YWlsYWJsZSBpbmZvcm1hdGlvbiBpbnRvIG1vcmUgdXNlZnVsIHBpZWNlcz8KCgo+IElmIHlvdSBh
-ZGQgdGhlIDsgYWZ0ZXIgdGhlIEFTU0VSVCBzdGF0ZW1lbnQgaXQgY29tZXMgb3V0IGFmdGVyIEFT
-U0VSVCwKPiBub3QgYWZ0ZXIgdGhlIGNvbW1lbnRlZCBhcmd1bWVudCBsaXN0LiBCdXQgd2l0aCB0
-aGlzIHNlbWFudGljIHBhdGNoLAo+IHRoZSA7IGNvbWVzIG91dCBvbiBhIGxpbmUgb2YgaXRzIG93
-biwgYW5kIHdvdWxkIGhhdmUgdG8gYmUgbW92ZWQgdXAgbWFudWFsbHkuCgpDYW4gdGhpcyBzb2Z0
-d2FyZSBiZWhhdmlvdXIgYmUgYXZvaWRlZCBpZiB0aGUgc2VtaWNvbG9uIHdvdWxkIGJlIGluc2Vy
-dGVkCmJ5IHVzaW5nIHRoZSBmdW5jdGlvbiDigJxtYWtlX3N0bXTigJ0gb2YgQ29jY2luZWxsZSdz
-IGxpYnJhcnkgaW4KYSBTbVBMIHNjcmlwdCBydWxlPwoKUmVnYXJkcywKTWFya3VzCl9fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCkNvY2NpIG1haWxpbmcgbGlz
-dApDb2NjaUBzeXN0ZW1lLmxpcDYuZnIKaHR0cHM6Ly9zeXN0ZW1lLmxpcDYuZnIvbWFpbG1hbi9s
-aXN0aW5mby9jb2NjaQo=
+> The only short term suggestion I have is the following:
+
+I wonder about the specification of two statement variables here.
+
+
+Under which circumstances can a transformation approach (like the following)
+work as desired?
+
+@addition@
+identifier action;
+statement s;
+@@
+ <+...
+ action(...)
++;
+ s
+ ...+>
+
+elfring@Sonne:~/Projekte/Coccinelle/Probe> spatch --parse-cocci add_semicolon_behind_call1.cocci
+init_defs_builtins: /usr/local/bin/../lib/coccinelle/standard.h
+minus: parse error:
+  File "add_semicolon_behind_call1.cocci", line 8, column 1, charpos = 70
+  around = 's',
+  whole content =  s
+
+
+How will further improvements be achieved for data processing around macro calls?
+
+Regards,
+Markus
+_______________________________________________
+Cocci mailing list
+Cocci@systeme.lip6.fr
+https://systeme.lip6.fr/mailman/listinfo/cocci
