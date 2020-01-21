@@ -6,51 +6,56 @@ X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 467AEC33CAA
-	for <cocci@archiver.kernel.org>; Tue, 21 Jan 2020 06:28:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF9B5C33CAA
+	for <cocci@archiver.kernel.org>; Tue, 21 Jan 2020 06:30:26 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E128D22522
-	for <cocci@archiver.kernel.org>; Tue, 21 Jan 2020 06:28:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E128D22522
+	by mail.kernel.org (Postfix) with ESMTPS id 851B622522
+	for <cocci@archiver.kernel.org>; Tue, 21 Jan 2020 06:30:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 851B622522
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 00L6SHYW009614;
-	Tue, 21 Jan 2020 07:28:17 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 00L6U9Pg007405;
+	Tue, 21 Jan 2020 07:30:09 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id E758C77E1;
-	Tue, 21 Jan 2020 07:28:16 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 85EA977E1;
+	Tue, 21 Jan 2020 07:30:09 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id B31E277DB
- for <cocci@systeme.lip6.fr>; Tue, 21 Jan 2020 07:28:14 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 945D677DB
+ for <cocci@systeme.lip6.fr>; Tue, 21 Jan 2020 07:30:08 +0100 (CET)
 Received: from mail2-relais-roc.national.inria.fr
  (mail2-relais-roc.national.inria.fr [192.134.164.83])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 00L6SEnI008497
- for <cocci@systeme.lip6.fr>; Tue, 21 Jan 2020 07:28:14 +0100 (CET)
-X-IronPort-AV: E=Sophos;i="5.70,344,1574118000"; d="scan'208";a="432302668"
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 00L6U4J3005084
+ for <cocci@systeme.lip6.fr>; Tue, 21 Jan 2020 07:30:04 +0100 (CET)
+X-IronPort-AV: E=Sophos;i="5.70,344,1574118000"; d="scan'208";a="432302784"
 Received: from unknown (HELO hadrien) ([167.98.102.107])
  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 21 Jan 2020 07:28:13 +0100
-Date: Tue, 21 Jan 2020 06:28:13 +0000 (GMT)
+ 21 Jan 2020 07:30:03 +0100
+Date: Tue, 21 Jan 2020 06:30:03 +0000 (GMT)
 From: Julia Lawall <julia.lawall@inria.fr>
 X-X-Sender: julia@hadrien
 To: Jaskaran Singh <jaskaransingh7654321@gmail.com>
-In-Reply-To: <20200119134610.31961-1-jaskaransingh7654321@gmail.com>
-Message-ID: <alpine.DEB.2.21.2001210626540.2301@hadrien>
-References: <20200119134610.31961-1-jaskaransingh7654321@gmail.com>
+In-Reply-To: <7fc95d036dbda26e6540839ef25c5c09c21ca747.camel@gmail.com>
+Message-ID: <alpine.DEB.2.21.2001210629190.2301@hadrien>
+References: <20200119134812.32748-1-jaskaransingh7654321@gmail.com>
+ <alpine.DEB.2.21.2001210619100.2301@hadrien>
+ <7fc95d036dbda26e6540839ef25c5c09c21ca747.camel@gmail.com>
 User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 21 Jan 2020 07:28:17 +0100 (CET)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 21 Jan 2020 07:30:09 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Tue, 21 Jan 2020 07:28:14 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Tue, 21 Jan 2020 07:30:04 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: linux-kernel-mentees@lists.linuxfoundation.org, cocci@systeme.lip6.fr
-Subject: Re: [Cocci] [PATCH] parsing_c: Handle case of macro before typedef
+Cc: "linux-kernel-mentees@lists.linuxfoundation.org"
+ <linux-kernel-mentees@lists.linuxfoundation.org>,
+        "cocci@systeme.lip6.fr" <cocci@systeme.lip6.fr>
+Subject: Re: [Cocci] [PATCH] parsing_hacks: Add bool to list of known
+	typedefs
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -69,90 +74,103 @@ Errors-To: cocci-bounces@systeme.lip6.fr
 
 
 
-On Sun, 19 Jan 2020, Jaskaran Singh wrote:
+On Tue, 21 Jan 2020, Jaskaran Singh wrote:
 
-> For the following case:
+> On Tue, 2020-01-21 at 06:20 +0000, Julia Lawall wrote:
+> >
+> > On Sun, 19 Jan 2020, Jaskaran Singh wrote:
+> >
+> > > bool is widely used in the Linux kernel. Certain cases of
+> > > parsing_hacks.ml would mislabel bool.
+> > >
+> > > Add bool to the list of known typedefs.
+> > >
+> > > Stats of --parse-c on Linux v5.5-rc4 are as follows:
+> > >
+> > > Before:
+> > >
+> > >   nb good = 18956150,  nb passed = 134062 =========> 0.70% passed
+> > >
+> > > After:
+> > >
+> > >   nb good = 18956150,  nb passed = 134073 =========> 0.70% passed
+> >
+> > Why did nb passed increase?  These are tokens that will not be able
+> > to be
+> > transformed by a semantic patch.
+> >
 >
-> <macro> <typedef> <identifier>
->
-> A case in parsing_hacks.ml sometimes mislabels <macro> as a
-> typedef ident.
->
-> If typedef is a known typedef (such as u8 or *_t), then label
-> <macro> as a CppMacro. Subsequent cases will then label <typedef>
-> correctly.
+> I suspect it's instances of nokprobe_inline in
+> linux/kernel/trace/trace_kprobe.c. They're marked as CppMacro.
 
-OK, I see that you are now using is_known_typdef in a more interesting
-way.  Could you add a test case that shows what has improved?  I would
-still know to know why the number of passed tokens increases.
+OK, that looks ok.  Could you update the log messages with that
+information?
 
+thanks,
 julia
 
 
 >
-> Following are results of --parse-c on the Linux Kernel v5.5-rc4:
+> Here's results from my diff:
 >
-> Before:
->
->   nb good = 18956150,  nb passed = 134061 =========> 0.70% passed
->
-> After:
->
->   nb good = 18956150,  nb passed = 134062 =========> 0.70% passed
->
-> Signed-off-by: Jaskaran Singh <jaskaransingh7654321@gmail.com>
+> 20402,20406c20288,20294
+> < passed:bool
+> < passed:bool
+> < passed:bool
+> < passed:bool
+> < passed:bool
 > ---
->  parsing_c/parsing_hacks.ml | 35 +++++++++++++++++++++++++++++++++++
->  1 file changed, 35 insertions(+)
+> > passed:nokprobe_inline
+> > passed:nokprobe_inline
+> > passed:nokprobe_inline
+> > passed:nokprobe_inline
+> > passed:nokprobe_inline
+> > passed:nokprobe_inline
+> > passed:nokprobe_inline
+> 20407a20296,20297
+> > passed:nokprobe_inline
+> > passed:nokprobe_inline
+> 20408a20299,20300
+> > passed:nokprobe_inline
+> > passed:nokprobe_inline
+> 20409a20302,20303
+> > passed:nokprobe_inline
+> > passed:nokprobe_inline
+> 20410a20305,20306
+> > passed:nokprobe_inline
+> > passed:nokprobe_inline
 >
-> diff --git a/parsing_c/parsing_hacks.ml b/parsing_c/parsing_hacks.ml
-> index 8374731b..23d675cf 100644
-> --- a/parsing_c/parsing_hacks.ml
-> +++ b/parsing_c/parsing_hacks.ml
-> @@ -2184,6 +2184,41 @@ let lookahead2 ~pass next before =
->        && ok_typedef s && is_macro s2 && is_type type_
->          ->
->  	  TIdent (s, i1)
-> +
-> +  (* xx yy zz : xx is a macro *)
-> +  | (TIdent (s, i1)::TIdent (s2, i2)::TIdent(_,_)::_ , _)
-> +    when not_struct_enum before
-> +	&& ok_typedef s2
-> +	&& is_known_typdef s2
-> +        ->
-> +	  TCommentCpp(Token_c.CppMacro, i1)
-> +
-> +  (* xx yy zz : xx is a typedef ident *)
-> +  | (TIdent (s, i1)::TIdent (s2, i2)::TIdent(_,_)::_ , _)
-> +    when not_struct_enum before
-> +	&& ok_typedef s
-> +        ->
-> +      msg_typedef s i1 2; LP.add_typedef_root s i1;
-> +      TypedefIdent (s, i1)
-> +
-> +  (* xx yy * zz : xx is a macro *)
-> +  | (TIdent (s, i1)::TIdent (s2, i2)::ptr , _)
-> +    when pointer ~followed_by:(function TIdent _ -> true | _ -> false) ptr
-> +	&& not_struct_enum before
-> +	&& ok_typedef s2
-> +	&& is_known_typdef s2
-> +        ->
-> +	  TCommentCpp(Token_c.CppMacro, i1)
-> +
-> +  (* xx yy * zz : xx is a typedef ident *)
-> +  | (TIdent (s, i1)::TIdent (s2, i2)::ptr , _)
-> +    when pointer ~followed_by:(function TIdent _ -> true | _ -> false) ptr
-> +	&& not_struct_enum before
-> +	&& ok_typedef s
-> +        ->
-> +      msg_typedef s i1 2; LP.add_typedef_root s i1;
-> +      TypedefIdent (s, i1)
-> +
->    (* xx yy *)
->    | (TIdent (s, i1)::TIdent (s2, i2)::rest  , _) when not_struct_enum before
->  	&& ok_typedef s && not (is_macro_paren s2 rest)
-> --
-> 2.21.1
+> Cheers,
+> Jaskaran.
+>
+> > julia
+> >
+> > > Signed-off-by: Jaskaran Singh <jaskaransingh7654321@gmail.com>
+> > > ---
+> > > The above diff has been obtained after applying
+> > > https://www.mail-archive.com/cocci@systeme.lip6.fr/msg06706.html
+> > >
+> > >  parsing_c/parsing_hacks.ml | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/parsing_c/parsing_hacks.ml
+> > > b/parsing_c/parsing_hacks.ml
+> > > index 685a4908..5e3301a0 100644
+> > > --- a/parsing_c/parsing_hacks.ml
+> > > +++ b/parsing_c/parsing_hacks.ml
+> > > @@ -61,7 +61,7 @@ let is_known_typdef =
+> > >        | "u_char"   | "u_short"  | "u_int"  | "u_long"
+> > >        | "u8" | "u16" | "u32" | "u64"
+> > >        | "s8"  | "s16" | "s32" | "s64"
+> > > -      | "__u8" | "__u16" | "__u32"  | "__u64"
+> > > +      | "__u8" | "__u16" | "__u32"  | "__u64" | "bool"
+> > >          -> true
+> > >
+> > >        | "acpi_handle"
+> > > --
+> > > 2.21.1
+> > >
+> > >
 >
 >
 _______________________________________________
