@@ -7,43 +7,43 @@ X-Spam-Status: No, score=-1.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BC74C2D0DB
-	for <cocci@archiver.kernel.org>; Tue, 21 Jan 2020 09:57:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32442C2D0CE
+	for <cocci@archiver.kernel.org>; Tue, 21 Jan 2020 10:10:36 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9DDF120882
-	for <cocci@archiver.kernel.org>; Tue, 21 Jan 2020 09:57:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id A149D20882
+	for <cocci@archiver.kernel.org>; Tue, 21 Jan 2020 10:10:35 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="hd+VnX1t"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9DDF120882
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="KHJ47K67"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A149D20882
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 00L9v11A007328;
-	Tue, 21 Jan 2020 10:57:01 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 00LAAFeG021766;
+	Tue, 21 Jan 2020 11:10:15 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id F13A177E1;
-	Tue, 21 Jan 2020 10:57:00 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 63B1D77E1;
+	Tue, 21 Jan 2020 11:10:15 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id B099577DB
- for <cocci@systeme.lip6.fr>; Tue, 21 Jan 2020 10:56:59 +0100 (CET)
-Received: from mout.web.de (mout.web.de [212.227.15.14])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 00L9uwaI023721
- for <cocci@systeme.lip6.fr>; Tue, 21 Jan 2020 10:56:58 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 8BEC177DB
+ for <cocci@systeme.lip6.fr>; Tue, 21 Jan 2020 11:10:13 +0100 (CET)
+Received: from mout.web.de (mout.web.de [212.227.15.3])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 00LAA9Eb023360
+ for <cocci@systeme.lip6.fr>; Tue, 21 Jan 2020 11:10:09 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1579600617;
- bh=dt1jt9pSwcGGnPZLg62VDnvqmFQRxIbXRYuVwEmInNc=;
+ s=dbaedf251592; t=1579601407;
+ bh=a3JTnN13l0sX5Xv1YfT6GQcnC04LgeQnbBcOPtlBnvc=;
  h=X-UI-Sender-Class:Cc:Subject:To:From:Date;
- b=hd+VnX1t8IEZyI8ag1L6umxAa27B/NGJlF9vZURe0nOrmdtNn27lnz3mCzE9V+Axg
- PPJoQD8qoMdpmE895tyyCndl4X8rs1GDiTwcuFQHGqx8qgjiDXARI5HjA+3scLYuJJ
- V4n3ABcg0NZ75X27InzSy6yAp5gFcqe4qDRa/kKQ=
+ b=KHJ47K67u2mMZc4XFQweZ/8JgaY5gxVOpsiv9oUseqqb3ZiHKqbTd/CpUWteBKmXg
+ SnflxDP7YL3F8LNkXeQwT7HkcBQLtHhbjkQBvPXe70cUHttgdIiu9rKhhZWIzpGXiM
+ N5ciSYAXxaB6Ysk2PSOJJvCDgxgQs/HycZCA84Xc=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
 Received: from [192.168.1.2] ([78.49.33.93]) by smtp.web.de (mrweb004
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0MUBPu-1j23SN0Iny-00QyPh; Tue, 21
- Jan 2020 10:56:57 +0100
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0MfCyA-1jHR4P1pda-00OmaA; Tue, 21
+ Jan 2020 11:10:07 +0100
 To: Jaskaran Singh <jaskaransingh7654321@gmail.com>, cocci@systeme.lip6.fr
 From: Markus Elfring <Markus.Elfring@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
@@ -89,43 +89,43 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <7f56dadb-0fde-359c-2b88-f812b0858ac8@web.de>
-Date: Tue, 21 Jan 2020 10:56:56 +0100
+Message-ID: <5bb2b304-96d9-c3e0-af31-5e918f1a8e40@web.de>
+Date: Tue, 21 Jan 2020 11:10:06 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.4.1
 MIME-Version: 1.0
 Content-Language: en-US
-X-Provags-ID: V03:K1:CUC1lwa25JVFAIT1WzeiMV9Li5jUPZHH33Sdi3OlrZDrCEPwlx/
- vVJMGpBoSkPiDD5jWnsVAYMJl8q2IRG3aj72XVazB8n5a3aJo3hs2fGJI4o3oQ2A9xP2oqL
- qQ2mJ5NANNvp8Cyr1F4T9goYjf+4Xi00E5Y+usFL5box4bVTgpxE50FoFpJZM2aiJsVJhuU
- x7vO+tTizf9ypLlXYGQVg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:xy/kaGqoJxo=:W8GNXF7P/4OfejcyJV1VoD
- 4bWrr5cFuEW0rRKTrHOK+Hjm0jX98TuDIAuaitWwgV9B22VjELTlx/aaMHQGKNcY3AlXf++od
- I/ptD0P8Xtz/yAFoYzfdnknJmX1WLQ2d8Yhr729r6BMkmy0oxQ01SssktE++oTAzvmGc7r0w9
- elmtRPrOGNL2vckpgdtQZA9sGUFglxaFsddoqxTnpq4GxzGBTWqiBkCXnmKA9rRYpFYAIxpZr
- KuyVvVMm/l4Gwe8yl9Jnn737t/huBnN39m3JDWVBrVBjDLAS6vmDmqqb+bI1lEqjVAi/tel0z
- hagoE6+hOmIL6+w4QrPIOlLYFN7ivPHLNbqUJsdx25QPOhK1LZXSaCEaeax8z85eXwTMGy1bK
- NkIbqKA6s8I5AUS+rJP4U4uD+T5evXMZliEVfJ+xLi3dwM189NUeHFiE2U0JRkMCpkv8A6KQn
- n43yq8DZQ639r8yPvGRlIbW0tzA09CIk1uAG0GbZjzcIrTNBHqaB2BpLl+HOUiZhUES9eRXmS
- 7ub60R31U9+N39TCCe0/71Xe3Mb+ZbaZeGBseSQ8McwXfXYnulOBeoI3KDGUQ2gPCgoc3D4xi
- s3hxlnBRfeWTSqEBt06BL6kKrAvcab1GOmarupEJiEkf4z5h5joTqOmaIsGHUmS9hFcNxdHD/
- 00oJu6bmeeQXKyNMl4HtLKx0egroRogzvYHE3Hx8OVSlK2qvVB8WCkTRNvoJj+IsSZRcWkdzu
- inBnw95kNe4W9Oz9Yxzx/9mFPWHhJyOh5oe4mwHm0kU6grd/bYFsJ26iN4HjGues3RN/I+Xoy
- nGBsMHvt8expL4z0MJwDBYNLQKOhy+MQB0XZIw8v1IKIiUmysG9NPLzlPC1bqT//1BuI5G6F0
- iZCQewH1sQmY06+V4JDxkZgFd/0jCWZsuTGZIjCGbdI2bNlV2MrvwoqZQlUqQN5hiLo0UBwU2
- Co9QciFWbi6X7pCPraFs2g9JUMXA0gGqWtpVFgQVRLnoTXwxzD0968Xtz3IaeD4627FSxDr+M
- aFspBzACQsggZmRPyNVmbkVlGIp4U0HmmAHUb/Vq5XI+jOv32mbUQxT5LAwDC1lGFODB5ua3/
- Qz0gVwNVO5fGB6jZkA4qXFb24lC8yzUfWk2mYwL1ZJri7aIsHaj6ZARIuMnqSatueusHSieXN
- 7vuGWeHuSLjhukIxksbbYPv9GSgQpVr6iL54jzZ2vFyJN+U/xFof1NR1gZPXr/lPXpXkh6/T/
- YqQCbX00hwRVja+vLJhQ2PDhApNYpx0EMkO41vKX9JMesMg6OmnWsW2wERfk=
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 21 Jan 2020 10:57:01 +0100 (CET)
+X-Provags-ID: V03:K1:w3j4ab0xQgMQ9qaz5Ni6KeqrJ2IXChDD/+135iR8FGe51dhYq9E
+ CRequgYROlj5vi2sJFFqUmzzY/qXDZ7rga85I0CiRjWfQrKpQm2L1urfCoP6nxoFqxjyNYs
+ cLNuG1kb5hmkjL0YjNFrpFos8Iw4wbjgRX9L0/wdwe6JC4E2Rh1tUhD6XNL9Ug2Yh0ttRxT
+ s/Hh7p1eAurQBXSjZW2qg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:x2NOkLbDYno=:pc77Ek6mLLTwB8aFZtjTar
+ f5np0OmsRelFGn4BZivQ98LayXFxPVi/8ecMrfIuO+0jwkGksGGvMpYlV153Da+jMYyo1XRRs
+ LjbEdj46ptZZ6Oh2D4s5eBpEvWKXjrOcqoPk4Q38bVOlD/3f27kMQHkBLKEMvbYtQDKXHY1yB
+ yuzsOMk7FNBJrnqSGuQII81T+rTILE0vAQZfbmqsJipRen8QgTBvm2YgFDZ1IX48/PLw4Rlo8
+ rnJHGHNHvCtwlht99w6GA84iDAVQezeIRLDcc6Ih0nRyAHdlVx+pZJ5KJckifE+UrorQ5sxYc
+ KG4P8651yJ85qYeK2bG+o29iWI/v6ha1UxrNOxbb0JEBCcLcLmvxvFjPRfx1J3vp0lKORZOf0
+ 3fpBTlQnnils+xxnUzw4WheBTCcV4G7lHTGSmUS6XG8feAJoUZof3iPOt6IVvWeGvQBCtyk5J
+ s8lY4uynZ5Z0pamctvysPvSvXS64DPqJMRE5WOWfedCTXRKCq2utOGV6J+qB+QtqOkQwgk2cL
+ VMOte91Dm2wLsrl6d1gX/+xvs7Qh1KDqrCmh2zWYJhMOtoLnJXMFJW0/kESprjVVjd+CcYAjm
+ JNjoVTqlgMvTKttk82rXy2GDzDT1HVlcxqe2+Umv5JH4l627E/7W43AOrTMSN0dSwhP9viDp4
+ Vxpmur6tRgWZhSDBpBPkKaffz/V5JBd0CdYQnTtkpJ+CO16kJQvIis5CZzdOQGB0aANaAwFUY
+ LigqRt/ZW5MKcWkqplfRj1KVExom66A/hbfamQuOzVJvSdhi7vsxtAHTahM2I/kWXSFV9FRj9
+ LTxGJ/YjjtCRnig0rMV1u0StcgU0dYR0Y7yfaeNZu10eLVX/sW08mw/N6HyfafIL159mAzZ4R
+ eN6JjL0UTjNRx2ZaeL0mQHg8ZaJc14fE64XMCd9GlEm/3MxC1TfGtUSQM5ZN0sHdXI0x+XSAQ
+ US5MSVTofupSN8Y0M3lAqErkUlWTGeSU2Uds+WbqBWSa3jSxQEPsH0qBtog5EIvqTi1AAyLLx
+ /igsH1Y9YDzr48xMuuQAuPStYFY4n4WcUEK6baGDjTgvRkfPi6nqBPCg8q7vecExtINliuhb6
+ iUFgWQsoSp+jITq5FTrsJ+jkngLbR5/COY+KXSq2idoIdeb6qBcJvN6QhYO5AqTrRvpI3YsFo
+ 98TXyDbaW6tBrmb2UfvcsDfhl+Yg0A2Rok2QWVjc3culfDW31DAhRVnBng5rsTzZJ6kBbLHDJ
+ I1qikGzOaEsxhNbX543VygD5orTYDeeNoW+qJis7Xq7YwYPd89O/ICVIzx50=
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 21 Jan 2020 11:10:15 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Tue, 21 Jan 2020 10:56:58 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Tue, 21 Jan 2020 11:10:09 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: linux-kernel-mentees@lists.linuxfoundation.org
-Subject: Re: [Cocci] [PATCH v2 0/3] cocci: Improve management of macros
- before typedefs
+Subject: Re: [Cocci] [PATCH v2 2/3] parsing_hacks: Add bool to list of known
+ typedefs
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -142,20 +142,11 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-> If <typedef> is a known typedef (such as u8 or *_t) then label <macro>
-> as a CppMacro. Subsequent cases will label <typedef> correctly as a
-> typedef ident.
->
-> Also add bool to the list of known typedefs so that cases of
+> Before:
+>   passed:bool
 
-Can a wording like the following be nicer for such a change description?
-
-  Label <macro> as a CppMacro if <typedef> is a known type definition
-  (such as u8 or *_t).
-  Subsequent cases will label <typedef> correctly as a type definition identifier.
-
-  Add bool also to the list of known type definition identifiers so that cases of
-
+I wonder if subsequent duplicate information can really help to achieve a better understanding
+by the suggested description of a software situation.
 
 Regards,
 Markus
