@@ -7,49 +7,47 @@ X-Spam-Status: No, score=-1.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFFE9C2D0B1
-	for <cocci@archiver.kernel.org>; Tue,  4 Feb 2020 12:52:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FA87C2D0B1
+	for <cocci@archiver.kernel.org>; Tue,  4 Feb 2020 13:03:05 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3C3B02082E
-	for <cocci@archiver.kernel.org>; Tue,  4 Feb 2020 12:52:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 7A50820730
+	for <cocci@archiver.kernel.org>; Tue,  4 Feb 2020 13:03:04 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="eetY2Wxh"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3C3B02082E
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="m4OBVwid"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7A50820730
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 014CqEoJ026132;
-	Tue, 4 Feb 2020 13:52:14 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 014D2pQA024909;
+	Tue, 4 Feb 2020 14:02:51 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 3DE4977EC;
-	Tue,  4 Feb 2020 13:52:14 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 70A4277EC;
+	Tue,  4 Feb 2020 14:02:51 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id B6A6077E8
- for <cocci@systeme.lip6.fr>; Tue,  4 Feb 2020 13:52:12 +0100 (CET)
-Received: from mout.web.de (mout.web.de [212.227.15.14])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 014CqCfo022987
- (version=TLSv1.2 cipher=DHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO)
- for <cocci@systeme.lip6.fr>; Tue, 4 Feb 2020 13:52:12 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 129E277E8
+ for <cocci@systeme.lip6.fr>; Tue,  4 Feb 2020 14:02:50 +0100 (CET)
+Received: from mout.web.de (mout.web.de [212.227.15.3])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 014D2ntS021365
+ (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO)
+ for <cocci@systeme.lip6.fr>; Tue, 4 Feb 2020 14:02:49 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1580820730;
- bh=DF4j/igQ40pmFhy1SoRSoxYbYEc9gDV4eoMGDY2hok0=;
+ s=dbaedf251592; t=1580821368;
+ bh=XqCKd/vsyb+/OAzFGzKsTNMajyjXApTLXjPOM3B7aK0=;
  h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
- b=eetY2WxhffOhqPEwqMZxsBxnkVm3IwOa0N2P44pOvbcsPvZSuM067BZvy2lYRE4l+
- yxIB26H12DpQgDr9YkPcI4C6NIEd7G50L21xTMcZsuXxxxgLQvqVquhdsjMyOEOroF
- iDcvmWLblT2U0zJntISuYI96M52G/jV83wZZQAes=
+ b=m4OBVwidRctscXTDijw7Dg++G2wLObV49aITSR/UpV0Hy2hnLU+kdm+PJ2SmJjQNj
+ ShHKXOfDQtMUwmGcU4XBTnI3wDPwkcqFTz3TvOz2HTIWVw9VPVOAhpt8c5w76i082w
+ CEhTrFUOdDufJQchgJtfKKlDrQhghcjplAi6tiRM=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([78.48.133.16]) by smtp.web.de (mrweb004
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0LqXBp-1jTdjX25AX-00e7kk; Tue, 04
- Feb 2020 13:52:10 +0100
-To: Julia Lawall <julia.lawall@inria.fr>
+Received: from [192.168.1.2] ([78.48.133.16]) by smtp.web.de (mrweb002
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0LdVha-1jQ0vi3Dpi-00iie6; Tue, 04
+ Feb 2020 14:02:48 +0100
+To: Wellington Wallace <wellingtonwallace@gmail.com>
 References: <72729ef6-f8df-942f-57aa-4b3fac75a20d@web.de>
- <alpine.DEB.2.21.2002032151520.3356@hadrien>
- <e1dd289a-c6d3-4c01-eae2-803aafd0cfb7@web.de>
- <alpine.DEB.2.21.2002041341470.3456@hadrien>
+ <CAAJnyheEpd44ShTijdOAq6QZ9dyjJ387dcJDHg5qcd4aN90PYw@mail.gmail.com>
 From: Markus Elfring <Markus.Elfring@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
@@ -94,46 +92,43 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <37e49b53-b55b-e22d-af6f-d5b27e79fd6d@web.de>
-Date: Tue, 4 Feb 2020 13:52:09 +0100
+Message-ID: <5fe198eb-2e43-4ae3-f82a-e7bcfc394623@web.de>
+Date: Tue, 4 Feb 2020 14:02:48 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.4.1
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.2002041341470.3456@hadrien>
+In-Reply-To: <CAAJnyheEpd44ShTijdOAq6QZ9dyjJ387dcJDHg5qcd4aN90PYw@mail.gmail.com>
 Content-Language: en-US
-X-Provags-ID: V03:K1:Nwc6Gspbf4w320qmDHQO1xSdN8MLCu472Acrjj+uY8VUEjxgUWP
- WeKk+a2BGqNyDC/LB29EGG2zfPb1Jp68km/121jdNfhMrw6KPZ+k1+NZ9XOso7RT5WuvDih
- 0AiLppVp+s3WJ/UXNPY28p0H/0erfK/e3NeqhfPlQ0khQdcjhaNIUAcJtu1TCTP8vUaS8Ni
- d3LmiNW9MTrOyPrWVQZww==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:MiXhYoSQqLs=:p8EwH4eOVIomLp2x2ke5L9
- 65Muhi+ePhxCCjyGnNHar44+wtTsL0w3MnAAa0yZB7rjSwJi3/mSzG7mAR20u6e3NCIvFHzJg
- TN091IBcWLEZ3NBMEap4XmwVuZqlbmwMBnGF9sPGWZFprF6+AcNBJ7lgLmY6qT+jk4g8fPtDH
- hf+z5E1Au7cabwnbTPvy0hlErHgoN0dLD8gHeXVEqMmyTCeEKxZffhVEFgGCQZfl5pbtjcpOn
- WeTZPgNkjsHDmQZC22JTD5WdmhpCQxj46qFVFYoLZY0wlID+bBbIc6AQJlGRxCJ32cAIZPEOG
- KAdKrIpbV/KArNGUq+XjAvTO3k1gAeGQLcEoPqOH/jJYmeFi/uYhOfnjRVfm7Sw6o8Zv9klSZ
- G01oBScF1QO84mQPLZtKbN1hwoYqGyGi/JuwCsck7OEmHSU6dGyq90QUDO+///S2MuZ9XjJdp
- DUXIBlmFFKjlA/+//kiYxYpIPBCLldAwzLAZiBd71LcaRfQMLdYflKOUZjQiK+smUIrtFqXr1
- S9BFb0KdMAFrU6R860R1dj0nBiYTE1Z3hfZSITM8+K/hGrIFI3PdXzdJvEjbTdHL0P3tRdZtu
- BtugEaTnlUVCUocyAW/uJCEOttUlbKfTLDcFRlpkNyir1knMAem07cpH4b3c66tqjvsidZ6FZ
- ahgocTvQYR6TL2iggtXt3G180Rc85/3pWh+thLo5KLJVdJKBcnbHUJreAjlCGaq9v59jaMPFb
- vURcnLRfW+XiUxJQE7xLa8JqwRbcQjbIDvXd94HBNvtN/P4qHL0+VjZFbKweJcRcImBUpPOQw
- VKgMs6r1NhKObvXjB4uyOE6b7hxKAsT+p0/A8E/Rd/kp2CCu+7T3DcWA05lUgZ1BItsjcjD8h
- N7638UncEiCv1lUMAPc79O+SeLAPF6NDmjd/MU6aH/IUG6m+pg6PgsftkL5XvR1FOrMdrsHIr
- wrnrXhoQ+XPitM3l7B5BotvTc2Tboz3rXjAtgFskFLIHrDU5ndtPkSWK0Jy0Rw8Px7EkkmdOp
- tvBjGtvxyiU3ZD+oGGdx3emAExivpiVS4Xnu5dtSJBxZS/VwGQK8Q9XR5xUJzNnyq9Ct5+dqR
- RTecPlnU8VUhV0NrwVRLJWPo/k5eFng1l/mm2+mtc3+J+GOU46zrbTPleTGKUQe4IMcEmTIDu
- AaRjZZ4qWa2+UwFk9GNW+L4Vaeuk+cDj6vKmpbY1swIn3L1NrWahtDxTHncX1GBp/kh4QZeR4
- moyTLLCtFT8EzRzbd
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 04 Feb 2020 13:52:14 +0100 (CET)
+X-Provags-ID: V03:K1:O+Fta5OFHSnQiv4g76vMPdyDRxeLMOjDih0w1WnZjHl4c2I0MbP
+ eu5YhrdsDiMq7tNZJl9JTZ7wwLBpXeZlM6hY+xTxOinnpy6DfItDx0OQfViSxtgECZjzSZP
+ 2sBj3uTFVHd49v+iwSTwFmxEIc6rD+qkt0aQ5OMNRB8eRV5EWVlv6XVBIdctNf7E8uEiJvQ
+ KdSuPeVL85LHcLeIj+Xgg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:kdMl2Z7+jhw=:CEPN7xIO9IXm9FHiQfcbZ9
+ +Wf6iecKIwn6fVp2jAsxs9NoE8e7L6dth+V3j6rxYgAd6LwVMsQrtbnyFABSPvtXDUtngcKFD
+ GUlkhUoVf4N9GRgm1KcSD2ZeHuwEmjTV/GoZ1xQEcFlg7KFqstQ+mHbSO5u/yrrW1cGhBQ9tl
+ h8+3Bp3BUQ+DbMMRbUDf4Z2Vyn4pyzZqexGm0+/ZcZ9pGM5u0ulmfsdm8Li+pRgJOg5DX6H80
+ Ea88lNiRL9/hR7gttwheHzH1jWk+VsawJkWnsIFUBgl5EUuyC+bXh83nliAE3EZIu2krD6OUu
+ NJGsOvw1KDNpOWLpG+cSZNAB4oCR4/4wyzN5ocMFX9+rjtSfN9jNpZYjxYIUxHlZ1F3ZXCdNL
+ AsoLwCd0eWCd2vx71VE+Pm+MWGr7mfVEykPx/kyfY/ztbSqpAU28nM8Z3vdjZB5yilBe1xLuj
+ 3EaVhu+7LvhU/9KCcgy+2T6xkb6M1kytsAFlKbgIg2QIRMzNpE/RfRWVkVosSvu3/GRVGg9FK
+ CES1p5ngeVG+Gu8j0QLYYwYWHbjYZWsSnRgRLtDjAUld9/MbkVRaJJtma/gPxiQ+OiMhuwnK+
+ KTmZKSqLQ8KNvXgyzx9pcTEXfXxYDREvVY+5A6OwzxWbN/oky4uGUEHX+/9rqyMzsCT3wRj98
+ 5XQH1wtKRNU1zcuLlBENlac/fxTbuW3K2BseuKXQ0AWifmwqf8digQs1DJX83QCprciSqvHVk
+ vTDd2WLdBIgP3ogVoOkJCRxhj6PX2Q12WTu6xIU7RvRro6wF8xzObbniMMZ3DxnztQ2tT1zST
+ U2QIdPAtwnMh0HlCGlL7Lucneh7XTzeWCICkHcbhf+XlAhGKags21JPtrB2eM4BGtNyyENA85
+ hKBx9GTd1YoxVZqGjaJOjMrMPM27zd8I5f+DgCrwl2A44jOcdzG7/yS9MGDWY5UPgXjZdX8yY
+ ZN+Mjjhi67+nqOfcHRlzDFRiUcOG8X3JEbI2niRr3Wg4g7shsK/gZcuVjF+YzCExCvE+mnY2/
+ A69+ZVnIiuHO7FISmKtEAlFwEEp6yLiQIJp9hET8EbQrNLTbjYm14j70J4Mxc/zSTdlJjw5kq
+ +IFCsSASRjiqLaPdWkBpeUJwtgil0rKmwYvOtuObjrzK16khpWUdvnTVQOFJZPdw9OQn7gRlf
+ j051d0Z7iobQo5zUu2Gr7ZJmjeYmOxyNKnP5ySnBrR4bZjv8BT2J+c+OPEEwWba6nCGLWx7X0
+ HHvWyNRtUHapyKd8W
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 04 Feb 2020 14:02:51 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Tue, 04 Feb 2020 13:52:12 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Tue, 04 Feb 2020 14:02:49 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Wellington Wallace <wellingtonwallace@gmail.com>,
-        Coccinelle <cocci@systeme.lip6.fr>
-Subject: Re: [Cocci]
- =?utf-8?q?Searching_for_usage_of_=E2=80=9Cauto=E2=80=9D_w?=
- =?utf-8?q?ith_SmPL=3F?=
+Cc: Coccinelle <cocci@systeme.lip6.fr>
+Subject: Re: [Cocci] Replacing a std::string check by strcmp() with SmPL
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -150,15 +145,30 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
->> meta: parse error:
->>   File "show_variable_definition_with_auto3.cocci", line 4, column 8, charpos = 46
->>   around = 'auto',
->>   whole content = typedef auto;
->
-> I understood already that it was not meant as a type.
+> The strcmp output has to be compared to zero strcmp(src_name, "equalizer_input_level") == 0.
 
-I tried your suggestion out if the idea can work finally.
-May such a key word be occasionally redefined (by the means of the semantic patch language)?
+Would you like to let the following script for the semantic patch language
+perform any changes in your source files automatically?
+
+@replacement@
+constant c;
+identifier text;
+statement is, es;
+@@
+ <+...
+ if (
++    !std::strcmp(
+     text
++    ,
+-    == std::string(
+     c
+     )
+    )
+    is
+ else
+    es
+ ...+>
+
 
 Regards,
 Markus
