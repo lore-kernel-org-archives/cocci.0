@@ -1,92 +1,91 @@
-Return-Path: <SRS0=4B11=3Y=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=pTva=3Z=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45817C35247
-	for <cocci@archiver.kernel.org>; Tue,  4 Feb 2020 15:26:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47BE2C35254
+	for <cocci@archiver.kernel.org>; Wed,  5 Feb 2020 13:04:15 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CE38620730
-	for <cocci@archiver.kernel.org>; Tue,  4 Feb 2020 15:26:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id B782F217F4
+	for <cocci@archiver.kernel.org>; Wed,  5 Feb 2020 13:04:14 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=yaerobi-com.20150623.gappssmtp.com header.i=@yaerobi-com.20150623.gappssmtp.com header.b="SycElHll"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CE38620730
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=yaerobi.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="A3K3EBL1"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B782F217F4
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 014FQ92V012486;
-	Tue, 4 Feb 2020 16:26:09 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 015D40Xg016253;
+	Wed, 5 Feb 2020 14:04:00 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id EA24177EC;
-	Tue,  4 Feb 2020 16:26:08 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id D0CF2772B;
+	Wed,  5 Feb 2020 14:04:00 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 1396277E8
- for <cocci@systeme.lip6.fr>; Tue,  4 Feb 2020 16:26:07 +0100 (CET)
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com
- [IPv6:2607:f8b0:4864:20:0:0:0:842])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 014FPxcs028733
+ by systeme.lip6.fr (Postfix) with ESMTPS id 4F0B77718
+ for <cocci@systeme.lip6.fr>; Wed,  5 Feb 2020 14:03:59 +0100 (CET)
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:444])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 015D3vET000350
  (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Tue, 4 Feb 2020 16:25:59 +0100 (CET)
-Received: by mail-qt1-x842.google.com with SMTP id d9so14554583qte.12
- for <cocci@systeme.lip6.fr>; Tue, 04 Feb 2020 07:25:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=yaerobi-com.20150623.gappssmtp.com; s=20150623;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-transfer-encoding:content-language;
- bh=BYmOPlNiblSmRpiPv2rXo+hSS8/67973Sr67YHKnzeM=;
- b=SycElHllS1MGUv3/zV2/T9nzIk82D2w5Cvn2Pttg/M0kf46jT7B/nHbN8lku7aJSvo
- qRHJfWz7rHlwJDIOKDmzxvzuD+7LNv64OKWtQ0L3dDiU601QALThFkMkioLdNwXVagCm
- q5m7igxjiYX4SrD+UQzlX5x+ze2/DZYpnnFmCO0UcVqOkqBSMvrQf16oEvIYWPw+ehlO
- ZAIJkaJfmwK5lfa/Ai+1QTVuqkRMwJb6K6RPvLhNxOGSumtE/73kvt87pneW8QN3GYdW
- NGqLEFd69ZhsQCtAQ+tTwF8I9tP5nctFSUlDClSL3i9/0QOQxKCoupksfUHTBU9Mev4P
- HJ1A==
+ for <cocci@systeme.lip6.fr>; Wed, 5 Feb 2020 14:03:58 +0100 (CET)
+Received: by mail-pf1-x444.google.com with SMTP id y5so1172583pfb.11
+ for <cocci@systeme.lip6.fr>; Wed, 05 Feb 2020 05:03:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=from:to:cc:subject:date:message-id:in-reply-to:references
+ :mime-version:content-transfer-encoding;
+ bh=T4sLQ+yI9jhZw7bh/zJf2U1VnqtoyxbY1frYKtrY/R0=;
+ b=A3K3EBL1QRuFMDBs0znyuc4E9dv/nt7AJOZBFb8l8+1duBy7DDVZwnCX0OiZKiwELU
+ 5/3t1a9Ql6KldFNvvmfmi2wdTbrRi0/wn11u5DjuMjiQJ1JKERGaXyxzPsi34icXZ/qp
+ mcPKH0Dg610caJAv9mlswkhcI+F7psDd1YIH7vKFmzuKx3vilSeH+vys9jQBYz+YduUc
+ Yj/mEm2Sd1NIr1tmENASa0Snja6w3h1b5FT1znUBDoBL6SfuJw8ytIMJHK4wnkUiNnaJ
+ 8dw/sGV5FH5shvlDF3y0MtaqlCOYfVoRQ0u1D92vKfRDATDE77/wxMTz+VuagrocEwaZ
+ D9yQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-transfer-encoding
- :content-language;
- bh=BYmOPlNiblSmRpiPv2rXo+hSS8/67973Sr67YHKnzeM=;
- b=XC6E5BCiVf96tM8gV0Qo9x+LhOnSM4QI9bBaPdwMxJAM4LG/vHvzcMQXjuLIPExJM2
- 3uWPsTZggRDY6FG6HqeJk5mvAS6WCwyje6GfKU2JS96rBCcOeywe8uKaH8lEfv3fRvQW
- Ql417YnU13BJBMhOpHnwg4Q/wd3ETtAxAXkyWX1PQK0V1K0fnzoPMQ/uwGHlBzTK8REJ
- qHgC6PGSLaJhBVQEPO3zHvTmy5xaGWphj2/TIYMAbALb6ZBILgFr02r6K2PcTL4vdfc9
- NRkehMZ9V0/EHM2diy1hs+5YtptIWR+ECtarKPF14pRP43XFX/TGlHMOlWcoyR/2Kfh6
- ejyQ==
-X-Gm-Message-State: APjAAAUy7P9OXxMuS2HT5eBOP8E3n0dENsx4ALUeuC17VCMxjaQU7EYa
- gRb3aLC2KdHAU08wzNfPPTXHoH8YOVY=
-X-Google-Smtp-Source: APXvYqx/vJG/5vMqsAfx/eWKx3r0Vvw+Vvsy4Kbl2WU6jSldUgUuUEddE060LulO3QFloP4GThh18w==
-X-Received: by 2002:ac8:7415:: with SMTP id p21mr16546827qtq.122.1580829958635; 
- Tue, 04 Feb 2020 07:25:58 -0800 (PST)
-Received: from [192.168.0.104] ([181.93.114.99])
- by smtp.gmail.com with ESMTPSA id l184sm11100112qkc.107.2020.02.04.07.25.56
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 04 Feb 2020 07:25:58 -0800 (PST)
-To: Julia Lawall <julia.lawall@inria.fr>
-References: <786d2ea9-621f-bcc4-b626-aed6454784e2@yaerobi.com>
- <alpine.DEB.2.21.2002041556540.3345@hadrien>
-From: eamanu <eamanu@yaerobi.com>
-Message-ID: <909d202d-9a8a-d010-107b-80c07febcb0f@yaerobi.com>
-Date: Tue, 4 Feb 2020 12:25:55 -0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.0
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=T4sLQ+yI9jhZw7bh/zJf2U1VnqtoyxbY1frYKtrY/R0=;
+ b=mfoqqaZBg7uU9ugLQ5nXyIc8dYqDrZkH485Rka7kPosLXbV/omi4wvf5l7UJKjKlRy
+ eZm7aMPAbjxT+jpoeOyqU0GCb6j/SbkfpI8HdiMLzZ0HU4PtR0gaI1Nam+97WyfAK1DD
+ TIJre7N+3ifjD5K023ElV8N3QA75KjKJgYmLYJe+w3vyGXoZx8vag0zuXm0QFBWrfGuB
+ av8S/woHVQrOVju+je9FwpR3FwA9f9niIg8RzRK0VHZVYOy95lR8TXk4SgqZlrcBLgYt
+ yO1REayfiQjtDKlJXyvz6CggUh304zPdMrgkyNsYYsK+S/jqfkxvjPc1Bx7OR8UCHQHv
+ qsoA==
+X-Gm-Message-State: APjAAAWWDIHlzfZTE7ssELv+zpHxN37XqKLozNjfERcQppP1OqWkeNxg
+ 1pt1FvZabGjMgAuJRG27dpEKiujBeLU=
+X-Google-Smtp-Source: APXvYqyhGdZ0ThCNxogrLhW45GWXOZVFOCGmQOXBGaDHxjSjVjB51HYpcxItMLMFlYVamj+laMi9Iw==
+X-Received: by 2002:a62:7bcb:: with SMTP id
+ w194mr37228503pfc.216.1580907836543; 
+ Wed, 05 Feb 2020 05:03:56 -0800 (PST)
+Received: from localhost.localdomain ([2405:204:30e:4a31:b268:7a3:7dc6:f288])
+ by smtp.gmail.com with ESMTPSA id
+ q6sm28137098pfh.127.2020.02.05.05.03.54
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 05 Feb 2020 05:03:56 -0800 (PST)
+From: Jaskaran Singh <jaskaransingh7654321@gmail.com>
+To: cocci@systeme.lip6.fr
+Date: Wed,  5 Feb 2020 18:33:26 +0530
+Message-Id: <20200205130327.6812-2-jaskaransingh7654321@gmail.com>
+X-Mailer: git-send-email 2.21.1
+In-Reply-To: <20200205130327.6812-1-jaskaransingh7654321@gmail.com>
+References: <20200205130327.6812-1-jaskaransingh7654321@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.2002041556540.3345@hadrien>
-Content-Language: en-US
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 04 Feb 2020 16:26:09 +0100 (CET)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 05 Feb 2020 14:04:00 +0100 (CET)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
  (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Tue, 04 Feb 2020 16:26:00 +0100 (CET)
+ Wed, 05 Feb 2020 14:03:58 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78
-Cc: cocci@systeme.lip6.fr
-Subject: Re: [Cocci] coccinelle depends on unmaintained pygtk
+Cc: linux-kernel-mentees@lists.linuxfoundation.org
+Subject: [Cocci] [PATCH 1/2] parsing_c: Align C AST and Cocci AST for pointer
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -103,38 +102,85 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Hi!
+For a pointer, the C parser constructed an AST dissimilar from that
+of the Cocci AST. This caused failures in matching with certain
+pointer types. For example, for the following case:
 
-On 04/02/2020 11:59, Julia Lawall wrote:
-> On Tue, 4 Feb 2020, eamanu wrote:
->
->> Hi everybody,
->>
->> Sorry if this issues is duplicated, I am new in the mailing list
->> and in a very quickly searching I didn't found about this issue.
->>
->> I am working on Coccinelle package on Debian
-> Thanks!
->
->> and currently
->> exist the next bug [1].
->>
->> There is any plan to port to use GObject Instrospection?
->>
->> [1] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=885267
-> I think we should just drop the code that depends on it.  It was added for
-> a MS thesis more than 10 years ago, and I don't think anyone has used it
-> since.
->
-> I will look into it.
+char *1 const *2 id;
 
-Great, if you need help, I can help :-)
+The C AST constructed would be:
+const Pointer1 -> Pointer2 -> char
 
-I will wait for any news. Thanks
+The Cocci AST constructed would be:
+Pointer2 -> const Pointer1 -> char
 
-eamanu
->
-> julia
+Change the pointer rule in the C parser so that an AST similar to the
+Cocci AST is constructed.
+
+Make necessary changes in the C pretty printer so that the pointer type
+is printed correctly.
+
+Signed-off-by: Jaskaran Singh <jaskaransingh7654321@gmail.com>
+---
+ parsing_c/parser_c.mly      | 4 ++--
+ parsing_c/pretty_print_c.ml | 6 ++++--
+ 2 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/parsing_c/parser_c.mly b/parsing_c/parser_c.mly
+index 8d7b761e..4c74f15a 100644
+--- a/parsing_c/parser_c.mly
++++ b/parsing_c/parser_c.mly
+@@ -1333,14 +1333,14 @@ pointer:
+  | tmul                   { (Ast_c.noattr,fun x -> mk_ty (Pointer x) [$1]) }
+  | tmul pointer
+      { let (attr,ptr) = $2 in
+-       (attr,fun x -> mk_ty (Pointer (ptr x)) [$1]) }
++       (attr,fun x -> ptr (mk_ty (Pointer x) [$1])) }
+  | tmul type_qualif_list
+      { let (attr,tq) = $2 in
+        (attr,fun x -> (tq.qualifD, mk_tybis (Pointer x) [$1]))}
+  | tmul type_qualif_list pointer
+      { let (attr1,tq) = $2 in
+        let (attr2,ptr) = $3 in
+-       (attr1@attr2,fun x -> (tq.qualifD, mk_tybis (Pointer (ptr x)) [$1])) }
++       (attr1@attr2,fun x -> ptr (tq.qualifD, mk_tybis (Pointer x) [$1])) }
+ 
+ tmul:
+    TMul { $1 }
+diff --git a/parsing_c/pretty_print_c.ml b/parsing_c/pretty_print_c.ml
+index a2e35588..40b89fe5 100644
+--- a/parsing_c/pretty_print_c.ml
++++ b/parsing_c/pretty_print_c.ml
+@@ -804,11 +804,12 @@ and pp_string_format (e,ii) =
+              (FunctionType (return=void, params=int i) *)
+           (*WRONG I THINK, use left & right function *)
+           (* bug: pp_type_with_ident_rest None t;      print_ident ident *)
++          pp_type_left t;
+           pr_elem i;
+           iiqu +> List.iter pr_elem; (* le const est forcement apres le '*' *)
+           if iiqu <> [] || get_comments_after i <> []
+           then pr_space();
+-          pp_type_with_ident_rest ident t attrs Ast_c.noattr;
++          print_ident ident
+ 
+       (* ugly special case ... todo? maybe sufficient in practice *)
+       | (ParenType ttop, [i1;i2]) ->
+@@ -885,11 +886,12 @@ and pp_string_format (e,ii) =
+       match ty, iity with
+ 	(NoType,_) -> failwith "pp_type_left: unexpected NoType"
+       | (Pointer t, [i]) ->
++          pp_type_left t;
+           pr_elem i;
+           iiqu +> List.iter pr_elem; (* le const est forcement apres le '*' *)
+           if iiqu <> [] || get_comments_after i <> []
+           then pr_space();
+-          pp_type_left t
++          ()
+ 
+       | (Array (eopt, t), [i1;i2]) -> pp_type_left t
+       | (FunctionType (returnt, paramst), [i1;i2]) -> pp_type_left returnt
+-- 
+2.21.1
 
 _______________________________________________
 Cocci mailing list
