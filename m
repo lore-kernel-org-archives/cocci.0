@@ -2,85 +2,89 @@ Return-Path: <SRS0=WAcx=37=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+X-Spam-Status: No, score=-9.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D700C352A3
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62216C3B187
 	for <cocci@archiver.kernel.org>; Tue, 11 Feb 2020 14:02:14 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AAF5220870
+	by mail.kernel.org (Postfix) with ESMTPS id AAD5C206ED
 	for <cocci@archiver.kernel.org>; Tue, 11 Feb 2020 14:02:13 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="acvYgbSd"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AAF5220870
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Xu63uOfV"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AAD5C206ED
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 01BE1tC3018971;
-	Tue, 11 Feb 2020 15:01:55 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 01BE1xgU017768;
+	Tue, 11 Feb 2020 15:01:59 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id E3EDF77FF;
-	Tue, 11 Feb 2020 15:01:54 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 649E277FF;
+	Tue, 11 Feb 2020 15:01:59 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id B25EB77EF
- for <cocci@systeme.lip6.fr>; Tue, 11 Feb 2020 15:01:52 +0100 (CET)
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com
- [IPv6:2607:f8b0:4864:20:0:0:0:443])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 01BE1oPm000352
+ by systeme.lip6.fr (Postfix) with ESMTPS id 84F4A77EF
+ for <cocci@systeme.lip6.fr>; Tue, 11 Feb 2020 15:01:57 +0100 (CET)
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:641])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 01BE1t74028154
  (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Tue, 11 Feb 2020 15:01:51 +0100 (CET)
-Received: by mail-pf1-x443.google.com with SMTP id n7so5562498pfn.0
- for <cocci@systeme.lip6.fr>; Tue, 11 Feb 2020 06:01:51 -0800 (PST)
+ for <cocci@systeme.lip6.fr>; Tue, 11 Feb 2020 15:01:56 +0100 (CET)
+Received: by mail-pl1-x641.google.com with SMTP id a6so4314849plm.3
+ for <cocci@systeme.lip6.fr>; Tue, 11 Feb 2020 06:01:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=S1++7kP6tXDKBd34NXZh/jrm4XImjEMB0GxCEH/3wBU=;
- b=acvYgbSdKsbxXiAamIo24G7YR39D/eTfJrVvRPU414RqjG5m11zdEDz/LzZ3kaDdK5
- U1RE+Rd8mG/KpR363XWKtIrKWSD8iNmmMm6e1Pgirp7yctsMrc9MwxyAemS4vMzV/WfQ
- Ai1IQHsT9jtyxIvd7I9fY+cIaRqwfWHJyqI1Hqj+l5Zn5+esUbUrvuBpxgLmSes8k7qA
- bBT5mveJWf5plUa0TJmwi+/xzTXNAawKjGojuvKQt6HJpXUBNfUiAnTdW54hN9Qm7JA1
- 0ed13uc1Ej+kIVR/1IIVhg9PeZkcnGPaW0pZth8Rb/05iqg0OTzZJunCiSr2NSY+HDd5
- 5QgQ==
+ h=from:to:cc:subject:date:message-id:in-reply-to:references
+ :mime-version:content-transfer-encoding;
+ bh=ghVu4OJ3L2uII3bIe675FjO/5HT0E/BaTOy1eE/SBDk=;
+ b=Xu63uOfVV77SshD8HZEjZIiRcnHXH+owM0i3VGRhS1P7+BdHi1j12sTjWkUJcqlhA2
+ 85s0Iq2HnOOjnA78WJjT1x2PoNRk7R0TxtENsQ2Urd5PQWdUeoXSJ4iQklZjBnhaZCmK
+ mhOMNPrR1Yzf4FMEi2tDo5/tPie68ZXO2zevBrJIEjFhcBftWcBBtNwJ6b1KxjBnmyAP
+ nbx/vtazk9pPeKbsLa9IE+eusp6iJh4A8q+b0xIIG3EHlWqVxZIVuSpOfcQNcxamLKqe
+ oZiv5PVx+GEGQcOvfSufB4iL9kZEw5spZMuBL20FiBuGeA4mrzIOccnWtawKNFVFSGhI
+ iCEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=S1++7kP6tXDKBd34NXZh/jrm4XImjEMB0GxCEH/3wBU=;
- b=Gz+2mSgBxJDFL9QqyAnLNm1rFET5b9IV6RP8goNbC13leMqvWa69bWt2ueCb2I2+eb
- vqQ3ECtHepjWUNwBtMIHtQnuri/KcZ1N9C65kSe/mxVE3XXmB9EYFeQ0brsX3avpNNmi
- Z+RGS+qQOodzHxvJJDk7kKyIyaMEAJMfPQ8wpGiELRCDikb1E4XEvxaBD3DVjR3Hc1Q2
- UuwPMTR8NTudlpCjwCn6SXVcFPejuWWVOblfTwMxlsVrptLGw3WVdwK3Z7EZKSE1kmbd
- yUlkWchqe8ZiIrv3q1UgfFMXSD5XbP2d3mCfZf2aDJPw4Ui/bvTFDXDPXFGVyeJqrqN7
- U6ww==
-X-Gm-Message-State: APjAAAWKU6Q2syc75qa9BEClPQvSEvW9Y98my61Lu8uwRRBxuQv0nj5C
- yBqJnbx27V5CjJv7l6itL+QMNYZt
-X-Google-Smtp-Source: APXvYqxdPTd1uTFRCdsF1L5Ty2PH1WiVF0BIxPvLjlM4agf51abg0KACwcUMPZSPEQ7/d30HxIl3Jw==
-X-Received: by 2002:aa7:96b6:: with SMTP id g22mr6617712pfk.206.1581429707966; 
- Tue, 11 Feb 2020 06:01:47 -0800 (PST)
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=ghVu4OJ3L2uII3bIe675FjO/5HT0E/BaTOy1eE/SBDk=;
+ b=Wi7iUdBr8QZeQ+egcXdpvNYXq2opXmaAct97gqdMwjr0SW7iaHab+eYQVEwTpI4pW+
+ bezqz7b3ad+M8W4T4+yjdKtlOHjs+iCcoCS6P8jKwV3AfPZSyojDB0WYBR5T5HOtyb0b
+ eMbpOzTBXD9K2wmQ5ThjF9HsNl8d2gIC2J6lj1adGWYu6jRUua4dNkL4ffwV9Tc1X3I4
+ hmjbZW/kDZY17CjTyZv0e5s2EQNvCrIRD2qdCjj+Cwimrll37fXyG4B4ouDsj1v7HgeG
+ kC6O/v92yYn8etIRq6wolXKy7MlFTS1Lnq6vxIbzHwUJRsBTk+iIg1j9yyMDIKcokXtK
+ rWRQ==
+X-Gm-Message-State: APjAAAXq1ln9UUidig6wBlaoTRVT44iHHqLp3NBeTw6FWr5p1bJUw49v
+ scbXhqowxS2zRQmk68xFnzQO/vb8
+X-Google-Smtp-Source: APXvYqyeyab7EZE7U4MyususChitcHk4tIiqkVP85T9zLSHnexikQ8aDXPwep00BAKgw7ustP1kmoA==
+X-Received: by 2002:a17:90a:8001:: with SMTP id
+ b1mr3804254pjn.39.1581429714618; 
+ Tue, 11 Feb 2020 06:01:54 -0800 (PST)
 Received: from localhost.localdomain ([2405:204:22ac:7250:d1c8:6411:2f12:731d])
- by smtp.gmail.com with ESMTPSA id z26sm4203575pgu.80.2020.02.11.06.01.44
+ by smtp.gmail.com with ESMTPSA id z26sm4203575pgu.80.2020.02.11.06.01.50
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 11 Feb 2020 06:01:47 -0800 (PST)
+ Tue, 11 Feb 2020 06:01:54 -0800 (PST)
 From: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 To: cocci@systeme.lip6.fr
-Date: Tue, 11 Feb 2020 19:31:34 +0530
-Message-Id: <20200211140137.2304-1-jaskaransingh7654321@gmail.com>
+Date: Tue, 11 Feb 2020 19:31:35 +0530
+Message-Id: <20200211140137.2304-2-jaskaransingh7654321@gmail.com>
 X-Mailer: git-send-email 2.21.1
+In-Reply-To: <20200211140137.2304-1-jaskaransingh7654321@gmail.com>
+References: <20200211140137.2304-1-jaskaransingh7654321@gmail.com>
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 11 Feb 2020 15:01:55 +0100 (CET)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 11 Feb 2020 15:01:59 +0100 (CET)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
  (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Tue, 11 Feb 2020 15:01:52 +0100 (CET)
+ Tue, 11 Feb 2020 15:01:56 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78
 Cc: linux-kernel-mentees@lists.linuxfoundation.org
-Subject: [Cocci] [PATCH v5 0/3] cocci: Align the C AST and Cocci AST for
+Subject: [Cocci] [PATCH v5 1/3] parsing_c: Align C AST and Cocci AST for
 	pointer
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
@@ -98,51 +102,91 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-This series is to address the type matching problem in Coccinelle.
+For a pointer, the C parser constructed an AST dissimilar from that
+of the Cocci AST. This caused failures in matching with certain
+pointer types. For example, for the following case:
 
-Patch 1/3 is for aligning the C and Cocci AST so that
-pointer to const pointer and its variants can be matched.
+char *1 const *2 id;
 
-Patch 2/3 reflects the pretty printing changes made in 
-1/3 in the ptrconstptr test case. A space is added between
-the * and const.
+The C AST constructed would be:
+const Pointer1 -> Pointer2 -> char
 
-Patch 3/3 consists of a test case for matching a pointer to
-const pointer and its variants.
+The Cocci AST constructed would be:
+Pointer2 -> const Pointer1 -> char
 
-Changes in v5:
---------------
-- Remove unnecessary parantheses and return of unit in Patch 1/3.
-- Have the test case in Patch 3/3 conform more closely with the
-  Linux kernel coding style.
+Change the pointer rule in the C parser so that an AST similar to the
+Cocci AST is constructed.
 
-Changes in v4:
---------------
-- Fix coding style w/r/t placement of comment with List.iter and
-  the qualifier printing function.
+Make necessary changes in the C pretty printer so that the pointer type
+is printed correctly.
 
-Changes in v3:
---------------
-- Add a space between the * and qualifier in Patch 1/3.
-- Add Patch 2/3 to add a space between * and const in the test
-  case ptrconstptr.
+Signed-off-by: Jaskaran Singh <jaskaransingh7654321@gmail.com>
+---
+ parsing_c/parser_c.mly      |  4 ++--
+ parsing_c/pretty_print_c.ml | 15 ++++++++++-----
+ 2 files changed, 12 insertions(+), 7 deletions(-)
 
-Changes in v2:
---------------
-- Change body and subject of Patch 2/2 as per suggestion of Markus
-  Elfring.
-
-[PATCH v5 1/3] parsing_c: Align C AST and Cocci AST for pointer
-[PATCH v5 2/3] tests: Add space between * and const in
-[PATCH v5 3/3] tests: Add test case to match const pointer variants
-
- parsing_c/parser_c.mly      |    4 ++--
- parsing_c/pretty_print_c.ml |   15 ++++++++++-----
- tests/constptr.c            |    7 +++++++
- tests/constptr.cocci        |   19 +++++++++++++++++++
- tests/constptr.res          |    7 +++++++
- tests/ptrconstptr.res       |    2 +-
- 6 files changed, 46 insertions(+), 8 deletions(-)
+diff --git a/parsing_c/parser_c.mly b/parsing_c/parser_c.mly
+index 8d7b761e..4c74f15a 100644
+--- a/parsing_c/parser_c.mly
++++ b/parsing_c/parser_c.mly
+@@ -1333,14 +1333,14 @@ pointer:
+  | tmul                   { (Ast_c.noattr,fun x -> mk_ty (Pointer x) [$1]) }
+  | tmul pointer
+      { let (attr,ptr) = $2 in
+-       (attr,fun x -> mk_ty (Pointer (ptr x)) [$1]) }
++       (attr,fun x -> ptr (mk_ty (Pointer x) [$1])) }
+  | tmul type_qualif_list
+      { let (attr,tq) = $2 in
+        (attr,fun x -> (tq.qualifD, mk_tybis (Pointer x) [$1]))}
+  | tmul type_qualif_list pointer
+      { let (attr1,tq) = $2 in
+        let (attr2,ptr) = $3 in
+-       (attr1@attr2,fun x -> (tq.qualifD, mk_tybis (Pointer (ptr x)) [$1])) }
++       (attr1@attr2,fun x -> ptr (tq.qualifD, mk_tybis (Pointer x) [$1])) }
+ 
+ tmul:
+    TMul { $1 }
+diff --git a/parsing_c/pretty_print_c.ml b/parsing_c/pretty_print_c.ml
+index a2e35588..f4821d5c 100644
+--- a/parsing_c/pretty_print_c.ml
++++ b/parsing_c/pretty_print_c.ml
+@@ -804,11 +804,14 @@ and pp_string_format (e,ii) =
+              (FunctionType (return=void, params=int i) *)
+           (*WRONG I THINK, use left & right function *)
+           (* bug: pp_type_with_ident_rest None t;      print_ident ident *)
++          pp_type_left t;
+           pr_elem i;
+-          iiqu +> List.iter pr_elem; (* le const est forcement apres le '*' *)
++          iiqu +>
++          List.iter (* le const est forcement apres le '*' *)
++            (function x -> pr_space(); pr_elem x);
+           if iiqu <> [] || get_comments_after i <> []
+           then pr_space();
+-          pp_type_with_ident_rest ident t attrs Ast_c.noattr;
++          print_ident ident
+ 
+       (* ugly special case ... todo? maybe sufficient in practice *)
+       | (ParenType ttop, [i1;i2]) ->
+@@ -885,11 +888,13 @@ and pp_string_format (e,ii) =
+       match ty, iity with
+ 	(NoType,_) -> failwith "pp_type_left: unexpected NoType"
+       | (Pointer t, [i]) ->
++          pp_type_left t;
+           pr_elem i;
+-          iiqu +> List.iter pr_elem; (* le const est forcement apres le '*' *)
++          iiqu +>
++          List.iter (* le const est forcement apres le '*' *)
++            (function x -> pr_space(); pr_elem x);
+           if iiqu <> [] || get_comments_after i <> []
+-          then pr_space();
+-          pp_type_left t
++          then pr_space()
+ 
+       | (Array (eopt, t), [i1;i2]) -> pp_type_left t
+       | (FunctionType (returnt, paramst), [i1;i2]) -> pp_type_left returnt
+-- 
+2.21.1
 
 _______________________________________________
 Cocci mailing list
