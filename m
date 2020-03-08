@@ -5,86 +5,86 @@ X-Spam-Level:
 X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35E9EC10F28
-	for <cocci@archiver.kernel.org>; Sun,  8 Mar 2020 08:45:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACD16C10F29
+	for <cocci@archiver.kernel.org>; Sun,  8 Mar 2020 08:45:10 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A54D6206D7
-	for <cocci@archiver.kernel.org>; Sun,  8 Mar 2020 08:45:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2CCC120838
+	for <cocci@archiver.kernel.org>; Sun,  8 Mar 2020 08:45:09 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aFKI6UVD"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A54D6206D7
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nLYHosbb"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2CCC120838
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0288itwF005613;
-	Sun, 8 Mar 2020 09:44:55 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0288iveL000332;
+	Sun, 8 Mar 2020 09:44:57 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 22D857800;
-	Sun,  8 Mar 2020 09:44:55 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 6039C7819;
+	Sun,  8 Mar 2020 09:44:57 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 3665D7742
- for <cocci@systeme.lip6.fr>; Sun,  8 Mar 2020 09:44:53 +0100 (CET)
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com
- [IPv6:2607:f8b0:4864:20:0:0:0:542])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 0288ipWD005752
+ by systeme.lip6.fr (Postfix) with ESMTPS id 66EF37814
+ for <cocci@systeme.lip6.fr>; Sun,  8 Mar 2020 09:44:55 +0100 (CET)
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:102e])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 0288irsP025184
  (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Sun, 8 Mar 2020 09:44:52 +0100 (CET)
-Received: by mail-pg1-x542.google.com with SMTP id t24so3294624pgj.7
- for <cocci@systeme.lip6.fr>; Sun, 08 Mar 2020 00:44:52 -0800 (PST)
+ for <cocci@systeme.lip6.fr>; Sun, 8 Mar 2020 09:44:54 +0100 (CET)
+Received: by mail-pj1-x102e.google.com with SMTP id l8so3032991pjy.1
+ for <cocci@systeme.lip6.fr>; Sun, 08 Mar 2020 00:44:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=9JAdyz2iBJMEmw31vFq2hVb+1Gs7bt49sVWPqgDF7jo=;
- b=aFKI6UVDaebs4uc00T2kHOJKk52T3qRsP3Gwu70aUiHEjuDyh9P+pxZR+aG/ATHxKm
- 74xz6eoziCYnLFdcDxpZLBXb8ARP+B2QyNhRwFc3HIG1YDRsQKQX1AcehRsoGiZ8c5x0
- DaVopmNtsxyG69kQluqv3KfWAnFfSzJ1F/AeSVRZrqJzpchC5jgDuoxGaOZeyhOuWBXW
- kgonYqXyoJ1LOLcps2BMRgt0FD7jREQyL1Vxv+gZsxhUiNR31Bx20gmhWGLqWyO2/E85
- qDqOXH2m0TxgL/FIQhIIMSg1zLObuzCjXcmgOfdD81HKg8rNTz+dALYNF2NwrnGUwZK5
- oFaA==
+ bh=OAgaf6f/g8C77m/ZDRBPmrtY2bP/QHsonyCPsjIZw/U=;
+ b=nLYHosbblarsu+jNX0qmOgQv0OXnyZyzPSP+u9P7VGUkZriHsQQXSD4CODIg4lMm60
+ RR38WjbvCM5dpFvetEA5ttRfOnmFQbuJUGWNDObwv6/WAYuvA9gNbREdM1AHHTMGjR5t
+ lQuu/4YkAy4azj2mNeXmEiSo1s18ZsWVmEP0hUvudU5XGJyPmp3ZZl7aqx3r+AL1UH6r
+ DEIZihnbfCm+vhAIS6PvFVDcu1KDXrDUNtPd+L7pRbWizGJI7xP4GnjJKAPRqUoC/ETd
+ tT3pzbkEizLqJbyy4hIeh6pKOrZxF+xERd4WNK8LcwHxViE6RbBzmnCNTivewASVr6PN
+ UdSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=9JAdyz2iBJMEmw31vFq2hVb+1Gs7bt49sVWPqgDF7jo=;
- b=FWg4rnaeKsAuVJNBZqQbWdika1rfWMR0Gcvq7I4z9K5Jjm+5SroDC9w3eirTBT6BlL
- x03CyX+d486M4/oZ+iWmuPeClrhdis6rWNSX3k/LJt6l/exaGrYILCIvP09D48F2IvkT
- Q0eW6EZQiA47nIY58MrzS0CEd348VVgW3RoKnSTuqq+OH66rHmA2RSC3iVvgRchBj5fE
- UkgBxdqsd1jXYJiKMrP7WlPsPLIAWZZv0xspcoXjzDS9SYkLrihTsPENFXhBflzmDzG1
- 3qFkW+YgE/V2DegV8vSMhyxWj1RArEFvgzhJ5yMr/G17ezTAfCWSwv/D9By8n+pmQGBe
- gKxA==
-X-Gm-Message-State: ANhLgQ32sOOMmsTANctq1V6mIJgQ6Hb2tH/gyNpVba4iUjN8K8/mcXBC
- gZ+vIWO0SK0ZjVm4i3XDoCwhIDnd
-X-Google-Smtp-Source: ADFU+vvTP/Sbamu6xSoHJndOb7H5rnt7WWsronG3SqCdb+hve+XroUgvYdE4Blp67RrvmTnpaHHEDA==
-X-Received: by 2002:a63:450b:: with SMTP id s11mr11015506pga.45.1583657090377; 
- Sun, 08 Mar 2020 00:44:50 -0800 (PST)
+ bh=OAgaf6f/g8C77m/ZDRBPmrtY2bP/QHsonyCPsjIZw/U=;
+ b=mWhCYImOvrbZbWXH0kmz4/7DaGpm3iv+EIoiby5v//3H7AEhE/ErqOxhRnBoS1z9Ni
+ TVjjwldiJai3tY//X4k+NdQQ59DQPttbmk94v89bdqx5rd4Ek3jq2M4QfHXYTzknTrtX
+ v4MrgtJTYEzQSnBOgtocwtZ/fxDD6Y5C1Xlm4SOFaE9XdyrpD1czhX/Qzcl2gyUbsker
+ 6/OKU68x7GybeVX8sJvUe104XJS54pvAiFFnPujn7wZFutJh1H11yXrqiIdAHGsDGS9L
+ k+CHUmMjoDEpGcFTsL0YCCjw4H4ozU/hktPxIrXV31YWPB94REJ3xQhXhPcs8oXOqlXf
+ jbGQ==
+X-Gm-Message-State: ANhLgQ293Q/nt8+2/c438ksJ7kBTqUueLUMSdXBnIiV+wFIAb7ezxWsW
+ aj1uW5+JtL7EGazydciqjUvIY3vI
+X-Google-Smtp-Source: ADFU+vuV3eswFrpa7AXYG+ZZ4kW1n+P7XnLdC0H8c6UN/irj0Ldjz1NyKWqGy3I11B0tyK4DsENs3A==
+X-Received: by 2002:a17:902:ab8f:: with SMTP id
+ f15mr11029537plr.280.1583657092804; 
+ Sun, 08 Mar 2020 00:44:52 -0800 (PST)
 Received: from localhost.localdomain ([1.38.148.20])
- by smtp.gmail.com with ESMTPSA id b3sm14587244pjo.30.2020.03.08.00.44.47
+ by smtp.gmail.com with ESMTPSA id b3sm14587244pjo.30.2020.03.08.00.44.50
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sun, 08 Mar 2020 00:44:50 -0800 (PST)
+ Sun, 08 Mar 2020 00:44:52 -0800 (PST)
 From: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 To: cocci@systeme.lip6.fr
-Date: Sun,  8 Mar 2020 14:13:54 +0530
-Message-Id: <20200308084356.14506-12-jaskaransingh7654321@gmail.com>
+Date: Sun,  8 Mar 2020 14:13:55 +0530
+Message-Id: <20200308084356.14506-13-jaskaransingh7654321@gmail.com>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200308084356.14506-1-jaskaransingh7654321@gmail.com>
 References: <20200308084356.14506-1-jaskaransingh7654321@gmail.com>
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 08 Mar 2020 09:44:55 +0100 (CET)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 08 Mar 2020 09:44:57 +0100 (CET)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
  (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Sun, 08 Mar 2020 09:44:52 +0100 (CET)
+ Sun, 08 Mar 2020 09:44:54 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78
 Cc: linux-kernel-mentees@lists.linuxfoundation.org
-Subject: [Cocci] [PATCH 11/13] cocci: pretty print EnumDef as per enum_decl
-	type
+Subject: [Cocci] [PATCH 12/13] tests: Add test case for assigned enumerator
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -101,139 +101,63 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-The SmPL AST has a separate enum_decl for a enumerator. Make
-corresponding changes in Unparse_cocci and Pretty_print_cocci
-to correctly pretty print enumerators.
+Add a test case to verify correct pretty printing of
+enumerators that are assigned. The test case should cover
+minused assigned enumerators, plussed assigned enumerators
+and correct matching of an enum with an assigned enumerator.
 
 Signed-off-by: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 ---
- parsing_c/unparse_cocci.ml          | 27 ++++++++++++++++++++++++---
- parsing_cocci/pretty_print_cocci.ml | 18 +++++++++++++++++-
- 2 files changed, 41 insertions(+), 4 deletions(-)
+ tests/enum_assign.c     |  6 ++++++
+ tests/enum_assign.cocci | 11 +++++++++++
+ tests/enum_assign.res   |  7 +++++++
+ 3 files changed, 24 insertions(+)
+ create mode 100644 tests/enum_assign.c
+ create mode 100644 tests/enum_assign.cocci
+ create mode 100644 tests/enum_assign.res
 
-diff --git a/parsing_c/unparse_cocci.ml b/parsing_c/unparse_cocci.ml
-index 30e755e9..8dff2b81 100644
---- a/parsing_c/unparse_cocci.ml
-+++ b/parsing_c/unparse_cocci.ml
-@@ -738,7 +738,7 @@ and typeC ty =
-   | Ast.EnumDef(ty,lb,ids,rb) ->
-       fullType ty; ft_space ty;
-       mcode print_string lb;
--      dots force_newline expression ids;
-+      dots force_newline enum_decl ids;
-       mcode print_string rb
-   | Ast.StructUnionName(kind,name) ->
-       mcode structUnion kind; print_option_prespace ident name
-@@ -952,6 +952,24 @@ and annotated_field d =
-   | Ast.OptField(decl) -> raise CantBeInPlus
-   | Ast.Fdots(_,_) -> raise CantBeInPlus
- 
-+and enum_decl d =
-+  match Ast.unwrap d with
-+    Ast.Enum(name,enum_val) ->
-+      ident name;
-+      pr_space();
-+      print_option
-+        (function (eq,eval) ->
-+          mcode print_string eq; pr_space(); expression eval) enum_val
-+  | Ast.EnumComma(cm) ->
-+      mcode (print_string_with_hint (SpaceOrNewline (ref " "))) cm
-+  | Ast.EnumDots(dots,whencode) when generating ->
-+      mcode print_string dots;
-+      print_option
-+      (function w ->
-+        print_text "   when != ";
-+        enum_decl w) whencode
-+  | Ast.EnumDots(dots,whencode) -> raise CantBeInPlus
+diff --git a/tests/enum_assign.c b/tests/enum_assign.c
+new file mode 100644
+index 00000000..9c2d16df
+--- /dev/null
++++ b/tests/enum_assign.c
+@@ -0,0 +1,6 @@
++enum h {
++	a = 0,
++	c,
++	x,
++	b
++};
+diff --git a/tests/enum_assign.cocci b/tests/enum_assign.cocci
+new file mode 100644
+index 00000000..a1a59ef8
+--- /dev/null
++++ b/tests/enum_assign.cocci
+@@ -0,0 +1,11 @@
++@@
++@@
 +
- (* --------------------------------------------------------------------- *)
- (* Initialiser *)
- 
-@@ -1420,6 +1438,7 @@ let pp_any = function
-   | Ast.InitTag(x) -> initialiser false x; false
-   | Ast.DeclarationTag(x) -> declaration x; false
-   | Ast.FieldTag(x) -> field x; false
-+  | Ast.EnumDeclTag(x) -> enum_decl x; false
- 
-   | Ast.StorageTag(x) -> storage x unknown unknown; false
-   | Ast.IncFileTag(x) -> inc_file x unknown unknown; false
-@@ -1473,6 +1492,7 @@ let pp_any = function
-   | Ast.StmtDotsTag(x) -> dots force_newline (statement "") x; false
-   | Ast.AnnDeclDotsTag(x) -> dots force_newline annotated_decl x; false
-   | Ast.AnnFieldDotsTag(x) -> dots force_newline annotated_field x; false
-+  | Ast.EnumDeclDotsTag(x) -> dots force_newline enum_decl x; false
-   | Ast.DefParDotsTag(x) -> dots (fun _ -> ()) print_define_param x; false
- 
-   | Ast.TypeCTag(x) -> typeC x; false
-@@ -1505,7 +1525,7 @@ in
- 	      force_newline(); force_newline()
- 	  | (Ast.Directive _::_)
- 	  | (Ast.Rule_elemTag _::_) | (Ast.StatementTag _::_)
--	  | (Ast.FieldTag _::_) | (Ast.InitTag _::_)
-+	  | (Ast.FieldTag _::_) | (Ast.EnumDeclTag _::_) | (Ast.InitTag _::_)
- 	  | (Ast.DeclarationTag _::_) | (Ast.Token ("}",_)::_) -> prnl hd
- 	  | _ -> () in
-       let newline_after _ =
-@@ -1516,7 +1536,8 @@ in
- 	      (if isfn s then force_newline());
- 	      force_newline()
- 	  | (Ast.Directive _::_) | (Ast.StmtDotsTag _::_)
--	  | (Ast.Rule_elemTag _::_) | (Ast.FieldTag _::_) | (Ast.InitTag _::_)
-+	  | (Ast.Rule_elemTag _::_) | (Ast.FieldTag _::_)
-+	  | (Ast.EnumDeclTag _::_)| (Ast.InitTag _::_)
- 	  | (Ast.DeclarationTag _::_) | (Ast.Token ("{",_)::_) ->
- 	      force_newline()
- 	  | _ -> () in
-diff --git a/parsing_cocci/pretty_print_cocci.ml b/parsing_cocci/pretty_print_cocci.ml
-index 6338e464..f6b2894f 100644
---- a/parsing_cocci/pretty_print_cocci.ml
-+++ b/parsing_cocci/pretty_print_cocci.ml
-@@ -439,7 +439,7 @@ and typeC ty =
-       print_option (function x -> ident x; print_string " ") name
-   | Ast.EnumDef(ty,lb,ids,rb) ->
-       fullType ty; mcode print_string lb;
--      dots force_newline expression ids;
-+      dots force_newline enum_decl ids;
-       mcode print_string rb
-   | Ast.StructUnionName(kind,name) ->
-       mcode structUnion kind;
-@@ -585,6 +585,20 @@ and annotated_field arity d =
-   | Ast.ConjField(decls) -> print_disj_list (annotated_field arity) decls "&"
-   | Ast.OptField(decl) -> print_string "?"; annotated_field arity decl
- 
-+and enum_decl d =
-+  match Ast.unwrap d with
-+    Ast.Enum(name,enum_val) ->
-+      ident name;
-+      (match enum_val with
-+        None -> ()
-+      | Some(eq,eval) ->
-+          mcode print_string eq;
-+          expression eval)
-+  | Ast.EnumComma(cm) -> mcode print_string cm
-+  | Ast.EnumDots(dots,Some whencode) ->
-+      mcode print_string dots; print_string "   when != "; enum_decl whencode
-+  | Ast.EnumDots(dots,None) -> mcode print_string dots
-+
- (* --------------------------------------------------------------------- *)
- (* Initialiser *)
- 
-@@ -1090,6 +1104,7 @@ let _ =
-     | Ast.InitTag(x) -> initialiser x
-     | Ast.DeclarationTag(x) -> declaration x
-     | Ast.FieldTag(x) -> field x
-+    | Ast.EnumDeclTag(x) -> enum_decl x
-     | Ast.StorageTag(x) -> storage x
-     | Ast.IncFileTag(x) -> inc_file x
-     | Ast.Rule_elemTag(x) -> rule_elem "" x
-@@ -1110,6 +1125,7 @@ let _ =
-     | Ast.StmtDotsTag(x) -> dots (function _ -> ()) (statement "") x
-     | Ast.AnnDeclDotsTag(x) -> dots (function _ -> ()) (annotated_decl "") x
-     | Ast.AnnFieldDotsTag(x) -> dots (function _ -> ()) (annotated_field "") x
-+    | Ast.EnumDeclDotsTag(x) -> dots (function _ -> ()) enum_decl x
-     | Ast.DefParDotsTag(x) -> dots (function _ -> ()) print_define_param x
-     | Ast.TypeCTag(x) -> typeC x
-     | Ast.ParamTag(x) -> parameterTypeDef x
++enum h {
++  ...,
++- a = 0,
+++ q = 0,
++  ...,
++  b,
+++ z
++};
+diff --git a/tests/enum_assign.res b/tests/enum_assign.res
+new file mode 100644
+index 00000000..3b204aa0
+--- /dev/null
++++ b/tests/enum_assign.res
+@@ -0,0 +1,7 @@
++enum h {
++	q = 0,
++	c,
++	x,
++	b,
++	z
++};
 -- 
 2.21.1
 
