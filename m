@@ -8,83 +8,83 @@ X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 476B6C3F2D1
-	for <cocci@archiver.kernel.org>; Sun,  8 Mar 2020 08:44:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A09F3C3F2C6
+	for <cocci@archiver.kernel.org>; Sun,  8 Mar 2020 08:44:39 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8F97C206D7
-	for <cocci@archiver.kernel.org>; Sun,  8 Mar 2020 08:44:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 1DAD1206D7
+	for <cocci@archiver.kernel.org>; Sun,  8 Mar 2020 08:44:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="vTA6AwJe"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8F97C206D7
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MTIESWNF"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1DAD1206D7
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0288iDjS008846;
-	Sun, 8 Mar 2020 09:44:13 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0288iEOl012945;
+	Sun, 8 Mar 2020 09:44:26 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 2B2CE7800;
-	Sun,  8 Mar 2020 09:44:13 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 3913577F4;
+	Sun,  8 Mar 2020 09:44:26 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 1A3AB7742
- for <cocci@systeme.lip6.fr>; Sun,  8 Mar 2020 09:44:11 +0100 (CET)
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com
- [IPv6:2607:f8b0:4864:20:0:0:0:544])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 0288i9db026054
+ by systeme.lip6.fr (Postfix) with ESMTPS id 310C17742
+ for <cocci@systeme.lip6.fr>; Sun,  8 Mar 2020 09:44:23 +0100 (CET)
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:441])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 0288iGYT006704
  (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Sun, 8 Mar 2020 09:44:10 +0100 (CET)
-Received: by mail-pg1-x544.google.com with SMTP id h8so3289724pgs.9
- for <cocci@systeme.lip6.fr>; Sun, 08 Mar 2020 00:44:10 -0800 (PST)
+ for <cocci@systeme.lip6.fr>; Sun, 8 Mar 2020 09:44:17 +0100 (CET)
+Received: by mail-pf1-x441.google.com with SMTP id c144so3404032pfb.10
+ for <cocci@systeme.lip6.fr>; Sun, 08 Mar 2020 00:44:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=vOKXLRyIQIQIj6PkqX4hLM7maWPHM49HWGvwgyeyiF0=;
- b=vTA6AwJeHjohV86/1Ci2LCdydD47Kve7mlRRD3CrHLsviH0R6qgKy9OVbBKE8MG+ba
- KvRK52+3zBwsbMiQnhMmHpkdgt/l+vdjlZeFlvVCOfRGCqmN/+oe40ylvkTDJI+Ndw3R
- 3uTD036Z+IkaJjLsPItkQ3KPAOICgD1/9QYrE7A7yOviYEwbtw3AEMwQvzWVdYXmTf1f
- U4JK1PADDSXbH+SdksZRnkUj0iLREU+UOk/OQY9kmieYHvov8CGEZmUYDCRCGELRHME6
- KOtyqDTcrV53QpeqR98Mo18Joz4ASsKmcijpuO3vmRp4POrAXB74EIjmk6TDnyP87keA
- S2kw==
+ bh=nSi+dgPVv0xkezcYKd48ZE1X5GOqXzTJa3ohoO1Apmo=;
+ b=MTIESWNFcQY2QWPO5eMS6C7CeqW7anSsU6Z793Utd9GI6wnXL4pEk6xRykG5QdhVcF
+ HTrfsorFLXxMQU9sFg3glWtpvetTEobTHK3vDRFK7ZsU1ztOqTXPeEu7PemJe+gMsZvd
+ fB72E4Rn+xuY04AnURROZFtXiTrmSqYTEW5zxtRSe8iYKu7M8WIjb6WpZ8gVVFfKZu4E
+ 2u4D4hse21fL/oCw3VpNCOHeP9b+tSoX5rNhrbQgRVoYrzGdej+BIG9wxY+Ea/sgOiNL
+ q1A7v0FoZggezQrQFH6Wikqr50DjEw4YEhZtSlIteShsNfTmZFhIs0iT+i8kDOT6K0Ez
+ cnQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=vOKXLRyIQIQIj6PkqX4hLM7maWPHM49HWGvwgyeyiF0=;
- b=lpYeUJDlwxglFgwoTKCS5rAv//eMVWnYPqn5oGKfhRiQvYhDrjNmdc4BzMN8DiXAP/
- ggQO0rYGVbM4+7uA5eTMxE64CZegGN7xC+a0btv1WTKmIb9cuqoWROiHzmdoDSJFcWeA
- o6l19KJAohksvSaba/RhtnJovmwuRR2HuvAKxDgnD33mNK2n2u7myeCHsi39QYNwbqet
- X0QQaRhwXnjfEzBjPbswV2AkTHb6Kbc36sPWgZxz+29zO46o0cmc0LNBSrB4hUra7Hoq
- FBbJ55s3NmKrmPV4veqFoQ7z+D2+94E1LMewhTSauaUm4wEzgHNMoTOmnw+hxwWazPok
- 7Jeg==
-X-Gm-Message-State: ANhLgQ0TriHWMZuHxWoN7f3ZiRnKke5QxtJ7MqYsAIIBTfELwZnwH2pe
- Fg60NXNKLfoZhcivgXSUR5MyUKBl
-X-Google-Smtp-Source: ADFU+vuI40k+4u0NkHaLII9DYy+ZDo82clHxyYQIt2GhVNbJg7Jgw3umyIa9SOrrENqA+SOscRBcGA==
-X-Received: by 2002:a63:3111:: with SMTP id x17mr11356596pgx.422.1583657048317; 
- Sun, 08 Mar 2020 00:44:08 -0800 (PST)
+ bh=nSi+dgPVv0xkezcYKd48ZE1X5GOqXzTJa3ohoO1Apmo=;
+ b=q9/mDsT/pxscaTxh5qtLDgyX/lKVfN7CcKSbovjLZsvClO/4Llf/45www7vW92p6wQ
+ zRTKuLDxs1ao/DrX8B4Sw9TztNemNLPm6rqlMUamynIp+k9Jp77v6msIu/ISV9YEYLHU
+ tFF0P8jzTAxRDy5koNXB+o4+jdRQJSY62MmTUbWF8gVIGyRcuRAPZkxwh+3Fhi0QjqCW
+ fMswOrINFMbe+dM3XdrFfljii2p3V+GR1iwlln/a77adiYyjWQ4Hj1LlzICW1bCk5Ko+
+ q1Q+jENwoTwDUryuQDI305VDYL4fB7vPfliL10VRg9X8LR6Jc/W2dr5/naLgdBvBg3Sk
+ E0Cw==
+X-Gm-Message-State: ANhLgQ2+pIZZ4USOUE5gw2YdcUnxySEzTAUfFj/n495VHH3nAvDuWWtg
+ 456Fn+VB4dBIfFccSfcsgm8bVshG
+X-Google-Smtp-Source: ADFU+vu9GWkUHfH56Um7+sGuoWDgr5VRLwBRNq+Y6cecZi6NyGSDkUWq4+Vkr91rmr27KChtEfK0Iw==
+X-Received: by 2002:a63:770d:: with SMTP id s13mr10961125pgc.7.1583657055986; 
+ Sun, 08 Mar 2020 00:44:15 -0800 (PST)
 Received: from localhost.localdomain ([1.38.148.20])
- by smtp.gmail.com with ESMTPSA id b3sm14587244pjo.30.2020.03.08.00.44.05
+ by smtp.gmail.com with ESMTPSA id b3sm14587244pjo.30.2020.03.08.00.44.11
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sun, 08 Mar 2020 00:44:07 -0800 (PST)
+ Sun, 08 Mar 2020 00:44:15 -0800 (PST)
 From: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 To: cocci@systeme.lip6.fr
-Date: Sun,  8 Mar 2020 14:13:44 +0530
-Message-Id: <20200308084356.14506-2-jaskaransingh7654321@gmail.com>
+Date: Sun,  8 Mar 2020 14:13:46 +0530
+Message-Id: <20200308084356.14506-4-jaskaransingh7654321@gmail.com>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200308084356.14506-1-jaskaransingh7654321@gmail.com>
 References: <20200308084356.14506-1-jaskaransingh7654321@gmail.com>
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 08 Mar 2020 09:44:14 +0100 (CET)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 08 Mar 2020 09:44:26 +0100 (CET)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
  (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Sun, 08 Mar 2020 09:44:10 +0100 (CET)
+ Sun, 08 Mar 2020 09:44:18 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78
 Cc: linux-kernel-mentees@lists.linuxfoundation.org
-Subject: [Cocci] [PATCH 01/13] parsing_cocci: Align C AST and SmPL AST for
-	enum
+Subject: [Cocci] [PATCH 03/13] parsing_cocci: parser: Parse enumerators
+	correctly
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -101,141 +101,84 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-The C AST and SmPL AST differs with respect to the enum type.
-
-For an enumerator, the C AST is as follows:
-	Enum -> list of (name, (info, expression))
-
-For the same, the SmPL AST is as follows:
-	EnumDef -> list of expression
-
-While the SmPL parser does make sure that enumerators are
-parsed as per C rules, the OCaml types for an enumerator themselves
-mismatch, due to their organization. This causes bugs/mismatches for
-cases where enums are in disjunctions.
-
-Make the enumerator type of the SmPL AST closer to that of
-the C AST.
+The EnumDef constructor of the SmPL AST has changed. Make
+the SmPL parser parse an EnumDef correctly.
 
 Signed-off-by: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 ---
- parsing_cocci/ast0_cocci.ml  | 11 ++++++++++-
- parsing_cocci/ast0_cocci.mli | 10 +++++++++-
- parsing_cocci/ast_cocci.ml   |  9 ++++++++-
- parsing_cocci/ast_cocci.mli  | 10 +++++++++-
- 4 files changed, 36 insertions(+), 4 deletions(-)
+ parsing_cocci/parse_aux.ml            |  5 +++++
+ parsing_cocci/parse_aux.mli           |  9 +++++++++
+ parsing_cocci/parser_cocci_menhir.mly | 13 +++++--------
+ 3 files changed, 19 insertions(+), 8 deletions(-)
 
-diff --git a/parsing_cocci/ast0_cocci.ml b/parsing_cocci/ast0_cocci.ml
-index 77dc46f0..b3d8b137 100644
---- a/parsing_cocci/ast0_cocci.ml
-+++ b/parsing_cocci/ast0_cocci.ml
-@@ -211,7 +211,7 @@ and base_typeC =
- 	               string mcode (* ) *) (* IBM C only *)
-   | EnumName        of string mcode (*enum*) * ident option (* name *)
-   | EnumDef  of typeC (* either StructUnionName or metavar *) *
--	string mcode (* { *) * expression dots * string mcode (* } *)
-+	string mcode (* { *) * enum_decl dots * string mcode (* } *)
-   | StructUnionName of Ast.structUnion mcode * ident option (* name *)
-   | StructUnionDef  of typeC (* either StructUnionName or metavar *) *
- 	string mcode (* { *) * field dots * string mcode (* } *)
-@@ -288,6 +288,15 @@ and bitfield = string mcode (* : *) * expression
+diff --git a/parsing_cocci/parse_aux.ml b/parsing_cocci/parse_aux.ml
+index 9f2d607b..b5d1afb4 100644
+--- a/parsing_cocci/parse_aux.ml
++++ b/parsing_cocci/parse_aux.ml
+@@ -136,6 +136,11 @@ let mkpdots str dot =
+     "..." -> Ast0.wrap(Ast0.Pdots(clt2mcode str dot))
+   | _ -> failwith "cannot happen"
  
- and field = base_field wrap
- 
-+and base_enum_decl =
-+    Enum of ident * (string mcode (* = *) * expression) option
-+  | EnumComma of string mcode (* , *)
-+  | EnumDots of string mcode (* ... *) * (string mcode * string mcode *
-+                enum_decl) option (* whencode *)
++let mkenumdots str (dot,whencode) =
++  match str with
++    "..." -> Ast0.wrap(Ast0.EnumDots(clt2mcode str dot, whencode))
++  | _ -> failwith "cannot happen"
 +
-+and enum_decl = base_enum_decl wrap
-+
-+
- (* --------------------------------------------------------------------- *)
- (* Initializers *)
+ let arith_op ast_op left op right =
+   let op' = Ast0.wrap (Ast0.Arith (clt2mcode ast_op op)) in  
+   Ast0.wrap (Ast0.Binary(left, op', right))
+diff --git a/parsing_cocci/parse_aux.mli b/parsing_cocci/parse_aux.mli
+index 63419831..91d7cb26 100644
+--- a/parsing_cocci/parse_aux.mli
++++ b/parsing_cocci/parse_aux.mli
+@@ -126,6 +126,15 @@ val mkpdots :
+   (Ast_cocci.added_string * Ast0_cocci.position_info) list *
+   (Ast_cocci.added_string * Ast0_cocci.position_info) list * Ast0_cocci.anything list *
+   string -> Ast0_cocci.base_parameterTypeDef Ast0_cocci.wrap
++val mkenumdots :
++  string ->
++  (Data.line_type * int * int * int * int * int *
++   (Ast_cocci.added_string * Ast0_cocci.position_info) list *
++   (Ast_cocci.added_string * Ast0_cocci.position_info) list * Ast0_cocci.anything list *
++   string) *
++  (string Ast0_cocci.mcode * string Ast0_cocci.mcode * Ast0_cocci.enum_decl)
++  option ->
++  Ast0_cocci.base_enum_decl Ast0_cocci.wrap
+ val arith_op :
+   Ast_cocci.arithOp ->
+   Ast0_cocci.expression ->
+diff --git a/parsing_cocci/parser_cocci_menhir.mly b/parsing_cocci/parser_cocci_menhir.mly
+index 9e6c8a08..ff535729 100644
+--- a/parsing_cocci/parser_cocci_menhir.mly
++++ b/parsing_cocci/parser_cocci_menhir.mly
+@@ -1160,15 +1160,12 @@ struct_decl_list_start:
+ /* very restricted what kinds of expressions can appear in an enum decl */
  
-diff --git a/parsing_cocci/ast0_cocci.mli b/parsing_cocci/ast0_cocci.mli
-index 274c6bc2..732a1345 100644
---- a/parsing_cocci/ast0_cocci.mli
-+++ b/parsing_cocci/ast0_cocci.mli
-@@ -202,7 +202,7 @@ and base_typeC =
- 	               string mcode (* ) *) (* IBM C only *)
-   | EnumName        of string mcode (*enum*) * ident option (* name *)
-   | EnumDef  of typeC (* either StructUnionName or metavar *) *
--	string mcode (* { *) * expression dots * string mcode (* } *)
-+	string mcode (* { *) * enum_decl dots * string mcode (* } *)
-   | StructUnionName of Ast_cocci.structUnion mcode * ident option (* name *)
-   | StructUnionDef  of typeC (* either StructUnionName or metavar *) *
- 	string mcode (* { *) * field dots * string mcode (* } *)
-@@ -276,6 +276,14 @@ and bitfield = string mcode (* : *) * expression
+ enum_decl_one:
+-    | disj_ident    { Ast0.wrap(Ast0.Ident($1)) }
++    | disj_ident    { Ast0.wrap(Ast0.Enum($1, None)) }
+     | disj_ident TEq enum_val
+-	{ let id = Ast0.wrap(Ast0.Ident($1)) in
+-        let (op,clt) = ("=",$2) in
+-        let op' = P.clt2mcode op clt in
+-        let op'' = Ast0.wrap (Ast0.SimpleAssign op') in
++	{
+ 	Ast0.wrap
+-	  (Ast0.Assignment
+-	     (id, op'', Ast0.set_arg_exp $3, false)) }
++	  (Ast0.Enum
++	     ($1, Some(P.clt2mcode "=" $2, $3))) }
  
- and field = base_field wrap
+ enum_val:
+    ident    { Ast0.wrap(Ast0.Ident($1)) }
+@@ -1193,7 +1190,7 @@ enum_val:
  
-+and base_enum_decl =
-+    Enum of ident * (string mcode (* = *) * expression) option
-+  | EnumComma of string mcode (* , *)
-+  | EnumDots of string mcode (* ... *) * (string mcode * string mcode *
-+                enum_decl) option (* whencode *)
-+
-+and enum_decl = base_enum_decl wrap
-+
- (* --------------------------------------------------------------------- *)
- (* Initializers *)
+ enum_decl_list:
+    nonempty_list_start(enum_decl_one,edots_when(TEllipsis,enum_decl_one))
+-     { Ast0.wrap($1 P.mkedots (fun c -> Ast0.EComma c)) }
++     { Ast0.wrap($1 P.mkenumdots (fun c -> Ast0.EnumComma c)) }
  
-diff --git a/parsing_cocci/ast_cocci.ml b/parsing_cocci/ast_cocci.ml
-index ba6ec29e..8fa64dcc 100644
---- a/parsing_cocci/ast_cocci.ml
-+++ b/parsing_cocci/ast_cocci.ml
-@@ -351,7 +351,7 @@ and base_typeC =
- 	               string mcode (* ) *) (* IBM C only *)
-   | EnumName        of string mcode (*enum*) * ident option (* name *)
-   | EnumDef  of fullType (* either EnumName or metavar *) *
--	string mcode (* { *) * expression dots * string mcode (* } *)
-+	string mcode (* { *) * enum_decl dots * string mcode (* } *)
-   | StructUnionName of structUnion mcode * ident option (* name *)
-   | StructUnionDef  of fullType (* either StructUnionName or metavar *) *
- 	string mcode (* { *) * annotated_field dots * string mcode (* } *)
-@@ -443,6 +443,13 @@ and base_annotated_field =
- 
- and annotated_field = base_annotated_field wrap
- 
-+and base_enum_decl =
-+    Enum of ident * (string mcode (* = *) * expression) option
-+  | EnumComma of string mcode (* , *)
-+  | EnumDots of string mcode (* ... *) * enum_decl option (* whencode *)
-+
-+and enum_decl = base_enum_decl wrap
-+
- (* --------------------------------------------------------------------- *)
- (* Initializers *)
- 
-diff --git a/parsing_cocci/ast_cocci.mli b/parsing_cocci/ast_cocci.mli
-index 5f21664b..e921f917 100644
---- a/parsing_cocci/ast_cocci.mli
-+++ b/parsing_cocci/ast_cocci.mli
-@@ -333,7 +333,7 @@ and base_typeC =
- 	               string mcode (* ) *) (* IBM C only *)
-   | EnumName        of string mcode (*enum*) * ident option (* name *)
-   | EnumDef  of fullType (* either EnumName or metavar *) *
--	string mcode (* { *) * expression dots * string mcode (* } *)
-+	string mcode (* { *) * enum_decl dots * string mcode (* } *)
-   | StructUnionName of structUnion mcode * ident option (* name *)
-   | StructUnionDef  of fullType (* either StructUnionName or metavar *) *
- 	string mcode (* { *) * annotated_field dots * string mcode (* } *)
-@@ -424,6 +424,14 @@ and base_annotated_field =
- 
- and annotated_field = base_annotated_field wrap
- 
-+and base_enum_decl =
-+    Enum of ident * (string mcode (* = *) * expression) option
-+  | EnumComma of string mcode (* , *)
-+  | EnumDots of string mcode (* ... *) * enum_decl option (* whencode *)
-+
-+and enum_decl = base_enum_decl wrap
-+
-+
- (* --------------------------------------------------------------------- *)
- (* Initializers *)
+ /*****************************************************************************/
  
 -- 
 2.21.1
