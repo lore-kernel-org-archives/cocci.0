@@ -8,83 +8,83 @@ X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82F02C18E5B
-	for <cocci@archiver.kernel.org>; Mon, 16 Mar 2020 10:04:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DBFCC0044D
+	for <cocci@archiver.kernel.org>; Mon, 16 Mar 2020 10:04:55 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 008052051A
-	for <cocci@archiver.kernel.org>; Mon, 16 Mar 2020 10:04:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id ABFD220663
+	for <cocci@archiver.kernel.org>; Mon, 16 Mar 2020 10:04:54 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="tBcvpOv4"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 008052051A
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="a06Pyq2O"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ABFD220663
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 02GA4eMY012935;
-	Mon, 16 Mar 2020 11:04:40 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 02GA4hm0029356;
+	Mon, 16 Mar 2020 11:04:43 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 377A47809;
-	Mon, 16 Mar 2020 11:04:40 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 921787809;
+	Mon, 16 Mar 2020 11:04:43 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 9C9F67802
- for <cocci@systeme.lip6.fr>; Mon, 16 Mar 2020 11:04:38 +0100 (CET)
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com
- [IPv6:2607:f8b0:4864:20:0:0:0:442])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 02GA4aqW028446
+ by systeme.lip6.fr (Postfix) with ESMTPS id 9A6057802
+ for <cocci@systeme.lip6.fr>; Mon, 16 Mar 2020 11:04:41 +0100 (CET)
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:544])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 02GA4dcr027852
  (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Mon, 16 Mar 2020 11:04:37 +0100 (CET)
-Received: by mail-pf1-x442.google.com with SMTP id 2so9628278pfg.12
- for <cocci@systeme.lip6.fr>; Mon, 16 Mar 2020 03:04:37 -0700 (PDT)
+ for <cocci@systeme.lip6.fr>; Mon, 16 Mar 2020 11:04:40 +0100 (CET)
+Received: by mail-pg1-x544.google.com with SMTP id m15so9452259pgv.12
+ for <cocci@systeme.lip6.fr>; Mon, 16 Mar 2020 03:04:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=Z5Vt+kSyi/RcHyrlEg6BWuNNcdeP5nA5wISFF/Yfsqg=;
- b=tBcvpOv48ZK8ACvgScx0mxSLE+Hey+IZqt2tohXLrgqHu0c+21ju+0ghXWth9t5Ug5
- BAA6gGK30H9vjpcaMWKYMkI+0KpXfZhY4gedt/vVbCkyFXxpQb/RC6HDqkLaWzVPw117
- ECzJhiJY+CgiTk24EY/NOuHokWNrtSUutZBeKISTQ3Zdq0i0CbAtLD0qNJX7db/UOgl4
- 5799C99aguxskhsBdSVvmPY2XK/3jOdFjIaJazKeSiiuwlXC/Gof41kXtODyqf23xBAI
- q8Ts2rrhEeYn5gSetEFbVx4mN6eCgF1RmEnetRyoZ42KxCAYKGUkQpDuJPfIy71SZpGn
- ratg==
+ bh=dqkv3oqMwtTa6d0C2gk8rkkDFXuoowFPaClNAY6dKVA=;
+ b=a06Pyq2Ojb7wEsGm91//1BvYSdvaZSgtgA98Pgkgv6vQSfwtmyyMdiFcupEjBi92W0
+ piY2Tc3qXthxI/VTaBSp0iIQvpyxA07lgjSKDfgL1PKJmVkAoCqvIaUdB/xbjbk8YJAq
+ u9imwvMu+0uTIYnH31boT1mRVPWtbSn/zmXSf2j5U9z0mgCRn8e0aRrRKDvsQ25J4l6/
+ mhlRXpp9vGz3WWQJctokd3qfjxCyXdPVKm1jqYN4kAJv0DFU9z0X/VwnPTtzZ0eqGcto
+ /kjzSxB9h4ZTK4On29kN7bEx+m+vujihAwFxEf84OH2NWgC/LpVqVY5HVkIx+qV1SkYM
+ NtLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=Z5Vt+kSyi/RcHyrlEg6BWuNNcdeP5nA5wISFF/Yfsqg=;
- b=U3aY7mqBzTSSJBsyljk/I1L1We4wPjGrbsCfpkGaPSLrueRU4YXZ7By2QL8mJQkuoe
- eGn5V4mM3KfjOo5lu7PK5e6EYTFYBNooWlpixebB40MgF0okAOgJWVa38dCNwsFGZLl1
- Zce5t2XPopAaNeY2rShzIR/sPDvUwclu3D+LiCYuhpnIAS1gZ6IGtkxhKQnx8di7SsnR
- Q1y60h1LZ+gOPj2w2ca/7g3m3EDiObM8mDpkn7kJ54MtRNi3uN50tZNSA74GpoZ3kNl2
- COq6ZGJpQ5NAIESF/MEPDETEaglv/9OKhCBx48sILVvXPJf6teUoE9xHnEJ2jd92oWEF
- bL1A==
-X-Gm-Message-State: ANhLgQ3EjHS0epaCiF717Bwk0kC37hep2lQjqrVWRuoc3hvca7VuFaGy
- HcOjrmgAP0VyMow04gp/KiFIQhcK
-X-Google-Smtp-Source: ADFU+vu1fbwM99gGzkn5JRcy+wsFdkIsZIGs7yw7uir9cJyWQX0bcgG0e/LZv08nzezdG+CL77y/Fg==
-X-Received: by 2002:a63:4b07:: with SMTP id y7mr26016286pga.272.1584353076167; 
- Mon, 16 Mar 2020 03:04:36 -0700 (PDT)
+ bh=dqkv3oqMwtTa6d0C2gk8rkkDFXuoowFPaClNAY6dKVA=;
+ b=DYZuc1n1El1sUIuW0GpV0Fg01agbVwCsehtVab/LMLmqg1XNP2/8yZnIgmj9ABrkH7
+ 0WIDoQgfrbh6fVzjUprBa2p/9EnXx4Xb5bane66poaKBp9ujG+2eQwSWv8NByVcrbudK
+ OKNtC0yhTXgJjKyDocHvF+L3BfTjDX1nK77rU3u2HZ/LAyQRS8YD7MfJHjb7+WM8Txol
+ mhqteEnx9L1fY3hK83dbQQ849n5yROqWfL4qdgAhxIu+kzbUhx14Mur9qfVGgt2dDH79
+ quRBtflpkg0iWZBfS40OixyKMrCCjo5bGL0AX08nLW6129c+LR/G9mvFXalKMdfAfbB9
+ mAcg==
+X-Gm-Message-State: ANhLgQ3efsUdWCabfRh7vtTiaJZvhhLn/Gipkq2MVAAswKIvDaNR63tB
+ +4oJWdqIoBE7MmTKV7u3WG65Diye
+X-Google-Smtp-Source: ADFU+vuNSGvnN+XiyxhDBk0Y1sCD9fMNs/PcYnfwmBm7gAZ4+5uhfaKAuLrTXNqCTU6N3HIbs9pJDw==
+X-Received: by 2002:a65:4081:: with SMTP id t1mr3387890pgp.134.1584353079205; 
+ Mon, 16 Mar 2020 03:04:39 -0700 (PDT)
 Received: from localhost.localdomain ([2405:204:284:a4f2:cc63:b7fc:551c:dce5])
  by smtp.gmail.com with ESMTPSA id
- u3sm19803374pjv.32.2020.03.16.03.04.33
+ u3sm19803374pjv.32.2020.03.16.03.04.36
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 16 Mar 2020 03:04:35 -0700 (PDT)
+ Mon, 16 Mar 2020 03:04:38 -0700 (PDT)
 From: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 To: cocci@systeme.lip6.fr
-Date: Mon, 16 Mar 2020 15:33:11 +0530
-Message-Id: <20200316100319.27935-19-jaskaransingh7654321@gmail.com>
+Date: Mon, 16 Mar 2020 15:33:12 +0530
+Message-Id: <20200316100319.27935-20-jaskaransingh7654321@gmail.com>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200316100319.27935-1-jaskaransingh7654321@gmail.com>
 References: <20200316100319.27935-1-jaskaransingh7654321@gmail.com>
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 16 Mar 2020 11:04:40 +0100 (CET)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 16 Mar 2020 11:04:43 +0100 (CET)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
  (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Mon, 16 Mar 2020 11:04:38 +0100 (CET)
+ Mon, 16 Mar 2020 11:04:41 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78
 Cc: linux-kernel-mentees@lists.linuxfoundation.org
-Subject: [Cocci] [PATCH 18/26] parsing_cocci: unify_ast: Add cases for
+Subject: [Cocci] [PATCH 19/26] parsing_cocci: disjdistr: Add cases for
 	ParenType/FunctionType
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
@@ -103,32 +103,34 @@ Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
 ParenType and FunctionType are now added to the SmPL ASTs. Add
-cases for these types in unify_ast.ml.
+cases for these types in disjdistr.ml.
 
 Signed-off-by: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 ---
- parsing_cocci/unify_ast.ml | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ parsing_cocci/disjdistr.ml | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/parsing_cocci/unify_ast.ml b/parsing_cocci/unify_ast.ml
-index d4ad3030..de86b1d3 100644
---- a/parsing_cocci/unify_ast.ml
-+++ b/parsing_cocci/unify_ast.ml
-@@ -336,6 +336,14 @@ and unify_typeC t1 t2 =
- 	 unify_fullType tya tyb &&
- 	 unify_dots unify_parameterTypeDef pdots paramsa paramsb
-        else false
-+  | (Ast.ParenType(lpa,tya,rpa),Ast.ParenType(lpb,tyb,rpb)) ->
-+      unify_fullType tya tyb && unify_mcode lpa lpb && unify_mcode rpa rpb
-+  | (Ast.FunctionType(tya,lpa,paramsa,rpa),
-+     Ast.FunctionType(tyb,lpb,paramsb,rpb)) ->
-+      unify_fullType tya tyb &&
-+      unify_mcode lpa lpb &&
-+      unify_dots unify_parameterTypeDef pdots paramsa paramsb &&
-+      unify_mcode rpa rpb
-   | (Ast.Array(ty1,lb1,e1,rb1),Ast.Array(ty2,lb2,e2,rb2)) ->
-       unify_fullType ty1 ty2 && unify_option unify_expression e1 e2
-   | (Ast.Decimal(dec1,lp1,len1,comma1,prec_opt1,rp1),
+diff --git a/parsing_cocci/disjdistr.ml b/parsing_cocci/disjdistr.ml
+index 668a8810..91d7f1b8 100644
+--- a/parsing_cocci/disjdistr.ml
++++ b/parsing_cocci/disjdistr.ml
+@@ -73,6 +73,16 @@ and disjtypeC bty =
+ 	(function ty ->
+ 	  Ast.rewrap bty (Ast.FunctionPointer(ty,lp1,star,rp1,lp2,params,rp2)))
+ 	ty
++  | Ast.ParenType(lp,ty,rp) ->
++      let ty = disjty ty in
++      List.map
++        (function ty ->
++          Ast.rewrap bty (Ast.ParenType(lp,ty,rp))) ty
++  | Ast.FunctionType(ty,lp,params,rp) ->
++      let ty = disjty ty in
++      List.map
++        (function ty ->
++          Ast.rewrap bty (Ast.FunctionType(ty,lp,params,rp))) ty
+   | Ast.Array(ty,lb,size,rb) ->
+       disjmult2 (disjty ty) (disjoption disjexp size)
+ 	(function ty -> function size ->
 -- 
 2.21.1
 
