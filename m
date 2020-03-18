@@ -6,53 +6,53 @@ X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E91D6C10DCE
-	for <cocci@archiver.kernel.org>; Wed, 18 Mar 2020 18:42:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E640C10DCE
+	for <cocci@archiver.kernel.org>; Wed, 18 Mar 2020 18:43:33 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 95DC02077F
-	for <cocci@archiver.kernel.org>; Wed, 18 Mar 2020 18:42:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 95DC02077F
+	by mail.kernel.org (Postfix) with ESMTPS id E09182077F
+	for <cocci@archiver.kernel.org>; Wed, 18 Mar 2020 18:43:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E09182077F
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 02IIg7VH027271;
-	Wed, 18 Mar 2020 19:42:07 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 02IIhHFI012829;
+	Wed, 18 Mar 2020 19:43:17 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 84FC87809;
-	Wed, 18 Mar 2020 19:42:07 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 066277809;
+	Wed, 18 Mar 2020 19:43:17 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 9BE1C77F9
- for <cocci@systeme.lip6.fr>; Wed, 18 Mar 2020 19:42:06 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 14CCF77F9
+ for <cocci@systeme.lip6.fr>; Wed, 18 Mar 2020 19:43:15 +0100 (CET)
 Received: from mail2-relais-roc.national.inria.fr
  (mail2-relais-roc.national.inria.fr [192.134.164.83])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 02IIg5Kv003911
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 02IIhEvO017983
  (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
- for <cocci@systeme.lip6.fr>; Wed, 18 Mar 2020 19:42:05 +0100 (CET)
-X-IronPort-AV: E=Sophos;i="5.70,568,1574118000"; d="scan'208";a="441036745"
+ for <cocci@systeme.lip6.fr>; Wed, 18 Mar 2020 19:43:14 +0100 (CET)
+X-IronPort-AV: E=Sophos;i="5.70,568,1574118000"; d="scan'208";a="441036846"
 Received: from abo-173-121-68.mrs.modulonet.fr (HELO hadrien) ([85.68.121.173])
  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 18 Mar 2020 19:42:05 +0100
-Date: Wed, 18 Mar 2020 19:42:05 +0100 (CET)
+ 18 Mar 2020 19:43:14 +0100
+Date: Wed, 18 Mar 2020 19:43:14 +0100 (CET)
 From: Julia Lawall <julia.lawall@inria.fr>
 X-X-Sender: jll@hadrien
 To: Jaskaran Singh <jaskaransingh7654321@gmail.com>
-In-Reply-To: <20200316100319.27935-15-jaskaransingh7654321@gmail.com>
-Message-ID: <alpine.DEB.2.21.2003181941410.2979@hadrien>
+In-Reply-To: <20200316100319.27935-16-jaskaransingh7654321@gmail.com>
+Message-ID: <alpine.DEB.2.21.2003181942250.2979@hadrien>
 References: <20200316100319.27935-1-jaskaransingh7654321@gmail.com>
- <20200316100319.27935-15-jaskaransingh7654321@gmail.com>
+ <20200316100319.27935-16-jaskaransingh7654321@gmail.com>
 User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 18 Mar 2020 19:42:07 +0100 (CET)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 18 Mar 2020 19:43:17 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Wed, 18 Mar 2020 19:42:05 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Wed, 18 Mar 2020 19:43:14 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: linux-kernel-mentees@lists.linuxfoundation.org, cocci@systeme.lip6.fr
-Subject: Re: [Cocci] [PATCH 14/26] parsing_cocci: adjust_pragmas: Add cases
+Subject: Re: [Cocci] [PATCH 15/26] parsing_cocci: compute_lines: Add cases
  for ParenType/FunctionType
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
@@ -75,33 +75,41 @@ Errors-To: cocci-bounces@systeme.lip6.fr
 On Mon, 16 Mar 2020, Jaskaran Singh wrote:
 
 > ParenType and FunctionType are now added to the SmPL ASTs. Add
-> cases for these types in adjust_pragmas.ml.
+> cases for these types in compute_lines.ml.
 >
 > Signed-off-by: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 > ---
->  parsing_cocci/adjust_pragmas.ml | 4 ++++
->  1 file changed, 4 insertions(+)
+>  parsing_cocci/compute_lines.ml | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
 >
-> diff --git a/parsing_cocci/adjust_pragmas.ml b/parsing_cocci/adjust_pragmas.ml
-> index 73b5ff5f..537150e7 100644
-> --- a/parsing_cocci/adjust_pragmas.ml
-> +++ b/parsing_cocci/adjust_pragmas.ml
-> @@ -171,6 +171,10 @@ let rec left_ty t =
->    | Ast0.FunctionPointer(ty,lp1,star,rp1,lp2,params,rp2) ->
->        call_right left_ty ty t
->  	(function ty -> Ast0.FunctionPointer(ty,lp1,star,rp1,lp2,params,rp2))
+> diff --git a/parsing_cocci/compute_lines.ml b/parsing_cocci/compute_lines.ml
+> index f4b6f4d8..8231a0e7 100644
+> --- a/parsing_cocci/compute_lines.ml
+> +++ b/parsing_cocci/compute_lines.ml
+> @@ -574,6 +574,17 @@ and typeC t =
+>        let rp2 = normal_mcode rp2 in
+>        mkres t (Ast0.FunctionPointer(ty,lp1,star,rp1,lp2,params,rp2))
+>  	ty (promote_mcode rp2)
 > +  | Ast0.ParenType(lp,ty,rp) ->
-> +      call_right left_ty ty t (function ty -> Ast0.ParenType(lp,ty,rp))
+> +      let lp = normal_mcode lp in
+> +      let rp = normal_mcode rp in
+> +      let ty = typeC ty in
+> +      mkres t (Ast0.ParenType(lp,ty,rp)) ty (promote_mcode rp)
 
-This doesn't look right, because the type is not the leftmost thing.
+The type is not the leftmost thing.  So the third argument should be
+(promote_mcode lp).
 
 julia
 
 > +  | Ast0.FunctionType(ty,lp,params,rp) ->
-> +      call_right left_ty ty t (function ty -> Ast0.FunctionType(ty,lp,params,rp))
+> +      let ty = typeC ty in
+> +      let lp = normal_mcode lp in
+> +      let params = parameter_list (Some(promote_mcode lp)) params in
+> +      let rp = normal_mcode rp in
+> +      mkres t (Ast0.FunctionType(ty,lp,params,rp)) ty (promote_mcode rp)
 >    | Ast0.Array(ty,lb,size,rb) ->
->        call_right left_ty ty t (function ty -> Ast0.Array(ty,lb,size,rb))
->    | Ast0.Decimal(dec,lp,length,comma,precision_opt,rp) ->
+>        let ty = typeC ty in
+>        let lb = normal_mcode lb in
 > --
 > 2.21.1
 >
