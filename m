@@ -2,92 +2,60 @@ Return-Path: <SRS0=IsyB=5E=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BA08C4332D
-	for <cocci@archiver.kernel.org>; Thu, 19 Mar 2020 16:27:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F385C4332D
+	for <cocci@archiver.kernel.org>; Thu, 19 Mar 2020 16:38:11 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 69A592072C
-	for <cocci@archiver.kernel.org>; Thu, 19 Mar 2020 16:27:20 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iZ09OgBi"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 69A592072C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 647252072C
+	for <cocci@archiver.kernel.org>; Thu, 19 Mar 2020 16:38:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 647252072C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 02JGR6mm012605;
-	Thu, 19 Mar 2020 17:27:06 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 02JGbtR2016109;
+	Thu, 19 Mar 2020 17:37:55 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 34358780E;
-	Thu, 19 Mar 2020 17:27:06 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 4E310780E;
+	Thu, 19 Mar 2020 17:37:55 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id BD29A7809
- for <cocci@systeme.lip6.fr>; Thu, 19 Mar 2020 17:27:03 +0100 (CET)
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com
- [IPv6:2607:f8b0:4864:20:0:0:0:641])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 02JGR1MA025342
- (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Thu, 19 Mar 2020 17:27:02 +0100 (CET)
-Received: by mail-pl1-x641.google.com with SMTP id a23so1284838plm.1
- for <cocci@systeme.lip6.fr>; Thu, 19 Mar 2020 09:27:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=message-id:subject:from:to:cc:date:in-reply-to:references
- :user-agent:mime-version:content-transfer-encoding;
- bh=ea9zuAkLk4+6JCCbykpY0++02KarRdu8yZ7pu1fLyZE=;
- b=iZ09OgBiv+XE9Ufxw+DNQjupiKyIfnNrXYzTvR0DB4CQm3DZmKvF2w0Gk5nJsUq7HK
- cCuK5lIOHDSgXdtGQIfNJaGcYDHP5ZX9JmiEeNzrXEuyy9apGF22c553OWrOQB4CSMkx
- lueLAlhq8r5Qm1OvGoufKIoF41jOulEAdzeYyFKaGLH/aAisMgZX5PEWJE/NVNJy+CIG
- Cl4nqa2PfDEAbpPBj5hpbMNY8ysVEoklzFMuF3pKRlrQNpUQzuz7CGdNm8tOWFKtpYXw
- Gos2mfLpdVBp1U5hE4ybZRQSaZWI2ACPs4Yc0A/tolKniUVoO4mkIvHNtURzAjvvRX3e
- LTHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
- :references:user-agent:mime-version:content-transfer-encoding;
- bh=ea9zuAkLk4+6JCCbykpY0++02KarRdu8yZ7pu1fLyZE=;
- b=bFHdH1ziHyHgMKvE7YwLy0dQO9Q2FyWTE1aXAUg0ZGB+MPZc3NZKjNTg0J8uR5v5Oh
- prQK0T2+YZoPsnbX+0m6aZKOs3py++ulVj1Uj2YtfpsLWxGiULZte10uEFywfeGPckDI
- jqp8x/8neM3RA/baZlAIu/rIimy1BmzSTZgEOFlIamzRgBIN3ErfyhBLK+sUCjz58d4O
- 0Srci9rv2RXDBzdxTvBNpN5j6jtQ4kkW2GsrzPY2RcHl84KDQAhFgVa4BuDi5XL1bPZA
- GZY0JcEqXM+aYVkFo/2rnD8LHPtYwCMWOKxxiins96iV2Wg0eNNKP1/NLr1G8qrnOTo0
- 0IMw==
-X-Gm-Message-State: ANhLgQ0Uqe6cQtd9fQJFWBEdYEt3O+m7sv8wj7/m+SDK9vrijWeSM3P7
- dNPXuVdGDahvvdxzi7SF0FGzArftPUQ=
-X-Google-Smtp-Source: ADFU+vut9FJmuOcH4LRH0Eo4sy2PSiNLwIhrgeTDMj6gtB3kgkb4S9/WWbAzm/R2xYxw/xD+KaqPgw==
-X-Received: by 2002:a17:902:8308:: with SMTP id
- bd8mr4368922plb.210.1584635220779; 
- Thu, 19 Mar 2020 09:27:00 -0700 (PDT)
-Received: from localhost.localdomain ([1.38.148.71])
- by smtp.gmail.com with ESMTPSA id m11sm2427695pjq.13.2020.03.19.09.26.53
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 19 Mar 2020 09:27:00 -0700 (PDT)
-Message-ID: <df62e9904a7864ddd3a55fc1ab7866bb28631fd6.camel@gmail.com>
-From: Jaskaran Singh <jaskaransingh7654321@gmail.com>
+ by systeme.lip6.fr (Postfix) with ESMTPS id A033D7809
+ for <cocci@systeme.lip6.fr>; Thu, 19 Mar 2020 17:37:53 +0100 (CET)
+Received: from mail2-relais-roc.national.inria.fr
+ (mail2-relais-roc.national.inria.fr [192.134.164.83])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 02JGboJd023727
+ (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
+ for <cocci@systeme.lip6.fr>; Thu, 19 Mar 2020 17:37:50 +0100 (CET)
+X-IronPort-AV: E=Sophos;i="5.70,572,1574118000"; d="scan'208";a="441226890"
+Received: from abo-173-121-68.mrs.modulonet.fr (HELO hadrien) ([85.68.121.173])
+ by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 19 Mar 2020 17:37:29 +0100
+Date: Thu, 19 Mar 2020 17:37:28 +0100 (CET)
+From: Julia Lawall <julia.lawall@inria.fr>
+X-X-Sender: jll@hadrien
 To: Jaskaran Singh <jaskaransingh7654321@gmail.com>
-Date: Thu, 19 Mar 2020 21:56:50 +0530
 In-Reply-To: <d52cb8eef0adb9db2103749a14eee184a2b65102.camel@gmail.com>
+Message-ID: <alpine.DEB.2.21.2003191735430.2312@hadrien>
 References: <20200316100319.27935-1-jaskaransingh7654321@gmail.com>
  <20200316100319.27935-2-jaskaransingh7654321@gmail.com>
  <alpine.DEB.2.21.2003181823000.2979@hadrien>
  <a703037e9791b58252c16d27e1a41707aea273b7.camel@gmail.com>
  <alpine.DEB.2.21.2003191654150.2312@hadrien>
  <d52cb8eef0adb9db2103749a14eee184a2b65102.camel@gmail.com>
-User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 19 Mar 2020 17:27:06 +0100 (CET)
-X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Thu, 19 Mar 2020 17:27:02 +0100 (CET)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 19 Mar 2020 17:37:55 +0100 (CET)
+X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [132.227.60.2]); Thu, 19 Mar 2020 17:37:50 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78
+X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: "linux-kernel-mentees@lists.linuxfoundation.org"
  <linux-kernel-mentees@lists.linuxfoundation.org>,
         "cocci@systeme.lip6.fr" <cocci@systeme.lip6.fr>
@@ -109,21 +77,24 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-On Thu, 2020-03-19 at 21:55 +0530, Jaskaran Singh wrote:
+
+
+On Thu, 19 Mar 2020, Jaskaran Singh wrote:
+
 > On Thu, 2020-03-19 at 16:54 +0100, Julia Lawall wrote:
+> >
 > > On Thu, 19 Mar 2020, Jaskaran Singh wrote:
-> > 
+> >
 > > > On Wed, 2020-03-18 at 18:25 +0100, Julia Lawall wrote:
 > > > > On Mon, 16 Mar 2020, Jaskaran Singh wrote:
-> > > > 
-> > > > > To add the types ParenType and FunctionType to the SmPL AST,
-> > > > > a
+> > > >
+> > > > > To add the types ParenType and FunctionType to the SmPL AST, a
 > > > > > reduce/reduce conflict with the funproto rule of the SmPL
 > > > > > parser
 > > > > > must be resolved. This requires explicitly identifying a
 > > > > > function
 > > > > > prototype by use of a token (TFunProto).
-> > > > > 
+> > > > >
 > > > > > While the correct method of identifying a function prototype
 > > > > > would
 > > > > > be to
@@ -131,13 +102,12 @@ On Thu, 2020-03-19 at 21:55 +0530, Jaskaran Singh wrote:
 > > > > > challenging
 > > > > > to implement. This is because implementing an OCaml function,
 > > > > > to
-> > > > > correctly determine a C type in SmPL, without the aid of
-> > > > > Yacc,
+> > > > > correctly determine a C type in SmPL, without the aid of Yacc,
 > > > > > would
 > > > > > have to handle a number of cases (disjunctions, typeof
 > > > > > expressions,
 > > > > > etc.).
-> > > > > 
+> > > > >
 > > > > > Thus, a slightly hacky approach is taken to determine a
 > > > > > function
 > > > > > prototype with not the best certainty but what works for most
@@ -147,37 +117,44 @@ On Thu, 2020-03-19 at 21:55 +0530, Jaskaran Singh wrote:
 > > > > > seem to be part of a type, then it is not identified as a
 > > > > > function
 > > > > > prototype. Else, it is.
-> > > > 
+> > > >
 > > > > This sacrifices the test case tests/p1p2.cocci:
-> > > > 
-> > > 
+> > > >
+> > >
 > > > What do you mean by sacrifice?
-> > 
+> >
 > > That it doesn't work after applying 01.
-> > 
+> >
 > > Does something that comes later make it work again?
-> > 
-> 
-> Yes. I applied the series till 16/25 
-
-
-Correction: 16/26*
-
-Cheers,
-Jaskaran.
-
-> (Got a fatal error before that),
+> >
+>
+> Yes. I applied the series till 16/25 (Got a fatal error before that),
 > where the test worked again.
-> 
+
+I can see how 16 would fix some fatal errors, but I don't see why it would
+fix the error in p1p2, which I see as:
+
+plus: parse error:
+  File "tests/p1p2.cocci", line 9, column 3, charpos = 93
+  around = '(',
+  whole content =  FN(P1, Error **errp);
+
+This means that it failed in parsing the plus slice of the code, ie the
+prototype with the attribute included.
+
+julia
+
+
+>
 > Cheers,
 > Jaskaran.
-> 
+>
 > > julia
-> > 
+> >
 > > > The test case seems to work, but not with just 01 applied. Here's
 > > > what
 > > > the debugger tells me about the AST:
-> > > 
+> > >
 > > > Ast_cocci.FunProto
 > > > ([Ast_cocci.FType
 > > >    {Ast_cocci.node =
@@ -195,14 +172,14 @@ Jaskaran.
 > > >                    "__attribute__((nonnull(2)))"]]],
 > > >              Ast_cocci.ONE)),
 > > >            []),
-> > > 
+> > >
 > > > Maybe after the grammar changes, Menhir does some kind of
 > > > lookahead?
 > > > I'm not sure.
-> > > 
+> > >
 > > > Cheers,
 > > > Jaskaran.
-> > > 
+> > >
 > > > > @@
 > > > > typedef Error;
 > > > > type T;
@@ -212,7 +189,7 @@ Jaskaran.
 > > > >  T
 > > > > +__attribute__((nonnull(1)))
 > > > >  FN(P1, Error **errp);
-> > > > 
+> > > >
 > > > > @@
 > > > > typedef Error;
 > > > > type T;
@@ -223,29 +200,27 @@ Jaskaran.
 > > > >  T
 > > > > +__attribute__((nonnull(2)))
 > > > >  FN(P1, P2, Error **errp);
-> > > > 
+> > > >
 > > > > Normally, the only way that you can have a ) before a function
 > > > > call
 > > > > is
-> > > > when there is a cast.  But hopefully in that case there would
-> > > > not
+> > > > when there is a cast.  But hopefully in that case there would not
 > > > > be
 > > > > two
 > > > > )) before the function call.  Can that get around the problem?
-> > > > 
+> > > >
 > > > > julia
-> > > > 
-> > > > 
-> > > > 
-> > > > 
-> > > > > Signed-off-by: Jaskaran Singh <jaskaransingh7654321@gmail.com
-> > > > > >
+> > > >
+> > > >
+> > > >
+> > > >
+> > > > > Signed-off-by: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 > > > > > ---
 > > > > >  parsing_cocci/parse_cocci.ml          | 72
 > > > > > +++++++++++++++++++++++----
 > > > > >  parsing_cocci/parser_cocci_menhir.mly |  9 ++--
 > > > > >  2 files changed, 67 insertions(+), 14 deletions(-)
-> > > > > 
+> > > > >
 > > > > > diff --git a/parsing_cocci/parse_cocci.ml
 > > > > > b/parsing_cocci/parse_cocci.ml
 > > > > > index 679d213a..4b2cb7e4 100644
@@ -256,11 +231,11 @@ Jaskaran.
 > > > > >    | PC.TInvalid -> "invalid"
 > > > > >    | PC.TFunDecl(clt) -> "fundecl"
 > > > > > +  | PC.TFunProto(clt) -> "funproto"
-> > > > > 
+> > > > >
 > > > > >    | PC.TIso -> "<=>"
 > > > > >    | PC.TRightIso -> "=>"
 > > > > > @@ -480,7 +481,7 @@ let get_clt (tok,_) =
-> > > > > 
+> > > > >
 > > > > >    | PC.TOPar0(_,clt) | PC.TMid0(_,clt) | PC.TAnd0(_,clt) |
 > > > > > PC.TCPar0(_,clt)
 > > > > >    | PC.TOEllipsis(clt) | PC.TCEllipsis(clt)
@@ -271,7 +246,7 @@ Jaskaran.
 > > > > >    | PC.TLineEnd(clt) -> clt
 > > > > >    | PC.TVAEllipsis(clt) -> clt
 > > > > > @@ -718,6 +719,7 @@ let update_clt (tok,x) clt =
-> > > > > 
+> > > > >
 > > > > >    | PC.TLineEnd(_) -> (PC.TLineEnd(clt),x)
 > > > > >    | PC.TFunDecl(_) -> (PC.TFunDecl(clt),x)
 > > > > > +  | PC.TFunProto(_) -> (PC.TFunProto(clt),x)
@@ -283,7 +258,7 @@ Jaskaran.
 > > > > >    | PC.TPArob clt | PC.TMetaPos(_,_,_,clt) |
 > > > > > PC.TMetaCom(_,_,clt)
 > > > > > -> split t clt
-> > > > > 
+> > > > >
 > > > > > -  | PC.TFunDecl(clt)
 > > > > > +  | PC.TFunDecl(clt) | PC.TFunProto(clt)
 > > > > >    | PC.TWhen(clt) | PC.TWhenTrue(clt) | PC.TWhenFalse(clt)
@@ -293,23 +268,19 @@ Jaskaran.
 > > > > >      | _ -> false in
 > > > > >    let rec split acc = function
 > > > > >        [] | [_] -> raise Irrelevant
-> > > > > -    | ((PC.TCPar(_),_) as t1) :: ((PC.TOBrace(_),_) as t2)
-> > > > > ::
+> > > > > -    | ((PC.TCPar(_),_) as t1) :: ((PC.TOBrace(_),_) as t2) ::
 > > > > > rest
 > > > > > ->
-> > > > > +    | ((PC.TCPar(_),_) as t1) :: ((PC.TOBrace(_),_) as t2)
-> > > > > ::
+> > > > > +    | ((PC.TCPar(_),_) as t1) :: ((PC.TOBrace(_),_) as t2) ::
 > > > > > rest
-> > > > > +    | ((PC.TCPar(_),_) as t1) :: ((PC.TPtVirg(_),_) as t2)
-> > > > > ::
+> > > > > +    | ((PC.TCPar(_),_) as t1) :: ((PC.TPtVirg(_),_) as t2) ::
 > > > > > rest
 > > > > > ->
 > > > > >  	(List.rev (t1::acc),(t2::rest))
 > > > > >      | x::xs -> split (x::acc) xs in
 > > > > >    let rec balanced_name level = function
 > > > > > @@ -1037,7 +1040,48 @@ let find_function_names l =
-> > > > >      | (PC.TArobArob,_)::_ | (PC.TArob,_)::_ | (PC.EOF,_)::_
-> > > > > ->
+> > > > >      | (PC.TArobArob,_)::_ | (PC.TArob,_)::_ | (PC.EOF,_)::_ ->
 > > > > >  	raise Irrelevant
 > > > > >      | t::rest -> balanced_args level rest in
 > > > > > -  let rec loop = function
@@ -399,7 +370,7 @@ Jaskaran.
 > > > > > +          t @ (loop (t @ acc) rest)
 > > > > > +        else t :: (loop (t :: acc) rest) in
 > > > > > +  loop [] l
-> > > > > 
+> > > > >
 > > > > >  (* ---------------------------------------------------------
 > > > > > ----
 > > > > > ---------- *)
@@ -417,23 +388,22 @@ Jaskaran.
 > > > > >  	lp::(loop false (infn + 1) type_names rest)
 > > > > >      | ((PC.TCPar(_),_) as rp)::rest when infn > 0 ->
 > > > > > @@ -1252,7 +1302,7 @@ let token2line (tok,_) =
-> > > > >    | PC.TMetaDParamList(_,_,_,_,clt) |
-> > > > > PC.TMetaFunc(_,_,_,clt)
+> > > > >    | PC.TMetaDParamList(_,_,_,_,clt) | PC.TMetaFunc(_,_,_,clt)
 > > > > >    | PC.TMetaLocalFunc(_,_,_,clt) | PC.TMetaPos(_,_,_,clt) |
 > > > > > PC.TMetaCom(_,_,clt)
-> > > > > 
+> > > > >
 > > > > > -  | PC.TFunDecl(clt)
 > > > > > +  | PC.TFunDecl(clt) | PC.TFunProto(clt)
 > > > > >    | PC.TWhen(clt) | PC.TWhenTrue(clt) | PC.TWhenFalse(clt)
 > > > > >    | PC.TAny(clt) | PC.TStrict(clt) | PC.TEllipsis(clt)
-> > > > > 
+> > > > >
 > > > > > diff --git a/parsing_cocci/parser_cocci_menhir.mly
 > > > > > b/parsing_cocci/parser_cocci_menhir.mly
 > > > > > index 9e6c8a08..26958f63 100644
 > > > > > --- a/parsing_cocci/parser_cocci_menhir.mly
 > > > > > +++ b/parsing_cocci/parser_cocci_menhir.mly
 > > > > > @@ -239,7 +239,8 @@ let inline_id aft = function
-> > > > > 
+> > > > >
 > > > > >  %token <Data.clt> TVAEllipsis
 > > > > >  %token <Data.clt> TIf TElse TWhile TFor TDo TSwitch TCase
 > > > > > TDefault
@@ -453,15 +423,14 @@ Jaskaran.
 > > > > > @@ -1439,7 +1440,8 @@
 > > > > > reverse_separated_nonempty_llist(separator,
 > > > > > X):
-> > > > > 
+> > > > >
 > > > > >  funproto:
 > > > > >    s=ioption(storage) i=ioption(Tinline) t=ctype
 > > > > > -  id=fn_ident lp=TOPar arglist=arg_list(name_opt_decl)
 > > > > > rp=TCPar
 > > > > > pt=TPtVirg
 > > > > > +  TFunProto id=fn_ident
-> > > > > +  lp=TOPar arglist=arg_list(name_opt_decl) rp=TCPar
-> > > > > pt=TPtVirg
+> > > > > +  lp=TOPar arglist=arg_list(name_opt_decl) rp=TCPar pt=TPtVirg
 > > > > >        { let s = match s with None -> [] | Some s ->
 > > > > > [Ast0.FStorage
 > > > > > s] in
@@ -476,16 +445,16 @@ Jaskaran.
 > > > > > rp=TCPar
 > > > > > pt=TPtVirg
 > > > > > +  TFunProto id=fn_ident
-> > > > > +  lp=TOPar arglist=arg_list(name_opt_decl) rp=TCPar
-> > > > > pt=TPtVirg
+> > > > > +  lp=TOPar arglist=arg_list(name_opt_decl) rp=TCPar pt=TPtVirg
 > > > > >        { let s = [Ast0.FStorage s] in
 > > > > >          let i = [Ast0.FInline (P.clt2mcode "inline" i)] in
 > > > > >  	let t = [Ast0.FType t] in
 > > > > > --
 > > > > > 2.21.1
-> > > > > 
-> > > > > 
-
+> > > > >
+> > > > >
+>
+>
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
