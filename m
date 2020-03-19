@@ -2,62 +2,93 @@ Return-Path: <SRS0=IsyB=5E=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 617D9C4332B
-	for <cocci@archiver.kernel.org>; Thu, 19 Mar 2020 07:02:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E54B5C4332B
+	for <cocci@archiver.kernel.org>; Thu, 19 Mar 2020 14:04:08 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BAFFD20714
-	for <cocci@archiver.kernel.org>; Thu, 19 Mar 2020 07:02:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BAFFD20714
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
+	by mail.kernel.org (Postfix) with ESMTPS id 1D14D208D6
+	for <cocci@archiver.kernel.org>; Thu, 19 Mar 2020 14:04:07 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Stm8aFDK"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1D14D208D6
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 02J72F1W005316;
-	Thu, 19 Mar 2020 08:02:15 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 02JDx341003569;
+	Thu, 19 Mar 2020 14:59:04 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id F20DA7809;
-	Thu, 19 Mar 2020 08:02:14 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id D37D2780E;
+	Thu, 19 Mar 2020 14:59:03 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id AB1AE7808
- for <cocci@systeme.lip6.fr>; Thu, 19 Mar 2020 08:02:12 +0100 (CET)
-Received: from mail3-relais-sop.national.inria.fr
- (mail3-relais-sop.national.inria.fr [192.134.164.104])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 02J72B5c013600
- (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
- for <cocci@systeme.lip6.fr>; Thu, 19 Mar 2020 08:02:11 +0100 (CET)
-X-IronPort-AV: E=Sophos;i="5.70,570,1574118000"; d="scan'208";a="342881065"
-Received: from abo-173-121-68.mrs.modulonet.fr (HELO hadrien) ([85.68.121.173])
- by mail3-relais-sop.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 19 Mar 2020 08:02:10 +0100
-Date: Thu, 19 Mar 2020 08:02:10 +0100 (CET)
-From: Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
-To: Jaskaran Singh <jaskaransingh7654321@gmail.com>
-In-Reply-To: <98213125c43ce9f603643ef31ca1ad186857b16d.camel@gmail.com>
-Message-ID: <alpine.DEB.2.21.2003190800320.3010@hadrien>
+ by systeme.lip6.fr (Postfix) with ESMTPS id 1F71A7809
+ for <cocci@systeme.lip6.fr>; Thu, 19 Mar 2020 14:59:02 +0100 (CET)
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:444])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 02JDwxcU019396
+ (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
+ for <cocci@systeme.lip6.fr>; Thu, 19 Mar 2020 14:59:00 +0100 (CET)
+Received: by mail-pf1-x444.google.com with SMTP id u68so1488507pfb.2
+ for <cocci@systeme.lip6.fr>; Thu, 19 Mar 2020 06:59:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=message-id:subject:from:to:cc:date:in-reply-to:references
+ :user-agent:mime-version:content-transfer-encoding;
+ bh=FORf05ahJzywB9UTwSYB/PM7/eC+uIjCJ/14DCErC8w=;
+ b=Stm8aFDK+g4YUWTcOAJggDymnAV+cR88OJyIT7pSdBv3NkA/gh54dx0HzqeDh3gV56
+ MviOjCIs73XnQ/nr9OeyFQLnPlURTXrlp/gD3UrlNP5Pn8cqtVPlEs/V1vEUErYCXdpu
+ u+UXbViWNu48Apk63VG7+IMumhHdBwYKmL3/dntTqMFibWuIx+b0J+m0fn1FDPK91mTA
+ EnuWra55BdNVSJUCxrraPmg4Qh6EuXnBtyd3nEdaJklnJmkSRYy2iyPO7G0bIa/mCc0e
+ qBiDxt3MH9kr1egKKFLwy7lqTU0DDq7a8sc9ZLZtBKMfgCb4i70hp54g7IstZ6L72S29
+ dM/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+ :references:user-agent:mime-version:content-transfer-encoding;
+ bh=FORf05ahJzywB9UTwSYB/PM7/eC+uIjCJ/14DCErC8w=;
+ b=gCBs7f0nxVE1JAz8uJJ+W5HMa+nD4/6tWFRgGF3hO3BQ6zGRKPLfMaNwF2A0y2pwib
+ XqWE+NBwLbBgfDBaETJqToqQTwEH9F1ruBXDKVAyfiFeWe08Iu+r1sGQNmYNpFLu7fBZ
+ diSNxtGbYrncE7Uq3nWcNJJJExvVpgQq6POKCyxBJjuvfo0Kti7newZDmzdpR2yRXVHu
+ gs0AIZT3Dlm/4rhJShHlQUYA96/2uMZ6wu7vkUl9X4ITLJr5xiizmHRahub7h8uWWbmi
+ yan6pEdFBfwFXyNhK24r1UvW2qcH6q2d99SfeSEQUYQc5MUJ+GeS0+TwIH3B0xd9GCYR
+ N3+A==
+X-Gm-Message-State: ANhLgQ3eTFIEqQ/erPJ/DdvciFLuHbqzEtLY+lCky2dj6Cy/rjvEjZhc
+ xTXU6ZGrqXajwn/Wj4AvP/I=
+X-Google-Smtp-Source: ADFU+vtT5gpK4zZnlbX31laH/41kYCviW14J44wqgvDqQEIjMh6bVB21Y+iuZnpxAe9WFauGXcElew==
+X-Received: by 2002:a63:a069:: with SMTP id u41mr3489586pgn.3.1584626338868;
+ Thu, 19 Mar 2020 06:58:58 -0700 (PDT)
+Received: from localhost.localdomain ([2402:3a80:1666:9e2c:b9:33d2:7d00:837d])
+ by smtp.gmail.com with ESMTPSA id
+ i4sm2545684pgo.23.2020.03.19.06.58.55
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 19 Mar 2020 06:58:57 -0700 (PDT)
+Message-ID: <a703037e9791b58252c16d27e1a41707aea273b7.camel@gmail.com>
+From: Jaskaran Singh <jaskaransingh7654321@gmail.com>
+To: Julia Lawall <julia.lawall@inria.fr>
+Date: Thu, 19 Mar 2020 19:28:53 +0530
+In-Reply-To: <alpine.DEB.2.21.2003181823000.2979@hadrien>
 References: <20200316100319.27935-1-jaskaransingh7654321@gmail.com>
- <20200316100319.27935-4-jaskaransingh7654321@gmail.com>
- <alpine.DEB.2.21.2003181831030.2979@hadrien>
- <98213125c43ce9f603643ef31ca1ad186857b16d.camel@gmail.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+ <20200316100319.27935-2-jaskaransingh7654321@gmail.com>
+ <alpine.DEB.2.21.2003181823000.2979@hadrien>
+User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 19 Mar 2020 08:02:16 +0100 (CET)
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Thu, 19 Mar 2020 08:02:11 +0100 (CET)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 19 Mar 2020 14:59:04 +0100 (CET)
+X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
+ Thu, 19 Mar 2020 14:59:01 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
+X-Scanned-By: MIMEDefang 2.78
 Cc: "linux-kernel-mentees@lists.linuxfoundation.org"
  <linux-kernel-mentees@lists.linuxfoundation.org>,
-        cocci@systeme.lip6.fr
-Subject: Re: [Cocci] [PATCH 03/26] parsing_cocci: parser: Add
- direct_declarator/direct_abstract_d rules
+        "cocci@systeme.lip6.fr" <cocci@systeme.lip6.fr>
+Subject: Re: [Cocci] [PATCH 01/26] parsing_cocci: Add Function Prototype
+	token
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -74,457 +105,314 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
+On Wed, 2020-03-18 at 18:25 +0100, Julia Lawall wrote:
+> 
+> On Mon, 16 Mar 2020, Jaskaran Singh wrote:
+> 
+> > To add the types ParenType and FunctionType to the SmPL AST, a
+> > reduce/reduce conflict with the funproto rule of the SmPL parser
+> > must be resolved. This requires explicitly identifying a function
+> > prototype by use of a token (TFunProto).
+> > 
+> > While the correct method of identifying a function prototype would
+> > be to
+> > check if an identifier is preceded by a return type, it is
+> > challenging
+> > to implement. This is because implementing an OCaml function, to
+> > correctly determine a C type in SmPL, without the aid of Yacc,
+> > would
+> > have to handle a number of cases (disjunctions, typeof expressions,
+> > etc.).
+> > 
+> > Thus, a slightly hacky approach is taken to determine a function
+> > prototype with not the best certainty but what works for most cases
+> > in SmPL. If the identifier is preceded by any token that does not
+> > seem to be part of a type, then it is not identified as a function
+> > prototype. Else, it is.
+> 
+> This sacrifices the test case tests/p1p2.cocci:
+> 
 
+What do you mean by sacrifice?
 
-On Thu, 19 Mar 2020, Jaskaran Singh wrote:
+The test case seems to work, but not with just 01 applied. Here's what
+the debugger tells me about the AST:
 
-> On Wed, 2020-03-18 at 18:31 +0100, Julia Lawall wrote:
-> >
-> > On Mon, 16 Mar 2020, Jaskaran Singh wrote:
-> >
-> > > The direct_declarator rule and the direct_abstract_d rule are
-> > > present in the C parser. Add similar rules to the SmPL parser so
-> > > that
-> > > declarators are parsed as they are in the C parser.
-> > >
-> > > For the type ParenType, direct_declarator and direct_abstract_d
-> > > only
-> > > allow the following productions:
-> > >
-> > > 	( * id  [ .* ] ) ( params )
-> > >
-> > > i.e. a function pointer or an array of function pointers. The
-> > > compromise
-> > > is flexibility in the range of productions, mainly because
-> > > collateral
-> > > evolutions needed by having a flexible rule are very large and
-> > > distasteful.
-> >
-> > It is not clear what is meant by flexible.  Can you give an example
-> > of
-> > what will not be supported?
-> >
->
-> Well, it's mainly anything that uses ParenType for anything other than
-> a function pointer or an array of function pointers. Examples of
-> productions that aren't supported:
->
-> int (**x[])(params); // array of pointer to function pointer
->
-> int (*x[][])(params); // array of array of function pointers
->
-> int ((*x))(params); // ident wrapped in double parantheses
->
-> To be honest, I think the first two and similar ones (i.e. array of
-> array of ... pointer to pointer to ....) can be supported by
-> implementing some kind of loop, but don't know about other
-> productions.
+Ast_cocci.FunProto
+([Ast_cocci.FType
+   {Ast_cocci.node =
+     Ast_cocci.Type (false, None,
+      {Ast_cocci.node =
+        Ast_cocci.MetaType
+         ((("rule starting on line 11", "T"),
+           {Ast_cocci.line = 18; column = 1;
+            strbef = []; straft = [];
+            whitespace = " "},
+           Ast_cocci.CONTEXT (Ast_cocci.NoPos,
+            Ast_cocci.AFTER
+             ([[Ast_cocci.Directive
+                 [Ast_cocci.Space
+                   "__attribute__((nonnull(2)))"]]],
+             Ast_cocci.ONE)),
+           []),
 
-OK.  You could add these to the log message for future reference.  The
-double parentheses seem like a low priority.  Perhaps the first two could
-be useful at some point.
+Maybe after the grammar changes, Menhir does some kind of lookahead?
+I'm not sure.
 
-thanks,
-julia
+Cheers,
+Jaskaran.
 
+> @@
+> typedef Error;
+> type T;
+> identifier FN;
+> parameter P1;
+> @@
+>  T
+> +__attribute__((nonnull(1)))
+>  FN(P1, Error **errp);
+> 
+> @@
+> typedef Error;
+> type T;
+> identifier FN;
+> parameter P1;
+> parameter P2;
+> @@
+>  T
+> +__attribute__((nonnull(2)))
+>  FN(P1, P2, Error **errp);
+> 
+> Normally, the only way that you can have a ) before a function call
+> is
+> when there is a cast.  But hopefully in that case there would not be
+> two
+> )) before the function call.  Can that get around the problem?
+> 
+> julia
+> 
+> 
+> 
+> 
+> > Signed-off-by: Jaskaran Singh <jaskaransingh7654321@gmail.com>
+> > ---
+> >  parsing_cocci/parse_cocci.ml          | 72
+> > +++++++++++++++++++++++----
+> >  parsing_cocci/parser_cocci_menhir.mly |  9 ++--
+> >  2 files changed, 67 insertions(+), 14 deletions(-)
+> > 
+> > diff --git a/parsing_cocci/parse_cocci.ml
+> > b/parsing_cocci/parse_cocci.ml
+> > index 679d213a..4b2cb7e4 100644
+> > --- a/parsing_cocci/parse_cocci.ml
+> > +++ b/parsing_cocci/parse_cocci.ml
+> > @@ -295,6 +295,7 @@ let token2c (tok,_) add_clt =
+> >    | PC.TLineEnd(clt) -> "line end"
+> >    | PC.TInvalid -> "invalid"
+> >    | PC.TFunDecl(clt) -> "fundecl"
+> > +  | PC.TFunProto(clt) -> "funproto"
+> > 
+> >    | PC.TIso -> "<=>"
+> >    | PC.TRightIso -> "=>"
+> > @@ -480,7 +481,7 @@ let get_clt (tok,_) =
+> > 
+> >    | PC.TOPar0(_,clt) | PC.TMid0(_,clt) | PC.TAnd0(_,clt) |
+> > PC.TCPar0(_,clt)
+> >    | PC.TOEllipsis(clt) | PC.TCEllipsis(clt)
+> > -  | PC.TPOEllipsis(clt) | PC.TPCEllipsis(clt)
+> > +  | PC.TPOEllipsis(clt) | PC.TPCEllipsis(clt) | PC.TFunProto(clt)
+> >    | PC.TFunDecl(clt) | PC.TDirective(_,clt) | PC.TAttr_(clt)
+> >    | PC.TLineEnd(clt) -> clt
+> >    | PC.TVAEllipsis(clt) -> clt
+> > @@ -718,6 +719,7 @@ let update_clt (tok,x) clt =
+> > 
+> >    | PC.TLineEnd(_) -> (PC.TLineEnd(clt),x)
+> >    | PC.TFunDecl(_) -> (PC.TFunDecl(clt),x)
+> > +  | PC.TFunProto(_) -> (PC.TFunProto(clt),x)
+> >    | PC.TTildeExclEq(_) -> (PC.TTildeExclEq(clt),x)
+> >    | PC.TDirective(a,_) -> (PC.TDirective(a,clt),x)
+> >    | PC.TAttr_(_) -> (PC.TAttr_(clt),x)
+> > @@ -925,7 +927,7 @@ let split_token ((tok,_) as t) =
+> >    | PC.TInitialize | PC.TFinalize -> ([t],[t])
+> >    | PC.TPArob clt | PC.TMetaPos(_,_,_,clt) | PC.TMetaCom(_,_,clt)
+> > -> split t clt
+> > 
+> > -  | PC.TFunDecl(clt)
+> > +  | PC.TFunDecl(clt) | PC.TFunProto(clt)
+> >    | PC.TWhen(clt) | PC.TWhenTrue(clt) | PC.TWhenFalse(clt)
+> >    | PC.TAny(clt) | PC.TStrict(clt) | PC.TLineEnd(clt)
+> >    | PC.TEllipsis(clt)
+> > @@ -1006,7 +1008,8 @@ let find_function_names l =
+> >      | _ -> false in
+> >    let rec split acc = function
+> >        [] | [_] -> raise Irrelevant
+> > -    | ((PC.TCPar(_),_) as t1) :: ((PC.TOBrace(_),_) as t2) :: rest
+> > ->
+> > +    | ((PC.TCPar(_),_) as t1) :: ((PC.TOBrace(_),_) as t2) :: rest
+> > +    | ((PC.TCPar(_),_) as t1) :: ((PC.TPtVirg(_),_) as t2) :: rest
+> > ->
+> >  	(List.rev (t1::acc),(t2::rest))
+> >      | x::xs -> split (x::acc) xs in
+> >    let rec balanced_name level = function
+> > @@ -1037,7 +1040,48 @@ let find_function_names l =
+> >      | (PC.TArobArob,_)::_ | (PC.TArob,_)::_ | (PC.EOF,_)::_ ->
+> >  	raise Irrelevant
+> >      | t::rest -> balanced_args level rest in
+> > -  let rec loop = function
+> > +  let rec is_permissible_proto = function
+> > +      [] -> false
+> > +    | (PC.TCPar0(_),_)::
+> > +      ((PC.TMid0(_),_) | (PC.TAnd0(_),_))::
+> > +      (PC.TOPar0(_),_)::_ -> false
+> > +    | (PC.TOPar0(_),_)::rest
+> > +    | (PC.TCPar0(_),_)::rest -> is_permissible_proto rest
+> > +    | x::rest when is_mid x ->
+> > +        let rec loop = function
+> > +          [] -> false
+> > +        | (PC.TOPar0(_),_)::xs -> is_permissible_proto xs
+> > +        | x::xs -> loop xs in
+> > +        loop rest
+> > +    | _::((PC.TEq(_),_) | (PC.TNotEq(_),_))::(PC.TWhen(_),_)::_
+> > +    | _::(PC.TWhen(_),_)::_
+> > +    | (PC.TComma(_),_)::_
+> > +    | (PC.TDirective(_),_)::_
+> > +    | (PC.TElse(_),_)::_
+> > +    | (PC.TReturn(_),_)::_
+> > +    | (PC.TMetaStm(_),_)::_
+> > +    | (PC.TMetaExp(_),_)::_
+> > +    | (PC.TMetaId(_),_)::_
+> > +    | (PC.TMetaLocalIdExp(_),_)::_
+> > +    | (PC.TEq(_),_)::_
+> > +    | (PC.TEllipsis(_),_)::_
+> > +    | (PC.TOEllipsis(_),_)::_
+> > +    | (PC.TCEllipsis(_),_)::_
+> > +    | (PC.TPOEllipsis(_),_)::_
+> > +    | (PC.TPCEllipsis(_),_)::_
+> > +    | (PC.TPtVirg(_),_)::_
+> > +    | (PC.TOBrace(_),_)::_
+> > +    | (PC.TCBrace(_),_)::_
+> > +    | (PC.TOPar(_),_)::_
+> > +    | (PC.TCPar(_),_)::_
+> > +    | (PC.TIdent(_),_)::_ -> false
+> > +    | _ -> true in
+> > +  let decl_or_proto clt info bef aft =
+> > +    match aft with
+> > +      (PC.TOBrace(_),_)::_ -> (((PC.TFunDecl(clt),info) :: bef),
+> > aft)
+> > +    | (PC.TPtVirg(_),_)::_ -> (((PC.TFunProto(clt),info) :: bef),
+> > aft)
+> > +    | _ -> raise Irrelevant in
+> > +  let rec loop acc = function
+> >        [] -> []
+> >      | t :: rest ->
+> >  	if is_par t || is_mid t || is_ident t
+> > @@ -1046,26 +1090,30 @@ let find_function_names l =
+> >  	    try
+> >  	      let (bef,aft) = split [] (t::rest) in
+> >  	      let rest = balanced_name 0 bef in
+> > +              (match aft with
+> > +                (PC.TPtVirg(_),_)::_
+> > +                 when not(is_permissible_proto acc) -> raise
+> > Irrelevant
+> > +              | _ ->
+> >  	      (match rest with
+> >  		(PC.TOPar(_),_)::_ ->
+> >  		  (match balanced_args 0 rest with
+> >  		    [] ->
+> >  		      let (_,info) as h = List.hd bef in
+> >  		      let clt = get_clt h in
+> > -		      (((PC.TFunDecl(clt),info) :: bef), aft)
+> > +                      decl_or_proto clt info bef aft
+> >  		  | (PC.TAttr_(_),_)::rest ->
+> >  		      (match balanced_args 0 rest with
+> >  			[] ->
+> >  			  let (_,info) as h = List.hd bef in
+> >  			  let clt = get_clt h in
+> > -			  (((PC.TFunDecl(clt),info) :: bef), aft)
+> > +                          decl_or_proto clt info bef aft
+> >  		      | _ -> raise Irrelevant)
+> >  		  | _ -> raise Irrelevant)
+> > -	      | _ -> raise Irrelevant)
+> > +	      | _ -> raise Irrelevant))
+> >  	    with Irrelevant -> ([t],rest) in
+> > -	  t @ (loop rest)
+> > -	else t :: (loop rest) in
+> > -  loop l
+> > +          t @ (loop (t @ acc) rest)
+> > +        else t :: (loop (t :: acc) rest) in
+> > +  loop [] l
+> > 
+> >  (* -------------------------------------------------------------
+> > ---------- *)
+> >  (* an attribute is an identifier that precedes another identifier
+> > and
+> > @@ -1168,6 +1216,8 @@ let detect_types in_meta_decls l =
+> >  	delim::newid::id::(loop false infn (ident::type_names) rest)
+> >      | ((PC.TFunDecl(_),_) as fn)::rest ->
+> >  	fn::(loop false 1 type_names rest)
+> > +    | ((PC.TFunProto(_),_) as fn)::rest ->
+> > +	fn::(loop false 1 type_names rest)
+> >      | ((PC.TOPar(_),_) as lp)::rest when infn > 0 ->
+> >  	lp::(loop false (infn + 1) type_names rest)
+> >      | ((PC.TCPar(_),_) as rp)::rest when infn > 0 ->
+> > @@ -1252,7 +1302,7 @@ let token2line (tok,_) =
+> >    | PC.TMetaDParamList(_,_,_,_,clt) | PC.TMetaFunc(_,_,_,clt)
+> >    | PC.TMetaLocalFunc(_,_,_,clt) | PC.TMetaPos(_,_,_,clt) |
+> > PC.TMetaCom(_,_,clt)
+> > 
+> > -  | PC.TFunDecl(clt)
+> > +  | PC.TFunDecl(clt) | PC.TFunProto(clt)
+> >    | PC.TWhen(clt) | PC.TWhenTrue(clt) | PC.TWhenFalse(clt)
+> >    | PC.TAny(clt) | PC.TStrict(clt) | PC.TEllipsis(clt)
+> > 
+> > diff --git a/parsing_cocci/parser_cocci_menhir.mly
+> > b/parsing_cocci/parser_cocci_menhir.mly
+> > index 9e6c8a08..26958f63 100644
+> > --- a/parsing_cocci/parser_cocci_menhir.mly
+> > +++ b/parsing_cocci/parser_cocci_menhir.mly
+> > @@ -239,7 +239,8 @@ let inline_id aft = function
+> > 
+> >  %token <Data.clt> TVAEllipsis
+> >  %token <Data.clt> TIf TElse TWhile TFor TDo TSwitch TCase TDefault
+> > TReturn
+> > -%token <Data.clt> TBreak TContinue TGoto TSizeof TTypeof TFunDecl
+> > Tdecimal Texec
+> > +%token <Data.clt> TBreak TContinue TGoto TSizeof TTypeof TFunDecl
+> > TFunProto
+> > +%token <Data.clt> Tdecimal Texec
+> >  %token <string * Data.clt> TIdent TTypeId TDeclarerId TIteratorId
+> > TSymId
+> >  %token <Ast_cocci.added_string * Data.clt> TDirective
+> >  %token <Data.clt> TAttr_
+> > @@ -1439,7 +1440,8 @@ reverse_separated_nonempty_llist(separator,
+> > X):
+> > 
+> >  funproto:
+> >    s=ioption(storage) i=ioption(Tinline) t=ctype
+> > -  id=fn_ident lp=TOPar arglist=arg_list(name_opt_decl) rp=TCPar
+> > pt=TPtVirg
+> > +  TFunProto id=fn_ident
+> > +  lp=TOPar arglist=arg_list(name_opt_decl) rp=TCPar pt=TPtVirg
+> >        { let s = match s with None -> [] | Some s -> [Ast0.FStorage
+> > s] in
+> >          let i =
+> >  	  match i with
+> > @@ -1453,7 +1455,8 @@ funproto:
+> >  	      P.clt2mcode "(" lp, args, vararg, P.clt2mcode ")" rp,
+> >  	      P.clt2mcode ";" pt)) }
+> >  | i=Tinline s=storage t=ctype
+> > -  id=fn_ident lp=TOPar arglist=arg_list(name_opt_decl) rp=TCPar
+> > pt=TPtVirg
+> > +  TFunProto id=fn_ident
+> > +  lp=TOPar arglist=arg_list(name_opt_decl) rp=TCPar pt=TPtVirg
+> >        { let s = [Ast0.FStorage s] in
+> >          let i = [Ast0.FInline (P.clt2mcode "inline" i)] in
+> >  	let t = [Ast0.FType t] in
+> > --
+> > 2.21.1
+> > 
+> > 
 
->
-> Cheers,
-> Jaskaran.
->
-> > julia
-> >
-> > > Replace usage of the older d_ident rule in the SmPL parser with the
-> > > above mentioned rules. All usages of d_ident, however, have not
-> > > been
-> > > removed due to reduce/reduce conflicts.
-> > >
-> > > Remove rules/productions that parse function pointers with usage of
-> > > direct_declarator and direct_abstract_d.
-> > >
-> > > Signed-off-by: Jaskaran Singh <jaskaransingh7654321@gmail.com>
-> > > ---
-> > >  parsing_cocci/parser_cocci_menhir.mly | 239 +++++++++++++---------
-> > > ----
-> > >  1 file changed, 116 insertions(+), 123 deletions(-)
-> > >
-> > > diff --git a/parsing_cocci/parser_cocci_menhir.mly
-> > > b/parsing_cocci/parser_cocci_menhir.mly
-> > > index 26958f63..fade830f 100644
-> > > --- a/parsing_cocci/parser_cocci_menhir.mly
-> > > +++ b/parsing_cocci/parser_cocci_menhir.mly
-> > > @@ -1116,33 +1116,17 @@ struct_decl_one:
-> > >  	{ let (mids,code) = t in
-> > >  	Ast0.wrap
-> > >  	  (Ast0.ConjField(P.id2mcode lp,code,mids, P.id2mcode rp)) }
-> > > -    | t=ctype d=d_ident_option bf=struct_bitfield? pv=TPtVirg
-> > > +    | t=ctype d=direct_decl_option(disj_ident) bf=struct_bitfield?
-> > > pv=TPtVirg
-> > >  	 { let (id,fn) = d in
-> > >  	 Ast0.wrap(Ast0.Field(fn t,id,bf,P.clt2mcode ";" pv)) }
-> > > -    | t=ctype lp1=TOPar st=TMul d=d_ident_option rp1=TCPar
-> > > -	lp2=TOPar p=decl_list(name_opt_decl) rp2=TCPar
-> > > -	bf=struct_bitfield? pv=TPtVirg
-> > > -        { let (id,fn) = d in
-> > > -        let t =
-> > > -	  Ast0.wrap
-> > > -	    (Ast0.FunctionPointer
-> > > -	       (t,P.clt2mcode "(" lp1,P.clt2mcode "*" st,P.clt2mcode
-> > > ")" rp1,
-> > > -		P.clt2mcode "(" lp2,p,P.clt2mcode ")" rp2)) in
-> > > -        Ast0.wrap(Ast0.Field(fn t,id,bf,P.clt2mcode ";" pv)) }
-> > > -     | cv=ioption(const_vol) i=pure_ident_or_symbol
-> > > d=d_ident_option
-> > > +    | cv=ioption(const_vol) i=pure_ident_or_symbol
-> > > +      d=direct_decl_option(disj_ident)
-> > >  	 bf=struct_bitfield?
-> > >  	 pv=TPtVirg
-> > >  	 { let (id,fn) = d in
-> > >  	 let idtype = P.make_cv cv (Ast0.wrap (Ast0.TypeName(P.id2mcode
-> > > i))) in
-> > >  	 Ast0.wrap(Ast0.Field(fn idtype,id,bf,P.clt2mcode ";" pv)) }
-> > >
-> > > -d_ident_option:
-> > > -	 { None, (fun x -> x) }
-> > > -     | d=d_ident {
-> > > -       let (id, fn) = d in
-> > > -       (Some id, fn)
-> > > -    }
-> > > -
-> > >  struct_bitfield:
-> > >     c=TDotDot e=expr { (P.clt2mcode ":" c, e) }
-> > >
-> > > @@ -1529,17 +1513,9 @@ storage:
-> > >         | s=Tregister    { P.clt2mcode Ast.Register s }
-> > >         | s=Textern      { P.clt2mcode Ast.Extern s }
-> > >
-> > > -decl: t=ctype i=disj_ident a=list(array_dec)
-> > > -	{ let t = P.arrayify t a in Ast0.wrap(Ast0.Param(t, Some i)) }
-> > > +decl: t=ctype d=direct_declarator(disj_ident)
-> > > +	{ let (i,fn) = d in Ast0.wrap(Ast0.Param(fn t, Some i)) }
-> > >      | t=ctype { (*verify in FunDecl*) Ast0.wrap(Ast0.Param(t,
-> > > None)) }
-> > > -    | t=ctype lp=TOPar s=TMul i=disj_ident rp=TCPar
-> > > -	lp1=TOPar d=decl_list(name_opt_decl) rp1=TCPar
-> > > -        { let fnptr =
-> > > -	  Ast0.wrap
-> > > -	    (Ast0.FunctionPointer
-> > > -	       (t,P.clt2mcode "(" lp,P.clt2mcode "*" s,P.clt2mcode ")"
-> > > rp,
-> > > -		P.clt2mcode "(" lp1,d,P.clt2mcode ")" rp1)) in
-> > > -	Ast0.wrap(Ast0.Param(fnptr, Some i)) }
-> > >      | TMetaParam
-> > >  	{ let (nm,cstr,pure,clt) = $1 in
-> > >  	Ast0.wrap(Ast0.MetaParam(P.clt2mcode nm clt,cstr,pure)) }
-> > > @@ -1547,14 +1523,6 @@ decl: t=ctype i=disj_ident a=list(array_dec)
-> > >
-> > >  name_opt_decl:
-> > >        decl  { $1 }
-> > > -    | t=ctype lp=TOPar s=TMul rp=TCPar
-> > > -	lp1=TOPar d=decl_list(name_opt_decl) rp1=TCPar
-> > > -        { let fnptr =
-> > > -	  Ast0.wrap
-> > > -	    (Ast0.FunctionPointer
-> > > -	       (t,P.clt2mcode "(" lp,P.clt2mcode "*" s,P.clt2mcode ")"
-> > > rp,
-> > > -		P.clt2mcode "(" lp1,d,P.clt2mcode ")" rp1)) in
-> > > -	Ast0.wrap(Ast0.Param(fnptr, None)) }
-> > >
-> > >  const_vol:
-> > >        Tconst       { P.clt2mcode Ast.Const $1 }
-> > > @@ -1684,13 +1652,15 @@ decl_var:
-> > >      t=ctype pv=TPtVirg
-> > >        { [Ast0.wrap(Ast0.TyDecl(t,P.clt2mcode ";" pv))] }
-> > >    | TMetaDecl { [P.meta_decl $1] }
-> > > -  | s=ioption(storage) t=ctype d=comma_list(d_ident) pv=TPtVirg
-> > > +  | s=ioption(storage) t=ctype
-> > > +      d=comma_list(direct_declarator(disj_ident)) pv=TPtVirg
-> > >        { List.map
-> > >  	  (function (id,fn) ->
-> > >  	    Ast0.wrap(Ast0.UnInit(s,fn t,id,[],P.clt2mcode ";" pv)))
-> > >  	  d }
-> > >    | f=funproto { [f] }
-> > > -  | s=ioption(storage) t=ctype d=d_ident a=attr_list q=TEq
-> > > e=initialize
-> > > +  | s=ioption(storage) t=ctype d=direct_declarator(disj_ident)
-> > > +    a=attr_list q=TEq e=initialize
-> > >        pv=TPtVirg
-> > >        {let (id,fn) = d in
-> > >        [Ast0.wrap
-> > > @@ -1711,18 +1681,6 @@ decl_var:
-> > >        let idtype = P.make_cv cv (Ast0.wrap
-> > > (Ast0.TypeName(P.id2mcode i))) in
-> > >        [Ast0.wrap(Ast0.Init(s,fn idtype,id,a,P.clt2mcode "=" q,e,
-> > >  			   P.clt2mcode ";" pv))] }
-> > > -  /* function pointer type */
-> > > -  | s=ioption(storage)
-> > > -    t=ctype lp1=TOPar st=TMul d=d_ident rp1=TCPar
-> > > -    lp2=TOPar p=decl_list(name_opt_decl) rp2=TCPar
-> > > -    pv=TPtVirg
-> > > -      { let (id,fn) = d in
-> > > -        let t =
-> > > -	  Ast0.wrap
-> > > -	    (Ast0.FunctionPointer
-> > > -	       (t,P.clt2mcode "(" lp1,P.clt2mcode "*" st,P.clt2mcode
-> > > ")" rp1,
-> > > -		P.clt2mcode "(" lp2,p,P.clt2mcode ")" rp2)) in
-> > > -        [Ast0.wrap(Ast0.UnInit(s,fn t,id,[],P.clt2mcode ";" pv))]
-> > > }
-> > >    | s=ioption(storage) d=decl_ident o=TOPar e=eexpr_list_option
-> > > c=TCPar
-> > >        p=TPtVirg
-> > >        { [Ast0.wrap(Ast0.MacroDecl(s,d,P.clt2mcode "(" o,e,
-> > > @@ -1735,56 +1693,25 @@ decl_var:
-> > >  	       (s,d,P.clt2mcode "(" o,e,
-> > >  		P.clt2mcode ")" c,P.clt2mcode "=" q,i,
-> > >  		P.clt2mcode ";" p))] }
-> > > -  | s=ioption(storage)
-> > > -    t=ctype lp1=TOPar st=TMul d=d_ident rp1=TCPar
-> > > -    lp2=TOPar p=decl_list(name_opt_decl) rp2=TCPar
-> > > -    q=TEq e=initialize pv=TPtVirg
-> > > -      { let (id,fn) = d in
-> > > -        let t =
-> > > -	  Ast0.wrap
-> > > -	    (Ast0.FunctionPointer
-> > > -	       (t,P.clt2mcode "(" lp1,P.clt2mcode "*" st,P.clt2mcode
-> > > ")" rp1,
-> > > -		P.clt2mcode "(" lp2,p,P.clt2mcode ")" rp2)) in
-> > > -      [Ast0.wrap
-> > > -	  (Ast0.Init(s,fn t,id,[],P.clt2mcode "=" q,e,P.clt2mcode ";"
-> > > pv))]}
-> > > -  | s=Ttypedef t=typedef_ctype id=comma_list(typedef_ident)
-> > > pv=TPtVirg
-> > > +  | s=Ttypedef t=typedef_ctype
-> > > +      d=comma_list(direct_declarator(typedef_ident)) pv=TPtVirg
-> > >        { let s = P.clt2mcode "typedef" s in
-> > >          List.map
-> > > -	  (function id ->
-> > > -	    Ast0.wrap(Ast0.Typedef(s,t,id,P.clt2mcode ";" pv)))
-> > > -	  id }
-> > > -  | s=Ttypedef t=typedef_ctype id=typedef_ident
-> > > -      l=TOCro i=eexpr r=TCCro pv=TPtVirg
-> > > -      { let s = P.clt2mcode "typedef" s in
-> > > -        let t = P.arrayify t [(l,Some i,r)] in
-> > > -	[Ast0.wrap(Ast0.Typedef(s,t,id,P.clt2mcode ";" pv))] }
-> > > -  | s=Ttypedef t=typedef_ctype id=typedef_ident
-> > > -      l=TOCro i=eexpr r=TCCro
-> > > -      l2=TOCro i2=eexpr r2=TCCro pv=TPtVirg
-> > > -      { let s = P.clt2mcode "typedef" s in
-> > > -        let t = P.arrayify t [(l,Some i,r)] in
-> > > -        let t = P.arrayify t [(l2,Some i2,r2)] in
-> > > -	[Ast0.wrap(Ast0.Typedef(s,t,id,P.clt2mcode ";" pv))] }
-> > > -  | s=Ttypedef
-> > > -    t=typedef_ctype lp1=TOPar st=TMul id=typedef_ident rp1=TCPar
-> > > -    lp2=TOPar p=decl_list(name_opt_decl) rp2=TCPar pv=TPtVirg
-> > > -      { let s = P.clt2mcode "typedef" s in
-> > > -        let t =
-> > > -	  Ast0.wrap
-> > > -	    (Ast0.FunctionPointer
-> > > -	       (t,P.clt2mcode "(" lp1,P.clt2mcode "*" st,P.clt2mcode
-> > > ")" rp1,
-> > > -		P.clt2mcode "(" lp2,p,P.clt2mcode ")" rp2)) in
-> > > -	[Ast0.wrap(Ast0.Typedef(s,t,id,P.clt2mcode ";" pv))]}
-> > > +	  (function (id,fn) ->
-> > > +	    Ast0.wrap(Ast0.Typedef(s,fn t,id,P.clt2mcode ";" pv)))
-> > > +	  d }
-> > >
-> > >  one_decl_var:
-> > >      t=ctype pv=TPtVirg
-> > >        { Ast0.wrap(Ast0.TyDecl(t,P.clt2mcode ";" pv)) }
-> > >    | TMetaDecl { P.meta_decl $1 }
-> > > -  | s=ioption(storage) t=ctype d=d_ident a=attr_list pv=TPtVirg
-> > > +  | s=ioption(storage) t=ctype d=direct_declarator(disj_ident)
-> > > +      a=attr_list pv=TPtVirg
-> > >        { let (id,fn) = d in
-> > >          Ast0.wrap(Ast0.UnInit(s,fn t,id,a,P.clt2mcode ";" pv)) }
-> > >    | f=funproto { f }
-> > > -  | s=ioption(storage) t=ctype d=d_ident a=attr_list q=TEq
-> > > e=initialize
-> > > +  | s=ioption(storage) t=ctype d=direct_declarator(disj_ident)
-> > > +      a=attr_list q=TEq e=initialize
-> > >        pv=TPtVirg
-> > >        { let (id,fn) = d in
-> > >        Ast0.wrap
-> > > @@ -1802,18 +1729,6 @@ one_decl_var:
-> > >        let idtype = P.make_cv cv (Ast0.wrap
-> > > (Ast0.TypeName(P.id2mcode i))) in
-> > >        Ast0.wrap(Ast0.Init(s,fn idtype,id,a,P.clt2mcode "=" q,e,
-> > >  			   P.clt2mcode ";" pv)) }
-> > > -  /* function pointer type */
-> > > -  | s=ioption(storage)
-> > > -    t=ctype lp1=TOPar st=TMul d=d_ident rp1=TCPar
-> > > -    lp2=TOPar p=decl_list(name_opt_decl) rp2=TCPar
-> > > -    pv=TPtVirg
-> > > -      { let (id,fn) = d in
-> > > -        let t =
-> > > -	  Ast0.wrap
-> > > -	    (Ast0.FunctionPointer
-> > > -	       (t,P.clt2mcode "(" lp1,P.clt2mcode "*" st,P.clt2mcode
-> > > ")" rp1,
-> > > -		P.clt2mcode "(" lp2,p,P.clt2mcode ")" rp2)) in
-> > > -        Ast0.wrap(Ast0.UnInit(s,fn t,id,[],P.clt2mcode ";" pv)) }
-> > >    | s=ioption(storage) d=decl_ident o=TOPar e=eexpr_list_option
-> > > c=TCPar
-> > >        p=TPtVirg
-> > >        { Ast0.wrap(Ast0.MacroDecl(s,d,P.clt2mcode "(" o,e,
-> > > @@ -1826,19 +1741,103 @@ one_decl_var:
-> > >                 (s,d,P.clt2mcode "(" o,e,
-> > >                  P.clt2mcode ")" c,P.clt2mcode "=" q,i,
-> > >                  P.clt2mcode ";" p)) }
-> > > -  | s=ioption(storage)
-> > > -    t=ctype lp1=TOPar st=TMul d=d_ident rp1=TCPar
-> > > -    lp2=TOPar p=decl_list(name_opt_decl) rp2=TCPar a=attr_list
-> > > -    q=TEq e=initialize pv=TPtVirg
-> > > -      { let (id,fn) = d in
-> > > -        let t =
-> > > -	  Ast0.wrap
-> > > -	    (Ast0.FunctionPointer
-> > > -	       (t,P.clt2mcode "(" lp1,P.clt2mcode "*" st,P.clt2mcode
-> > > ")" rp1,
-> > > -		P.clt2mcode "(" lp2,p,P.clt2mcode ")" rp2)) in
-> > > -      Ast0.wrap(Ast0.Init(s,fn t,id,a,P.clt2mcode "="
-> > > q,e,P.clt2mcode ";" pv))}
-> > >
-> > >
-> > > +direct_declarator(ident_type):
-> > > +    ident_type
-> > > +      { ($1, function x -> x) }
-> > > +  | o=TOPar m=list(TMul) d=direct_declarator(ident_type) c=TCPar
-> > > +      { let (id,fn) = d in
-> > > +        (id,
-> > > +         function t ->
-> > > +          let ty =  fn (P.pointerify t m) in
-> > > +          let _ =
-> > > +           match Ast0.unwrap ty with
-> > > +            Ast0.Pointer(ty1,_) ->
-> > > +             (match Ast0.unwrap ty1 with
-> > > +               Ast0.FunctionType(ty2,_,_,_) -> ()
-> > > +             | _ ->
-> > > +              raise (Semantic_cocci.Semantic "expected function
-> > > pointer"))
-> > > +           | Ast0.Array(ty1,_,_,_) ->
-> > > +              (match Ast0.unwrap ty1 with
-> > > +                Ast0.Pointer(ty2,_) ->(
-> > > +                 match Ast0.unwrap ty2 with
-> > > +                  Ast0.FunctionType(ty3,_,_,_) -> ()
-> > > +                 | _ ->
-> > > +                  raise (Semantic_cocci.Semantic "expected
-> > > function pointer"))
-> > > +             | _ ->
-> > > +              raise (Semantic_cocci.Semantic "expected function
-> > > pointer"))
-> > > +           | _ ->
-> > > +            raise (Semantic_cocci.Semantic "expected function
-> > > pointer") in
-> > > +          Ast0.wrap
-> > > +            (Ast0.ParenType
-> > > +               (P.clt2mcode "(" o,
-> > > +                ty,
-> > > +                P.clt2mcode ")" c))) }
-> > > +  | d=direct_declarator(ident_type) a=array_dec
-> > > +      { let (id,fn) = d in
-> > > +        (id, function t -> let r = P.arrayify t [a] in fn r) }
-> > > +  | d=direct_declarator(ident_type)
-> > > +      o=TOPar arglist=decl_list(name_opt_decl) c=TCPar
-> > > +      { let (id,fn) = d in
-> > > +        (id, function t ->
-> > > +              let r =
-> > > +               Ast0.wrap
-> > > +                (Ast0.FunctionType
-> > > +                  (t,P.clt2mcode "(" o,arglist,P.clt2mcode ")" c))
-> > > in fn r) }
-> > > +
-> > > +
-> > > +direct_abstract_d:
-> > > +    o=TOPar m=list(TMul) d=direct_abstract_d c=TCPar
-> > > +      { function t ->
-> > > +          let ty = d (P.pointerify t m) in
-> > > +          let _ =
-> > > +           match Ast0.unwrap ty with
-> > > +            Ast0.Pointer(ty1,_) ->
-> > > +             (match Ast0.unwrap ty1 with
-> > > +               Ast0.FunctionType(ty2,_,_,_) ->()
-> > > +             | _ ->
-> > > +              raise (Semantic_cocci.Semantic "expected function
-> > > pointer"))
-> > > +           | Ast0.Array(ty1,_,_,_) ->
-> > > +              (match Ast0.unwrap ty1 with
-> > > +                Ast0.Pointer(ty2,_) ->(
-> > > +                 match Ast0.unwrap ty2 with
-> > > +                  Ast0.FunctionType(ty3,_,_,_) -> ()
-> > > +                 | _ ->
-> > > +                  raise (Semantic_cocci.Semantic "expected
-> > > function pointer"))
-> > > +             | _ ->
-> > > +              raise (Semantic_cocci.Semantic "expected function
-> > > pointer"))
-> > > +           | _ ->
-> > > +            raise (Semantic_cocci.Semantic "expected function
-> > > pointer") in
-> > > +          Ast0.wrap
-> > > +            (Ast0.ParenType
-> > > +               (P.clt2mcode "(" o,
-> > > +                ty,
-> > > +                P.clt2mcode ")" c))
-> > > +      }
-> > > +  | a=array_dec
-> > > +      { function t -> P.arrayify t [a] }
-> > > +  | d=direct_abstract_d a=array_dec
-> > > +      { function t -> let r = P.arrayify t [a] in d r }
-> > > +  | o=TOPar arglist=decl_list(name_opt_decl) c=TCPar
-> > > +      { function t ->
-> > > +               Ast0.wrap
-> > > +                (Ast0.FunctionType
-> > > +                  (t,P.clt2mcode "(" o,arglist,P.clt2mcode ")" c))
-> > > }
-> > > +  | d=direct_abstract_d o=TOPar arglist=decl_list(name_opt_decl)
-> > > c=TCPar
-> > > +      { function t ->
-> > > +              let r =
-> > > +               Ast0.wrap
-> > > +                (Ast0.FunctionType
-> > > +                  (t,P.clt2mcode "(" o,arglist,P.clt2mcode ")" c))
-> > > in d r }
-> > > +
-> > > +
-> > > +direct_decl_option(ident_type):
-> > > +      { (None, function x -> x) }
-> > > +  | d=direct_declarator(ident_type)
-> > > +      { let (id,fn) = d in
-> > > +        (Some id, fn) }
-> > > +
-> > >  d_ident:
-> > >      disj_ident list(array_dec)
-> > >        { ($1, function t -> P.arrayify t $2) }
-> > > @@ -2151,16 +2150,10 @@ cast_expr(r,pe):
-> > >      unary_expr(r,pe)                      { $1 }
-> > >    | lp=TOPar t=ctype rp=TCPar e=cast_expr(r,pe)
-> > >        { Ast0.wrap(Ast0.Cast (P.clt2mcode "(" lp, t,
-> > > +                             P.clt2mcode ")" rp, e)) }
-> > > +  | lp=TOPar t=ctype d=direct_abstract_d rp=TCPar
-> > > e=cast_expr(r,pe)
-> > > +      { Ast0.wrap(Ast0.Cast (P.clt2mcode "(" lp, d t,
-> > >  			     P.clt2mcode ")" rp, e)) }
-> > > -  | lp=TOPar t=ctype lp1=TOPar s=TMul rp1=TCPar
-> > > -      lp2=TOPar d=decl_list(name_opt_decl) rp2=TCPar rp=TCPar
-> > > -      e=cast_expr(r,pe)
-> > > -      { let fnptr =
-> > > -	  Ast0.wrap
-> > > -	    (Ast0.FunctionPointer
-> > > -	       (t,P.clt2mcode "(" lp1,P.clt2mcode "*" s,P.clt2mcode ")"
-> > > rp1,
-> > > -		P.clt2mcode "(" lp2,d,P.clt2mcode ")" rp2)) in
-> > > -      Ast0.wrap(Ast0.Cast (P.clt2mcode "(" lp, fnptr, P.clt2mcode
-> > > ")" rp, e)) }
-> > >
-> > >  unary_expr(r,pe):
-> > >      postfix_expr(r,pe)                   { $1 }
-> > > --
-> > > 2.21.1
-> > >
-> > >
->
->
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
