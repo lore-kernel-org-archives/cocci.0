@@ -2,86 +2,88 @@ Return-Path: <SRS0=15MF=5F=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1435FC4332E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FFD8C4332D
 	for <cocci@archiver.kernel.org>; Fri, 20 Mar 2020 07:02:44 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 619E120775
+	by mail.kernel.org (Postfix) with ESMTPS id 6151320774
 	for <cocci@archiver.kernel.org>; Fri, 20 Mar 2020 07:02:43 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="p3Fn7+z0"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 619E120775
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="vFQ0l+pF"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6151320774
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 02K72IGn021295;
-	Fri, 20 Mar 2020 08:02:19 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 02K72Odg001050;
+	Fri, 20 Mar 2020 08:02:24 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id D5DBD780E;
-	Fri, 20 Mar 2020 08:02:18 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 427657824;
+	Fri, 20 Mar 2020 08:02:22 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 287493B93
- for <cocci@systeme.lip6.fr>; Fri, 20 Mar 2020 08:02:17 +0100 (CET)
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com
- [IPv6:2607:f8b0:4864:20:0:0:0:532])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 02K72ENR003239
+ by systeme.lip6.fr (Postfix) with ESMTPS id 7C1C07823
+ for <cocci@systeme.lip6.fr>; Fri, 20 Mar 2020 08:02:20 +0100 (CET)
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:541])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 02K72H4G006353
  (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Fri, 20 Mar 2020 08:02:15 +0100 (CET)
-Received: by mail-pg1-x532.google.com with SMTP id b22so2601323pgb.6
- for <cocci@systeme.lip6.fr>; Fri, 20 Mar 2020 00:02:15 -0700 (PDT)
+ for <cocci@systeme.lip6.fr>; Fri, 20 Mar 2020 08:02:18 +0100 (CET)
+Received: by mail-pg1-x541.google.com with SMTP id k191so1453090pgc.13
+ for <cocci@systeme.lip6.fr>; Fri, 20 Mar 2020 00:02:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=1sY74GkyZuxdCYokvBmv+hrifgX3v/qyVpyDCQhtrjA=;
- b=p3Fn7+z05Pd9TDTfcHErHEAYF+iRb/a2MomtlrMTMgDx/e1Oy8QzdgCTFYrZ8jJQzh
- VrZkYSV6+1SfVxcmF2HQc5x0A63jyYoXRNSY8inxcH8fcfPxw7X3kcG5KMOe+gOZfjcL
- O8Rw+GFlgZLUv4He7ZG/sJjQcsU/SkLEjY3GJ9pl/0qUTgCak5OEb6ogLCRvPPJSAGyD
- 607H/z10pj5uv7pdN52EpKd1f1hfPVvNmYOJYXt4N3nbik2q7qDfZSrY90rrwKiJEO6f
- hMP9G7+W4ygnDub5+xPEHIc7tKk1yY+LM00fGtJcPQqssDLdNWLy/HgxbnrSkiKPMV0a
- EskA==
+ h=from:to:cc:subject:date:message-id:in-reply-to:references
+ :mime-version:content-transfer-encoding;
+ bh=Ckvc6plc+LC3hFSV6yF0owQPz7JKO44MLZLow7a8p3s=;
+ b=vFQ0l+pFUJNwONSzTmEIhnp81Ka/tzJPHswGKa6+aYZdmgRFDkMoF0W7pqWMfU7Pee
+ CilFbVIpFk0kyukthRAVKulh3NDBo5Mw+Y9fcSj9+q3BB62YyvMqg2nA/ntAhhZmuZ7v
+ gw/tSO+6hPtP5C9QYMljSm2W83G3c2Ap9cfKs7FfJC+3kSRkTpZoe4V8IEfJlJcKC+cD
+ Kq86f11aaa1NR8WQo0rZ597DbN+g+j/Tm3PMBcdckmpD/10rwTKS0dmD6YqP99QhxPCY
+ r6+7lBV87zhWjYHopQx0K3d6l77ZgpKj+mHmEI60aoegZejk81S0ygHVTqf5LLvTAZXv
+ hdOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=1sY74GkyZuxdCYokvBmv+hrifgX3v/qyVpyDCQhtrjA=;
- b=VCHTeppuP+/7eDT+obl6vg5C6/U7iMOREeGgZ0lzEcMLK5brge/0yh/XpqLtoJQrUk
- wNp5pVgKmYYoTiBmgkEokkrn0Bpv1SaiaS3ucRVeH4hsO0cauHPNbkUWRkt9ygO9qsjN
- rHVePYrZ2Dy9GztxCEznCaVNEy5dQV1jHCgdsAkerU/oy37Vu1GMmelRmaJ2yPeiqAYg
- Asr07ElV1NyJDZs8FhyjXyGgQ+IuFm/CIke1Uy5nfw9jT/dHDMdVhBriu+m7Ymw36Ea2
- iQ91mv3Ep/R/ClovjWOwxNHkZwLpNVe6gk1PM80rGAFKND0eD25toDMYHDyvo1okMu4p
- tgew==
-X-Gm-Message-State: ANhLgQ1p9pHIUY7+7ugi2SOoJJ3PTm/uW7e0+0UFNxSeVXv+wWvItF/1
- +FEdpQL/4ZSGU/cSbOsPshla2VPl
-X-Google-Smtp-Source: ADFU+vuO/1o6IId7Nr/PrsGbEZmz4iZ3BsLSRJGGozvbpmg9w3A6e8dL8cgNnElaPpAKRw1kTy1P1A==
-X-Received: by 2002:a63:82c2:: with SMTP id w185mr7423709pgd.382.1584687733209; 
- Fri, 20 Mar 2020 00:02:13 -0700 (PDT)
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=Ckvc6plc+LC3hFSV6yF0owQPz7JKO44MLZLow7a8p3s=;
+ b=FrSwrJ6AVyWNv5tE1WH0Up4rrQlHPHmSAVjS/XpfhnafqG840oH8U05KnMxBDipisu
+ 9gkZWEqJU0vT34anGSyOSzalGzqgzxhrb+IPv4hfCLB4/Yt54xrNFIGU0ibOgomKzd2A
+ SisxCiHdS5gpLFHn1JWb+V4PTjmuqLU54maxiQCf0V3/oywBBZukXDr6+RvOQXxmhODi
+ 7/sJVODKBdPRXdKiB7ZOojanyiiAO1t64tyx+fLaKo9zoCcwGpjAQTG4sqFIje9X6Znd
+ U7IOwJ0MQbkrN0eQJc8hGf5d6fgGKIJ48dHjoBHkhSssVgot4m2ZgKRSevmfH5z5WW21
+ lJyA==
+X-Gm-Message-State: ANhLgQ2q1O4gMKUeQheXjXJsh3GwiGWQPB0B5EpaQ/zM1DKIvcRpkwe0
+ kPLqdaabTljIVJavxCqqrOEL9z8Z
+X-Google-Smtp-Source: ADFU+vveu2DX72l9mi6636OUv9I9QjQWQgcpHD5HaovEhnKhYWrMrzCrKVuGKo/MPAXDmF/BHg7zTQ==
+X-Received: by 2002:a63:144e:: with SMTP id 14mr7475899pgu.264.1584687736201; 
+ Fri, 20 Mar 2020 00:02:16 -0700 (PDT)
 Received: from localhost.localdomain ([2405:204:2190:a751:deeb:c09d:833a:659d])
- by smtp.gmail.com with ESMTPSA id l11sm3941232pjy.44.2020.03.20.00.02.08
+ by smtp.gmail.com with ESMTPSA id l11sm3941232pjy.44.2020.03.20.00.02.13
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 20 Mar 2020 00:02:12 -0700 (PDT)
+ Fri, 20 Mar 2020 00:02:15 -0700 (PDT)
 From: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 To: cocci@systeme.lip6.fr
-Date: Fri, 20 Mar 2020 12:31:31 +0530
-Message-Id: <20200320070157.4206-1-jaskaransingh7654321@gmail.com>
+Date: Fri, 20 Mar 2020 12:31:32 +0530
+Message-Id: <20200320070157.4206-2-jaskaransingh7654321@gmail.com>
 X-Mailer: git-send-email 2.21.1
+In-Reply-To: <20200320070157.4206-1-jaskaransingh7654321@gmail.com>
+References: <20200320070157.4206-1-jaskaransingh7654321@gmail.com>
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 20 Mar 2020 08:02:20 +0100 (CET)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 20 Mar 2020 08:02:24 +0100 (CET)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
  (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Fri, 20 Mar 2020 08:02:15 +0100 (CET)
+ Fri, 20 Mar 2020 08:02:19 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78
 Cc: linux-kernel-mentees@lists.linuxfoundation.org
-Subject: [Cocci] [PATCH v3 00/26] cocci: Add ParenType/FunctionType to SmPL
-	ASTs
+Subject: [Cocci] [PATCH v3 01/26] parsing_cocci: Add Function Prototype token
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -98,143 +100,248 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-The aim of this patch series is to add the types ParenType
-and FunctionType to the SmPL AST. These types are present in
-the C AST but not in the SmPL AST.
+To add the types ParenType and FunctionType to the SmPL AST, a
+reduce/reduce conflict with the funproto rule of the SmPL parser
+must be resolved. This requires explicitly identifying a function
+prototype by use of a token (TFunProto).
 
-Preliminarily, a hack to resolve a reduce/reduce conflict
-with the funproto rule in the SmPL parser is implemented.
+While the correct method of identifying a function prototype would be to
+check if an identifier is preceded by a return type, it is challenging
+to implement. This is because implementing an OCaml function, to
+correctly determine a C type in SmPL, without the aid of Yacc, would
+have to handle a number of cases (disjunctions, typeof expressions,
+etc.).
 
-Upon this, a rule similar to that of the C parser's direct
-declarator rule is implemented, and used wherever suitable.
-The direct declarator rule produces ParenType and FunctionType,
-similar to the C parser.
+Thus, a slightly hacky approach is taken to determine a function
+prototype with not the best certainty but what works for most cases
+in SmPL. If the identifier is preceded by any token that does not
+seem to be part of a type, then it is not identified as a function
+prototype. Else, it is.
 
-Cases for these types are added to various places in the codebase.
+Signed-off-by: Jaskaran Singh <jaskaransingh7654321@gmail.com>
+---
+ parsing_cocci/parse_cocci.ml          | 97 +++++++++++++++++++++------
+ parsing_cocci/parser_cocci_menhir.mly |  9 ++-
+ 2 files changed, 83 insertions(+), 23 deletions(-)
 
-The FunctionPointer type is removed from the SmPL AST, since
-all the productions that produce FunctionPointers in the SmPL
-parser are replaced by those that produce ParenType. Any functions,
-constructs or cases of FunctionPointer are also removed from the
-codebase.
-
-A test case to match an array of function pointers is included to
-demonstrate matching improvements.
-
-Changes in v3:
---------------
-- Patch 01/26:
-    - Add case for __attribute__((.*)) in is_permissible_proto
-      so that the p1p2 test case passes successfully with just
-      01/26 applied.
-    - Add case for typeof(.*) in is_permissible_proto.
-    - Change the function balanced_args in find_function_names
-      by adding a new argument "reverse". reverse is a bool that
-      indicates whether the given list is reversed, and if it is
-      then when to return the rest of the tokens and how to increment
-      or decrement the current depth/level of the parentheses.
-- Patch 02/26:
-    Briefly describe how the new constructs are used in
-    the SmPL AST.
-- Patch 03/26:
-    State examples of productions that are not supported
-    by the direct_declarator and direct_abstract_d rules, and how some
-    of these could be supported.
-- Patch 04/26:
-    - Group together repeated code in a function.
-    - Place match statement on a single line.
-    - Change spaces to tabs in a ParenType/FunctionType cases of
-      named_type and named_type_typedef.
-- Patch 05/26:
-    - Group together repeated code in a function.
-    - Place match statement on a single line.
-- Patch 07/26:
-    Change the comment in the head of index.ml to indicate
-    which indexes have now been used.
-- Patch 09/26:
-    Group together repeated code in a function.
-- Patch 10/26:
-    Change ParenType's case as per what term is to the
-    left.
-- Patch 14/26:
-    Change ParenType's case as per what term is to the
-    left.
-- Patch 15/26:
-    Change promote_mcode rp to promote_mcode lp for
-    ParenType's case.
-- Patch 21/26:
-    Group together repeated code in a function.
-- Patch 22/26:
-    - Group together repeated code in a function.
-    - Add FunctionType case to named_type function.
-
-Changes in v2:
---------------
-- Patch 05/26: Change "visitor_ast0" in patch subject to "visitor_ast"
-
-[PATCH v3 01/26] parsing_cocci: Add Function Prototype token
-[PATCH v3 02/26] parsing_cocci: AST: Add ParenType and FunctionType
-[PATCH v3 03/26] parsing_cocci: parser: Add
-[PATCH v3 04/26] parsing_cocci: visitor_ast0: Add cases for
-[PATCH v3 05/26] parsing_cocci: visitor_ast: Add cases for
-[PATCH v3 06/26] parsing_cocci: arity: Add cases for
-[PATCH v3 07/26] parsing_cocci: index: Add cases for
-[PATCH v3 08/26] parsing_cocci: context_neg: Add cases for
-[PATCH v3 09/26] parsing_cocci: unparse_ast0: Add cases for
-[PATCH v3 10/26] parsing_cocci: single_statement: Add cases for
-[PATCH v3 11/26] parsing_cocci: function_prototypes: Add cases for
-[PATCH v3 12/26] parsing_cocci: check_meta: Add cases for
-[PATCH v3 13/26] parsing_cocci: iso_pattern: Add cases for
-[PATCH v3 14/26] parsing_cocci: adjust_pragmas: Add cases for
-[PATCH v3 15/26] parsing_cocci: compute_lines: Add cases for
-[PATCH v3 16/26] parsing_cocci: ast0toast: Add cases for
-[PATCH v3 17/26] parsing_cocci: type_cocci: Add
-[PATCH v3 18/26] parsing_cocci: unify_ast: Add cases for
-[PATCH v3 19/26] parsing_cocci: disjdistr: Add cases for
-[PATCH v3 20/26] parsing_cocci: ast_cocci: Add cases for
-[PATCH v3 21/26] parsing_cocci: pretty_print_cocci: Print
-[PATCH v3 22/26] parsing_c: unparse_cocci: Print
-[PATCH v3 23/26] engine: Match A.ParenType and A.FunctionType
-[PATCH v3 24/26] tools: spgen: Add cases for ParenType/FunctionType
-[PATCH v3 25/26] cocci: Remove Ast_cocci.FunctionPointer
-[PATCH v3 26/26] tests: Add test case for array of function pointers
-
- engine/check_exhaustive_pattern.ml       |    3 
- engine/cocci_vs_c.ml                     |   82 +++-------
- ocaml/coccilib.mli                       |   10 -
- parsing_c/unparse_cocci.ml               |   72 +++++++--
- parsing_cocci/adjust_pragmas.ml          |    7 
- parsing_cocci/arity.ml                   |   25 ++-
- parsing_cocci/ast0_cocci.ml              |    7 
- parsing_cocci/ast0_cocci.mli             |    6 
- parsing_cocci/ast0toast.ml               |   11 -
- parsing_cocci/ast_cocci.ml               |   21 +-
- parsing_cocci/ast_cocci.mli              |    6 
- parsing_cocci/check_meta.ml              |    8 -
- parsing_cocci/compute_lines.ml           |   21 +-
- parsing_cocci/context_neg.ml             |    4 
- parsing_cocci/disjdistr.ml               |   16 +-
- parsing_cocci/function_prototypes.ml     |    7 
- parsing_cocci/get_constants.ml           |    2 
- parsing_cocci/index.ml                   |    5 
- parsing_cocci/iso_pattern.ml             |   17 --
- parsing_cocci/parse_cocci.ml             |   97 +++++++++---
- parsing_cocci/parser_cocci_menhir.mly    |  248 +++++++++++++++----------------
- parsing_cocci/pretty_print_cocci.ml      |   64 ++++++--
- parsing_cocci/single_statement.ml        |    3 
- parsing_cocci/type_cocci.mli             |    3 
- parsing_cocci/type_infer.ml              |   25 +--
- parsing_cocci/unify_ast.ml               |   16 +-
- parsing_cocci/unparse_ast0.ml            |   51 ++++--
- parsing_cocci/visitor_ast.ml             |   92 ++++++++---
- parsing_cocci/visitor_ast0.ml            |  198 ++++++++++++++++++------
- tests/funptr_array.c                     |    1 
- tests/funptr_array.cocci                 |    9 +
- tests/funptr_array.res                   |    1 
- tools/spgen/source/meta_variable.ml      |    1 
- tools/spgen/source/position_generator.ml |    9 -
- 34 files changed, 732 insertions(+), 416 deletions(-)
-
+diff --git a/parsing_cocci/parse_cocci.ml b/parsing_cocci/parse_cocci.ml
+index 679d213a..e92a01d0 100644
+--- a/parsing_cocci/parse_cocci.ml
++++ b/parsing_cocci/parse_cocci.ml
+@@ -295,6 +295,7 @@ let token2c (tok,_) add_clt =
+   | PC.TLineEnd(clt) -> "line end"
+   | PC.TInvalid -> "invalid"
+   | PC.TFunDecl(clt) -> "fundecl"
++  | PC.TFunProto(clt) -> "funproto"
+ 
+   | PC.TIso -> "<=>"
+   | PC.TRightIso -> "=>"
+@@ -480,7 +481,7 @@ let get_clt (tok,_) =
+ 
+   | PC.TOPar0(_,clt) | PC.TMid0(_,clt) | PC.TAnd0(_,clt) | PC.TCPar0(_,clt)
+   | PC.TOEllipsis(clt) | PC.TCEllipsis(clt)
+-  | PC.TPOEllipsis(clt) | PC.TPCEllipsis(clt)
++  | PC.TPOEllipsis(clt) | PC.TPCEllipsis(clt) | PC.TFunProto(clt)
+   | PC.TFunDecl(clt) | PC.TDirective(_,clt) | PC.TAttr_(clt)
+   | PC.TLineEnd(clt) -> clt
+   | PC.TVAEllipsis(clt) -> clt
+@@ -718,6 +719,7 @@ let update_clt (tok,x) clt =
+ 
+   | PC.TLineEnd(_) -> (PC.TLineEnd(clt),x)
+   | PC.TFunDecl(_) -> (PC.TFunDecl(clt),x)
++  | PC.TFunProto(_) -> (PC.TFunProto(clt),x)
+   | PC.TTildeExclEq(_) -> (PC.TTildeExclEq(clt),x)
+   | PC.TDirective(a,_) -> (PC.TDirective(a,clt),x)
+   | PC.TAttr_(_) -> (PC.TAttr_(clt),x)
+@@ -925,7 +927,7 @@ let split_token ((tok,_) as t) =
+   | PC.TInitialize | PC.TFinalize -> ([t],[t])
+   | PC.TPArob clt | PC.TMetaPos(_,_,_,clt) | PC.TMetaCom(_,_,clt) -> split t clt
+ 
+-  | PC.TFunDecl(clt)
++  | PC.TFunDecl(clt) | PC.TFunProto(clt)
+   | PC.TWhen(clt) | PC.TWhenTrue(clt) | PC.TWhenFalse(clt)
+   | PC.TAny(clt) | PC.TStrict(clt) | PC.TLineEnd(clt)
+   | PC.TEllipsis(clt)
+@@ -1006,7 +1008,8 @@ let find_function_names l =
+     | _ -> false in
+   let rec split acc = function
+       [] | [_] -> raise Irrelevant
+-    | ((PC.TCPar(_),_) as t1) :: ((PC.TOBrace(_),_) as t2) :: rest ->
++    | ((PC.TCPar(_),_) as t1) :: ((PC.TOBrace(_),_) as t2) :: rest
++    | ((PC.TCPar(_),_) as t1) :: ((PC.TPtVirg(_),_) as t2) :: rest ->
+ 	(List.rev (t1::acc),(t2::rest))
+     | x::xs -> split (x::acc) xs in
+   let rec balanced_name level = function
+@@ -1024,20 +1027,68 @@ let find_function_names l =
+     | t::rest when is_ident t && level = 0 -> rest
+     | t::rest when is_ident t || is_mid t -> balanced_name level rest
+     | _ -> raise Irrelevant in
+-  let rec balanced_args level = function
++  let rec balanced_args level reverse = function
+       [] -> raise Irrelevant
+     | (PC.TCPar(_),_)::rest ->
+-	let level = level - 1 in
+-	if level = 0
++	let level = if reverse then level + 1 else level - 1 in
++	if level = 0 && not(reverse)
+ 	then rest
+-	else balanced_args level rest
++	else balanced_args level reverse rest
+     | (PC.TOPar(_),_)::rest ->
+-	let level = level + 1 in
+-	balanced_args level rest
++	let level = if reverse then level - 1 else level + 1 in
++	if level = 0 && reverse
++	then rest
++	else balanced_args level reverse rest
+     | (PC.TArobArob,_)::_ | (PC.TArob,_)::_ | (PC.EOF,_)::_ ->
+ 	raise Irrelevant
+-    | t::rest -> balanced_args level rest in
+-  let rec loop = function
++    | t::rest -> balanced_args level reverse rest in
++  let rec is_permissible_proto = function
++      [] -> false
++    | (PC.TCPar0(_),_)::
++      ((PC.TMid0(_),_) | (PC.TAnd0(_),_))::
++      (PC.TOPar0(_),_)::_ -> false
++    | (PC.TOPar0(_),_)::rest
++    | (PC.TCPar0(_),_)::rest -> is_permissible_proto rest
++    | x::rest when is_mid x ->
++        let rec loop = function
++          [] -> false
++        | (PC.TOPar0(_),_)::xs -> is_permissible_proto xs
++        | x::xs -> loop xs in
++        loop rest
++    | ((PC.TCPar(_),_)::rest as l) ->
++      let l = balanced_args 0 true l in
++      let x = match l with
++        (PC.TAttr_(_),_)::rest -> is_permissible_proto rest
++      | (PC.TTypeof(_),_)::_ -> true
++      | _ -> false in x
++    | _::((PC.TEq(_),_) | (PC.TNotEq(_),_))::(PC.TWhen(_),_)::_
++    | _::(PC.TWhen(_),_)::_
++    | (PC.TComma(_),_)::_
++    | (PC.TDirective(_),_)::_
++    | (PC.TElse(_),_)::_
++    | (PC.TReturn(_),_)::_
++    | (PC.TMetaStm(_),_)::_
++    | (PC.TMetaExp(_),_)::_
++    | (PC.TMetaId(_),_)::_
++    | (PC.TMetaLocalIdExp(_),_)::_
++    | (PC.TEq(_),_)::_
++    | (PC.TEllipsis(_),_)::_
++    | (PC.TOEllipsis(_),_)::_
++    | (PC.TCEllipsis(_),_)::_
++    | (PC.TPOEllipsis(_),_)::_
++    | (PC.TPCEllipsis(_),_)::_
++    | (PC.TPtVirg(_),_)::_
++    | (PC.TOBrace(_),_)::_
++    | (PC.TCBrace(_),_)::_
++    | (PC.TOPar(_),_)::_
++    | (PC.TIdent(_),_)::_ -> false
++    | _ -> true in
++  let decl_or_proto clt info bef aft =
++    match aft with
++      (PC.TOBrace(_),_)::_ -> (((PC.TFunDecl(clt),info) :: bef), aft)
++    | (PC.TPtVirg(_),_)::_ -> (((PC.TFunProto(clt),info) :: bef), aft)
++    | _ -> raise Irrelevant in
++  let rec loop acc = function
+       [] -> []
+     | t :: rest ->
+ 	if is_par t || is_mid t || is_ident t
+@@ -1046,26 +1097,30 @@ let find_function_names l =
+ 	    try
+ 	      let (bef,aft) = split [] (t::rest) in
+ 	      let rest = balanced_name 0 bef in
++              (match aft with
++                (PC.TPtVirg(_),_)::_
++                 when not(is_permissible_proto acc) -> raise Irrelevant
++              | _ ->
+ 	      (match rest with
+ 		(PC.TOPar(_),_)::_ ->
+-		  (match balanced_args 0 rest with
++		  (match balanced_args 0 false rest with
+ 		    [] ->
+ 		      let (_,info) as h = List.hd bef in
+ 		      let clt = get_clt h in
+-		      (((PC.TFunDecl(clt),info) :: bef), aft)
++                      decl_or_proto clt info bef aft
+ 		  | (PC.TAttr_(_),_)::rest ->
+-		      (match balanced_args 0 rest with
++		      (match balanced_args 0 false rest with
+ 			[] ->
+ 			  let (_,info) as h = List.hd bef in
+ 			  let clt = get_clt h in
+-			  (((PC.TFunDecl(clt),info) :: bef), aft)
++                          decl_or_proto clt info bef aft
+ 		      | _ -> raise Irrelevant)
+ 		  | _ -> raise Irrelevant)
+-	      | _ -> raise Irrelevant)
++	      | _ -> raise Irrelevant))
+ 	    with Irrelevant -> ([t],rest) in
+-	  t @ (loop rest)
+-	else t :: (loop rest) in
+-  loop l
++          t @ (loop (t @ acc) rest)
++        else t :: (loop (t :: acc) rest) in
++  loop [] l
+ 
+ (* ----------------------------------------------------------------------- *)
+ (* an attribute is an identifier that precedes another identifier and
+@@ -1168,6 +1223,8 @@ let detect_types in_meta_decls l =
+ 	delim::newid::id::(loop false infn (ident::type_names) rest)
+     | ((PC.TFunDecl(_),_) as fn)::rest ->
+ 	fn::(loop false 1 type_names rest)
++    | ((PC.TFunProto(_),_) as fn)::rest ->
++	fn::(loop false 1 type_names rest)
+     | ((PC.TOPar(_),_) as lp)::rest when infn > 0 ->
+ 	lp::(loop false (infn + 1) type_names rest)
+     | ((PC.TCPar(_),_) as rp)::rest when infn > 0 ->
+@@ -1252,7 +1309,7 @@ let token2line (tok,_) =
+   | PC.TMetaDParamList(_,_,_,_,clt) | PC.TMetaFunc(_,_,_,clt)
+   | PC.TMetaLocalFunc(_,_,_,clt) | PC.TMetaPos(_,_,_,clt) | PC.TMetaCom(_,_,clt)
+ 
+-  | PC.TFunDecl(clt)
++  | PC.TFunDecl(clt) | PC.TFunProto(clt)
+   | PC.TWhen(clt) | PC.TWhenTrue(clt) | PC.TWhenFalse(clt)
+   | PC.TAny(clt) | PC.TStrict(clt) | PC.TEllipsis(clt)
+ 
+diff --git a/parsing_cocci/parser_cocci_menhir.mly b/parsing_cocci/parser_cocci_menhir.mly
+index 9e6c8a08..26958f63 100644
+--- a/parsing_cocci/parser_cocci_menhir.mly
++++ b/parsing_cocci/parser_cocci_menhir.mly
+@@ -239,7 +239,8 @@ let inline_id aft = function
+ 
+ %token <Data.clt> TVAEllipsis
+ %token <Data.clt> TIf TElse TWhile TFor TDo TSwitch TCase TDefault TReturn
+-%token <Data.clt> TBreak TContinue TGoto TSizeof TTypeof TFunDecl Tdecimal Texec
++%token <Data.clt> TBreak TContinue TGoto TSizeof TTypeof TFunDecl TFunProto
++%token <Data.clt> Tdecimal Texec
+ %token <string * Data.clt> TIdent TTypeId TDeclarerId TIteratorId TSymId
+ %token <Ast_cocci.added_string * Data.clt> TDirective
+ %token <Data.clt> TAttr_
+@@ -1439,7 +1440,8 @@ reverse_separated_nonempty_llist(separator, X):
+ 
+ funproto:
+   s=ioption(storage) i=ioption(Tinline) t=ctype
+-  id=fn_ident lp=TOPar arglist=arg_list(name_opt_decl) rp=TCPar pt=TPtVirg
++  TFunProto id=fn_ident
++  lp=TOPar arglist=arg_list(name_opt_decl) rp=TCPar pt=TPtVirg
+       { let s = match s with None -> [] | Some s -> [Ast0.FStorage s] in
+         let i =
+ 	  match i with
+@@ -1453,7 +1455,8 @@ funproto:
+ 	      P.clt2mcode "(" lp, args, vararg, P.clt2mcode ")" rp,
+ 	      P.clt2mcode ";" pt)) }
+ | i=Tinline s=storage t=ctype
+-  id=fn_ident lp=TOPar arglist=arg_list(name_opt_decl) rp=TCPar pt=TPtVirg
++  TFunProto id=fn_ident
++  lp=TOPar arglist=arg_list(name_opt_decl) rp=TCPar pt=TPtVirg
+       { let s = [Ast0.FStorage s] in
+         let i = [Ast0.FInline (P.clt2mcode "inline" i)] in
+ 	let t = [Ast0.FType t] in
+-- 
+2.21.1
 
 _______________________________________________
 Cocci mailing list
