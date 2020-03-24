@@ -2,60 +2,90 @@ Return-Path: <SRS0=lKqB=5J=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D87EEC4332B
-	for <cocci@archiver.kernel.org>; Tue, 24 Mar 2020 13:04:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7447AC43331
+	for <cocci@archiver.kernel.org>; Tue, 24 Mar 2020 18:21:32 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7DC3A208CA
-	for <cocci@archiver.kernel.org>; Tue, 24 Mar 2020 13:04:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7DC3A208CA
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+	by mail.kernel.org (Postfix) with ESMTPS id 1267C20714
+	for <cocci@archiver.kernel.org>; Tue, 24 Mar 2020 18:21:31 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="iyhktkum"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1267C20714
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 02OD4bXq025969;
-	Tue, 24 Mar 2020 14:04:37 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 02OIL8Jv014015;
+	Tue, 24 Mar 2020 19:21:08 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 2973377FC;
-	Tue, 24 Mar 2020 14:04:37 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 9728477FC;
+	Tue, 24 Mar 2020 19:21:08 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id B92813B63
- for <cocci@systeme.lip6.fr>; Tue, 24 Mar 2020 09:27:43 +0100 (CET)
-Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 02O8ReSZ002743
- (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
- for <cocci@systeme.lip6.fr>; Tue, 24 Mar 2020 09:27:42 +0100 (CET)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
- by mx2.suse.de (Postfix) with ESMTP id 62F7BADB5;
- Tue, 24 Mar 2020 08:27:38 +0000 (UTC)
-To: "Guilherme G. Piccoli" <gpiccoli@canonical.com>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
+ by systeme.lip6.fr (Postfix) with ESMTPS id 9D8453B63
+ for <cocci@systeme.lip6.fr>; Tue, 24 Mar 2020 19:20:59 +0100 (CET)
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:642])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 02OIKv2b001723
+ (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
+ for <cocci@systeme.lip6.fr>; Tue, 24 Mar 2020 19:20:58 +0100 (CET)
+Received: by mail-pl1-x642.google.com with SMTP id m1so7744606pll.6
+ for <cocci@systeme.lip6.fr>; Tue, 24 Mar 2020 11:20:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=pT25UnZw8GM7Hd21OQrxHvPDWru16NnMVVxodL4fKVA=;
+ b=iyhktkumgD/jnOyy/wrt8dXzir+rVbxsCaX0F1NIU968y/5PKrYcKlaC+EUgsXxoD1
+ qRnZuBoGJVEq/iPtymBbiQq/d0t+3o76Vg7pmHHpXjJtM7UuE+MA3iFeocbUrYXAjiQM
+ Z6sejDHA46aOnvzsmPK6WvTcsSKcktL/hzcag=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=pT25UnZw8GM7Hd21OQrxHvPDWru16NnMVVxodL4fKVA=;
+ b=eOgjpQAdhPloCnH2+N9Q/0yspYWGZvdsAnB7aGQMhF7CZYhkxMleLeCTCmYWnFF0Ym
+ X2/22GU+CHcfmNFEsu4+Rl40/6R1jUjVdYMOFSJxQsJw5yzQwNZP/bfoeKBm9DaUQPrJ
+ PC23qGLe2ujwy/0l/PcPHW9wirwQaFeNtc4xJrNhiIzRp8dMvEbGMl6jHrCHcX61kCWl
+ 83MFDIGUjDk06+n02J/gY6X374XtkBN6/tBNhxKP2s0uYEUuEWUtFVwc5V2RLmXuAstO
+ 5hVfUEZnYiIwjGE9AcUH/R+gYrCCkiTD98+d4MAG/GS3iZ/vpJtElFOrQ+EEdyvr2G5Q
+ rqxQ==
+X-Gm-Message-State: ANhLgQ1W3u+L+L4ALDsw8XdSY4NHa/Abwy2UcuwNnq1I5RbAY/TzqHHO
+ RjOs+BY3Q1UiQs/3DR2wvHtdMg==
+X-Google-Smtp-Source: ADFU+vsbUZvpEd+JNrfXu3SDrVaKk1GB6LCcXwZqBJNz0+KcmuSLdw3UClszpGNl3JJHmzGTOgzQXQ==
+X-Received: by 2002:a17:90a:3349:: with SMTP id
+ m67mr6643283pjb.175.1585074057290; 
+ Tue, 24 Mar 2020 11:20:57 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+ by smtp.gmail.com with ESMTPSA id w31sm15114250pgl.84.2020.03.24.11.20.56
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 24 Mar 2020 11:20:56 -0700 (PDT)
+Date: Tue, 24 Mar 2020 11:20:55 -0700
+From: Kees Cook <keescook@chromium.org>
+To: "Guilherme G. Piccoli" <gpiccoli@canonical.com>
+Message-ID: <202003241119.A666E1C694@keescook>
 References: <20200323214618.28429-1-gpiccoli@canonical.com>
-From: Vlastimil Babka <vbabka@suse.cz>
-Message-ID: <b73a6519-0529-e36f-fac5-e4b638ceb3cf@suse.cz>
-Date: Tue, 24 Mar 2020 09:27:37 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+ <b73a6519-0529-e36f-fac5-e4b638ceb3cf@suse.cz>
+ <eee335a2-e673-39bf-ae64-e49c66f74255@canonical.com>
 MIME-Version: 1.0
-In-Reply-To: <20200323214618.28429-1-gpiccoli@canonical.com>
-Content-Language: en-US
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 24 Mar 2020 14:04:37 +0100 (CET)
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Tue, 24 Mar 2020 09:27:42 +0100 (CET)
+Content-Disposition: inline
+In-Reply-To: <eee335a2-e673-39bf-ae64-e49c66f74255@canonical.com>
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 24 Mar 2020 19:21:09 +0100 (CET)
+X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
+ Tue, 24 Mar 2020 19:20:59 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Mailman-Approved-At: Tue, 24 Mar 2020 14:04:35 +0100
-Cc: keescook@chromium.org, linux-doc@vger.kernel.org,
+X-Scanned-By: MIMEDefang 2.78
+Cc: randy Dunlap <rdunlap@infradead.org>, linux-doc@vger.kernel.org,
         penguin-kernel@I-love.SAKURA.ne.jp, linux-api@vger.kernel.org,
-        kernel@gpiccoli.net, cocci@systeme.lip6.fr, tglx@linutronix.de,
-        yzaikin@google.com, akpm@linux-foundation.org
+        kernel@gpiccoli.net, linux-kernel@vger.kernel.org,
+        cocci@systeme.lip6.fr, linux-fsdevel@vger.kernel.org,
+        tglx@linutronix.de, yzaikin@google.com, akpm@linux-foundation.org,
+        Vlastimil Babka <vbabka@suse.cz>
 Subject: Re: [Cocci] [PATCH V2] kernel/hung_task.c: Introduce sysctl to
  print all traces when a hung task is detected
 X-BeenThere: cocci@systeme.lip6.fr
@@ -74,88 +104,21 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-On 3/23/20 10:46 PM, Guilherme G. Piccoli wrote:
-> Commit 401c636a0eeb ("kernel/hung_task.c: show all hung tasks before panic")
-> introduced a change in that we started to show all CPUs backtraces when a
-> hung task is detected _and_ the sysctl/kernel parameter "hung_task_panic"
-> is set. The idea is good, because usually when observing deadlocks (that
-> may lead to hung tasks), the culprit is another task holding a lock and
-> not necessarily the task detected as hung.
-> 
-> The problem with this approach is that dumping backtraces is a slightly
-> expensive task, specially printing that on console (and specially in many
-> CPU machines, as servers commonly found nowadays). So, users that plan to
-> collect a kdump to investigate the hung tasks and narrow down the deadlock
-> definitely don't need the CPUs backtrace on dmesg/console, which will delay
-> the panic and pollute the log (crash tool would easily grab all CPUs traces
-> with 'bt -a' command).
-> Also, there's the reciprocal scenario: some users may be interested in
-> seeing the CPUs backtraces but not have the system panic when a hung task
-> is detected. The current approach hence is almost as embedding a policy in
-> the kernel, by forcing the CPUs backtraces' dump (only) on hung_task_panic.
-> 
-> This patch decouples the panic event on hung task from the CPUs backtraces
-> dump, by creating (and documenting) a new sysctl/kernel parameter called
-> "hung_task_all_cpu_backtrace", analog to the approach taken on soft/hard
-> lockups, that have both a panic and an "all_cpu_backtrace" sysctl to allow
-> individual control. The new mechanism for dumping the CPUs backtraces on
-> hung task detection respects "hung_task_warnings" by not dumping the
-> traces in case there's no warnings left.
-> 
-> Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-> Signed-off-by: Guilherme G. Piccoli <gpiccoli@canonical.com>
-> ---
-> 
-> 
-> V2: Followed suggestions from Kees and Tetsuo (and other grammar
-> improvements). Also, followed Tetsuo suggestion to itereate kernel
-> testing community - but I don't really know a ML for that, so I've
-> CCed Coccinelle community and kernel-api ML.
-> 
-> Also, Tetsuo suggested that this option could be default to 1 - I'm
-> open to it, but given it is only available if hung_task panic is set
-> as of now and the goal of this patch is give users more flexibility,
-> I vote to keep default as 0. I can respin a V3 in case more people
-> want to see it enabled by default. Thanks in advance for the review!
-> Cheers,
-> 
-> Guilherme
-> 
-> 
->  .../admin-guide/kernel-parameters.txt         |  6 ++++
->  Documentation/admin-guide/sysctl/kernel.rst   | 15 ++++++++++
->  include/linux/sched/sysctl.h                  |  7 +++++
->  kernel/hung_task.c                            | 30 +++++++++++++++++--
->  kernel/sysctl.c                               | 11 +++++++
->  5 files changed, 67 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index c07815d230bc..7a14caac6c94 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -1453,6 +1453,12 @@
->  			x86-64 are 2M (when the CPU supports "pse") and 1G
->  			(when the CPU supports the "pdpe1gb" cpuinfo flag).
->  
-> +	hung_task_all_cpu_backtrace=
-> +			[KNL] Should kernel generate backtraces on all cpus
-> +			when a hung task is detected. Defaults to 0 and can
-> +			be controlled by hung_task_all_cpu_backtrace sysctl.
-> +			Format: <integer>
-> +
+On Tue, Mar 24, 2020 at 09:45:40AM -0300, Guilherme G. Piccoli wrote:
+> Thanks Randy and Vlastimil for the comments. I really liked your
+> approach Vlastimil, I agree that we have no reason to not have a generic
+> sysctl setting via cmdline mechanism - I'll rework this patch removing
+> the kernel parameter (same for other patch I just submitted).
 
-Before adding a new thing as both kernel parameter and sysctl, could we perhaps
-not add the kernel parameter, in favor of the generic sysctl parameter solution?
-[1] There were no objections and some support from Kees, so I will try to send a
-new version ASAP that will work properly with all "static" sysctls - we don't
-need to be blocked by a full solution for dynamically registered sysctls yet, I
-guess?
+I've been thinking we'll likely want to have a big patch series that
+removes all the old "duplicate" boot params and adds some kind of
+"alias" mechanism.
 
-Thanks,
-Vlastimil
+Vlastimil, have you happened to keep a list of other "redundant" boot
+params you've noticed in the kernel? I bet there are a lot. :)
 
-[1] https://lore.kernel.org/linux-api/20200317132105.24555-1-vbabka@suse.cz/
-
+-- 
+Kees Cook
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
