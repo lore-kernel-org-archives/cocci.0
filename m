@@ -2,59 +2,78 @@ Return-Path: <SRS0=pejK=5M=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B09C2D0E5
-	for <cocci@archiver.kernel.org>; Fri, 27 Mar 2020 16:15:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AF54C43331
+	for <cocci@archiver.kernel.org>; Fri, 27 Mar 2020 18:24:22 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BA19420658
-	for <cocci@archiver.kernel.org>; Fri, 27 Mar 2020 16:15:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BA19420658
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
+	by mail.kernel.org (Postfix) with ESMTPS id D00EA20716
+	for <cocci@archiver.kernel.org>; Fri, 27 Mar 2020 18:24:21 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jIQZbTiI"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D00EA20716
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 02RGFet3012818;
-	Fri, 27 Mar 2020 17:15:40 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 02RIO5Bg013644;
+	Fri, 27 Mar 2020 19:24:05 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 670257812;
-	Fri, 27 Mar 2020 17:15:40 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id A76CD7812;
+	Fri, 27 Mar 2020 19:24:05 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 062F8780C
- for <cocci@systeme.lip6.fr>; Fri, 27 Mar 2020 17:15:38 +0100 (CET)
-Received: from mail2-relais-roc.national.inria.fr
- (mail2-relais-roc.national.inria.fr [192.134.164.83])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 02RGFaGi011213
- (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
- for <cocci@systeme.lip6.fr>; Fri, 27 Mar 2020 17:15:36 +0100 (CET)
-X-IronPort-AV: E=Sophos;i="5.72,313,1580770800"; d="scan'208";a="442666116"
-Received: from abo-173-121-68.mrs.modulonet.fr (HELO hadrien) ([85.68.121.173])
- by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 27 Mar 2020 17:15:36 +0100
-Date: Fri, 27 Mar 2020 17:15:36 +0100 (CET)
-From: Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
-To: =?ISO-8859-15?Q?Christoph_B=F6hmwalder?= <christoph.boehmwalder@linbit.com>
-In-Reply-To: <1f1a7b29-b767-551c-e2ec-d5cdf5ceecd0@linbit.com>
-Message-ID: <alpine.DEB.2.21.2003271714150.2709@hadrien>
-References: <b86347f3-69d3-0801-c91f-87c3424e71dc@linbit.com>
- <alpine.DEB.2.21.2003271645370.2709@hadrien>
- <1f1a7b29-b767-551c-e2ec-d5cdf5ceecd0@linbit.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 03D7D780C
+ for <cocci@systeme.lip6.fr>; Fri, 27 Mar 2020 19:19:41 +0100 (CET)
+Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:331])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 02RIJdO0013125
+ (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
+ for <cocci@systeme.lip6.fr>; Fri, 27 Mar 2020 19:19:40 +0100 (CET)
+Received: by mail-ot1-x331.google.com with SMTP id c9so10699449otl.12
+ for <cocci@systeme.lip6.fr>; Fri, 27 Mar 2020 11:19:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:from:date:message-id:subject:to;
+ bh=Zvu0IcolkeOnzMqADYZjSRIfVhhD/AJiAn/BStFVhRY=;
+ b=jIQZbTiIEu/oqNPv1yskCEkmDIEhvd1CbjWwmAG6qpf52QKir2gxx6uniOvPoUUIMe
+ yi9aJr5IxHKLzAaWjSiLLa0SXhyUgc8RMK9rSnzafcwHhvIud+XnYyESQvFWFAjsIqfq
+ AR+Aw3BDJx6EwTK1SIYklHBqpL5bA4hlXAVJzJAJRyqvsQ+Lj8PG+aBRZK4s3az68TrY
+ udFfKcGqm+hAsl12hngI8nfgP/r8qH7WPm/x4m7ruawb1aPox3UGj96TerhJ7AfdkvCR
+ MzicmmYVnqMnppi192bhWBgHezBbgpRPJsiQUvfHqoTjwlsu8wr8gxbhOl2KFuM4Hbhq
+ +PoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+ bh=Zvu0IcolkeOnzMqADYZjSRIfVhhD/AJiAn/BStFVhRY=;
+ b=YKbgJBS93GE247+/JMgYLL2HftSbFSuTspuF2C5MmSs9S3ezrbSLJQuSD48hX5n9SG
+ gfZwDUciZV9YS8k8UfVZw2bEUHTx7HmHXlcikFmDA6dNidK3SaQtRsKDo6EklwADo8K7
+ QVU/Kyvq6zWuZ7o8teC8C+hksFPMK3CKobA/2bNAplv3NwXGjzte3FzhFQpeFdzUjXWO
+ eU/iAlUkT+S+enOqW8nahTZARFm71/GgSg9gFRXsCWYgsfr0b8iI7qoYC+mZSBjiRCkg
+ MQkgxI6uitlB+5E1g+8RRJtCg7BxZkg3d0S+hTCePJ85PsdHgzhsE1azfQlmbIqG+9z6
+ 7A/w==
+X-Gm-Message-State: ANhLgQ3a9nTe0NjrEK7y9iQl7p5VLIxsFBZ06LFmVrWSo+tLGsFaZKiP
+ mKVgdkCiQ2LVXSqm0GS7QjHnh9NIzoD4wrsHuq3bxqyyzg==
+X-Google-Smtp-Source: ADFU+vtVrPnBezn76Iz7F+6SSR1FWIi1NbRDKs/w5yOD844dcMUMWj3qGrmAcOA49Z/P+8UJJ7yQ25J/FgKhViUO7DY=
+X-Received: by 2002:a9d:6b02:: with SMTP id g2mr11541232otp.340.1585333178464; 
+ Fri, 27 Mar 2020 11:19:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-179480623-1585325736=:2709"
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 27 Mar 2020 17:15:40 +0100 (CET)
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Fri, 27 Mar 2020 17:15:36 +0100 (CET)
+From: George McCollister <george.mccollister@gmail.com>
+Date: Fri, 27 Mar 2020 13:19:27 -0500
+Message-ID: <CAFSKS=NXVUcp1KwpidZoFTfyUCmh+8ij2njaGZ7g6h9LvEiYrA@mail.gmail.com>
+To: cocci@systeme.lip6.fr
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 27 Mar 2020 19:24:06 +0100 (CET)
+X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
+ Fri, 27 Mar 2020 19:19:40 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Coccinelle <cocci@systeme.lip6.fr>
-Subject: Re: [Cocci] Matching against a declarer macro
+X-Scanned-By: MIMEDefang 2.78
+X-Mailman-Approved-At: Fri, 27 Mar 2020 19:24:04 +0100
+Subject: [Cocci] using cocci to switch to formatted log/print function
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -66,68 +85,86 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Hello,
 
---8323329-179480623-1585325736=:2709
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+I'm working with an old code base that makes excessive use of the
+following sort of construct:
+
+char display[128];
+
+...
+
+snprintf(display, sizeof(display), "example log message %d", i);
+log_buffer(level, strlen(display)+1, display);
+
+I'd like to replace this mess with a single call to a function named
+log_formatted(). This involves moving the format string and arguments
+passed to snprintf into the log_formatted() call, removing snprintf
+call and (here's where it gets a bit tricky) remove the buffer if it
+isn't used for anything else.
+
+I have this all working with the following script with the caveat that
+running it on moderately complicated source files makes it never
+finish (after an hour or so the spatch process crashes with a stack
+overflow error).
+I've tried --no-loops which seem to speed things up but complicated
+source files still result in it never finishing.
+
+@r1@
+type T;
+identifier disp;
+expression level;
+expression list prnt;
+@@
+
+{
+... when any
+(
+T disp[...];
+|
+T disp[...]="";
+)
+<+...
+  snprintf(disp, sizeof(disp), prnt);
+... when != disp
+- log_buffer(level, strlen(disp)+1, disp);
++ log_formatted(level, prnt);
+...+>
+}
+
+// Only remove the display variable and snprintf if there are no
+// other references to the variable.
+
+@r2 depends on r1@
+type r1.T;
+identifier r1.disp;
+expression list r1.prnt;
+@@
+
+{
+... when any
+(
+- T disp[...];
+|
+- T disp[...]="";
+)
+<+... when != disp
+- snprintf(disp, sizeof(disp), prnt);
+...+>
+}
 
 
+Any suggestions on changes to my script that would make this work on
+lengthy source files would be greatly appreciated!
 
-On Fri, 27 Mar 2020, Christoph Böhmwalder wrote:
-
-> Am 27.03.20 um 16:47 schrieb Julia Lawall:> Are you sure that the C code is
-> parsed successfully?  I'm not at all sure
-> > that static is allowed in an argument list.  Types are allowed, bu static
-> > is only part of a type.
->
-> I'm pretty sure it is parsed successfully. At least spatch doesn't complain
-> about it, no matter how many debug flags I specify.
-
-Did you try spatch --parse-c file.c?
-
->
-> I really only want to swap out the last parameter, but I'm having trouble
-> coming up with the syntax. This should match, right?
->
-> @@
-> declarer name RB_DECLARE_CALLBACKS_MAX;
-> identifier NODE_END;
-> @@
-> RB_DECLARE_CALLBACKS_MAX(...,
-> - NODE_END
-> + compute_subtree_last
->  );
-
-If the code is getting parsed, this should be fine.
-
-Do you want to actually match NODE_END?  If so, it shouldn't be declared
-as a metavariable.
-
-julia
-
-> > For augment_callbacks, either identifier or expression would be fine.
-> > Coccinelle has no idea what is going to happen to augment_callbacks
-> > afterwards.  It just sees a sequence of characters and classifies it as an
-> > identifier.
->
-> That's what I thought, thank you for confirming.
->
-> > julia
->
---8323329-179480623-1585325736=:2709
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Thanks,
+George McCollister
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
 https://systeme.lip6.fr/mailman/listinfo/cocci
-
---8323329-179480623-1585325736=:2709--
