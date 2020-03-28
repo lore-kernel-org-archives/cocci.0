@@ -1,78 +1,143 @@
-Return-Path: <SRS0=pejK=5M=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=sy63=5N=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-X-Spam-Level: **
-X-Spam-Status: No, score=2.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,HTML_MESSAGE,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80726C43331
-	for <cocci@archiver.kernel.org>; Fri, 27 Mar 2020 23:23:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 319ABC43331
+	for <cocci@archiver.kernel.org>; Sat, 28 Mar 2020 07:37:49 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E4A092073B
-	for <cocci@archiver.kernel.org>; Fri, 27 Mar 2020 23:23:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 8125220716
+	for <cocci@archiver.kernel.org>; Sat, 28 Mar 2020 07:37:48 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ivt7Gp5y"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E4A092073B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="qPhWrXhV"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8125220716
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 02RNNIkC013801;
-	Sat, 28 Mar 2020 00:23:18 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 02S7bRwN020288;
+	Sat, 28 Mar 2020 08:37:27 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 6CBF67812;
-	Sat, 28 Mar 2020 00:23:18 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id BBE137812;
+	Sat, 28 Mar 2020 08:37:27 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 3071F780C
- for <cocci@systeme.lip6.fr>; Sat, 28 Mar 2020 00:23:17 +0100 (CET)
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com
- [IPv6:2607:f8b0:4864:20:0:0:0:231])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 02RNNF1B019103
- (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Sat, 28 Mar 2020 00:23:16 +0100 (CET)
-Received: by mail-oi1-x231.google.com with SMTP id k9so10329972oia.8
- for <cocci@systeme.lip6.fr>; Fri, 27 Mar 2020 16:23:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:from:date:message-id:subject:to;
- bh=1BJPLw4eGQIzVOqQHwU5bOjp7JJs5RW1QZRo0qgvFsE=;
- b=Ivt7Gp5yL/50bCMzH9ZkCIW9Dj4EDTza++RKYMhHswQ2SjSM33iA1165jrNzwcE+iC
- gOe2MgUSL+rzTgW/YPA1N1/px7awZAHIdqMeaN1W0JB1NSo+TzYZQ7WS192ZWHL0MJNI
- AnnX6J3xy5JJjbBmGZW76Gd7mNqdYjwlxQgGRYJSzDKoSmwAKyB04f0up1ddZbgyLGa+
- ERMuJNj5w4No3S186H0+GVEPTE6rO6MbqXvqkDtcycE/HwxSaK2inKLCqaY/xjrcH/br
- yeNuBTxHCQ9MCiV6LpFtQzJoR817zImwRwhBrb4Jfv0gLJNSoQN4gmIdK1jhQcbVNIw5
- PPww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
- bh=1BJPLw4eGQIzVOqQHwU5bOjp7JJs5RW1QZRo0qgvFsE=;
- b=cdlDx1JRvJjzHTqL3df1KlJ6b0/e9GofPMoSyMF8LfeDtxZzm02n2zwgrRdLasL1Lq
- vlsRQOgeu8YxL3E7zfhFtfBLC5I+g0aakbbwxrORhSuNzvsEXP5KIwu599si20y8FKil
- 4O+A2NW2NhQ6E+XlRO69JtV+hFxFKtK4vKcT1Ac0cC+4oo6XnGL+GgG7cHmFhQXivKKV
- TfVN2QyF2ncZ3bG5rJwWOtvWHA3O6+mPBTXE0tWcbS8+lCCJbuCaGPogSe2eZKrQqgWM
- jsnTPNxp7CVHT6NGH884iaWasu6gvYO0WiWTeUKC8vc/BL2wcV9eLYfn2BzmH6LOkF8h
- HUsw==
-X-Gm-Message-State: ANhLgQ2NgZ9NNBG0hXyr2L0nK0cK8NYlsS0wOKaTbnjW3zNVxorAM0uH
- mXmAtYqL6lisiPLcOEbyKKVuvrQY0fEVj5EZ/CVBQDOOpw==
-X-Google-Smtp-Source: ADFU+vvDEci/WoO5V2OFKOFCEaYvP7D239uOs5/cCm/pIQ4qQdFM4LSvr+bMH/3ub2LizlvBeZJmX0MUfQx+0O686+g=
-X-Received: by 2002:a54:4519:: with SMTP id l25mr998906oil.92.1585351394673;
- Fri, 27 Mar 2020 16:23:14 -0700 (PDT)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 3F61466CB
+ for <cocci@systeme.lip6.fr>; Sat, 28 Mar 2020 08:37:22 +0100 (CET)
+Received: from mout.web.de (mout.web.de [212.227.17.12])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 02S7bLEr020298
+ (version=TLSv1.2 cipher=DHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO)
+ for <cocci@systeme.lip6.fr>; Sat, 28 Mar 2020 08:37:21 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+ s=dbaedf251592; t=1585381019;
+ bh=EDEH9jdg6/zn01RnRrpu4yO6+wEMUBtPpvCZL68yIjU=;
+ h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+ b=qPhWrXhV7m2phxYTMsH4vVcOkgDmUR/RRnP7X4c+ulCaEC+3st49rlGzPcF9hJZqo
+ 4DzN/zPXglXOztmCTA0yfpQfnZdnPcK6SC6aSRFkujgvx/DLQtmy+0pfarY9tLH2Md
+ +O3qGu0p1oN0EFoPdnxvncS19FsTjtO2jhiLVHi4=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([78.49.150.134]) by smtp.web.de (mrweb101
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0Ltnmz-1jPpJm0GqD-011E4U; Sat, 28
+ Mar 2020 08:36:59 +0100
+To: Michel Lespinasse <walken@google.com>, Coccinelle <cocci@systeme.lip6.fr>,
+        linux-mm@kvack.org
+References: <20200327225102.25061-1-walken@google.com>
+ <20200327225102.25061-6-walken@google.com>
+From: Markus Elfring <Markus.Elfring@web.de>
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+Message-ID: <bc2980d7-b823-2fff-d29c-57dcbc9aaf27@web.de>
+Date: Sat, 28 Mar 2020 08:36:47 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-From: George McCollister <george.mccollister@gmail.com>
-Date: Fri, 27 Mar 2020 18:23:03 -0500
-Message-ID: <CAFSKS=OcAXz61G2u=V2kEd1sre9pmOknguD-VBA1Nge_5qm2rw@mail.gmail.com>
-To: cocci@systeme.lip6.fr
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 28 Mar 2020 00:23:18 +0100 (CET)
-X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Sat, 28 Mar 2020 00:23:16 +0100 (CET)
+In-Reply-To: <20200327225102.25061-6-walken@google.com>
+Content-Language: en-US
+X-Provags-ID: V03:K1:WfN6iMoyPNkwiSWKgKgM43tFwkiSrc4OThnzDZe1Vx7oRdJ6kiN
+ n4orh7sp5gV+dYEYQvjXkGcGn6Yq2K0xcb67dKR6Ni5TNCdLPG3wxoTVkTC8bWwkm2QamJS
+ KiJkTIk3uIWslzHhGBCt5DtJvnCEiC4TV0E7jfBurTjPw2D6M9yAN7RPf8Pe7bSGvt8yLui
+ DKXvG5D0Pp2OG01fxsfqA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:h9r6F5gZxUE=:eMgL21AmjASjtJzVRR8GOr
+ QX0F7pxrb1WzX5vxgKyt4bb1XNYQmDgPkDJbEUYsUd/siQoPCYDcqqZ9jfdxRhFM6jpXqjpLJ
+ O8O7b196Z/o8jOyoZJ5ocGDAdQ3Q0XCVxVE+9FEx4DBT4cvzmYIZakx3ox6GS78+Sdg3R7LV4
+ Mku0qc06LgQdpCyBaq5hCxfOZjku5SKXtPx4FrKiMJZ7Tbpn2cnySiHjEi1JxFuzALpet9p/y
+ MNTYy9aycGC7MOktFCcJ0fwyGTjBkprr2RcdWsO4kavqMkZnnjGv2Yo5RwTqH2uNjdCZrsj5F
+ kIU7y0dfQqiaYxR/+aaXNIKDG0Dc1KFBUI0JQCH9V5xs+7CrIIy0a2lOSYtdYkAlxtL9i9cS9
+ MLWHTu6MgfKor2lHFxts7XQpOe5lohbaqS9/833tm1n92QcrlCAZ7oS1LCqkLVi/7pB+E8q60
+ Rz0zTC8eEu5rmrcsDov4NCJ3GdYbagUBTVHaTl28SMYwlpcW65ePOJsK9nUG8+yUvepGsv/Mx
+ C3f2O1a9nxLLrJd7fgCex5kXL/l6KVkNWzGvtBNc0coVXxjrptVmTH7JFdEOE2QAXoc1ZcYnY
+ Qut5WoHGyAYglFaBGY4Sx/ANjWSyJkiDssUOytwWTVD9VpO0J5yBN1u4gcFpQ2YDVV+dVv3hK
+ e6wMnZY2y6wYscGOdit5q5LW5BuMOzRU802ND6QTCDMs1Qgu4pDxjFKcyUFDa6s5eeCFO5qAh
+ Y1kBqEYXJ1c7zNv5xoyvkzzNfpVORJU4T5HJozzFwVBWpz4ECjXy+bno5fxO196aFJuOndVcf
+ Et+r0qnPSK/3QQHZJS2N71hv7L2K203hnn56munzPRd5u0mk6w6SiGhpzqV1H3VkP2p/4/5V0
+ g/gBq/LiSGWzbhI6cTpZlOgbhqHQ5QAtrIcyYtEIaQW3UqBO2CriUkKZEYqUNaN5YtxyJA9o1
+ 4AYGz123R0K1M0nV/CVokish0rTplR8hUTBBNcYil0wXFN3H0NGUuR7akoRh90kt6PP0N+Hd3
+ SxPOCvNEUJwUDlAlvTXd8YKbauXqLfgP/LqBJ5PQpxGQL/ohYj0U+92425//QPyKG8ECP3tll
+ YW0twvGX1yLUlqGpDIa2KgIFGBCCiRzQiqPndraIHLP0rKXu9lLZLRFNCfH1pCTq3fUQrmVIG
+ b8TsFNQvNMYVq9y2rCqkauKbyUTgpQI5Nb4ivJHeLN5IPpFSAaT2B/GjEDySTT8KbNTM1uNQf
+ tRVURfgqAWr08oq1k
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 28 Mar 2020 08:37:28 +0100 (CET)
+X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [132.227.60.2]); Sat, 28 Mar 2020 08:37:21 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78
-Subject: [Cocci] C++ Parse error with new in else
+X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
+Cc: Davidlohr Bueso <dave@stgolabs.net>, Peter Zijlstra <peterz@infradead.org>,
+        Hugh Dickins <hughd@google.com>, LKML <linux-kernel@vger.kernel.org>,
+        Liam Howlett <Liam.Howlett@oracle.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Matthew Wilcox <willy@infradead.org>, Ying Han <yinghan@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Laurent Dufour <ldufour@linux.ibm.com>,
+        Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [Cocci] [PATCH v3 05/10] mmap locking API: convert mmap_sem
+ call sites missed by coccinelle
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -84,158 +149,27 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============1190636577=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
---===============1190636577==
-Content-Type: multipart/alternative; boundary="000000000000b94a4c05a1de6215"
+> Convert the last few remaining mmap_sem rwsem calls to use the new
+> mmap locking API. These were missed by coccinelle for some reason
 
---000000000000b94a4c05a1de6215
-Content-Type: text/plain; charset="UTF-8"
+Will the clarification of this software situation become more interesting?
 
-I know C++ support isn't really finished but thought I'd point out this
-strange bug I found just in case some body wanted to fix it.
 
-Simple C++ program:
-struct foo
-{
-    int i;
-};
+> (I think coccinelle does not support some of the preprocessor
+> constructs in these files ?)
 
-int main(int argc, const char* argv[])
-{
-    foo * a;
+I suggest to omit this information from the final change description.
+Would you like to help any more to find nicer solutions
+for remaining open issues?
 
-    if (argc == 1) {
-        a = new foo;
-        a->i = argc;
-    } else {
-        //a = new foo; // line is marked BAD:!!!!! if uncommented
-        a->i = argc + 1;
-    }
-
-    delete a;
-
-    return 0;
-}
-
-Simple cocci file:
-@@
-
-@@
-
-- a
-+ b
-
-I run:
-spatch -sp_file cocci_broken.cocci cocci_broken.cpp --c++ --debug
-
-It works fine as long as that first line in the else is commented out. If I
-uncomment it I get:
-
-Parse error
- = error in cocci_broken.cpp; set verbose_parsing for more info
-badcount: 17
-bad: };
-bad:
-bad: int main(int argc, const char* argv[])
-bad: {
-bad: foo * a;
-bad:
-bad: if (argc == 1) {
-bad: a = new foo;
-bad: a->i = argc;
-bad: } else {
-BAD:!!!!! a = new foo; // line is marked BAD:!!!!! if uncommented
-bad: a->i = argc + 1;
-bad: }
-bad:
-bad: delete a;
-bad:
-bad: return 0;
-bad: }
-
-I'm using spatch version 1.0.8.
-
-It seems quite odd everything is fine until that line is enabled since it's
-the same thing that's in the if clause.
-
-Cheers,
-George McCollister
-
---000000000000b94a4c05a1de6215
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div><div class=3D"gmail_default" style=3D"font-family:mon=
-ospace,monospace">I know C++ support isn&#39;t really finished but thought =
-I&#39;d point out this strange bug I found just in case some body wanted to=
- fix it.</div></div><div class=3D"gmail_default" style=3D"font-family:monos=
-pace,monospace"><br></div><div class=3D"gmail_default" style=3D"font-family=
-:monospace,monospace">Simple C++ program:</div>struct foo<br>{<br>	<span cl=
-ass=3D"gmail_default" style=3D"font-family:monospace,monospace">=C2=A0 =C2=
-=A0 </span>int i;<br>};<br><br>int main(int argc, const char* argv[])<br>{<=
-br>	<span class=3D"gmail_default" style=3D"font-family:monospace,monospace"=
->=C2=A0 =C2=A0 </span>foo * a;<br><br>	<span class=3D"gmail_default" style=
-=3D"font-family:monospace,monospace">=C2=A0 =C2=A0 </span>i<span class=3D"g=
-mail_default" style=3D"font-family:monospace,monospace"></span><span class=
-=3D"gmail_default" style=3D"font-family:monospace,monospace"></span>f (argc=
- =3D=3D 1) {<br>		<span class=3D"gmail_default" style=3D"font-family:monosp=
-ace,monospace">=C2=A0 =C2=A0 =C2=A0 =C2=A0 </span>a =3D new foo;<br>		<span=
- class=3D"gmail_default" style=3D"font-family:monospace,monospace">=C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 </span>a-&gt;i =3D argc;<br>	<span class=3D"gmail_defa=
-ult" style=3D"font-family:monospace,monospace">=C2=A0 =C2=A0 </span>} else =
-{<br>		<span class=3D"gmail_default" style=3D"font-family:monospace,monospa=
-ce">=C2=A0 =C2=A0 =C2=A0 =C2=A0 </span>//a =3D new foo; // line is marked B=
-AD:!!!!! if uncommented<br>		<span class=3D"gmail_default" style=3D"font-fa=
-mily:monospace,monospace">=C2=A0 =C2=A0 =C2=A0 =C2=A0 </span>a-&gt;i =3D ar=
-gc + 1;<br>	<span class=3D"gmail_default" style=3D"font-family:monospace,mo=
-nospace">=C2=A0 =C2=A0 </span>} <br><br>	<span class=3D"gmail_default" styl=
-e=3D"font-family:monospace,monospace">=C2=A0 =C2=A0 </span>delete a;<br><br=
->	<span class=3D"gmail_default" style=3D"font-family:monospace,monospace">=
-=C2=A0 =C2=A0 </span>return 0;<br>}<div><br></div><div><div class=3D"gmail_=
-default" style=3D"font-family:monospace,monospace">Simple cocci file:</div>=
-<div class=3D"gmail_default" style=3D"font-family:monospace,monospace">@@<b=
-r></div><div class=3D"gmail_default" style=3D"font-family:monospace,monospa=
-ce"><br>@@<br><br>- a<br>+ b<br></div><br></div><div><div class=3D"gmail_de=
-fault" style=3D"font-family:monospace,monospace">I run:</div></div><div><di=
-v class=3D"gmail_default" style=3D"font-family:monospace,monospace">spatch =
--sp_file cocci_broken.cocci cocci_broken.cpp --c++ --debug</div><div class=
-=3D"gmail_default" style=3D"font-family:monospace,monospace"><br></div><div=
- class=3D"gmail_default" style=3D"font-family:monospace,monospace">It works=
- fine as long as that first line in the else is commented out. If I uncomme=
-nt it I get:</div><div class=3D"gmail_default" style=3D"font-family:monospa=
-ce,monospace"><br></div><div class=3D"gmail_default" style=3D"font-family:m=
-onospace,monospace">Parse error <br>=C2=A0=3D error in cocci_broken.cpp; se=
-t verbose_parsing for more info<br>badcount: 17<br>bad: };<br>bad: <br>bad:=
- int main(int argc, const char* argv[])<br>bad: {<br>bad: 	foo * a;<br>bad:=
- <br>bad: 	if (argc =3D=3D 1) {<br>bad: 		a =3D new foo;<br>bad: 		a-&gt;i =
-=3D argc;<br>bad: 	} else {<br>BAD:!!!!! 		a =3D new foo; // line is marked=
- BAD:!!!!! if uncommented<br>bad: 		a-&gt;i =3D argc + 1;<br>bad: 	} <br>ba=
-d: <br>bad: 	delete a;<br>bad: <br>bad: 	return 0;<br>bad: }<br></div><br><=
-/div><div><div class=3D"gmail_default" style=3D"font-family:monospace,monos=
-pace">I&#39;m using spatch version 1.0.8.</div><div class=3D"gmail_default"=
- style=3D"font-family:monospace,monospace"><br></div><div class=3D"gmail_de=
-fault" style=3D"font-family:monospace,monospace">It seems quite odd everyth=
-ing is fine until that line is enabled since it&#39;s the same thing that&#=
-39;s in the if clause.</div><div class=3D"gmail_default" style=3D"font-fami=
-ly:monospace,monospace"><br></div><div class=3D"gmail_default" style=3D"fon=
-t-family:monospace,monospace">Cheers,</div><div class=3D"gmail_default" sty=
-le=3D"font-family:monospace,monospace">George McCollister</div><br></div></=
-div>
-
---000000000000b94a4c05a1de6215--
-
---===============1190636577==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Regards,
+Markus
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
 https://systeme.lip6.fr/mailman/listinfo/cocci
-
---===============1190636577==--
