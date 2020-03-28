@@ -6,74 +6,77 @@ X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	DKIM_INVALID,DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
 	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10D09C43331
-	for <cocci@archiver.kernel.org>; Sun, 29 Mar 2020 07:22:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1B6EC43331
+	for <cocci@archiver.kernel.org>; Sun, 29 Mar 2020 07:22:31 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5A10520748
-	for <cocci@archiver.kernel.org>; Sun, 29 Mar 2020 07:22:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 1B68E20748
+	for <cocci@archiver.kernel.org>; Sun, 29 Mar 2020 07:22:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="WOVV8fRn"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5A10520748
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="JUObUgRE"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1B68E20748
 Authentication-Results: mail.kernel.org; dmarc=fail (p=reject dis=none) header.from=google.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 02T7M4MA022841;
-	Sun, 29 Mar 2020 09:22:04 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 02T7M5Ug019944;
+	Sun, 29 Mar 2020 09:22:05 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 4869F7750;
+	by systeme.lip6.fr (Postfix) with ESMTP id BA3177823;
 	Sun, 29 Mar 2020 09:22:04 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id B0B3766CB
- for <cocci@systeme.lip6.fr>; Sat, 28 Mar 2020 08:47:21 +0100 (CET)
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com
- [IPv6:2607:f8b0:4864:20:0:0:0:b42])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 02S7lJoD013953
+ by systeme.lip6.fr (Postfix) with ESMTPS id 153DB66CB
+ for <cocci@systeme.lip6.fr>; Sat, 28 Mar 2020 09:53:43 +0100 (CET)
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:b2d])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 02S8rfVs011990
  (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Sat, 28 Mar 2020 08:47:20 +0100 (CET)
-Received: by mail-yb1-xb42.google.com with SMTP id o70so5902362ybg.10
- for <cocci@systeme.lip6.fr>; Sat, 28 Mar 2020 00:47:20 -0700 (PDT)
+ for <cocci@systeme.lip6.fr>; Sat, 28 Mar 2020 09:53:41 +0100 (CET)
+Received: by mail-yb1-xb2d.google.com with SMTP id x63so5977398ybx.2
+ for <cocci@systeme.lip6.fr>; Sat, 28 Mar 2020 01:53:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
  h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=9jl+BpbHZ/7r9CkbFROQ9el447QHzytPcgY1mfe7n2I=;
- b=WOVV8fRn0QHeIZLcDiHRypp+CZ74Q7ALHPvHpNEf9Y72LLtBAWPEWhdu1+WfMmSslm
- UWERIzqxKzdnY73jCAj7ReOrGf9m58xY5hJxs0UaAj7e2o8D0tsas4KPyi2OOFj72j42
- NcPNtcWWUeBSr0/fk6cAAnyzC0H1eLxJaBRjwjuZc4J6XKHlXGGVoUX1KsEM0hbZByjM
- IyS69XD5dopcswpVYiQCH5U4YbxNbvaNyXdpA2Jymn71KM7rMcTt02v5bCIDEmmRiPqa
- K+m9WQstmHWeSar87A5wR2lcItFBo/9UVt4aYJC3p7uxeZDf6bMcSe5NkkFbByv2Dkpq
- 0dmg==
+ :cc:content-transfer-encoding;
+ bh=VcMXP9kKkoDSkAWpwZibgZEebuHA/f4VzON6mG+RLvo=;
+ b=JUObUgREFSOVke/eCuZ4G+0EhvK+rWozJZgWgkfBGJI9r3P9/Su+o+HTSyZOF67sGH
+ dNsRWiQe175l9AU2xXx9XtLB/z02YVC3yoO8/IpiLT9KwTWvnDp/Ctd20VhOjztafiT4
+ sqOpbfdwoMNRQuje3GkRUz68A7L2jq3hWBVwMoBXhl01+F2Cyp3vshzhHN1EUoW74G0d
+ W11OYDzk9A+MDtAKT6ukIvmZYCcloylK2QR+Dj1XyNbGfdwb6bpnWFQ74D58/2WOKtyo
+ VJ0tWCoK0kvzJkT1W8WXQm6Eh8pY16M03mUtqkpP9+cmJ+zCpgMmZ2PpHwE+05+Rj78g
+ riVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=9jl+BpbHZ/7r9CkbFROQ9el447QHzytPcgY1mfe7n2I=;
- b=CB10TnsTGK5N4CvJJYIGro6EuqDILdn2/6DkWLLNDl/jIswDOwaVW0M/3t1jnI5Fr1
- PWt0c7aApj+6o+CY0zCSDvqbEY/iWdLWXZepcygnCWKaDeH++Ah6a0mQwxEnC5JyNh5U
- tF3ZvnF0pz4Op9K50NAZS50wJAJiKbWQQ8PcLy8PcnAnN8WPKCT134BMkuKfZ2KcM+uO
- +7SRT+6369F0MA/Ooy1+GCzT1rnzCt/c96/JWWGoqEHJO2R1LAUUcO5yNBcaijrLW4b4
- 31HZ6Blx27TalHYCncRmCLyy5zKL8WZlIKyModBC3910O9Vf6WMW51IM/7joatTpN7j5
- aucQ==
-X-Gm-Message-State: ANhLgQ0pbvhSTJQuqTDk1uq2Wr/JNloIPwRx20FAE5EwrajbP8I5/wzl
- Xbzu7tv7bECujRW1M3oy/rqyQubD7yMqp9DCDyJtOg==
-X-Google-Smtp-Source: ADFU+vszhRv5ayaRSxIAK9LsFFYzkpzCnkWSEHJUDdkTE99yJa1AGlFn/ETcRFmuPn19IzHAqxLW++TFE8J8+cyA28Q=
-X-Received: by 2002:a5b:4ce:: with SMTP id u14mr1565259ybp.518.1585381638995; 
- Sat, 28 Mar 2020 00:47:18 -0700 (PDT)
+ :message-id:subject:to:cc:content-transfer-encoding;
+ bh=VcMXP9kKkoDSkAWpwZibgZEebuHA/f4VzON6mG+RLvo=;
+ b=YHnjWpcrhg1FWTJM94D9x+JLHA68tbq6N0RdinAeR9SMh+l0yROF/n8anxV1h2x5S4
+ oTK5VCOjtbSdHPdfiXYw+UGIa0EqdzwToWORKKurwo2ySZQNAjDldmGPAOcVScctwAiw
+ LIDRkc2d/1x/s81aKVHv1zlhke1wSTYJs7QH5aU/hbnnonKc0DzjFT90jPHQZLmKrTSQ
+ 5IOKMgGIf9McIvjVo0nLtFrL1uFBlUczMR0vfL8Pfcfa2CnPlOpMaZQ7fBgFfLStkIMU
+ RDY1V6N+8ebfWYwvQkCmOfVAOtQ5bkTpu23ovMPjLYhDuH8AV0Lq8Y/LK+AIOMoCPySB
+ uaww==
+X-Gm-Message-State: ANhLgQ0zXfxyMz18baBhIgBfqNWZHBI1KmqqWNznCGcO3UBJy2wXkm0p
+ n+W+XD3MH/Sq6nvB4xeIKpNI0156MoHw9wX1pwjPsg==
+X-Google-Smtp-Source: ADFU+vvlKy21P6FfgcE5xtIgg+AHvek5xsesheRSeKeLs8jWRYEgjd819dYreTrbjtVaRkYNPaWsh6pk+FIFDnb7KD4=
+X-Received: by 2002:a25:ccd0:: with SMTP id l199mr4734314ybf.446.1585385620467; 
+ Sat, 28 Mar 2020 01:53:40 -0700 (PDT)
 MIME-Version: 1.0
 References: <20200327225102.25061-1-walken@google.com>
  <20200327225102.25061-6-walken@google.com>
  <bc2980d7-b823-2fff-d29c-57dcbc9aaf27@web.de>
-In-Reply-To: <bc2980d7-b823-2fff-d29c-57dcbc9aaf27@web.de>
+ <CANN689H=tjNi=g6M776qo8inr+OfAu8mtL5xsJpu4F=dB6R9zA@mail.gmail.com>
+ <3c222f3c-c8e2-660a-a348-5f3583e7e036@web.de>
+In-Reply-To: <3c222f3c-c8e2-660a-a348-5f3583e7e036@web.de>
 From: Michel Lespinasse <walken@google.com>
-Date: Sat, 28 Mar 2020 00:47:06 -0700
-Message-ID: <CANN689H=tjNi=g6M776qo8inr+OfAu8mtL5xsJpu4F=dB6R9zA@mail.gmail.com>
+Date: Sat, 28 Mar 2020 01:53:27 -0700
+Message-ID: <CANN689HyS0dYWZw3AeWGBvN6_2G4hRDzjMJQ_adHMh0ZkiACYg@mail.gmail.com>
 To: Markus Elfring <Markus.Elfring@web.de>
 X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 29 Mar 2020 09:22:05 +0200 (CEST)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
  (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Sat, 28 Mar 2020 08:47:20 +0100 (CET)
+ Sat, 28 Mar 2020 09:53:41 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78
 X-Mailman-Approved-At: Sun, 29 Mar 2020 09:22:02 +0200
@@ -86,8 +89,8 @@ Cc: Davidlohr Bueso <dave@stgolabs.net>, Jason Gunthorpe <jgg@ziepe.ca>,
         Andrew Morton <akpm@linux-foundation.org>,
         Laurent Dufour <ldufour@linux.ibm.com>,
         Coccinelle <cocci@systeme.lip6.fr>, Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [Cocci] [PATCH v3 05/10] mmap locking API: convert mmap_sem
- call sites missed by coccinelle
+Subject: Re: [Cocci] [v3 05/10] mmap locking API: convert mmap_sem call
+ sites missed by coccinelle
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -99,42 +102,20 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Hi Markus,
-
-On Sat, Mar 28, 2020 at 12:37 AM Markus Elfring <Markus.Elfring@web.de> wrote:
-> > Convert the last few remaining mmap_sem rwsem calls to use the new
-> > mmap locking API. These were missed by coccinelle for some reason
->
-> Will the clarification of this software situation become more interesting?
->
-> > (I think coccinelle does not support some of the preprocessor
-> > constructs in these files ?)
->
-> I suggest to omit this information from the final change description.
-> Would you like to help any more to find nicer solutions
-> for remaining open issues?
-
-So, from a practical perspective I think coccinelle has filled its
-purpose for me - it got 99% of the job done, and I had to do the last
-1% by hand which is not ideal, but really not too bad either. Also, by
-using coccinelle I think reviewers can appreciate that the
-change is purely mechanical, and reproduce it on their end if needed,
-which facilitates the review process greatly.
-
-I would be interested to find out why coccinelle wasn't able to do the
-last 1%, but only as part of a long-term learning process on getting
-better with coccinelle - I don't consider it a blocker for short-term
-progress on this patchset.
-
--- 
-Michel "Walken" Lespinasse
-A program is never fully debugged until the last user dies.
-_______________________________________________
-Cocci mailing list
-Cocci@systeme.lip6.fr
-https://systeme.lip6.fr/mailman/listinfo/cocci
+T24gU2F0LCBNYXIgMjgsIDIwMjAgYXQgMTozOSBBTSBNYXJrdXMgRWxmcmluZyA8TWFya3VzLkVs
+ZnJpbmdAd2ViLmRlPiB3cm90ZToKPiA+IEkgd291bGQgYmUgaW50ZXJlc3RlZCB0byBmaW5kIG91
+dCB3aHkgY29jY2luZWxsZSB3YXNuJ3QgYWJsZSB0byBkbyB0aGUKPiA+IGxhc3QgMSUsIGJ1dCBv
+bmx5IGFzIHBhcnQgb2YgYSBsb25nLXRlcm0gbGVhcm5pbmcgcHJvY2VzcyBvbiBnZXR0aW5nCj4g
+PiBiZXR0ZXIgd2l0aCBjb2NjaW5lbGxlIC0g4oCmCj4KPiBIb3cgd2lsbCBjb3JyZXNwb25kaW5n
+IHNvZnR3YXJlIGRldmVsb3BtZW50IHJlc291cmNlcyBldm9sdmU/CgpJIGRvbid0IHRoaW5rIEkg
+dW5kZXJzdGFuZCB0aGUgcXVlc3Rpb24sIG9yLCBhY3R1YWxseSwgYXJlIHlvdSBhc2tpbmcKbWUg
+b3IgdGhlIGNvY2NpbmVsbGUgZGV2ZWxvcGVycyA/CgotLSAKTWljaGVsICJXYWxrZW4iIExlc3Bp
+bmFzc2UKQSBwcm9ncmFtIGlzIG5ldmVyIGZ1bGx5IGRlYnVnZ2VkIHVudGlsIHRoZSBsYXN0IHVz
+ZXIgZGllcy4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
+Q29jY2kgbWFpbGluZyBsaXN0CkNvY2NpQHN5c3RlbWUubGlwNi5mcgpodHRwczovL3N5c3RlbWUu
+bGlwNi5mci9tYWlsbWFuL2xpc3RpbmZvL2NvY2NpCg==
