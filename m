@@ -2,88 +2,135 @@ Return-Path: <SRS0=tv+X=5Z=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5555DC2D0EA
-	for <cocci@archiver.kernel.org>; Thu,  9 Apr 2020 06:52:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 314D0C38A2C
+	for <cocci@archiver.kernel.org>; Thu,  9 Apr 2020 08:49:19 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C296E206F7
-	for <cocci@archiver.kernel.org>; Thu,  9 Apr 2020 06:51:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 4CDEF2173E
+	for <cocci@archiver.kernel.org>; Thu,  9 Apr 2020 08:41:40 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="Jt4UEb08"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C296E206F7
-Authentication-Results: mail.kernel.org; dmarc=fail (p=reject dis=none) header.from=google.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="ZDcvrRLE"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4CDEF2173E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0396pXls007878;
-	Thu, 9 Apr 2020 08:51:33 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0398fJ90003894;
+	Thu, 9 Apr 2020 10:41:19 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id DBF3A782B;
-	Thu,  9 Apr 2020 08:51:32 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 6CCC47815;
+	Thu,  9 Apr 2020 10:41:19 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 3FF1577F9
- for <cocci@systeme.lip6.fr>; Thu,  9 Apr 2020 00:27:17 +0200 (CEST)
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com
- [IPv6:2a00:1450:4864:20:0:0:0:243])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 038MRGEf028958
- (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Thu, 9 Apr 2020 00:27:16 +0200 (CEST)
-Received: by mail-lj1-x243.google.com with SMTP id 142so4865856ljj.7
- for <cocci@systeme.lip6.fr>; Wed, 08 Apr 2020 15:27:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=0IxhJthYzoFGzHPRNJEuwsAmGxzG5+XUgsaLtHukDmo=;
- b=Jt4UEb08cWeiS20+2wlm3OhfNdeq68MS15GaeQ7aBN6rERE2M6pKSwmxcdCu2CIxAd
- Nsb/9hmyaCIptWmS7Q8wVxdaWRIKVTd3NnESPyzok7t6R0iYUhjZnD/+WFPEd7D+EQkp
- k7561fyi3XD5Bf5R0FqG5Jii6fTBO5eH68o9bwYiHvbjhTm4xS1G0WNSNXlFWubhWpxv
- yNdaUvOI3XtWwuvJfoJhwPSEyvrEpRLxLIBADqcFX/2dwr4Gvb0SNJ8yI0rNUkdo+fNL
- cRfDeJB6G2RtRBTurl4ijWTPuSAN501p4bPgj2e8IkIxRrZZAKQrmD7JI0mRQxK1OeLS
- LYqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=0IxhJthYzoFGzHPRNJEuwsAmGxzG5+XUgsaLtHukDmo=;
- b=JCly+xf7A5OSGalycBMaHWIKoLeK8dlBCVtAcq1gY4K6+A5Nfn8FXC75A5Jgpd9NU3
- Ssxzglju0zFE6KDShWCexK8p/9/86xL0hJ+/lGXu81OChx7jCGr0XjJUugGcEejZvTw8
- ZD7nOIfIihszh0xALWP2XOjtSl7+yickgt0Olau+mw3PdOFvsHw5YscjMPWrHg3/BPgX
- SA+3HqEk9cCvDkKRbCW4usJvf8e+jvo2IrK/M/rDZ1NHqht+beIU3cBzn88CC+KwEafy
- w7tYtSBPFfb3KsLtwABsQkWcEoq91rDjQ/jWW+Qc8d4Aa+1IxkLAP8VjIfaVL6BGzgFO
- ey/Q==
-X-Gm-Message-State: AGi0Pub8Nygo0Avu7ryQQp7BGXTLIoK7WDXOJuqy+aCxfVMyHC9cupI1
- xnlZ34UwxlZQxy2elGeh0ChIlHNqd3WFKOh8LofDRA==
-X-Google-Smtp-Source: APiQypKw3pUMTJPpu9PX8DKDTel9965lGRN2jMKefg+mFHDV23V0n9xzRSOYGpKDCRGHdJbIYIRbz0DZDEi2uCjq5Uc=
-X-Received: by 2002:a2e:9247:: with SMTP id v7mr5980354ljg.215.1586384835570; 
- Wed, 08 Apr 2020 15:27:15 -0700 (PDT)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 104A577FC
+ for <cocci@systeme.lip6.fr>; Thu,  9 Apr 2020 10:41:18 +0200 (CEST)
+Received: from mout.web.de (mout.web.de [212.227.15.14])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 0398fHrn002689
+ (version=TLSv1.2 cipher=DHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
+ Thu, 9 Apr 2020 10:41:17 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+ s=dbaedf251592; t=1586421663;
+ bh=Yk+LDJGP3Qme0ozxjoDwuMj3imLHuR5L0BNQ6x2LZac=;
+ h=X-UI-Sender-Class:To:Cc:Subject:From:Date;
+ b=ZDcvrRLEHy+PZ5fHprX4A23YTXI21cLa5HTK9znhN1jrOnL0AJDBAg8e3cfrCA422
+ /VtklYO+HY2a5z2iOCjMZX1r2rJhw+PaD28vddcHDJ8+h7AYgPkYlLWxlHSOemfQ9O
+ GxWiL7yRCoIXGkv5brvmHjNaVSMQ6rJBiGwGmGrA=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.3] ([93.133.77.56]) by smtp.web.de (mrweb002
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0MPY1p-1jR7RG2945-004ntn; Thu, 09
+ Apr 2020 10:41:03 +0200
+To: Alexander Popov <alex.popov@linux.com>, cocci@systeme.lip6.fr,
+        kernel-hardening@lists.openwall.com
+From: Markus Elfring <Markus.Elfring@web.de>
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+Message-ID: <f6175913-560e-d554-cc2d-080b7f6a264b@web.de>
+Date: Thu, 9 Apr 2020 10:41:02 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-References: <fff664e9-06c9-d2fb-738f-e8e591e09569@linux.com>
-In-Reply-To: <fff664e9-06c9-d2fb-738f-e8e591e09569@linux.com>
-From: Jann Horn <jannh@google.com>
-Date: Thu, 9 Apr 2020 00:26:49 +0200
-Message-ID: <CAG48ez09gn1Abv-EwwW5Rgjqo2CQsbq6tjDeTfpr_FnJC7f5zA@mail.gmail.com>
-To: Alexander Popov <alex.popov@linux.com>
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 09 Apr 2020 08:51:33 +0200 (CEST)
-X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Thu, 09 Apr 2020 00:27:16 +0200 (CEST)
+Content-Language: en-US
+X-Provags-ID: V03:K1:7kMxChmIDzQkuZeNQu7Z6UvyZ7+IlCmAXD3jNqPhm3fAaLZOImK
+ VUKqAju8mWHeggKSoPUJ6CR1hE/M+1nG6gbuEulrmugiRO+BO+BaKT0nK0dJfGY1sRrsb8w
+ ThXFUTCtHpKffkj43kbgfBBREzrrnlahO3nbzTnBRg67peeD0u/caFnHAbXgeJfbqjoPhc+
+ Ip1ZVxa4MamHMlfdUQsIg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:D4CFTFNMRow=:T+WRPFUVuiw7Mfp1wcAeIq
+ xDIBPR/A84BOmbw0/KPuYImvEfenv+g8sYm9w8+VtyKrLGPSvzszlZKaah0KHIkPAv9B5WXBD
+ nbxixQcvMSFVUrBZtdM+nCG0ZMbvHPRik51zqhi2E9y3/A4ThSj5MmT1apc+yOV4quO77AOgx
+ cUFNrDAolGZwre0P3H6/9pUyET+o/KMBhWzJkLWoQIJDrXKkulw0ya5hlS3ZubrAc1aer/2Wr
+ 49ZCAVCdA1naTbqLRw7CzFmzq88dikic89sX5x2emdfSUdLJ8/NtzoZSFNtZeaodYykhvJ/zO
+ 7MCHOqB+OBNiJwtP5q0PbtdXMQCTwJcX+Aof0DKGxHpP6/qx2NEX6DjtuUc1+2aHfSYgXcGf2
+ 9NfjrthRjvzU7QJwiK1Jzao/YO8Eq2Bl+TzAzvQh5HzZ4vyP+yMMXL/cVAMHTCGFEipodsZ5G
+ JqaczLrK/Vnksbco3QBNJe+36GZijKn9tHedtTx59CB06BbIJdeO49rJhTve/sZiVV8IenyzQ
+ 5CS4UucGtKQOOZYyNq4EvgJDUQmlOUa+AGV6ZL1MrXYN9CGgZm1cvueYJg34X4yIFQhdgiD9U
+ PwITT1IvFxTljI9moPJiCmxT7A+KjI46tZZPPnlxEXsOKlXyoxS1BqX4eKzrrgZHM1ugvWAks
+ 9XkVNldo8bkfNrp5m1XXa0MFmj2v64Ve4p/GSlbVEH45eoqwVzErATx6cpsmjM0CStoRSkOo/
+ oA5wHUxZfK7Ubicbg1YAIzjwUKP0etDEALa1Db3xEBT6DPR+0eMDWmkwDn97OzY14/tEkNLXS
+ oh/RJ42qTJ1nhB9Ffa8q74gHfhPb6NT6qRm0lTmZ650tlujCdc6P9WLgMdKz/G8zobupy609T
+ QeutpqPdVlyJxLwaLwV6uEZMKDP29yq5h4u8v0pKpeUX4C2B1cxyiJ8HsxkedaDhglQzhfrBj
+ aDoacDcnta9UHIne3p9hvYPdOU7D5ZFgs0rQrasqUVqhbRdKlrRJcWnjmR0U9XL69UjxcR50k
+ ZjbiK8fIF6AlBPP9G035Jfht/00oX03yl7Ln/xXk8fddYgkPvh22HExW7p4EwKbsxLFvorzyt
+ CONBgNbvvqKAV+mH9IJI7rXrRxkPH88UyJpG/91vB6c/jw+jlTcBYwxzcAqq9OmV+7MdWJ9cn
+ EQhGS56Lxx8ySOdGSVy0c6eEse/hDYvfpWAUfIVZCf8OYVDWhMH7VEb6liOwvxlVrBdr2LvmM
+ mZtWtWshXF1eJj0ob
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 09 Apr 2020 10:41:19 +0200 (CEST)
+X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [132.227.60.2]); Thu, 09 Apr 2020 10:41:17 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78
-X-Mailman-Approved-At: Thu, 09 Apr 2020 08:51:30 +0200
+X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: Michal Marek <michal.lkml@markovi.net>, Kees Cook <keescook@chromium.org>,
-        "kernel-hardening@lists.openwall.com"
- <kernel-hardening@lists.openwall.com>,
-        Gilles Muller <Gilles.Muller@lip6.fr>,
-        Nicolas Palix <nicolas.palix@imag.fr>,
-        LKML <linux-kernel@vger.kernel.org>, Hans Verkuil <hverkuil@xs4all.nl>,
-        Julia Lawall <Julia.Lawall@lip6.fr>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>, cocci@systeme.lip6.fr,
-        Linux Media Mailing List <linux-media@vger.kernel.org>
+        Gilles Muller <Gilles.Muller@lip6.fr>, Jann Horn <jannh@google.com>,
+        Nicolas Palix <nicolas.palix@imag.fr>, linux-kernel@vger.kernel.org,
+        Hans Verkuil <hverkuil@xs4all.nl>, Julia Lawall <Julia.Lawall@lip6.fr>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org
 Subject: Re: [Cocci] Coccinelle rule for CVE-2019-18683
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
@@ -96,126 +143,20 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-On Thu, Apr 9, 2020 at 12:01 AM Alexander Popov <alex.popov@linux.com> wrote:
-> CVE-2019-18683 refers to three similar vulnerabilities caused by the same
-> incorrect approach to locking that is used in vivid_stop_generating_vid_cap(),
-> vivid_stop_generating_vid_out(), and sdr_cap_stop_streaming().
->
-> For fixes please see the commit 6dcd5d7a7a29c1e4 (media: vivid: Fix wrong
-> locking that causes race conditions on streaming stop).
->
-> These three functions are called during streaming stopping with vivid_dev.mutex
-> locked. And they all do the same mistake while stopping their kthreads, which
-> need to lock this mutex as well. See the example from
-> vivid_stop_generating_vid_cap():
->     /* shutdown control thread */
->     vivid_grab_controls(dev, false);
->     mutex_unlock(&dev->mutex);
->     kthread_stop(dev->kthread_vid_cap);
->     dev->kthread_vid_cap = NULL;
->     mutex_lock(&dev->mutex);
->
-> But when this mutex is unlocked, another vb2_fop_read() can lock it instead of
-> the kthread and manipulate the buffer queue. That causes use-after-free.
->
-> I created a Coccinelle rule that detects mutex_unlock+kthread_stop+mutex_lock
-> within one function.
-[...]
-> mutex_unlock@unlock_p(E)
-> ...
-> kthread_stop@stop_p(...)
-> ...
-> mutex_lock@lock_p(E)
-
-Is the kthread_stop() really special here? It seems to me like it's
-pretty much just a normal instance of the "temporarily dropping a
-lock" pattern - which does tend to go wrong quite often, but can also
-be correct.
-
-I think it would be interesting though to have a list of places that
-drop and then re-acquire a mutex/spinlock/... that was not originally
-acquired in the same block of code (but was instead originally
-acquired in an outer block, or by a parent function, or something like
-that). So things like this:
-
-void X(...) {
-  mutex_lock(A);
-  for (...) {
-    ...
-    mutex_unlock(A);
-    ...
-    mutex_lock(A);
-    ...
-  }
-  mutex_unlock(A);
-}
-
-or like this:
-
-void X(...) {
-  ... [no mutex operations on A]
-  mutex_unlock(A);
-  ...
-  mutex_lock(A);
-  ...
-}
-
-
-But of course, there are places where this kind of behavior is
-correct; so such a script wouldn't just return report code, just code
-that could use a bit more scrutiny than normal. For example, in
-madvise_remove(), the mmap_sem is dropped and then re-acquired, which
-is fine because the caller deals with that possibility properly:
-
-static long madvise_remove(struct vm_area_struct *vma,
-                                struct vm_area_struct **prev,
-                                unsigned long start, unsigned long end)
-{
-        loff_t offset;
-        int error;
-        struct file *f;
-
-        *prev = NULL;   /* tell sys_madvise we drop mmap_sem */
-
-        if (vma->vm_flags & VM_LOCKED)
-                return -EINVAL;
-
-        f = vma->vm_file;
-
-        if (!f || !f->f_mapping || !f->f_mapping->host) {
-                        return -EINVAL;
-        }
-
-        if ((vma->vm_flags & (VM_SHARED|VM_WRITE)) != (VM_SHARED|VM_WRITE))
-                return -EACCES;
-
-        offset = (loff_t)(start - vma->vm_start)
-                        + ((loff_t)vma->vm_pgoff << PAGE_SHIFT);
-
-        /*
-         * Filesystem's fallocate may need to take i_mutex.  We need to
-         * explicitly grab a reference because the vma (and hence the
-         * vma's reference to the file) can go away as soon as we drop
-         * mmap_sem.
-         */
-        get_file(f);
-        if (userfaultfd_remove(vma, start, end)) {
-                /* mmap_sem was not released by userfaultfd_remove() */
-                up_read(&current->mm->mmap_sem);
-        }
-        error = vfs_fallocate(f,
-                                FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE,
-                                offset, end - start);
-        fput(f);
-        down_read(&current->mm->mmap_sem);
-        return error;
-}
-_______________________________________________
-Cocci mailing list
-Cocci@systeme.lip6.fr
-https://systeme.lip6.fr/mailman/listinfo/cocci
+PiBEbyB5b3UgaGF2ZSBhbnkgaWRlYSBob3cgdG8gaW1wcm92ZSBpdD8KCkkgc2VlIGZ1cnRoZXIg
+c29mdHdhcmUgZGV2ZWxvcG1lbnQgcG9zc2liaWxpdGllcyBvZiB2YXJ5aW5nIHJlbGV2YW5jZQph
+bHNvIGZvciB0aGlzIHNjcmlwdCBvZiB0aGUgc2VtYW50aWMgcGF0Y2ggbGFuZ3VhZ2UuCgoqIFRo
+ZSBTbVBMIHZhcmlhYmxlcyDigJxsb2NrX3DigJ0sIOKAnHVubG9ja19w4oCdIGFuZCDigJxzdG9w
+X3DigJ0gY291bGQgYmUgZGVjbGFyZWQKICBpbiBhIG1vcmUgc3VjY2luY3Qgd2F5IGp1c3QgYnkg
+bGlzdGluZyB0aGVtIGluIHRoZSBzYW1lIHN0YXRlbWVudC4KCiogVGhlIHNvdXJjZSBjb2RlIHNl
+YXJjaCBwYXR0ZXJuIGNhbiBiZSB0b28gZ2VuZXJpYy4KICBIb3cgZG8geW91IHRoaW5rIGFib3V0
+IHRvIGNvbnNpZGVyIGFkZGl0aW9uYWwgY29uc3RyYWludHMKICBmb3Igc2FmZXIgZGF0YSBjb250
+cm9sIGZsb3cgYW5hbHlzaXM/CgoqIE90aGVyIG9wZXJhdGlvbiBtb2RlcyBtaWdodCBiZWNvbWUg
+aGVscGZ1bC4KClJlZ2FyZHMsCk1hcmt1cwpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fXwpDb2NjaSBtYWlsaW5nIGxpc3QKQ29jY2lAc3lzdGVtZS5saXA2LmZy
+Cmh0dHBzOi8vc3lzdGVtZS5saXA2LmZyL21haWxtYW4vbGlzdGluZm8vY29jY2kK
