@@ -2,63 +2,97 @@ Return-Path: <SRS0=tv+X=5Z=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 675F9C2BA2B
-	for <cocci@archiver.kernel.org>; Thu,  9 Apr 2020 10:54:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E06D3C2BA2B
+	for <cocci@archiver.kernel.org>; Thu,  9 Apr 2020 11:45:35 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DDD7220857
-	for <cocci@archiver.kernel.org>; Thu,  9 Apr 2020 10:54:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DDD7220857
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
+	by mail.kernel.org (Postfix) with ESMTPS id 5B52D20757
+	for <cocci@archiver.kernel.org>; Thu,  9 Apr 2020 11:45:35 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=gmx.net header.i=@gmx.net header.b="FDYxI6xf"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5B52D20757
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gmx.co.uk
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 039ArvZe010805;
-	Thu, 9 Apr 2020 12:53:57 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 039BjDt1020085;
+	Thu, 9 Apr 2020 13:45:13 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 9EBFE7818;
-	Thu,  9 Apr 2020 12:53:57 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 886E87818;
+	Thu,  9 Apr 2020 13:45:13 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 87A9F7815
- for <cocci@systeme.lip6.fr>; Thu,  9 Apr 2020 12:53:55 +0200 (CEST)
-Received: from mail2-relais-roc.national.inria.fr
- (mail2-relais-roc.national.inria.fr [192.134.164.83])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 039ArsPR022174
- (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
- for <cocci@systeme.lip6.fr>; Thu, 9 Apr 2020 12:53:54 +0200 (CEST)
-X-IronPort-AV: E=Sophos;i="5.72,362,1580770800"; d="scan'208";a="444554909"
-Received: from abo-173-121-68.mrs.modulonet.fr (HELO hadrien) ([85.68.121.173])
- by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 09 Apr 2020 12:53:54 +0200
-Date: Thu, 9 Apr 2020 12:53:54 +0200 (CEST)
-From: Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
-To: Alexander Popov <alex.popov@linux.com>
-In-Reply-To: <fff664e9-06c9-d2fb-738f-e8e591e09569@linux.com>
-Message-ID: <alpine.DEB.2.21.2004091248190.2403@hadrien>
-References: <fff664e9-06c9-d2fb-738f-e8e591e09569@linux.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 482577815
+ for <cocci@systeme.lip6.fr>; Thu,  9 Apr 2020 13:45:12 +0200 (CEST)
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 039BjBab009203
+ (version=TLSv1.2 cipher=DHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
+ Thu, 9 Apr 2020 13:45:11 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+ s=badeba3b8450; t=1586432695;
+ bh=K7D8BGQFCMpn4R7rMXXwygtnH7RyFjFLFJ9+JV6zBrI=;
+ h=X-UI-Sender-Class:Date:From:To:Cc:Subject:References:In-Reply-To;
+ b=FDYxI6xf/LlLptXIsxFPzL36agOwj5G/1aMNnPQF00Xv3sCmbfQVAQjstFPfU75b5
+ 6M0SJ4Yug5TUTiMOsIgL2MSZ5BuXwkxqUQSiVJx+1Ru8gHSAtDDum1uSOZcRozCpNq
+ yE+G6d9mAWD1fqKVk6+zNTtJXsVW+ek/CyYmdi2o=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from medion ([82.19.195.159]) by mail.gmx.com (mrgmx105
+ [212.227.17.174]) with ESMTPSA (Nemesis) id 1MkHMP-1itnd01SgL-00kfO5; Thu, 09
+ Apr 2020 13:44:55 +0200
+Date: Thu, 9 Apr 2020 12:44:50 +0100
+From: Alex Dewar <alex.dewar@gmx.co.uk>
+To: Markus Elfring <Markus.Elfring@web.de>
+Message-ID: <20200409114450.io57vlnrzotsemqp@medion>
+References: <beeed2c8-1b5a-66a8-ec41-f5770c04bae9@web.de>
+ <20200407160330.5m75sfkhrrx3wgrl@lenovo-laptop>
+ <045a4a1a-c841-2979-c899-b632ca418b3b@web.de>
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 09 Apr 2020 12:53:58 +0200 (CEST)
+Content-Disposition: inline
+In-Reply-To: <045a4a1a-c841-2979-c899-b632ca418b3b@web.de>
+X-Provags-ID: V03:K1:EHcv7ZoRNqEat2p9pitzu+oEfylG1jMtYB4nTkNpN16pcm+sW8T
+ 5xJ2xy3Nr353DnIbSrP47UXLYEIus5Lun0uSb0WAKKPgvZ1tdMIZ/FeqGKBNsQV7M57fIM/
+ nK98ieoPuiyRPBWOjMwd9FsxsEnOYTGnDtqO3UqR9fyomGW6jBJKPYC/D3tqevSUYDRdesx
+ KMeryVYZxRk0jBHp6fDUA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:ro2NTf+59tc=:KGN1txuX7HuhMpihl1DSMo
+ O6lSFnJ7TE6JUbMj3yxgQb7JpxnNJaJPWzufVKwyiuH4Oo9WSC9uaF9uSkt6X5qXiDf0CfRo+
+ 4OAlNv30wOA0F5BZTa2kPYiTWYZsEAz0tkKIsyVgZ0YeahS1dvVcJEXEmNQp378v9eTgwcjPS
+ lqUMIwwYL3NNSP1EfHc97ryqhWQuKnblxxuFXxJtEYZY7t4tQxQe4MLmY32iU25mTQTNUAi4o
+ i48ljDzDILQlTj9oSNrzFtBlZ+J3Zd9xNcr62h6gZ5X9L/PcVeYXYWZ2TdY7eZKPvtxhzwyG8
+ Cma50oxVEiD37iq9xOerGF7tgTZS0lgkWMEJdwaehsY+DwoNN6rtHLPiRyxPBN3mpFVeuclZX
+ SiqwDh9aHjXEnceqT2VgGEOeJmXDECUXocPyVK4p0k+3RkNcblzhYd/ji+njlppdHw76SiVMY
+ qa6tT5yQhbL+XWRhXgRhCE7AcwBoC3qUrvgS/cSKgTLo3K4bcsL4B3Vgi9/KrqgOh1GyfHhg3
+ Th9sUaivlKTcqlyqiGX8fBy5ECZcuu5nKO5FBicvyaA3gQyCmtcwYC90B9s79gUf+61CCLOWm
+ rDJJri2/By06Sti87ys6tfsW1HGNBfNcJN9MyBrp3DhDd1ZQUqxzwJ0NI/hA27DiOfchwuzls
+ SrjaGzYbvXV6egwxqpNtN/qcjcuH2M2iZT5jM9ZjK/Y0zCuFwIPC+mfuAYAvYZwo3YIRveWje
+ LZl8FXT5D3pKbZaKv5Zrh0bpINHThhtC4XoIv1k3jkOCFgi4vmOqbRiIw6YNM87vlLxwq9eEZ
+ JYScA7bBhXA68/VZo1IUOwUENuEHEV5el/DN8d4znBj+QxbG9sp6f7dZGriEZixNWkiO2dbi9
+ kNyZmlczdCe3cPhmoc0HinXOLCEw7De6+ShympDaPsl+B8Ws7w6VF2PMS+I8FDW32E9O5k8Vy
+ kMcC8ZHNSHjoGt/sSGZsAgUPByqggrX2lQtEG7VEJVn8wfD8Wx6BpiG4q0SulEskGd1Eq/RfX
+ shUnj5z/g0GTBIRTJ9ONb26K3paghH855eI+fGexXFyasoFM4RUiS8Y8tXLMlxusH8gdotEa+
+ uLyZdF6PCQ+rFONRBUj3PvEtT3pOpWzvVOf8/XC7ZnkWBfaS2ArYV2VpJM7hWcxTIj2rxNmJz
+ 4LHNbpjHO26u090sRZc9XMaTQHeT2+HC+OhBr0K77qXIXb5Y3ioIy1v2DBDYTSNluOinA+kJv
+ Bxg1IeNVI2whEyevL
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 09 Apr 2020 13:45:13 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Thu, 09 Apr 2020 12:53:54 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Thu, 09 Apr 2020 13:45:11 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Michal Marek <michal.lkml@markovi.net>, Kees Cook <keescook@chromium.org>,
-        "kernel-hardening@lists.openwall.com"
- <kernel-hardening@lists.openwall.com>,
-        jannh@google.com, Nicolas Palix <nicolas.palix@imag.fr>,
-        LKML <linux-kernel@vger.kernel.org>, Hans Verkuil <hverkuil@xs4all.nl>,
-        Gilles Muller <Gilles.Muller@lip6.fr>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>, cocci@systeme.lip6.fr,
-        Linux Media Mailing List <linux-media@vger.kernel.org>
-Subject: Re: [Cocci] Coccinelle rule for CVE-2019-18683
+Cc: Kate Stewart <kstewart@linuxfoundation.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Julia Lawall <Julia.Lawall@lip6.fr>,
+        Nicolas Palix <nicolas.palix@imag.fr>,
+        Gilles Muller <Gilles.Muller@lip6.fr>, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>, cocci@systeme.lip6.fr,
+        Allison Randal <allison@lohutok.net>
+Subject: Re: [Cocci] Coccinelle: zalloc-simple: Fix patch mode for
+ dma_alloc_coherent()
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -75,120 +109,37 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
+On Tue, Apr 07, 2020 at 07:10:46PM +0200, Markus Elfring wrote:
+> >> Will the software development attention grow in a way so that further
+> >> implementation details can be adjusted also for the mentioned SmPL script?
+> >
+> > I'm not sure I understand what you mean. Would you mind clarifying?
+>
+> You would like to a change a file for which some software development
+> discussions happened a while ago.
+> Do you get any further ideas from available information in message archives?
 
+Hi Markus,
 
-On Thu, 9 Apr 2020, Alexander Popov wrote:
-
-> Hello!
->
-> Some time ago I fixed CVE-2019-18683 in the V4L2 subsystem of the Linux kernel.
->
-> I created a Coccinelle rule that detects that bug pattern. Let me show it.
-
-Thanks for the discussion :)
+What should I be looking for in the archives? I've referenced what I
+think is the relevant commit here.
 
 >
+> Julia Lawall (and me) pointed special development concerns out.
 >
-> Bug pattern
-> ===========
->
-> CVE-2019-18683 refers to three similar vulnerabilities caused by the same
-> incorrect approach to locking that is used in vivid_stop_generating_vid_cap(),
-> vivid_stop_generating_vid_out(), and sdr_cap_stop_streaming().
->
-> For fixes please see the commit 6dcd5d7a7a29c1e4 (media: vivid: Fix wrong
-> locking that causes race conditions on streaming stop).
->
-> These three functions are called during streaming stopping with vivid_dev.mutex
-> locked. And they all do the same mistake while stopping their kthreads, which
-> need to lock this mutex as well. See the example from
-> vivid_stop_generating_vid_cap():
->     /* shutdown control thread */
->     vivid_grab_controls(dev, false);
->     mutex_unlock(&dev->mutex);
->     kthread_stop(dev->kthread_vid_cap);
->     dev->kthread_vid_cap = NULL;
->     mutex_lock(&dev->mutex);
->
-> But when this mutex is unlocked, another vb2_fop_read() can lock it instead of
-> the kthread and manipulate the buffer queue. That causes use-after-free.
->
-> I created a Coccinelle rule that detects mutex_unlock+kthread_stop+mutex_lock
-> within one function.
->
->
-> Coccinelle rule
-> ===============
->
-> virtual report
->
-> @race exists@
-> expression E;
-> position stop_p;
-> position unlock_p;
-> position lock_p;
-> @@
->
-> mutex_unlock@unlock_p(E)
-> ...
+> Example:
+> Code duplications in SmPL disjunctions
+> https://lore.kernel.org/cocci/alpine.DEB.2.21.2004062115000.10239@hadrien/
+> https://systeme.lip6.fr/pipermail/cocci/2020-April/007099.html
 
-It would be good to put when != mutex_lock(E) after the ... above.  Your
-rule doesn't actually prevent the lock from being retaken.
+I have replied to these messages now.
 
-> kthread_stop@stop_p(...)
-> ...
-> mutex_lock@lock_p(E)
->
-> @script:python@
-> stop_p << race.stop_p;
-> unlock_p << race.unlock_p;
-> lock_p << race.lock_p;
-> E << race.E;
-> @@
->
-> coccilib.report.print_report(unlock_p[0], 'mutex_unlock(' + E + ') here')
-> coccilib.report.print_report(stop_p[0], 'kthread_stop here')
-> coccilib.report.print_report(lock_p[0], 'mutex_lock(' + E + ') here\n')
->
->
-> Testing the rule
-> ================
->
-> I reverted the commit 6dcd5d7a7a29c1e4 and called:
-> COCCI=./scripts/coccinelle/kthread_race.cocci make coccicheck MODE=report
->
-> The result:
->
-> ./drivers/media/platform/vivid/vivid-kthread-out.c:347:1-13: mutex_unlock(& dev
-> -> mutex) here
-> ./drivers/media/platform/vivid/vivid-kthread-out.c:348:1-13: kthread_stop here
-> ./drivers/media/platform/vivid/vivid-kthread-out.c:350:1-11: mutex_lock(& dev ->
-> mutex) here
->
-> ./drivers/media/platform/vivid/vivid-sdr-cap.c:306:1-13: mutex_unlock(& dev ->
-> mutex) here
-> ./drivers/media/platform/vivid/vivid-sdr-cap.c:307:1-13: kthread_stop here
-> ./drivers/media/platform/vivid/vivid-sdr-cap.c:309:1-11: mutex_lock(& dev ->
-> mutex) here
->
-> ./drivers/media/platform/vivid/vivid-kthread-cap.c:1001:1-13: mutex_unlock(& dev
-> -> mutex) here
-> ./drivers/media/platform/vivid/vivid-kthread-cap.c:1002:1-13: kthread_stop here
-> ./drivers/media/platform/vivid/vivid-kthread-cap.c:1004:1-11: mutex_lock(& dev
-> -> mutex) here
->
-> There are no other bugs detected.
->
-> Do you have any idea how to improve it?
-> Do we need that rule for regression testing in the upstream?
+Best,
+Alex
 
-Based on Jann's suggestion, it seem like it could be interesting to find
-these locking pauses, and then collect functions that are used in locks
-and in lock pauses.  If a function is mostly used with locks held, then
-using it in a lock pause could be a sign of a bug.  I will see if it turns
-up anything interesting.
-
-julia
+>
+> Regards,
+> Markus
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
