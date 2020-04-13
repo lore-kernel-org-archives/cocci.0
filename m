@@ -7,44 +7,44 @@ X-Spam-Status: No, score=-1.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 268D2C2BBFD
-	for <cocci@archiver.kernel.org>; Mon, 13 Apr 2020 14:23:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3600C2BA19
+	for <cocci@archiver.kernel.org>; Mon, 13 Apr 2020 14:50:37 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7A17820786
-	for <cocci@archiver.kernel.org>; Mon, 13 Apr 2020 14:23:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 27C3B20732
+	for <cocci@archiver.kernel.org>; Mon, 13 Apr 2020 14:50:36 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="r8/0FpXa"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7A17820786
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="fmuRoCOZ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 27C3B20732
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 03DENF6P015305;
-	Mon, 13 Apr 2020 16:23:15 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 03DEoNYU016131;
+	Mon, 13 Apr 2020 16:50:23 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 481177816;
-	Mon, 13 Apr 2020 16:23:15 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 9609E7816;
+	Mon, 13 Apr 2020 16:50:23 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 68BC27755
- for <cocci@systeme.lip6.fr>; Mon, 13 Apr 2020 16:23:13 +0200 (CEST)
-Received: from mout.web.de (mout.web.de [212.227.17.11])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 03DENCgQ003362
+ by systeme.lip6.fr (Postfix) with ESMTPS id 99B8D7755
+ for <cocci@systeme.lip6.fr>; Mon, 13 Apr 2020 16:50:21 +0200 (CEST)
+Received: from mout.web.de (mout.web.de [217.72.192.78])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 03DEoK1Q026792
  (version=TLSv1.2 cipher=DHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO)
- for <cocci@systeme.lip6.fr>; Mon, 13 Apr 2020 16:23:12 +0200 (CEST)
+ for <cocci@systeme.lip6.fr>; Mon, 13 Apr 2020 16:50:20 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1586787791;
- bh=sCeSEDiUo+uL1avVOHOAUKzoy8BNhqMUXyi1iZcQ4tI=;
- h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
- b=r8/0FpXa8tzzOoAFviHBmGgNv/MWEm5aXythUdPL3Un4+TLzm23uwcqllTih4NFFv
- wCF5S8iU3q/PScCGMhKW+tI+DiFFKknnawhNZx9/M9PzIKNW/Hva1aIr8iTeC4NgIl
- 613PpZM6cwerMoG+OSdmJD+BXitTrTc4KVbVZyaw=
+ s=dbaedf251592; t=1586789419;
+ bh=v66jBRHbwPCVV4ALQBdXqoljGMXcxwgsLMSsZbJlAMI=;
+ h=X-UI-Sender-Class:Subject:To:References:Cc:From:Date:In-Reply-To;
+ b=fmuRoCOZo6w70C1RNTuWcROhLoST1AnJTacenRiEfcv7sGxcR0FXATuGRmBBJ331N
+ cG5SDOXNTPLm2Tb7pEKwjvYiny/euy6hzi9FAdbpW2L5LnDY9SgHVESrQaq5IeVwNH
+ 1zYxbQISTMRpk5UV0e+84uT8cUzM7FrXYqMvG6X8=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
 Received: from [192.168.1.3] ([93.133.146.177]) by smtp.web.de (mrweb103
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0MDPEX-1jTj1u10sn-00Gr8w; Mon, 13
- Apr 2020 16:23:11 +0200
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0LjJH1-1iqrS93X0Z-00db1K; Mon, 13
+ Apr 2020 16:50:18 +0200
 To: Julia Lawall <julia.lawall@inria.fr>
 References: <146360ce-9cfb-e6f5-1601-fa95460c2cd5@web.de>
  <alpine.DEB.2.21.2004101712080.3039@hadrien>
@@ -59,6 +59,8 @@ References: <146360ce-9cfb-e6f5-1601-fa95460c2cd5@web.de>
  <alpine.DEB.2.21.2004130957540.3035@hadrien>
  <7228efff-76bb-44c9-e2cd-ea19bbd49abf@web.de>
  <alpine.DEB.2.21.2004131553460.3035@hadrien>
+ <d4324b34-0040-0fb7-d24c-b738ed811c0c@web.de>
+ <alpine.DEB.2.21.2004131627470.3035@hadrien>
 From: Markus Elfring <Markus.Elfring@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
@@ -103,39 +105,39 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <d4324b34-0040-0fb7-d24c-b738ed811c0c@web.de>
-Date: Mon, 13 Apr 2020 16:23:10 +0200
+Message-ID: <8c9431e7-64e9-9f00-3f10-6fa8e316dcca@web.de>
+Date: Mon, 13 Apr 2020 16:50:08 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.2004131553460.3035@hadrien>
+In-Reply-To: <alpine.DEB.2.21.2004131627470.3035@hadrien>
 Content-Language: en-US
-X-Provags-ID: V03:K1:JZ/sdlLSynwWjpBTrImGEJxdljQbCCr2oc/Mx/RMkirJuNeRjPI
- XmNmEROX365I00yDETJoI8VfSgVuWW9dNA0QZlomoNY+kuVNZXU3mrMUC1kjmnS5zNfCFAP
- 3Ix+HD2I4ye0AFzdzc4Ti5xbIP2+axzaF9n7HitYXBU9/cgL5NltXiHgnqtOmmKpgQwyVKS
- 0+Z9L0xOwcgIZmBZ741Ug==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:z8/Qz+uiU+M=:RSEZCR0eCJ5mvkDOucd9HG
- k08PjFoyCbgKzw43t2ndACItRHCplVzQ8R+yhmYhvjz7BqmjdZOtPQUFewAPMpYdb3hWw9CEx
- /lZNxJb63HMmo8+lgrl/Le9VTOcXki2NvTEHT4YzQ68oDbB4+DfeEZSA+ux9g5/RXjPhxkngM
- yanCD9V50Dc1zTHhc/GBVvjLxQ/E3wExzp5MwJIuuGLQZaReRGT9JagqL2OqMaMXy8RmO/7f4
- 0FiazwGWdOnwLG4akqc3gT7L4wZptL5u753h0rWD9l0N2DDLwe9zQJtGDS6MUv4rEZQGwnfkG
- 2WlkUxtdHDTb84scybxIfV8Pqax/81NcAv3WnFqu05lU4pbqFRlAdTyfLX5cw0Vzn+EU1tofO
- ekm30HJNFx6W8c4glrKUiMKaBK48KMIdgpcfF/p4w5iUY1TZzv4upf7QKWNjEB9U1nHPTE1vN
- M5OdS1qF6f77bwE36ycRjNXMGEuQ5zBKacevnlkjcCXMv8AYvjNxles4Y2EQM+mOIHp9oo2n4
- C26QIkmlJQ/DNKzmZ/4rvzJ9ue74V17Z2MRhMIsHji1sa2initOXSiAmqy/jUaNejZzVlb42u
- IqT4ER+au6KkNxvxaQPEh9LLqelxRGKmejP12Z3BnU/4MQ4sX05k8YvLNu07X9U83ZxiXm7BC
- DyuasEEAKXIvc5ZjpJBmxVR7q2iXywv8f07NxSXj1mLk00MSXcrgX3kR1wlub/vF2kpdeKCh0
- QWGf6LVB5emwV3HMMRAIypuQCfG1nD7xbFYL4JTbkN9oOcuh5UC/9XynK3DRbOJdclouFAHw7
- bVT1PTUtOT5LaooKcRF2KL9RugmXPVvw57TzIkRKVoXr8uDmU0BT4AcLAFKJc4+eMasroCJTZ
- Zvw70iwYsRYGTqk03PLCADbzHKlLfl8h6BgD8kFjD5nlWT1+sOM/tLLEj05ttdM8cqSC5zAdW
- 6PBABD5EBBVWL+xg+0bbUTox05Co/cWVvehtvi5yk8HJMAexD8yhPLecT4Etbgea84LO5gDZ/
- yx4FJjIkzhjzmbGbl7uHZX+VgO6bRJd7kbztbxFgRe3+9o/W1goSSPwphLWLvhx8GDTfzych6
- UhyUZX3XxpXuSZMKUEIf4I6/iXQg9xoRtMcY3uDFcG3cfbS4IBRJwzMJVNuPLMWL6hIvfOUN4
- yZpsc5bddGY+nqQZ1FUuhXNR0lTCkn6imqPbPcaiIkjNs/wZdWY+F/oFnZ+U/w96i9oW0p5I+
- DO3HEp0Iz/R4AKf1R
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 13 Apr 2020 16:23:15 +0200 (CEST)
+X-Provags-ID: V03:K1:4W/dxmeNaeqOAskNVYn0yJ34n9C9lpIy63cedwCLe4V8MBO7B9X
+ h7RD/pfh9+ggAmVJt8ME9d7zLnj6EOjDPAX8WHi70c0eSEVwuJYpo3dZHjg3sQJnIg1Dmzd
+ MuppBpZkIBRf0GB0ePYjkhnKgPNk08gzNn3s1mkBDCSs3yDlwnjpdb5q4RGMerupqnYFHRr
+ /WWvNBpEIgS+Uh8W+6Hbw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:F4sGU58eFhg=:PrEDG4BSvNi4U+bZL67qZt
+ FlDxVfoLx3PJW3JLIXqrDg1GQYJzIJQD60HkzUQdb2/+RdU4WJIx03sYdFkTbsqx1i3OFIVdo
+ n+TvTPy+9HAE7jSDRBh+VKthJiRJj7+davJm6+vp2NVbegSAOuHYj0KVo2nuWVZcDP7ooSaP4
+ un/iWMSuMMJ0Dh64E+bCfr/Gu95X3rTYHD9JnsGWqHnK1F/VB2e9vSlNHpdXKBsO2HrYzSWBK
+ lZBygbVOgnfKKKVOw/0zZeIwJ154FiJt2/PK7kCM/dWcKB47t03ULDawFQ/nSlLyWVtGC5hUX
+ Hqm672XsHpYvEgB6cmH3R9QtKLcPYAoI2r9bfs+2845JaSClgypwRfltBqYa5UwFjz1f3Lclu
+ yfvHhzTBUhg5FU59+hZQxzw7vH/kaZmpZ7l3ar2zCYQGNbsXiW7GsVaN0Y5ZAQiediDg7f5Bt
+ SAylnufgRcMCrocslh3COjXRGl+SPiFrKYXV6U7kqhYDGHhWG2VQmV9eon77RTXGbyjQ6X7y9
+ TgbXHftfZfsYFfFgQw//XvyGBUaftbn/4Hn8nMsG4MGkzJKT9cGvSXMpAPEsCnsVJ9UONsbkQ
+ GYUZJ/8U8LZxdjtzJIqEFigjJqFXp4Q3e+kK7Yg2RA+svChClfi+lFTgIqgLNaN5XYPLl8+CN
+ l4qW3yJxmJHSQaL8KnDJNp9ttCIWfiQaGyrwD9lLqHcUt6lwtaOS/wdW2iY8YI3lLt1lveQEa
+ VPoEyUTpPFpF+L54L4Z009KnDPJagIo0+XBmzUfcpg+OF9XcAtY6YRWouIYQypHrHUDhE1JyL
+ oyy1mIf+rkVy4rJbxE0PGeZo4ZViWZ0Yiv9/7pZuTtK9ru5RPAHiTeKa8XqczkHqQKTw92UOX
+ WOvJMM8Yr4YLqrKiwHYQHEt4EmspsvewQqVyJnKA8vb8F5wFhW3U6NxNy7hOd70XFSvYidlEd
+ Aw9RvsAmIagHDNqNDO5mdUPoHJUxOe+57Z256xwtjj6Umoukmg84xsBtBGvDAMJ0J7LlRmidb
+ 2Is2ieWkT+RMyvyIzpmRy3KRlCifx4vq3jALk0tT7GXmF6OlnOeKKcNp6vONn7DWSg5XI4iEr
+ I5EZx7gkiUp2+oIcRlP4d9MflWSQbIrAPmAgbb0EAdXAa5ys3KjFwlBX0rZNMdyv1XWFLQxz/
+ bbO8KlQj0WhhCandl3b5C18eWKis60YnxDeFIJZM2QpxSjKKtlfjaRQj9DPGGUCJLNPOzU4EZ
+ H/ibZ/nqWiOBuN+Ga
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 13 Apr 2020 16:50:24 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Mon, 13 Apr 2020 16:23:12 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Mon, 13 Apr 2020 16:50:20 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: Coccinelle <cocci@systeme.lip6.fr>
@@ -156,56 +158,26 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-> @script:ocaml@
-> action << find.action;
-> check << find.check;
-> p << find.p;
-> @@
-> Printf.printf "%s %s %s\n" action check (Dumper.dump p)
+> Maybe you consider the following results to be a problem:
 >
-> On the code you provided whichis unfortunately much too long to include in
-> a message
+> kzalloc mcde [("mcde_probe", 2, 0, 198, 1, "m.c", 16, 1, 16, 3)]
+> kzalloc ! mcde [("mcde_probe", 2, 0, 198, 1, "m.c", 16, 1, 16, 3)]
+> platform_get_irq irq [("mcde_probe", 2, 0, 198, 1, "m.c", 97, 1, 97, 3)]
+> platform_get_irq ! irq [("mcde_probe", 2, 0, 198, 1, "m.c", 97, 1, 97, 3)]
+>
+> The positions are the same.  The result is because of an isomorphism that
+> exchanges the branches of a conditional.
 
-I found my code examples short enough.
-
-
-> and that you could have surely shortened to illustrate whatever
-> is the problem.
-
-Does such a feedback indicate that you are still struggling with the understanding
-for the presented software situation?
-
-
-> I get the same output from both semantic patches, except that the line
-> numbers are different for the position variable p,
-
-Does this information contain a contradiction?
-
-Do you observe any repeated data sets?
+Can the data which are provided because of isomorphism transformations
+be distinguished by an additional attribute?
 
 
-> because you have put it in a different place.
+> I think that you could have figured this out by yourself.  If you just
+> printed out the data instead of wrapping it in lots of database noise,
+> then you could have seen what was going on.
 
-Yes. - Thus I would expect that different column numbers will be displayed
-while the line numbers should be (mostly?) identical.
-
-
-> I don't see any reason why making the script code call a database would
-> have any impact on this issue.
-
-The database can provide ACID properties for parallel data processing,
-can't it?
-
-I would like to perform aggregate computations finally.
-Would you become interested in counting record sets anyhow?
-
-
-> If you do get different results for the above semantic patches,
-> please make a small .c file that illustrates the problem.
-
-I presented questionable differences once more a moment ago.
-https://lore.kernel.org/cocci/7228efff-76bb-44c9-e2cd-ea19bbd49abf@web.de/
-https://systeme.lip6.fr/pipermail/cocci/2020-April/007142.html
+I got the impression that there are further software development
+challenges to consider (also for safer counting of record sets).
 
 Regards,
 Markus
