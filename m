@@ -2,85 +2,97 @@ Return-Path: <SRS0=SyX8=6E=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84C04C3815B
-	for <cocci@archiver.kernel.org>; Mon, 20 Apr 2020 15:21:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD7AC54FCB
+	for <cocci@archiver.kernel.org>; Mon, 20 Apr 2020 15:21:49 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 212E6206B9
-	for <cocci@archiver.kernel.org>; Mon, 20 Apr 2020 15:21:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 6AC29206B9
+	for <cocci@archiver.kernel.org>; Mon, 20 Apr 2020 15:21:49 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="hKYmzntT"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 212E6206B9
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WWDlb6SF"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6AC29206B9
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 03KFLaxX021630;
-	Mon, 20 Apr 2020 17:21:36 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 03KFLZnd022048;
+	Mon, 20 Apr 2020 17:21:35 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id D3E157834;
+	by systeme.lip6.fr (Postfix) with ESMTP id 2F6C47763;
 	Mon, 20 Apr 2020 17:21:35 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 69BA97459
- for <cocci@systeme.lip6.fr>; Mon, 20 Apr 2020 16:29:46 +0200 (CEST)
-Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
- [207.211.31.120])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 03KETiIl029709
- (version=TLSv1.2 cipher=DHE-RSA-AES256-SHA256 bits=256 verify=NO)
- for <cocci@systeme.lip6.fr>; Mon, 20 Apr 2020 16:29:45 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1587392984;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=+AZN+bOVr4lqKHcln5HjQTCBVwoSpl2i43tDw1zfaFA=;
- b=hKYmzntTcNvymwlTnAwbxd+BqaFHoo60Hpn87T6pc2ouCB2rhQzSr1FOYmZVGV7IhHZ3zJ
- xs2Ll5EKU0SBsC8hKT28qg2Olm2eWwU+uU0dZ8FpXbphtC1zdeTCJlz2+I6A+0fO1+unaJ
- XyT49+k/fOttyv05zJuyq6XEEaSRupU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-127-Og-DowTHNJ6I9mil35pZlg-1; Mon, 20 Apr 2020 10:29:42 -0400
-X-MC-Unique: Og-DowTHNJ6I9mil35pZlg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com
- [10.5.11.12])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9FA8D193578E;
- Mon, 20 Apr 2020 14:29:41 +0000 (UTC)
-Received: from blackfin.pond.sub.org (ovpn-113-6.ams2.redhat.com [10.36.113.6])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id 6491260C80;
- Mon, 20 Apr 2020 14:29:41 +0000 (UTC)
-Received: by blackfin.pond.sub.org (Postfix, from userid 1000)
- id D208111358BC; Mon, 20 Apr 2020 16:29:39 +0200 (CEST)
-From: Markus Armbruster <armbru@redhat.com>
+ by systeme.lip6.fr (Postfix) with ESMTPS id 9DDE17459
+ for <cocci@systeme.lip6.fr>; Mon, 20 Apr 2020 15:13:32 +0200 (CEST)
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:1042])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 03KDDUdv002918
+ (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
+ for <cocci@systeme.lip6.fr>; Mon, 20 Apr 2020 15:13:31 +0200 (CEST)
+Received: by mail-pj1-x1042.google.com with SMTP id np9so4562083pjb.4
+ for <cocci@systeme.lip6.fr>; Mon, 20 Apr 2020 06:13:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:content-transfer-encoding:in-reply-to
+ :user-agent; bh=1TAgcxIt86/pBZoXVfOkKX7rv0NrEGvRTPnHP44Lt+w=;
+ b=WWDlb6SFnnPcrUNjIa1hQgMf2be2Ej55anqWOXEjcohow9GEJAFR8b2vFR/+Z6b3Ay
+ ES6An7SYMLfKug3SNa/XyetLtJEmclrWAMjyWRWOP6nkoPcnCBeBl18P8Akes2xDHlYf
+ y0vPqjQrRHxOBfxM9QeY5WcBYBnidKhOAlY2mo1DI64fwJK2LAEp9MgulN/oFINeDUTQ
+ 5M2MmSFQWHC2GMkIBOyf0ULo0o/m9S9qmj+NKeugqEFi3T2nxXWnBsx4RPFCw20cKMaJ
+ FJ4Ks0a7HYY4CzGfhQjFwnSbKWA6c98nn0IjRp8aCRkzAlBLj1FH3WfKtL7YgSIwqjQZ
+ PBOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:content-transfer-encoding
+ :in-reply-to:user-agent;
+ bh=1TAgcxIt86/pBZoXVfOkKX7rv0NrEGvRTPnHP44Lt+w=;
+ b=R438cKXez3DuedHBUjCk8Ffcgr4LD+SDH0u/N7kqeyh9aKloIK3rTbvCWqxvMkVV7E
+ RXIppUV0MwqQbErqDRM5sAJQz6RAse9ILvAC7fh1qCfLjseaUigpixg4JzknIVuVvRIP
+ htexxAphnuiwEssIcwFgqFGyHx6SBnhjBbuSY5foBZhMzeK67UtZOx9FCZXEmB9wcXpU
+ MFNFhNrUrLsqaLmYf9i5nI76VjkKUOtWm8RZbewSP3attWZDySHJSL7p+uNSAlzSKlCJ
+ LPCLQLniZT7il+q//TBr5zrLCUpqwjVm0VyhBpvabFejZU+ozNNCyOw45ZKwJRKOXI+p
+ HLvw==
+X-Gm-Message-State: AGi0PuailvoHGr31IRavQ9rTYHwl6O3im7w+tlcngZ+fuSzvI2Bp3OuJ
+ nzoQCtq+Vly3GGzdG2v0XPM=
+X-Google-Smtp-Source: APiQypJU5VK8wVTpvE19z47A8p3kMYjIqaAA/yNAWadv9cPJFQp+9mZYnwvBoQhFFvunoy0bECEV6w==
+X-Received: by 2002:a17:90a:32ea:: with SMTP id
+ l97mr21405427pjb.50.1587388410421; 
+ Mon, 20 Apr 2020 06:13:30 -0700 (PDT)
+Received: from localhost (89.208.244.140.16clouds.com. [89.208.244.140])
+ by smtp.gmail.com with ESMTPSA id o187sm1052194pfb.12.2020.04.20.06.13.29
+ (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+ Mon, 20 Apr 2020 06:13:29 -0700 (PDT)
+Date: Mon, 20 Apr 2020 21:13:27 +0800
+From: Dejin Zheng <zhengdejin5@gmail.com>
 To: Markus Elfring <Markus.Elfring@web.de>
-References: <eeb90865-05a7-cdf3-fd27-cf190c2d53ca@web.de>
- <87imhugt3x.fsf@dusky.pond.sub.org>
- <281aceca-f26f-7def-a77c-d5dcc72d3e6c@web.de>
-Date: Mon, 20 Apr 2020 16:29:39 +0200
-In-Reply-To: <281aceca-f26f-7def-a77c-d5dcc72d3e6c@web.de> (Markus Elfring's
- message of "Mon, 20 Apr 2020 16:08:29 +0200")
-Message-ID: <87ftcyfcx8.fsf@dusky.pond.sub.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.3 (gnu/linux)
+Message-ID: <20200420131327.GA8103@nuc8i5>
+References: <08979629-d9b8-6656-222f-4e84667651a1@web.de>
 MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <08979629-d9b8-6656-222f-4e84667651a1@web.de>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 20 Apr 2020 17:21:35 +0200 (CEST)
+X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
+ Mon, 20 Apr 2020 15:13:32 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 20 Apr 2020 17:21:36 +0200 (CEST)
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Mon, 20 Apr 2020 16:29:46 +0200 (CEST)
+X-Scanned-By: MIMEDefang 2.78
 X-Mailman-Approved-At: Mon, 20 Apr 2020 17:21:32 +0200
-Cc: cocci@systeme.lip6.fr
-Subject: Re: [Cocci] Function-like macro with the same name as a typedef
+Cc: netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Coccinelle <cocci@systeme.lip6.fr>,
+        "David S. Miller" <davem@davemloft.net>,
+        Wolfgang Grandegger <wg@grandegger.com>
+Subject: Re: [Cocci] [PATCH net-next v1] can: ti_hecc: convert to
+ devm_platform_ioremap_resource_byname()
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -92,47 +104,29 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Markus Elfring <Markus.Elfring@web.de> writes:
-
->>>> * spatch seems to have trouble parsing
->>>>
->>>>     ARMSSE *s = ARMSSE(opaque);
->>>>
->>>>   where ARMSSE is a typedef, and ARMSSE() is a function-like macro.
->>>>   Yes, I know that's in rather poor taste.
->>>
->>> I am curious for the safe handling of related software development challenges.
->>>
->>>
->>>> * Workaround #1: rename the typedef to ARMSSE_
->>>
->>> Will adjustments become more interesting also around such name space issues?
->>
->> I'm not sure I understand your question.  Can you elaborate?
->
-> Do we come along the need to adjust (or even improve) two software areas?
->
-> * How many software implementations use identical type definitions
->   and function-like macros?
-
-I don't know.  For what it's worth, it's valid C.  Unless I'm mistaken,
-Coccinelle tries to support as much of C as it possibly can.
-
-The QEMU project can certainly work around this Coccinelle bug /
-restriction.
-
-I'm reporting it because I've found Coccinelle useful.
-
-> * How will the evolution be continued around Coccinelle?
-
-Is this a question about Coccinelle's future?
-
-_______________________________________________
-Cocci mailing list
-Cocci@systeme.lip6.fr
-https://systeme.lip6.fr/mailman/listinfo/cocci
+T24gU3VuLCBBcHIgMTksIDIwMjAgYXQgMDY6MTk6MTJQTSArMDIwMCwgTWFya3VzIEVsZnJpbmcg
+d3JvdGU6Cj4gPiB1c2UgZGV2bV9wbGF0Zm9ybV9pb3JlbWFwX3Jlc291cmNlX2J5bmFtZSgpIHRv
+IHNpbXBsaWZ5IGNvZGUsCj4gPiBpdCBjb250YWlucyBwbGF0Zm9ybV9nZXRfcmVzb3VyY2VfYnlu
+YW1lKCkgYW5kCj4gPiBkZXZtX2lvcmVtYXBfcmVzb3VyY2UoKSwgYW5kIGFsc28gcmVtb3ZlIHNv
+bWUgZHVwbGljYXRlIGVycm9yCj4gPiBtZXNzYWdlLgo+IAo+IEhvdyBkbyB5b3UgdGhpbmsgYWJv
+dXQgYSB3b3JkaW5nIHZhcmlhbnQgbGlrZSB0aGUgZm9sbG93aW5nPwo+IAo+ICAgIFVzZSB0aGUg
+ZnVuY3Rpb24g4oCcZGV2bV9wbGF0Zm9ybV9pb3JlbWFwX3Jlc291cmNlX2J5bmFtZeKAnSB0byBz
+aW1wbGlmeQo+ICAgIHNvdXJjZSBjb2RlIHdoaWNoIGNhbGxzIHRoZSBmdW5jdGlvbnMg4oCccGxh
+dGZvcm1fZ2V0X3Jlc291cmNlX2J5bmFtZeKAnQo+ICAgIGFuZCDigJxkZXZtX2lvcmVtYXBfcmVz
+b3VyY2XigJ0uCj4gICAgUmVtb3ZlIGFsc28gYSBmZXcgZXJyb3IgbWVzc2FnZXMgd2hpY2ggYmVj
+YW1lIHVubmVjZXNzYXJ5IHdpdGggdGhpcwo+ICAgIHNvZnR3YXJlIHJlZmFjdG9yaW5nLgo+Ck1h
+cmt1cywgVGhhbmsgeW91IHZlcnkgbXVjaO+8gXllcywgeW91ciBjb21tZW50cyBpcyBiZXR0ZXIu
+IEkgd2lsbCBzZW5kCnRoZSBwYXRjaCB2Mi4gVGhhbmtzIGFnYWluIQoKPiAKPiBXaWxsIGFueSBt
+b3JlIGNvbnRyaWJ1dG9ycyBnZXQgaW50byB0aGUgZGV2ZWxvcG1lbnQgbW9vZCB0byBhY2hpZXZl
+Cj4gc2ltaWxhciBjb2xsYXRlcmFsIGV2b2x1dGlvbiBieSB0aGUgbWVhbnMgb2YgdGhlIHNlbWFu
+dGljIHBhdGNoIGxhbmd1YWdlPwo+IFdvdWxkIHlvdSBsaWtlIHRvIGluY3JlYXNlIGFwcGxpY2F0
+aW9ucyBvZiB0aGUgQ29jY2luZWxsZSBzb2Z0d2FyZT8KPgpJIHdhbnQsIGJ1dCBjdXJyZW50bHkg
+SSBkb24ndCBoYXZlIG11Y2ggZnJlZSB0aW1lLCBzb3Jyee+8gQoKQlIsCkRlamluCj4gUmVnYXJk
+cywKPiBNYXJrdXMKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X18KQ29jY2kgbWFpbGluZyBsaXN0CkNvY2NpQHN5c3RlbWUubGlwNi5mcgpodHRwczovL3N5c3Rl
+bWUubGlwNi5mci9tYWlsbWFuL2xpc3RpbmZvL2NvY2NpCg==
