@@ -7,56 +7,48 @@ X-Spam-Status: No, score=-1.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6385BC3815B
-	for <cocci@archiver.kernel.org>; Mon, 20 Apr 2020 06:30:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE093C3815B
+	for <cocci@archiver.kernel.org>; Mon, 20 Apr 2020 14:08:57 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 907532078A
-	for <cocci@archiver.kernel.org>; Mon, 20 Apr 2020 06:30:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 482BF21473
+	for <cocci@archiver.kernel.org>; Mon, 20 Apr 2020 14:08:56 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="iyT1tsGv"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 907532078A
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="lkG3DfO6"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 482BF21473
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 03K6UTrQ006694;
-	Mon, 20 Apr 2020 08:30:29 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 03KE8cI2029716;
+	Mon, 20 Apr 2020 16:08:38 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 27AEB7763;
-	Mon, 20 Apr 2020 08:30:29 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 41A917763;
+	Mon, 20 Apr 2020 16:08:38 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id C00AC7459
- for <cocci@systeme.lip6.fr>; Mon, 20 Apr 2020 08:30:27 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 680887459
+ for <cocci@systeme.lip6.fr>; Mon, 20 Apr 2020 16:08:36 +0200 (CEST)
 Received: from mout.web.de (mout.web.de [212.227.17.12])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 03K6UQZY009591
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 03KE8ZUj009327
  (version=TLSv1.2 cipher=DHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO)
- for <cocci@systeme.lip6.fr>; Mon, 20 Apr 2020 08:30:26 +0200 (CEST)
+ for <cocci@systeme.lip6.fr>; Mon, 20 Apr 2020 16:08:35 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1587364224;
- bh=9f2DDdjvE7E39GxWg53JEGqBLLE1WxjFXVMuLx7LvQQ=;
- h=X-UI-Sender-Class:Subject:From:To:Cc:References:Date:In-Reply-To;
- b=iyT1tsGvUrVVbzN0ZuPDI77Le4iKs9uLY7VFaiYF2PjnG5ZeRSzbDziElNyVB9OBv
- xYH4sac2IYGQWg6GoeBQvDfbQGC86ePZx1xdsyJ7eRNlR0oJDPGWH7Luh4EO69JIUO
- SPm7lLUx6Wye8c8JFUbijEviLjl9Jux2uw2c5MsQ=
+ s=dbaedf251592; t=1587391713;
+ bh=5y7fHEu8+EeUd4kmvp+oxkJ7oJqhzArcoNR/qBW8s3w=;
+ h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+ b=lkG3DfO6U7wmcm7wzS6PiL9ZPP4Li3O4fnFPWeX1rW6ltD1d9r7VsOFWFmnKQc6Da
+ VdSGE/GaxsgS+MD8LO1fQhrm4UDa4UHMo79Sn3hhXJ64sFlmuH7gBZo/9/DiNcbGqd
+ 8Htb5fCpySwpdgAOOBEtNHmIHay6NS3aq0k8SDb4=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([2.244.153.203]) by smtp.web.de (mrweb103
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0Lpf3q-1imQli18Mg-00fVrz; Mon, 20
- Apr 2020 08:30:24 +0200
+Received: from [192.168.1.2] ([2.244.153.203]) by smtp.web.de (mrweb102
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0MNtPr-1jKDiF48PD-007TCr; Mon, 20
+ Apr 2020 16:08:33 +0200
+To: Markus Armbruster <armbru@redhat.com>
+References: <eeb90865-05a7-cdf3-fd27-cf190c2d53ca@web.de>
+ <87imhugt3x.fsf@dusky.pond.sub.org>
 From: Markus Elfring <Markus.Elfring@web.de>
-To: Julia Lawall <julia.lawall@inria.fr>
-References: <25b804fd-0d04-475d-f614-26c03c9fd544@web.de>
- <alpine.DEB.2.21.2004151949230.2381@hadrien>
- <5702b553-d054-33a4-8544-f68ed5457acc@web.de>
- <alpine.DEB.2.21.2004161052210.2447@hadrien>
- <0365dceb-3b66-48cd-c273-4bf7fceb4688@web.de>
- <alpine.DEB.2.21.2004161444300.8125@hadrien>
- <735a3c61-695b-a857-b0ce-8999b04644b1@web.de>
- <alpine.DEB.2.21.2004161627300.8125@hadrien>
- <fc9f592c-ffe9-947e-3777-8791d4952daf@web.de>
- <96a828a3-d977-e5d9-b7a8-10c976f41cea@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
  +v43YoGpDNyhgA0w9CEhuwfZrE91GocMtjLO67TAc2i2nxMc/FJRDI0OemO4VJ9RwID6ltwt
@@ -100,43 +92,43 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <6a49e69a-75b6-52de-a468-8396d16a1304@web.de>
-Date: Mon, 20 Apr 2020 08:30:16 +0200
+Message-ID: <281aceca-f26f-7def-a77c-d5dcc72d3e6c@web.de>
+Date: Mon, 20 Apr 2020 16:08:29 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <96a828a3-d977-e5d9-b7a8-10c976f41cea@web.de>
-Content-Language: en-GB
-X-Provags-ID: V03:K1:ryj/s08qcNv1xWPpjqBbiFZ6WgSQQMyJVF+hbMDAey4TLzYfNrp
- A+xkfHrc/IzzBrsbR9BmH3Wae06AbnefpAk+w3I99rP1+m/L2G0G3zoTOBE03PWvoFU8hGQ
- 5PN8cazsGYPiU8D/Ii6W/yIWPOuV7GoUWl4WT/eWHSJbHET0EvSoxqfNfE6J1SiOgtIjx0g
- g5C2Y2J+lFtueznl8hbMA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Zme/G/nHmuw=:XoAyAsTC9daeKdef/8l6pj
- OP3UZ6GUlF+uqQc8+i3NjXA2ESrcOS/VL/ZU2ejo4WACbB/SwstSCpgPibIDpyiE/Vb2/gD6s
- DM2Ai+MXc7ZUZKfqJpBzYl4NvvOuUzcscUHHww53Wd3DhgM4E2sC15U83YxQ79RDtc2K4H1Ul
- zPRyYhkuV8OZLjQYL1yE9+XZczNQV6LaHToqtdj3AXtKA/+0ABRqR6qytUsosWnoQ2gfTL++d
- +4eKpwvSOrjWEYA5bxihJ4w29xwHkg000TNdiacsT/M2buH00iVUoB0UcyOLbNA2ggOvnxjR6
- FGsGSt1cS54Al4YNmOSLy5JPz5EmjN5eqSBNCbILB9LgJ+n8NAvV8S6DSCYH0Iy3hj4WsKYQ0
- +LvZpLQq1+/bu0LLibWRqoBXN9NgdWHZdjA0ggKO5m2DpchvGMp5QaaTj54ZM9KrgRHrvkUi2
- j54pTSM+0CJCEV7sarSmr8WYv/kL47ucGEl/eTpSA58DYNlr+vBHPzzOPFgLOQ6H/vBEZuUDm
- AvF5pQKAL3uBqw4oPmVw22Fhu1EovfO9jI9ZNO12MFG9BzjahXkku+IFzKLuXGgFV9Cr3NS69
- aJ38oBWPoDXtQs2vgOXkrKlc6slUzePUGmxa0uRjMmmVg0fOhc+tkUp163DKsFm7v40kSvhG7
- 3KK/GaEgDJ+VohY+p7pAp+Us62Yu7xCCx/XuswMcfiOiJ1ulUoNJUoEgDO3uIAeMRg1Ee4fnz
- oNPEQQkbM7PPqXjH8aIPtDFDb10ZYnGXPHqXXxsKIfaEMjB2nDipqVlVNEjRMP0xWXLU+wXO1
- biHOpXqX5kph1EsUV+aKBWpnuB2mCTvdSHizLJ6HE1dAOwQ6xHBUTo/v0dkNGH5N9PcPRwm+t
- ovCB83nXR3SAE+mhD1nheB3OdXCO4SIkQiIgaIUzkJ0B+JPcHemIe07eURiBIN6+pjLxWLINI
- eGkE7BSKwtj0lHcpqmJ9YPxaRJf9s8/Wf59+pjj8MaBOPGpRmaCQCquNZGbwFsa9Yi5wZgt9a
- kV2+Buu5TvyE2HTgFkOGSfrrJRZIulBIp4M2BP0RZgtG1i4YzmNCFbW2BwydUREc58QmcoFLo
- 2Uh5dN28gfW2Vntuv5V/sz6+VhqtfBDrFgLB1aP+Gd49Ys0lD6DGbgMLYYWg1PECnqZ9iFlap
- IowrTUbNVj97bTLVy+Pa140lFMOlFy9WWOfkU1ZbgJdjED7NHFlKdF1OfgxRQYRswwUjYuiWJ
- FcBo1PebA411bprmU
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 20 Apr 2020 08:30:29 +0200 (CEST)
+In-Reply-To: <87imhugt3x.fsf@dusky.pond.sub.org>
+Content-Language: en-US
+X-Provags-ID: V03:K1:7SV1O4KxvAxgE2jrIsgvKlf3jKNZZC2YsDt6w/iHXGL+Y+Xuvjm
+ VQ8gtK4tOnGIZIovuF2e6ezjVlQkovRaBbpBSPM8dco12HLVXSqaZppNHm8eBTjTrSLV/8r
+ UE0+tbjUvXUmaNhD5VZTQSF/I7niUg/xV8iXBoT8jgjgdjjKeL0MKyjKPNEX5uTlu8iXInH
+ RtoQFXk9LydP5a3d3e5lg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:0HaBV2s5LrA=:nNXoubVRmXsJsxtLx4NfT1
+ MIphBM6TD6KSxlToFMCLL1UMzx/+/QTXmRft9IU6j8Q+4RL3Y4ZIpNKZM1tzBB9BhefvFiudN
+ cz/BzydrBGxYyeQgq1K53UxqwgOj3zyJepqsjhYOzPMPADsvk49BmTiE2R4e6SCuoMmK8ZjIG
+ WgFv4x7dZ++WYrsRdPsFRaxwcp8uQfERYPGHh3JKDUI/FPkvRYfPgtsp/GaW4bBQ8DFz7DxOH
+ fIYb1asW4f4qEqNFYTffr/PiXnQTY3VcqAKKUjxRWswZiVhatHFOWPCGWgyiY5nl+p0tg+6i+
+ grb1L1zYqQuFFskieoIVDWEbI6nrym9qI8ryHbbezank8nP7+ge3TzCw519imXTbmIF6Db38S
+ Gcbns7N8RXtbn7Ry2Vh82BhRoitXCPWC3oSPB0Rmb6A/7+RwIAIfznZ48qw6mXsnWczGWgwzP
+ RUi6gt6bzZBnOCho6wgdfkY3pk5ucEVUBiC67AC98oG/7H5n7W6xaTDAtQeOZz/VtCmDGnplD
+ /bmbH1x/Esp3Qg9pmEPNWsGvqSWEYwacxktrawf3Me7FmplOQhE33Oo5ZH0NbiM91q3ypn2oO
+ lLx4XdgANDwz5fGeH4GNKLVxmjk8l9tkhOiPmT20tOhb9/gBQrXNx5w0miF7wsfqBy4v1ZgqC
+ fSzo96eltZKky5CueQwtzW2CfPW1ByxoTom1X2qX8f7FRH0SKvOT1SHFCsGMvNVKfNHUZIczI
+ LIoegnX8lWjh9FlHRWtVd0WWNvncDUS4dx9tzHqonVMzbS3hWkZFLI2xWaToGmT5a2M/n7yP+
+ dU671g1OpgvkpjRYS0VAbqz+xsTB1OEhqrK/H32xQpUKXjbzHAUr80XFmqe3LxzB7LUlYMWRh
+ DKIWG/txlGK88YsxmXT6S6jwVJi6QbjDJZ6Pk6OkG0yzddAJW6nrmyhEbXqQ6PBc4MYu3tbIF
+ K4ov2mjP3m9UmILVZzya1Ia9cvFk4Q1OTwqGkaZfjqo8aMNtuEWUcP0Jd6/uTNGXSK6vRtaGP
+ Ty/k/nqxHrq5ijqbcDe0+7hRnYe+4VetxGh7JW181kSCkNPsABVMV/PE0/D1QBtab2aNfBwLc
+ GJKQKOKiYSECEqbz5i0fHf1KkoNsm2WWPIWIbk8JqijgKO4KZSi88+cWE/Ol+bACEqFSH8Kgd
+ y40HcoHmPPONthuZIvHfx2OUaoJSHndgguzrj/oAIQB3qr7yp541NyODcwDjPhzh/78mnSDwj
+ ukfsErmntHWJOTEN6
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 20 Apr 2020 16:08:38 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Mon, 20 Apr 2020 08:30:26 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Mon, 20 Apr 2020 16:08:36 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Dejin Zheng <zhengdejin5@gmail.com>, Coccinelle <cocci@systeme.lip6.fr>
-Subject: Re: [Cocci] Checking the replacement of two specific function calls
+Cc: cocci@systeme.lip6.fr
+Subject: Re: [Cocci] Function-like macro with the same name as a typedef
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -153,55 +145,28 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-> Another possibility should be taken into account for source code variations.
+>>> * spatch seems to have trouble parsing
+>>>
+>>>     ARMSSE *s = ARMSSE(opaque);
+>>>
+>>>   where ARMSSE is a typedef, and ARMSSE() is a function-like macro.
+>>>   Yes, I know that's in rather poor taste.
+>>
+>> I am curious for the safe handling of related software development challenges.
+>>
+>>
+>>> * Workaround #1: rename the typedef to ARMSSE_
+>>
+>> Will adjustments become more interesting also around such name space issues?
 >
-> SmPL script example:
-> @replacement@
-> expression base, device1, device2, index, private;
-> @@
-> -private->res = platform_get_resource(device1, IORESOURCE_MEM, index);
->  base =
-> -       devm_ioremap_resource
-> +       devm_platform_get_and_ioremap_resource
->                              (device2,
-> +                                     index, &
->                                               private->res
->                              );
+> I'm not sure I understand your question.  Can you elaborate?
 
-Such a transformation approach can work to some degree.
-Thus I would expect that it can be reused for a case distinction in the way
-of a SmPL disjunction like the following.
+Do we come along the need to adjust (or even improve) two software areas?
 
-Another SmPL script example:
-@replacement@
-expression base, device1, device2, index, private, resource;
-@@
--resource = platform_get_resource(device1, IORESOURCE_MEM, index);
- base =
--       devm_ioremap_resource
-+       devm_platform_get_and_ioremap_resource
-                             (
-(
--                             &
-                               device1
--                                     ->dev
-                              ,
-+                             index, &
-                                      resource
-|
-                              device2,
-+                                      index, &
-                                               private->res
-)
-                             );
+* How many software implementations use identical type definitions
+  and function-like macros?
 
-
-Test command:
-elfring@Sonne:~/Projekte/Coccinelle/janitor> spatch use_devm_platform_get_and_ioremap_resource10.cocci ../Probe/i2c-rcar-excerpt-20200415.c
-
-
-Now I wonder again why the known patch is not generated as expected so far.
-How would you like to clarify this software situation?
+* How will the evolution be continued around Coccinelle?
 
 Regards,
 Markus
