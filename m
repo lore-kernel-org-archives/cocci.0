@@ -2,88 +2,102 @@ Return-Path: <SRS0=bJsz=6M=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C835EC83001
-	for <cocci@archiver.kernel.org>; Tue, 28 Apr 2020 17:06:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A455C83000
+	for <cocci@archiver.kernel.org>; Tue, 28 Apr 2020 17:41:30 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 43F3020730
-	for <cocci@archiver.kernel.org>; Tue, 28 Apr 2020 17:06:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E70612085B
+	for <cocci@archiver.kernel.org>; Tue, 28 Apr 2020 17:41:29 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Xnk5ILG+"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 43F3020730
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="vXhJEFPx"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E70612085B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 03SH6CrW022229;
-	Tue, 28 Apr 2020 19:06:12 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 03SHfDVC018694;
+	Tue, 28 Apr 2020 19:41:13 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 2E2077807;
-	Tue, 28 Apr 2020 19:06:12 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 70D62783A;
+	Tue, 28 Apr 2020 19:41:13 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id C1F263DC8
- for <cocci@systeme.lip6.fr>; Tue, 28 Apr 2020 19:06:10 +0200 (CEST)
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com
- [IPv6:2607:f8b0:4864:20:0:0:0:436])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 03SH69El003960
+ by systeme.lip6.fr (Postfix) with ESMTPS id C2A377763
+ for <cocci@systeme.lip6.fr>; Thu, 23 Apr 2020 19:02:53 +0200 (CEST)
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:443])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 03NH2qU9004679
  (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Tue, 28 Apr 2020 19:06:10 +0200 (CEST)
-Received: by mail-pf1-x436.google.com with SMTP id 18so10971791pfx.6
- for <cocci@systeme.lip6.fr>; Tue, 28 Apr 2020 10:06:10 -0700 (PDT)
+ for <cocci@systeme.lip6.fr>; Thu, 23 Apr 2020 19:02:53 +0200 (CEST)
+Received: by mail-pf1-x443.google.com with SMTP id 18so3248891pfx.6
+ for <cocci@systeme.lip6.fr>; Thu, 23 Apr 2020 10:02:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=Ji5NtgAzooxdhdMeMZ3zeDyqNKeDtDsiR9XjjkqT74Q=;
- b=Xnk5ILG+ctusxihp3HX5D5aamCSWqJ2nBS97PkCkiUV8s/WNSiuRfnUGwK1KaeSFin
- Lgh06SmMjR7LTS4DcnZ2ZVFVCYHCIy594UUyipD2K6XOmSc3aSUWD2NfVR9aLgFI6uny
- 6Qve5SWLVCwAeioq/qrlPc1ldcdWXlAUpUPhcmMmHDP9JgiBVVTtcwp2lEUrYvHG1rT3
- 4wRxVQheiBO21NFHNhiPYpaL2Oam4wTDji2QDPk/Ry+3PHRru+3uy7CjQ0GD4cxyIVIe
- NjhhQiNfHEBtjxr39ooKqmRtg8VWq4izfuMc1jcVE/lSPix6wUpBnbX4RX3zpqUgMHbL
- aQEw==
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to:user-agent;
+ bh=BdjmbukyN93EyhI1DSTNcyhVrYjSoObY8SQv9ckT3OI=;
+ b=vXhJEFPxCQwVoQXSTNO7YMg1HIyKEpV6lC+8pPWILrho1vIrTYf7UoAtU9MirtLHZe
+ i6KIAsnQK7M9f/BFnt5/Y/yopgyslrJalNcovo0+uJBc1yu1OTt8V5/wn1qPIHDQKp82
+ DVcB8mHqkVdvrwJ9AODqJAc4JXSSUGkpwH+pWtj1dj+qrhXUlF8RYRQXG4FYjWkyvDfa
+ 4UtchUVnEcSAc31X4mLxPHPY1uWi7U2ZcJpagDCh7QFHJiA6x0d3VS4QxxgxyTJ0w5os
+ KAhYbfPZR82MsC+AF9VB7T+ByJwLrc+3wWRv4++vLdCNdV1CFjuGjDn375prp2Uw9Wp0
+ m/Pg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=Ji5NtgAzooxdhdMeMZ3zeDyqNKeDtDsiR9XjjkqT74Q=;
- b=ns4USeO5Rzf0gxiT6HrAUGLXT6ukMJHqXp/TEUGrLdnjWRImhsH4ZkQO4lC37QHglo
- D1jBK7oRYdsmFEcgHg1uVFZCy14jvfcKYzknQqttBDfrg7KipuhLhc+vOoEpnOIb8fn0
- 7DcoI5eTu/upkDCK3NVbc+CMzHTaMOvV/rJkbXNCoqzEAmnka7ZAPAmO/26vFN6ZjvGU
- QflrStXn6YJA2RY/5IVw0bzsD6HkoCpNorKOdTySbOo+ASooGsBDX1pMC4SZiFtSLBkd
- oUQ0mIx5O2N/IQDkv6HSIlQYu4ZQHAuXdBdV/u1U5N7SaMVt+TOxTMq8co0kaHm2XmWN
- g40w==
-X-Gm-Message-State: AGi0PuZbXvL0E9eXln6xpy5acCiEO4px7a2IyU/3TSTv0fnc7Rppl9ET
- UJeYKE08SDAn86hCmadpByzK2BEK6NY=
-X-Google-Smtp-Source: APiQypLJ9vedTj016yBIIfeD7/CUTh0ageSSJeHU6riRQ0/mMBlDqf4ZYLgED51jUmnvRYQd1P9UNg==
-X-Received: by 2002:a65:4641:: with SMTP id k1mr30891357pgr.406.1588093568352; 
- Tue, 28 Apr 2020 10:06:08 -0700 (PDT)
-Received: from localhost.localdomain ([1.38.220.163])
- by smtp.gmail.com with ESMTPSA id u15sm2505097pjm.47.2020.04.28.10.06.04
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 28 Apr 2020 10:06:07 -0700 (PDT)
-From: Jaskaran Singh <jaskaransingh7654321@gmail.com>
-To: cocci@systeme.lip6.fr
-Date: Tue, 28 Apr 2020 22:32:28 +0530
-Message-Id: <20200428170228.7002-33-jaskaransingh7654321@gmail.com>
-X-Mailer: git-send-email 2.21.1
-In-Reply-To: <20200428170228.7002-1-jaskaransingh7654321@gmail.com>
-References: <20200428170228.7002-1-jaskaransingh7654321@gmail.com>
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to:user-agent;
+ bh=BdjmbukyN93EyhI1DSTNcyhVrYjSoObY8SQv9ckT3OI=;
+ b=BcEOAah0eIUxjwd3iE0nXrtpwAXUVgocWEze06x2E3uFnY4Jf0sJQcsnDlykeaUWWQ
+ Wt7P1B+FtvNNc7N5WFsBXwk/0dGSWsqTjyKILS5C9u1Znc5lPkbGApSgZiOs7ao4Grk9
+ tf4LK06YW3zMV+y0kiXj7cEzCa+AbTjtHsFK2jVr6P9Kq4W2Z9r+Z/R710MWIeIqppGT
+ fVFtup/fQFs8YrK5s1VmQINxBo4Crq+t91oR8QT2cUxyAUuykPvLKy/XqZS0itdvb3Rv
+ Ud0vG9YeLhdGn28rxSCsgdJ6hnwAONerCv4hanFeQoVlyYXmQZYl23Q5WFWbhVVFZSG/
+ il8A==
+X-Gm-Message-State: AGi0PuYq1H37s1BQBeInVpj9jVtdofKEQa+m6AWHfB70orWx86HrjCGF
+ vXZhl5youn15dG4d6SY/koc=
+X-Google-Smtp-Source: APiQypJWSjA7CCiMuitdqpKx5L1KTkJAM/q32nofaJP3XA57AQ41nGcVcHpg1zkfSbrYj7gWzJBy1g==
+X-Received: by 2002:a63:1d08:: with SMTP id d8mr4797010pgd.306.1587661371447; 
+ Thu, 23 Apr 2020 10:02:51 -0700 (PDT)
+Received: from localhost (176.122.158.71.16clouds.com. [176.122.158.71])
+ by smtp.gmail.com with ESMTPSA id o198sm3105112pfg.183.2020.04.23.10.02.49
+ (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+ Thu, 23 Apr 2020 10:02:50 -0700 (PDT)
+Date: Fri, 24 Apr 2020 01:02:45 +0800
+From: Dejin Zheng <zhengdejin5@gmail.com>
+To: Markus Elfring <Markus.Elfring@web.de>
+Message-ID: <20200423170245.GA3417@nuc8i5>
+References: <c62ec54f-348b-2eae-59eb-374dde4d49ad@web.de>
+ <20200423142909.GB1562@nuc8i5>
+ <f054f00c-b813-e0c2-fe2e-30ccdec1ff46@web.de>
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 28 Apr 2020 19:06:12 +0200 (CEST)
+Content-Disposition: inline
+In-Reply-To: <f054f00c-b813-e0c2-fe2e-30ccdec1ff46@web.de>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 28 Apr 2020 19:41:13 +0200 (CEST)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
  (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Tue, 28 Apr 2020 19:06:10 +0200 (CEST)
+ Thu, 23 Apr 2020 19:02:53 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78
-Cc: linux-kernel-mentees@lists.linuxfoundation.org
-Subject: [Cocci] [PATCH 32/32] tests: Add test case to detect cast attributes
+X-Mailman-Approved-At: Tue, 28 Apr 2020 19:41:11 +0200
+Cc: linux-fbdev@vger.kernel.org,
+        Thomas =?utf-8?Q?Bogend=C3=B6rfer?= <tsbogend@alpha.franken.de>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Florian Tobias Schandinat <FlorianSchandinat@gmx.de>,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Ralf =?utf-8?Q?B=C3=A4chle?= <ralf@linux-mips.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Coccinelle <cocci@systeme.lip6.fr>
+Subject: Re: [Cocci] console: Complete exception handling in newport_probe()
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -100,76 +114,30 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Add a test case to detect a cast attribute. The following cases are
-covered for when a attribute is:
+On Thu, Apr 23, 2020 at 05:23:29PM +0200, Markus Elfring wrote:
+> >> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/log/scripts/coccinelle/free/iounmap.cocci
+> >>
+> >> How do you think about to extend presented software analysis approaches?
+> >>
+> > Sorry, I am not familiar with it, I don't know.
+> 
+> Do you find the comments helpful at the beginning of this SmPL script?
+>
+Sorry, I do not know how to use the SmPL script. 
 
-- Before the cast type.
-- After the cast type.
-- After the cast type and before the *.
-- After the cast type and *.
+> Would you like to let any more source code analysis tools help you
+> to find remaining update candidates?
+>
+yes, but I think the source code analysis tools only can found the simple
+repetitive issue. and need spend some time learning to use it. at different
+stages, it should have different methods for me. now, I think the best for
+me may be that read and check the source code. Thanks!
 
-Signed-off-by: Jaskaran Singh <jaskaransingh7654321@gmail.com>
----
- tests/detect_cast_attr.c     | 10 ++++++++++
- tests/detect_cast_attr.cocci | 11 +++++++++++
- tests/detect_cast_attr.res   | 10 ++++++++++
- 3 files changed, 31 insertions(+)
- create mode 100644 tests/detect_cast_attr.c
- create mode 100644 tests/detect_cast_attr.cocci
- create mode 100644 tests/detect_cast_attr.res
+BR,
+Dejin
 
-diff --git a/tests/detect_cast_attr.c b/tests/detect_cast_attr.c
-new file mode 100644
-index 00000000..2458ef05
---- /dev/null
-+++ b/tests/detect_cast_attr.c
-@@ -0,0 +1,10 @@
-+#define __cast_attr MACROANNOTATION
-+
-+int func()
-+{
-+	char *a = (int __cast_attr) x;
-+	char *a = (__cast_attr int) x;
-+	char *a = (int __cast_attr *) x;
-+	char *a = (int *__cast_attr) x;
-+	char *a = (int) x;
-+}
-diff --git a/tests/detect_cast_attr.cocci b/tests/detect_cast_attr.cocci
-new file mode 100644
-index 00000000..d626048f
---- /dev/null
-+++ b/tests/detect_cast_attr.cocci
-@@ -0,0 +1,11 @@
-+@r0@
-+type T;
-+attribute name __cast_attr;
-+identifier x;
-+@@
-+
-+  (
-+-	T
-++	char *
-+ 	__cast_attr
-+  ) x
-diff --git a/tests/detect_cast_attr.res b/tests/detect_cast_attr.res
-new file mode 100644
-index 00000000..2a273316
---- /dev/null
-+++ b/tests/detect_cast_attr.res
-@@ -0,0 +1,10 @@
-+#define __cast_attr MACROANNOTATION
-+
-+int func()
-+{
-+	char *a = (char *__cast_attr) x;
-+	char *a = (__cast_attr char *) x;
-+	char *a = (char *__cast_attr) x;
-+	char *a = (char *__cast_attr) x;
-+	char *a = (int) x;
-+}
--- 
-2.21.1
-
+> Regards,
+> Markus
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
