@@ -5,86 +5,86 @@ X-Spam-Level:
 X-Spam-Status: No, score=-9.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 412A3C2BA1A
-	for <cocci@archiver.kernel.org>; Fri, 24 Apr 2020 09:19:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A01CC55194
+	for <cocci@archiver.kernel.org>; Fri, 24 Apr 2020 09:19:44 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B4B982074F
-	for <cocci@archiver.kernel.org>; Fri, 24 Apr 2020 09:19:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 07E6020724
+	for <cocci@archiver.kernel.org>; Fri, 24 Apr 2020 09:19:43 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WXzGkVzI"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B4B982074F
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nJICzcm6"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 07E6020724
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 03O9JVqM006357;
-	Fri, 24 Apr 2020 11:19:31 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 03O9JWDl020007;
+	Fri, 24 Apr 2020 11:19:32 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 3D7D17827;
-	Fri, 24 Apr 2020 11:19:31 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id A828E7827;
+	Fri, 24 Apr 2020 11:19:32 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id BBDB87815
- for <cocci@systeme.lip6.fr>; Fri, 24 Apr 2020 11:19:28 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id C6BF47827
+ for <cocci@systeme.lip6.fr>; Fri, 24 Apr 2020 11:19:31 +0200 (CEST)
 Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com
  [IPv6:2607:f8b0:4864:20:0:0:0:1042])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 03O9JRH9026852
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 03O9JTxU000972
  (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Fri, 24 Apr 2020 11:19:28 +0200 (CEST)
-Received: by mail-pj1-x1042.google.com with SMTP id a7so3699042pju.2
- for <cocci@systeme.lip6.fr>; Fri, 24 Apr 2020 02:19:27 -0700 (PDT)
+ for <cocci@systeme.lip6.fr>; Fri, 24 Apr 2020 11:19:30 +0200 (CEST)
+Received: by mail-pj1-x1042.google.com with SMTP id fu13so3104971pjb.5
+ for <cocci@systeme.lip6.fr>; Fri, 24 Apr 2020 02:19:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=kkmMfCn78jeLBrlG5zHTVXjT0l4ypf79mn+DmgCmYOA=;
- b=WXzGkVzIhLcUWM99DMUrWoa9sIC38Yz3Gk/3bAuNSgkZGGQ6tfnCSuyTAdhkwwhFni
- cuYBueTVvpuDBprwSwv63R4IKpwstEbZRG8svV/D9DU7gzSfQVewaKWJHusfsyM1HtO6
- IL5juAwCkigllEETLpaiFE37U1YugKIECaQbJL76e4yOx/dY2IZqTvxDAJ4vHJHcGaj+
- TQOFr2rU8L1pl6IOLWEoIKP6kFJbo6PiZYcVccNc1M/Avl1JvO+WqCXo7+v7v7VLj7iW
- grtOQBVYv1iaA2hXwEL1p7CSN980yFYFYGsiIuknoT7NQdKjuniAQLwp2WjoAaeKiW5c
- uhmg==
+ bh=KfRA+3R9ZzJveL4ru1tMAAgz/8T168ipuotIP5e5FwI=;
+ b=nJICzcm6XnqiAn4T+CuPnVtAABJ/JJgq+yxS9N/lglJYb4ML2KGllFV3/vZZYKwmcA
+ OEmTaFd0VgV9VbXVsqd924DE4pqgREDCAQOurPAPdM3wVqFz/ixK9oECNe+2na18TtXK
+ YRcDWpVwah9DgBfdWioo8xvKXpnQLIy0nrfqREVKeelw0Ed3Cu715wurZ3gnG8+aMH19
+ riIRBzgmbojK7WgGzZZv5otpx3LTYkhrx0PrWn0y2KNdwfq1smz1cI5lS1hrTurq6co5
+ NQ5GLSJCjV02NPKZMJoSd5lxckgxGDhC+JdDACiVafKqE5WKPw7jcqy/bERHJojc/nlp
+ 0Akg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=kkmMfCn78jeLBrlG5zHTVXjT0l4ypf79mn+DmgCmYOA=;
- b=hm7FuQOmGLapuQAROJRqeM6lluW3ybCsl1S/P0wq7jpMVV7+6lEgQRr4oprrMOQ39q
- a4uXkMquR2Zxh3tit4LPZwpsWeDOwY/I+45lcyJYMztbypFd9gSsJezRpo5Z1XdYBunl
- 6F6EvYQvb4p7GtGs2Yvtj8KCI9DdC8SwCJpQo+brsYp6m69lngpGoGLbTTNX7EYpIZUJ
- 27sbtOrfBNxVkbu50qsAImeRhNzSsVjwKlLqK7ZWdWATvUYcqjXcMLU1L+igRGJjvsNB
- l8fYYYfDRBMg4tf9XFj+8QaFaEH3o+KjiCDg/RaUNGuP7MnNsIybSia+k3RYNcpWwWRF
- UPcQ==
-X-Gm-Message-State: AGi0PubEZZLiD/5tZAXFzkIT9ks617NOVdj1JHSJi88d3YenP0As/XXO
- qhAI5D7g9Sx2Kzg1xQrWt+/JAQ7rSGw=
-X-Google-Smtp-Source: APiQypJdIs4tzwi74kUNnMhdUlyNu8a7Icrd7Si+ZRxT6ZdHRH5BHmfCaW88ri7ahe4tta0dWRJhqQ==
-X-Received: by 2002:a17:90a:734b:: with SMTP id
- j11mr5168948pjs.108.1587719966223; 
- Fri, 24 Apr 2020 02:19:26 -0700 (PDT)
+ bh=KfRA+3R9ZzJveL4ru1tMAAgz/8T168ipuotIP5e5FwI=;
+ b=AzvJv7PZIeXVWZuFDIxm2j6jQexQwi5NpjnX6usCdgwuxukN8dgwQGUaExC5O6TDgA
+ y+lB0uMXxJx1KtTFcA45M8MS8izDWmg4Xn1BuPCiX2OOcjVq1VMzHDsCF3FR1yK4Fh8j
+ Ur+C6ybn+CsFSrgS7Wz1hKMtZNDAxqDjBYqNCbTO5MGJzo8nG0IN3S5i+xOklIgdDyBz
+ Dp4cHQQNdQWvGNYCjYRJ8++ozO/PtpGlalW4Jysje1j3dflhYZOfMLYmKztuJjZVQJ0Q
+ YHLOH+pb8t/2J1GeywCiDuwTTA/Zlppkgqli6HNpJNnS5eBhn6lFq4yDeQMapne8RkUn
+ pwuA==
+X-Gm-Message-State: AGi0PuYCYw/fpeWSrR7yqQgyOr6kdVKQzOk4wVvJ5nlg0kAp9Ut9AvHF
+ Iq9uxG3qqW/rKOucSDUl9YP6Vz/z95U=
+X-Google-Smtp-Source: APiQypKuhTtyoFJta0Pp0Ngex9fnXkqqVI7XmX7+p3ZKVoG7MyZ7A4dDHoUV98Om0Z9dGUqMYU82tg==
+X-Received: by 2002:a17:902:a98a:: with SMTP id
+ bh10mr7940909plb.340.1587719969134; 
+ Fri, 24 Apr 2020 02:19:29 -0700 (PDT)
 Received: from localhost.localdomain ([1.38.216.60])
- by smtp.gmail.com with ESMTPSA id c80sm5043933pfb.82.2020.04.24.02.19.23
+ by smtp.gmail.com with ESMTPSA id c80sm5043933pfb.82.2020.04.24.02.19.26
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 24 Apr 2020 02:19:25 -0700 (PDT)
+ Fri, 24 Apr 2020 02:19:28 -0700 (PDT)
 From: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 To: cocci@systeme.lip6.fr
-Date: Fri, 24 Apr 2020 14:47:51 +0530
-Message-Id: <20200424091801.13871-16-jaskaransingh7654321@gmail.com>
+Date: Fri, 24 Apr 2020 14:47:52 +0530
+Message-Id: <20200424091801.13871-17-jaskaransingh7654321@gmail.com>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200424091801.13871-1-jaskaransingh7654321@gmail.com>
 References: <20200424091801.13871-1-jaskaransingh7654321@gmail.com>
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 24 Apr 2020 11:19:31 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 24 Apr 2020 11:19:32 +0200 (CEST)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
  (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Fri, 24 Apr 2020 11:19:28 +0200 (CEST)
+ Fri, 24 Apr 2020 11:19:31 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78
 Cc: linux-kernel-mentees@lists.linuxfoundation.org
-Subject: [Cocci] [RFC PATCH 15/25] parsing_c: lib_parsing_c: Add ii_of_attr
+Subject: [Cocci] [RFC PATCH 16/25] engine: Add distrf_attr to PARAM functor
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -101,39 +101,80 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-ii_of_attr can be used to get the corresponding info of a single C
-attribute. Add this function to lib_parsing_c.
+distrf_attr can be used to match a single attribute at a time. Add this
+matcher function to the PARAM functor.
 
 Signed-off-by: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 ---
- parsing_c/lib_parsing_c.ml  | 1 +
- parsing_c/lib_parsing_c.mli | 1 +
- 2 files changed, 2 insertions(+)
+ engine/cocci_vs_c.ml       | 3 +++
+ engine/cocci_vs_c.mli      | 3 +++
+ engine/pattern_c.ml        | 1 +
+ engine/transformation_c.ml | 5 +++++
+ 4 files changed, 12 insertions(+)
 
-diff --git a/parsing_c/lib_parsing_c.ml b/parsing_c/lib_parsing_c.ml
-index 2ab3b3a9..99e43be3 100644
---- a/parsing_c/lib_parsing_c.ml
-+++ b/parsing_c/lib_parsing_c.ml
-@@ -315,6 +315,7 @@ let ii_of_define_params =
- let ii_of_ident_list = extract_info_visitor Visitor_c.vk_ident_list_splitted
- let ii_of_exec_code_list =
-   extract_info_visitor Visitor_c.vk_exec_code_list_splitted
-+let ii_of_attr = extract_info_visitor Visitor_c.vk_attribute
- let ii_of_attrs = extract_info_visitor Visitor_c.vk_attrs_splitted
- let ii_of_toplevel = extract_info_visitor Visitor_c.vk_toplevel
+diff --git a/engine/cocci_vs_c.ml b/engine/cocci_vs_c.ml
+index 2a3c3f94..e383aef8 100644
+--- a/engine/cocci_vs_c.ml
++++ b/engine/cocci_vs_c.ml
+@@ -700,6 +700,9 @@ module type PARAM =
+     val distrf_exec_code_list :
+       (A.meta_name A.mcode, (Ast_c.exec_code, Ast_c.il) either list) matcher
  
-diff --git a/parsing_c/lib_parsing_c.mli b/parsing_c/lib_parsing_c.mli
-index 1fc59420..d9578f3c 100644
---- a/parsing_c/lib_parsing_c.mli
-+++ b/parsing_c/lib_parsing_c.mli
-@@ -125,6 +125,7 @@ val ii_of_ident_list :
-   (Ast_c.name, Ast_c.il) Common.either list -> Ast_c.info list
- val ii_of_exec_code_list :
-   (Ast_c.exec_code, Ast_c.il) Common.either list -> Ast_c.info list
-+val ii_of_attr : Ast_c.attribute -> Ast_c.info list
- val ii_of_attrs :
-   (Ast_c.attribute, Ast_c.il) Common.either list -> Ast_c.info list
- val ii_of_toplevel : Ast_c.toplevel -> Ast_c.info list
++    val distrf_attr :
++      (A.meta_name A.mcode, Ast_c.attribute) matcher
++
+     val distrf_attrs :
+       (A.meta_name A.mcode, (Ast_c.attribute, Ast_c.il) either list) matcher
+ 
+diff --git a/engine/cocci_vs_c.mli b/engine/cocci_vs_c.mli
+index ef55d478..70354e19 100644
+--- a/engine/cocci_vs_c.mli
++++ b/engine/cocci_vs_c.mli
+@@ -162,6 +162,9 @@ module type PARAM =
+       (Ast_cocci.meta_name Ast_cocci.mcode,
+        (Ast_c.exec_code, Ast_c.il) Common.either list) matcher
+ 
++    val distrf_attr :
++      (Ast_cocci.meta_name Ast_cocci.mcode, Ast_c.attribute) matcher
++
+     val distrf_attrs :
+       (Ast_cocci.meta_name Ast_cocci.mcode,
+        (Ast_c.attribute, Ast_c.il) Common.either list) matcher
+diff --git a/engine/pattern_c.ml b/engine/pattern_c.ml
+index 7b1d0c0a..e6796368 100644
+--- a/engine/pattern_c.ml
++++ b/engine/pattern_c.ml
+@@ -335,6 +335,7 @@ module XMATCH = struct
+   let distrf_define_params  = distrf Lib_parsing_c.ii_of_define_params
+   let distrf_ident_list     = distrf Lib_parsing_c.ii_of_ident_list
+   let distrf_exec_code_list = distrf Lib_parsing_c.ii_of_exec_code_list
++  let distrf_attr           = distrf Lib_parsing_c.ii_of_attr
+   let distrf_attrs          = distrf Lib_parsing_c.ii_of_attrs
+ 
+ 
+diff --git a/engine/transformation_c.ml b/engine/transformation_c.ml
+index 4de8fe51..eecd4858 100644
+--- a/engine/transformation_c.ml
++++ b/engine/transformation_c.ml
+@@ -621,6 +621,9 @@ module XTRANS = struct
+   let distribute_mck_ini (maxpos, minpos) = fun (lop,mop,rop,bop) -> fun x ->
+     Visitor_c.vk_ini_s (mk_bigf (maxpos, minpos) (lop,mop,rop,bop)) x
+ 
++  let distribute_mck_attr (maxpos, minpos) = fun (lop,mop,rop,bop) -> fun x ->
++    Visitor_c.vk_attribute_s (mk_bigf (maxpos, minpos) (lop,mop,rop,bop)) x
++
+   let distribute_mck_inis (maxpos, minpos) = fun (lop,mop,rop,bop) -> fun x ->
+     Visitor_c.vk_inis_splitted_s (mk_bigf (maxpos, minpos) (lop,mop,rop,bop)) x
+ 
+@@ -750,6 +753,8 @@ module XTRANS = struct
+     distrf (Lib_parsing_c.ii_of_ident_list,distribute_mck_ident_list)
+   let distrf_exec_code_list =
+     distrf (Lib_parsing_c.ii_of_exec_code_list,distribute_mck_exec_code_list)
++  let distrf_attr =
++    distrf (Lib_parsing_c.ii_of_attr,distribute_mck_attr)
+   let distrf_attrs =
+     distrf (Lib_parsing_c.ii_of_attrs,distribute_mck_attrs)
+ 
 -- 
 2.21.1
 
