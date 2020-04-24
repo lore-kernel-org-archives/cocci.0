@@ -5,86 +5,86 @@ X-Spam-Level:
 X-Spam-Status: No, score=-9.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A8B9C55194
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9A49C55186
 	for <cocci@archiver.kernel.org>; Fri, 24 Apr 2020 09:19:27 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8554D20724
-	for <cocci@archiver.kernel.org>; Fri, 24 Apr 2020 09:19:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 5A02220724
+	for <cocci@archiver.kernel.org>; Fri, 24 Apr 2020 09:19:27 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CkF5DY46"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8554D20724
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lmnOshuJ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5A02220724
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 03O9JFi1006260;
-	Fri, 24 Apr 2020 11:19:15 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 03O9JHjV006483;
+	Fri, 24 Apr 2020 11:19:17 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 9657B7827;
-	Fri, 24 Apr 2020 11:19:15 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 0379B7827;
+	Fri, 24 Apr 2020 11:19:17 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 29F397815
- for <cocci@systeme.lip6.fr>; Fri, 24 Apr 2020 11:19:13 +0200 (CEST)
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com
- [IPv6:2607:f8b0:4864:20:0:0:0:1041])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 03O9JBSP006224
+ by systeme.lip6.fr (Postfix) with ESMTPS id 141867815
+ for <cocci@systeme.lip6.fr>; Fri, 24 Apr 2020 11:19:16 +0200 (CEST)
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:444])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 03O9JEHv027535
  (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Fri, 24 Apr 2020 11:19:12 +0200 (CEST)
-Received: by mail-pj1-x1041.google.com with SMTP id t40so3697437pjb.3
- for <cocci@systeme.lip6.fr>; Fri, 24 Apr 2020 02:19:12 -0700 (PDT)
+ for <cocci@systeme.lip6.fr>; Fri, 24 Apr 2020 11:19:15 +0200 (CEST)
+Received: by mail-pf1-x444.google.com with SMTP id z1so2837239pfn.3
+ for <cocci@systeme.lip6.fr>; Fri, 24 Apr 2020 02:19:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=BSXy7p3ASCxK8X1Fpi/Kk/DjgU4d+i+CiSo8ebcoGBU=;
- b=CkF5DY46Av8t7kqNHJl/EnKarmm45YwT+fKvzf3VDrf7Bh6H+t/SyEZF6A8gYfxplu
- oOUJasKEi/OuF1iDiZTMgnj2C2YGszbFh4t9kcp3c4DLO3zd3d3EU9C8OzK4PkO3KmWr
- Bb6qs8+FEsgUOIeRchREtuuKSigoVNQCcRBXbpnDWlFi9h2JER3aaZhbsT3KMkEjFoDS
- qf13sfHpjLr+LeQGmC/Fh4s3Vv5gEeykUm/Dnd6Yh0iU+otaf3lt8TbHHoWRGqIPst+8
- 1XM/aETElq1f0Ayk4OGMavCyXQHo8hTeMXfj7tKjuPU0LQzdHQBubeSXar6Ir3v9rv4e
- lXwg==
+ bh=SQehgLNKcnkP2r6snLh68vsSiNrWsr6X4sXUN+Ob+dg=;
+ b=lmnOshuJAISWxrhI6uRfWGisXd5KiwS1rSynPF2Xmxqe1FMntwT8kgnUONKENSYd00
+ 3ZTelG44l8GAFIW6TB8u1TiwsBPMySflv3eM72gurM4zmdTmsOZkbXs6KswJ4C20LNgb
+ muJ4H5lltM2DvWE08fnCuhaYUt5E41URgNTaHr6YYhlmkd/sam2rOrpxgYnp9aYn34IJ
+ alnwAG7cBPz9T9l4fxk54Cn+sAHDn1N1ZP77AivW1ehEubayipUqu+JuHoKUKg2HFoG0
+ ExYg96qOEUw0p1n6ybirZxzOg/o5A2OCFgP3/r3aqPaDCLPFKcCOPLKCvxLAs85plxPQ
+ nN9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=BSXy7p3ASCxK8X1Fpi/Kk/DjgU4d+i+CiSo8ebcoGBU=;
- b=NUhaboLHu5q1E2EvHg566oWIXgV5FYLN02XMVgtncZziTwllETdBUF0GFkEvjoyn1U
- J3Pv4UxfBJhfTsMMdQ/MZwtDbrAqR7xHP5FMAiXlhur0j2uIgq2Ke+/kn8ZzRD2JcNFa
- P/7cwaFK7sKj1WBtxV0+nGNlFFDQL4XaSn88/ULt2rXXwozZpPiCyhd4b+QZGse/FeIB
- /RiO0ynookzTj3f3gswwXxdcnvaBfsXKJScqgH98xYX2+mDMeqimOeRoaFVxm2maTuyE
- nOz/xMKKZ2sNJBwuTw0qGMwnJvkrW/Gf1pDuyxaJd8Ynq1quhT6y3Azl5hkDxU2br8uz
- LplA==
-X-Gm-Message-State: AGi0PuZFP3zlck4iF/Se7fbX0uaCJow4QodCA5HmCRa2n3ItNMWvySiD
- J9iO9XBGUdYs8UxLtLIa78GC4e80Nvc=
-X-Google-Smtp-Source: APiQypKfKqxVyZUaah9B0bt9Oq1oy81MEEPwBHJYyG19yS8UUql75qd2rpeI6Pxf6c6CI5s+H6kwDg==
-X-Received: by 2002:a17:90a:82:: with SMTP id a2mr5533209pja.47.1587719950493; 
- Fri, 24 Apr 2020 02:19:10 -0700 (PDT)
+ bh=SQehgLNKcnkP2r6snLh68vsSiNrWsr6X4sXUN+Ob+dg=;
+ b=RcB1IO1+m6dLMCrz6Z7PGmhtox9fXN9Bd/F6qAd3KW1zS3RDReuaFYOI2If8KEo8Ts
+ vXjV8dfIkEn6BeXTs5Mq1zYOzx5h4GkrTkE/wRzFhpIsM/rl5xx6V3IBvWuZHunENDgE
+ nIqymlf5WXQNrNuKV4keKxlny+jPw3H8YBV+/eE59YGZLlAJauU79bVThUuGfUbFVG+C
+ gVKObwa+n2vvL/pTu4NqKyBX2IOvrmvn2j3fDUoCepaF+eXzgGTiLhtzI5bnbTbmi4dz
+ nm2JEqYmXD+o6nSYvj4uQvluYh+J0UR64/NTI8zUr8Ws1XnwOd0mududpzrwZDtve449
+ qnpg==
+X-Gm-Message-State: AGi0PuZqD72P4adRZXiIZgLDo6KZcX0nNZj2mHVw2L11jMP0+4erCbbW
+ rtJCZ2WW3X7l8RGIjvFXbZtFBFXvXvA=
+X-Google-Smtp-Source: APiQypI5hOl7Sz9P6ONJTaxtxFR193NME9k1L/obfvJi0VWNMBGVLcJg3rfISlvrUHWlSSZPbdVf3Q==
+X-Received: by 2002:a63:b23:: with SMTP id 35mr7976708pgl.170.1587719953502;
+ Fri, 24 Apr 2020 02:19:13 -0700 (PDT)
 Received: from localhost.localdomain ([1.38.216.60])
- by smtp.gmail.com with ESMTPSA id c80sm5043933pfb.82.2020.04.24.02.19.07
+ by smtp.gmail.com with ESMTPSA id c80sm5043933pfb.82.2020.04.24.02.19.10
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 24 Apr 2020 02:19:10 -0700 (PDT)
+ Fri, 24 Apr 2020 02:19:13 -0700 (PDT)
 From: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 To: cocci@systeme.lip6.fr
-Date: Fri, 24 Apr 2020 14:47:47 +0530
-Message-Id: <20200424091801.13871-12-jaskaransingh7654321@gmail.com>
+Date: Fri, 24 Apr 2020 14:47:48 +0530
+Message-Id: <20200424091801.13871-13-jaskaransingh7654321@gmail.com>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200424091801.13871-1-jaskaransingh7654321@gmail.com>
 References: <20200424091801.13871-1-jaskaransingh7654321@gmail.com>
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 24 Apr 2020 11:19:15 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 24 Apr 2020 11:19:17 +0200 (CEST)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
  (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Fri, 24 Apr 2020 11:19:12 +0200 (CEST)
+ Fri, 24 Apr 2020 11:19:15 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78
 Cc: linux-kernel-mentees@lists.linuxfoundation.org
-Subject: [Cocci] [RFC PATCH 11/25] parsing_c: parser: cpp_other end
-	attributes production
+Subject: [Cocci] [RFC PATCH 12/25] parsing_c: cpp_token_c: Introduce
+	MACROANNOTATION hint
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -101,61 +101,39 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Add a production for a macro call in the cpp_other rule of Coccinelle's
-C parser. This parses the following C code from Linux v5.6-rc7
-successfully:
+A better way of denoting attributes is to pass attribute information
+from SmPL to the C parser. However, a temporary solution is to introduce
+a MACROANNOTATION hint to cpp_token_c.ml so that the parser can identify
+attributes easily.
 
-  arch/x86/kernel/irq_64.c:
+This hint can be used as follows in standard.h, the user provided
+macro-defs file or the given C file itself:
 
-	DEFINE_PER_CPU_PAGE_ALIGNED(struct irq_stack, irq_stack_backing_store) __visible;
+	#define __attribute_name MACROANNOTATION
+
+By default, __attribute_name would be identified as a comment. Using the
+above hint, __attribute_name would be identified as an attribute and
+transformations from SmPL would be performed as if __attribute_name is
+an attribute, not a comment.
 
 Signed-off-by: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 ---
- parsing_c/parser_c.mly | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+ parsing_c/cpp_token_c.ml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/parsing_c/parser_c.mly b/parsing_c/parser_c.mly
-index eb22cbcf..da6b9c7b 100644
---- a/parsing_c/parser_c.mly
-+++ b/parsing_c/parser_c.mly
-@@ -2262,6 +2262,37 @@ cpp_other:
-            (* old: MacroTop (fst $1, $3,    [snd $1;$2;$4;$5])  *)
-      }
+diff --git a/parsing_c/cpp_token_c.ml b/parsing_c/cpp_token_c.ml
+index 425234e8..0654be26 100644
+--- a/parsing_c/cpp_token_c.ml
++++ b/parsing_c/cpp_token_c.ml
+@@ -81,6 +81,8 @@ let assoc_hint_string = [
+   "YACFE_END_ATTRIBUTE" , HintEndAttribute;
+   "YACFE_IDENT_BUILDER" , HintMacroIdentBuilder;
  
-+ | identifier TOPar argument_list TCPar end_attributes TPtVirg
-+     {
-+       if args_are_params $3
-+       then
-+	 (* if all args are params, assume it is a prototype of a function
-+	    with no return type *)
-+	 let parameters = args_to_params $3 None in
-+	 let paramlist = (parameters, (false, [])) in (* no varargs *)
-+	 let id = RegularName (mk_string_wrap $1) in
-+	 let ret =
-+	   warning "type defaults to 'int'"
-+	     (mk_ty defaultInt [fakeInfo fake_pi]) in
-+	 let ty =
-+	   fixOldCDecl (mk_ty (FunctionType (ret, paramlist)) [$2;$4]) in
-+	 let attrs = Ast_c.noattr in
-+	 let sto = (NoSto, false), [] in
-+	 let iistart = Ast_c.fakeInfo () in
-+	 Declaration(
-+	 DeclList ([{v_namei = Some (id,NoInit); v_type = ty;
-+                      v_storage = unwrap sto; v_local = NotLocalDecl;
-+                      v_attr = attrs; v_endattr = $5;
-+		      v_type_bis = ref None;
-+                    },[]],
-+                   ($6::iistart::snd sto)))
-+       else
-+	 Declaration
-+	   (MacroDecl((NoSto, fst $1, $3, true), [snd $1;$2;$4;$6;fakeInfo()]))
-+           (* old: MacroTop (fst $1, $3,    [snd $1;$2;$4;$5])  *)
-+     }
++  "MACROANNOTATION"   , HintAttribute;
 +
-+
-  /* cheap solution for functions with no return type.  Not really a
-        cpp_other, but avoids conflicts */
-  | identifier TOPar argument_list TCPar compound {
+   "MACROSTATEMENT"   , HintMacroStatement; (* backward compatibility *)
+ ]
+ 
 -- 
 2.21.1
 
