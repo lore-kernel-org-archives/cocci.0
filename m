@@ -8,83 +8,82 @@ X-Spam-Status: No, score=-9.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53DF5C83000
-	for <cocci@archiver.kernel.org>; Tue, 28 Apr 2020 17:04:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80388C83000
+	for <cocci@archiver.kernel.org>; Tue, 28 Apr 2020 17:05:28 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C3CBB20730
-	for <cocci@archiver.kernel.org>; Tue, 28 Apr 2020 17:04:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 1EBA520730
+	for <cocci@archiver.kernel.org>; Tue, 28 Apr 2020 17:05:27 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PWs+T5Nk"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C3CBB20730
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KpS4UL2r"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1EBA520730
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 03SH4ZAS007019;
-	Tue, 28 Apr 2020 19:04:35 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 03SH5HDc014614;
+	Tue, 28 Apr 2020 19:05:17 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id D229A7807;
-	Tue, 28 Apr 2020 19:04:35 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 446CA7807;
+	Tue, 28 Apr 2020 19:05:17 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 451333DC8
- for <cocci@systeme.lip6.fr>; Tue, 28 Apr 2020 19:04:34 +0200 (CEST)
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com
- [IPv6:2607:f8b0:4864:20:0:0:0:642])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 03SH4WEg015604
+ by systeme.lip6.fr (Postfix) with ESMTPS id DF86D3DC8
+ for <cocci@systeme.lip6.fr>; Tue, 28 Apr 2020 19:05:15 +0200 (CEST)
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:544])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 03SH5ENT002434
  (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Tue, 28 Apr 2020 19:04:33 +0200 (CEST)
-Received: by mail-pl1-x642.google.com with SMTP id v2so8620088plp.9
- for <cocci@systeme.lip6.fr>; Tue, 28 Apr 2020 10:04:33 -0700 (PDT)
+ for <cocci@systeme.lip6.fr>; Tue, 28 Apr 2020 19:05:15 +0200 (CEST)
+Received: by mail-pg1-x544.google.com with SMTP id d3so3398815pgj.6
+ for <cocci@systeme.lip6.fr>; Tue, 28 Apr 2020 10:05:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=EOnyLzO8txfwyXdMk5xZdnI9RRWzBI9eFOCxN8utaI8=;
- b=PWs+T5NkLLr9kvjHBiwf4JR9a/hk1A0LWsmipHoRZKTugbxUAYtp+49K28Qs/sXcoq
- WgH1U5V2ryiLvnU/rNGKXlGbFSQwsPVTZyhCJbtYqjCmIyx5raBcTPcmMlwPtUlUUsRA
- O3EgdAL08eq7VcjiCyZe87j9cf7B/D6YLBs4qj1KPyl/6GAitMQRrZrLKwa12sdYazCd
- EosseqWqJngZd2VB0BAEg6V4IDAVQa+Thlqbw7hJB0ZaQOkgB0Q0i92J8yq/50DGCrBF
- +u47nUM9+sOYMETJY/cITiMRABXCvDcF1piEqwpxmTpL9yRkWONk0y6BT+TB0l2g/50v
- cRgw==
+ bh=iAZwpXgyXbVEqG7G570Yyi1YamOd5ca2XXaSrHWEm88=;
+ b=KpS4UL2rZjVeESKfcz3mMogXrGX/CeKHjNubaz6tldW3rXd4nSCmxvan6cPqIZn0wL
+ fI58FII0YL+28nma78cpDWQb/pqer8dQUGFzl3LQ8OM4fG3IcS/MMFsJ0TNnZTlRBDhC
+ ivJy+eozkAfP4Pl+0o2MOM0wFsArbk+Re0d2cB1pIh3QsXzJW+RFdlfdFOI/nFSpHi1w
+ KJJTw72m7skScNllQbJQel0hAI5URDQsTLvxDEdgXlHPw7JRQNUpZHS3b4sSF+Hx1Fds
+ CqcCY8pHeu+iSVXzKFvhk42iPBwciycsfiFhsbZb6nkKXwMb7cEDZJU4NWu4xotCevhn
+ XOng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=EOnyLzO8txfwyXdMk5xZdnI9RRWzBI9eFOCxN8utaI8=;
- b=X6tjS0S/eTzFp6BgOnxoCT54uwUkepGsW549DT8n8crITPZKWE6lbSFwZxK3oMUL8x
- Mwt+WI971nJW0u2Uhottk5ez1NlMwuqP3k595P0O5aIIbtJyaScmV133uqGv+i8l2ywv
- x1M0E/aVYtMKuC8MCZytq6zqazXegoNJr4o1lQ5jqL4qznhD4Yac2mcO9KF/UPv7I2qq
- RVxrNIpP7W4nmZkIK9ORBhuij57/gJWoOFdKTzk9sknTcq+Fj4kntr52s46Ig6WBiG39
- VhxQorYCEop7udLXTJbbh+oB94pwRlezqC8S3r7bpde4X+QTpz7fgjcOxLNUsc34LyaA
- P0Og==
-X-Gm-Message-State: AGi0Pub41TOPYDA0VwQUnIry1Fs1ElS3nk9ksMyS0Icc6hv5u137x8e6
- Fqs2DV2uNLyMIUgHsk5x9OJ9gMwKfP8=
-X-Google-Smtp-Source: APiQypIQrFkcoKmIGiA5COLWgRpZU2Mr3OhLi3XqZaHDISWSQm0BuG4dLWksHKZhcby5M5BWBF27uw==
-X-Received: by 2002:a17:90a:7486:: with SMTP id
- p6mr6315890pjk.62.1588093471888; 
- Tue, 28 Apr 2020 10:04:31 -0700 (PDT)
+ bh=iAZwpXgyXbVEqG7G570Yyi1YamOd5ca2XXaSrHWEm88=;
+ b=kThxTbWlaiEpel/9sEyrcB6FlcK7H6ZyNc671X/dNNrnSm90gTHEMoLIGfdAkK5cZg
+ 3DoPBtS7luaR3Noie2bdHasgR4G02c1ImalKM7kJAZMfwwMIgCY+jCgk3k7fBUgG2WiT
+ LlngBdhDd1gOpZuFBT5MQTUZkbJpbjgATThbFOrgikM19rc0ThDnEyvs6hkRDTSK00Ir
+ SzKky66BVTeJcYjGq4oXliEhZaXxUNonURispqvJsDPY1XYWkVFcVhl9M9+PshfbYGTq
+ 1AQGFVvRaDMxWvnUVWo6+JIMkqnTcBC+LLwhiNIxb12C00v+aG2DZxIpFIqwM4/vCpS7
+ xrZA==
+X-Gm-Message-State: AGi0Pua4XS8OHJbnawJ5He9D72yXJCnB6FXUSnSfIIGKLqT6sKvollUr
+ LNz2WKe071sAv0NTPJihT+VKe1P3U0s=
+X-Google-Smtp-Source: APiQypLNkS0XUbsfkXqh2bzODQQF1vf+GCaV/JoN4WxpPRy0v5Eknh/cnVHvbHpiLe38ZwA/lK2M4Q==
+X-Received: by 2002:a62:5402:: with SMTP id i2mr31249943pfb.89.1588093513520; 
+ Tue, 28 Apr 2020 10:05:13 -0700 (PDT)
 Received: from localhost.localdomain ([1.38.220.163])
- by smtp.gmail.com with ESMTPSA id u15sm2505097pjm.47.2020.04.28.10.04.22
+ by smtp.gmail.com with ESMTPSA id u15sm2505097pjm.47.2020.04.28.10.04.32
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 28 Apr 2020 10:04:31 -0700 (PDT)
+ Tue, 28 Apr 2020 10:05:13 -0700 (PDT)
 From: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 To: cocci@systeme.lip6.fr
-Date: Tue, 28 Apr 2020 22:32:18 +0530
-Message-Id: <20200428170228.7002-23-jaskaransingh7654321@gmail.com>
+Date: Tue, 28 Apr 2020 22:32:19 +0530
+Message-Id: <20200428170228.7002-24-jaskaransingh7654321@gmail.com>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200428170228.7002-1-jaskaransingh7654321@gmail.com>
 References: <20200428170228.7002-1-jaskaransingh7654321@gmail.com>
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 28 Apr 2020 19:04:35 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 28 Apr 2020 19:05:17 +0200 (CEST)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
  (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Tue, 28 Apr 2020 19:04:33 +0200 (CEST)
+ Tue, 28 Apr 2020 19:05:15 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78
 Cc: linux-kernel-mentees@lists.linuxfoundation.org
-Subject: [Cocci] [PATCH 22/32] parsing_c: pretty_print_c: Reflect Cast
+Subject: [Cocci] [PATCH 23/32] parsing_c: type_annoter_c: Reflect Cast
 	attributes
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
@@ -102,39 +101,36 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Cast attributes are added to the SmPL AST. Print these attributes in
-pretty_print_c.ml.
+Cast attributes are added to the SmPL AST. Reflect these changes in
+type_annoter_c.ml.
 
 Signed-off-by: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 ---
- parsing_c/pretty_print_c.ml | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ parsing_c/type_annoter_c.ml | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/parsing_c/pretty_print_c.ml b/parsing_c/pretty_print_c.ml
-index 99a7e0ed..96a11d72 100644
---- a/parsing_c/pretty_print_c.ml
-+++ b/parsing_c/pretty_print_c.ml
-@@ -146,8 +146,9 @@ let mk_pretty_printers
- 	pp_expression e
-     | SizeOfType  (t),     [i1;i2;i3] ->
-         pr_elem i1; pr_elem i2; pp_type t; pr_elem i3
--    | Cast    (t, e),      [i1;i2] ->
--        pr_elem i1; pp_type t; pr_elem i2; pp_expression e
-+    | Cast    (t, e, a),      [i1;i2] ->
-+        pr_elem i1; pp_type t; pr_elem i2; pp_expression e;
-+        a +> pp_attributes pr_elem pr_space
+diff --git a/parsing_c/type_annoter_c.ml b/parsing_c/type_annoter_c.ml
+index dfd363b2..c42ac5e9 100644
+--- a/parsing_c/type_annoter_c.ml
++++ b/parsing_c/type_annoter_c.ml
+@@ -525,7 +525,7 @@ let rec is_simple_expr expr =
+       true
+   | Binary (e1, op, e2) ->
+       true
+-  | Cast (t, e) ->
++  | Cast (t, e, a) ->
+       true
+   | ParenExpr (e) -> is_simple_expr e
  
-     | StatementExpr (statxs, [ii1;ii2]),  [i1;i2] ->
-         pr_elem i1;
-@@ -184,7 +185,7 @@ let mk_pretty_printers
-     | CondExpr (_,_,_) | Sequence (_,_) | Assignment (_,_,_)
-     | Postfix (_,_) | Infix (_,_) | Unary (_,_) | Binary (_,_,_)
-     | ArrayAccess (_,_) | RecordAccess (_,_) | RecordPtAccess (_,_)
--    | SizeOfExpr (_) | SizeOfType (_) | Cast (_,_)
-+    | SizeOfExpr (_) | SizeOfType (_) | Cast (_,_,_)
-     | StatementExpr (_) | Constructor _
-     | ParenExpr (_) | New (_) | Delete (_,_)
-     | Defined (_)),_ -> raise (Impossible 95)
+@@ -961,7 +961,7 @@ let annotater_expr_visitor_subpart = (fun (k,bigf) expr ->
+ 
+ 
+     (* -------------------------------------------------- *)
+-    | Cast (t, e) ->
++    | Cast (t, e, a) ->
+         k expr;
+         (* todo: if infer, can "push" info ? add_types_expr [t] e ? *)
+         make_info_def_fix (Lib.al_type t)
 -- 
 2.21.1
 
