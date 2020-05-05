@@ -4,143 +4,88 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB3EFC47247
-	for <cocci@archiver.kernel.org>; Tue,  5 May 2020 09:17:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BCAFC47247
+	for <cocci@archiver.kernel.org>; Tue,  5 May 2020 09:59:42 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 58F40206B8
-	for <cocci@archiver.kernel.org>; Tue,  5 May 2020 09:17:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 90A16206B9
+	for <cocci@archiver.kernel.org>; Tue,  5 May 2020 09:59:41 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=schleiser.de header.i=@schleiser.de header.b="XkLtrDz/"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 58F40206B8
-Authentication-Results: mail.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=schleiser.de
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=cilium-io.20150623.gappssmtp.com header.i=@cilium-io.20150623.gappssmtp.com header.b="ooBGbKp4"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 90A16206B9
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=cilium.io
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0459GkCC021482;
-	Tue, 5 May 2020 11:16:47 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0459xGJP024268;
+	Tue, 5 May 2020 11:59:16 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id D5D03775A;
-	Tue,  5 May 2020 11:16:46 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 2990A775A;
+	Tue,  5 May 2020 11:59:16 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id E77B43E6B
- for <cocci@systeme.lip6.fr>; Tue,  5 May 2020 11:16:44 +0200 (CEST)
-Received: from mail.socioholic.net (mail.socioholic.net [138.201.210.212])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 0459Ginb007527
- (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
- for <cocci@systeme.lip6.fr>; Tue, 5 May 2020 11:16:44 +0200 (CEST)
-Received: from [IPv6:2003:db:172e:4500:f654:9ca9:f1f3:7ab0]
- (p200300DB172E4500F6549CA9F1F37AB0.dip0.t-ipconnect.de
- [IPv6:2003:db:172e:4500:f654:9ca9:f1f3:7ab0])
- (Authenticated sender: kaspar)
- by mail.socioholic.net (Postfix) with ESMTPSA id 3B99B10640A;
- Tue,  5 May 2020 11:17:50 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=schleiser.de; s=mail;
- t=1588670272; bh=ADzSLIQxxb7btVpeEBK+a4+6Tg+PIeSvrTn0LvC7euY=;
- h=Subject:To:References:From:Date:In-Reply-To:From;
- b=XkLtrDz/hy/BHGd6KGOvFINYx2NnUs5u3Wqg9riGacDK6y31GNkUgmzdxR8n/aMhb
- B9oRAKLLGVg0ejnYMVhUowuCf3Yx0+8pKK8rbc4SEmLOwQS6jjmYuWXy+QAOhzv3ZH
- R6LaV063ha6EO4Oec/y+3CfeqSg+MvDBwFJ07WyrDb9uM8hwnrBSpWd2+yhERcAayo
- RCdcrUbPj/ytQIeDpA5Lg3Je4mSKKW1jDWoH6KKrsVFK+5DQx9ciFnrXcM6jkY67Sv
- YcmZ4Allo6bZ6qapWtiiapKzE3+IKkCxyYxb/HtnrgU/RmRwxVz5Z8Jwlov0m9NFQb
- toZNAhddJX9Wg==
-To: Nicolas Palix <nicolas.palix@univ-grenoble-alpes.fr>,
-        Julia Lawall <julia.lawall@lip6.fr>, cocci@systeme.lip6.fr
-References: <alpine.DEB.2.21.1909302142430.2925@hadrien>
- <eccc921f-c5f5-6dc5-5233-75f0fc16cb51@schleiser.de>
- <904fcac6-77cb-b44b-07fd-430bf3596614@univ-grenoble-alpes.fr>
-From: Kaspar Schleiser <kaspar@schleiser.de>
-Autocrypt: addr=kaspar@schleiser.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <ed125ed8-a2f8-2c1a-b0aa-acf83544cae8@schleiser.de>
-Date: Tue, 5 May 2020 11:16:41 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+ by systeme.lip6.fr (Postfix) with ESMTPS id 371A43E6B
+ for <cocci@systeme.lip6.fr>; Tue,  5 May 2020 11:59:15 +0200 (CEST)
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com
+ [IPv6:2a00:1450:4864:20:0:0:0:42f])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 0459xETj010964
+ (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
+ for <cocci@systeme.lip6.fr>; Tue, 5 May 2020 11:59:14 +0200 (CEST)
+Received: by mail-wr1-x42f.google.com with SMTP id i10so1950921wrv.10
+ for <cocci@systeme.lip6.fr>; Tue, 05 May 2020 02:59:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=cilium-io.20150623.gappssmtp.com; s=20150623;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to:user-agent;
+ bh=7NIUTERwrvDKFhVggje2Rp2xGHeL22wL3xfJx0e0EEg=;
+ b=ooBGbKp4VT+HN+12T6TY+4iGi7dQjzwxodlNiaTbt/RWoNyt8c5hMRkDQRb5/mM/1U
+ uah/bW8xI2HHRftiw2Us0QAXRp5eqqjCwzKNWtfrsm+SRuzFcgUCwk5gGYmjXJGoBmS5
+ TN9h3ot+Cyg7UX1IFA6PtINkl1+7uc9uDd8OrcwYhhBySfRXeAiBSoixbjLAj1lEYERU
+ 0GYEmlGxUKEkoHyIEZYM6brzcEbrn5WvukixClk05FGVkn6p7Ydme+sPTybE9j2AY8+9
+ 9Bc9cGXcCKXhnR5X15NiT+P0AGHueGKI59ZSGbdqMP8pp8XlY3OqSJeChBVxHW97b4Px
+ lYaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to:user-agent;
+ bh=7NIUTERwrvDKFhVggje2Rp2xGHeL22wL3xfJx0e0EEg=;
+ b=Jk4oPp9W5KQrxIci1Lavg+ROO6GSsFc6HhcvxLF6HkizrZJub0wVcgya4k5cgqOD9z
+ YcHRhIe85MMj2SZs2ggqwOHOfCu/snp1j+eCPB4W+PZ7qZlYgKQk9CVKCafuWBq/skKn
+ JZNfmBzvlVkn9+hquiG7fMHl4GKY7d5xaxdqUKvVGqVQGd8PeJMZWLo9HXzyj/FvH03w
+ iSSLwrPRKEu+L8cAIZGdJBm1wsvI/k77I6WKqfJ3gorNCNxaDHveyFQbKZR6yueY0ZXt
+ Uwo0qas1dHJTKI4v/8Qszc04IckvUnd/27vos7aDEw4WsO7+zAT2wtSzMRy73/ZNGj/r
+ JKOA==
+X-Gm-Message-State: AGi0Pub2hQyFtJc1AYZIzmEnXzcQYVc+L227KdF2G5kLc1UJiQTgN9mc
+ vskn0IkcXVRl03FnUuNTpQrTWwl/MSg/
+X-Google-Smtp-Source: APiQypJ39T0u4oFQIOzMkD9lbdnzNk1JxgAf4+f/g1Wx3dQDT29sSy6AOP/bkGBHPlmCa+O1ssRUSw==
+X-Received: by 2002:a5d:4b90:: with SMTP id b16mr3051066wrt.16.1588672753921; 
+ Tue, 05 May 2020 02:59:13 -0700 (PDT)
+Received: from Mem ([145.136.49.157])
+ by smtp.gmail.com with ESMTPSA id t2sm3096521wmt.15.2020.05.05.02.59.13
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 05 May 2020 02:59:13 -0700 (PDT)
+Date: Tue, 5 May 2020 11:59:12 +0200
+From: Paul Chaignon <paul@cilium.io>
+To: Markus Elfring <Markus.Elfring@web.de>
+Message-ID: <20200505095911.GA7247@Mem>
+References: <b6c5ae24-f24c-a0d5-796a-8e9cbd17a7d6@web.de>
+ <20200429190733.GA5695@Mem>
+ <72cb854f-912b-4c34-a526-be7b584e8fd8@web.de>
 MIME-Version: 1.0
-In-Reply-To: <904fcac6-77cb-b44b-07fd-430bf3596614@univ-grenoble-alpes.fr>
-Content-Language: en-US-large
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 05 May 2020 11:16:47 +0200 (CEST)
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Tue, 05 May 2020 11:16:44 +0200 (CEST)
+Content-Disposition: inline
+In-Reply-To: <72cb854f-912b-4c34-a526-be7b584e8fd8@web.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 05 May 2020 11:59:16 +0200 (CEST)
+X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
+ Tue, 05 May 2020 11:59:14 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Subject: Re: [Cocci] 1.0.8 on Ubuntu
+X-Scanned-By: MIMEDefang 2.78
+Cc: cocci@systeme.lip6.fr
+Subject: Re: [Cocci] Exit with non-zero status
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -157,33 +102,61 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Hi Nicolas,
+On Wed, Apr 29, 2020 at 09:50:21PM +0200, Markus Elfring wrote:
+> >> I suggest to handle the desired search result counter
+> >> by an other data processing interface.
+> >> How would you like to treat program execution failures otherwise?
+> >
+> > I'm trying to run SmPL programs as part of a CI pipeline, so execution
+> > failure and (buggy) code pattern not found really mean the same in
+> > the end: a human needs to take a look :-)
+> 
+> I imagine that such a look can occasionally made a bit more convenient.
+> 
+> 
+> > I understand that is not a common use case
+> 
+> Can such a software application become more popular?
 
-thanks for the quick reply!
+As far as I understand, if it's not more popular to use Coccinelle in
+CIs right now it's because of (1) false positives for some rules, and
+(2) the little reliance of the Linux community on CIs.
 
-On 5/5/20 10:50 AM, Nicolas Palix wrote:
-> I think you could try the following version (intended for 20.10).
-> https://launchpad.net/ubuntu/+source/coccinelle/1.0.8.deb-2
+We rely heavily on CI and probably wouldn't use Coccinelle in the long
+term if we couldn't enable it in CI. Without CI, developers and
+reviewers would likely forget to execute semantic patches.
 
-I managed to compile the 19.04 version
-(coccinelle_1.0.8~19.04npalix1.dsc,
-coccinelle_1.0.8~19.04npalix1.tar.xz). Somehow I missed that there's a
-20.10 version.
+So CI use seems to become more popular (even in low-level projects), but
+it's not like this exit status issue is a blocker to use Coccinelle in
+CI. For the record, I enabled Coccinelle in our CI (GitHub Actions)
+yesterday and worked around that issue with the following script:
 
-The commands were roughly:
+  make -C bpf/ coccicheck | tee /tmp/stdout
+  exit $(grep -c "[prefix of warning messages]" /tmp/stdout)
 
-$ apt install debhelper devscripts equivs
-$ dpkg-source -x coccinelle_1.0.8~19.04npalix1.dsc
-$ cd coccinelle-1.0.8
-$ mk-build-deps -i
-$ dpkg-buildpackage -rfakeroot -b
-$ apt install ../coccinelle_1.0.8~19.04npalix1_amd64.deb
+> 
+> 
+> > and I'm fine using a workaround.
+> 
+> We have got different views around preferable solutions.
+> How many information would you like to put into an exit code so far?
 
-The resulting .deb can be installed on an otherwise clean focal:latest
-container. The spatch binary starts (prints help), did not do further
-testing.
+Please see above script. I currently exit with number of failures, but
+having just 0 (success) and 1 (fail) statuses would be enough.
 
-Kaspar
+> 
+> 
+> > Just wanted to check I wasn't missing something obvious.
+> 
+> Further possibilities should probably be clarified further,
+> shouldn't they?
+> 
+> Will the usage of additional data structures become more interesting?
+
+Not sure I understand the question. What data structures?
+
+Cheers,
+Paul
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
