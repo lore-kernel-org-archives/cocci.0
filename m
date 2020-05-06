@@ -1,152 +1,95 @@
-Return-Path: <SRS0=zNwH=6T=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=rX/m=6U=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FF2AC47254
-	for <cocci@archiver.kernel.org>; Tue,  5 May 2020 19:51:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2308CC28CBC
+	for <cocci@archiver.kernel.org>; Wed,  6 May 2020 12:01:44 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 59D6720721
-	for <cocci@archiver.kernel.org>; Tue,  5 May 2020 19:51:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 40C84206DD
+	for <cocci@archiver.kernel.org>; Wed,  6 May 2020 12:01:42 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=schleiser.de header.i=@schleiser.de header.b="Zj/vGa5c"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 59D6720721
-Authentication-Results: mail.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=schleiser.de
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=cilium-io.20150623.gappssmtp.com header.i=@cilium-io.20150623.gappssmtp.com header.b="FcLvBqu0"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 40C84206DD
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=cilium.io
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 045Jp29p022076;
-	Tue, 5 May 2020 21:51:02 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 046C1Kxr020519;
+	Wed, 6 May 2020 14:01:20 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 375A6775A;
-	Tue,  5 May 2020 21:51:02 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 097CF775A;
+	Wed,  6 May 2020 14:01:20 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 2AC543E6B
- for <cocci@systeme.lip6.fr>; Tue,  5 May 2020 21:51:00 +0200 (CEST)
-Received: from mail.socioholic.net (mail.socioholic.net
- [IPv6:2a01:4f8:172:3845:0:0:8ac9:d2d4])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 045JoxqL024091
- (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
- for <cocci@systeme.lip6.fr>; Tue, 5 May 2020 21:50:59 +0200 (CEST)
-Received: from [IPv6:2003:db:172e:4500:f654:9ca9:f1f3:7ab0]
- (p200300DB172E4500F6549CA9F1F37AB0.dip0.t-ipconnect.de
- [IPv6:2003:db:172e:4500:f654:9ca9:f1f3:7ab0])
- (Authenticated sender: kaspar)
- by mail.socioholic.net (Postfix) with ESMTPSA id 40A68106331;
- Tue,  5 May 2020 21:52:05 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=schleiser.de; s=mail;
- t=1588708326; bh=CHYLPqGRXpsj0agyN+32FJmvkrKi1QdSD5/MWFGZOjM=;
- h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
- b=Zj/vGa5cs/u3v1lcnXMHDNZc621tqj9wv75B1dQs2F6v559qTPG6L8zxxDTdBrSwT
- w+NhfsSpFsxajWSsAeNlSaoRHTmViqnpj00195sQ64AfqO8KGwf1xPJW8PjquUypUa
- YS4ft0onx/G8i1wt7zYhoZJmafaXQGZ1adlYDy6xbrAV0BSi8GjzXlxPziWW3LGIgV
- xtadKo0djtn1rTDJhFRUZ+evimdGV6iTZOH+Kg5XdGq/q9GaYT0ECoXbdjXI4WdpCJ
- Ts9+Jd7t4MvzFT3LCVZRMWXp4lMIaIlxz4Cg23ysafbGpkVCjHmn75R02BvQ5qPlW1
- TRkJbwOoMOgZQ==
-To: Julia Lawall <julia.lawall@inria.fr>,
-        Nicolas Palix <nicolas.palix@univ-grenoble-alpes.fr>
-References: <alpine.DEB.2.21.1909302142430.2925@hadrien>
- <eccc921f-c5f5-6dc5-5233-75f0fc16cb51@schleiser.de>
- <904fcac6-77cb-b44b-07fd-430bf3596614@univ-grenoble-alpes.fr>
- <ed125ed8-a2f8-2c1a-b0aa-acf83544cae8@schleiser.de>
- <fe7da089-446f-1d37-3d37-b24cdeff2a9f@univ-grenoble-alpes.fr>
- <alpine.DEB.2.21.2005051522410.2462@hadrien>
-From: Kaspar Schleiser <kaspar@schleiser.de>
-Autocrypt: addr=kaspar@schleiser.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <1f2a8999-c68c-485b-3690-35a4a6654aae@schleiser.de>
-Date: Tue, 5 May 2020 21:50:56 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+ by systeme.lip6.fr (Postfix) with ESMTPS id 1470B7559
+ for <cocci@systeme.lip6.fr>; Wed,  6 May 2020 14:01:18 +0200 (CEST)
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com
+ [IPv6:2a00:1450:4864:20:0:0:0:42e])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 046C1DV1019173
+ (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
+ for <cocci@systeme.lip6.fr>; Wed, 6 May 2020 14:01:13 +0200 (CEST)
+Received: by mail-wr1-x42e.google.com with SMTP id h9so1895638wrt.0
+ for <cocci@systeme.lip6.fr>; Wed, 06 May 2020 05:01:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=cilium-io.20150623.gappssmtp.com; s=20150623;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:content-transfer-encoding:in-reply-to
+ :user-agent; bh=SM/DjLts2NGU+Kystdi5gESGkqH5v/cSh354jRHQ17w=;
+ b=FcLvBqu04eAphlp5pvcZCIRg1djiRrZXR06FjPz8ImMkb3tatmHqpvymqKwxM+VLa5
+ ev/cr3K6o88ttoi6rNPuYlDHSbR4cXhW1X7M5rsJADtC6ALErqhk4aO74cMk9ZhzRxBP
+ YS2WVVrQuwSyN/x8ejmzzaz1kX4rw1d9cMnujzCmm4pJ9F7099ZG+/DqtTbTSNqSjDnm
+ BfOQzqTydE80/FM/sKzqBB6sAdWCLf6okV5wLGKRDGQCkNtQ7FQNFllM0BdMhSH/4t8b
+ 7tBEJsECl9U3DjW0+Nbdoi5eWUhYsKghFdJ3RhaJ8AO4Bafx7ncy07BtAj/3ltN2nIdg
+ 5pAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:content-transfer-encoding
+ :in-reply-to:user-agent;
+ bh=SM/DjLts2NGU+Kystdi5gESGkqH5v/cSh354jRHQ17w=;
+ b=ijo5zJNodyoZ8p9awKQBAc5oqFEUS/2i7WlPVVdYfZraa351P8FzD06tNVXcsf0MFE
+ B/A38fX1nFm+3cY48x53gCEE3BvtUFtJXJwu3avTgnjuIMt+STEymRDFMaTCbLtOEV3v
+ x9UFmDFxgpaeipftTOW97LgS8C0oLDbLTwQR0OwKvk5ATPRBlDtWQSmCjwydjM1sxPDW
+ HeWcoQ7Y5+xEnQXtFR7k+o04jrpaI26bVpzbYu/bQxjtssCy1edgevBaSg5rejfur+Zj
+ /0vpzoFkHcpRV+lWDdqikgmurxCaFjUe++KED6zn/Gw54jPK/x7MPA4USY7nT1H8HL3a
+ lfpg==
+X-Gm-Message-State: AGi0PuafH0xtSaEUMXfz1AsndCxm8lGgdLJqx/eKBv30Got2VcEB4/h9
+ mOaln9NlBiOGoqU4d1CD+riEreFA6T/M
+X-Google-Smtp-Source: APiQypIs2bjHlEylq+bSTxAomfo7XQnHnq61aheThkkDCqp0CjvTMYIc4TdM4NAAlRFaYg2WnIUF3w==
+X-Received: by 2002:a5d:6a92:: with SMTP id s18mr8546178wru.50.1588766473005; 
+ Wed, 06 May 2020 05:01:13 -0700 (PDT)
+Received: from Mem ([145.136.49.157])
+ by smtp.gmail.com with ESMTPSA id h16sm2629888wrw.36.2020.05.06.05.01.11
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 06 May 2020 05:01:12 -0700 (PDT)
+Date: Wed, 6 May 2020 14:01:09 +0200
+From: Paul Chaignon <paul@cilium.io>
+To: Markus Elfring <Markus.Elfring@web.de>
+Message-ID: <20200506120107.GA3242@Mem>
+References: <b6c5ae24-f24c-a0d5-796a-8e9cbd17a7d6@web.de>
+ <20200429190733.GA5695@Mem>
+ <72cb854f-912b-4c34-a526-be7b584e8fd8@web.de>
+ <20200505095911.GA7247@Mem>
+ <78195706-c910-5c3b-5887-da94c244b61c@web.de>
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.2005051522410.2462@hadrien>
-Content-Language: en-US-large
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 05 May 2020 21:51:02 +0200 (CEST)
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
+Content-Disposition: inline
+In-Reply-To: <78195706-c910-5c3b-5887-da94c244b61c@web.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 06 May 2020 14:01:20 +0200 (CEST)
+X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
  (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Tue, 05 May 2020 21:50:59 +0200 (CEST)
+ Wed, 06 May 2020 14:01:13 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78
 Cc: cocci@systeme.lip6.fr
-Subject: Re: [Cocci] 1.0.8 on Ubuntu
+Subject: Re: [Cocci] Exit with non-zero status
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -158,61 +101,40 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Hi,
-
-On 5/5/20 3:23 PM, Julia Lawall wrote:
->> Julia, maybe it worth recording the sequence of commands somewhere,
->> in the README or the website.
-> 
-> Good idea.  I'm just concerned about the word "roughly".  Kaspar are there
-> any details that need to be added?
-> 
->>>
->>> The commands were roughly:
->>>
-
-I went through the commands again, this time with the package files
-proposed by Nicolas, from [1].
-
-I'm starting a fresh focal container using:
-
-$ docker run --rm -ti ubuntu:focal /bin/bash
-
-Then, in the container prompt:
-
-$ cd
-$ apt install devscripts equivs wget
-$ wget
-https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/coccinelle/1.0.8.deb-2/coccinelle_1.0.8.deb-2.dsc
-$ wget
-https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/coccinelle/1.0.8.deb-2/coccinelle_1.0.8.deb.orig.tar.gz
-$ wget
-https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/coccinelle/1.0.8.deb-2/coccinelle_1.0.8.deb-2.debian.tar.xz
-$ dpkg-source -x coccinelle_1.0.8.deb-2.dsc
-$ cd coccinelle-1.0.8.deb
-$ dpkg-buildpackage -rfakeroot -b
-
-There's now a package file at "/root/coccinelle_1.0.8.deb-2_amd64.deb".
-Whith the container still running, it can be copied out, from another shell:
-
-$ docker cp 1de810777b2a:/root/coccinelle_1.0.8.deb-2_amd64.deb .
-
-(replace 1de810777b2a with the contianer id, find out by looking at the
-container's prompt ("root@<id>:...$") or using "docker ps".)
-
-This deb can now be installed via:
-
-$ apt install ./coccinelle_1.0.8.deb-2_amd64.deb
-
-Kaspar
-
-[1] https://launchpad.net/ubuntu/+source/coccinelle/1.0.8.deb-2
-_______________________________________________
-Cocci mailing list
-Cocci@systeme.lip6.fr
-https://systeme.lip6.fr/mailman/listinfo/cocci
+T24gVHVlLCBNYXkgMDUsIDIwMjAgYXQgMDE6MDg6MjZQTSArMDIwMCwgTWFya3VzIEVsZnJpbmcg
+d3JvdGU6Cj4gPiBGb3IgdGhlIHJlY29yZCwgSSBlbmFibGVkIENvY2NpbmVsbGUgaW4gb3VyIENJ
+IChHaXRIdWIgQWN0aW9ucykKPiA+IHllc3RlcmRheSBhbmQgd29ya2VkIGFyb3VuZCB0aGF0IGlz
+c3VlIHdpdGggdGhlIGZvbGxvd2luZyBzY3JpcHQ6Cj4gPgo+ID4gICBtYWtlIC1DIGJwZi8gY29j
+Y2ljaGVjayB8IHRlZSAvdG1wL3N0ZG91dAo+ID4gICBleGl0ICQoZ3JlcCAtYyAiW3ByZWZpeCBv
+ZiB3YXJuaW5nIG1lc3NhZ2VzXSIgL3RtcC9zdGRvdXQpCj4gCj4gSSBwcm9wb3NlIHRvIGltcHJv
+dmUgdGhlIGRhdGEgcHJvY2Vzc2luZyBhcHByb2FjaCBhY2NvcmRpbmcgdG8geW91ciByZWNlbnQK
+PiBjb21taXQg4oCcY29jY2luZWxsZTogUnVuIGNvY2NpY2hlY2sgd2l0aCBHaXRIdWIgQWN0aW9u
+c+KAnS4KPiBodHRwczovL2dpdGh1Yi5jb20vY2lsaXVtL2NpbGl1bS9jb21taXQvMzVkMjk5YTRl
+ZTk5NmRjMmY0YmVlYzNjODhiNzdkZWRiZDAwYjJiYQo+IAo+IAo+ID4gUGxlYXNlIHNlZSBhYm92
+ZSBzY3JpcHQuIEkgY3VycmVudGx5IGV4aXQgd2l0aCBudW1iZXIgb2YgZmFpbHVyZXMsCj4gPiBi
+dXQgaGF2aW5nIGp1c3QgMCAoc3VjY2VzcykgYW5kIDEgKGZhaWwpIHN0YXR1c2VzIHdvdWxkIGJl
+IGVub3VnaC4KPiAKPiBJIHN1Z2dlc3QgdG8gc3RpY2sgdG8gYSBtb3JlIHRyYWRpdGlvbmFsIGhh
+bmRsaW5nIG9mIHRoZSBwcm9ncmFtCj4gZXhpdCBzdGF0dXMgYmVjYXVzZSBvZiBkZXZlbG9wbWVu
+dCBjb25jZXJucyBhcm91bmQgc29mdHdhcmUgcG9ydGFiaWxpdHkuCj4gCj4gCj4gPj4gV2lsbCB0
+aGUgdXNhZ2Ugb2YgYWRkaXRpb25hbCBkYXRhIHN0cnVjdHVyZXMgYmVjb21lIG1vcmUgaW50ZXJl
+c3Rpbmc/Cj4gPgo+ID4gTm90IHN1cmUgSSB1bmRlcnN0YW5kIHRoZSBxdWVzdGlvbi4gV2hhdCBk
+YXRhIHN0cnVjdHVyZXM/Cj4gCj4gRXhhbXBsZXM6Cj4gCj4gKiBPcmRpbmFyeSB0ZXh0IGZpbGVz
+IGZvciB0aGUgc3RhbmRhcmQgb3V0cHV0IGFuZCBlcnJvciBjaGFubmVscy4KPiAKPiAqIFdvdWxk
+IHlvdSBsaWtlIHRvIHN0b3JlIGFueSBzZWFyY2ggcmVzdWx0cyBpbnRvIGRhdGFiYXNlIHRhYmxl
+cz8KPiAKPiAqIEhvdyBkbyB5b3UgdGhpbmsgYWJvdXQgdG8gcGVyZm9ybSBkYXRhIHRyYW5zbWlz
+c2lvbnMgYnkgaGlnaGVyIGxldmVsCj4gICBwcm9ncmFtbWluZyBpbnRlcmZhY2VzIGZvciBkaXN0
+cmlidXRlZCBwcm9jZXNzZXM/Cj4gCj4gCj4gV2hpY2ggc29mdHdhcmUgZXh0ZW5zaW9ucyBjYW4g
+YmVjb21lIG1vcmUgaW50ZXJlc3RpbmcgYWxzbyBmb3IKPiBhcHBsaWNhdGlvbnMgYXJvdW5kIHlv
+dXIgY29udGludW91cyBpbnRlZ3JhdGlvbiBzeXN0ZW0/CgpJIHNlZS4gV2UncmUgbm90IHBsYW5u
+aW5nIHRvIHVzZSBhbnkgb2YgdGhlIGFib3ZlIGluIHRoZSBtZWRpdW0gdGVybS4KV2UncmUgb25s
+eSBwbGFubmluZyB0byBhZGQgQ29jY2luZWxsZSBydWxlcyBpbiB0aGUgZnV0dXJlLiBJZiB3ZSBu
+ZWVkIG1vcmUKY29tcGxleCBwb3N0LXByb2Nlc3NpbmcsIHdlJ2xsIGxpa2VseSBpbXBsZW1lbnQg
+aXQgaW4gR2l0SHViIEFjdGlvbnMgYW5kCm5vdCBkaXJlY3RseSBpbiBDb2NjaW5lbGxlIHNjcmlw
+dHMuCgpQYXVsCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+CkNvY2NpIG1haWxpbmcgbGlzdApDb2NjaUBzeXN0ZW1lLmxpcDYuZnIKaHR0cHM6Ly9zeXN0ZW1l
+LmxpcDYuZnIvbWFpbG1hbi9saXN0aW5mby9jb2NjaQo=
