@@ -8,85 +8,83 @@ X-Spam-Status: No, score=-9.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6594EC54E8D
-	for <cocci@archiver.kernel.org>; Mon, 11 May 2020 10:09:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19EFCC54E8D
+	for <cocci@archiver.kernel.org>; Mon, 11 May 2020 10:09:11 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D872420731
-	for <cocci@archiver.kernel.org>; Mon, 11 May 2020 10:09:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 835DE20720
+	for <cocci@archiver.kernel.org>; Mon, 11 May 2020 10:09:10 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="h7GeQ6an"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D872420731
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S+khDt8D"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 835DE20720
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 04BA8u15023886;
-	Mon, 11 May 2020 12:08:56 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 04BA8xZi006749;
+	Mon, 11 May 2020 12:08:59 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id ED9F93E6B;
-	Mon, 11 May 2020 12:08:55 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 503483E6B;
+	Mon, 11 May 2020 12:08:59 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 397B13DC8
- for <cocci@systeme.lip6.fr>; Mon, 11 May 2020 12:08:54 +0200 (CEST)
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com
- [IPv6:2607:f8b0:4864:20:0:0:0:441])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 04BA8q86013547
+ by systeme.lip6.fr (Postfix) with ESMTPS id BC0963DC8
+ for <cocci@systeme.lip6.fr>; Mon, 11 May 2020 12:08:57 +0200 (CEST)
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:544])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 04BA8umH016310
  (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Mon, 11 May 2020 12:08:53 +0200 (CEST)
-Received: by mail-pf1-x441.google.com with SMTP id r14so4538084pfg.2
- for <cocci@systeme.lip6.fr>; Mon, 11 May 2020 03:08:53 -0700 (PDT)
+ for <cocci@systeme.lip6.fr>; Mon, 11 May 2020 12:08:57 +0200 (CEST)
+Received: by mail-pg1-x544.google.com with SMTP id u35so1363606pgk.6
+ for <cocci@systeme.lip6.fr>; Mon, 11 May 2020 03:08:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=9+LCecuHRzdR/o7M/ikGH5G4JrMwoDyf73lHut0jbu0=;
- b=h7GeQ6angKT+XYjyho/EzT2LYrafE7OVEX1t7xcLS3lNqkor/j9ihEJF99yDW0QRny
- vAdyzmLTuWQwdKT6AngTHhE8B0ZjH9Gct1z/7MPIt8bZeD+E6jSXOUUZY2CSf51ekOIz
- +d6xOeViKZdrNFFX+GEjjh9dtQ/wZ/5DwgKtO/LfwCT+AEZ3Vkn8sJ4/RoOyCRrOlSdK
- sW3nHjaiCrPU8MAl8S3WAxlrA8cfcheYwCEiYNlJEUCP6tFxRSItiXgRGNv/5nFKQ8H8
- mIJXr5rMECbp7LIPgH8dn6auIX9F+i2LstWrnkf95Zpe0oWdTiD6kEU4K2dN+Mss/yld
- 0RIA==
+ bh=Kok0aW8gFlHjW7PHm/cxJ/jED6PTY9Z2/hiZotJQf4M=;
+ b=S+khDt8DYlDuIFfayyfTpjvqWS5Jbj7ViwFzp/recHrW1KlSHznA99J71VZj04HvJb
+ sg2pbK1Szk/ZUFMDL0PmxIB0klMjcU25jokx3pOHYd4+HHjESxGxL4okpP9Yru1A5ox7
+ +Y7uWfec8Mhu0bJE0/ZgGFXpqkY588w70vSD23h+Lb4ECFZH9PUWbgpJXxG986x762Td
+ qHu9D6Q2MCt6BauKD6XIbqrMQsrJa5YoBSx5WlSDe/ZFC3K8vBf+rf1+EZ2cHf0wKppz
+ 3hLQjXQ05zJdg65g6te+akJJXFkc6LiCF+L3aIC9Su+liqmt6geZQHqUeMhEOMK26zzb
+ zXoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=9+LCecuHRzdR/o7M/ikGH5G4JrMwoDyf73lHut0jbu0=;
- b=kzPtvxGaXavUdF4ybnLzyWhBvtnPfPDhcVijto/VhNx6kjge5rhPgiqo0sR3VJN1Wu
- 5MmHge5q+Jeykvsz9wygwkAu8nxiJLwcS+NsS23fO9GhIrqKEI6PqXZnski/08CQusgl
- ZJkFiiADpyZNu2v1WabzH9zYzpQdlD+AUhJ/M0xDZMrvezLgZ4MQ64Qn9Hjx6VZvH6rS
- aMmcWmOYC1YsYOCpJjSr7fnb0wrAqX5Wzs6G1oO1IWCgdYgEPJ2K+JVzNwHh80YyDDGJ
- nQtBMFeBV140JVvUT/2U79ezQ4qI6BbKLKe84q13pAggCrKp4vk/FdahuiOnKZklNMCg
- xgpw==
-X-Gm-Message-State: AGi0PuZ1xkAy1OgLyUf4xxPWBH/xOjNnhMOGK4D+5rek/g0GTBYTQOEQ
- ee8eOi5xFGoXF4GPyGXeLhpjiXgmPpg=
-X-Google-Smtp-Source: APiQypIPXNUv4FjDzB/h0HAlb6FddelA+Zob+scQO3d444cuX7sBPXiFL7cOBR2jTYcvF6VyeuzB3A==
-X-Received: by 2002:a62:1b84:: with SMTP id
- b126mr15566787pfb.123.1589191731833; 
- Mon, 11 May 2020 03:08:51 -0700 (PDT)
+ bh=Kok0aW8gFlHjW7PHm/cxJ/jED6PTY9Z2/hiZotJQf4M=;
+ b=C38h6EqPtqj/UfTlO5+l+zME97Bnm/XcuPyCSNN/0PAvRhqQnqnXToRbd6UZp+SReA
+ g3ecZxHpsVDYujeJuOHcnYXl+rTrF6MR7OoCurlmGqy4WYUiLG22s6IDVM5OeqTHq6hx
+ cbhAltZUBafIpCrT5PP+0BlyrQombV7T80XcZt6b8whqRvqRE8i/jzL/8i47D9LmDFK+
+ ADSOJmBhhT5QNk8Pdgt3dhp5Q3iyDT1jsmlCiNV7uoqYoqI1EaKJg5ciESqWj8CluteY
+ WOrYmIDE8YQhsR4fQ9Xdz+DUtU+EyaZ5CaIxS5pAJqJUfsJLMMu4lhgRhegFC9+CVzVX
+ jreA==
+X-Gm-Message-State: AGi0PubkY69DlhgKjyRFXOBgsghBtOuQDZB3a886NuUvyo04ctcYYNA8
+ COkIlhdpGdGXrgRZLARQ3GgSOEJL30o=
+X-Google-Smtp-Source: APiQypIr/DgoLnFkOBSEcd5V1O70aMrR8XkdBwchTYJTCHDAZGiMgSVQf/BFQpdA2X3CHCDG3E8JIA==
+X-Received: by 2002:a63:e74f:: with SMTP id j15mr14189947pgk.153.1589191735420; 
+ Mon, 11 May 2020 03:08:55 -0700 (PDT)
 Received: from localhost.localdomain ([2405:204:382:66db:4729:1ab8:2139:8945])
  by smtp.gmail.com with ESMTPSA id
- o99sm9772994pjo.8.2020.05.11.03.08.48
+ o99sm9772994pjo.8.2020.05.11.03.08.52
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 11 May 2020 03:08:51 -0700 (PDT)
+ Mon, 11 May 2020 03:08:55 -0700 (PDT)
 From: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 To: cocci@systeme.lip6.fr
-Date: Mon, 11 May 2020 15:37:02 +0530
-Message-Id: <20200511100715.19819-20-jaskaransingh7654321@gmail.com>
+Date: Mon, 11 May 2020 15:37:03 +0530
+Message-Id: <20200511100715.19819-21-jaskaransingh7654321@gmail.com>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200511100715.19819-1-jaskaransingh7654321@gmail.com>
 References: <20200511100715.19819-1-jaskaransingh7654321@gmail.com>
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 11 May 2020 12:08:56 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 11 May 2020 12:08:59 +0200 (CEST)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
  (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Mon, 11 May 2020 12:08:53 +0200 (CEST)
+ Mon, 11 May 2020 12:08:57 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78
 Cc: linux-kernel-mentees@lists.linuxfoundation.org
-Subject: [Cocci] [PATCH v2 19/32] parsing_cocci: unify_ast: Reflect Cast
-	attributes
+Subject: [Cocci] [PATCH v2 20/32] parsing_c: ast_c: Add Cast attributes
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -103,31 +101,41 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Cast attributes are added to the SmPL AST. Reflect these changes in
-unify_ast.ml.
+Add cast attributes to the C AST. This is a list of attributes in the
+Cast type of the C AST.
 
 Signed-off-by: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 ---
- parsing_cocci/unify_ast.ml | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ parsing_c/ast_c.ml  | 2 +-
+ parsing_c/ast_c.mli | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/parsing_cocci/unify_ast.ml b/parsing_cocci/unify_ast.ml
-index 68cb6613..25287503 100644
---- a/parsing_cocci/unify_ast.ml
-+++ b/parsing_cocci/unify_ast.ml
-@@ -220,8 +220,10 @@ and unify_expression e1 e2 =
-       unify_expression e1 e2 && unify_ident fld1 fld2
-   | (Ast.RecordPtAccess(e1,pt1,fld1),Ast.RecordPtAccess(e2,pt2,fld2)) ->
-       unify_expression e1 e2 && unify_ident fld1 fld2
--  | (Ast.Cast(lp1,ty1,rp1,e1),Ast.Cast(lp2,ty2,rp2,e2)) ->
--      unify_fullType ty1 ty2 && unify_expression e1 e2
-+  | (Ast.Cast(lp1,ty1,attr1,rp1,e1),Ast.Cast(lp2,ty2,attr2,rp2,e2)) ->
-+      if List.for_all2 unify_mcode attr1 attr2
-+      then unify_fullType ty1 ty2 && unify_expression e1 e2
-+      else false
-   | (Ast.SizeOfExpr(szf1,e1),Ast.SizeOfExpr(szf2,e2)) ->
-       unify_expression e1 e2
-   | (Ast.SizeOfType(szf1,lp1,ty1,rp1),Ast.SizeOfType(szf2,lp2,ty2,rp2)) ->
+diff --git a/parsing_c/ast_c.ml b/parsing_c/ast_c.ml
+index f25f9b55..1299d03c 100644
+--- a/parsing_c/ast_c.ml
++++ b/parsing_c/ast_c.ml
+@@ -343,7 +343,7 @@ and expression = (expressionbis * exp_info ref (* semantic: *)) wrap3
+ 
+   | SizeOfExpr     of expression
+   | SizeOfType     of fullType
+-  | Cast           of fullType * expression
++  | Cast           of fullType * attribute list * expression
+ 
+   (* gccext: *)
+   | StatementExpr of compound wrap (* ( )     new scope *)
+diff --git a/parsing_c/ast_c.mli b/parsing_c/ast_c.mli
+index 8923a335..90dee9fd 100644
+--- a/parsing_c/ast_c.mli
++++ b/parsing_c/ast_c.mli
+@@ -104,7 +104,7 @@ and expressionbis =
+   | RecordPtAccess of expression * name
+   | SizeOfExpr of expression
+   | SizeOfType of fullType
+-  | Cast of fullType * expression
++  | Cast of fullType * attribute list * expression
+   | StatementExpr of compound wrap
+   | Constructor of fullType * initialiser
+   | ParenExpr of expression
 -- 
 2.21.1
 
