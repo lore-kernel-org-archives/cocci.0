@@ -8,83 +8,84 @@ X-Spam-Status: No, score=-9.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12166C433DF
-	for <cocci@archiver.kernel.org>; Thu, 28 May 2020 12:25:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0383DC433E0
+	for <cocci@archiver.kernel.org>; Thu, 28 May 2020 12:25:53 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A217220888
-	for <cocci@archiver.kernel.org>; Thu, 28 May 2020 12:25:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 76E0920888
+	for <cocci@archiver.kernel.org>; Thu, 28 May 2020 12:25:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dVNySu5s"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A217220888
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rn6y/GHb"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 76E0920888
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 04SCPl52027342;
-	Thu, 28 May 2020 14:25:47 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 04SCPneW021558;
+	Thu, 28 May 2020 14:25:49 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 106B35D47;
-	Thu, 28 May 2020 14:25:47 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 73D6E5D47;
+	Thu, 28 May 2020 14:25:49 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 3F3645D47
- for <cocci@systeme.lip6.fr>; Thu, 28 May 2020 14:25:44 +0200 (CEST)
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com
- [IPv6:2607:f8b0:4864:20:0:0:0:444])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 04SCPghT028365
+ by systeme.lip6.fr (Postfix) with ESMTPS id BF64F3E1D
+ for <cocci@systeme.lip6.fr>; Thu, 28 May 2020 14:25:47 +0200 (CEST)
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:641])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 04SCPjnI015686
  (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Thu, 28 May 2020 14:25:43 +0200 (CEST)
-Received: by mail-pf1-x444.google.com with SMTP id 131so5099277pfv.13
- for <cocci@systeme.lip6.fr>; Thu, 28 May 2020 05:25:43 -0700 (PDT)
+ for <cocci@systeme.lip6.fr>; Thu, 28 May 2020 14:25:46 +0200 (CEST)
+Received: by mail-pl1-x641.google.com with SMTP id x18so10387584pll.6
+ for <cocci@systeme.lip6.fr>; Thu, 28 May 2020 05:25:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=dyw+Qp7viQi2nyCbqX5ANdDvSch9vDo6f7qr8BxYN/4=;
- b=dVNySu5sirpr0kdQFs1o59tcvgYzh/3Yyn0DOanjD5Y1klz4fkqXCuuKkyGUJbAvoz
- /WMrFdKAdsMjHL+HzxNz3zuOtS5KbMu/fefCOMti5i44I+7/+mcuJcun5kRCaysEubYo
- VFP7klQr71JX/LKPUhTYqU+93Xw8gGu7HstXJs0GaNPY2p/IKfIzrNu3n2lyxugt8eWr
- 6CYWJzl4W+R8IYoxYl8+wdBs61GNj8AuKGnh6RyX/Dgnl+mO7L4C/JVpOtRl1AAbJ+cl
- IxVvCm//DvoCyqz088cNG5QJla4OcqE0zO4wG4XmE7omS1dkyM8QALOzyic0kI0NOrMt
- +Y3A==
+ bh=4dXktnt2JoaHvfulBMJF3+3oeU5k7LYjH73DfL+m17Y=;
+ b=rn6y/GHbnBYmhTkrUQIxdd03jU6cxo1074rlTAsROpFFM3UdwfncMXNmmI0N6dHmxd
+ UD+NG0CQBKewZtT5h5NSU+qDsrcMt5mPhpi8SlJYUntuxYpig90LG9QOjqyG3uHjdQGI
+ E2g45zsca2VWq1i7Kh9zm6Q2n5Y05zy4gHWcVteRC6W6zTDGAJN2mxRKk3mN12xRALUy
+ sqrwX0KYVokM6yUpH1PlMM6V9/wGB08pWflYWLVFLqceR/ps14mERGt3lzoYcaR2cO6K
+ umc8/DsWrzw8bJQQnCcibtubCJVD0JS8RVZg4CUyFaX7JHHrivkmhvZZBaOSl3JdEHKO
+ 4aAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=dyw+Qp7viQi2nyCbqX5ANdDvSch9vDo6f7qr8BxYN/4=;
- b=lUwEPfC1ORtIIW0VXf6F58g7Q/ZulrV0KqmA1EyLicUexm+1B8CLt2KOCqDbvRgxim
- J13P1hZkee/P36J2jP+9onGdchcVTfYN1PaTkVTKiDd725Ahv5TX9Fgbg/H422WGK2XT
- s/WFr6XuFinwZhrA26JKvwq1HrKfUWBlcq/Bem+Y0mme4nodvz2eqL+UgxzQZhTQCIg7
- dDuoDdeXdVbQxQpzDtbs9PS10v4gf8C6nMCteorRkQSzXQ4SQVAfT/dQPIrw0rpjRKc0
- L+20tQfhxRyqJyPexQcV/Ck0EyMeivR+ipdx3E9rv1n0r7AOgYO35cnCfKwuf/3v6EDE
- ympQ==
-X-Gm-Message-State: AOAM533eJusme4xTPlDZoauiCLkQUIa5gz1d1MpwIUTtd93VjRZyb8MI
- cnVhelmpmZ3Jlgcfte97NUSa2JRV
-X-Google-Smtp-Source: ABdhPJxxdyFLFycskXjNsunfTbgHjGRAxfH6nO/MkY+Brz9ixeeEasUmvoK7rqL1O3M9b9Kn2pQPJw==
-X-Received: by 2002:a65:40c3:: with SMTP id u3mr2792760pgp.305.1590668741623; 
- Thu, 28 May 2020 05:25:41 -0700 (PDT)
+ bh=4dXktnt2JoaHvfulBMJF3+3oeU5k7LYjH73DfL+m17Y=;
+ b=dMBDONOn7GvrMcJlHUygxiUsXQDeGnjbdoNlCCrVn7ic13LO4NuK2gEkkIUbticDrq
+ oTzOQpZatV32zMa05j35XGmKt4Q0PdARu1cY3zuvjhu3I0EVOA/VlLCrFrW6/m7RnZm8
+ o03xlCVCiEXO+dfqvAP9PNWDv4zWvLeFIVcMEkgB/nHYI0Zxq3QQH/WYGWMRHxZ1tH1b
+ iYey1XXO9PJs1o6s/3Ba7hXT+o6VGS0vh+kgtQJGOMAcEdyVK4jDIlPg1zAaqLLaSbhT
+ ABKaQTL/OEZYkX1n5R4rn5BHFqqlTZNfWi4vlDy7qFQfH3Ld3oTXKh/htCIHyQYqwnQu
+ 9c8w==
+X-Gm-Message-State: AOAM53137jYDjJkKd7W6etYCBKeKjILjjQ5RSfWYQ/TnKhsj/IGKe9bE
+ Tzhcv6n5WJX47tTlJHJJx7bdEbWQ
+X-Google-Smtp-Source: ABdhPJz1SlVkKgGS56f1S9nYrkV9pcTs0J6qMbbDLTGZBCNCg53tJuTWlSa7uuA2vaSxkVujwGJfDw==
+X-Received: by 2002:a17:90b:1482:: with SMTP id
+ js2mr3633155pjb.54.1590668745112; 
+ Thu, 28 May 2020 05:25:45 -0700 (PDT)
 Received: from localhost.localdomain ([2405:204:2183:e360:deba:7bf4:98ef:5568])
- by smtp.gmail.com with ESMTPSA id 1sm5722888pje.26.2020.05.28.05.25.38
+ by smtp.gmail.com with ESMTPSA id 1sm5722888pje.26.2020.05.28.05.25.42
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 28 May 2020 05:25:41 -0700 (PDT)
+ Thu, 28 May 2020 05:25:44 -0700 (PDT)
 From: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 To: cocci@systeme.lip6.fr
-Date: Thu, 28 May 2020 17:54:19 +0530
-Message-Id: <20200528122428.4212-18-jaskaransingh7654321@gmail.com>
+Date: Thu, 28 May 2020 17:54:20 +0530
+Message-Id: <20200528122428.4212-19-jaskaransingh7654321@gmail.com>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200528122428.4212-1-jaskaransingh7654321@gmail.com>
 References: <20200528122428.4212-1-jaskaransingh7654321@gmail.com>
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 28 May 2020 14:25:47 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 28 May 2020 14:25:49 +0200 (CEST)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
  (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Thu, 28 May 2020 14:25:43 +0200 (CEST)
+ Thu, 28 May 2020 14:25:47 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78
 Cc: linux-kernel-mentees@lists.linuxfoundation.org
-Subject: [Cocci] [PATCH v2 17/25] engine: cocci_vs_c: Add allminus argument
-	to attribute_list
+Subject: [Cocci] [PATCH v2 18/25] parsing_c: parser: Make
+	abstract_declarator pass attributes
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -101,108 +102,67 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-The allminus argument is used to denote when attributes should be
-removed. This is with respect to the given SmPL program.
-
-Add the allminus argument to attribute_list, and pass it correctly in
-places where attribute_list is used.
-
-This also makes sure that the test case unstruct does not break when
-attributes are identified correctly by the C parser.
+The attributes in abstract_declarator can be used for adding parameter
+attributes, cast attributes and others to the C AST. Make
+abstract_declarator pass these attributes in a tuple.
 
 Signed-off-by: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 ---
- engine/cocci_vs_c.ml | 32 ++++++++++++++++++++++----------
- 1 file changed, 22 insertions(+), 10 deletions(-)
+ parsing_c/parser_c.mly | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/engine/cocci_vs_c.ml b/engine/cocci_vs_c.ml
-index e383aef8..413ea220 100644
---- a/engine/cocci_vs_c.ml
-+++ b/engine/cocci_vs_c.ml
-@@ -2563,7 +2563,7 @@ and onedecl = fun allminus decla (declb, iiptvirgb, iistob) ->
-        ident_cpp DontKnow ida nameidb >>= (fun ida nameidb ->
-        tokenf ptvirga iiptvirgb >>= (fun ptvirga iiptvirgb ->
-        fullType typa typb >>= (fun typa typb ->
--       attribute_list attrsa endattrs >>= (fun attrsa endattrs ->
-+       attribute_list allminus attrsa endattrs >>= (fun attrsa endattrs ->
-        storage_optional_allminus allminus stoa (stob, iistob) >>=
-         (fun stoa (stob, iistob) ->
-          return (
-@@ -2592,7 +2592,7 @@ and onedecl = fun allminus decla (declb, iiptvirgb, iistob) ->
-        tokenf ptvirga iiptvirgb >>= (fun ptvirga iiptvirgb ->
-        tokenf eqa iieqb >>= (fun eqa iieqb ->
-        fullType typa typb >>= (fun typa typb ->
--       attribute_list attrsa endattrs >>= (fun attrsa endattrs ->
-+       attribute_list allminus attrsa endattrs >>= (fun attrsa endattrs ->
-        storage_optional_allminus allminus stoa (stob, iistob) >>=
-        (fun stoa (stob, iistob) ->
-        initialiser inia inib >>= (fun inia inib ->
-@@ -2651,7 +2651,7 @@ and onedecl = fun allminus decla (declb, iiptvirgb, iistob) ->
-           inla (stob, iistob) >>= (fun inla (stob, iistob) ->
-         storage_optional_allminus allminus
-           stoa (stob, iistob) >>= (fun stoa (stob, iistob) ->
--        attribute_list attras attrs >>= (fun attras attrs ->
-+        attribute_list allminus attras attrs >>= (fun attras attrs ->
-         fullType_optional_allminus allminus tya tyb >>= (fun tya tyb ->
- 	let fninfoa = put_fninfo stoa tya inla attras in
-         parameters (seqstyle paramsa) (A.unwrap paramsa) paramsb >>=
-@@ -4194,29 +4194,41 @@ and attribute_list attras attrbs =
+diff --git a/parsing_c/parser_c.mly b/parsing_c/parser_c.mly
+index 2caf4974..57528dfc 100644
+--- a/parsing_c/parser_c.mly
++++ b/parsing_c/parser_c.mly
+@@ -1397,13 +1397,14 @@ tccro: TCCro { dt "tccro" ();$1 }
  
- (* The cheap hackish version.  No wrapping requires... *)
+ /*(*-----------------------------------------------------------------------*)*/
+ abstract_declarator:
+- | pointer                            { snd $1 }
+- |         direct_abstract_declarator { $1 }
+- | pointer direct_abstract_declarator { fun x -> x +> $2 +> (snd $1) }
++ | pointer                            { $1 }
++ |         direct_abstract_declarator { ([], $1) }
++ | pointer direct_abstract_declarator
++     { (fst $1, fun x -> x +> $2 +> (snd $1)) }
  
--and attribute_list attras attrbs =
-+and attribute_list allminus attras attrbs =
-   X.optional_attributes_flag (fun optional_attributes ->
-   match attras,attrbs with
-     [], _ when optional_attributes || attrbs = [] ->
--      return ([], attrbs)
-+      if allminus
-+      then
-+        let rec loop = function
-+            [] -> return ([],[])
-+          | ib::ibs ->
-+              X.distrf_attr minusizer ib >>= (fun _ ib ->
-+                  loop ibs >>= (fun l ibs ->
-+                    return([],ib::ibs))) in
-+        loop attrbs
-+      else return ([], attrbs)
-   | [], _ -> fail
-   | [attra], [attrb] ->
--    attribute attra attrb >>= (fun attra attrb ->
-+    attribute allminus attra attrb >>= (fun attra attrb ->
-       return ([attra], [attrb])
-     )
-   | [attra], attrb -> fail
-   | _ -> failwith "only one attribute allowed in SmPL")
+ direct_abstract_declarator:
+  | TOPar abstract_declarator TCPar /*(* forunparser: old: $2 *)*/
+-     { fun x -> mk_ty (ParenType ($2 x)) [$1;$3] }
++     { fun x -> mk_ty (ParenType ((snd $2) x)) [$1;$3] }
  
--and attribute = fun ea eb ->
-+and attribute = fun allminus ea eb ->
-   match ea, eb with
-     attra, (B.Attribute attrb, ii)
-       when (A.unwrap_mcode attra) = attrb ->
-       let ib1 = tuple_of_list1 ii in
-       tokenf attra ib1 >>= (fun attra ib1 ->
-+       (if allminus
-+        then minusize_list [ib1]
-+        else return ((), [ib1])) >>= (fun _ ib1 ->
- 	return (
- 	  attra,
--	  (B.Attribute attrb, [ib1])
--        ))
-+          (B.Attribute attrb,ib1)
-+        )))
-   | _ -> fail
+  | TOCro            TCCro
+      { fun x -> mk_ty (Array (None, x)) [$1;$2] }
+@@ -1461,7 +1462,7 @@ parameter_decl2:
+      { LP.kr_impossible();
+        let ((returnType,hasreg), iihasreg) = fixDeclSpecForParam (snd $1) in
+        { p_namei = None;
+-         p_type = $2 returnType;
++         p_type = (snd $2) returnType;
+          p_register = hasreg, iihasreg;
+        }
+      }
+@@ -1527,8 +1528,9 @@ type_name:
+        let (returnType, _) = fixDeclSpecForDecl ds in returnType }
+  | spec_qualif_list abstract_declaratort
+      { let (attrs1, ds) = $1 in
++       let (attrs2, fn) = $2 in
+        let (returnType, _) = fixDeclSpecForDecl ds in
+-       $2 returnType }
++       fn returnType }
  
- (*---------------------------------------------------------------------------*)
-@@ -4927,7 +4939,7 @@ let rec (rule_elem_node: (A.rule_elem, F.node) matcher) =
-             inla (stob, iistob) >>= (fun inla (stob, iistob) ->
-           storage_optional_allminus allminus
-             stoa (stob, iistob) >>= (fun stoa (stob, iistob) ->
--          attribute_list attras attrs >>= (fun attras attrs ->
-+          attribute_list allminus attras attrs >>= (fun attras attrs ->
-               (
-                 if isvaargs
-                 then
+ 
+ 
+@@ -2117,7 +2119,7 @@ define_val:
+      }
+  | decl_spec abstract_declarator
+      { let returnType = fixDeclSpecForMacro (snd $1) in
+-       let typ = $2 returnType in
++       let typ = (snd $2) returnType in
+        DefineType typ
+      }
+ 
 -- 
 2.21.1
 
