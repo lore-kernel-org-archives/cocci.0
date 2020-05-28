@@ -5,86 +5,86 @@ X-Spam-Level:
 X-Spam-Status: No, score=-9.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ADA8C433DF
-	for <cocci@archiver.kernel.org>; Thu, 28 May 2020 12:25:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8A80C433E0
+	for <cocci@archiver.kernel.org>; Thu, 28 May 2020 12:25:58 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9B4BA20888
-	for <cocci@archiver.kernel.org>; Thu, 28 May 2020 12:25:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2715220888
+	for <cocci@archiver.kernel.org>; Thu, 28 May 2020 12:25:57 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MVCF/3Ut"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9B4BA20888
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cucKPpiK"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2715220888
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 04SCPrPn028024;
-	Thu, 28 May 2020 14:25:53 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 04SCPtQi009932;
+	Thu, 28 May 2020 14:25:55 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id E2E8D5D47;
-	Thu, 28 May 2020 14:25:52 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 684535D47;
+	Thu, 28 May 2020 14:25:55 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 044FB3E1D
- for <cocci@systeme.lip6.fr>; Thu, 28 May 2020 14:25:51 +0200 (CEST)
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com
- [IPv6:2607:f8b0:4864:20:0:0:0:1041])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 04SCPnuJ029089
+ by systeme.lip6.fr (Postfix) with ESMTPS id E89F23E1D
+ for <cocci@systeme.lip6.fr>; Thu, 28 May 2020 14:25:53 +0200 (CEST)
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:544])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 04SCPqIT022757
  (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Thu, 28 May 2020 14:25:50 +0200 (CEST)
-Received: by mail-pj1-x1041.google.com with SMTP id cx22so3133719pjb.1
- for <cocci@systeme.lip6.fr>; Thu, 28 May 2020 05:25:50 -0700 (PDT)
+ for <cocci@systeme.lip6.fr>; Thu, 28 May 2020 14:25:53 +0200 (CEST)
+Received: by mail-pg1-x544.google.com with SMTP id p21so13402078pgm.13
+ for <cocci@systeme.lip6.fr>; Thu, 28 May 2020 05:25:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=thv5I0AzqjXXuHTBbXXaR1eYEonA5aOATmSFwn/Lm54=;
- b=MVCF/3UtTtALvLG9g4B0JSWTxccpc0vdMaLHcB0idOVl6KX8ZBkglWypkyHvLS/yT3
- ZgvLWCYABfRPLpDeqsCGJAAsyPCK06WoyTHZ6CsW1TuOXI69wuVD/mc8am7eStkdVbEs
- t4M84fc0t58RNkQGKyVg5mQKd9OPNIe7xcymCNBajukPtz9xsS1fwN22QF588udcLYvD
- mJGX9Ui+kAF/DaerT5LRE+E0U2QvZoKzTNT4jw9tEzdjY+Nk9wWvMLfO/+5QelvvEo9n
- OSc81zdxYcg/2ax0RJzQwtCMRpWYsjF5xJGMOUf6s2MN+STkMJY0ZVZJE2GqakdhImyy
- twQQ==
+ bh=6TWncHt645mauf4KMuI7jEQm3qpNRixb3sU4vXEWEYc=;
+ b=cucKPpiK0ThVXBzy4wx3unc3y8amexwbCuMoPPypBYLj8j26ffmytJc1I2iwDyUlbF
+ sLObQqFDowOkogEgClvDtAB3j9nmq0h+3HejuEV+ch6HcRofLrMvRzb6dIbMepeg5oR0
+ dDITNnxvLrzA4DAY0LbdDt6ImMxnOOKg6G/v/a7R9mF5QDk4Y+wnSn6AcSF7NbNCskbx
+ ZeVvGqRUWg44SuxVVpY2Wdgfc64xJeZQ3g/byRSOHyQvmusN13BSLmlfBx+RSZZmcuoh
+ yRKAOZt/o22/Zzs4HeEuXpF1zUXZ7KdpETRqxzyAhrUe9eI6qRh1ItP+ba1jQ2rPQgtR
+ 4a2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=thv5I0AzqjXXuHTBbXXaR1eYEonA5aOATmSFwn/Lm54=;
- b=SSrtGTDMzpzmgmlRKU1nRG2maQcC4V+uSa6C1ItDikGVlqOkS76h6nSf4TgMzMlOQw
- pQh6C8D6MV7s+/cbljv/EiVuy+JMaZazYHcjoZb8gwZLwpU26Tj3QI9MQLs6q1cpn+P9
- fw6cOqvUd4Tw+ItAzWpu2+/rJQaCM8nHyNvwfp792GdkL2zV9sVBxN4GHczyKJoveAdZ
- Ecfek+7GWXDkrsvL0GwNa5+9rBQH/EvkKYqyl2bcrmAXDp9f13/qwORX8OmlK3kq5v/w
- VkmC+Yll+MQhYAdDrQRuRznpksWi1EnlfqcjuFJdgP2UTqZsmozghg+DmyLSnF4jomGt
- pRKw==
-X-Gm-Message-State: AOAM531t2FDKQ5SReQofkoizapPGzO0alIK9Z/VgFd8A0G0gQfI2PMIX
- KaLik+UXx+pHZ+KgHbw4q7EA6YYN
-X-Google-Smtp-Source: ABdhPJwoXPsAv5gXc7GjR6/Pw89dlO1qZKOf0QdW98OIG8QSlzXhFNk/mOB1Tdjq5n7Y44opMdAgDg==
-X-Received: by 2002:a17:90b:4010:: with SMTP id
- ie16mr3504303pjb.138.1590668748574; 
- Thu, 28 May 2020 05:25:48 -0700 (PDT)
+ bh=6TWncHt645mauf4KMuI7jEQm3qpNRixb3sU4vXEWEYc=;
+ b=pVdV/k4k+zV4164BsPq62dky4bam3p3kmgeI5Mk38KZ72bFkSup/6rX3rR9uidCgwP
+ k5xqzp89vdu+4Z74l7ebz3JoB8u+T+Ps5+hlwpl60yzVd1kKLQ4ggKEU6VPIIiCTq3OJ
+ NNSz8IyCL85cS+lDdHsbU0DMyP0jG1KfzKpQ7ZH8/n/XvxJikwNBapIefNyxCdXib6Re
+ hkkP4Y/OOZag6HRc8c1tvlxu0w3hDBEPPc8Ugpzvl/FszJTZ+PP9pkTiQ5H6ZxwBR/OF
+ zGUpVs6NZedbkn49zvgMFzznnA9wCTV1Fy6M+8RJ5tFvQ3JgcT7TQGyHGaAZr7xTj8Fe
+ U63g==
+X-Gm-Message-State: AOAM533QFo5I59i6XNRGZUUvmxNB+r6KcmrekSuTwrYRfJk/IrYvBt1k
+ WvuwxDmQ0mNy4o7y1GbPE18xMCB/
+X-Google-Smtp-Source: ABdhPJxLzLk97Ym5L2eBVy/MBgkyhJCvn11V+WHqK/6tT9jkBt+Nfud4B/JVb7gcZqPpTXWtDESozg==
+X-Received: by 2002:a63:214d:: with SMTP id s13mr2593150pgm.277.1590668751355; 
+ Thu, 28 May 2020 05:25:51 -0700 (PDT)
 Received: from localhost.localdomain ([2405:204:2183:e360:deba:7bf4:98ef:5568])
- by smtp.gmail.com with ESMTPSA id 1sm5722888pje.26.2020.05.28.05.25.45
+ by smtp.gmail.com with ESMTPSA id 1sm5722888pje.26.2020.05.28.05.25.48
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 28 May 2020 05:25:48 -0700 (PDT)
+ Thu, 28 May 2020 05:25:50 -0700 (PDT)
 From: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 To: cocci@systeme.lip6.fr
-Date: Thu, 28 May 2020 17:54:21 +0530
-Message-Id: <20200528122428.4212-20-jaskaransingh7654321@gmail.com>
+Date: Thu, 28 May 2020 17:54:22 +0530
+Message-Id: <20200528122428.4212-21-jaskaransingh7654321@gmail.com>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200528122428.4212-1-jaskaransingh7654321@gmail.com>
 References: <20200528122428.4212-1-jaskaransingh7654321@gmail.com>
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 28 May 2020 14:25:53 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 28 May 2020 14:25:55 +0200 (CEST)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
  (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Thu, 28 May 2020 14:25:50 +0200 (CEST)
+ Thu, 28 May 2020 14:25:53 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78
 Cc: linux-kernel-mentees@lists.linuxfoundation.org
-Subject: [Cocci] [PATCH v2 19/25] cocci: Add parameter attributes to C AST
+Subject: [Cocci] [PATCH v2 20/25] parsing_c: parser: Place parameter
+	attributes in C AST
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -101,54 +101,80 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-With extended support of attributes, parameter attributes are needed in
-the C AST so that the nocast test case does not break.
-
-Add the p_attr field to parameter in the C AST.
+Parameter attributes are needed so as to not break the nocast test case
+when attributes are fully supported. Add parameter attributes to the C
+AST.
 
 Signed-off-by: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 ---
- ocaml/coccilib.mli  | 1 +
- parsing_c/ast_c.ml  | 1 +
- parsing_c/ast_c.mli | 1 +
- 3 files changed, 3 insertions(+)
+ parsing_c/parser_c.mly | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/ocaml/coccilib.mli b/ocaml/coccilib.mli
-index bc355512..5e31eec3 100644
---- a/ocaml/coccilib.mli
-+++ b/ocaml/coccilib.mli
-@@ -109,6 +109,7 @@ module Ast_c :
-       p_namei : name option;
-       p_register : bool wrap;
-       p_type : fullType;
-+      p_attr : attribute list;
-     }
-     and typeQualifier = typeQualifierbis wrap
-     and typeQualifierbis =
-diff --git a/parsing_c/ast_c.ml b/parsing_c/ast_c.ml
-index b53c8060..204bd412 100644
---- a/parsing_c/ast_c.ml
-+++ b/parsing_c/ast_c.ml
-@@ -287,6 +287,7 @@ and fullType = typeQualifier * typeC
-         { p_namei: name option;
-           p_register: bool wrap;
-           p_type: fullType;
-+          p_attr: attribute list;
-         }
-         (* => (bool (register) * fullType) list * bool *)
+diff --git a/parsing_c/parser_c.mly b/parsing_c/parser_c.mly
+index 57528dfc..cd997aaa 100644
+--- a/parsing_c/parser_c.mly
++++ b/parsing_c/parser_c.mly
+@@ -857,7 +857,7 @@ new_argument:
+      { let ty = addTypeD ($1,nullDecl) in
+        let ((returnType,hasreg), iihasreg) = fixDeclSpecForParam ty in
+        Right (ArgType { p_namei = None; p_type = returnType;
+-			p_register = hasreg, iihasreg;
++                        p_register = hasreg, iihasreg; p_attr = [];
+ 		      } )
+      }
+  | new_argument TOCro expr TCCro
+@@ -1447,23 +1447,28 @@ parameter_decl2:
+      { p_namei = Some name;
+        p_type = mk_ty NoType [];
+        p_register = (false, []);
++       p_attr = [];
+      }
+    }
+  | decl_spec declaratorp
+      { LP.kr_impossible();
+        let ((returnType,hasreg),iihasreg) = fixDeclSpecForParam (snd $1) in
+-       let (name, ftyp) = $2 in
++       let attrs = (fst $1) @ (fst $2) in
++       let (name, ftyp) = snd $2 in
+        { p_namei = Some (name);
+          p_type = ftyp returnType;
+          p_register = (hasreg, iihasreg);
++         p_attr = attrs;
+        }
+      }
+  | decl_spec abstract_declaratorp
+      { LP.kr_impossible();
+        let ((returnType,hasreg), iihasreg) = fixDeclSpecForParam (snd $1) in
++       let attrs = (fst $1) @ (fst $2) in
+        { p_namei = None;
+          p_type = (snd $2) returnType;
+          p_register = hasreg, iihasreg;
++         p_attr = attrs;
+        }
+      }
+  | decl_spec
+@@ -1472,6 +1477,7 @@ parameter_decl2:
+        { p_namei = None;
+          p_type = returnType;
+          p_register = hasreg, iihasreg;
++         p_attr = fst $1;
+        }
+      }
  
-diff --git a/parsing_c/ast_c.mli b/parsing_c/ast_c.mli
-index 61935c18..5411bbb3 100644
---- a/parsing_c/ast_c.mli
-+++ b/parsing_c/ast_c.mli
-@@ -73,6 +73,7 @@ and parameterType = {
-   p_namei : name option;
-   p_register : bool wrap;
-   p_type : fullType;
-+  p_attr : attribute list;
- }
- and typeQualifier = typeQualifierbis wrap
- and typeQualifierbis = { const : bool; volatile : bool; }
+@@ -1484,11 +1490,11 @@ parameter_decl: parameter_decl2 { et "param" ();  $1 }
+ 
+ declaratorp:
+  | declarator  { let (attr,dec) = $1 in (* attr gets ignored *)
+-                 LP.add_ident (str_of_name (fst dec)); dec }
++                 LP.add_ident (str_of_name (fst dec)); attr, dec }
+  /*(* gccext: *)*/
+  | declarator attributes
+                { let (attr,dec) = $1 in (* attr gets ignored *)
+-                 LP.add_ident (str_of_name (fst dec)); dec }
++                 LP.add_ident (str_of_name (fst dec)); attr, dec }
+ 
+ abstract_declaratorp:
+  | abstract_declarator { $1 }
 -- 
 2.21.1
 
