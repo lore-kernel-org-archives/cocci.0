@@ -6,56 +6,56 @@ X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CAB1C433DF
-	for <cocci@archiver.kernel.org>; Thu,  4 Jun 2020 21:03:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C169CC433E1
+	for <cocci@archiver.kernel.org>; Thu,  4 Jun 2020 21:25:38 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 961D920872
-	for <cocci@archiver.kernel.org>; Thu,  4 Jun 2020 21:03:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 961D920872
+	by mail.kernel.org (Postfix) with ESMTPS id 6A380206C3
+	for <cocci@archiver.kernel.org>; Thu,  4 Jun 2020 21:25:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6A380206C3
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 054L3hhO017050;
-	Thu, 4 Jun 2020 23:03:43 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 054LPYPT012159;
+	Thu, 4 Jun 2020 23:25:34 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id E6B867567;
-	Thu,  4 Jun 2020 23:03:42 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id A96787567;
+	Thu,  4 Jun 2020 23:25:34 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 5B1785D47
- for <cocci@systeme.lip6.fr>; Thu,  4 Jun 2020 23:03:41 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 3ADB95D47
+ for <cocci@systeme.lip6.fr>; Thu,  4 Jun 2020 23:25:33 +0200 (CEST)
 Received: from mail-lf1-f65.google.com (mail-lf1-f65.google.com
  [209.85.167.65])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 054L3eTG010002
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 054LPWl5015670
  (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Thu, 4 Jun 2020 23:03:40 +0200 (CEST)
-Received: by mail-lf1-f65.google.com with SMTP id z206so4482063lfc.6
- for <cocci@systeme.lip6.fr>; Thu, 04 Jun 2020 14:03:40 -0700 (PDT)
+ for <cocci@systeme.lip6.fr>; Thu, 4 Jun 2020 23:25:32 +0200 (CEST)
+Received: by mail-lf1-f65.google.com with SMTP id c21so4507823lfb.3
+ for <cocci@systeme.lip6.fr>; Thu, 04 Jun 2020 14:25:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:reply-to:subject:to:cc:references:from:autocrypt
+ h=x-gm-message-state:reply-to:to:cc:references:from:autocrypt:subject
  :message-id:date:user-agent:mime-version:in-reply-to
  :content-language:content-transfer-encoding;
- bh=Qj/mH6Ksi1py8PwVFzxrK4/3Imgc5IGEgSu++hptVZE=;
- b=EFKQJP3qvsZbzFRM3caM43ZVKzFoDKFE1DGP5nwmttPCzI/04mp85YNw1pljXroRUA
- vv1imAFhIIKTUNUr13iT7RcANnSukk5dwsrz6pkQbF2ri21FMqSEzLxB97LHBFpH3+7r
- UgCMXSkj6FdKDQcZkK35Kdpj6MuK0fjrWmkRqIYGsTM50fHs385QGjrI5iQqkHIz6GjC
- uBo9wWrpWmqfC1Uq3Oxa7SCjFjr/YO9Avs75Y0sltRB/Qwk9ckqEm8oeEGxWJ7x9ZJfu
- JfR5jjjs5GL0F6GgVN2E2UNPJI2NMqMmGJvXolccCeOQFYTi3GZyXEtx3JyZR9nVFDdM
- kf0Q==
-X-Gm-Message-State: AOAM530TJbP/nFIR5i/oiBUKKJMMrQfcv3icdFnzU4+qZnjhFZJpkjtG
- pSnGtuFM0dn2dztlneqKoFQM642c
-X-Google-Smtp-Source: ABdhPJz+0Z2VChW84TupUu4D9YxuKU9FBRmsVqWZaCZJ/HTnkJp+BWCMR1k+yo+Rl7ManP6GvEbEOQ==
-X-Received: by 2002:a19:6554:: with SMTP id c20mr3484373lfj.140.1591304620300; 
- Thu, 04 Jun 2020 14:03:40 -0700 (PDT)
+ bh=dUEkIEcl8m+7s4DCcou7ocYj6d7oI7cJh6p6MIHUees=;
+ b=d4kR5eWyW6LeW6ik9hdJ4NvNtfc7WJZUyKw0SGT9X3nlzdkVFe6jP8qlF2pLUbzuuY
+ rXw94dhIVxmsf9hyB5qxoBJwaPrkvH0s7FtLfFFjEAlMqJyKs60os9r6DEL6o44BdZzd
+ O4UMYwKA7wdZD1B5HM5p29o3321tG0J9cY55JQiTOSdsiD+OjERgkz8K8z5RcfuCcQUb
+ 7C8dQZ/kmYe6Aph5M2beP4axWLAPjdbuy0EDXEpcynAZ1cbfJ321JyhY532BbGSxOM3x
+ SlaUkQG69Y2pYWGKGnBHmpl0ZbUESWdI9ZJW1oFPCooQNA4zTaVXuxg1QpNn4F2zdZjc
+ hd2w==
+X-Gm-Message-State: AOAM532w/7U2r6zfMUkLmNoBMq0p3eIeBhTZFaKRR2x9/G9qAbg7Vwqv
+ uUzzm4kbElXuthgwlAtuFQCPRVnT
+X-Google-Smtp-Source: ABdhPJy0f5yM4auqZ6t/YG08dGkpTGVii/q6zTu+ZdvQ97PICMBn7Pvpg2PhMvzU2QOXOtaJCl9dQA==
+X-Received: by 2002:a19:356:: with SMTP id 83mr3561589lfd.179.1591305932238;
+ Thu, 04 Jun 2020 14:25:32 -0700 (PDT)
 Received: from [10.68.32.147] (broadband-37-110-38-130.ip.moscow.rt.ru.
  [37.110.38.130])
- by smtp.gmail.com with ESMTPSA id a12sm133071ljb.92.2020.06.04.14.03.39
+ by smtp.gmail.com with ESMTPSA id n20sm175542lfe.60.2020.06.04.14.25.30
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Thu, 04 Jun 2020 14:03:39 -0700 (PDT)
+ Thu, 04 Jun 2020 14:25:31 -0700 (PDT)
 To: Julia Lawall <julia.lawall@inria.fr>
 References: <20200604140805.111613-1-efremov@linux.com>
  <20200604204846.15897-1-efremov@linux.com>
@@ -104,16 +104,16 @@ Autocrypt: addr=efremov@linux.com; keydata=
  EahrGMfRngbdp/mKs9aBR56ECMfFFUPyI3VJsNbgpcIJjV/0N+JdJKQpJ/4uQ2zNm0wH/RU8
  CRJvEwtKemX6fp/zLI36Gvz8zJIjSBIEqCb7vdgvWarksrhmi6/Jay5zRZ03+k6YwiqgX8t7
  ANwvYa1h1dQ36OiTqm1cIxRCGl4wrypOVGx3OjCar7sBLD+NkwO4RaqFvdv0xuuy4x01VnOF
-Message-ID: <b79cb999-5b9d-4e05-a1d9-b89c025cd8c2@linux.com>
-Date: Fri, 5 Jun 2020 00:03:40 +0300
+Message-ID: <378e709b-695a-be84-f4b3-f25dfcdc6ec7@linux.com>
+Date: Fri, 5 Jun 2020 00:25:31 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.8.1
 MIME-Version: 1.0
 In-Reply-To: <alpine.DEB.2.21.2006042254240.2577@hadrien>
 Content-Language: en-US
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 04 Jun 2020 23:03:43 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 04 Jun 2020 23:25:35 +0200 (CEST)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Thu, 04 Jun 2020 23:03:41 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Thu, 04 Jun 2020 23:25:32 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: Joe Perches <joe@perches.com>, cocci@systeme.lip6.fr,
@@ -136,18 +136,26 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-On 6/4/20 11:57 PM, Julia Lawall wrote:
-> On the other hand, do you really require E to be a pointer?  If you do
-> that, it will have to find the type of E.  If E refers to a structure
-> field, then the type might not be available in the current function, and
-> you may need command line argments like --all-includes or
-> --recursive-includes.  Is avoiding transforming the case where E is not
-> verified to be a pointer a concern?
+It looks like a good idea to add type cast, like:
 
-It's save to use "expression E;" in this rule. Do you want me to send v3?
++// Ignore kzfree definition
++// Ignore kasan test
++@r depends on !patch && !(file in "lib/test_kasan.c") && !(file in "mm/slab_common.c") forall@
++expression *E;
++position p;
++type T;
++@@
++
++* \(memset\|memset_explicit\)((T)E, 0, ...);
++  ... when != E
++      when strict
++* \(kfree\|vfree\|kvfree\)(E)@p;
++
 
-Any thoughts about commented lines in "patch"? Maybe I do something wrong
-trying to use "..." it in r2?
+and to exclude file "mm/util.c" because it will contain the definition of 
+kvfree_sensitive().
+
+I will wait for your recommendation about commented lines and will send v3 after.
 
 Thanks,
 Denis
