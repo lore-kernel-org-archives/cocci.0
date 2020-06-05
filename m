@@ -2,136 +2,85 @@ Return-Path: <SRS0=TTUf=7S=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBF1FC433E0
-	for <cocci@archiver.kernel.org>; Fri,  5 Jun 2020 06:43:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81640C433E0
+	for <cocci@archiver.kernel.org>; Fri,  5 Jun 2020 13:44:07 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 50EA420823
-	for <cocci@archiver.kernel.org>; Fri,  5 Jun 2020 06:43:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id D00EA206E6
+	for <cocci@archiver.kernel.org>; Fri,  5 Jun 2020 13:44:06 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="jM6ioFuu"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 50EA420823
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="axdlCXXW"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D00EA206E6
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0556hRfu004418;
-	Fri, 5 Jun 2020 08:43:27 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 055Di20p027079;
+	Fri, 5 Jun 2020 15:44:02 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id BA0147567;
-	Fri,  5 Jun 2020 08:43:27 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 2E6027567;
+	Fri,  5 Jun 2020 15:44:02 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 6F7B83F9A
- for <cocci@systeme.lip6.fr>; Fri,  5 Jun 2020 08:43:26 +0200 (CEST)
-Received: from mout.web.de (mout.web.de [212.227.15.4])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 0556hPK8024380
- (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
- Fri, 5 Jun 2020 08:43:25 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1591339398;
- bh=N8Q7hyBR5uvg6/uWiiaPsqnWwBDvfxFBrSltitvHp84=;
- h=X-UI-Sender-Class:Cc:Subject:From:To:Date;
- b=jM6ioFuuPsygCIbvBdZK8ajH1uKl3ssnPD30NbQqci7MZ7iUhjTWtYJWEA9tllE03
- zRvejLxszdI+m0MrIvSsn5BtifR9D0QaeocRFaBvK8q0cjwLiTGbTeHIMNC5OIYxVD
- K7SxhMEKGC3OjTL5v3J63xoafZggc3L1D7i4h0J0=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([93.131.102.114]) by smtp.web.de (mrweb005
- [213.165.67.108]) with ESMTPSA (Nemesis) id 1MNfYN-1jJ7Az1XFz-00P2uM; Fri, 05
- Jun 2020 08:43:18 +0200
-From: Markus Elfring <Markus.Elfring@web.de>
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
- +v43YoGpDNyhgA0w9CEhuwfZrE91GocMtjLO67TAc2i2nxMc/FJRDI0OemO4VJ9RwID6ltwt
- mpVJgXGKkNJ1ey+QOXouzlErVvE2fRh+KXXN1Q7fSmTJlAW9XJYHS3BDHb0uRpymRSX3O+E2
- lA87C7R8qAigPDZi6Z7UmwIA83ZMKXQ5stA0lhPyYgQcM7fh7V4ZYhnR0I5/qkUoxKpqaYLp
- YHBczVP+Zx/zHOM0KQphOMbU7X3c1pmMruoe6ti9uZzqZSLsF+NKXFEPBS665tQr66HJvZvY
- GMDlntZFAZ6xQvCC1r3MGoxEC1tuEa24vPCC9RZ9wk2sY5Csbva0WwYv3WKRZZBv8eIhGMxs
- rcpeGShRFyZ/0BYO53wZAPV1pEhGLLxd8eLN/nEWjJE0ejakPC1H/mt5F+yQBJAzz9JzbToU
- 5jKLu0SugNI18MspJut8AiA1M44CIWrNHXvWsQ+nnBKHDHHYZu7MoXlOmB32ndsfPthR3GSv
- jN7YD4Ad724H8fhRijmC1+RpuSce7w2JLj5cYj4MlccmNb8YUxsE8brY2WkXQYS8Ivse39MX
- BE66MQN0r5DQ6oqgoJ4gHIVBUv/ZwgcmUNS5gQkNCFA0dWXznQARAQABtCZNYXJrdXMgRWxm
- cmluZyA8TWFya3VzLkVsZnJpbmdAd2ViLmRlPokCVAQTAQgAPhYhBHDP0hzibeXjwQ/ITuU9
- Figxg9azBQJYNvsQAhsjBQkJZgGABQsJCAcCBhUICQoLAgQWAgMBAh4BAheAAAoJEOU9Figx
- g9azcyMP/iVihZkZ4VyH3/wlV3nRiXvSreqg+pGPI3c8J6DjP9zvz7QHN35zWM++1yNek7Ar
- OVXwuKBo18ASlYzZPTFJZwQQdkZSV+atwIzG3US50ZZ4p7VyUuDuQQVVqFlaf6qZOkwHSnk+
- CeGxlDz1POSHY17VbJG2CzPuqMfgBtqIU1dODFLpFq4oIAwEOG6fxRa59qbsTLXxyw+PzRaR
- LIjVOit28raM83Efk07JKow8URb4u1n7k9RGAcnsM5/WMLRbDYjWTx0lJ2WO9zYwPgRykhn2
- sOyJVXk9xVESGTwEPbTtfHM+4x0n0gC6GzfTMvwvZ9G6xoM0S4/+lgbaaa9t5tT/PrsvJiob
- kfqDrPbmSwr2G5mHnSM9M7B+w8odjmQFOwAjfcxoVIHxC4Cl/GAAKsX3KNKTspCHR0Yag78w
- i8duH/eEd4tB8twcqCi3aCgWoIrhjNS0myusmuA89kAWFFW5z26qNCOefovCx8drdMXQfMYv
- g5lRk821ZCNBosfRUvcMXoY6lTwHLIDrEfkJQtjxfdTlWQdwr0mM5ye7vd83AManSQwutgpI
- q+wE8CNY2VN9xAlE7OhcmWXlnAw3MJLW863SXdGlnkA3N+U4BoKQSIToGuXARQ14IMNvfeKX
- NphLPpUUnUNdfxAHu/S3tPTc/E/oePbHo794dnEm57LuuQINBFg2+xABEADZg/T+4o5qj4cw
- nd0G5pFy7ACxk28mSrLuva9tyzqPgRZ2bdPiwNXJUvBg1es2u81urekeUvGvnERB/TKekp25
- 4wU3I2lEhIXj5NVdLc6eU5czZQs4YEZbu1U5iqhhZmKhlLrhLlZv2whLOXRlLwi4jAzXIZAu
- 76mT813jbczl2dwxFxcT8XRzk9+dwzNTdOg75683uinMgskiiul+dzd6sumdOhRZR7YBT+xC
- wzfykOgBKnzfFscMwKR0iuHNB+VdEnZw80XGZi4N1ku81DHxmo2HG3icg7CwO1ih2jx8ik0r
- riIyMhJrTXgR1hF6kQnX7p2mXe6K0s8tQFK0ZZmYpZuGYYsV05OvU8yqrRVL/GYvy4Xgplm3
- DuMuC7/A9/BfmxZVEPAS1gW6QQ8vSO4zf60zREKoSNYeiv+tURM2KOEj8tCMZN3k3sNASfoG
- fMvTvOjT0yzMbJsI1jwLwy5uA2JVdSLoWzBD8awZ2X/eCU9YDZeGuWmxzIHvkuMj8FfX8cK/
- 2m437UA877eqmcgiEy/3B7XeHUipOL83gjfq4ETzVmxVswkVvZvR6j2blQVr+MhCZPq83Ota
- xNB7QptPxJuNRZ49gtT6uQkyGI+2daXqkj/Mot5tKxNKtM1Vbr/3b+AEMA7qLz7QjhgGJcie
- qp4b0gELjY1Oe9dBAXMiDwARAQABiQI8BBgBCAAmFiEEcM/SHOJt5ePBD8hO5T0WKDGD1rMF
- Alg2+xACGwwFCQlmAYAACgkQ5T0WKDGD1rOYSw/+P6fYSZjTJDAl9XNfXRjRRyJSfaw6N1pA
- Ahuu0MIa3djFRuFCrAHUaaFZf5V2iW5xhGnrhDwE1Ksf7tlstSne/G0a+Ef7vhUyeTn6U/0m
- +/BrsCsBUXhqeNuraGUtaleatQijXfuemUwgB+mE3B0SobE601XLo6MYIhPh8MG32MKO5kOY
- hB5jzyor7WoN3ETVNQoGgMzPVWIRElwpcXr+yGoTLAOpG7nkAUBBj9n9TPpSdt/npfok9ZfL
- /Q+ranrxb2Cy4tvOPxeVfR58XveX85ICrW9VHPVq9sJf/a24bMm6+qEg1V/G7u/AM3fM8U2m
- tdrTqOrfxklZ7beppGKzC1/WLrcr072vrdiN0icyOHQlfWmaPv0pUnW3AwtiMYngT96BevfA
- qlwaymjPTvH+cTXScnbydfOQW8220JQwykUe+sHRZfAF5TS2YCkQvsyf7vIpSqo/ttDk4+xc
- Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
- x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
- pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-To: Denis Efremov <efremov@linux.com>, Coccinelle <cocci@systeme.lip6.fr>,
-        Gilles Muller <Gilles.Muller@lip6.fr>,
-        Julia Lawall <Julia.Lawall@lip6.fr>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nicolas Palix <nicolas.palix@imag.fr>
-Message-ID: <99e0349e-9392-b610-05b6-8f90986073fa@web.de>
-Date: Fri, 5 Jun 2020 08:43:16 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.1
+ by systeme.lip6.fr (Postfix) with ESMTPS id 714DB3F9A
+ for <cocci@systeme.lip6.fr>; Fri,  5 Jun 2020 15:44:00 +0200 (CEST)
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:443])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 055Dhw6O028348
+ (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
+ for <cocci@systeme.lip6.fr>; Fri, 5 Jun 2020 15:43:59 +0200 (CEST)
+Received: by mail-pf1-x443.google.com with SMTP id h185so4937910pfg.2
+ for <cocci@systeme.lip6.fr>; Fri, 05 Jun 2020 06:43:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=nV3qp30vahdf2LjeklPIogPl2PZxLdKOXkcxwb0UmnA=;
+ b=axdlCXXW9/5zrn0y7ORU0ObS87xrTBaESr0GZK0YH1jZLyTFGYorbc2YIYia57rl6w
+ hXC2gqmLiAAISp8qHPtjieZALtZstvggXa6+bt2pFnjsaHAYebGEcN3GX4IGUM1jkSCR
+ wNceL+1Cg3jnXD8CMVmtfSlD2fHQQ0x6DHO3wZCMDzcoMj2tKULjU+DrS+PvzO42SN8a
+ pX2PKv/fg24y3E8XFA15wfKMybM+peRflLIc5fHXydJ7HaRJajz6LjvK6TIAATkHXbwa
+ igl1/UNFaxvGHYkmGoFT32XZ/p57A8LNe3V1r08LYQiUWgJ5c8ZvQxTaDOtoF75SJH/Y
+ PXsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=nV3qp30vahdf2LjeklPIogPl2PZxLdKOXkcxwb0UmnA=;
+ b=jqEr9Wo2e4ekNanKXqEOVfQNHYrS7aLtn0wJXffa/50pVkQ2XMES69YTI0e3psq4m5
+ KtRjKKHrkdLKgShaf+OjBFetUhqMy+AdvjcCL8L67C+3gQ9GkuL3YM5SERF7At/7LUC3
+ OcSshkuT1t5KgLFd0Fo4RJroEPI0JsM3xF+RExY6NZhLMRy9rHmzQ7ugAs37h40mLVQn
+ rohzIYJ8fhNl1WwsOhvB5hklAvwqRtU34gYanmWxvn4wA3YqIKzkci3XPBfcfbeJsNV2
+ 4dNnhGQ8oeXIsbn91M4co8lxJA+fhLpJqt+fMCXq/gjCxcezokmkRiTGDqVBwA5bQnmn
+ XTqw==
+X-Gm-Message-State: AOAM531koO/T5xL8Dv3g2KqGTyqSfKvnfUYAk6tkUIL+fx8DAn/w0IYQ
+ dQ2m0suGu44rxzdjuP+ZF+Zu0GLEQ5c=
+X-Google-Smtp-Source: ABdhPJwy0Ssw0P1Oa6CD+e9LwW25jPbZ00JuOZBceYXoEVLUHQ94zaqFG1k9Dm8OeNtEOkz8ZWFxMQ==
+X-Received: by 2002:a62:7547:: with SMTP id q68mr10064038pfc.202.1591364637251; 
+ Fri, 05 Jun 2020 06:43:57 -0700 (PDT)
+Received: from localhost.localdomain ([1.38.221.125])
+ by smtp.gmail.com with ESMTPSA id w186sm7861353pff.83.2020.06.05.06.43.52
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 05 Jun 2020 06:43:54 -0700 (PDT)
+From: Jaskaran Singh <jaskaransingh7654321@gmail.com>
+To: cocci@systeme.lip6.fr
+Date: Fri,  5 Jun 2020 19:13:08 +0530
+Message-Id: <20200605134322.15307-1-jaskaransingh7654321@gmail.com>
+X-Mailer: git-send-email 2.21.1
 MIME-Version: 1.0
-Content-Language: en-GB
-X-Provags-ID: V03:K1:3n1lKZLlK2kY4L3XBHhB2QdV5UADpledGUkfuQpGdeA+FeLYtzN
- uKJeyTjsw20wWmwHzvid9FeZSyBv1KTU/Ea/dBBrKCgBUL2K8BwBu0LXD5M0Etts7giBUiR
- LtagjbkV3xa+I/T/zIaCA2eOuHb9CPPcqKahn572RgM019RzwOwjCCAiz1do6ZJqVy4Uwbq
- yFYBHizQ9bVBLr2OG60Gw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:+1aJiyAWN4M=:n0ofJPYKAz1rQmuaCclxBQ
- PjXtksTLyy2E+HoYb24bPnF6lpW8pYfDf3guaT4abcQudyYWkA1K3qUZLvIhbQzq9oVtUcKD/
- YAEWL3Jg+GZ40BDeJrZW49G4n6Ut5V6w4M8+eIlRozUCqXi3Ir897yhZbQN3P7AvUi3rIsvK8
- UniBNjpSVC9HI6KCz4EkOzNHoVeI3iaEtNFExM4KkNMjjl3fZGfA+We0C7fbX2MiEZUEquSJJ
- u0FwoE5cFZBoEsk5fUgdmcdCR9IIZh0UTABfwSGyN5L2sWK1EqIKlqMwpL/N1uVPNtHMZHLlu
- /wrtgMA4BlMkTat6Hm2hUvIQEEh4w0heOb065PKeMCfTVRlzOOmIbMCgebbM7eIecUhCjY67d
- qAVB68ULRmZcQ1LnrnWeKzyy34OQF6vxWvWEj6/5JCJ9o3qxBhAa/B39djb9iJSV1T484R791
- 2vZ43V9+Ur3ReqsxDJ6oEwMtmSdiezsGUSZzpwTeG5X/8VOkKkfQYvaRR8wSxdEabMT96Smos
- gtME9vG2cp9xIvKx06R8xr3XpF8SkG6TKl+riQMx2852aItX5EfsW8pF8lHwmgNhMbwSGkacO
- JI6BSYlfbhStp6IYhxMe1pykCUtKe3P+haNL2WYlpnp/wxmiNrTebQW+CZ+WMBQosnmFaAL/q
- oDGrAlSwAQQCr03jPUSoTDIxOl27/xsFwJT+QWx8BN/hj7+Pnkjvrz+/F4EG6KcWPrBJkWbiJ
- H1mGgWCZC3NYj+rpGxZJ1lqPQgr5NIjfCeF0oDTRrQiOk+jMH99wxPbZyV1XMUidykrJ7y1n0
- 44KjN/qyI2wYXCXrklXKhxRwqPCZiLXMTfswkZwj/V6mZi9RCZFVa7IAMvi1Bq44wSz47grt/
- 26wygLRwdmSqf6+NF6IDgAd2Pe0JYmky8Sc7dB215PUfLpnSo0irm07YMOzmVOtwS1KYqfEBR
- U2ayhjMeiL8NDXxiUD9KjYrY4xq8vajFdgIuCMNjvFVi3x28EHQwPVkt0xpEiqao/366JszcS
- fCnlCvJeZWGWnaggkNBx47H5mOJ71GWjAwNjBM+DxukA5VvTWlUCp3ARvWPqz40O+GwMNARPS
- Hx/OmVX7EVMi8wDHUammaIEC0Vf5sddsY6E6aKm5sxFvX4KXta8fshDdA102walDqGcc6HQse
- hmUn9C4waWFozFESmvtehuJBFcDbbrMKtxk9KCDgqYQ///sWkJyC3PsAeDkpdjMTW2mhFA23K
- rwY257wlg6l2eOHle
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 05 Jun 2020 08:43:28 +0200 (CEST)
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Fri, 05 Jun 2020 08:43:25 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 05 Jun 2020 15:44:02 +0200 (CEST)
+X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
+ Fri, 05 Jun 2020 15:43:59 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Joe Perches <joe@perches.com>, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [Cocci] [PATCH v2] coccinelle: api: add kzfree script
+X-Scanned-By: MIMEDefang 2.78
+Cc: linux-kernel-mentees@lists.linuxfoundation.org
+Subject: [Cocci] [PATCH v4 00/14] cocci: Improve C parsing of attributes
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -148,60 +97,121 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-> Check for memset()/memset_explicit() with 0 followed by
-> kfree()/vfree()/kvfree().
+This patch series aims to improve parsing of attributes in C by
+Coccinelle's C parser.
 
-Another software evolution will become interesting here.
+These parsing errors were discovered by running a build of Coccinelle's
+master branch on gitlab to parse the source code of Linux v5.5-rc4 and Linux
+v5.6-rc7. Coccinelle currently manages attributes similar to comments, so
+to explicity state what the attributes are to the C parser, a
+MACROANNOTATION hint was used in Coccinelle's standard.h file. The hint
+enables the parser to correctly identify attributes, and thus potentially
+handle them differently in the AST.
 
+Upon collection of these parsing errors, The GNU C Compiler's
+grammar was taken as a reference for introducing attributes in correct
+places in Coccinelle's C parser.
 
-> +/// memset_explicit with 0 followed by kfree
+Upon applying the MACROANNOTATION hint to a majority of the attributes in
+Coccinelle's standard.h file and parsing the source code of Linux
+v5.6-rc7, the difference between the stats (of --parse-c) before and
+after applying this patch series are as follows:
 
-How do you think about to extend this comment?
+Before:
 
+        NB total files = 28268; perfect = 25697; pbs = 2570; timeout = 0; =========> 90%
+        nb good = 19160664,  nb passed = 135235 =========> 0.70% passed
+        nb good = 19160664,  nb bad = 129685 =========> 99.33% good or passed
 
-Would you like to take the following SmPL code variants into account?
+After:
 
+        NB total files = 28268; perfect = 25699; pbs = 2568; timeout = 0; =========> 90%
+        nb good = 19160856,  nb passed = 71716 =========> 0.37% passed
+        nb good = 19160856,  nb bad = 129493 =========> 99.33% good or passed
 
-> +virtual context
-> +virtual org
-> +virtual report
-> +virtual patch
+What this patch series does not do:
+- Add attributes from all the new productions into the C AST. Some of
+  these are dropped.
+- Reflect changes from the C parser in the SmPL parser.
 
-+virtual context, org, report, patch
-
-
-> +(
-> +- kfree(E);
-> ++ kzfree(E);
-> +|
-> +- vfree(E);
-> ++ kvfree_sensitive(E, size);
-> +|
-> +- kvfree(E);
-> ++ kvfree_sensitive(E, size);
-> +)
-
-+(
-+-kfree
-++kzfree
-+      (E);
-+|
-+-vfree
-++kvfree_sensitive
-+      (E
-++      , size
-+      );
-+|
-+-kvfree
-++kvfree_sensitive
-+       (E
-++       , size
-+       );
-+)
+Separate patches will be sent for the above.
 
 
-Regards,
-Markus
+Changes in v4:
+-------------
+Remove the following patches from the series and add/merge them to [1].
+	parsing_c: visitor_c: Add vk_attribute and vk_attribute_s
+	parsing_c: lib_parsing_c: Add ii_of_attr
+	engine: Add distrf_attr to PARAM functor
+	engine: cocci_vs_c: Add allminus argument to attribute_list
+	parsing_c: parser: Make abstract_declarator pass attributes
+	cocci: Add parameter attributes to C AST
+	parsing_c: parser: Place parameter attributes in C AST
+	parsing_c: visitor_c: Visit parameter attributes
+	parsing_c: unparse_hrule: Add parameter attributes in record
+	parsing_c: type_c: Add parameter attributes to record
+	engine: cocci_vs_c: "Match" parameter attributes
+	engine: c_vs_c: Match parameter attributes
+
+parsing_c: parser: Add rule for optional end attributes
+- Add to series.
+
+parsing_c: parser: Add field declaration end attributes production
+- Use end_attributes_opt to avoid duplicate code.
+
+parsing_c: parser: Handle struct/union/enum end attributes
+- Use end_attributes_opt to avoid duplicate code.
+
+parsing_c: parser: Add MacroDecl end attributes production
+- Use end_attributes_opt to avoid duplicate code.
+
+parsing_c: parser: cpp_other end attributes production
+- Use end_attributes_opt to avoid duplicate code.
+
+
+Changes in v3:
+-------------
+parsing_c: parser: Place parameter attributes in C AST
+- Remove the "attr is ignored" comments in the declaratorp rule.
+- Place the attributes from the "declarator attributes" production
+  in the declaratorp rule in the C AST as well.
+
+
+Changes in v2:
+--------------
+parsing_c: parser: Add attribute production in spec_qualif_list
+- This patch applied on its own causes a build error. Fix the error by
+  removing the let binding for abstract_declaratort in the type_name
+  rule
+
+parsing_c: parser: Make abstract_declarator pass attributes
+- Reflect changes from the above build error fix.
+
+
+Jaskaran Singh (14):
+      parsing_c: parse_c: Ignore TMacroAttr and TMacroEndAttr in passed tokens
+      parsing_c: parsing_hacks: Label end attributes correctly
+      parsing_c: parsing_hacks: Commentize attributes before qualif/type
+      parsing_c: parser: Add rule for multiple end attributes
+      parsing_c: parser: Add expression statement attributes
+      parsing_c: parser: Add rule for optional end attributes
+      parsing_c: parser: Add attribute production in spec_qualif_list
+      parsing_c: parser: Add init_declarator_attrs rule
+      parsing_c: parser: Add field declaration end attributes production
+      parsing_c: parser: Handle struct/union/enum end attributes
+      parsing_c: parser: Add MacroDecl end attributes production
+      parsing_c: parser: cpp_other end attributes production
+      parsing_c: cpp_token_c: Introduce MACROANNOTATION hint
+      cocci: standard.h: Annotate attributes with MACROANNOTATION
+
+ parsing_c/cpp_token_c.ml   |    2 
+ parsing_c/parse_c.ml       |    4 +
+ parsing_c/parser_c.mly     |   91 ++++++++++++++++++++++++-----------
+ parsing_c/parsing_hacks.ml |   37 ++++++++++++++
+ standard.h                 |  116 ++++++++++++++++++++++-----------------------
+ 5 files changed, 164 insertions(+), 86 deletions(-)
+
+
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
