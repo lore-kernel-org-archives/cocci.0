@@ -8,84 +8,84 @@ X-Spam-Status: No, score=-9.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33812C433E2
-	for <cocci@archiver.kernel.org>; Fri,  5 Jun 2020 13:44:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89F97C433E1
+	for <cocci@archiver.kernel.org>; Fri,  5 Jun 2020 13:44:50 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A593D2075B
-	for <cocci@archiver.kernel.org>; Fri,  5 Jun 2020 13:44:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 09AB5206E6
+	for <cocci@archiver.kernel.org>; Fri,  5 Jun 2020 13:44:49 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GMLELhXt"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A593D2075B
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EHN7rrXH"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 09AB5206E6
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 055DihxV004553;
-	Fri, 5 Jun 2020 15:44:43 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 055DilLf028604;
+	Fri, 5 Jun 2020 15:44:47 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 617C27567;
-	Fri,  5 Jun 2020 15:44:43 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id B4EDD7567;
+	Fri,  5 Jun 2020 15:44:47 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id AED773F9A
- for <cocci@systeme.lip6.fr>; Fri,  5 Jun 2020 15:44:41 +0200 (CEST)
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com
- [IPv6:2607:f8b0:4864:20:0:0:0:642])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 055DidwX019353
+ by systeme.lip6.fr (Postfix) with ESMTPS id 336363F9A
+ for <cocci@systeme.lip6.fr>; Fri,  5 Jun 2020 15:44:46 +0200 (CEST)
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:644])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 055DiiPF002547
  (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Fri, 5 Jun 2020 15:44:40 +0200 (CEST)
-Received: by mail-pl1-x642.google.com with SMTP id y17so3648042plb.8
- for <cocci@systeme.lip6.fr>; Fri, 05 Jun 2020 06:44:40 -0700 (PDT)
+ for <cocci@systeme.lip6.fr>; Fri, 5 Jun 2020 15:44:45 +0200 (CEST)
+Received: by mail-pl1-x644.google.com with SMTP id bg4so3661375plb.3
+ for <cocci@systeme.lip6.fr>; Fri, 05 Jun 2020 06:44:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=AG7aKTjYrpWO29CJRPMqYtbq2fkHSj17rRnvdb8I1QQ=;
- b=GMLELhXtIhZu3O5zhm2xEv/q6Rb707cFKYmAoi/uMaKvDVpSNIIrweBhPAsQKqBYU0
- uyo1elA3C9u4/M7Puk6w6Jw2VQ4F1k1h4z/Z789euSIVNu20VwJW8wlsSd7tpAZowHHx
- pJZ+oWYuDQ5+EagG4u9C7QbaAbCWNMiYY/Et7kB4laF1kyQB1OMIIsl48vEOjE7urG/d
- uHGwP3erj5K9Uqzsifg/H8YBCaJId3kYmJqUPEGZecL3xRQfzL9Rs8HHmHXE20xHU69+
- pLtZTjzAK0Ox0mCOlw+45vQ+6Zls+Yunj1IGAKAjcf/pOR/n+rvkdPa/RZs22RqLVcPQ
- i3fA==
+ bh=mM0yEkzigxdxEBTLGKgE+cLixX23avYYOLyrqBoWtNw=;
+ b=EHN7rrXH+n6NJOiBwQ9BJvdnDnS7AfK/R+UKibVs6iE0Ub+oPyp+kCBqDuS73mzoQO
+ +i2C9im0YE7dKhZNTmRugcM0WxwsRX+EY4jjtubCQruYjQKIKqwjW2V6mdmAc7fYxcBD
+ tKi1jTSrBaiucLE+ndKtZiRrnsepWvsTFvRF1O4ODfh3JlJjIjT49++698eIH5ZviMv6
+ KSAirShnLDqKT04gDuca+5lESkZFWwptDXsymJpngliSKMiYwhjhGgSnY1C4u2WpS5jx
+ AzzFYOMYrYykcM3PPs+WVECBJwrHc/MvIAy+jlmOZRcdzCfcAT5cyP3j0Ap/ACYFnjHr
+ YVxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=AG7aKTjYrpWO29CJRPMqYtbq2fkHSj17rRnvdb8I1QQ=;
- b=AMdWZivEakPMbDmR2+hlUx1+13bs01SkR5ATyP79b1t2tkA/+WLI4jktbUmL9Xi/CW
- nlN7Cz5VEYyhPjxix3YqDJ6hhslGZr05UqmK2a1Fb6yupLUcrbszP6Agwhgj/OOokLWV
- lU+9Uy9e/yuHUBvpRJQCRZxX7qIzxcV78iDP/0N/QIk2beoNjODB8U27K33P1gxTkHgl
- t7s1OamWaf0zfdvTljgpf0IEfahoK45rvIqqpM0OH44kJoOlsCibCF7ZuzSfUuxkzUv6
- buFuwVVFhYyqW4wqYcjPsvbOFqZpF8koOKQvytVn/PFGdnJdQzScvybisjYKrxrsho5P
- cRYA==
-X-Gm-Message-State: AOAM532U/xunoL1sbf/MMZRCDvNIkpyRTOE0MTTc2lV1PuE9sgBtP1wn
- 4iVDaFOKtCz1CR8gCg3/6Z8AKeIkA34=
-X-Google-Smtp-Source: ABdhPJwEHmzCXmTgCaQlLMtflPrrQ46g8M8a/u1NwhPSVWkt2cdYAS7vaM4NUKvcCa3RZC9OEQZWkw==
-X-Received: by 2002:a17:90a:70c6:: with SMTP id
- a6mr2945733pjm.16.1591364679227; 
- Fri, 05 Jun 2020 06:44:39 -0700 (PDT)
+ bh=mM0yEkzigxdxEBTLGKgE+cLixX23avYYOLyrqBoWtNw=;
+ b=AHM3ro2YM6DlhMkhHLpPmgsDbJ2LxYgQMGj+f7iNLnUtixzs0pie2bb51Ui459k1Qy
+ mjGxRdxJezNCHtYydcevG3FlfugaxcINg3z6V9H57nqrNOtpjoPtQskV/t3iL3IoBcNC
+ oXAeO/yiwEZs/GNtxgM+5ccxz25rEb5uvIDXys8JA1aPUJyir/V2nuguZ1gxD4HXuZaE
+ zMckJoL/fBbbHqed/sGUJkYSzp4dVmKPV6JAvVZ58Np3eKpCceJ146iJmNKfEzqKyF16
+ Tl7AQ5G2DEWun+6q70vFXZbckDyEzbwE2d6jjCINYQJjtiBiMhe+UAfFLHNhxbsRr5Ws
+ OHMw==
+X-Gm-Message-State: AOAM531lk+Nt9DcEjRgNS4Mf97j72cbKw87cVeqs9Akd6/EMGmI/I+wv
+ Xhf9EGiDDpJR4j9edka6IWQgFaFOYLg=
+X-Google-Smtp-Source: ABdhPJwEq9LltdJj89b9nPUZaDgiKosPSHexCQubgcmbf5dcVTdoOldEh7OtS2GRrsDd92PiMI+IuQ==
+X-Received: by 2002:a17:902:bf46:: with SMTP id
+ u6mr9778921pls.302.1591364683517; 
+ Fri, 05 Jun 2020 06:44:43 -0700 (PDT)
 Received: from localhost.localdomain ([1.38.221.125])
- by smtp.gmail.com with ESMTPSA id w186sm7861353pff.83.2020.06.05.06.44.30
+ by smtp.gmail.com with ESMTPSA id w186sm7861353pff.83.2020.06.05.06.44.39
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 05 Jun 2020 06:44:38 -0700 (PDT)
+ Fri, 05 Jun 2020 06:44:43 -0700 (PDT)
 From: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 To: cocci@systeme.lip6.fr
-Date: Fri,  5 Jun 2020 19:13:17 +0530
-Message-Id: <20200605134322.15307-10-jaskaransingh7654321@gmail.com>
+Date: Fri,  5 Jun 2020 19:13:18 +0530
+Message-Id: <20200605134322.15307-11-jaskaransingh7654321@gmail.com>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200605134322.15307-1-jaskaransingh7654321@gmail.com>
 References: <20200605134322.15307-1-jaskaransingh7654321@gmail.com>
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 05 Jun 2020 15:44:43 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 05 Jun 2020 15:44:47 +0200 (CEST)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
  (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Fri, 05 Jun 2020 15:44:41 +0200 (CEST)
+ Fri, 05 Jun 2020 15:44:45 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78
 Cc: linux-kernel-mentees@lists.linuxfoundation.org
-Subject: [Cocci] [PATCH v4 09/14] parsing_c: parser: Add field declaration
-	end attributes production
+Subject: [Cocci] [PATCH v4 10/14] parsing_c: parser: Handle
+	struct/union/enum end attributes
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -102,71 +102,73 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-As per GCC's C grammar, the struct-declarator rule has the following
-productions:
+As per GCC's C grammar, the struct-or-union-specifier and enum-specifier
+have the following productions:
 
-	struct-declarator:
-	  declarator gnu-attributes[opt]
-	  declarator[opt] : constant-expression gnu-attributes[opt]
+   struct-or-union-specifier:
+     struct-or-union attribute-specifier-sequence[opt] gnu-attributes[opt]
+       identifier[opt] { struct-contents } gnu-attributes[opt]
 
-While these productions are handled in the struct_declarator rule of
-Coccinelle's C grammar, end attributes are not.
+   enum-specifier:
+     enum gnu-attributes[opt] identifier[opt] { enumerator-list }
+       gnu-attributes[opt]
+     enum gnu-attributes[opt] identifier[opt] { enumerator-list , }
+       gnu-attributes[opt]
 
-Add productions for end attributes in the field_declaration rule of
-Coccinelle's C parser. This parses the following C code from Linux
-v5.6-rc7 successfully:
+Add a production to the decl2 rule of Coccinelle's C parser to handle
+the end attributes here (i.e. gnu-attributes after the } ). This parses
+the following C code from Linux v5.6-rc7:
 
-  kernel/sched/sched.h:
+  drivers/net/wireless/broadcom/b43legacy/b43legacy.h
 
-	struct task_group {
-		...
-		atomic_t load_avg __cacheline_aligned;
-		...
-	};
+	struct b43legacy_iv {
+		__be16 offset_size;
+		union {
+			__be16 d16;
+			__be32 d32;
+		} data __packed;
+	} __packed;
+
+  drivers/scsi/myrs.h:
+
+	enum myrs_cmd_opcode {
+		MYRS_CMD_OP_MEMCOPY		= 0x01,
+		MYRS_CMD_OP_SCSI_10_PASSTHRU	= 0x02,
+		MYRS_CMD_OP_SCSI_255_PASSTHRU	= 0x03,
+		MYRS_CMD_OP_SCSI_10		= 0x04,
+		MYRS_CMD_OP_SCSI_256		= 0x05,
+		MYRS_CMD_OP_IOCTL		= 0x20,
+	} __packed;
 
 Signed-off-by: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 ---
- parsing_c/parser_c.mly | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ parsing_c/parser_c.mly | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/parsing_c/parser_c.mly b/parsing_c/parser_c.mly
-index 9afbd68c..5b7e1faf 100644
+index 5b7e1faf..3412c34e 100644
 --- a/parsing_c/parser_c.mly
 +++ b/parsing_c/parser_c.mly
-@@ -1830,7 +1830,7 @@ struct_decl2:
+@@ -1542,16 +1542,16 @@ abstract_declaratort:
+ /*(*************************************************************************)*/
  
- 
- field_declaration:
-- | spec_qualif_list struct_declarator_list TPtVirg
-+ | spec_qualif_list struct_declarator_list end_attributes_opt TPtVirg
-      {
-        let (attrs, ds) = $1 in
-        let (returnType,storage) = fixDeclSpecForDecl ds in
-@@ -1840,13 +1840,13 @@ field_declaration:
-        let iistart = Ast_c.fakeInfo () in (* for parallelism with DeclList *)
-        FieldDeclList ($2 +> (List.map (fun (f, iivirg) ->
-          f returnType, iivirg))
--                         ,[$3;iistart])
-+                         ,[$4;iistart])
-          (* don't need to check if typedef or func initialised cos
-           * grammar don't allow typedef nor initialiser in struct
-           *)
+ decl2:
+- | decl_spec TPtVirg
++ | decl_spec end_attributes_opt TPtVirg
+      { function local ->
+        let (returnType,storage) = fixDeclSpecForDecl (snd $1) in
+        let iistart = Ast_c.fakeInfo () in
+        DeclList ([{v_namei = None; v_type = returnType;
+                    v_storage = unwrap storage; v_local = local;
+-                   v_attr = fst $1; v_endattr = Ast_c.noattr;
++                   v_attr = fst $1; v_endattr = $2;
+                    v_type_bis = ref None;
+                 },[]],
+-                ($2::iistart::snd storage))
++                ($3::iistart::snd storage))
       }
- 
-- | spec_qualif_list TPtVirg
-+ | spec_qualif_list end_attributes_opt TPtVirg
-      {
-        let (attrs, ds) = $1 in
-        (* gccext: allow empty elements if it is a structdef or enumdef *)
-@@ -1855,7 +1855,7 @@ field_declaration:
-        then internal_error "parsing don't allow this";
- 
-        let iistart = Ast_c.fakeInfo () in (* for parallelism with DeclList *)
--       FieldDeclList ([(Simple (None, returnType)) , []], [$2;iistart])
-+       FieldDeclList ([(Simple (None, returnType)) , []], [$3;iistart])
-      }
- 
- 
+  | decl_spec init_declarator_list TPtVirg
+      { function local ->
 -- 
 2.21.1
 
