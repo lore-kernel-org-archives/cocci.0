@@ -2,139 +2,91 @@ Return-Path: <SRS0=zMkO=7T=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A56A3C433DF
-	for <cocci@archiver.kernel.org>; Sat,  6 Jun 2020 11:21:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E343C433E0
+	for <cocci@archiver.kernel.org>; Sat,  6 Jun 2020 13:54:23 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0B4C520663
-	for <cocci@archiver.kernel.org>; Sat,  6 Jun 2020 11:21:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id CCA31206A2
+	for <cocci@archiver.kernel.org>; Sat,  6 Jun 2020 13:54:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="MgUvTfyi"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0B4C520663
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZAwTrfqt"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CCA31206A2
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 056BLqDt010399;
-	Sat, 6 Jun 2020 13:21:52 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 056DsJgE012429;
+	Sat, 6 Jun 2020 15:54:19 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 1DDC45D47;
-	Sat,  6 Jun 2020 13:21:52 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id D9CC95D47;
+	Sat,  6 Jun 2020 15:54:18 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 550523BAB
- for <cocci@systeme.lip6.fr>; Sat,  6 Jun 2020 13:21:50 +0200 (CEST)
-Received: from mout.web.de (mout.web.de [212.227.15.3])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 056BLnGR022209
- (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
- Sat, 6 Jun 2020 13:21:49 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1591442504;
- bh=PvdB1jlig5gPjk+E7qkJrOtVJDGK6YtwTQrAFwVDAOc=;
- h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
- b=MgUvTfyidmi8txwizqxSxAENby0jq3hyXjH2GzmoNdZxZSVHEGtlS+BP34cKNBJqd
- UmpTbPHWV32YQk2PMvNpYgQNiXY9NRj+fKYYCCoggHDgQcmhTqZQWW49mAklF07/Cz
- U1BjA4q9wohMhUDNwzdtKrHjDbDcEIT5sOoH68X8=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([2.244.40.239]) by smtp.web.de (mrweb002
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0Luu81-1izIF720av-0103Qa; Sat, 06
- Jun 2020 13:21:44 +0200
-To: Julia Lawall <julia.lawall@inria.fr>, Denis Efremov <efremov@linux.com>,
-        Coccinelle <cocci@systeme.lip6.fr>
-References: <99ed463c-b7ba-0400-7cf7-5bcc1992baef@web.de>
- <alpine.DEB.2.21.2006060944320.2578@hadrien>
- <51a176d4-8c59-5da1-b4d2-c97b17b691a7@web.de>
- <alpine.DEB.2.21.2006061307020.2578@hadrien>
-From: Markus Elfring <Markus.Elfring@web.de>
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- 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 FEE=
-Message-ID: <bf698c44-4384-e471-3ff0-e38587140b98@web.de>
-Date: Sat, 6 Jun 2020 13:21:41 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.1
+ by systeme.lip6.fr (Postfix) with ESMTPS id 75E163BAB
+ for <cocci@systeme.lip6.fr>; Sat,  6 Jun 2020 15:54:17 +0200 (CEST)
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:1043])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 056DsF1U000603
+ (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
+ for <cocci@systeme.lip6.fr>; Sat, 6 Jun 2020 15:54:16 +0200 (CEST)
+Received: by mail-pj1-x1043.google.com with SMTP id i12so3831734pju.3
+ for <cocci@systeme.lip6.fr>; Sat, 06 Jun 2020 06:54:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=from:to:cc:subject:date:message-id:in-reply-to:references
+ :mime-version:content-transfer-encoding;
+ bh=QFD98B05ZSExaCbo2dTU/He13s/4duWpGEACJla/iM0=;
+ b=ZAwTrfqtlGdwgCpV89qAjsbuVmwtSBoDVpP7QKIV98VKZvZc6f1ULMFSJ6mtSCUg/Q
+ /mWOGWIaFw1EWMGFOq/y8VJIuqE5PNTq0BzmEUUY3wdw4azSi2Y8q+yRJeC/vKt9jo0/
+ +VvzWwIatzf01NotPyY1KIw1GWQgUhJbFUvHDEFWZW7MMxQDx11WR7240WS6VcE9/VRl
+ vtS1dlXn4Juof/ImjZxSpWJwdUXiLkQJuXNiR0vVTYWPFmM9ofP5v4JruGGr9GAH79up
+ JjJVokIEWJg+AtY0YkEeVgQvJ9te6YnYdcq4h0K1ObePsv9q8Z8/yQVikk84aV6w4HKZ
+ /t2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=QFD98B05ZSExaCbo2dTU/He13s/4duWpGEACJla/iM0=;
+ b=REUMvrqLQpcdWgeEz3IlrmGmu167FlNjBJCqayYvNiXu8d+UgcHyt0wadj+y8dkJB4
+ yo/wEJ+InSzsEpa7rE28RpHGyGijoIq/DnhFvX60Ug5ZWYjFnR88NwKHAzmhv+AEQCnW
+ X9qUB65Qvh72h0LN7ggGHAsRV6n5CvclT4O8t0yJ7b+n3S7SbSi1OSzDigfpXqtpHMcR
+ +pdqi/QpbdCN97S1AVJpRpaP35mt1fW9yhnb0dN/URhpbsw2rmKtNKrP6FRjRY5yrquc
+ fkC7jUW99qnrgf37jqUTyjvwnNk3nw7QPDpj5/U9+9nSGzyhO9jZmIj4Nb8zOrTnt45X
+ eZ0A==
+X-Gm-Message-State: AOAM533hxCdjRhenYDeZTGhcb55QtgkakCB0IEVPkmnK9xngcgTpy6RR
+ xVgvuojTCR+zyVveRFPUnhOEriZ5
+X-Google-Smtp-Source: ABdhPJxXzUl6I6eT3mV5/KCYNXCFPgzHm/oy4FIS6Kt9bne8uwStUmo6JtxUWVgKDphB6pVaeO2zFA==
+X-Received: by 2002:a17:90b:384c:: with SMTP id
+ nl12mr7498778pjb.108.1591451654855; 
+ Sat, 06 Jun 2020 06:54:14 -0700 (PDT)
+Received: from localhost.localdomain ([2405:204:28b:e8d7:7fc3:eb75:1ea0:39fe])
+ by smtp.gmail.com with ESMTPSA id
+ l4sm2062657pgo.92.2020.06.06.06.54.11
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Sat, 06 Jun 2020 06:54:14 -0700 (PDT)
+From: Jaskaran Singh <jaskaransingh7654321@gmail.com>
+To: cocci@systeme.lip6.fr
+Date: Sat,  6 Jun 2020 19:23:42 +0530
+Message-Id: <20200606135342.12584-1-jaskaransingh7654321@gmail.com>
+X-Mailer: git-send-email 2.21.1
+In-Reply-To: <20200529120703.31145-24-jaskaransingh7654321@gmail.com>
+References: <20200529120703.31145-24-jaskaransingh7654321@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.2006061307020.2578@hadrien>
-Content-Language: en-GB
-X-Provags-ID: V03:K1:cyWwJjQSkVzLGnBAQuoHWGcniaoteW35rJSoEbMM0j+hrQOr7mn
- HdsPmERCSi+Mr4MSxVJB2wBGCuvz2QHlcN8uUTTiWGhNMP0wm8rScctq04LA0NOQFHB/wfW
- Do2M6QF2Vm7AMr89e3uI91Ujn0F7612DFQoA+Gs8cPnzm4XbSgtGfA6V+aaNtVEaj3bIKD8
- aUYvcmISXdKkL8WPUxKxg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:J0appR+Bq6A=:vpbi3TTa9+syRiX1gqs84W
- byzk4x6JHDfwzYZUdALzIvZcnK4tALCh9jwQm+Ed774lv5ZLAYe8mO+NXt7FLUQG1cvCR+7PQ
- XkkRPVQvmKCaD+BV3ATWMgXxiBw9BJETGi22g6ZSVG4h/UX8xx2Zat6b2difGZXzg5VAQ266g
- jW5NXEPjibPa8hZnUssVHdaxlXuZ00eHbF9djCvrg+usmNxSQ/VeoVXI4rnGLrmBwz4tgCT0z
- ofv8KSIKk8uk02aJUuF1WOBny0/mXATyPdTThIJUgK9MnzC8YUWRCNGWnknSIqVP3RmmREO/Y
- Cih+4+2FTEY5FbVrsq7n+6KGAaLRKniNQPF5sq4WCbD6Y16danAfMnFHpmt9f5ExQIRbkzpC+
- HOsgfmrN6Y1CqopBh1bCr2SmOi4zcwy/yoUj3zkWpG1qWMfWwyWU1ixTOI4SzUw6VFNf3VU09
- rW/0+IUCF8hm+GOu93NuknMBHemor9F+4FUANi6Yr9FFzqetdaABaz0B+zrN3tZlDp9+Ydb2Z
- 2CXDb/L8qRy89ezWSv/RO0V17Wekbi8WAmQB4sWNp88Es5Ueta23HtqopPoQPG2gT7CTH8MKj
- 5LE3im7oNabDD30qJvjgD2nvzCFDTV6L0YO7fUL0hXn3djOonc2pfISH5n15VM8Zt4uRk2+Dx
- o0hhdfolDiE/AtrBDSQ2DdTROws4M2WhHr7tjCW2LwjEuNBoB42Eb5BnypmKiDKpWhnVrXGho
- +Au0FIOZZswuDBGHRYIkCt50Uuo3YRxkWGSRkHzEink7TIFWDO6MCO60aXLiSo062hVjau6OM
- uLEkCowNbR8c0M7JzKYrvjm7GwHzew5PAaA5NLThUI6VFjsj91sH3uIU63nNYmT96HL6AVjKY
- dHMrST740UvrP9q7i4KI9QGirpj9xQBvKniqHB8s7b19bTJmKTdACEK0YVEzWx48ARkb+V/eH
- JbLeWxd1Lh3sXwS/zrr1vzQlaEMVxZ+fH2pvGBCFr9Ttqzkd0i7VSovhSsTziT7zLWRQVrMqT
- 07WwRptqnV1tZeFd1olRUwM8StKkC60Ddd/tVCVhORcsGuZ8y5Fhz3xUgh4/9onVqsICJV84y
- Mxyip/vA5vFo6eyN1Sr+kpXi4h2H+ZU00xr9bVofV+PEAd9icG4vDYefTCX2Dz4R9GKOVUp6y
- vAYmLr5COw2Y7EZio+gbFaysTkq9kGBWV3F+BVOvECNE4VJk8T2dv76C5zmpabTlEA7v2v1b/
- Mo2m1MoQDDMi1E7Ky
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 06 Jun 2020 13:21:52 +0200 (CEST)
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sat, 06 Jun 2020 13:21:49 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 06 Jun 2020 15:54:19 +0200 (CEST)
+X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
+ Sat, 06 Jun 2020 15:54:16 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Michal Marek <michal.lkml@markovi.net>,
-        Gilles Muller <Gilles.Muller@lip6.fr>,
-        Nicolas Palix <nicolas.palix@imag.fr>, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [Cocci] coccinelle: api: add kvfree script
+X-Scanned-By: MIMEDefang 2.78
+Cc: linux-kernel-mentees@lists.linuxfoundation.org
+Subject: [Cocci] [PATCH v4 23/32] parsing_c: type_annoter_c: Reflect Cast
+	attributes
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -151,23 +103,90 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-> So there are a lot of reasons why constraints are useful.
+Cast attributes are added to the SmPL AST. Reflect these changes in
+type_annoter_c.ml.
 
-Thanks for such a view.
+Signed-off-by: Jaskaran Singh <jaskaransingh7654321@gmail.com>
+---
+Changes in v4:
+- Change 't, e, a' to 't, a, e' in the Cast constructor for
+  consistency
 
-Thus I dare to point the possibility out to consider their application
-for mentioned function name lists (besides using SmPL disjunctions).
-Can coding style concerns be resolved in a more constructive way then?
+Changes in v3:
+Rebase as follows:
+        v3 of "cocci: Add Parameter attributes to SmPL"[2]
+        v3 of "cocci: Improve C parsing of attributes"[3]
+        gitlab master branch (ffb87d9d)
+
+Changes in v2:
+parsing_c: parser: Pass attribute list from type_name
+- Warn about dropped attributes in typeof and sizeof productions
+
+parsing_cocci: parser: Parse cast attributes
+- Mention in commit message that cast attributes are matched anywhere
+  in a cast.
+
+parsing_cocci: arity: Reflect Cast attributes
+- Apply mcode2arity on attributes as well.
+
+parsing_cocci: visitor_ast: Visit cast attributes
+- Typo in commit message (AST0 -> AST).
+
+parsing_c: pretty_print_c: Reflect Cast attributes
+- Less space in front of [
+
+parsing_c: ast_c: Add Cast attributes
+- Switch places of expression and attributes in Cast type.
+
+parsing_c: parser: Parse Cast attributes
+- Switch places of expression and attributes in Cast type.
+
+parsing_c: pretty_print_c: Reflect Cast attributes
+- Switch places of expression and attributes in Cast type.
+- Change printing order of cast elements.
+
+parsing_c: type_annoter_c: Reflect Cast attributes
+- Switch places of expression and attributes in Cast type.
+
+parsing_c: visitor_c: Visit Cast attributes
+- Switch places of expression and attributes in Cast type.
+- Change visitor order of cast elements.
+
+engine: cocci_vs_c: Match Cast attributes
+- Switch places of expression and attributes in C AST Cast type.
+
+ocaml: coccilib: Reflect Cast attributes
+- Switch places of expression and attributes in C AST Cast type.
 
 
-> But hiding information that could be apparent to the SmPL compiler
-> and could be used to improve the performance of the matching
-> process is not one of them.
+ parsing_c/type_annoter_c.ml | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Will any software extensions become possible also in this area?
+diff --git a/parsing_c/type_annoter_c.ml b/parsing_c/type_annoter_c.ml
+index dfd363b2..25cb6c0e 100644
+--- a/parsing_c/type_annoter_c.ml
++++ b/parsing_c/type_annoter_c.ml
+@@ -525,7 +525,7 @@ let rec is_simple_expr expr =
+       true
+   | Binary (e1, op, e2) ->
+       true
+-  | Cast (t, e) ->
++  | Cast (t, a, e) ->
+       true
+   | ParenExpr (e) -> is_simple_expr e
+ 
+@@ -961,7 +961,7 @@ let annotater_expr_visitor_subpart = (fun (k,bigf) expr ->
+ 
+ 
+     (* -------------------------------------------------- *)
+-    | Cast (t, e) ->
++    | Cast (t, a, e) ->
+         k expr;
+         (* todo: if infer, can "push" info ? add_types_expr [t] e ? *)
+         make_info_def_fix (Lib.al_type t)
+-- 
+2.21.1
 
-Regards,
-Markus
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
