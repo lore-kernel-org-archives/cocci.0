@@ -4,48 +4,48 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-1.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6732C433DF
-	for <cocci@archiver.kernel.org>; Mon,  8 Jun 2020 12:22:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30C4CC433DF
+	for <cocci@archiver.kernel.org>; Mon,  8 Jun 2020 12:47:50 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 29C552074B
-	for <cocci@archiver.kernel.org>; Mon,  8 Jun 2020 12:22:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C11262072F
+	for <cocci@archiver.kernel.org>; Mon,  8 Jun 2020 12:47:49 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="NCIeTtNE"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 29C552074B
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="oRCsuY5E"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C11262072F
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 058CM7Of027550;
-	Mon, 8 Jun 2020 14:22:07 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 058Clk2c028640;
+	Mon, 8 Jun 2020 14:47:46 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id C7B317783;
-	Mon,  8 Jun 2020 14:22:07 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id CFAAA7783;
+	Mon,  8 Jun 2020 14:47:46 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 37A5044A7
- for <cocci@systeme.lip6.fr>; Mon,  8 Jun 2020 14:22:06 +0200 (CEST)
-Received: from mout.web.de (mout.web.de [212.227.17.12])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 058CM5Cq007500
+ by systeme.lip6.fr (Postfix) with ESMTPS id 7B51644A7
+ for <cocci@systeme.lip6.fr>; Mon,  8 Jun 2020 14:47:44 +0200 (CEST)
+Received: from mout.web.de (mout.web.de [212.227.17.11])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 058Clhbb019971
  (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO)
- for <cocci@systeme.lip6.fr>; Mon, 8 Jun 2020 14:22:05 +0200 (CEST)
+ for <cocci@systeme.lip6.fr>; Mon, 8 Jun 2020 14:47:44 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1591618924;
- bh=2CYSfjsuX3hT+0hjSQFzvLwNxj1NUPRy3m8C+1C0Qi0=;
+ s=dbaedf251592; t=1591620462;
+ bh=3d5A6pLYkAO9Mu6HpFE2ASG5+m7DHjkaZrZOFcrND+I=;
  h=X-UI-Sender-Class:Cc:Subject:To:From:Date;
- b=NCIeTtNERujcBRsLJEkhKdD83XzAdYHO0VRPnsgOEDjam+m7Ohqo4slUUIyK0Tf6R
- drdEkczu6kldLGtguvE0xS4Xtuwi6C5CAU8J6PA5Xw36C73m++6wc9WdQlQDQozYsk
- pmcw7MLZqoqzhbCLE47kqsOw8onNs4saSRuBjxW8=
+ b=oRCsuY5EU4Npa5OG+cy0DOWMSXET0tWHdWiG07KnNhtBFdUkfcdhD3l7KSmOS+fQR
+ oE2sA/+4fEo2FI7oQprvxlTL1X1cij1dZZ600WjdvieSaT94XHZVfTiHqXb+x8HfCZ
+ uhwWsEyPZV7QZaSeJkY+/+1SKbme6f9bbffZZSrM=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([78.49.116.236]) by smtp.web.de (mrweb102
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0LlF9O-1j7Yew0r70-00b73B; Mon, 08
- Jun 2020 14:22:04 +0200
-To: Julia Lawall <julia.lawall@inria.fr>
+Received: from [192.168.1.2] ([78.49.116.236]) by smtp.web.de (mrweb103
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0LtWwK-1izM661dcS-010uNv; Mon, 08
+ Jun 2020 14:47:42 +0200
+To: Jaskaran Singh <jaskaransingh7654321@gmail.com>, cocci@systeme.lip6.fr
 From: Markus Elfring <Markus.Elfring@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
@@ -90,42 +90,43 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <f19c2856-11cd-4223-b6f4-ec4b1493f369@web.de>
-Date: Mon, 8 Jun 2020 14:22:03 +0200
+Message-ID: <75dfde9d-7a2e-585f-ecd8-b21aa1e2567e@web.de>
+Date: Mon, 8 Jun 2020 14:47:41 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.8.1
 MIME-Version: 1.0
 Content-Language: en-GB
-X-Provags-ID: V03:K1:EN3mRxQcdspfv0DAPajTJ8dKrZhiiSAHvB+kAXaxGNuBX9TChoI
- /oCur9ViN5IPlW2jCfT5V/wm4juxSDE4nCM/pQgwFrZfNsKcOmGUCaQdIrvtNhX5M7KGIVR
- 8+dH0lCwLslJPwdwBVlnZDBPpquN2HL7RqSBwkjERbH1UJgVkX86Y0SIG5VQTDKJLHd+re4
- XSm9FkZCYB1oCdd9Vy9Gg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:K/ZJteQLDdY=:W76cPZivVgnThjASgK9WUA
- yIdmTs+UA3VAcNM/8Iqn0zobb6VtgKZttexGIK+aOIHXikqceeJco0bLCcEphJBcA5OjvNMqg
- F4ufNGp7wPYAggTKP2szKkpUaGtcg2lxuthGpjW23Q50wAR6ggIOfPdaYckK91W4w3zxrjUH3
- TSgOGenUiIHMO5if50qT/6LSyzU2iBF3x2HJiAGQwH8ocffUxEprFeQlF1XbidrYQ9wyy4imk
- JMXxJfqrYTe55vZxbnWnHgedXrur/PCuRji/LSc9qYVMQxmjBYJkWIF926nHMLzE6dDSMXDmo
- hm3rMUgstg6sb8vLBJFO2c8Fwpm8BSfuJ995dZzpW++5yBMu4Kj/ijs9Dv9xa4zOhwJnKH9cv
- SaLVrrjSJTtTaJuu0OJcK1OZJrHPf3HSETfUJsvYtJik+g3Kbt6gDdBhu1mXVOSNPLPJV579Z
- wOLNwDipWNhMfvSLcXHOGMO/JWkUEFslmvpBHAdutNKM9uziwkV+0+K0YS7WZqw8zCBaldxQl
- U/f14OyTHaKMXCkK0chqMm/2q26lG29tCXbSc33e3MDeSRUP7zEICilJLX8q7HtAx7g4YiQ7x
- 2Ao+oR4/enzPQ2UZ6qHUXyYEYKtar0UT3RISzxWd/VN1c9tMl/hrIFEpg0ozrSysWsvhiQqUX
- 2yqEr1pFV2IVlr+YXUKJEO++/fjK3A5erHahGMhfdK+nazF+qr404P9ZYf33L6CE1HbadsrYY
- Tmssb6k21rbo2wPAIUgAFL8UrJKK8IUFOqkm8O+psQFN1ZBuEowOubwq+pxV1X5jygcHJ/c51
- iOEUfOckbdH5aCc5ZiIs+/vVCqmuhzvqJ4MyZSySsseeERGrdmkYRe3590Q11/8kwohx11jrn
- p/AfPJgcPgveNvsD4HS0jELscECdWw4dJOqvDQw5A5cdnfjpefnmVDWg9ZyG6gUQPBmsQlWCY
- y1RtzuNFASHGOa4TnciKsKNcF9eunrM3HlUQEMdXxtqekzx9A/Ovgb/clI0P/90RfkSJ1lw/l
- iawRKWifeBPr1xTerXwJI7i26Z9E9I/EFVG1Xa9Jk7eSemeT106EQGN0JpC2OBu3bNfPliCeZ
- vBUJPGRUo6PvjJ95qNiV8ti121CsJ7YjDKajdERBJvl2ZkzGNKpmzVOcyoeYV1EcBnPOIFidw
- KyusrwHjGGf3hOcESg98BO0tOKQiXERyQcPSpa9AU7Hzs1Y2gcw6BVf6SkjuPHpO5MiucWv2V
- +EWPwoyKqOFkMOfYZ
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 08 Jun 2020 14:22:07 +0200 (CEST)
+X-Provags-ID: V03:K1:PUdVzSenBlNfqVjuMGyiqsHr4/ksqq1WIPcbSG1DNS291dD7mrz
+ 1jqloZanQIv2fET+oRJhNY1aKBqhxRdmFv53zxXRgAtmjdz5oOsZTTx5IM/sTdt7Pm7w2OE
+ tVu91159tTsOq1wXHLKx8K6TwqCOMvzATczG8o33BZ7SZq+UVVqSDWtpDQfoqM3TjYOUWVS
+ JZmLMm7qnV1/Qz/TbBkkg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:pC0b7os7XvE=:NLFIF5yGb2R8cWTdji/KYA
+ Qva9A8I7/u4cnBgHlJ15HfjK9hvLYeC9Zn5of7YNFm+NGMA1yME4PUVJirDxDTHqpAfMyNsce
+ YuyzBQDC1Lw+PxmN9wlJYlP0iKrni7wXP80Nmcij9b5bBBHjeOgt1GonUmRYOGSMlJfmZ7Q4H
+ tDQv/FEO6RpreCIO8fko0ll/pEuIb0nlvUOkUfXCBcsLlftr6PhFhiyYyT7NavCN8ZbKMD1Me
+ 6PAP5MM7MberzYqSykFn14vsYPLtDAjEd4UbU4REFUyQtvnPeX1Nq908IaR4qGH93WpVvjXTt
+ V1oVT7tGiPfGLj97Jj4jgVO+p7+M/SQAd05hiYjIAznJ4TIukM/GtnqfuyLGwCxUtF/sgffHr
+ aRGXOESrAsN75R9a4MP9bbg+b049iK0NzveqP6hlWzoGN+I3U4/G5ouNXTiTg7zD9ScArUmui
+ IGHDKZSCdu3BLWHi8QHmroYxSLmMI6HHlgnQtL2YEjGiMF5QIJTejV1kZBVQQ9FmQwE5hQOhu
+ CCtgKUc5c+E7sZ18wpL4KyZg30QJ0diqyt/N6YCTsgDnZtraNVpKdZQNl45/ylI2yOD0AGS8h
+ iqhjSXN3i55eSHwvuUt5JSofmrTqCYRqfN+Un0MfUbV1XeuYYTtyRKI8HAWxsUVtXCz9SXOeI
+ f+3QZ+jhRvMQJ9gE+vH8hkJ6CRPtJ2aJEL28Kf9kiozkL3DC1k3uXYzfuIk6JZvaXQXVChL1K
+ dSyr7pa6LiXMdUXqmCORD8B6NCkKSiFmWVHI0qkd8q9HCVarkLYqALY99pJf5NJmEnnEo+LcS
+ Wnw+1EhRhuO7tc0O5oHxx84USoWD+9ZpUlStZ5p4oFfSabBWvaFTuySlXRaB8LJxVK1pzARyz
+ Lfg/vPQORPYUEzwIT/3FU3b61CPfr6DatOW3TxekYdZ5JKLT81FqBOXN6w+tC6CJztmwa54eB
+ ZOh598xUSzeUDf8AycXQNmZYx0ZShA4bE7uP0VwGDom/8IasvaZRrC21F2ETz9y5YqsKtw6mr
+ Kx0JdSl5ncBejjm7ppRUzJbE4Ulecf5q0OsVc4pESjH2oKwNaJGKDH1bzEnNXJGU1jSPtr9Ar
+ 5tAKhrUymZP2IPZltAE22jvrmODjFQk4yp2wPiWGYWhOsklgZ5lT7S/sbaK9MPDXhRC4dj0ax
+ rvYxNbhmxa5ma43RMMgQY+Bib71qNZmiVSdQRLeUfd54gzRE3VqXpfs3+QLRzmqP+rl9SDrSi
+ NtYXOIPy5rKKwJlbb
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 08 Jun 2020 14:47:47 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Mon, 08 Jun 2020 14:22:05 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Mon, 08 Jun 2020 14:47:44 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: cocci@systeme.lip6.fr, Denis Efremov <efremov@ispras.ru>
-Subject: Re: [Cocci] Python interface
+Cc: linux-kernel-mentees@lists.linuxfoundation.org
+Subject: Re: [Cocci] [PATCH 0/4] parsing_c: parser: Add end_attributes_opt
+ rule
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -142,15 +143,16 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-> OK, basically I worry about converting a list of 35 000 file names to python.
+> Patches for improving the C parsing of attributes[1] introduced a lot
+> redundant code in the C parser. This patch series resolves this by adding
+> a rule for optional end attributes and merging the redundant code
+> together.
+>
+> [1]
+> [PATCH v2 00/25] cocci: Improve C parsing of attributes
+> https://lore.kernel.org/cocci/20200528122428.4212-1-jaskaransingh7654321@gmail.com/
 
-Can such development concerns be adjusted?
-
-
-> But maybe it's not a big deal.
-
-Will additional search filters, dependencies and better algorithms improve
-the software situation finally?
+Could questionable source code have been avoided before?
 
 Regards,
 Markus
