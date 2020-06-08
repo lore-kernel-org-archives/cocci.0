@@ -6,70 +6,70 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDC57C433E0
-	for <cocci@archiver.kernel.org>; Mon,  8 Jun 2020 15:01:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5656C433DF
+	for <cocci@archiver.kernel.org>; Mon,  8 Jun 2020 15:01:29 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 50E60206C3
-	for <cocci@archiver.kernel.org>; Mon,  8 Jun 2020 15:01:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 50E60206C3
+	by mail.kernel.org (Postfix) with ESMTPS id 2D40B206C3
+	for <cocci@archiver.kernel.org>; Mon,  8 Jun 2020 15:01:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2D40B206C3
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 058F1OHM011567;
-	Mon, 8 Jun 2020 17:01:24 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 058F1QMk014288;
+	Mon, 8 Jun 2020 17:01:26 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id D265B7783;
-	Mon,  8 Jun 2020 17:01:24 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 516627783;
+	Mon,  8 Jun 2020 17:01:26 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 2C38944A7
- for <cocci@systeme.lip6.fr>; Mon,  8 Jun 2020 17:01:23 +0200 (CEST)
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com
- [209.85.208.179])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 058F1M9X027097
+ by systeme.lip6.fr (Postfix) with ESMTPS id 5F3A944A7
+ for <cocci@systeme.lip6.fr>; Mon,  8 Jun 2020 17:01:25 +0200 (CEST)
+Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com
+ [209.85.208.170])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 058F1ODr019516
  (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Mon, 8 Jun 2020 17:01:22 +0200 (CEST)
-Received: by mail-lj1-f179.google.com with SMTP id a25so20903107ljp.3
- for <cocci@systeme.lip6.fr>; Mon, 08 Jun 2020 08:01:22 -0700 (PDT)
+ for <cocci@systeme.lip6.fr>; Mon, 8 Jun 2020 17:01:24 +0200 (CEST)
+Received: by mail-lj1-f170.google.com with SMTP id c17so20870768lji.11
+ for <cocci@systeme.lip6.fr>; Mon, 08 Jun 2020 08:01:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=gS/VQWLqdTR1WnMRT1E0dWszp6HUI8fnasX0aZv1mo8=;
- b=PT7TLCyHiYaC7tglY2lDCkzweTpsI6QVKt+ki0CXFZ6KRow1sfe7J/g2ivgAXAqcKV
- C+IqO6C12FByKWo8ngB9otK0gjiRWEEUkgfX9LIEaAxmH8sykWCgDB+3uCJpuOEmDPSG
- gjhdnSVRhbFW7JH+Y4WOrtBm8OXqe//hcuEARpI1dQnMHhrPPAU9EvazOPOnBB7Ro08Y
- 6LpjzVdrqzrVmjdYGjfldJAYdc7N6PqoZ0MNUERGgDv3FAd+T3KcwlivmLN7UGEwaY5O
- LMaDYmkGjICypNys3pDHmZWi/HK239F5DowqkGlX0fBQF5QXljoQ2Ry5ijS86jYwOIgE
- M/pA==
-X-Gm-Message-State: AOAM531obrfSSJ2YNbHt1oudq2WLtYYmrPW/mlKS+Ttr8XwMc0oKDv+e
- Jq6qAJaaLSPa3XqSEDSs48o=
-X-Google-Smtp-Source: ABdhPJzLKQbTG+B2awlUCbuilSYITMINPGNFWm2gSFfpcpQ8UoH6L5e6cbQTFICgqgLzZ6kTX9ZppQ==
-X-Received: by 2002:a2e:9081:: with SMTP id l1mr12154029ljg.81.1591628482141; 
- Mon, 08 Jun 2020 08:01:22 -0700 (PDT)
+ bh=lR7SkMxR2WvDhYKg7h/qTpiMFY/yOdg6mP8JNQ15c78=;
+ b=pmSvVoR90pw3o7RKS0zdPmjjlMOnHDxu6pM62Egz5JOaaXDdHnZaVQKMzMtofEjoye
+ O64zdXc0+cEyfLBwDAjRPCDkgm4TRez1leYofH8ez9m3Ls6YKJbSqAseCIUcJy+2DG8U
+ Y8FYsnNqtOybdw4gXKbMISgNBVwYBEmFUW3cpNfKSrOI4nzAgrX6ueLKNiuwFKdIBd+k
+ Qb9NDmqZZryjx4aWHxcn3e7A+rNAFQOlBCFFVy1nCj8eDuFpej3g64Hlp2e88kpxGX/M
+ 8zcFEAFrSVdXeUMQrqkzreus8R9CMkOIckUFC2/L/AXf8ZSAw+BebMxSWLcWrHZvj5K4
+ zjHQ==
+X-Gm-Message-State: AOAM532AKCY5fKWWo8d0s594RDsEmErhZXM9C2rMEJ2VTJrvxx7jLKTA
+ I9H6UPG51OfJg0K92hLZoAM=
+X-Google-Smtp-Source: ABdhPJyxS9y/hUjXRm6R0Uxf68yVoHH4SPTO73VCz8t8ngQaeVrq1ectHYOH68ht0aomkffk9AQdaA==
+X-Received: by 2002:a2e:800b:: with SMTP id j11mr12204281ljg.467.1591628484282; 
+ Mon, 08 Jun 2020 08:01:24 -0700 (PDT)
 Received: from localhost.localdomain ([213.87.137.116])
- by smtp.googlemail.com with ESMTPSA id r16sm279228ljn.106.2020.06.08.08.01.20
+ by smtp.googlemail.com with ESMTPSA id r16sm279228ljn.106.2020.06.08.08.01.22
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 08 Jun 2020 08:01:21 -0700 (PDT)
+ Mon, 08 Jun 2020 08:01:23 -0700 (PDT)
 From: Denis Efremov <efremov@linux.com>
 To: Julia Lawall <Julia.Lawall@lip6.fr>
-Date: Mon,  8 Jun 2020 18:00:37 +0300
-Message-Id: <20200608150038.223747-4-efremov@linux.com>
+Date: Mon,  8 Jun 2020 18:00:38 +0300
+Message-Id: <20200608150038.223747-5-efremov@linux.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200608150038.223747-1-efremov@linux.com>
 References: <20200608150038.223747-1-efremov@linux.com>
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 08 Jun 2020 17:01:24 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 08 Jun 2020 17:01:26 +0200 (CEST)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Mon, 08 Jun 2020 17:01:22 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Mon, 08 Jun 2020 17:01:25 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: linux-kernel@vger.kernel.org, cocci@systeme.lip6.fr
-Subject: [Cocci] [PATCH v2 3/4] coccinelle: api: filter out memdup_user
-	definitions
+Subject: [Cocci] [PATCH v2 4/4] coccinelle: api: add selfcheck for
+	memdup_user rule
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -86,69 +86,81 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Don't match original implementations.
+Check that the rule matches vmemdup_user implementation.
+memdup_user is out of scope because we are not matching
+kmalloc_track_caller() function.
 
 Signed-off-by: Denis Efremov <efremov@linux.com>
 ---
- scripts/coccinelle/api/memdup_user.cocci | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+ scripts/coccinelle/api/memdup_user.cocci | 46 ++++++++++++++++++++++--
+ 1 file changed, 44 insertions(+), 2 deletions(-)
 
 diff --git a/scripts/coccinelle/api/memdup_user.cocci b/scripts/coccinelle/api/memdup_user.cocci
-index d15c061a34ab..8621bd98be1e 100644
+index 8621bd98be1e..78fded83b197 100644
 --- a/scripts/coccinelle/api/memdup_user.cocci
 +++ b/scripts/coccinelle/api/memdup_user.cocci
-@@ -15,12 +15,20 @@ virtual context
+@@ -14,13 +14,24 @@ virtual patch
+ virtual context
  virtual org
  virtual report
++virtual selfcheck
  
-+@initialize:python@
+ @initialize:python@
+ @@
+-filter = frozenset(['memdup_user', 'vmemdup_user'])
++
++definitions = {
++    'memdup_user': 'mm/util.c',
++    'vmemdup_user': 'mm/util.c',
++}
++
++filter = frozenset(definitions.keys())
++coccinelle.filtered = set()
++coccinelle.checked_files = set()
+ 
+ def relevant(p):
+-    return not (filter & {el.current_element for el in p})
++    found = filter & {el.current_element for el in p}
++    coccinelle.filtered |= found
++    return not found
+ 
+ @depends on patch@
+ expression from,to,size;
+@@ -117,3 +128,34 @@ p << rv.p;
+ @@
+ 
+ coccilib.report.print_report(p[0], "WARNING opportunity for vmemdup_user")
++
++@script:python depends on selfcheck@
 +@@
-+filter = frozenset(['memdup_user', 'vmemdup_user'])
++coccinelle.checked_files |= set(definitions.values()) & set(cocci.files())
 +
-+def relevant(p):
-+    return not (filter & {el.current_element for el in p})
++@finalize:python depends on selfcheck@
++filtered << merge.filtered;
++checked_files << merge.checked_files;
++@@
 +
- @depends on patch@
- expression from,to,size;
- identifier l1,l2;
-+position p : script:python() { relevant(p) };
- @@
- 
---  to = \(kmalloc\|kzalloc\)
-+-  to = \(kmalloc@p\|kzalloc@p\)
- 		(size,\(GFP_KERNEL\|GFP_USER\|
- 		      \(GFP_KERNEL\|GFP_USER\)|__GFP_NOWARN\));
- +  to = memdup_user(from,size);
-@@ -42,9 +50,10 @@ identifier l1,l2;
- @depends on patch@
- expression from,to,size;
- identifier l1,l2;
-+position p : script:python() { relevant(p) };
- @@
- 
---  to = \(kvmalloc\|kvzalloc\)(size,\(GFP_KERNEL\|GFP_USER\));
-+-  to = \(kvmalloc@p\|kvzalloc@p\)(size,\(GFP_KERNEL\|GFP_USER\));
- +  to = vmemdup_user(from,size);
-    if (
- -      to==NULL
-@@ -63,7 +72,7 @@ identifier l1,l2;
- 
- @r depends on !patch@
- expression from,to,size;
--position p;
-+position p : script:python() { relevant(p) };
- statement S1,S2;
- @@
- 
-@@ -76,7 +85,7 @@ statement S1,S2;
- 
- @rv depends on !patch@
- expression from,to,size;
--position p;
-+position p : script:python() { relevant(p) };
- statement S1,S2;
- @@
- 
++# Don't check memdup_user because the pattern is not capturing
++# kmalloc_track_caller() calls
++del definitions['memdup_user']
++
++# mapping between checked files and filtered definitions
++found_defns = {}
++for files, funcs in zip(checked_files, filtered):
++   for file in files:
++      found_defns[file] = funcs
++
++# reverse mapping of definitions
++expected_defns = {v : set() for v in definitions.values()}
++for k, v in definitions.items():
++    expected_defns[v] |= {k}
++
++for efile, efuncs in expected_defns.items():
++    if efile in found_defns:
++        not_found = efuncs - found_defns[efile]
++        if not_found:
++            print('SELF-CHECK: the pattern no longer matches ' \
++		  'definitions {} in file {}'.format(not_found, efile))
 -- 
 2.26.2
 
