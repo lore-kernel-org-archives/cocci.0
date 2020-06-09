@@ -1,4 +1,4 @@
-Return-Path: <SRS0=02ua=7V=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=tHwe=7W=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
@@ -7,48 +7,44 @@ X-Spam-Status: No, score=-1.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50CE6C433DF
-	for <cocci@archiver.kernel.org>; Mon,  8 Jun 2020 19:24:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3998C433E0
+	for <cocci@archiver.kernel.org>; Tue,  9 Jun 2020 09:36:23 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8282D2063A
-	for <cocci@archiver.kernel.org>; Mon,  8 Jun 2020 19:24:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id DC9AF2063A
+	for <cocci@archiver.kernel.org>; Tue,  9 Jun 2020 09:36:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="j2Nj1ZjU"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8282D2063A
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="lK+45rqX"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DC9AF2063A
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 058JOsG7005881;
-	Mon, 8 Jun 2020 21:24:54 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0599aJqI005690;
+	Tue, 9 Jun 2020 11:36:19 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id E7E567783;
-	Mon,  8 Jun 2020 21:24:53 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 4E85E7783;
+	Tue,  9 Jun 2020 11:36:19 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 9ACBF44A7
- for <cocci@systeme.lip6.fr>; Mon,  8 Jun 2020 21:24:52 +0200 (CEST)
-Received: from mout.web.de (mout.web.de [217.72.192.78])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 058JOpLE026745
+ by systeme.lip6.fr (Postfix) with ESMTPS id A1BA03F9A
+ for <cocci@systeme.lip6.fr>; Tue,  9 Jun 2020 11:36:17 +0200 (CEST)
+Received: from mout.web.de (mout.web.de [212.227.17.11])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 0599aFrm009940
  (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
- Mon, 8 Jun 2020 21:24:52 +0200 (CEST)
+ Tue, 9 Jun 2020 11:36:15 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1591644286;
- bh=ntpGprcWPLFY+hQr6JDXGQi/wzfc1NSUFNqsD75E4Ps=;
- h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
- b=j2Nj1ZjUR3U+j0AKe0Tebd0ta3GSnO8KkEto6QLaua7JveyBYPs67LWe1zruIfiyK
- RiYJAEMiHRrycXaPJ4hCd0HXovbDzyJpXT/nnDG6o+N1e/WFhfliKecBFS97uOfv5V
- iY8DpXDq8R+DeMmYNg9idNklCvkvWPJNF7C2X48U=
+ s=dbaedf251592; t=1591695371;
+ bh=NpSwO6xMFBw8TDKDNbh3ZtFdFhrLZFzYnTF7UJssoFM=;
+ h=X-UI-Sender-Class:Cc:Subject:From:To:Date;
+ b=lK+45rqX6Fc7flnJKFO5plwbq8zR42zPEvB1icZgGK8LGOiihxFaI4k2QgdW8as1y
+ lj2p5hngN7Su+mAsfnImFtZKqWBcbvfftpINCzbJsH17R1x9nyzQFpE29BvHoajETp
+ bGft9SFOQXQyw6wpS/J5z+FP5LB3d//qWec3/91w=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([78.49.116.236]) by smtp.web.de (mrweb101
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0Ldn6l-1jHbTR0FIB-00iyWa; Mon, 08
- Jun 2020 21:24:46 +0200
-To: Julia Lawall <julia.lawall@inria.fr>, Denis Efremov <efremov@linux.com>,
-        Coccinelle <cocci@systeme.lip6.fr>
-References: <6c9c6a4c-c305-ddab-8a1b-e4dc448d643f@web.de>
- <alpine.DEB.2.21.2006082035580.3136@hadrien>
+Received: from [192.168.1.2] ([77.6.55.3]) by smtp.web.de (mrweb106
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 1N0Icn-1ilWsW2Q6B-00xFxk; Tue, 09
+ Jun 2020 11:36:11 +0200
 From: Markus Elfring <Markus.Elfring@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
@@ -93,47 +89,49 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <dd5b2ec1-2307-7508-6423-a3a1a371d33d@web.de>
-Date: Mon, 8 Jun 2020 21:24:44 +0200
+To: Denis Efremov <efremov@linux.com>, Coccinelle <cocci@systeme.lip6.fr>,
+        Gilles Muller <Gilles.Muller@lip6.fr>,
+        Julia Lawall <Julia.Lawall@lip6.fr>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nicolas Palix <nicolas.palix@imag.fr>
+Message-ID: <675f3bc3-99f4-1780-af04-cf7de2e9059a@web.de>
+Date: Tue, 9 Jun 2020 11:36:02 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.8.1
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.2006082035580.3136@hadrien>
 Content-Language: en-GB
-X-Provags-ID: V03:K1:4RLo0gH8yxE/3JuG0hn1uf1xKtPScsjntHcA766Gqf5xjwt7rbc
- qxUrvkTHGK7iE/nykUpFRIBUJtWQ/04b0VeYmmoDvyI7Ay1UkY6qebfzWoX0X0r304plX+f
- vEKu0uRwIMmnCEAEp3py9Tl6tcCabDk9Iy5AaJRKuJ9L8EFs0k0NUF6+N+bzH9FCZdYTvAr
- j9EpKljhXR9hRdILz5oAw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:rQabCmWyncw=:mIJgOO/t7DIcBRJtV8Ugpa
- +uAdrOebI6bEnt8CEQsAHyeCsTbv87OS2Bg4+jk0u6ejTiZmi2xgASy+cBSt05NC82HURXDSh
- PNuV++mC2XyHF1aYiTGhYNbCA0Wdsy6cq8ImTJCTY4AYoHjim6HdxSD9ywNbrrZDrRGYcWUwB
- SPdVKlFPLIupC+xieru7hN5oCDIXsfJwtYNSm+bFnQeTyJ1moDCliuCq5nwPKirOVaBZ1DHGR
- V9nGHll6o3C+B1ZvosvtYpm9TvlHYjeESOvOoXhFDpIq24A537mRGyjNn/1tYmjuJbxZoHQN3
- dbHZlfR6dkahyNz0YmAXX+UNIt7aMzfsC647MO4utN40ee+SewDD/yd8Mt2gufQjiOVt5vq/q
- cC3wTgrwToEJbbfSgM7X52shF11f2nVYGj9t4VjjrUr/cVPP7NnvyUoNzRDrTqYPuFG9j+EKr
- nsiNyQEv4JeBiPwoVn5YofhvHC3knnWngMuSaVPQqVquJYbzE+vcHI6iE0y9zGm09NTp188Us
- KFFa1SKKXFD0cn0MkDSGSyxQ20cmam/ZLPcW6s8GPOoEoxvKfIoJRiDn6fX+6F5AiR5ScnZt/
- lAlJPX7LvxAekNP9vUn7yS0wvLldkqzrTnjWoXFZPqs9TUoq9RZ/42JON8+1QlymVDW+ugUbX
- hgoh5fTRZfMOgUvMKvGOaSYFYWcYzrKgw4Hdf6o9qvU3Kb8m7sisAH0ZuY61LEFoxjuw9QXs1
- FXYFQreRCoRiToS9QXdHYj2fPX9ISx7xdA8XjauaP7KQb1dhPqr9LGRfT6jinRlYscXYW0BQ7
- 5JrPvWy0yCzlHp6dooF4JYwkCI3gW/KHVCnBGpviIM3Y2OpAVMcoxyuRjxu01yxuf4fJU/aVV
- VS1kjoV6117q3RbAaUfAz0mtUx0sz7XMXJkEGwbYkBPpz1uahEF3y/WNWonnyu9xoxscy9nHc
- cOpN6NXnwl/ePQ7FoKG7HWCHIK8ixNbpptzBcU3rlGl7OHK0rRe9BkTLm3cKQvEv5uwLZtkGa
- VM+QVx3ORZpsMP+ZpsVEe4uiG3GXz2wPXBZhjwIuqeuEtH6WZvW48IQw1a+4M+WzJ6kuhHTWt
- DkzlHzFC7jitW6/+lVtuarhLG1/E0kEZuIywmiZnvMc2mx5RT7B5/yCFP/Rf6eNXvqQHh4Tmp
- X8LpbDVdh2yT6Z/tdH9suJVnSA+PRlkjPdJFpOowHMDmFC6f+zef7ExgwQTYx4JFhxmQ6XToV
- v+jvoS7c5dASq++38
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 08 Jun 2020 21:24:54 +0200 (CEST)
+X-Provags-ID: V03:K1:7CeUvxCUQ6EJKnHmYxZyFtswKqKjx7kdOjE/wFEB1/nj6KWdiqf
+ YJDX0kicge1A54j8VpqHqMvaDp8W2HUMuCwWCbn8B8pi3lnKAn6Icv57v8lMAjgHr6A4cq/
+ 2jXmpjt/UDRG6HLQDMT1xqzgBUSgrI3hbDfJCUuccwnHzDzi95nPZ7g6bP5amsW2cDV61v5
+ ZynDy7TTK8bDk1MinJq+Q==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:AfBzq1DY0VU=:BQZxKX84v1cpxQsKIW4lG4
+ 7f+1ZVpSMBb4+leC47n/K+2TYUVg8JDLZiaXiX3D1rKbFN/6Noz/ozif+b5AGlRF5RUCGYpiS
+ SbrTMWLTpMXNuXa9YuiW/gWtAnNccJicT8jtm6RqUCrr9C6RFOYZTH6CxSvng7m8mXEPVPJZE
+ JJQKl8h86fVjkn/wZymV3oQQBiuBYq1K9ohKtxTkvl+QsoYjO/uSkGadibOHlj3K5PXBw4zDD
+ gH8LnUwgSNbmP9I4uGYCN4kItJDENB+AA2EYrKtu8jcclsk7nhxKIM0waD3y8vaOPueRlYsJd
+ FZjztEn5sO7vor6cF/jI0BrXFZk4s8AITttPXk4O39/Mqi+xeyALq9MPEeHUQMQjqko4uty6U
+ kMnK81a+i09U8MsmxBhuZRcrO69uks/lCjukWMXm5RfM9XnkjwtYGF3/JzmrUPqC2jY9rPc7d
+ YpSnHYjHN8M6CwdtGMh1A1605JxHtfzAp5X4h2Hwl6Ru5kiqnLXQ0+HiyUH47f67QD+VHYcIz
+ Hkq7SrgDE3HBbBWvJXXzF8I99z4Uq2LQvGaiJF3+51MnBN7I1qIZAsTdue6OXLN+Pd0r7gV7y
+ U2GNlwMca35pZrxdUQyINm2AM18DyJ/RHKZzHTkWxM9fJB2WsmoKTkaKtg0jN7GNS1zLXeqYW
+ h2DB+xM9haoAgNkw2AfcGTCBU70ZGpnH9QJz3GrvrHh9aj+jtrb3bEZL6cFqesAg2VYBuvhDk
+ 4AmFNMjc5nN9x1tU2Ez0sFcMXaffGPOE9uPQb40JDBGIWFjxClk3cN7cE2w5AttNlksrmnMwI
+ hAKGg/H/1odZ9Y+GVEQ4D8GjU1LDNRhslSrg/YPUozeWdyiM1NWQB+1AKHiGXNnWajlkhOQaT
+ 8ZCS1tD/shfqNBn7U44IUK2j2sGjvLdM/+jtbYwyZHmnLa2e2AFscYjnvnMySHIFGxZI5CrYR
+ cVZ1t0U3DmTKNqBbq7wVqV63F7lgmPa3irVrOa2tVzmZlxQB0Ij/4cflU7IvrBANvIY1DVBvF
+ 9Utt+4zQmd0Yrexh8a2YkqaDh68AN3xmRgeY4VMqEJVbuZlR7UMTMM/SV5TH3DeM2gi987xZy
+ RjMDlW7Ok6FE8XCmEx9ba+QCn4r4Va82DW1a0Vl4EG770ejnRFJsAMbEtdIvHNntduAcVJ7Ev
+ 2YafDIB26xITvu+zQJgfTR13o59ZtbBNsh8j76bBqHHG952TH/nn7RmyVRZ/XNhI0tckOmlA4
+ OE22034hzyDRSev2X
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 09 Jun 2020 11:36:19 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Mon, 08 Jun 2020 21:24:52 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Tue, 09 Jun 2020 11:36:15 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Michal Marek <michal.lkml@markovi.net>,
-        Gilles Muller <Gilles.Muller@lip6.fr>,
-        Nicolas Palix <nicolas.palix@imag.fr>, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [Cocci] [PATCH v2 2/4] coccinelle: api: extend memdup_user rule
- with vmemdup_user()
+Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [Cocci] [PATCH v2 4/4] coccinelle: api: add selfcheck for
+ memdup_user rule
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -150,16 +148,24 @@ Content-Transfer-Encoding: base64
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Pj4+ICsqICB0byA9IFwoa3ZtYWxsb2NAcFx8a3Z6YWxsb2NAcFwpKHNpemUsXChHRlBfS0VSTkVM
-XHxHRlBfVVNFUlwpKTsKPj4+ICsgICBpZiAodG89PU5VTEwgfHwgLi4uKSBTMQo+Pj4gKyAgIGlm
-IChjb3B5X2Zyb21fdXNlcih0bywgZnJvbSwgc2l6ZSkgIT0gMCkKPj4+ICsgICBTMgo+Pgo+PiBI
-b3cgZG9lcyB0aGUgU21QTCBhc3RlcmlzayBmdW5jdGlvbmFsaXR5IGZpdCB0byB0aGUgb3BlcmF0
-aW9uCj4+IG1vZGVzIOKAnG9yZ+KAnSBhbmQg4oCccmVwb3J04oCdPwo+Cj4gTWFrZSBjb2NjaWNo
-ZWNrIHVzZXMgLS1uby1zaG93LWRpZmYgZm9yIG9yZyBhbmQgcmVwb3J0IG1vZGVzLCBzbyB0aGUg
-KiBoYXMKPiBubyBlZmZlY3QgaW4gdGhvc2UgY2FzZXMuCgoqIENhbiBpdCBiZSBuaWNlciB0byBn
-ZW5lcmF0ZSBvbmx5IHJlcXVpcmVkIGRhdGEgZm9yIGVhY2ggb3BlcmF0aW9uIG1vZGU/CgoqIFdv
-dWxkIHlvdSBsaWtlIHRvIGNvbXBhcmUgdGhlIHVzYWdlIG9mIHRoaXMgY29tbWFuZCBwYXJhbWV0
-ZXIgd2l0aCBvdGhlcgogIGRlc2lnbiBhcHByb2FjaGVzPwoKUmVnYXJkcywKTWFya3VzCl9fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCkNvY2NpIG1haWxpbmcg
-bGlzdApDb2NjaUBzeXN0ZW1lLmxpcDYuZnIKaHR0cHM6Ly9zeXN0ZW1lLmxpcDYuZnIvbWFpbG1h
-bi9saXN0aW5mby9jb2NjaQo=
+4oCmCj4gKysrIGIvc2NyaXB0cy9jb2NjaW5lbGxlL2FwaS9tZW1kdXBfdXNlci5jb2NjaQo+IEBA
+IC0xNCwxMyArMTQsMjQgQEAgdmlydHVhbCBwYXRjaAo+ICB2aXJ0dWFsIGNvbnRleHQKPiAgdmly
+dHVhbCBvcmcKPiAgdmlydHVhbCByZXBvcnQKPiArdmlydHVhbCBzZWxmY2hlY2sKCldvdWxkIHlv
+dSBsaWtlIHRvIGF2b2lkIHRoZSByZXBldGl0aW9uIG9mIGEgU21QTCBrZXkgd29yZCBoZXJlPwoK
+K3ZpcnR1YWwgcGF0Y2gsIGNvbnRleHQsIG9yZywgcmVwb3J0LCBzZWxmY2hlY2sKCgo+IEBAIC0x
+MTcsMyArMTI4LDM0IEBAIHAgPDwgcnYucDsKPiAgQEAKPgo+ICBjb2NjaWxpYi5yZXBvcnQucHJp
+bnRfcmVwb3J0KHBbMF0sICJXQVJOSU5HIG9wcG9ydHVuaXR5IGZvciB2bWVtZHVwX3VzZXIiKQo+
+ICsKPiArQHNjcmlwdDpweXRob24gZGVwZW5kcyBvbiBzZWxmY2hlY2tACj4gK0BACj4gK2NvY2Np
+bmVsbGUuY2hlY2tlZF9maWxlcyB8PSBzZXQoZGVmaW5pdGlvbnMudmFsdWVzKCkpICYgc2V0KGNv
+Y2NpLmZpbGVzKCkpCgpJIHN1Z2dlc3QgdG8gcmVjb25zaWRlciB0aGUgdXNhZ2Ugb2YgdGhlIGZ1
+bmN0aW9uIOKAnGNvY2NpLmZpbGVzKCnigJ0uCkNhbiBzdWNoIGEgc2NyaXB0IHJ1bGUgZGV0ZXJt
+aW5lIGZvciB3aGljaCBmaWxlIGl0IHNob3VsZCBwZXJmb3JtIGRhdGEgcHJvY2Vzc2luZz8KCgo+
+ICsgICAgICAgICAgICBwcmludCgnU0VMRi1DSEVDSzogdGhlIHBhdHRlcm4gbm8gbG9uZ2VyIG1h
+dGNoZXMgJyBcCj4gKwkJICAnZGVmaW5pdGlvbnMge30gaW4gZmlsZSB7fScuZm9ybWF0KG5vdF9m
+b3VuZCwgZWZpbGUpKQoKQ2FuIHRoZSBmb2xsb3dpbmcgY29kZSB2YXJpYW50IGJlIGEgYml0IG5p
+Y2VyPwoKKyAgICAgICAgICAgIHN5cy5zdGRvdXQud3JpdGUoJ1NFTEYtQ0hFQ0s6IFRoZSBwYXR0
+ZXJuIGRvZXMgbm90IG1hdGNoIGRlZmluaXRpb25zIHt9IGluIGZpbGUge30gYW55IG1vcmUuXG4n
+IFwKKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgLmZvcm1hdChub3RfZm91bmQsIGVmaWxl
+KSkKCgpSZWdhcmRzLApNYXJrdXMKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX18KQ29jY2kgbWFpbGluZyBsaXN0CkNvY2NpQHN5c3RlbWUubGlwNi5mcgpodHRw
+czovL3N5c3RlbWUubGlwNi5mci9tYWlsbWFuL2xpc3RpbmZvL2NvY2NpCg==
