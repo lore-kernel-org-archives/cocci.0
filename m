@@ -2,57 +2,129 @@ Return-Path: <SRS0=yQoC=73=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93FECC433E0
-	for <cocci@archiver.kernel.org>; Sun, 14 Jun 2020 15:21:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABA5BC433E0
+	for <cocci@archiver.kernel.org>; Sun, 14 Jun 2020 16:12:31 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 03304206D7
-	for <cocci@archiver.kernel.org>; Sun, 14 Jun 2020 15:21:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 03304206D7
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
+	by mail.kernel.org (Postfix) with ESMTPS id EEEE1206D7
+	for <cocci@archiver.kernel.org>; Sun, 14 Jun 2020 16:12:30 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="L8t2Vk15"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EEEE1206D7
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 05EFL2Dr015571;
-	Sun, 14 Jun 2020 17:21:02 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 05EGCQ22001053;
+	Sun, 14 Jun 2020 18:12:26 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id F390D7760;
-	Sun, 14 Jun 2020 17:21:01 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id B4E9A7760;
+	Sun, 14 Jun 2020 18:12:26 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 9569E44A7
- for <cocci@systeme.lip6.fr>; Sun, 14 Jun 2020 17:21:00 +0200 (CEST)
-Received: from mail2-relais-roc.national.inria.fr
- (mail2-relais-roc.national.inria.fr [192.134.164.83])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 05EFKxWN020429
- (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
- for <cocci@systeme.lip6.fr>; Sun, 14 Jun 2020 17:20:59 +0200 (CEST)
-X-IronPort-AV: E=Sophos;i="5.73,511,1583190000"; d="scan'208";a="454632835"
-Received: from abo-173-121-68.mrs.modulonet.fr (HELO hadrien) ([85.68.121.173])
- by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 14 Jun 2020 17:20:58 +0200
-Date: Sun, 14 Jun 2020 17:20:58 +0200 (CEST)
-From: Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
-To: Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <dadeaa1d-1146-c4b1-e757-14e9791dac59@infradead.org>
-Message-ID: <alpine.DEB.2.22.394.2006141719310.2849@hadrien>
-References: <b14e6d1d-afa0-5c28-547a-9bb1a987f6fd@infradead.org>
- <alpine.DEB.2.22.394.2006140932490.2849@hadrien>
- <dadeaa1d-1146-c4b1-e757-14e9791dac59@infradead.org>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 563B944A7
+ for <cocci@systeme.lip6.fr>; Sun, 14 Jun 2020 18:12:25 +0200 (CEST)
+Received: from mout.web.de (mout.web.de [212.227.17.11])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 05EGCOWw010901
+ (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO)
+ for <cocci@systeme.lip6.fr>; Sun, 14 Jun 2020 18:12:24 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+ s=dbaedf251592; t=1592151142;
+ bh=6JbQhdoSICrP+1+JUc3VeyJ1lfYceH1iM3T14pw3xpQ=;
+ h=X-UI-Sender-Class:Cc:Subject:To:From:Date;
+ b=L8t2Vk1552ObxoMZtsjiKDxILL6jOKy2GtQm93yWCdwSwJbdQt63n/K7lZmgzlSyS
+ q7pnV8TcaPhfajx0JsV++8rpmX2u05bbYWDVpcZA2uHXdrSrdTgmydPPI2mn/nR8BV
+ twWO9QGhFM0NbuWBh6Zk8k8U3+Xy3NyEzUGCmick=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([93.131.103.145]) by smtp.web.de (mrweb105
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 1N1LwP-1imvhV1pLH-012lLJ; Sun, 14
+ Jun 2020 18:12:22 +0200
+To: Julia Lawall <julia.lawall@inria.fr>, Randy Dunlap <rdunlap@infradead.org>
+From: Markus Elfring <Markus.Elfring@web.de>
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+Message-ID: <417df11f-3dea-9efc-212f-dcaa8c6dc331@web.de>
+Date: Sun, 14 Jun 2020 18:12:21 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 14 Jun 2020 17:21:02 +0200 (CEST)
+Content-Language: en-GB
+X-Provags-ID: V03:K1:f1AJNcpo8g4qLbIaU0pFgKFYtlJWz/7hPJwp3B9WgmIYml8jf1+
+ Mu5HaHAwb48i/rfwKTSxYtX2ukRi4P0liMsdfOIYbDH+c01x9MqFC1EIbLtdipJNYFs5pus
+ HcfJE//e03Cym2ou6y6BEINi/Nw9vnXVNCSxEXM6ynCu35b9u3/Gd8Dmsu4Z5aGF1epjdjy
+ oMe045iXdyA9lsuLAntwg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:ZSPTPY+tvlA=://YXrtrLk8yrBtM5Vk70B3
+ COFq9MwMFLMkYDX5CBgxhtP3Usk3XOCDlLNkXRgqTtMfsTSNqp/uVaGW1cdiuVgnZZgbRAeFp
+ +qRq3C/xtVpeWDsvFyIX54qviqVR8ZFs/OaGV0rpZjF8PG0imlDlDBNuRmlSZUeLROeGx/TUV
+ 0ryYPGoxIZWncNWc/AK3Kvb32B1PKMlUiQGJWqFY+/Dwp0+1oKXl+s7wERj2QT/26We84OvOL
+ bNekaUxF2QU0Fe6T8qfDAAsVRmhuL9jrsUElQx1v2SkwzWWVMU0eRA2cCA6p8V5r92IMqbOZC
+ 3Nt8wADMgAOzCdil7ArxIwnb/dM7hIhlapawYhIgqQAdZcLsYCg7jFOOfQsMAStT0svPlMUsh
+ MsWF9htTmZjY0i7DTQ+Z6WYLB2ngmYrCb3aDh5r/WVYc4wQ84/xT3LZvpZl5Yd9y22G1lraiV
+ H+bLaa+WYKinrIiDHwI3L9SRCNPi3NQyQUPLlfYMRA8KNV6cogqwDcTrlDVsAzpbtF45du9ek
+ DpPDgWTRDSD/AVijkHo8HdYNuaj8+75zfI/ORva8E//Ta8IJfcIGtuQ3O+Q71E14FL7P/sM2M
+ ARlutNvPPJ1JdxRbdtgxDN1ri7zUK9MWiWYiyM/hgqHP0oSX4+YEYW06XiGFJ3byCBKqKDwgO
+ DvoKVt4WwTZ2MMWnMWaWBee0OxSnwvUxvkdJEwy+fa5VYJ89ItfDmaqgAdeNG/mqAcZbxo8yJ
+ aenCPi9est6mzpprJkuUblVUZu8/+Wtamdx6DbDtHD04mCBabVcGEAfANSvHqOkK230t8nn3Y
+ +jfGFCwFXTS4VbQ+kEU76PZN+nu9QSr7pRQR1tarx4zwQIagU+oz9U/IYeOw8CTpt6NqUII+8
+ 2m1f9sMSj+CLROZtKdbRpoWl2ok/QnVKuzLw93TOyjK354EHkmJGHY2k/H7RCGqMt0kh0HoXq
+ H8+ibQznJhb0PRNHUBHsahbuYxdMm7RB5qc3I5/9XexfQrM5nPzK4nS0BSBScLhppUs42yvVY
+ VEsgDQ7IcEbj48ySCX6x1OSb8Zcda/pgoV4DvJyZaodqthwp8qBaHJqq4e/nki0oa1r1x788z
+ cm6VbNB4QdgJ/LlsFwy3SqW4K3y19P2qp+02VTb/3znM0R+GCRse0nqd6AiI+LkIHhuioAANp
+ D4zKBJD7EIkBVtaOQwvs4yJXK5+ePNJfNLrzxiFnEbDCBlphNRMs5mHGK+W4tN0fXBiC2BeSj
+ fhlydXpy9iZAnB0cH
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 14 Jun 2020 18:12:27 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sun, 14 Jun 2020 17:20:59 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Sun, 14 Jun 2020 18:12:24 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: LKML <linux-kernel@vger.kernel.org>, cocci@systeme.lip6.fr
+Cc: cocci@systeme.lip6.fr, linux-kernel@vger.kernel.org
 Subject: Re: [Cocci] coccinelle issues
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
@@ -70,108 +142,23 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
+> > Note2: https://github.com/coccinelle/coccinelle/blob/master/install.txt
+> > says that 'spatch' is a script, but it seems to be a binary executable file.
+>
+> Actually, it is a script, and the fact that you say it is a binary may be
+> the reason for your python problem.  Normally there is a script
+> (scripts/spatch) that make install puts in place that refers back to where
+> your Coccinelle is installed.
 
+I suggest to take another look at the corresponding software development history.
+The build infrastructures were occasionally updated in the meantime.
 
-On Sun, 14 Jun 2020, Randy Dunlap wrote:
+elfring@Sonne:~> SP=$(which spatch) && file $SP && du -h $SP
+/usr/local/bin/spatch: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, with debug_info, not stripped
+16M	/usr/local/bin/spatch
 
-> On 6/14/20 12:39 AM, Julia Lawall wrote:
-> >
-> >
-> > On Sat, 13 Jun 2020, Randy Dunlap wrote:
-> >
-> >> Hi,
-> >>
-> >> OK, I've not used Coccinelle and now I am trying to use it.
-> >> It seems that I am having a few issues.
-> >> The primary one is when I run spatch (via 'make coccicheck' in
-> >> the kernel source tree), it tells me:
-> >>
-> >> Python error: No module named coccilib.elems
-> >>
-> >> I do see "elems.py" in /usr/local/lib64/coccinelle/python/coccilib.
-> >>
-> >> I am using coccinelle-master downloaded from github on
-> >> Friday June 12, 2020.
-> >>
-> >>
-> >> I have also made the following notes while building/installing it.
-> >>
-> >>
-> >> Note1: The latest coccinelle tarball is not actually available
-> >> at the coccinelle home page although the kernel documentation says it is.
-> >
-> > Yes, I'm aware of this problem.  We're not able to update the home page at
-> > the moment.  This problem is being worked on.
-> >
-> >>
-> >> Note2: https://github.com/coccinelle/coccinelle/blob/master/install.txt
-> >> says that 'spatch' is a script, but it seems to be a binary executable
-> >> file.
-> >
-> > Actually, it is a script, and the fact that you say it is a binary may be
-> > the reason for your python problem.  Normally there is a script
-> > (scripts/spatch) that make install puts in place that refers back to where
-> > your Coccinelle is installed.
->
-> Yes, I saw scripts/spatch, but that script is not what is installed in
-> /usr/local/bin.
-> (see more below)
-
-OK.  I don't install Coccinelle in the normal way.  I will check on what
-is intended.
-
->
-> >> Note3: https://github.com/coccinelle/coccinelle/blob/master/install.txt
-> >> probably should say to use 'sudo make install' instead of just
-> >> 'make install', just like 'coccinelle.rst' file in the kernel tree says.
-> >
-> > OK.  A lot of documentation for a lot of projects seems to omit the sudo,
-> > but I have indeed never understood why.
-> >
-> > Maybe try again with make distclean, ./autogen, ./configure, sudo make
-> > install?
->
-> OK, I did all of those.
->
-> Is this expected?
->
-> $ ./autogen
-> cat: VERSION: No such file or directory
-> cat: VERSION: No such file or directory
-> cat: VERSION: No such file or directory
-> cat: VERSION: No such file or directory
-> cat: VERSION: No such file or directory
-> cat: VERSION: No such file or directory
-> cat: VERSION: No such file or directory
-> cat: VERSION: No such file or directory
-> cat: VERSION: No such file or directory
-> cat: VERSION: No such file or directory
-> cat: VERSION: No such file or directory
-
-Sorry.  This problem has no impact, but I just pushed a commit to github
-to solve it.
-
-julia
-
->
->
-> spatch is installed in /usr/local/bin/spatch:
->
-> $ ll /usr/local/bin/spatch
-> -rwxr-xr-x 1 root root 15547736 Jun 14 07:32 /usr/local/bin/spatch*
->
-> $ file /usr/local/bin/spatch
-> /usr/local/bin/spatch: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/l, BuildID[sha1]=2b658c12a1a49deae24010b71d22d262988ce041, for GNU/Linux 3.2.0, with debug_info, not stripped
->
->
-> I still get this runtime error:
->
-> Python error: No module named coccilib.elems
->
-> --
-> ~Randy
->
->
+Regards,
+Markus
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
