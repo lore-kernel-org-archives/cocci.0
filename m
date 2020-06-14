@@ -2,129 +2,94 @@ Return-Path: <SRS0=yQoC=73=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABA5BC433E0
-	for <cocci@archiver.kernel.org>; Sun, 14 Jun 2020 16:12:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7867C433E0
+	for <cocci@archiver.kernel.org>; Sun, 14 Jun 2020 18:22:02 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EEEE1206D7
-	for <cocci@archiver.kernel.org>; Sun, 14 Jun 2020 16:12:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2DDE7206D7
+	for <cocci@archiver.kernel.org>; Sun, 14 Jun 2020 18:22:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="L8t2Vk15"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EEEE1206D7
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="skpqeAph"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2DDE7206D7
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 05EGCQ22001053;
-	Sun, 14 Jun 2020 18:12:26 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 05EILvdA009671;
+	Sun, 14 Jun 2020 20:21:57 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id B4E9A7760;
-	Sun, 14 Jun 2020 18:12:26 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id C02737760;
+	Sun, 14 Jun 2020 20:21:57 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 563B944A7
- for <cocci@systeme.lip6.fr>; Sun, 14 Jun 2020 18:12:25 +0200 (CEST)
-Received: from mout.web.de (mout.web.de [212.227.17.11])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 05EGCOWw010901
- (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO)
- for <cocci@systeme.lip6.fr>; Sun, 14 Jun 2020 18:12:24 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1592151142;
- bh=6JbQhdoSICrP+1+JUc3VeyJ1lfYceH1iM3T14pw3xpQ=;
- h=X-UI-Sender-Class:Cc:Subject:To:From:Date;
- b=L8t2Vk1552ObxoMZtsjiKDxILL6jOKy2GtQm93yWCdwSwJbdQt63n/K7lZmgzlSyS
- q7pnV8TcaPhfajx0JsV++8rpmX2u05bbYWDVpcZA2uHXdrSrdTgmydPPI2mn/nR8BV
- twWO9QGhFM0NbuWBh6Zk8k8U3+Xy3NyEzUGCmick=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([93.131.103.145]) by smtp.web.de (mrweb105
- [213.165.67.124]) with ESMTPSA (Nemesis) id 1N1LwP-1imvhV1pLH-012lLJ; Sun, 14
- Jun 2020 18:12:22 +0200
-To: Julia Lawall <julia.lawall@inria.fr>, Randy Dunlap <rdunlap@infradead.org>
-From: Markus Elfring <Markus.Elfring@web.de>
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- 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 FEE=
-Message-ID: <417df11f-3dea-9efc-212f-dcaa8c6dc331@web.de>
-Date: Sun, 14 Jun 2020 18:12:21 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
-MIME-Version: 1.0
-Content-Language: en-GB
-X-Provags-ID: V03:K1:f1AJNcpo8g4qLbIaU0pFgKFYtlJWz/7hPJwp3B9WgmIYml8jf1+
- Mu5HaHAwb48i/rfwKTSxYtX2ukRi4P0liMsdfOIYbDH+c01x9MqFC1EIbLtdipJNYFs5pus
- HcfJE//e03Cym2ou6y6BEINi/Nw9vnXVNCSxEXM6ynCu35b9u3/Gd8Dmsu4Z5aGF1epjdjy
- oMe045iXdyA9lsuLAntwg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:ZSPTPY+tvlA=://YXrtrLk8yrBtM5Vk70B3
- COFq9MwMFLMkYDX5CBgxhtP3Usk3XOCDlLNkXRgqTtMfsTSNqp/uVaGW1cdiuVgnZZgbRAeFp
- +qRq3C/xtVpeWDsvFyIX54qviqVR8ZFs/OaGV0rpZjF8PG0imlDlDBNuRmlSZUeLROeGx/TUV
- 0ryYPGoxIZWncNWc/AK3Kvb32B1PKMlUiQGJWqFY+/Dwp0+1oKXl+s7wERj2QT/26We84OvOL
- bNekaUxF2QU0Fe6T8qfDAAsVRmhuL9jrsUElQx1v2SkwzWWVMU0eRA2cCA6p8V5r92IMqbOZC
- 3Nt8wADMgAOzCdil7ArxIwnb/dM7hIhlapawYhIgqQAdZcLsYCg7jFOOfQsMAStT0svPlMUsh
- MsWF9htTmZjY0i7DTQ+Z6WYLB2ngmYrCb3aDh5r/WVYc4wQ84/xT3LZvpZl5Yd9y22G1lraiV
- H+bLaa+WYKinrIiDHwI3L9SRCNPi3NQyQUPLlfYMRA8KNV6cogqwDcTrlDVsAzpbtF45du9ek
- DpPDgWTRDSD/AVijkHo8HdYNuaj8+75zfI/ORva8E//Ta8IJfcIGtuQ3O+Q71E14FL7P/sM2M
- ARlutNvPPJ1JdxRbdtgxDN1ri7zUK9MWiWYiyM/hgqHP0oSX4+YEYW06XiGFJ3byCBKqKDwgO
- DvoKVt4WwTZ2MMWnMWaWBee0OxSnwvUxvkdJEwy+fa5VYJ89ItfDmaqgAdeNG/mqAcZbxo8yJ
- aenCPi9est6mzpprJkuUblVUZu8/+Wtamdx6DbDtHD04mCBabVcGEAfANSvHqOkK230t8nn3Y
- +jfGFCwFXTS4VbQ+kEU76PZN+nu9QSr7pRQR1tarx4zwQIagU+oz9U/IYeOw8CTpt6NqUII+8
- 2m1f9sMSj+CLROZtKdbRpoWl2ok/QnVKuzLw93TOyjK354EHkmJGHY2k/H7RCGqMt0kh0HoXq
- H8+ibQznJhb0PRNHUBHsahbuYxdMm7RB5qc3I5/9XexfQrM5nPzK4nS0BSBScLhppUs42yvVY
- VEsgDQ7IcEbj48ySCX6x1OSb8Zcda/pgoV4DvJyZaodqthwp8qBaHJqq4e/nki0oa1r1x788z
- cm6VbNB4QdgJ/LlsFwy3SqW4K3y19P2qp+02VTb/3znM0R+GCRse0nqd6AiI+LkIHhuioAANp
- D4zKBJD7EIkBVtaOQwvs4yJXK5+ePNJfNLrzxiFnEbDCBlphNRMs5mHGK+W4tN0fXBiC2BeSj
- fhlydXpy9iZAnB0cH
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 14 Jun 2020 18:12:27 +0200 (CEST)
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sun, 14 Jun 2020 18:12:24 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id AE1F044A7
+ for <cocci@systeme.lip6.fr>; Sun, 14 Jun 2020 20:21:55 +0200 (CEST)
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com
+ [IPv6:2a00:1450:4864:20:0:0:0:62a])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 05EILtAO011001
+ (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
+ for <cocci@systeme.lip6.fr>; Sun, 14 Jun 2020 20:21:55 +0200 (CEST)
+Received: by mail-ej1-x62a.google.com with SMTP id x1so15024820ejd.8
+ for <cocci@systeme.lip6.fr>; Sun, 14 Jun 2020 11:21:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=message-id:subject:from:to:cc:date:in-reply-to:references
+ :mime-version:content-transfer-encoding;
+ bh=225IYXjfjqwlsJoM56IQsF7q74PBimOlhOs/vYp8QKY=;
+ b=skpqeAphHkfEFv4Lt8Nj4Dx8zu4Hd3Z978LQL4dxWp+e8Iw+Pz3eG6SXM1li8Ty8ws
+ p+bbMI2jjkZwOmBixQ4WboHipLe3r4Wy2gjmg6XhKALy1eZe5znAN++bWa0x4q7gLSQ7
+ tubkUP2UHQ4oCFvZKNM0xOOL5+2d9+LFAVltvQMSZKqpBIHfZHeKS8781nBwGx955vv0
+ BA+ltb+mCgAytzKpq9Psg63fjlswTO1Pu1Jtg4qHdc5ldEeU8HLP8rwdZdUuIAmSJtY2
+ pGeK38C6dOv5cBJ9842tNVcDg/J6y/CXuCVA4bVKUir6TxQrw74j7cCCoQ6h8WT+2rso
+ mkuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=225IYXjfjqwlsJoM56IQsF7q74PBimOlhOs/vYp8QKY=;
+ b=LwE0icTqiJuW3F0GolwhbLvAC29JIcI8ir4+11pyn4aV1S4kM9XM/FjTotbhhiwYtY
+ gEXMkHgcae8BD/pxAUA0RhsQdaWzKLQ5zM5kPBhqpxunso65y+5+R1QdBFqPQoLDicJR
+ F8TGCOpYumj4O4GO810Qdj7HnAlbJdEKKRShA8QTJXSNBAyhqUfPCLGLpsSo650tgNhs
+ kXNFMkL7qmBeqjzD8eAQQ05K0n8t8MVVBcuIX7qLM3cPLo8c8fzt+fqb7V5SerzJllju
+ kvN5YzVpxKWRcScSq43SdKc2REBKY8VUCp0QRxv1i8IbC7flIzhokzywYZOa66dNZXb1
+ 1u6w==
+X-Gm-Message-State: AOAM532WAP8L4TMgVFsB7RbigII30VyEDT4TvJEchji4Q2mGzefi7nLf
+ VZbqH+LelF+qCTVwDzpAhL8=
+X-Google-Smtp-Source: ABdhPJz49uapQQLIzKZB38EsdDxWu4uJbebyt+g40JeKcFC8h4/a8Etjh5v9+WA/LtaPxTCLVNxaJA==
+X-Received: by 2002:a17:906:1c8e:: with SMTP id
+ g14mr22316256ejh.136.1592158914834; 
+ Sun, 14 Jun 2020 11:21:54 -0700 (PDT)
+Received: from homer.simpson.net ([185.221.150.24])
+ by smtp.googlemail.com with ESMTPSA id
+ gv18sm7494425ejb.113.2020.06.14.11.21.53
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Sun, 14 Jun 2020 11:21:54 -0700 (PDT)
+Message-ID: <1592158913.7336.48.camel@gmail.com>
+From: Mike Galbraith <umgwanakikbuti@gmail.com>
+To: Julia Lawall <julia.lawall@inria.fr>
+Date: Sun, 14 Jun 2020 20:21:53 +0200
+In-Reply-To: <alpine.DEB.2.22.394.2006141456520.2849@hadrien>
+References: <b14e6d1d-afa0-5c28-547a-9bb1a987f6fd@infradead.org>
+ <1592115803.27290.33.camel@gmail.com>
+ <alpine.DEB.2.22.394.2006140940000.2849@hadrien>
+ <1592121432.2129.9.camel@gmail.com>
+ <alpine.DEB.2.22.394.2006141042270.2849@hadrien>
+ <1592124280.2129.22.camel@gmail.com>
+ <alpine.DEB.2.22.394.2006141456520.2849@hadrien>
+X-Mailer: Evolution 3.26.6 
+Mime-Version: 1.0
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 14 Jun 2020 20:21:58 +0200 (CEST)
+X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
+ Sun, 14 Jun 2020 20:21:55 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: cocci@systeme.lip6.fr, linux-kernel@vger.kernel.org
+X-Scanned-By: MIMEDefang 2.78
+Cc: Randy Dunlap <rdunlap@infradead.org>, cocci@systeme.lip6.fr
 Subject: Re: [Cocci] coccinelle issues
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
@@ -142,23 +107,54 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-> > Note2: https://github.com/coccinelle/coccinelle/blob/master/install.txt
-> > says that 'spatch' is a script, but it seems to be a binary executable file.
->
-> Actually, it is a script, and the fact that you say it is a binary may be
-> the reason for your python problem.  Normally there is a script
-> (scripts/spatch) that make install puts in place that refers back to where
-> your Coccinelle is installed.
+On Sun, 2020-06-14 at 14:59 +0200, Julia Lawall wrote:
+> 
+> On Sun, 14 Jun 2020, Mike Galbraith wrote:
+> 
+> > On Sun, 2020-06-14 at 10:43 +0200, Julia Lawall wrote:
+> > >
+> > > What is your Linux distribution?
+> >
+> > openSUSE Leap-15.1
+> 
+> Our CI already has an entry for openSUSE Leap.  We will look into it, but
+> if you have any further information about the problem, please let us know.
 
-I suggest to take another look at the corresponding software development history.
-The build infrastructures were occasionally updated in the meantime.
+Executive Summary:
 
-elfring@Sonne:~> SP=$(which spatch) && file $SP && du -h $SP
-/usr/local/bin/spatch: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, with debug_info, not stripped
-16M	/usr/local/bin/spatch
+warning: Can't find macro file: /usr/local/coccinelle/bin/../lib/coccinelle/standard.h
+warning: Can't find default iso file: /usr/local/coccinelle/bin/../lib/coccinelle/standard.iso
 
-Regards,
-Markus
+I find those under lib64, apply symlink bandaid, proggy acks.
+
+WRT the HEAD make install booboo..
+
+git@homer:~/coccinelle> sudo make install
+mkdir -p /usr/local/coccinelle/bin /usr/local/coccinelle/lib64/coccinelle
+mkdir -p /usr/local/coccinelle/lib64/coccinelle/ocaml
+if test -f bundles/pyml/dllpyml_stubs.so; then \
+        /usr/bin/install -c -m 755 bundles/pyml/dllpyml_stubs.so \
+                /usr/local/coccinelle/lib64/coccinelle; \
+fi
+if test -f bundles/pcre/dllpcre_stubs.so; then \
+        /usr/bin/install -c -m 755 bundles/pcre/dllpcre_stubs.so \
+                /usr/local/coccinelle/lib64/coccinelle; \
+fi
+/usr/bin/install -c -m 755 spatch.opt /usr/local/coccinelle/bin/spatch
+/usr/bin/install -c -m 644 standard.h /usr/local/coccinelle/lib64/coccinelle
+/usr/bin/install -c -m 644 standard.iso /usr/local/coccinelle/lib64/coccinelle
+/usr/bin/install -c -m 644 ocaml/*.cmi /usr/local/coccinelle/lib64/coccinelle/ocaml/
+if test -f ocaml/coccilib.cmx; then \
+        /usr/bin/install -c -m 644 ocaml/*.cmx /usr/local/coccinelle/lib64/coccinelle/ocaml/; \
+fi
+/usr/bin/install -c -m 755 tools/spgen/source/spgen.opt \
+         /usr/local/coccinelle/bin/spgen
+/usr/bin/install -c -m 644 python/coccilib/*.py \
+        /usr/local/coccinelle/lib64/coccinelle/python/coccilib
+/usr/bin/install: target '/usr/local/coccinelle/lib64/coccinelle/python/coccilib' is not a directory
+make: *** [Makefile:332: install-python] Error 1
+
+mkdir -p bandaid worked.
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
