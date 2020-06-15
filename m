@@ -1,75 +1,98 @@
-Return-Path: <SRS0=yQoC=73=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=AA88=74=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1DE3C433E0
-	for <cocci@archiver.kernel.org>; Sun, 14 Jun 2020 21:54:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89122C433E0
+	for <cocci@archiver.kernel.org>; Mon, 15 Jun 2020 04:16:54 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 31E952071A
-	for <cocci@archiver.kernel.org>; Sun, 14 Jun 2020 21:54:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 31E952071A
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux.com
+	by mail.kernel.org (Postfix) with ESMTPS id CF7A02065F
+	for <cocci@archiver.kernel.org>; Mon, 15 Jun 2020 04:16:53 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FBecWtfd"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CF7A02065F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 05ELs81B025771;
-	Sun, 14 Jun 2020 23:54:08 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 05F4GoL6029723;
+	Mon, 15 Jun 2020 06:16:50 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 6D2A17760;
-	Sun, 14 Jun 2020 23:54:08 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 3A0527577;
+	Mon, 15 Jun 2020 06:16:50 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id DE77044A7
- for <cocci@systeme.lip6.fr>; Sun, 14 Jun 2020 23:54:06 +0200 (CEST)
-Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com
- [209.85.167.45])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 05ELs6VF029913
+ by systeme.lip6.fr (Postfix) with ESMTPS id EC8273BAB
+ for <cocci@systeme.lip6.fr>; Mon, 15 Jun 2020 06:16:46 +0200 (CEST)
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com
+ [IPv6:2a00:1450:4864:20:0:0:0:62c])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 05F4Gk9O016137
  (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Sun, 14 Jun 2020 23:54:06 +0200 (CEST)
-Received: by mail-lf1-f45.google.com with SMTP id w15so8348003lfe.11
- for <cocci@systeme.lip6.fr>; Sun, 14 Jun 2020 14:54:06 -0700 (PDT)
+ for <cocci@systeme.lip6.fr>; Mon, 15 Jun 2020 06:16:46 +0200 (CEST)
+Received: by mail-ej1-x62c.google.com with SMTP id o15so15857028ejm.12
+ for <cocci@systeme.lip6.fr>; Sun, 14 Jun 2020 21:16:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=message-id:subject:from:to:cc:date:in-reply-to:references
+ :mime-version:content-transfer-encoding;
+ bh=YN3zN3mQ/BfHzTlkXTeRbeqf/iLJme8W5IzNkvzgDXY=;
+ b=FBecWtfdgd5GVH/qUXE0O1v4lxZIbc6WFHvH9sBWPv2kFsFwfWYKHtulR7ejMDwemw
+ U7yLZO4g5DmbenCpl4MOtZMBexoDjmfmhFPTYpWwtoqmRHwzYDDN7ZW84fpusmvRxHbW
+ MZOCUmi0D9//KbVGAPhhLh+OoTDbIxXI6HR5s+2GLaSq+s676TXp3ekEtv9RapsjKqNg
+ AEGQ5inFT9eDTJo0JtBc+w/w00XLKh5QrZfKmQhpjUVKSyvo9yp4PW8VczF4bmI8ACVH
+ 2vMZoiPIIE/YMAbXSPX9/uD3j8++FanVGauuT9FA64GQAn26qHjYdQoyrgz4ZT8NbaEG
+ i4hg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=exuwoJRcicaA0UCuHwfbQdxe2r5HN92fxJmC6sAbWzI=;
- b=ozvTvXunbIdV9XCQtTWRhDtU1MC5o3EJFiGavDSsr4RKPJcuwnvXxAAG2H03tDXqmX
- 3xigjm2GyxAKZ2rsGbobohEf7qq//0Jb9JKfhkITc1dUsehkSbi7VmTqNXO6dqoZ+j1b
- 9NYIJTgQijVA1CMFSqYEmk4SxkiUTkVowafjxyJERJo5l7kSqY2DDoKBjtjl3WcQkgjh
- 2tk6jr25bcBJKCDIQxusMcgrXJ1A+A+d5YSo+NcQLMzrfXjbrPnhCjmy2PktxWUX68C6
- Kp2G5IgaS926wfWaKJDF0bjdUYRqXyh6dfeJrY55DGPdZ7ObAuaXiNOW9R+KyrHqAzyG
- tvkA==
-X-Gm-Message-State: AOAM5331Y22l6wcsF5Exb1HvBXuoEIkPwxKslU6s+eiLTPogUa4N1vxa
- sAwTPnniGvV1T891PBCa8xM=
-X-Google-Smtp-Source: ABdhPJz1YZTJNXqbMcTdX5Y2lYQHHOcc8cpxCKrcEhwrlQvnmP0ytzbdjeQZbhp7FMrpAuh2f6jEYQ==
-X-Received: by 2002:a19:8305:: with SMTP id f5mr5845453lfd.173.1592171645720; 
- Sun, 14 Jun 2020 14:54:05 -0700 (PDT)
-Received: from localhost.localdomain (broadband-37-110-38-130.ip.moscow.rt.ru.
- [37.110.38.130])
- by smtp.googlemail.com with ESMTPSA id g5sm3467254ljk.93.2020.06.14.14.54.04
+ bh=YN3zN3mQ/BfHzTlkXTeRbeqf/iLJme8W5IzNkvzgDXY=;
+ b=IYkBWTFqDdltlti7LYaZxh7WN3veJUSfVKKRFzYf4siAWozeyNF9+UQDF14zhQa09Z
+ OQBQzBHCjur8BkhERV4jrQFcIgbMle44BbluqMy6CRa41nMfUGMjmxEg9xcghnEz4cGN
+ Rlxd9lKoPePHFttYxlUBpCvQppDk7yUMMSHgEgNELea58Q0OE/++phr2jXpAIofJ1hon
+ aCn9BA6YiqSrk3D98cIJIvFouo9mC24Q6j0021mjwzXz1+igBx0jjCVi9ktTwqOw5+lI
+ v+XGAalKEtGhzlsSR43n4YPF8NNnbXlnMp/Fl+mB79+Wbs4XJTiJIBRsIDZniieBQ6BY
+ jaNw==
+X-Gm-Message-State: AOAM531+15TB4gO7OdpC9k0HdaQQyhJji8QEfrQ+oIiUcT469pisQacd
+ VnVpVxNCQegfaY7f6FOrwos=
+X-Google-Smtp-Source: ABdhPJxL3qunD1Ss96rNpTIMAEtLIAHU++EAgSYURSTQdNHyeBEIqGWL3z1l4HtegzDrl793igzgdg==
+X-Received: by 2002:a17:906:7696:: with SMTP id
+ o22mr22902368ejm.245.1592194606242; 
+ Sun, 14 Jun 2020 21:16:46 -0700 (PDT)
+Received: from homer.simpson.net ([185.221.150.7])
+ by smtp.googlemail.com with ESMTPSA id n5sm7682308edq.13.2020.06.14.21.16.45
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sun, 14 Jun 2020 14:54:04 -0700 (PDT)
-From: Denis Efremov <efremov@linux.com>
-To: Julia Lawall <Julia.Lawall@lip6.fr>
-Date: Mon, 15 Jun 2020 00:54:14 +0300
-Message-Id: <20200614215414.40034-1-efremov@linux.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200604140805.111613-1-efremov@linux.com>
-References: <20200604140805.111613-1-efremov@linux.com>
-MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 14 Jun 2020 23:54:08 +0200 (CEST)
+ Sun, 14 Jun 2020 21:16:45 -0700 (PDT)
+Message-ID: <1592194605.7336.83.camel@gmail.com>
+From: Mike Galbraith <umgwanakikbuti@gmail.com>
+To: Julia Lawall <julia.lawall@inria.fr>
+Date: Mon, 15 Jun 2020 06:16:45 +0200
+In-Reply-To: <alpine.DEB.2.22.394.2006142137330.2849@hadrien>
+References: <b14e6d1d-afa0-5c28-547a-9bb1a987f6fd@infradead.org>
+ <1592115803.27290.33.camel@gmail.com>
+ <alpine.DEB.2.22.394.2006140940000.2849@hadrien>
+ <1592121432.2129.9.camel@gmail.com>
+ <alpine.DEB.2.22.394.2006141042270.2849@hadrien>
+ <1592124280.2129.22.camel@gmail.com>
+ <alpine.DEB.2.22.394.2006141456520.2849@hadrien>
+ <1592158913.7336.48.camel@gmail.com>
+ <alpine.DEB.2.22.394.2006142137330.2849@hadrien>
+X-Mailer: Evolution 3.26.6 
+Mime-Version: 1.0
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 15 Jun 2020 06:16:50 +0200 (CEST)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sun, 14 Jun 2020 23:54:06 +0200 (CEST)
+ (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
+ Mon, 15 Jun 2020 06:16:46 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: cocci@systeme.lip6.fr, linux-kernel@vger.kernel.org
-Subject: [Cocci] [PATCH v3] coccinelle: api: add kzfree script
+X-Scanned-By: MIMEDefang 2.78
+Cc: Randy Dunlap <rdunlap@infradead.org>, cocci@systeme.lip6.fr
+Subject: Re: [Cocci] coccinelle issues
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -86,124 +109,26 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Check for memset()/memzero_explicit() followed by kfree()/vfree()/kvfree().
+P.S.
 
-Signed-off-by: Denis Efremov <efremov@linux.com>
----
-Changes in v2:
- - memset_explicit() added
- - kvfree_sensitive() added
- - forall added to r1
- - ... between memset and kfree added
-Changes in v3:
- - Explicit filter for definitions instead of !(file in "...") conditions
- - type T added to match casts
- - memzero_explicit() patterns fixed
- - additional rule "cond" added to filter false-positives
+> > warning: Can't find macro file: /usr/local/coccinelle/bin/../lib/coccinelle/standard.h
+> > warning: Can't find default iso file: /usr/local/coccinelle/bin/../lib/coccinelle/standard.iso
 
- scripts/coccinelle/api/kzfree.cocci | 90 +++++++++++++++++++++++++++++
- 1 file changed, 90 insertions(+)
- create mode 100644 scripts/coccinelle/api/kzfree.cocci
+The hard coded "lib" causing this issue lives in globals/config.ml.in.
 
-diff --git a/scripts/coccinelle/api/kzfree.cocci b/scripts/coccinelle/api/kzfree.cocci
-new file mode 100644
-index 000000000000..4758ca5a781e
---- /dev/null
-+++ b/scripts/coccinelle/api/kzfree.cocci
-@@ -0,0 +1,90 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+///
-+/// Use kzfree, kvfree_sensitive rather than memset or
-+/// memzero_explicit followed by kfree
-+///
-+// Confidence: High
-+// Copyright: (C) 2020 Denis Efremov ISPRAS
-+// Options: --no-includes --include-headers
-+//
-+// Keywords: kzfree, kvfree_sensitive
-+//
-+
-+virtual context
-+virtual patch
-+virtual org
-+virtual report
-+
-+@initialize:python@
-+@@
-+# kmalloc_oob_in_memset uses memset to explicitly trigger out-of-bounds access
-+filter = frozenset(['kmalloc_oob_in_memset', 'kzfree', 'kvfree_sensitive'])
-+
-+def relevant(p):
-+    return not (filter & {el.current_element for el in p})
-+
-+@cond@
-+position ok;
-+@@
-+
-+if (...)
-+  \(memset@ok\|memzero_explicit@ok\)(...);
-+
-+@r depends on !patch forall@
-+expression E;
-+position p : script:python() { relevant(p) };
-+position m != cond.ok;
-+type T;
-+@@
-+
-+(
-+* memset@m((T)E, 0, ...);
-+|
-+* memzero_explicit@m((T)E, ...);
-+)
-+  ... when != E
-+      when strict
-+* \(kfree\|vfree\|kvfree\)(E)@p;
-+
-+@rp_memzero depends on patch@
-+expression E, size;
-+position p : script:python() { relevant(p) };
-+type T;
-+@@
-+
-+- memzero_explicit((T)E, size)@p;
-+  ... when != E
-+      when strict
-+- \(kfree\|vfree\|kvfree\)(E);
-++ kvfree_sensitive(E, size);
-+
-+@rp_memset depends on patch@
-+expression E, size;
-+position p : script:python() { relevant(p) };
-+type T;
-+@@
-+
-+- memset((T)E, size)@p;
-+  ... when != E
-+      when strict
-+(
-+- kfree(E);
-++ kzfree(E);
-+|
-+- \(vfree\|kvfree\)(E);
-++ kvfree_sensitive(E, size);
-+)
-+
-+@script:python depends on report@
-+p << r.p;
-+@@
-+
-+coccilib.report.print_report(p[0],
-+  "WARNING: opportunity for kzfree/kvfree_sensitive")
-+
-+@script:python depends on org@
-+p << r.p;
-+@@
-+
-+coccilib.org.print_todo(p[0],
-+  "WARNING: opportunity for kzfree/kvfree_sensitive")
--- 
-2.26.2
-
+diff --git a/globals/config.ml.in b/globals/config.ml.in
+index 2a4135f3b06e..5969be5aa1e2 100644
+--- a/globals/config.ml.in
++++ b/globals/config.ml.in
+@@ -37,7 +37,7 @@ let path =
+       exec_dir
+     else
+       List.fold_left Filename.concat exec_dir
+-	[Filename.parent_dir_name; "lib"; "coccinelle"]
++	[Filename.parent_dir_name; "lib64"; "coccinelle"]
+ 
+ 
+ let std_iso = ref (Filename.concat path "standard.iso")
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
