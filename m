@@ -1,126 +1,80 @@
-Return-Path: <SRS0=AA88=74=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=twh3=75=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Level: **
+X-Spam-Status: No, score=2.7 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,HTML_MESSAGE,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C69FC433DF
-	for <cocci@archiver.kernel.org>; Mon, 15 Jun 2020 19:11:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03116C433DF
+	for <cocci@archiver.kernel.org>; Tue, 16 Jun 2020 16:24:47 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1230420739
-	for <cocci@archiver.kernel.org>; Mon, 15 Jun 2020 19:11:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 792EB20882
+	for <cocci@archiver.kernel.org>; Tue, 16 Jun 2020 16:24:46 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="ksIm2T40"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1230420739
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Oh85dvXp"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 792EB20882
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 05FJAt9n014954;
-	Mon, 15 Jun 2020 21:10:55 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 05GGOSFv007968;
+	Tue, 16 Jun 2020 18:24:28 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 6454A7577;
-	Mon, 15 Jun 2020 21:10:55 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 90A967577;
+	Tue, 16 Jun 2020 18:24:28 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 9CDE5402B
- for <cocci@systeme.lip6.fr>; Mon, 15 Jun 2020 20:09:39 +0200 (CEST)
-Received: from userp2130.oracle.com (userp2130.oracle.com [156.151.31.86])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 05FI9bPt024574
- (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL)
- for <cocci@systeme.lip6.fr>; Mon, 15 Jun 2020 20:09:38 +0200 (CEST)
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
- by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05FI7hca026496;
- Mon, 15 Jun 2020 18:08:31 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
- h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=EdV85x/l0ZQB7qs/RGol05XelTO/TGwy+i5Nwcf8gRM=;
- b=ksIm2T40o14OrDnPOVl41oLfXflESyB3DKHmSrY07W8hiE/Z7QLC5o1aUTaHPRbSwzbu
- 9c0NwLH9cAIIrEop8mGTFh8G1XGbz9PddITo/iGjFqouwLRZRmyMPkuv312Tprpn0qqE
- vsgCBz56dXPpSbVxKCQXClzuApbPztWVszZo40Z9/pDvMf5EwgQrvvf51uoX9UnrZp3o
- w/4xkBk0XXZDlc2YcrCzTOExgRGYIv3Y4giKzpy8SzyD0DJs8FkiFKoy2usbln1dH7C7
- /e2gagyqK7O847BIeVNSzHbKNPgl/68telPWwh1LacJqZVCnTiRrQlKn7a2GbDXIJ48j 0Q== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
- by userp2130.oracle.com with ESMTP id 31p6s22cke-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
- Mon, 15 Jun 2020 18:08:31 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
- by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05FHwvkZ051587;
- Mon, 15 Jun 2020 18:08:30 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
- by aserp3020.oracle.com with ESMTP id 31p6de1e1n-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Mon, 15 Jun 2020 18:08:30 +0000
-Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
- by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 05FI8G7g031730;
- Mon, 15 Jun 2020 18:08:17 GMT
-Received: from kadam (/41.57.98.10) by default (Oracle Beehive Gateway v4.0)
- with ESMTP ; Mon, 15 Jun 2020 11:08:15 -0700
-Date: Mon, 15 Jun 2020 21:07:53 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Waiman Long <longman@redhat.com>
-Message-ID: <20200615180753.GJ4151@kadam>
-References: <20200413211550.8307-1-longman@redhat.com>
- <20200413211550.8307-2-longman@redhat.com>
+ by systeme.lip6.fr (Postfix) with ESMTPS id 567DE438E
+ for <cocci@systeme.lip6.fr>; Tue, 16 Jun 2020 18:14:33 +0200 (CEST)
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:1034])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 05GGEVRM020893
+ (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
+ for <cocci@systeme.lip6.fr>; Tue, 16 Jun 2020 18:14:32 +0200 (CEST)
+Received: by mail-pj1-x1034.google.com with SMTP id h22so1826838pjf.1
+ for <cocci@systeme.lip6.fr>; Tue, 16 Jun 2020 09:14:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:from:date:message-id:subject:to;
+ bh=+CSUOL0MxWjOFxOE+yfqWPyharEVJGFKivIoWdZf1n0=;
+ b=Oh85dvXpAF31tkRY9Pa7gBL0xTt3XJBbljuzTg95JTcLgNvKAGv0vTnYRbTcY95m7g
+ 2mSqmstA76TJjh0ATBE1IQJNqe1Uug0OyG3SC4tLn3sv5ay2KYrnVZckieozu97n1C9x
+ 4wWA9IS5XTdwN6BQCciiN/pgBVIGfQHtEPckOeQjZD0Cnr/U6bYc8wbO/3NhHF6kd0Y2
+ uH+LVVCz0KNfqea69DOK7NHrZpWbT7HKT8F2jbikGZgQuH/LxQAMHo8HzaQxe5O0k1Oj
+ gil94SlpxIbox6QoH0yc0EEJmAQhHSxYoQTcNNlNPH93gmk1CI6tiRKlWWg2WG5zkCUx
+ kYFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+ bh=+CSUOL0MxWjOFxOE+yfqWPyharEVJGFKivIoWdZf1n0=;
+ b=V2Z5933X+oFn3IkrZQWtjTutjYHLTtUQjVwn7mvY2G+LSMJi5nT0lCHJ/EvSmZRdZ+
+ 3fzMT+5sJ3LiUzFLXK+91Lx9lTCLe8fSySYL5tNUyey9xi5Q1kDPIuuXkJwld+YyCtRp
+ KbR4BRdzPZvNmhoBwVFxR5u+E3OLR2bWWyI9x9KtsY1qZFQCS+gbvNRFoHJTYUwkYJP2
+ JjeGdSttvDT0gjv+p888qkcSBqoA5WeZB2OKnsNuiJHfw43AHe8wFZ9FQAMPhSijGzCq
+ lg9N/Zi9y1Nq07GHb++0gfen32BVN0bpMa4zIMEqRM7uWjIeGNPrWEKFn7DEMb8aTV35
+ moSw==
+X-Gm-Message-State: AOAM5326WHAkLBuy9rzKN6JCE/+hsZ5SoPY+3OZTNneJgAgu/2uwD0k1
+ spIVUl6NvQwh8Wj4YGPDV3byZ0xV83MZIWsT/VD+tsb3
+X-Google-Smtp-Source: ABdhPJwMIA2pctstKe9MCBYj9e5j1tbvIneJiREAGptTJDCuvn58VmzgXupvTwoDucv2TpkRna4dZWWENXxLkFWKfuA=
+X-Received: by 2002:a17:90a:d18c:: with SMTP id
+ fu12mr3716605pjb.232.1592324071047; 
+ Tue, 16 Jun 2020 09:14:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200413211550.8307-2-longman@redhat.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9653
- signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2
- adultscore=0 bulkscore=0
- phishscore=0 malwarescore=0 spamscore=0 mlxlogscore=930 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006150134
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9653
- signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0
- lowpriorityscore=0 impostorscore=0
- clxscore=1011 mlxscore=0 mlxlogscore=944 priorityscore=1501 phishscore=0
- malwarescore=0 suspectscore=2 spamscore=0 cotscore=-2147483648 bulkscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2004280000 definitions=main-2006150135
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 15 Jun 2020 21:10:55 +0200 (CEST)
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Mon, 15 Jun 2020 20:09:39 +0200 (CEST)
+From: Thomas Calderon <calderon.thomas@gmail.com>
+Date: Tue, 16 Jun 2020 17:14:20 +0100
+Message-ID: <CA+1ewKbOb7uv+dYDgPHrTsuAWOMt1+CudcwGcdttGZHCvcAtLA@mail.gmail.com>
+To: cocci@systeme.lip6.fr
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 16 Jun 2020 18:24:28 +0200 (CEST)
+X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
+ Tue, 16 Jun 2020 18:14:33 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Mailman-Approved-At: Mon, 15 Jun 2020 21:10:54 +0200
-Cc: linux-cifs@vger.kernel.org, linux-wireless@vger.kernel.org,
-        Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
-        virtualization@lists.linux-foundation.org,
-        David Howells <dhowells@redhat.com>, linux-mm@kvack.org,
-        linux-sctp@vger.kernel.org, target-devel@vger.kernel.org,
-        kasan-dev@googlegroups.com, cocci@systeme.lip6.fr,
-        devel@driverdev.osuosl.org, linux-s390@vger.kernel.org,
-        linux-scsi@vger.kernel.org, x86@kernel.org,
-        James Morris <jmorris@namei.org>, Matthew Wilcox <willy@infradead.org>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        intel-wired-lan@lists.osuosl.org, David Rientjes <rientjes@google.com>,
-        "Serge E. Hallyn" <serge@hallyn.com>, linux-pm@vger.kernel.org,
-        ecryptfs@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-fscrypt@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-btrfs@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-nfs@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        samba-technical@lists.samba.org, linux-kernel@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-security-module@vger.kernel.org,
-        keyrings@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
-        Joe Perches <joe@perches.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-wpan@vger.kernel.org,
-        wireguard@lists.zx2c4.com, linux-ppp@vger.kernel.org
-Subject: Re: [Cocci] [PATCH 1/2] mm,
-	treewide: Rename kzfree() to kfree_sensitive()
+X-Scanned-By: MIMEDefang 2.78
+X-Mailman-Approved-At: Tue, 16 Jun 2020 18:24:26 +0200
+Subject: [Cocci] Ubuntu Focal release for Coccinelle
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -132,58 +86,41 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============0605014648=="
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-On Mon, Apr 13, 2020 at 05:15:49PM -0400, Waiman Long wrote:
-> diff --git a/mm/slab_common.c b/mm/slab_common.c
-> index 23c7500eea7d..c08bc7eb20bd 100644
-> --- a/mm/slab_common.c
-> +++ b/mm/slab_common.c
-> @@ -1707,17 +1707,17 @@ void *krealloc(const void *p, size_t new_size, gfp_t flags)
->  EXPORT_SYMBOL(krealloc);
->  
->  /**
-> - * kzfree - like kfree but zero memory
-> + * kfree_sensitive - Clear sensitive information in memory before freeing
->   * @p: object to free memory of
->   *
->   * The memory of the object @p points to is zeroed before freed.
-> - * If @p is %NULL, kzfree() does nothing.
-> + * If @p is %NULL, kfree_sensitive() does nothing.
->   *
->   * Note: this function zeroes the whole allocated buffer which can be a good
->   * deal bigger than the requested buffer size passed to kmalloc(). So be
->   * careful when using this function in performance sensitive code.
->   */
-> -void kzfree(const void *p)
-> +void kfree_sensitive(const void *p)
->  {
->  	size_t ks;
->  	void *mem = (void *)p;
-> @@ -1725,10 +1725,10 @@ void kzfree(const void *p)
->  	if (unlikely(ZERO_OR_NULL_PTR(mem)))
->  		return;
->  	ks = ksize(mem);
-> -	memset(mem, 0, ks);
-> +	memzero_explicit(mem, ks);
-        ^^^^^^^^^^^^^^^^^^^^^^^^^
-This is an unrelated bug fix.  It really needs to be pulled into a
-separate patch by itself and back ported to stable kernels.
+--===============0605014648==
+Content-Type: multipart/alternative; boundary="0000000000009f525705a835d6fd"
 
->  	kfree(mem);
->  }
-> -EXPORT_SYMBOL(kzfree);
-> +EXPORT_SYMBOL(kfree_sensitive);
->  
->  /**
->   * ksize - get the actual amount of memory allocated for a given object
+--0000000000009f525705a835d6fd
+Content-Type: text/plain; charset="UTF-8"
 
-regards,
-dan carpenter
+Hello,
+
+I was wondering if there is a package available for Coccinelle for Ubuntu
+20.04?
+
+Many thanks,
+
+Thomas
+
+--0000000000009f525705a835d6fd
+Content-Type: text/html; charset="UTF-8"
+
+<div dir="ltr">Hello,<div><br></div><div>I was wondering if there is a package available for Coccinelle for Ubuntu 20.04?</div><div><br></div><div>Many thanks,</div><div><br></div><div>Thomas</div></div>
+
+--0000000000009f525705a835d6fd--
+
+--===============0605014648==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
 https://systeme.lip6.fr/mailman/listinfo/cocci
+
+--===============0605014648==--
