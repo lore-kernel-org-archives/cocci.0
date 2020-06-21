@@ -6,49 +6,49 @@ X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E39D0C433E0
-	for <cocci@archiver.kernel.org>; Sun, 21 Jun 2020 20:54:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48C62C433E0
+	for <cocci@archiver.kernel.org>; Sun, 21 Jun 2020 20:56:21 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 285432528B
-	for <cocci@archiver.kernel.org>; Sun, 21 Jun 2020 20:54:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 285432528B
+	by mail.kernel.org (Postfix) with ESMTPS id BC47B22AAC
+	for <cocci@archiver.kernel.org>; Sun, 21 Jun 2020 20:56:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BC47B22AAC
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 05LKrSVh010067;
-	Sun, 21 Jun 2020 22:53:28 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 05LKu9Af003419;
+	Sun, 21 Jun 2020 22:56:09 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 394E67773;
-	Sun, 21 Jun 2020 22:53:28 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id DB2757773;
+	Sun, 21 Jun 2020 22:56:09 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 0D69A3D0F
- for <cocci@systeme.lip6.fr>; Sun, 21 Jun 2020 22:53:26 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 9A2423D0F
+ for <cocci@systeme.lip6.fr>; Sun, 21 Jun 2020 22:56:08 +0200 (CEST)
 Received: from mail2-relais-roc.national.inria.fr
  (mail2-relais-roc.national.inria.fr [192.134.164.83])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 05LKrPIM021435
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 05LKu7SJ001159
  (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
- for <cocci@systeme.lip6.fr>; Sun, 21 Jun 2020 22:53:25 +0200 (CEST)
-X-IronPort-AV: E=Sophos;i="5.75,264,1589234400"; d="scan'208";a="455861131"
+ for <cocci@systeme.lip6.fr>; Sun, 21 Jun 2020 22:56:07 +0200 (CEST)
+X-IronPort-AV: E=Sophos;i="5.75,264,1589234400"; d="scan'208";a="455861323"
 Received: from abo-173-121-68.mrs.modulonet.fr (HELO hadrien) ([85.68.121.173])
  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 21 Jun 2020 22:53:24 +0200
-Date: Sun, 21 Jun 2020 22:53:24 +0200 (CEST)
+ 21 Jun 2020 22:56:07 +0200
+Date: Sun, 21 Jun 2020 22:56:07 +0200 (CEST)
 From: Julia Lawall <julia.lawall@inria.fr>
 X-X-Sender: jll@hadrien
 To: Denis Efremov <efremov@linux.com>
 In-Reply-To: <20200619131313.15468-1-efremov@linux.com>
-Message-ID: <alpine.DEB.2.22.394.2006212251250.2501@hadrien>
+Message-ID: <alpine.DEB.2.22.394.2006212255140.2501@hadrien>
 References: <20200615102045.4558-1-efremov@linux.com>
  <20200619131313.15468-1-efremov@linux.com>
 User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 21 Jun 2020 22:53:28 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 21 Jun 2020 22:56:09 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sun, 21 Jun 2020 22:53:25 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Sun, 21 Jun 2020 22:56:07 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>,
@@ -71,23 +71,6 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-> +@as_next@
-> +expression subE1 <= as.E1;
-> +expression subE2 <= as.E2;
-> +expression as.E1, as.E2, E3;
-> +assignment operator aop;
-> +position p1, p2;
-> +@@
-> +
-> +* E1 * E2@p1
-> +  ... when != \(E1\|E2\|subE1\|subE2\) aop E3
-> +      when != &\(E1\|E2\|subE1\|subE2\)
-
-You don't need E1 and E2 in the above two lines.  subE1 and subE2 will
-match them.  Likewise for the other rules.
-
-> +* array_size(E1, E2)@p2
-> +
 > +@script:python depends on report@
 > +p1 << as_next.p1;
 > +p2 << as_next.p2;
@@ -96,11 +79,14 @@ match them.  Likewise for the other rules.
 > +coccilib.report.print_report(p1[0],
 > +f"WARNING: array_size is used down the code (line {p2[0].line}) to compute the same size")
 
-I don't think that "down the code" is very understandable.  "Later in the
-code" would be fine.  Even just "later" would be fine.
+I get python failures for all of these messages.  I know nothing about
+python.  How is this supposed to work?  Is it a python 2 vs python 3
+thing?
 
 julia
 
+
+> +
 > +@script:python depends on org@
 > +p1 << as_next.p1;
 > +p2 << as_next.p2;
