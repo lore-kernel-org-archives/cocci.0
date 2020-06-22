@@ -6,57 +6,56 @@ X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 804D0C433E0
-	for <cocci@archiver.kernel.org>; Mon, 22 Jun 2020 12:12:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 244C0C433E0
+	for <cocci@archiver.kernel.org>; Mon, 22 Jun 2020 12:16:18 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EE22E206FA
-	for <cocci@archiver.kernel.org>; Mon, 22 Jun 2020 12:12:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EE22E206FA
+	by mail.kernel.org (Postfix) with ESMTPS id 9EECC206FA
+	for <cocci@archiver.kernel.org>; Mon, 22 Jun 2020 12:16:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9EECC206FA
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 05MCC165017214;
-	Mon, 22 Jun 2020 14:12:01 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 05MCFtf7001363;
+	Mon, 22 Jun 2020 14:15:55 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 1FA827773;
-	Mon, 22 Jun 2020 14:12:01 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id BCBFE7773;
+	Mon, 22 Jun 2020 14:15:55 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 692ED3BAB
- for <cocci@systeme.lip6.fr>; Mon, 22 Jun 2020 14:11:59 +0200 (CEST)
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com
- [209.85.218.47])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 05MCBvDC026471
+ by systeme.lip6.fr (Postfix) with ESMTPS id 4E7CE3BAB
+ for <cocci@systeme.lip6.fr>; Mon, 22 Jun 2020 14:15:54 +0200 (CEST)
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com
+ [209.85.208.47])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 05MCFr3E018352
  (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Mon, 22 Jun 2020 14:11:57 +0200 (CEST)
-Received: by mail-ej1-f47.google.com with SMTP id q19so17765742eja.7
- for <cocci@systeme.lip6.fr>; Mon, 22 Jun 2020 05:11:57 -0700 (PDT)
+ for <cocci@systeme.lip6.fr>; Mon, 22 Jun 2020 14:15:53 +0200 (CEST)
+Received: by mail-ed1-f47.google.com with SMTP id p18so13451841eds.7
+ for <cocci@systeme.lip6.fr>; Mon, 22 Jun 2020 05:15:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:reply-to:subject:to:cc:references:from:autocrypt
  :message-id:date:user-agent:mime-version:in-reply-to
  :content-language:content-transfer-encoding;
- bh=b1faUQbOs5qeYo5N21a8jYBHSSlOL9ES80kAu+hsLFU=;
- b=dzPmTl/OQO/I7+CJ/XsSOBAJYNYhEGHF8dpoP9aUbnoEhXsjkNVCI+xPs57GdZdZMQ
- /U2wCgrLyc5O3qWWqhWnOYj5Q9G1Il/4CLsFFAIAe16m6NCzuKHzL5F2pD9vXzSiPDld
- DVhbGVU05ANVoyR9SZOkT0S6asq0pJjENsNrm3WaUmpiVm2LOOptaAA0X6RADqzcaBPF
- yMy7ta12b9LE386VQEw11EU+m/8b2ybE2WNPxcqfVJ471lOask00UAMXZIwPAZoF3OJr
- HCNClB7zC6f957x9AmwTdY84VqqCq0pJiiL+gt5VyCRHBocO/V4c33cdunEbai0Mr0Kv
- i2tg==
-X-Gm-Message-State: AOAM533SnrMV6WIGXV+ldvk6Fa4/fbi+c0o09vPhvOaguSNwlpWQZuHt
- KorBcpz8wRpM7kTTSV+Eg3Y=
-X-Google-Smtp-Source: ABdhPJwHKvCyt5z9lGLpzs9XEq/SF9X+awMj0tflVpNmHTydwSHSVKd1PzMqNC27lA+m4tr922UFHQ==
-X-Received: by 2002:a17:906:3483:: with SMTP id
- g3mr15158613ejb.373.1592827917305; 
- Mon, 22 Jun 2020 05:11:57 -0700 (PDT)
+ bh=hQzYMaUlZUDlc8Lem8l9/7cthTQDrT2IC1P1jvMCOQw=;
+ b=j22gUIT/RndDFlUL2bgZVBJaNytAd+0HGR4R7AohDQV/7NLM0C7tL6a6VrMNRwtOXH
+ 2+olZBsavbcbic8sW2NIQEJE74FUF7I0YMTaPSDD7ysauWJ2nyHAWeW0QIWrC/lQKdHg
+ lLQfNR7MCiF6XTXK8o7+8DW+vmIrai1w4KMqa6gIt+Fa4HhMmTI+x6xx70gevokWyzFE
+ Vteh6bTQD5vM3nGCyFY2+K7/Cs93b1/IQeRg/aGudrpenf6np/CNKzwgk8c4Xu2p5KZf
+ K9Mq1yCF3lMq8QN/8aOIagAXUaaL4oMJzdBSdd95G2F/IHks1ahIVcCuT7o0UrjuKeV/
+ lCqw==
+X-Gm-Message-State: AOAM5333ceegwrmRPqRGtcO4T0GX/w9XLS0WVC7fVbNpoBaLB3b7Lpc3
+ TLzbSuzH4MEagHUi5jsI0zM=
+X-Google-Smtp-Source: ABdhPJwjuFE6Tx1w7jw/7lOt+LiuyZiM8PuDJdjY4MSvZygRdc6baVasVMTneLOhh1Bx5lOa/+DSiQ==
+X-Received: by 2002:aa7:d98e:: with SMTP id u14mr17025220eds.247.1592828153714; 
+ Mon, 22 Jun 2020 05:15:53 -0700 (PDT)
 Received: from [10.68.32.147] (broadband-37-110-38-130.ip.moscow.rt.ru.
  [37.110.38.130])
- by smtp.gmail.com with ESMTPSA id ch25sm1398102edb.90.2020.06.22.05.11.56
+ by smtp.gmail.com with ESMTPSA id j3sm12254485edr.87.2020.06.22.05.15.52
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Mon, 22 Jun 2020 05:11:56 -0700 (PDT)
+ Mon, 22 Jun 2020 05:15:53 -0700 (PDT)
 To: Julia Lawall <julia.lawall@inria.fr>
 References: <20200615102045.4558-1-efremov@linux.com>
  <20200619131313.15468-1-efremov@linux.com>
@@ -105,16 +104,16 @@ Autocrypt: addr=efremov@linux.com; keydata=
  EahrGMfRngbdp/mKs9aBR56ECMfFFUPyI3VJsNbgpcIJjV/0N+JdJKQpJ/4uQ2zNm0wH/RU8
  CRJvEwtKemX6fp/zLI36Gvz8zJIjSBIEqCb7vdgvWarksrhmi6/Jay5zRZ03+k6YwiqgX8t7
  ANwvYa1h1dQ36OiTqm1cIxRCGl4wrypOVGx3OjCar7sBLD+NkwO4RaqFvdv0xuuy4x01VnOF
-Message-ID: <4983fb06-006e-d26b-7cfb-d987ad27e57d@linux.com>
-Date: Mon, 22 Jun 2020 15:12:26 +0300
+Message-ID: <e57c419b-a64a-55a1-be7a-8f45edaea3bf@linux.com>
+Date: Mon, 22 Jun 2020 15:16:23 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.9.0
 MIME-Version: 1.0
 In-Reply-To: <alpine.DEB.2.22.394.2006212255140.2501@hadrien>
 Content-Language: en-US
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 22 Jun 2020 14:12:01 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 22 Jun 2020 14:15:55 +0200 (CEST)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Mon, 22 Jun 2020 14:11:57 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Mon, 22 Jun 2020 14:15:54 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>,
@@ -138,17 +137,46 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
+What do you think about removing duplicates warning from the rule?
 
+I mean this kind of warnings: "WARNING: same array_size (line {p1[0].line})"
 
-On 6/21/20 11:56 PM, Julia Lawall wrote:
-> Is it a python 2 vs python 3 thing?
+As for now, I think it's better to not disturb developers with this kind
+of things.
 
-Yes, python2 is no longer supported and I
-thought it would be safe to use this syntax.
-
-Ok, I will make it portable in v4.
-
+Thanks,
 Denis
+
+>> +@as_dup@
+>> +expression subE1 <= as.E1;
+>> +expression subE2 <= as.E2;
+>> +expression as.E1, as.E2, E3;
+>> +assignment operator aop;
+>> +position p1, p2;
+>> +@@
+>> +
+>> +* array_size(E1, E2)@p1
+>> +  ... when != \(E1\|E2\|subE1\|subE2\) aop E3
+>> +      when != &\(E1\|E2\|subE1\|subE2\)
+>> +* array_size(E1, E2)@p2
+>> +
+>> +@script:python depends on report@
+>> +p1 << as_dup.p1;
+>> +p2 << as_dup.p2;
+>> +@@
+>> +
+>> +coccilib.report.print_report(p2[0],
+>> +f"WARNING: same array_size (line {p1[0].line})")
+>> +
+>> +@script:python depends on org@
+>> +p1 << as_dup.p1;
+>> +p2 << as_dup.p2;
+>> +@@
+>> +
+>> +coccilib.org.print_todo(p2[0],
+>> +f"WARNING: same array_size (line {p1[0].line})")
+>> +
+
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
