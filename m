@@ -2,85 +2,63 @@ Return-Path: <SRS0=uwmw=AM=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0CF8C433DF
-	for <cocci@archiver.kernel.org>; Wed,  1 Jul 2020 15:19:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6098EC433E0
+	for <cocci@archiver.kernel.org>; Wed,  1 Jul 2020 15:29:45 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 64192206C3
-	for <cocci@archiver.kernel.org>; Wed,  1 Jul 2020 15:19:52 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="C71K5/fQ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 64192206C3
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	by mail.kernel.org (Postfix) with ESMTPS id B1B3A20760
+	for <cocci@archiver.kernel.org>; Wed,  1 Jul 2020 15:29:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B1B3A20760
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 061FJblv004473;
-	Wed, 1 Jul 2020 17:19:37 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 061FTVIi004419;
+	Wed, 1 Jul 2020 17:29:31 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 2C226776E;
-	Wed,  1 Jul 2020 17:19:37 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 65D94776E;
+	Wed,  1 Jul 2020 17:29:31 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 5D126742B
- for <cocci@systeme.lip6.fr>; Wed,  1 Jul 2020 17:19:35 +0200 (CEST)
-Received: from merlin.infradead.org (merlin.infradead.org
- [IPv6:2001:8b0:10b:1231:0:0:0:1])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 061FJV7V005929
- (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
- Wed, 1 Jul 2020 17:19:32 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
- In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
- :Reply-To:Content-ID:Content-Description;
- bh=RMq+iE1LUPENeNcgBeF0Dm87bPYKtg4gXNNVgu26xNQ=; b=C71K5/fQGisGL/dr162sd1/BB0
- PKXUXMzoOs1afRIhld7BQ9X7Pr4/y1MLjs8gQLGV98nh88bgZ+pw2CnwPL2I6DoGrBt4SfCuJAAAG
- Pbceya8bm8et3ppzsfP50Wvq/oYOsVgqyFo5BK1gm47jR1/SeiqtHL7E1uSIqRP3ol+8eUm2K8jaV
- RcKZR8XfcKONRxcIRVyd6WaPpfjCHJRSvjxe+UkOETlAlE2laAv2k9yPX0dwWOM0YC83jwEnr2My/
- PkNAvhmO2EZhzSFBzyX2BrWqufyNegvBKJWrUEHfZ2RFpKKcNJ+nDVl4U7AsHWZD66vIjR/cTDZm9
- 14ntrsQg==;
-Received: from [2601:1c0:6280:3f0::19c2]
- by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1jqeWF-00086O-TU; Wed, 01 Jul 2020 15:19:28 +0000
-To: Markus Elfring <Markus.Elfring@web.de>, linux-doc@vger.kernel.org,
-        Coccinelle <cocci@systeme.lip6.fr>
+ by systeme.lip6.fr (Postfix) with ESMTPS id B5C99742B
+ for <cocci@systeme.lip6.fr>; Wed,  1 Jul 2020 17:29:30 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr
+ (mail2-relais-roc.national.inria.fr [192.134.164.83])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 061FTTkD000462
+ (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
+ for <cocci@systeme.lip6.fr>; Wed, 1 Jul 2020 17:29:29 +0200 (CEST)
+X-IronPort-AV: E=Sophos;i="5.75,300,1589234400"; d="scan'208";a="457697522"
+Received: from abo-173-121-68.mrs.modulonet.fr (HELO hadrien) ([85.68.121.173])
+ by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 01 Jul 2020 17:29:12 +0200
+Date: Wed, 1 Jul 2020 17:29:11 +0200 (CEST)
+From: Julia Lawall <julia.lawall@inria.fr>
+X-X-Sender: jll@hadrien
+To: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <0616dd0c-bb86-be2b-3dc6-1c695a92c3ca@infradead.org>
+Message-ID: <alpine.DEB.2.22.394.2007011728400.2540@hadrien>
 References: <0616dd0c-bb86-be2b-3dc6-1c695a92c3ca@infradead.org>
- <c2c1dec0-2bd1-b0e2-1aa4-38d0e954d5ba@web.de>
- <efc8b0c9-db3b-3c9c-d876-897b53a9e278@infradead.org>
- <2a3940de-6a81-1aff-8109-53c1c5a6aa1b@web.de>
- <f2aaa91a-f935-bc2d-26f2-712576c1bbd7@infradead.org>
- <2f80fb10-dc7f-29be-dc3e-2715f8bafc6d@web.de>
- <dfa2ed9f-fe68-58d1-c3d0-ac436f9bee09@infradead.org>
- <648d287e-3636-1858-1439-103d317f8571@web.de>
- <34065299-03cf-5b62-db37-0acc9830be72@infradead.org>
- <65db3f88-1ac8-374d-e3fe-2ea0970ffd67@web.de>
-From: Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <30b722ca-1bd8-2b96-ca41-1e9bc7212b66@infradead.org>
-Date: Wed, 1 Jul 2020 08:19:22 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-In-Reply-To: <65db3f88-1ac8-374d-e3fe-2ea0970ffd67@web.de>
-Content-Language: en-US
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 01 Jul 2020 17:19:37 +0200 (CEST)
-X-Greylist: IP, sender and recipient auto-whitelisted, not delayed by
- milter-greylist-4.4.3 (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Wed, 01 Jul 2020 17:19:32 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 01 Jul 2020 17:29:31 +0200 (CEST)
+X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [132.227.60.2]); Wed, 01 Jul 2020 17:29:29 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78
-Cc: Michal Marek <michal.lkml@markovi.net>,
-        Gilles Muller <Gilles.Muller@lip6.fr>, kernel-janitors@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>,
+X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
+Cc: Michal Marek <michal.lkml@markovi.net>, Jonathan Corbet <corbet@lwn.net>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
         Nicolas Palix <nicolas.palix@imag.fr>,
         LKML <linux-kernel@vger.kernel.org>,
-        Julia Lawall <julia.lawall@lip6.fr>
-Subject: Re: [Cocci] [v2] Documentation: Coccinelle: fix typos and command
-	example
+        Julia Lawall <julia.lawall@lip6.fr>,
+        Markus Elfring <Markus.Elfring@web.de>,
+        Gilles Muller <Gilles.Muller@lip6.fr>, cocci@systeme.lip6.fr
+Subject: Re: [Cocci] [PATCH v2] Documentation: Coccinelle: fix typos and
+ command	example
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -92,23 +70,198 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-T24gNy8xLzIwIDg6MTUgQU0sIE1hcmt1cyBFbGZyaW5nIHdyb3RlOgo+Pj4gV291bGQgeW91IGxp
-a2UgdG8gaW50ZWdyYXRlIGFueSBtb3JlIGRldGFpbHMgZnJvbSB0aGUgcnVubmluZyBwYXRjaCBy
-ZXZpZXc/Cj4+Cj4+IEkgYW0gc2F0aXNmaWVkIHdpdGggdGhlIGN1cnJlbnQgcGF0Y2guCj4gCj4g
-SSBnb3QgYW4gb3RoZXIgc29mdHdhcmUgZGV2ZWxvcG1lbnQgaW1wcmVzc2lvbi4KPiAKPiAKPj4g
-Tm8gZG91YnQgdGhhdCBhbnkgZG9jdW1lbnRhdGlvbiBjYW4gYmUgaW1wcm92ZWQsIGFsbW9zdCBh
-ZCBpbmZpbml0dW0sCj4+IGJ1dCBJJ20gbm90IHRyeWluZyB0byBkbyB0aGF0Lgo+IAo+IERvIHdl
-IHN0dW1ibGUgb24gYSB0YXJnZXQgY29uZmxpY3QgYWNjb3JkaW5nIHRvIGEgc3BlY2lmaWMgdGVj
-aG5pY2FsIGRldGFpbD8KPiAKPiBIb3cgZG8geW91IHRoaW5rIGFib3V0IHRvIGNvbXBhcmUgc291
-cmNlIGNvZGUgYW5hbHlzaXMgcmVzdWx0cwo+IGZyb20gcHJvZ3JhbXMgbGlrZSDigJxzcGFyc2Xi
-gJ0gYW5kIOKAnHNwYXRjaOKAnSAoYnkgdGhlIG1lbnRpb25lZCBtYWtlIGNvbW1hbmQpPwoKTm9u
-ZSBvZiB0aGF0IGhhcyBhbnl0aGluZyB0byBkbyB3aXRoIHRoZSBjdXJyZW50IHBhdGNoLgoKSnVs
-aWEsIGRvIHlvdSBoYXZlIGFueSBjb21tZW50cyBhYm91dCB0aGUgY3VycmVudCBwYXRjaD8gKHYy
-KQoKdGhhbmtzLgoKLS0gCn5SYW5keQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX18KQ29jY2kgbWFpbGluZyBsaXN0CkNvY2NpQHN5c3RlbWUubGlwNi5mcgpo
-dHRwczovL3N5c3RlbWUubGlwNi5mci9tYWlsbWFuL2xpc3RpbmZvL2NvY2NpCg==
+
+
+On Mon, 29 Jun 2020, Randy Dunlap wrote:
+
+> From: Randy Dunlap <rdunlap@infradead.org>
+>
+> Fix various typos etc. in dev-tools/coccinelle.rst:
+>
+> - punctuation, grammar, wording
+> - add "path/to/file.c" when using Coccinelle to check a single file
+>
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+
+Acked-by: Julia Lawall <julia.lawall@inria.fr>
+
+Thanks very much for your help!
+
+julia
+
+
+> Cc: Julia Lawall <Julia.Lawall@lip6.fr>
+> Cc: Gilles Muller <Gilles.Muller@lip6.fr>
+> Cc: Nicolas Palix <nicolas.palix@imag.fr>
+> Cc: Michal Marek <michal.lkml@markovi.net>
+> Cc: cocci@systeme.lip6.fr
+> Cc: Markus Elfring <Markus.Elfring@web.de>
+> ---
+> v2: s/at minimum/a minimum/ (Julia and Markus)
+>  Documentation/dev-tools/coccinelle.rst |   44 +++++++++++------------
+>  1 file changed, 22 insertions(+), 22 deletions(-)
+>
+> --- linux-next-20200629.orig/Documentation/dev-tools/coccinelle.rst
+> +++ linux-next-20200629/Documentation/dev-tools/coccinelle.rst
+> @@ -85,7 +85,7 @@ Four basic modes are defined: ``patch``,
+>    file:line:column-column: message
+>
+>  - ``context`` highlights lines of interest and their context in a
+> -  diff-like style.Lines of interest are indicated with ``-``.
+> +  diff-like style. Lines of interest are indicated with ``-``.
+>
+>  - ``org`` generates a report in the Org mode format of Emacs.
+>
+> @@ -119,7 +119,7 @@ For each semantic patch, a commit messag
+>  description of the problem being checked by the semantic patch, and
+>  includes a reference to Coccinelle.
+>
+> -As any static code analyzer, Coccinelle produces false
+> +As with any static code analyzer, Coccinelle produces false
+>  positives. Thus, reports must be carefully checked, and patches
+>  reviewed.
+>
+> @@ -135,18 +135,18 @@ the parallelism, set the J= variable. Fo
+>
+>     make coccicheck MODE=report J=4
+>
+> -As of Coccinelle 1.0.2 Coccinelle uses Ocaml parmap for parallelization,
+> +As of Coccinelle 1.0.2 Coccinelle uses Ocaml parmap for parallelization;
+>  if support for this is detected you will benefit from parmap parallelization.
+>
+>  When parmap is enabled coccicheck will enable dynamic load balancing by using
+> -``--chunksize 1`` argument, this ensures we keep feeding threads with work
+> +``--chunksize 1`` argument. This ensures we keep feeding threads with work
+>  one by one, so that we avoid the situation where most work gets done by only
+>  a few threads. With dynamic load balancing, if a thread finishes early we keep
+>  feeding it more work.
+>
+>  When parmap is enabled, if an error occurs in Coccinelle, this error
+> -value is propagated back, the return value of the ``make coccicheck``
+> -captures this return value.
+> +value is propagated back, and the return value of the ``make coccicheck``
+> +command captures this return value.
+>
+>  Using Coccinelle with a single semantic patch
+>  ---------------------------------------------
+> @@ -177,13 +177,13 @@ For example, to check drivers/net/wirele
+>  To apply Coccinelle on a file basis, instead of a directory basis, the
+>  following command may be used::
+>
+> -    make C=1 CHECK="scripts/coccicheck"
+> +    make C=1 CHECK="scripts/coccicheck" path/to/file.c
+>
+>  To check only newly edited code, use the value 2 for the C flag, i.e.::
+>
+> -    make C=2 CHECK="scripts/coccicheck"
+> +    make C=2 CHECK="scripts/coccicheck" path/to/file.c
+>
+> -In these modes, which works on a file basis, there is no information
+> +In these modes, which work on a file basis, there is no information
+>  about semantic patches displayed, and no commit message proposed.
+>
+>  This runs every semantic patch in scripts/coccinelle by default. The
+> @@ -198,12 +198,12 @@ Debugging Coccinelle SmPL patches
+>
+>  Using coccicheck is best as it provides in the spatch command line
+>  include options matching the options used when we compile the kernel.
+> -You can learn what these options are by using V=1, you could then
+> +You can learn what these options are by using V=1; you could then
+>  manually run Coccinelle with debug options added.
+>
+>  Alternatively you can debug running Coccinelle against SmPL patches
+> -by asking for stderr to be redirected to stderr, by default stderr
+> -is redirected to /dev/null, if you'd like to capture stderr you
+> +by asking for stderr to be redirected to stderr. By default stderr
+> +is redirected to /dev/null; if you'd like to capture stderr you
+>  can specify the ``DEBUG_FILE="file.txt"`` option to coccicheck. For
+>  instance::
+>
+> @@ -211,8 +211,8 @@ instance::
+>      make coccicheck COCCI=scripts/coccinelle/free/kfree.cocci MODE=report DEBUG_FILE=cocci.err
+>      cat cocci.err
+>
+> -You can use SPFLAGS to add debugging flags, for instance you may want to
+> -add both --profile --show-trying to SPFLAGS when debugging. For instance
+> +You can use SPFLAGS to add debugging flags; for instance you may want to
+> +add both --profile --show-trying to SPFLAGS when debugging. For example
+>  you may want to use::
+>
+>      rm -f err.log
+> @@ -229,7 +229,7 @@ DEBUG_FILE support is only supported whe
+>  --------------------
+>
+>  Coccinelle supports reading .cocciconfig for default Coccinelle options that
+> -should be used every time spatch is spawned, the order of precedence for
+> +should be used every time spatch is spawned. The order of precedence for
+>  variables for .cocciconfig is as follows:
+>
+>  - Your current user's home directory is processed first
+> @@ -237,7 +237,7 @@ variables for .cocciconfig is as follows
+>  - The directory provided with the --dir option is processed last, if used
+>
+>  Since coccicheck runs through make, it naturally runs from the kernel
+> -proper dir, as such the second rule above would be implied for picking up a
+> +proper dir; as such the second rule above would be implied for picking up a
+>  .cocciconfig when using ``make coccicheck``.
+>
+>  ``make coccicheck`` also supports using M= targets. If you do not supply
+> @@ -260,13 +260,13 @@ If not using the kernel's coccicheck tar
+>  order logic of .cocciconfig reading. If using the kernel's coccicheck target,
+>  override any of the kernel's .coccicheck's settings using SPFLAGS.
+>
+> -We help Coccinelle when used against Linux with a set of sensible defaults
+> +We help Coccinelle when used against Linux with a set of sensible default
+>  options for Linux with our own Linux .cocciconfig. This hints to coccinelle
+> -git can be used for ``git grep`` queries over coccigrep. A timeout of 200
+> +that git can be used for ``git grep`` queries over coccigrep. A timeout of 200
+>  seconds should suffice for now.
+>
+>  The options picked up by coccinelle when reading a .cocciconfig do not appear
+> -as arguments to spatch processes running on your system, to confirm what
+> +as arguments to spatch processes running on your system. To confirm what
+>  options will be used by Coccinelle run::
+>
+>        spatch --print-options-only
+> @@ -290,7 +290,7 @@ given to it when options are in conflict
+>
+>  Coccinelle supports idutils as well but requires coccinelle >= 1.0.6.
+>  When no ID file is specified coccinelle assumes your ID database file
+> -is in the file .id-utils.index on the top level of the kernel, coccinelle
+> +is in the file .id-utils.index on the top level of the kernel. Coccinelle
+>  carries a script scripts/idutils_index.sh which creates the database with::
+>
+>      mkid -i C --output .id-utils.index
+> @@ -317,7 +317,7 @@ SmPL patch specific options
+>  ---------------------------
+>
+>  SmPL patches can have their own requirements for options passed
+> -to Coccinelle. SmPL patch specific options can be provided by
+> +to Coccinelle. SmPL patch-specific options can be provided by
+>  providing them at the top of the SmPL patch, for instance::
+>
+>  	// Options: --no-includes --include-headers
+> @@ -327,7 +327,7 @@ SmPL patch Coccinelle requirements
+>
+>  As Coccinelle features get added some more advanced SmPL patches
+>  may require newer versions of Coccinelle. If an SmPL patch requires
+> -at least a version of Coccinelle, this can be specified as follows,
+> +a minimum version of Coccinelle, this can be specified as follows,
+>  as an example if requiring at least Coccinelle >= 1.0.5::
+>
+>  	// Requires: 1.0.5
+>
+> _______________________________________________
+> Cocci mailing list
+> Cocci@systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
+>
+_______________________________________________
+Cocci mailing list
+Cocci@systeme.lip6.fr
+https://systeme.lip6.fr/mailman/listinfo/cocci
