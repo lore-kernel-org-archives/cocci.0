@@ -7,50 +7,48 @@ X-Spam-Status: No, score=-10.0 required=3.0
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF679C433DF
-	for <cocci@archiver.kernel.org>; Fri,  3 Jul 2020 18:03:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96DBBC433E0
+	for <cocci@archiver.kernel.org>; Fri,  3 Jul 2020 18:03:19 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6FF5421D79
+	by mail.kernel.org (Postfix) with ESMTPS id 279A921D7D
 	for <cocci@archiver.kernel.org>; Fri,  3 Jul 2020 18:03:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6FF5421D79
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 279A921D7D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 063I2upr024734;
-	Fri, 3 Jul 2020 20:02:56 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 063I2rxb024726;
+	Fri, 3 Jul 2020 20:02:59 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 84FB5785D;
-	Fri,  3 Jul 2020 20:02:47 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 53D2C786D;
+	Fri,  3 Jul 2020 20:02:49 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 1A26E3F6C
- for <cocci@systeme.lip6.fr>; Fri,  3 Jul 2020 20:00:02 +0200 (CEST)
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk
- [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 063I01fn002983
+ by systeme.lip6.fr (Postfix) with ESMTPS id F01923F6C
+ for <cocci@systeme.lip6.fr>; Fri,  3 Jul 2020 20:00:06 +0200 (CEST)
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 063I06ir004335
  (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
- for <cocci@systeme.lip6.fr>; Fri, 3 Jul 2020 20:00:01 +0200 (CEST)
+ for <cocci@systeme.lip6.fr>; Fri, 3 Jul 2020 20:00:06 +0200 (CEST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
- (Authenticated sender: jaskaran_singh) with ESMTPSA id 23B342A6516
+ (Authenticated sender: jaskaran_singh) with ESMTPSA id 37FDD2A6516
 From: Jaskaran Singh <jaskaran.singh@collabora.com>
 To: cocci@systeme.lip6.fr
-Date: Fri,  3 Jul 2020 23:29:17 +0530
-Message-Id: <20200703175931.1693-7-jaskaran.singh@collabora.com>
+Date: Fri,  3 Jul 2020 23:29:21 +0530
+Message-Id: <20200703175931.1693-11-jaskaran.singh@collabora.com>
 X-Mailer: git-send-email 2.21.3
 In-Reply-To: <20200703175931.1693-1-jaskaran.singh@collabora.com>
 References: <20200703175931.1693-1-jaskaran.singh@collabora.com>
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 03 Jul 2020 20:02:56 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 03 Jul 2020 20:02:59 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Fri, 03 Jul 2020 20:00:01 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Fri, 03 Jul 2020 20:00:06 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78
+X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Mailman-Approved-At: Fri, 03 Jul 2020 20:02:41 +0200
-Subject: [Cocci] [PATCH 06/20] parsing_cocci: compute_lines: Wrap SmPL
+Subject: [Cocci] [PATCH 10/20] parsing_cocci: unparse_ast0: Wrap SmPL
 	Attributes
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
@@ -69,145 +67,102 @@ Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
 Attributes are wrapped in the SmPL AST. Reflect these changes in
-compute_lines.ml.
+unparse_ast0.ml.
 
 Signed-off-by: Jaskaran Singh <jaskaran.singh@collabora.com>
 ---
- parsing_cocci/compute_lines.ml | 42 +++++++++++++++++++---------------
- 1 file changed, 24 insertions(+), 18 deletions(-)
+ parsing_cocci/unparse_ast0.ml | 34 +++++++++++++++++-----------------
+ 1 file changed, 17 insertions(+), 17 deletions(-)
 
-diff --git a/parsing_cocci/compute_lines.ml b/parsing_cocci/compute_lines.ml
-index 4f273307..4420e952 100644
---- a/parsing_cocci/compute_lines.ml
-+++ b/parsing_cocci/compute_lines.ml
-@@ -428,7 +428,7 @@ let rec expression e =
-   | Ast0.Cast(lp,ty,attr,rp,exp) ->
-       let lp = normal_mcode lp in
-       let exp = expression exp in
--      let attr = List.map normal_mcode attr in
-+      let attr = List.map attribute attr in
-       let rp = normal_mcode rp in
-       mkres e (Ast0.Cast(lp,typeC ty,attr,rp,exp)) (promote_mcode lp) exp
-   | Ast0.SizeOfExpr(szf,exp) ->
-@@ -672,7 +672,7 @@ and declaration d =
-   | Ast0.Init(stg,ty,id,attr,eq,exp,sem) ->
-       let ty = typeC ty in
-       let id = ident id in
--      let attr = List.map normal_mcode attr in
-+      let attr = List.map attribute attr in
-       let eq = normal_mcode eq in
-       let exp = initialiser exp in
-       let sem = normal_mcode sem in
-@@ -686,7 +686,7 @@ and declaration d =
-   | Ast0.UnInit(stg,ty,id,attr,sem) ->
-       let ty = typeC ty in
-       let id = ident id in
--      let attr = List.map normal_mcode attr in
-+      let attr = List.map attribute attr in
-       let sem = normal_mcode sem in
-       (match stg with
- 	None ->
-@@ -715,13 +715,13 @@ and declaration d =
- 	| Ast0.FStorage(stg)::_ -> mkres d res (promote_mcode stg) right
- 	| Ast0.FType(ty)::_ -> mkres d res ty right
- 	| Ast0.FInline(inline)::_ -> mkres d res (promote_mcode inline) right
--	| Ast0.FAttr(attr)::_ -> mkres d res (promote_mcode attr) right)
-+	| Ast0.FAttr(attr)::_ -> mkres d res attr right)
-   | Ast0.MacroDecl(stg,name,lp,args,rp,attr,sem) ->
-       let name = ident name in
-       let lp = normal_mcode lp in
-       let args = dots is_exp_dots (Some(promote_mcode lp)) expression args in
-       let rp = normal_mcode rp in
--      let attr = List.map normal_mcode attr in
-+      let attr = List.map attribute attr in
-       let sem = normal_mcode sem in
-       (match stg with
- 	None ->
-@@ -749,7 +749,7 @@ and declaration d =
- 	    (promote_mcode x) (promote_mcode sem))
-   | Ast0.TyDecl(ty,attr,sem) ->
-       let ty = typeC ty in
--      let attr = List.map normal_mcode attr in
-+      let attr = List.map attribute attr in
-       let sem = normal_mcode sem in
-       mkres d (Ast0.TyDecl(ty,attr,sem)) ty (promote_mcode sem)
-   | Ast0.Typedef(stg,ty,id,sem) ->
-@@ -907,6 +907,13 @@ and initialiser_list prev = dots is_init_dots prev initialiser
- (* for export *)
- and initialiser_dots x = dots is_init_dots None initialiser x
- 
-+and attribute a =
+diff --git a/parsing_cocci/unparse_ast0.ml b/parsing_cocci/unparse_ast0.ml
+index 81bbb71a..109f1844 100644
+--- a/parsing_cocci/unparse_ast0.ml
++++ b/parsing_cocci/unparse_ast0.ml
+@@ -223,8 +223,7 @@ let rec expression e =
+ 	  expression exp; mcode print_string ar; ident field
+       | Ast0.Cast(lp,ty,attr,rp,exp) ->
+ 	  mcode print_string_box lp; typeC ty; close_box();
+-	  (if not (attr = []) then print_string " ");
+-	  print_between (fun _ -> print_string " ") (mcode print_string) attr;
++          print_attribute_list attr;
+ 	  mcode print_string rp; expression exp
+       | Ast0.SizeOfExpr(szf,exp) ->
+ 	  mcode print_string szf; expression exp
+@@ -408,15 +407,13 @@ and declaration d =
+       |	Ast0.Init(stg,ty,id,attr,eq,ini,sem) ->
+ 	  print_option (mcode U.storage) stg;
+ 	  print_named_type ty id;
+-	  (if not (attr = []) then print_string " ");
+-	  print_between (fun _ -> print_string " ") (mcode print_string) attr;
++          print_attribute_list attr;
+ 	  print_string " ";
+ 	  mcode print_string eq; print_string " "; initialiser ini;
+ 	  mcode print_string sem
+       | Ast0.UnInit(stg,ty,id,attr,sem) ->
+ 	  print_option (mcode U.storage) stg; print_named_type ty id;
+-	  (if not (attr = []) then print_string " ");
+-	  print_between (fun _ -> print_string " ") (mcode print_string) attr;
++          print_attribute_list attr;
+ 	  mcode print_string sem
+       | Ast0.FunProto(fninfo,name,lp1,params,va,rp1,sem) ->
+ 	  List.iter print_fninfo fninfo;
+@@ -429,8 +426,7 @@ and declaration d =
+ 	  ident name; mcode print_string_box lp;
+ 	  let _ = dots (function _ -> ()) expression args in
+ 	  close_box(); mcode print_string rp;
+-	  (if not (attr = []) then print_string " ");
+-	  print_between (fun _ -> print_string " ") (mcode print_string) attr;
++          print_attribute_list attr;
+ 	  mcode print_string sem
+       | Ast0.MacroDeclInit(stg,name,lp,args,rp,eq,ini,sem) ->
+ 	  print_option (mcode U.storage) stg;
+@@ -442,8 +438,7 @@ and declaration d =
+ 	  mcode print_string sem
+       | Ast0.TyDecl(ty,attr,sem) ->
+           typeC ty;
+-          (if not (attr = []) then print_string " ");
+-          print_between (fun _ -> print_string " ") (mcode print_string) attr;
++          print_attribute_list attr;
+           mcode print_string sem
+       | Ast0.Typedef(stg,ty,id,sem) ->
+ 	  mcode print_string stg; typeC ty; typeC id;
+@@ -557,16 +552,13 @@ and parameterTypeDef p =
+       match Ast0.unwrap p with
+         Ast0.VoidParam(ty,attr) ->
+           typeC ty;
+-          (if (attr = []) then print_string " ");
+-          print_between (fun _ -> print_string " ") (mcode print_string) attr;
++          print_attribute_list attr;
+       | Ast0.Param(ty,Some id,attr) ->
+           print_named_type ty id;
+-          (if (attr = []) then print_string " ");
+-          print_between (fun _ -> print_string " ") (mcode print_string) attr;
++          print_attribute_list attr;
+       | Ast0.Param(ty,None,attr) ->
+           typeC ty;
+-          (if (attr = []) then print_string " ");
+-          print_between (fun _ -> print_string " ") (mcode print_string) attr;
++          print_attribute_list attr;
+       | Ast0.MetaParam(name,_,_) -> mcode print_meta name
+       | Ast0.MetaParamList(name,_,_,_) -> mcode print_meta name
+       | Ast0.PComma(cm) -> mcode print_string cm; print_space()
+@@ -767,7 +759,15 @@ and print_fninfo = function
+     Ast0.FStorage(stg) -> mcode U.storage stg
+   | Ast0.FType(ty) -> typeC ty
+   | Ast0.FInline(inline) -> mcode print_string inline
+-  | Ast0.FAttr(attr) -> mcode print_string attr
++  | Ast0.FAttr(attr) -> print_attribute attr
++
++and print_attribute_list attrs =
++  if not (attrs = []) then print_string " ";
++  print_between (fun _ -> print_string " ") print_attribute attrs
++
++and print_attribute a =
 +  match Ast0.unwrap a with
-+    Ast0.Attribute(attr) ->
-+      let ln = promote_mcode attr in
-+      mkres a (Ast0.Attribute(attr)) ln ln
-+
-+
- (* --------------------------------------------------------------------- *)
- (* Parameter *)
++    Ast0.Attribute(attr) -> mcode print_string attr
  
-@@ -918,30 +925,30 @@ and is_param_dots p =
- and parameterTypeDef p =
-   match Ast0.unwrap p with
-     Ast0.VoidParam(ty,attr) ->
--      let attr = List.map normal_mcode attr in
-+      let attr = List.map attribute attr in
-       let ty = typeC ty in
-       (match attr with
-         [] -> mkres p (Ast0.VoidParam(ty,attr)) ty ty
-       | l ->
-           let lattr = List.hd (List.rev l) in
--          mkres p (Ast0.VoidParam(ty,attr)) ty (promote_mcode lattr))
-+          mkres p (Ast0.VoidParam(ty,attr)) ty lattr)
-   | Ast0.Param(ty,Some id,attr) ->
-       let id = ident id in
-       let ty = typeC ty in
--      let attr = List.map normal_mcode attr in
-+      let attr = List.map attribute attr in
-       (match attr with
-         [] -> mkres p (Ast0.Param(ty,Some id,attr)) ty id
-       | l ->
-           let lattr = List.hd (List.rev l) in
--          mkres p (Ast0.Param(ty,Some id,attr)) ty (promote_mcode lattr))
-+          mkres p (Ast0.Param(ty,Some id,attr)) ty lattr)
-   | Ast0.Param(ty,None,attr) ->
--      let attr = List.map normal_mcode attr in
-+      let attr = List.map attribute attr in
-       let ty = typeC ty in
-       (match attr with
-         [] -> mkres p (Ast0.Param(ty,None,attr)) ty ty
-       | l ->
-           let lattr = List.hd (List.rev l) in
--          mkres p (Ast0.Param(ty,None,attr)) ty (promote_mcode lattr))
-+          mkres p (Ast0.Param(ty,None,attr)) ty lattr)
-   | Ast0.MetaParam(name,a,b) ->
-       let name = normal_mcode name in
-       let ln = promote_mcode name in
-@@ -1297,7 +1304,7 @@ let rec statement s =
- 	| Ast0.FStorage(stg)::_ -> mkres s res (promote_mcode stg) right
- 	| Ast0.FType(ty)::_ -> mkres s res ty right
- 	| Ast0.FInline(inline)::_ -> mkres s res (promote_mcode inline) right
--	| Ast0.FAttr(attr)::_ -> mkres s res (promote_mcode attr) right)
-+	| Ast0.FAttr(attr)::_ -> mkres s res attr right)
- 
-     | Ast0.Include(inc,stm) ->
- 	let inc = normal_mcode inc in
-@@ -1359,11 +1366,10 @@ and leftfninfo fninfo name bef = (* cases on what is leftmost *)
-        Ast0.FInline(set_mcode_info inline (Ast0.get_info inlinfo))::rest,
-        name)
-   | Ast0.FAttr(attr)::rest ->
--      let (leftinfo,attrinfo) =
--	promote_to_statement_start (promote_mcode attr) bef in
--      (leftinfo,
--       Ast0.FAttr(set_mcode_info attr (Ast0.get_info attrinfo))::rest,
--       name)
-+      let attr = attribute attr in
-+      let (leftinfo,attr) =
-+	promote_to_statement_start attr bef in
-+      (leftinfo,Ast0.FAttr(attr)::rest,name)
- 
- and pragmainfo pi =
-   match Ast0.unwrap pi with
+ and whencode notfn alwaysfn = function
+     Ast0.WhenNot (_,_,a) ->
 -- 
 2.21.3
 
