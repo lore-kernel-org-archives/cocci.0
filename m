@@ -2,58 +2,57 @@ Return-Path: <SRS0=xwEL=AS=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CC3EC433DF
-	for <cocci@archiver.kernel.org>; Tue,  7 Jul 2020 20:01:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA246C433E1
+	for <cocci@archiver.kernel.org>; Tue,  7 Jul 2020 21:36:05 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9E137206F6
-	for <cocci@archiver.kernel.org>; Tue,  7 Jul 2020 20:01:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9E137206F6
+	by mail.kernel.org (Postfix) with ESMTPS id 58304206BE
+	for <cocci@archiver.kernel.org>; Tue,  7 Jul 2020 21:36:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 58304206BE
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 067K1N4E010776;
-	Tue, 7 Jul 2020 22:01:23 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 067LZlBi011515;
+	Tue, 7 Jul 2020 23:35:47 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 598F244A7;
-	Tue,  7 Jul 2020 22:01:23 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 21FD844A7;
+	Tue,  7 Jul 2020 23:35:47 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 77F553FFB
- for <cocci@systeme.lip6.fr>; Tue,  7 Jul 2020 22:01:21 +0200 (CEST)
-Received: from mail2-relais-roc.national.inria.fr
- (mail2-relais-roc.national.inria.fr [192.134.164.83])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 067K1K7o002907
+ by systeme.lip6.fr (Postfix) with ESMTPS id A28743FFB
+ for <cocci@systeme.lip6.fr>; Tue,  7 Jul 2020 23:35:45 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr
+ (mail3-relais-sop.national.inria.fr [192.134.164.104])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 067LZiSe021495
  (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
- for <cocci@systeme.lip6.fr>; Tue, 7 Jul 2020 22:01:21 +0200 (CEST)
-X-IronPort-AV: E=Sophos;i="5.75,325,1589234400"; d="scan'208";a="458806559"
+ for <cocci@systeme.lip6.fr>; Tue, 7 Jul 2020 23:35:45 +0200 (CEST)
+X-IronPort-AV: E=Sophos;i="5.75,325,1589234400"; d="scan'208";a="353873148"
 Received: from abo-173-121-68.mrs.modulonet.fr (HELO hadrien) ([85.68.121.173])
- by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 07 Jul 2020 22:01:20 +0200
-Date: Tue, 7 Jul 2020 22:01:20 +0200 (CEST)
+ by mail3-relais-sop.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 07 Jul 2020 23:35:20 +0200
+Date: Tue, 7 Jul 2020 23:35:19 +0200 (CEST)
 From: Julia Lawall <julia.lawall@inria.fr>
 X-X-Sender: jll@hadrien
-To: Markus Elfring <Markus.Elfring@web.de>
-In-Reply-To: <4b3bb651-5db0-021c-cbea-347eda0e95e0@web.de>
-Message-ID: <alpine.DEB.2.22.394.2007072200540.32782@hadrien>
-References: <4b3bb651-5db0-021c-cbea-347eda0e95e0@web.de>
+To: Denis Efremov <efremov@linux.com>
+In-Reply-To: <20200614215414.40034-1-efremov@linux.com>
+Message-ID: <alpine.DEB.2.22.394.2007072333250.32782@hadrien>
+References: <20200604140805.111613-1-efremov@linux.com>
+ <20200614215414.40034-1-efremov@linux.com>
 User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-491673124-1594152080=:32782"
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 07 Jul 2020 22:01:23 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 07 Jul 2020 23:35:47 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Tue, 07 Jul 2020 22:01:21 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Tue, 07 Jul 2020 23:35:45 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Coccinelle <cocci@systeme.lip6.fr>
-Subject: Re: [Cocci] Adding labels without indentation before specific
- statements?
+Cc: cocci@systeme.lip6.fr, linux-kernel@vger.kernel.org
+Subject: Re: [Cocci] [PATCH v3] coccinelle: api: add kzfree script
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -65,57 +64,152 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-491673124-1594152080=:32782
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
 
 
+On Mon, 15 Jun 2020, Denis Efremov wrote:
 
-On Tue, 7 Jul 2020, Markus Elfring wrote:
-
-> Hello,
+> Check for memset()/memzero_explicit() followed by kfree()/vfree()/kvfree().
 >
-> I have tried another tiny script variant out for the semantic patch language
-> (according to the software combination “Coccinelle 1.0.8-00139-gd0fd4c7d”).
+> Signed-off-by: Denis Efremov <efremov@linux.com>
+> ---
+> Changes in v2:
+>  - memset_explicit() added
+>  - kvfree_sensitive() added
+>  - forall added to r1
+>  - ... between memset and kfree added
+> Changes in v3:
+>  - Explicit filter for definitions instead of !(file in "...") conditions
+>  - type T added to match casts
+>  - memzero_explicit() patterns fixed
+>  - additional rule "cond" added to filter false-positives
 >
-> @addition@
-> identifier work;
-> expression action;
-> @@
->  void work(...)
->  {
->  ... when any
-> +last_action:
->  action(...);
->  }
+>  scripts/coccinelle/api/kzfree.cocci | 90 +++++++++++++++++++++++++++++
+>  1 file changed, 90 insertions(+)
+>  create mode 100644 scripts/coccinelle/api/kzfree.cocci
 >
->
-> Such a simple adjustment approach can work as expected (in principle).
-> It seems that indentation is also applied to the added label according to
-> the function call at the end of found function implementations.
->
-> But the Linux coding style prefers to start labels in the first column.
-> How should patches be accordingly generated then?
+> diff --git a/scripts/coccinelle/api/kzfree.cocci b/scripts/coccinelle/api/kzfree.cocci
+> new file mode 100644
+> index 000000000000..4758ca5a781e
+> --- /dev/null
+> +++ b/scripts/coccinelle/api/kzfree.cocci
+> @@ -0,0 +1,90 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +///
+> +/// Use kzfree, kvfree_sensitive rather than memset or
+> +/// memzero_explicit followed by kfree
+> +///
+> +// Confidence: High
+> +// Copyright: (C) 2020 Denis Efremov ISPRAS
+> +// Options: --no-includes --include-headers
+> +//
+> +// Keywords: kzfree, kvfree_sensitive
+> +//
+> +
+> +virtual context
+> +virtual patch
+> +virtual org
+> +virtual report
+> +
+> +@initialize:python@
+> +@@
+> +# kmalloc_oob_in_memset uses memset to explicitly trigger out-of-bounds access
+> +filter = frozenset(['kmalloc_oob_in_memset', 'kzfree', 'kvfree_sensitive'])
+> +
+> +def relevant(p):
+> +    return not (filter & {el.current_element for el in p})
+> +
+> +@cond@
+> +position ok;
+> +@@
+> +
+> +if (...)
+> +  \(memset@ok\|memzero_explicit@ok\)(...);
+> +
+> +@r depends on !patch forall@
+> +expression E;
+> +position p : script:python() { relevant(p) };
+> +position m != cond.ok;
+> +type T;
+> +@@
+> +
+> +(
+> +* memset@m((T)E, 0, ...);
+> +|
+> +* memzero_explicit@m((T)E, ...);
+> +)
+> +  ... when != E
+> +      when strict
+> +* \(kfree\|vfree\|kvfree\)(E)@p;
+> +
+> +@rp_memzero depends on patch@
+> +expression E, size;
+> +position p : script:python() { relevant(p) };
+> +type T;
+> +@@
+> +
+> +- memzero_explicit((T)E, size)@p;
 
-Probably the pretty printing is not perfect in this case and you are
-welcome to fix it.
+This rule also needs a @m, like in the rule above.
+
+
+> +  ... when != E
+> +      when strict
+> +- \(kfree\|vfree\|kvfree\)(E);
+> ++ kvfree_sensitive(E, size);
+> +
+> +@rp_memset depends on patch@
+> +expression E, size;
+> +position p : script:python() { relevant(p) };
+> +type T;
+> +@@
+> +
+> +- memset((T)E, size)@p;
+
+This rule also needs a @m.  It was also previously noted that this
+call to memset is msising a 0.
 
 julia
---8323329-491673124-1594152080=:32782
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
+
+
+
+> +  ... when != E
+> +      when strict
+> +(
+> +- kfree(E);
+> ++ kzfree(E);
+> +|
+> +- \(vfree\|kvfree\)(E);
+> ++ kvfree_sensitive(E, size);
+> +)
+> +
+> +@script:python depends on report@
+> +p << r.p;
+> +@@
+> +
+> +coccilib.report.print_report(p[0],
+> +  "WARNING: opportunity for kzfree/kvfree_sensitive")
+> +
+> +@script:python depends on org@
+> +p << r.p;
+> +@@
+> +
+> +coccilib.org.print_todo(p[0],
+> +  "WARNING: opportunity for kzfree/kvfree_sensitive")
+> --
+> 2.26.2
+>
+> _______________________________________________
+> Cocci mailing list
+> Cocci@systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
+>
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
 https://systeme.lip6.fr/mailman/listinfo/cocci
-
---8323329-491673124-1594152080=:32782--
