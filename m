@@ -7,50 +7,49 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	UNPARSEABLE_RELAY,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15046C433E0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDACDC433E2
 	for <cocci@archiver.kernel.org>; Wed,  8 Jul 2020 12:54:49 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9268B206C3
-	for <cocci@archiver.kernel.org>; Wed,  8 Jul 2020 12:54:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9268B206C3
+	by mail.kernel.org (Postfix) with ESMTPS id 76B6920786
+	for <cocci@archiver.kernel.org>; Wed,  8 Jul 2020 12:54:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 76B6920786
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 068CsS8T012562;
-	Wed, 8 Jul 2020 14:54:38 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 068CsThk010133;
+	Wed, 8 Jul 2020 14:54:39 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 060797489;
-	Wed,  8 Jul 2020 14:54:38 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 0EEB844A7;
+	Wed,  8 Jul 2020 14:54:39 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 3BAD67489
- for <cocci@systeme.lip6.fr>; Wed,  8 Jul 2020 14:54:35 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 1273F782B
+ for <cocci@systeme.lip6.fr>; Wed,  8 Jul 2020 14:54:36 +0200 (CEST)
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk
  [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 068CsSmF007762
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 068CsTcb020693
  (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
- for <cocci@systeme.lip6.fr>; Wed, 8 Jul 2020 14:54:28 +0200 (CEST)
+ for <cocci@systeme.lip6.fr>; Wed, 8 Jul 2020 14:54:29 +0200 (CEST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
- (Authenticated sender: jaskaran_singh) with ESMTPSA id 3B8782A5778
+ (Authenticated sender: jaskaran_singh) with ESMTPSA id 84C572A5779
 From: Jaskaran Singh <jaskaran.singh@collabora.com>
 To: cocci@systeme.lip6.fr
-Date: Wed,  8 Jul 2020 18:23:46 +0530
-Message-Id: <20200708125357.8998-11-jaskaran.singh@collabora.com>
+Date: Wed,  8 Jul 2020 18:23:47 +0530
+Message-Id: <20200708125357.8998-12-jaskaran.singh@collabora.com>
 X-Mailer: git-send-email 2.21.3
 In-Reply-To: <20200708125357.8998-1-jaskaran.singh@collabora.com>
 References: <20200708125357.8998-1-jaskaran.singh@collabora.com>
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 08 Jul 2020 14:54:38 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 08 Jul 2020 14:54:39 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
  (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Wed, 08 Jul 2020 14:54:28 +0200 (CEST)
+ Wed, 08 Jul 2020 14:54:29 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78
-Subject: [Cocci] [PATCH 10/20] parsing_cocci: unparse_ast0: Wrap SmPL
-	Attributes
+Subject: [Cocci] [PATCH 11/20] parsing_cocci: ast0toast: Wrap SmPL Attributes
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -68,102 +67,88 @@ Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
 Attributes are wrapped in the SmPL AST. Reflect these changes in
-unparse_ast0.ml.
+ast0toast.ml.
 
 Signed-off-by: Jaskaran Singh <jaskaran.singh@collabora.com>
 ---
- parsing_cocci/unparse_ast0.ml | 34 +++++++++++++++++-----------------
- 1 file changed, 17 insertions(+), 17 deletions(-)
+ parsing_cocci/ast0toast.ml | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
-diff --git a/parsing_cocci/unparse_ast0.ml b/parsing_cocci/unparse_ast0.ml
-index 81bbb71a..109f1844 100644
---- a/parsing_cocci/unparse_ast0.ml
-+++ b/parsing_cocci/unparse_ast0.ml
-@@ -223,8 +223,7 @@ let rec expression e =
- 	  expression exp; mcode print_string ar; ident field
-       | Ast0.Cast(lp,ty,attr,rp,exp) ->
- 	  mcode print_string_box lp; typeC ty; close_box();
--	  (if not (attr = []) then print_string " ");
--	  print_between (fun _ -> print_string " ") (mcode print_string) attr;
-+          print_attribute_list attr;
- 	  mcode print_string rp; expression exp
-       | Ast0.SizeOfExpr(szf,exp) ->
- 	  mcode print_string szf; expression exp
-@@ -408,15 +407,13 @@ and declaration d =
-       |	Ast0.Init(stg,ty,id,attr,eq,ini,sem) ->
- 	  print_option (mcode U.storage) stg;
- 	  print_named_type ty id;
--	  (if not (attr = []) then print_string " ");
--	  print_between (fun _ -> print_string " ") (mcode print_string) attr;
-+          print_attribute_list attr;
- 	  print_string " ";
- 	  mcode print_string eq; print_string " "; initialiser ini;
- 	  mcode print_string sem
-       | Ast0.UnInit(stg,ty,id,attr,sem) ->
- 	  print_option (mcode U.storage) stg; print_named_type ty id;
--	  (if not (attr = []) then print_string " ");
--	  print_between (fun _ -> print_string " ") (mcode print_string) attr;
-+          print_attribute_list attr;
- 	  mcode print_string sem
-       | Ast0.FunProto(fninfo,name,lp1,params,va,rp1,sem) ->
- 	  List.iter print_fninfo fninfo;
-@@ -429,8 +426,7 @@ and declaration d =
- 	  ident name; mcode print_string_box lp;
- 	  let _ = dots (function _ -> ()) expression args in
- 	  close_box(); mcode print_string rp;
--	  (if not (attr = []) then print_string " ");
--	  print_between (fun _ -> print_string " ") (mcode print_string) attr;
-+          print_attribute_list attr;
- 	  mcode print_string sem
-       | Ast0.MacroDeclInit(stg,name,lp,args,rp,eq,ini,sem) ->
- 	  print_option (mcode U.storage) stg;
-@@ -442,8 +438,7 @@ and declaration d =
- 	  mcode print_string sem
-       | Ast0.TyDecl(ty,attr,sem) ->
-           typeC ty;
--          (if not (attr = []) then print_string " ");
--          print_between (fun _ -> print_string " ") (mcode print_string) attr;
-+          print_attribute_list attr;
-           mcode print_string sem
-       | Ast0.Typedef(stg,ty,id,sem) ->
- 	  mcode print_string stg; typeC ty; typeC id;
-@@ -557,16 +552,13 @@ and parameterTypeDef p =
-       match Ast0.unwrap p with
-         Ast0.VoidParam(ty,attr) ->
-           typeC ty;
--          (if (attr = []) then print_string " ");
--          print_between (fun _ -> print_string " ") (mcode print_string) attr;
-+          print_attribute_list attr;
-       | Ast0.Param(ty,Some id,attr) ->
-           print_named_type ty id;
--          (if (attr = []) then print_string " ");
--          print_between (fun _ -> print_string " ") (mcode print_string) attr;
-+          print_attribute_list attr;
-       | Ast0.Param(ty,None,attr) ->
-           typeC ty;
--          (if (attr = []) then print_string " ");
--          print_between (fun _ -> print_string " ") (mcode print_string) attr;
-+          print_attribute_list attr;
-       | Ast0.MetaParam(name,_,_) -> mcode print_meta name
-       | Ast0.MetaParamList(name,_,_,_) -> mcode print_meta name
-       | Ast0.PComma(cm) -> mcode print_string cm; print_space()
-@@ -767,7 +759,15 @@ and print_fninfo = function
-     Ast0.FStorage(stg) -> mcode U.storage stg
-   | Ast0.FType(ty) -> typeC ty
-   | Ast0.FInline(inline) -> mcode print_string inline
--  | Ast0.FAttr(attr) -> mcode print_string attr
-+  | Ast0.FAttr(attr) -> print_attribute attr
+diff --git a/parsing_cocci/ast0toast.ml b/parsing_cocci/ast0toast.ml
+index cba32af6..f0cad067 100644
+--- a/parsing_cocci/ast0toast.ml
++++ b/parsing_cocci/ast0toast.ml
+@@ -441,7 +441,7 @@ and expression e =
+ 	Ast.RecordPtAccess(expression exp,mcode ar,ident field)
+     | Ast0.Cast(lp,ty,attr,rp,exp) ->
+ 	let allminus = check_allminus.VT0.combiner_rec_expression e in
+-	let attr = List.map mcode attr in
++	let attr = List.map attribute attr in
+ 	Ast.Cast(mcode lp,typeC allminus ty,attr,mcode rp,expression exp)
+     | Ast0.SizeOfExpr(szf,exp) ->
+ 	Ast.SizeOfExpr(mcode szf,expression exp)
+@@ -637,14 +637,14 @@ and declaration d =
+ 	let stg = get_option mcode stg in
+ 	let ty = typeC allminus ty in
+ 	let id = ident id in
+-	let attr = List.map mcode attr in
++	let attr = List.map attribute attr in
+ 	let eq = mcode eq in
+ 	let ini = initialiser ini in
+ 	let sem = mcode sem in
+ 	Ast.Init(stg,ty,id,attr,eq,ini,sem)
+     | Ast0.UnInit(stg,ty,id,attr,sem) ->
+ 	let allminus = check_allminus.VT0.combiner_rec_declaration d in
+-	let attr = List.map mcode attr in
++	let attr = List.map attribute attr in
+ 	Ast.UnInit(get_option mcode stg,typeC allminus ty,ident id,attr,
+ 		   mcode sem)
+     | Ast0.FunProto(fi,name,lp,params,va,rp,sem) ->
+@@ -665,7 +665,7 @@ and declaration d =
+ 	let lp = mcode lp in
+ 	let args = dots expression args in
+ 	let rp = mcode rp in
+-	let attr = List.map mcode attr in
++	let attr = List.map attribute attr in
+ 	let sem = mcode sem in
+ 	Ast.MacroDecl(stg,name,lp,args,rp,attr,sem)
+     | Ast0.MacroDeclInit(stg,name,lp,args,rp,eq,ini,sem) ->
+@@ -681,7 +681,7 @@ and declaration d =
+ 	Ast.MacroDeclInit(stg,name,lp,args,rp,eq,ini,sem)
+     | Ast0.TyDecl(ty,attr,sem) ->
+ 	let allminus = check_allminus.VT0.combiner_rec_declaration d in
+-	let attr = List.map mcode attr in
++	let attr = List.map attribute attr in
+ 	Ast.TyDecl(typeC allminus ty,attr,mcode sem)
+     | Ast0.Typedef(stg,ty,id,sem) ->
+ 	let allminus = check_allminus.VT0.combiner_rec_declaration d in
+@@ -861,10 +861,10 @@ and parameterTypeDef p =
+   rewrap p no_isos
+     (match Ast0.unwrap p with
+       Ast0.VoidParam(ty,attr) ->
+-        Ast.VoidParam(typeC false ty,List.map mcode attr)
++        Ast.VoidParam(typeC false ty,List.map attribute attr)
+     | Ast0.Param(ty,id,attr) ->
+ 	let allminus = check_allminus.VT0.combiner_rec_parameter p in
+-	Ast.Param(typeC allminus ty,get_option ident id,List.map mcode attr)
++	Ast.Param(typeC allminus ty,get_option ident id,List.map attribute attr)
+     | Ast0.MetaParam(name,cstr,_) ->
+ 	Ast.MetaParam(mcode name,constraints cstr,unitary,false)
+     | Ast0.MetaParamList(name,lenname,cstr,_) ->
+@@ -1195,7 +1195,12 @@ and fninfo = function
+     Ast0.FStorage(stg) -> Ast.FStorage(mcode stg)
+   | Ast0.FType(ty) -> Ast.FType(typeC false ty)
+   | Ast0.FInline(inline) -> Ast.FInline(mcode inline)
+-  | Ast0.FAttr(attr) -> Ast.FAttr(mcode attr)
++  | Ast0.FAttr(attr) -> Ast.FAttr(attribute attr)
 +
-+and print_attribute_list attrs =
-+  if not (attrs = []) then print_string " ";
-+  print_between (fun _ -> print_string " ") print_attribute attrs
-+
-+and print_attribute a =
-+  match Ast0.unwrap a with
-+    Ast0.Attribute(attr) -> mcode print_string attr
++and attribute a =
++  rewrap a no_isos
++    (match Ast0.unwrap a with
++      Ast0.Attribute(attr) -> Ast.Attribute(mcode attr))
  
- and whencode notfn alwaysfn = function
-     Ast0.WhenNot (_,_,a) ->
+ and option_to_list = function
+     Some x -> [x]
 -- 
 2.21.3
 
