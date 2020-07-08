@@ -7,48 +7,48 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	UNPARSEABLE_RELAY,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3717C433DF
-	for <cocci@archiver.kernel.org>; Wed,  8 Jul 2020 13:01:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F05C433E4
+	for <cocci@archiver.kernel.org>; Wed,  8 Jul 2020 13:01:42 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4C8EB20658
+	by mail.kernel.org (Postfix) with ESMTPS id E715D20658
 	for <cocci@archiver.kernel.org>; Wed,  8 Jul 2020 13:01:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4C8EB20658
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E715D20658
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 068D1Kpc022845;
-	Wed, 8 Jul 2020 15:01:20 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 068D1JaW018490;
+	Wed, 8 Jul 2020 15:01:22 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 9FBB8785A;
-	Wed,  8 Jul 2020 15:01:17 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 2002A7839;
+	Wed,  8 Jul 2020 15:01:21 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id BF6357842
- for <cocci@systeme.lip6.fr>; Wed,  8 Jul 2020 15:01:15 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 964B9785D
+ for <cocci@systeme.lip6.fr>; Wed,  8 Jul 2020 15:01:19 +0200 (CEST)
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 068D1EE5018851
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 068D1IQV020204
  (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
- for <cocci@systeme.lip6.fr>; Wed, 8 Jul 2020 15:01:15 +0200 (CEST)
+ for <cocci@systeme.lip6.fr>; Wed, 8 Jul 2020 15:01:18 +0200 (CEST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
- (Authenticated sender: jaskaran_singh) with ESMTPSA id CBE912A0A8B
+ (Authenticated sender: jaskaran_singh) with ESMTPSA id B95132A07C0
 From: Jaskaran Singh <jaskaran.singh@collabora.com>
 To: cocci@systeme.lip6.fr
-Date: Wed,  8 Jul 2020 18:30:20 +0530
-Message-Id: <20200708130035.26687-6-jaskaran.singh@collabora.com>
+Date: Wed,  8 Jul 2020 18:30:23 +0530
+Message-Id: <20200708130035.26687-9-jaskaran.singh@collabora.com>
 X-Mailer: git-send-email 2.21.3
 In-Reply-To: <20200708130035.26687-1-jaskaran.singh@collabora.com>
 References: <20200708130035.26687-1-jaskaran.singh@collabora.com>
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 08 Jul 2020 15:01:20 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 08 Jul 2020 15:01:22 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Wed, 08 Jul 2020 15:01:15 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Wed, 08 Jul 2020 15:01:18 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Subject: [Cocci] [PATCH v2 RESEND 05/20] parsing_cocci: arity: Wrap SmPL
-	Attributes
+Subject: [Cocci] [PATCH v2 RESEND 08/20] parsing_cocci: iso_pattern: Wrap
+	SmPL Attributes
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -66,153 +66,157 @@ Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
 Attributes are wrapped in the SmPL AST. Reflect these changes in
-arity.ml.
+iso_pattern.ml.
 
 Signed-off-by: Jaskaran Singh <jaskaran.singh@collabora.com>
 ---
- parsing_cocci/arity.ml | 55 +++++++++++++++++++-----------------------
- 1 file changed, 25 insertions(+), 30 deletions(-)
+ parsing_cocci/iso_pattern.ml | 68 ++++++++++++++----------------------
+ 1 file changed, 27 insertions(+), 41 deletions(-)
 
-diff --git a/parsing_cocci/arity.ml b/parsing_cocci/arity.ml
-index 3bbecedf..23eb32f9 100644
---- a/parsing_cocci/arity.ml
-+++ b/parsing_cocci/arity.ml
-@@ -256,10 +256,10 @@ let rec top_expression opt_allowed tgt expr =
-       make_exp expr tgt arity (Ast0.RecordPtAccess(exp,ar,field))
-   | Ast0.Cast(lp,ty,attr,rp,exp) ->
-       let arity =
--        exp_same (mcode2line lp) (List.map mcode2arity ([lp] @ attr @ [rp])) in
-+	exp_same (mcode2line lp) (List.map mcode2arity ([lp;rp])) in
-       let lp = mcode lp in
-       let ty = typeC arity ty in
--      let attr = List.map mcode attr in
-+      let attr = List.map attribute attr in
-       let rp = mcode rp in
-       let exp = expression arity exp in
-       make_exp expr tgt arity (Ast0.Cast(lp,ty,attr,rp,exp))
-@@ -564,7 +564,7 @@ and declaration tgt decl =
-       let stg = get_option mcode stg in
-       let ty = typeC arity ty in
-       let id = ident false arity id in
--      let attr = List.map mcode attr in
-+      let attr = List.map attribute attr in
-       let eq = mcode eq in
-       let exp = initialiser arity exp in
-       let sem = mcode sem in
-@@ -577,7 +577,7 @@ and declaration tgt decl =
-       let stg = get_option mcode stg in
-       let ty = typeC arity ty in
-       let id = ident false arity id in
--      let attr = List.map mcode attr in
-+      let attr = List.map attribute attr in
-       let sem = mcode sem in
-       make_decl decl tgt arity (Ast0.UnInit(stg,ty,id,attr,sem))
-   | Ast0.FunProto(fi,name,lp1,params,va,rp1,sem) ->
-@@ -601,13 +601,13 @@ and declaration tgt decl =
-       let arity =
- 	all_same true tgt (mcode2line lp)
- 	  ((match stg with None -> [] | Some x -> [mcode2arity x]) @
--	   (List.map mcode2arity ([lp;rp] @ attr @ [sem]))) in
-+	   (List.map mcode2arity ([lp;rp;sem]))) in
-       let stg = get_option mcode stg in
-       let name = ident false arity name in
-       let lp = mcode lp in
-       let args = dots (expression arity) args in
-       let rp = mcode rp in
--      let attr = List.map mcode attr in
-+      let attr = List.map attribute attr in
-       let sem = mcode sem in
-       make_decl decl tgt arity (Ast0.MacroDecl(stg,name,lp,args,rp,attr,sem))
-   | Ast0.MacroDeclInit(stg,name,lp,args,rp,eq,ini,sem) ->
-@@ -626,10 +626,10 @@ and declaration tgt decl =
- 	(Ast0.MacroDeclInit(stg,name,lp,args,rp,eq,ini,sem))
-   | Ast0.TyDecl(ty,attr,sem) ->
-       let arity =
--        all_same true tgt
--          (mcode2line sem) (List.map mcode2arity (attr @ [sem])) in
-+	all_same true tgt
-+	  (mcode2line sem) [mcode2arity sem] in
-       let ty = typeC arity ty in
--      let attr = List.map mcode attr in
-+      let attr = List.map attribute attr in
-       let sem = mcode sem in
-       make_decl decl tgt arity (Ast0.TyDecl(ty,attr,sem))
-   | Ast0.Typedef(stg,ty,id,sem) ->
-@@ -816,40 +816,30 @@ and make_param =
+diff --git a/parsing_cocci/iso_pattern.ml b/parsing_cocci/iso_pattern.ml
+index 6cd5f1cb..40fd67e8 100644
+--- a/parsing_cocci/iso_pattern.ml
++++ b/parsing_cocci/iso_pattern.ml
+@@ -759,14 +759,10 @@ let match_maker checks_needed context_required whencode_allowed =
+ 		   match_ident fielda fieldb]
+ 	  | (Ast0.Cast(lp1,tya,attra,rp1,expa),
+              Ast0.Cast(lp,tyb,attrb,rp,expb)) ->
+-              if (List.length attra = List.length attrb &&
+-                  List.fold_left2 (fun p a b -> p && mcode_equal a b) true
+-                  attra attrb)
+-              then
+ 	      conjunct_many_bindings
+ 		[check_mcode lp1 lp; check_mcode rp1 rp;
++                  match_attributes attra attrb;
+ 		  match_typeC tya tyb; match_expr expa expb]
+-              else return false
+ 	  | (Ast0.SizeOfExpr(szf1,expa),Ast0.SizeOfExpr(szf,expb)) ->
+ 	      conjunct_bindings (check_mcode szf1 szf) (match_expr expa expb)
+ 	  | (Ast0.SizeOfType(szf1,lp1,tya,rp1),
+@@ -940,27 +936,23 @@ let match_maker checks_needed context_required whencode_allowed =
+ 	  match (up,Ast0.unwrap d) with
+ 	    (Ast0.Init(stga,tya,ida,attra,eq1,inia,sc1),
+ 	     Ast0.Init(stgb,tyb,idb,attrb,eq,inib,sc)) ->
+-	       if bool_match_option mcode_equal stga stgb &&
+-                 (List.length attra = List.length attrb &&
+-                  List.fold_left2 (fun p a b -> p && mcode_equal a b) true
+-                    attra attrb) (* no metavars *)
++	       if bool_match_option mcode_equal stga stgb
+ 	       then
+ 		 conjunct_many_bindings
+ 		   [check_mcode eq1 eq; check_mcode sc1 sc;
+ 		     match_option check_mcode stga stgb;
+ 		     match_typeC tya tyb; match_ident ida idb;
++                     match_attributes attra attrb;
+ 		     match_init inia inib]
+ 	       else return false
+ 	  | (Ast0.UnInit(stga,tya,ida,attra,sc1),
+ 	     Ast0.UnInit(stgb,tyb,idb,attrb,sc)) ->
+-	      if bool_match_option mcode_equal stga stgb &&
+-                (List.length attra = List.length attrb &&
+-                 List.fold_left2 (fun p a b -> p && mcode_equal a b) true
+-                   attra attrb) (* no metavars *)
++	      if bool_match_option mcode_equal stga stgb
+ 	      then
+ 		conjunct_many_bindings
+ 		  [check_mcode sc1 sc; match_option check_mcode stga stgb;
+-		    match_typeC tya tyb; match_ident ida idb]
++		    match_typeC tya tyb; match_ident ida idb;
++                    match_attributes attra attrb]
+ 	      else return false
+ 	  | (Ast0.FunProto(fninfo1,name1,lp1,params1,va1a,rp1,sem1),
+ 	     Ast0.FunProto(fninfo,name,lp,params,va1b,rp,sem)) ->
+@@ -973,17 +965,15 @@ let match_maker checks_needed context_required whencode_allowed =
+                  ]
+ 	  | (Ast0.MacroDecl(stga,namea,lp1,argsa,rp1,attra,sc1),
+ 	     Ast0.MacroDecl(stgb,nameb,lp,argsb,rp,attrb,sc)) ->
+-	       if bool_match_option mcode_equal stga stgb &&
+-                 (List.length attra = List.length attrb &&
+-                  List.fold_left2 (fun p a b -> p && mcode_equal a b) true
+-                    attra attrb) (* no metavars *)
++	       if bool_match_option mcode_equal stga stgb
+ 	       then
+ 		 conjunct_many_bindings
+ 		   [match_ident namea nameb;
+ 		     check_mcode lp1 lp; check_mcode rp1 rp;
+ 		     check_mcode sc1 sc;
+ 		     match_dots match_expr is_elist_matcher do_elist_match
+-		       argsa argsb]
++                       argsa argsb;
++                     match_attributes attra attrb]
+ 	       else return false
+ 	  | (Ast0.MacroDeclInit(stga,namea,lp1,argsa,rp1,eq1,ini1,sc1),
+ 	     Ast0.MacroDeclInit(stgb,nameb,lp,argsb,rp,eq,ini,sc)) ->
+@@ -999,12 +989,10 @@ let match_maker checks_needed context_required whencode_allowed =
+ 		     match_init ini1 ini]
+ 	       else return false
+ 	  | (Ast0.TyDecl(tya,attra,sc1),Ast0.TyDecl(tyb,attrb,sc)) ->
+-	      if (List.length attra = List.length attrb &&
+-                  List.fold_left2 (fun p a b -> p && mcode_equal a b) true
+-                    attra attrb) (* no metavars *)
+-              then
+-	        conjunct_bindings (check_mcode sc1 sc) (match_typeC tya tyb)
+-              else return false
++              conjunct_many_bindings
++                  [check_mcode sc1 sc;
++                    match_typeC tya tyb;
++                    match_attributes attra attrb]
+ 	  | (Ast0.Typedef(stga,tya,ida,sc1),Ast0.Typedef(stgb,tyb,idb,sc)) ->
+ 	      conjunct_bindings (check_mcode sc1 sc)
+ 		(conjunct_bindings (match_typeC tya tyb) (match_typeC ida idb))
+@@ -1180,21 +1168,11 @@ let match_maker checks_needed context_required whencode_allowed =
+ 	then
+ 	  match (up,Ast0.unwrap p) with
+ 	    (Ast0.VoidParam(tya,attra),Ast0.VoidParam(tyb,attrb)) ->
+-               if (List.length attra = List.length attrb &&
+-                 List.fold_left2 (fun p a b -> p && mcode_equal a b) true
+-                 attra attrb)
+-               then
+-                 match_typeC tya tyb
+-               else return false
++               conjunct_bindings (match_typeC tya tyb)
++                   (match_attributes attra attrb)
+ 	  | (Ast0.Param(tya,ida,attra),Ast0.Param(tyb,idb,attrb)) ->
+-               if (List.length attra = List.length attrb &&
+-                 List.fold_left2 (fun p a b -> p && mcode_equal a b) true
+-                 attra attrb)
+-              then
+-	        conjunct_bindings (match_typeC tya tyb)
++	      conjunct_bindings (match_typeC tya tyb)
+ 		  (match_option match_ident ida idb)
+-              else
+-                return false
+ 	  | (Ast0.PComma(c1),Ast0.PComma(c)) -> check_mcode c1 c
+ 	  | (Ast0.Pdots(d1),Ast0.Pdots(d)) -> check_mcode d1 d
+ 	  | (Ast0.OptParam(parama),Ast0.OptParam(paramb)) ->
+@@ -1427,9 +1405,7 @@ let match_maker checks_needed context_required whencode_allowed =
+ 	  then conjunct_bindings (check_mcode ia ib) (loop (resta,restb))
+ 	  else return false
+       |	(Ast0.FAttr(ia)::resta,Ast0.FAttr(ib)::restb) ->
+-	  if mcode_equal ia ib
+-	  then conjunct_bindings (check_mcode ia ib) (loop (resta,restb))
+-	  else return false
++          conjunct_bindings (match_attributes [ia] [ib]) (loop (resta,restb))
+       |	(x::resta,((y::_) as restb)) ->
+ 	  (match compare x y with
+ 	    -1 -> return false
+@@ -1438,6 +1414,16 @@ let match_maker checks_needed context_required whencode_allowed =
+       |	_ -> return false in
+     loop (patterninfo,cinfo)
  
- and parameterTypeDef tgt param =
-   let param_same = all_same true tgt in
--  let make_param_attr param tgt ret = function
--      [] -> Ast0.rewrap param ret
--    | x::_ as xs ->
--        let arity = param_same (mcode2line x) (List.map mcode2arity xs) in
--        make_param param tgt arity ret in
-   match Ast0.unwrap param with
-     Ast0.VoidParam(ty,attr) ->
--      let ty = top_typeC tgt true ty in
--      let attr = List.map mcode attr in
--      let ret = Ast0.VoidParam(ty,attr) in
--      make_param_attr param tgt ret attr
-+      Ast0.rewrap param (Ast0.VoidParam(typeC tgt ty,List.map attribute attr))
-   | Ast0.Param(ty,Some id,attr) ->
-       let ty = top_typeC tgt true ty in
-       let id = ident true tgt id in
--      let attr = List.map mcode attr in
--      let ret =
--	match (Ast0.unwrap ty,Ast0.unwrap id) with
-+      let attr = List.map attribute attr in
-+      Ast0.rewrap param
-+	(match (Ast0.unwrap ty,Ast0.unwrap id) with
- 	  (Ast0.OptType(ty),Ast0.OptIdent(id)) ->
- 	    Ast0.OptParam(Ast0.rewrap param (Ast0.Param(ty,Some id,attr)))
- 	| (Ast0.OptType(ty),_) ->
- 	    fail param "arity mismatch in param declaration"
- 	| (_,Ast0.OptIdent(id)) ->
- 	    fail param "arity mismatch in param declaration"
--	| _ -> Ast0.Param(ty,Some id,attr) in
--      make_param_attr param tgt ret attr
-+	| _ -> Ast0.Param(ty,Some id,attr))
-   | Ast0.Param(ty,None,attr) ->
-       let ty = top_typeC tgt true ty in
--      let attr = List.map mcode attr in
--      let ret =
--	match Ast0.unwrap ty with
-+      let attr = List.map attribute attr in
-+      Ast0.rewrap param
-+	(match Ast0.unwrap ty with
- 	  Ast0.OptType(ty) ->
- 	    Ast0.OptParam(Ast0.rewrap param (Ast0.Param(ty,None,attr)))
--	| _ -> Ast0.Param(ty,None,attr) in
--      make_param_attr param tgt ret attr
-+	| _ -> Ast0.Param(ty,None,attr))
-   | Ast0.MetaParam(name,cstr,pure) ->
-       let arity = param_same (mcode2line name) [mcode2arity name] in
-       let name = mcode name in
-@@ -1272,7 +1262,7 @@ and fninfo arity = function
-     Ast0.FStorage(stg) -> Ast0.FStorage(mcode stg)
-   | Ast0.FType(ty) -> Ast0.FType(typeC arity ty)
-   | Ast0.FInline(inline) -> Ast0.FInline(mcode inline)
--  | Ast0.FAttr(attr) -> Ast0.FAttr(mcode attr)
-+  | Ast0.FAttr(attr) -> Ast0.FAttr(attribute attr)
- 
- and fninfo2arity fninfo =
-   List.concat
-@@ -1281,9 +1271,14 @@ and fninfo2arity fninfo =
- 	   Ast0.FStorage(stg) -> [mcode2arity stg]
- 	 | Ast0.FType(ty) -> []
- 	 | Ast0.FInline(inline) -> [mcode2arity inline]
--	 | Ast0.FAttr(attr) -> [mcode2arity attr])
-+	 | Ast0.FAttr(attr) -> [])
-        fninfo)
- 
-+and attribute attr =
-+  match Ast0.unwrap attr with
-+    Ast0.Attribute(a) ->
-+      Ast0.rewrap attr (Ast0.Attribute(mcode a))
++  and match_attribute a1 a2 =
++    match (Ast0.unwrap a1,Ast0.unwrap a2) with
++      (Ast0.Attribute(attr1),Ast0.Attribute(attr2)) ->
++        check_mcode attr1 attr2
 +
- and whencode notfn alwaysfn expression = function
-     Ast0.WhenNot (w,e,a) -> Ast0.WhenNot (w,e,notfn a)
-   | Ast0.WhenAlways (w,e,a) -> Ast0.WhenAlways (w,e,alwaysfn a)
++  and match_attributes a1 a2 =
++    match_list match_attribute
++     (function _ -> false) (function _ -> failwith "")
++     a1 a2
++
+   and match_case_line pattern c =
+     if not(checks_needed) || not(context_required) || is_context c
+     then
 -- 
 2.21.3
 
