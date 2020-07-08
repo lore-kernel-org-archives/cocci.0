@@ -7,47 +7,47 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	UNPARSEABLE_RELAY,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F05C433E4
-	for <cocci@archiver.kernel.org>; Wed,  8 Jul 2020 13:01:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 552E1C433E2
+	for <cocci@archiver.kernel.org>; Wed,  8 Jul 2020 13:01:41 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E715D20658
-	for <cocci@archiver.kernel.org>; Wed,  8 Jul 2020 13:01:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E715D20658
+	by mail.kernel.org (Postfix) with ESMTPS id D0D4820786
+	for <cocci@archiver.kernel.org>; Wed,  8 Jul 2020 13:01:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D0D4820786
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 068D1JaW018490;
-	Wed, 8 Jul 2020 15:01:22 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 068D1K0V012940;
+	Wed, 8 Jul 2020 15:01:29 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 2002A7839;
-	Wed,  8 Jul 2020 15:01:21 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 9E103778A;
+	Wed,  8 Jul 2020 15:01:29 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 964B9785D
- for <cocci@systeme.lip6.fr>; Wed,  8 Jul 2020 15:01:19 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id C96467829
+ for <cocci@systeme.lip6.fr>; Wed,  8 Jul 2020 15:01:26 +0200 (CEST)
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 068D1IQV020204
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 068D1PZ1018498
  (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
- for <cocci@systeme.lip6.fr>; Wed, 8 Jul 2020 15:01:18 +0200 (CEST)
+ for <cocci@systeme.lip6.fr>; Wed, 8 Jul 2020 15:01:25 +0200 (CEST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
- (Authenticated sender: jaskaran_singh) with ESMTPSA id B95132A07C0
+ (Authenticated sender: jaskaran_singh) with ESMTPSA id 6858A2A573C
 From: Jaskaran Singh <jaskaran.singh@collabora.com>
 To: cocci@systeme.lip6.fr
-Date: Wed,  8 Jul 2020 18:30:23 +0530
-Message-Id: <20200708130035.26687-9-jaskaran.singh@collabora.com>
+Date: Wed,  8 Jul 2020 18:30:28 +0530
+Message-Id: <20200708130035.26687-14-jaskaran.singh@collabora.com>
 X-Mailer: git-send-email 2.21.3
 In-Reply-To: <20200708130035.26687-1-jaskaran.singh@collabora.com>
 References: <20200708130035.26687-1-jaskaran.singh@collabora.com>
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 08 Jul 2020 15:01:22 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 08 Jul 2020 15:01:29 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Wed, 08 Jul 2020 15:01:18 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Wed, 08 Jul 2020 15:01:25 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Subject: [Cocci] [PATCH v2 RESEND 08/20] parsing_cocci: iso_pattern: Wrap
+Subject: [Cocci] [PATCH v2 RESEND 13/20] parsing_cocci: visitor_ast: Wrap
 	SmPL Attributes
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
@@ -65,158 +65,173 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Attributes are wrapped in the SmPL AST. Reflect these changes in
-iso_pattern.ml.
+Attributes are wrapped in the SmPL AST. Create a function for attributes
+in the SmPL AST visitor. This function has not been added to the
+visitor API yet.
 
 Signed-off-by: Jaskaran Singh <jaskaran.singh@collabora.com>
 ---
- parsing_cocci/iso_pattern.ml | 68 ++++++++++++++----------------------
- 1 file changed, 27 insertions(+), 41 deletions(-)
+ parsing_cocci/visitor_ast.ml | 48 +++++++++++++++++++++++-------------
+ 1 file changed, 31 insertions(+), 17 deletions(-)
 
-diff --git a/parsing_cocci/iso_pattern.ml b/parsing_cocci/iso_pattern.ml
-index 6cd5f1cb..40fd67e8 100644
---- a/parsing_cocci/iso_pattern.ml
-+++ b/parsing_cocci/iso_pattern.ml
-@@ -759,14 +759,10 @@ let match_maker checks_needed context_required whencode_allowed =
- 		   match_ident fielda fieldb]
- 	  | (Ast0.Cast(lp1,tya,attra,rp1,expa),
-              Ast0.Cast(lp,tyb,attrb,rp,expb)) ->
--              if (List.length attra = List.length attrb &&
--                  List.fold_left2 (fun p a b -> p && mcode_equal a b) true
--                  attra attrb)
--              then
- 	      conjunct_many_bindings
- 		[check_mcode lp1 lp; check_mcode rp1 rp;
-+                  match_attributes attra attrb;
- 		  match_typeC tya tyb; match_expr expa expb]
--              else return false
- 	  | (Ast0.SizeOfExpr(szf1,expa),Ast0.SizeOfExpr(szf,expb)) ->
- 	      conjunct_bindings (check_mcode szf1 szf) (match_expr expa expb)
- 	  | (Ast0.SizeOfType(szf1,lp1,tya,rp1),
-@@ -940,27 +936,23 @@ let match_maker checks_needed context_required whencode_allowed =
- 	  match (up,Ast0.unwrap d) with
- 	    (Ast0.Init(stga,tya,ida,attra,eq1,inia,sc1),
- 	     Ast0.Init(stgb,tyb,idb,attrb,eq,inib,sc)) ->
--	       if bool_match_option mcode_equal stga stgb &&
--                 (List.length attra = List.length attrb &&
--                  List.fold_left2 (fun p a b -> p && mcode_equal a b) true
--                    attra attrb) (* no metavars *)
-+	       if bool_match_option mcode_equal stga stgb
- 	       then
- 		 conjunct_many_bindings
- 		   [check_mcode eq1 eq; check_mcode sc1 sc;
- 		     match_option check_mcode stga stgb;
- 		     match_typeC tya tyb; match_ident ida idb;
-+                     match_attributes attra attrb;
- 		     match_init inia inib]
- 	       else return false
- 	  | (Ast0.UnInit(stga,tya,ida,attra,sc1),
- 	     Ast0.UnInit(stgb,tyb,idb,attrb,sc)) ->
--	      if bool_match_option mcode_equal stga stgb &&
--                (List.length attra = List.length attrb &&
--                 List.fold_left2 (fun p a b -> p && mcode_equal a b) true
--                   attra attrb) (* no metavars *)
-+	      if bool_match_option mcode_equal stga stgb
- 	      then
- 		conjunct_many_bindings
- 		  [check_mcode sc1 sc; match_option check_mcode stga stgb;
--		    match_typeC tya tyb; match_ident ida idb]
-+		    match_typeC tya tyb; match_ident ida idb;
-+                    match_attributes attra attrb]
- 	      else return false
- 	  | (Ast0.FunProto(fninfo1,name1,lp1,params1,va1a,rp1,sem1),
- 	     Ast0.FunProto(fninfo,name,lp,params,va1b,rp,sem)) ->
-@@ -973,17 +965,15 @@ let match_maker checks_needed context_required whencode_allowed =
-                  ]
- 	  | (Ast0.MacroDecl(stga,namea,lp1,argsa,rp1,attra,sc1),
- 	     Ast0.MacroDecl(stgb,nameb,lp,argsb,rp,attrb,sc)) ->
--	       if bool_match_option mcode_equal stga stgb &&
--                 (List.length attra = List.length attrb &&
--                  List.fold_left2 (fun p a b -> p && mcode_equal a b) true
--                    attra attrb) (* no metavars *)
-+	       if bool_match_option mcode_equal stga stgb
- 	       then
- 		 conjunct_many_bindings
- 		   [match_ident namea nameb;
- 		     check_mcode lp1 lp; check_mcode rp1 rp;
- 		     check_mcode sc1 sc;
- 		     match_dots match_expr is_elist_matcher do_elist_match
--		       argsa argsb]
-+                       argsa argsb;
-+                     match_attributes attra attrb]
- 	       else return false
- 	  | (Ast0.MacroDeclInit(stga,namea,lp1,argsa,rp1,eq1,ini1,sc1),
- 	     Ast0.MacroDeclInit(stgb,nameb,lp,argsb,rp,eq,ini,sc)) ->
-@@ -999,12 +989,10 @@ let match_maker checks_needed context_required whencode_allowed =
- 		     match_init ini1 ini]
- 	       else return false
- 	  | (Ast0.TyDecl(tya,attra,sc1),Ast0.TyDecl(tyb,attrb,sc)) ->
--	      if (List.length attra = List.length attrb &&
--                  List.fold_left2 (fun p a b -> p && mcode_equal a b) true
--                    attra attrb) (* no metavars *)
--              then
--	        conjunct_bindings (check_mcode sc1 sc) (match_typeC tya tyb)
--              else return false
-+              conjunct_many_bindings
-+                  [check_mcode sc1 sc;
-+                    match_typeC tya tyb;
-+                    match_attributes attra attrb]
- 	  | (Ast0.Typedef(stga,tya,ida,sc1),Ast0.Typedef(stgb,tyb,idb,sc)) ->
- 	      conjunct_bindings (check_mcode sc1 sc)
- 		(conjunct_bindings (match_typeC tya tyb) (match_typeC ida idb))
-@@ -1180,21 +1168,11 @@ let match_maker checks_needed context_required whencode_allowed =
- 	then
- 	  match (up,Ast0.unwrap p) with
- 	    (Ast0.VoidParam(tya,attra),Ast0.VoidParam(tyb,attrb)) ->
--               if (List.length attra = List.length attrb &&
--                 List.fold_left2 (fun p a b -> p && mcode_equal a b) true
--                 attra attrb)
--               then
--                 match_typeC tya tyb
--               else return false
-+               conjunct_bindings (match_typeC tya tyb)
-+                   (match_attributes attra attrb)
- 	  | (Ast0.Param(tya,ida,attra),Ast0.Param(tyb,idb,attrb)) ->
--               if (List.length attra = List.length attrb &&
--                 List.fold_left2 (fun p a b -> p && mcode_equal a b) true
--                 attra attrb)
--              then
--	        conjunct_bindings (match_typeC tya tyb)
-+	      conjunct_bindings (match_typeC tya tyb)
- 		  (match_option match_ident ida idb)
--              else
--                return false
- 	  | (Ast0.PComma(c1),Ast0.PComma(c)) -> check_mcode c1 c
- 	  | (Ast0.Pdots(d1),Ast0.Pdots(d)) -> check_mcode d1 d
- 	  | (Ast0.OptParam(parama),Ast0.OptParam(paramb)) ->
-@@ -1427,9 +1405,7 @@ let match_maker checks_needed context_required whencode_allowed =
- 	  then conjunct_bindings (check_mcode ia ib) (loop (resta,restb))
- 	  else return false
-       |	(Ast0.FAttr(ia)::resta,Ast0.FAttr(ib)::restb) ->
--	  if mcode_equal ia ib
--	  then conjunct_bindings (check_mcode ia ib) (loop (resta,restb))
--	  else return false
-+          conjunct_bindings (match_attributes [ia] [ib]) (loop (resta,restb))
-       |	(x::resta,((y::_) as restb)) ->
- 	  (match compare x y with
- 	    -1 -> return false
-@@ -1438,6 +1414,16 @@ let match_maker checks_needed context_required whencode_allowed =
-       |	_ -> return false in
-     loop (patterninfo,cinfo)
+diff --git a/parsing_cocci/visitor_ast.ml b/parsing_cocci/visitor_ast.ml
+index 8129bcda..d5819acf 100644
+--- a/parsing_cocci/visitor_ast.ml
++++ b/parsing_cocci/visitor_ast.ml
+@@ -201,7 +201,7 @@ let combiner bind option_default
+       | Ast.Cast(lp,ty,attr,rp,exp) ->
+ 	  let llp = string_mcode lp in
+ 	  let lty = fullType ty in
+-	  let lattr = multibind (List.map string_mcode attr) in
++	  let lattr = multibind (List.map attribute attr) in
+ 	  let lrp = string_mcode rp in
+ 	  let lexp = expression exp in
+           multibind [llp; lty; lattr; lrp; lexp]
+@@ -448,7 +448,7 @@ let combiner bind option_default
+       |	Ast.Init(stg,ty,id,attr,eq,ini,sem) ->
+ 	  let lstg = get_option storage_mcode stg in
+ 	  let lid = named_type ty id in
+-	  let lattr = multibind (List.map string_mcode attr) in
++	  let lattr = multibind (List.map attribute attr) in
+ 	  let leq = string_mcode eq in
+ 	  let lini = initialiser ini in
+ 	  let lsem = string_mcode sem in
+@@ -456,7 +456,7 @@ let combiner bind option_default
+       | Ast.UnInit(stg,ty,id,attr,sem) ->
+ 	  let lstg = get_option storage_mcode stg in
+ 	  let lid = named_type ty id in
+-	  let lattr = multibind (List.map string_mcode attr) in
++	  let lattr = multibind (List.map attribute attr) in
+ 	  let lsem = string_mcode sem in
+ 	  multibind [lstg; lid; lattr; lsem]
+       | Ast.FunProto(fi,name,lp1,params,va,rp1,sem) ->
+@@ -477,7 +477,7 @@ let combiner bind option_default
+ 	  let llp = string_mcode lp in
+ 	  let largs = expression_dots args in
+ 	  let lrp = string_mcode rp in
+-	  let lattr = multibind (List.map string_mcode attr) in
++	  let lattr = multibind (List.map attribute attr) in
+ 	  let lsem = string_mcode sem in
+ 	  multibind [lstg; lname; llp; largs; lrp; lattr; lsem]
+       | Ast.MacroDeclInit(stg,name,lp,args,rp,eq,ini,sem) ->
+@@ -492,7 +492,7 @@ let combiner bind option_default
+ 	  multibind [lstg; lname; llp; largs; lrp; leq; lini; lsem]
+       | Ast.TyDecl(ty,attr,sem) ->
+ 	  let lty = fullType ty in
+-	  let lattr = multibind (List.map string_mcode attr) in
++	  let lattr = multibind (List.map attribute attr) in
+ 	  let lsem = string_mcode sem in
+ 	  multibind [lty; lattr; lsem]
+       | Ast.Typedef(stg,ty,id,sem) ->
+@@ -626,15 +626,15 @@ let combiner bind option_default
+       match Ast.unwrap p with
+         Ast.VoidParam(ty,attr) ->
+           let lty = fullType ty in
+-          let lattr = multibind (List.map string_mcode attr) in
++          let lattr = multibind (List.map attribute attr) in
+           bind lty lattr
+       | Ast.Param(ty,Some id,attr) ->
+           let lid = named_type ty id in
+-          let lattr = multibind (List.map string_mcode attr) in
++          let lattr = multibind (List.map attribute attr) in
+           bind lid lattr
+       | Ast.Param(ty,None,attr) ->
+           let lty = fullType ty in
+-          let lattr = multibind (List.map string_mcode attr) in
++          let lattr = multibind (List.map attribute attr) in
+           bind lty lattr
+       | Ast.MetaParam(name,_,_,_) -> meta_mcode name
+       | Ast.MetaParamList(name,_,_,_,_) -> meta_mcode name
+@@ -915,7 +915,14 @@ let combiner bind option_default
+       Ast.FStorage(stg) -> storage_mcode stg
+     | Ast.FType(ty) -> fullType ty
+     | Ast.FInline(inline) -> string_mcode inline
+-    | Ast.FAttr(attr) -> string_mcode attr
++    | Ast.FAttr(attr) -> attribute attr
++
++  and attribute a =
++    let k a =
++      match Ast.unwrap a with
++        Ast.Attribute(attr) -> string_mcode attr in
++    k a
++
  
-+  and match_attribute a1 a2 =
-+    match (Ast0.unwrap a1,Ast0.unwrap a2) with
-+      (Ast0.Attribute(attr1),Ast0.Attribute(attr2)) ->
-+        check_mcode attr1 attr2
+   and whencode notfn alwaysfn = function
+       Ast.WhenNot a -> notfn a
+@@ -1199,7 +1206,7 @@ let rebuilder
+ 	| Ast.Cast(lp,ty,attr,rp,exp) ->
+ 	    let llp = string_mcode lp in
+ 	    let lty = fullType ty in
+-	    let lattr = List.map string_mcode attr in
++	    let lattr = List.map attribute attr in
+ 	    let lrp = string_mcode rp in
+ 	    let lexp = expression exp in
+ 	    Ast.Cast(llp, lty, lattr, lrp, lexp)
+@@ -1406,7 +1413,7 @@ let rebuilder
+ 	    let lstg = get_option storage_mcode stg in
+ 	    let lty = fullType ty in
+ 	    let lid = ident id in
+-	    let lattr = List.map string_mcode attr in
++	    let lattr = List.map attribute attr in
+ 	    let leq = string_mcode eq in
+ 	    let lini = initialiser ini in
+ 	    let lsem = string_mcode sem in
+@@ -1415,7 +1422,7 @@ let rebuilder
+ 	    let lstg = get_option storage_mcode stg in
+ 	    let lty = fullType ty in
+ 	    let lid = ident id in
+-	    let lattr = List.map string_mcode attr in
++	    let lattr = List.map attribute attr in
+ 	    let lsem = string_mcode sem in
+ 	    Ast.UnInit(lstg, lty, lid, lattr, lsem)
+ 	| Ast.FunProto(fi,name,lp,params,va,rp,sem) ->
+@@ -1436,7 +1443,7 @@ let rebuilder
+ 	    let llp = string_mcode lp in
+ 	    let largs = expression_dots args in
+ 	    let lrp = string_mcode rp in
+-	    let lattr = List.map string_mcode attr in
++	    let lattr = List.map attribute attr in
+ 	    let lsem = string_mcode sem in
+ 	    Ast.MacroDecl(lstg, lname, llp, largs, lrp, lattr, lsem)
+ 	| Ast.MacroDeclInit(stg,name,lp,args,rp,eq,ini,sem) ->
+@@ -1451,7 +1458,7 @@ let rebuilder
+ 	    Ast.MacroDeclInit(lstg, lname, llp, largs, lrp, leq, lini, lsem)
+ 	| Ast.TyDecl(ty,attr,sem) ->
+ 	    let lty = fullType ty in
+-	    let lattr = List.map string_mcode attr in
++	    let lattr = List.map attribute attr in
+ 	    let lsem = string_mcode sem in
+ 	    Ast.TyDecl(lty, lattr, lsem)
+ 	| Ast.Typedef(stg,ty,id,sem) ->
+@@ -1598,10 +1605,10 @@ let rebuilder
+       Ast.rewrap p
+ 	(match Ast.unwrap p with
+ 	  Ast.VoidParam(ty,attr) ->
+-            Ast.VoidParam(fullType ty,List.map string_mcode attr)
++            Ast.VoidParam(fullType ty,List.map attribute attr)
+ 	| Ast.Param(ty,id,attr) ->
+             Ast.Param
+-              (fullType ty, get_option ident id,List.map string_mcode attr)
++              (fullType ty, get_option ident id,List.map attribute attr)
+ 	| Ast.MetaParam(name,constraints,keep,inherited) ->
+ 	    Ast.MetaParam(meta_mcode name,constraints,keep,inherited)
+ 	| Ast.MetaParamList(name,lenname_inh,constraints,keep,inherited) ->
+@@ -1902,7 +1909,14 @@ let rebuilder
+       Ast.FStorage(stg) -> Ast.FStorage(storage_mcode stg)
+     | Ast.FType(ty) -> Ast.FType(fullType ty)
+     | Ast.FInline(inline) -> Ast.FInline(string_mcode inline)
+-    | Ast.FAttr(attr) -> Ast.FAttr(string_mcode attr)
++    | Ast.FAttr(attr) -> Ast.FAttr(attribute attr)
 +
-+  and match_attributes a1 a2 =
-+    match_list match_attribute
-+     (function _ -> false) (function _ -> failwith "")
-+     a1 a2
-+
-   and match_case_line pattern c =
-     if not(checks_needed) || not(context_required) || is_context c
-     then
++  and attribute a =
++    let k a =
++      Ast.rewrap a
++        (match Ast.unwrap a with
++          Ast.Attribute(attr) -> Ast.Attribute(string_mcode attr)) in
++    k a
+ 
+   and whencode notfn alwaysfn = function
+       Ast.WhenNot a -> Ast.WhenNot (notfn a)
 -- 
 2.21.3
 
