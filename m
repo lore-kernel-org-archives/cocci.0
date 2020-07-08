@@ -7,49 +7,47 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	UNPARSEABLE_RELAY,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C4A5C433E1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F251BC433E3
 	for <cocci@archiver.kernel.org>; Wed,  8 Jul 2020 12:54:42 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 08A2020775
-	for <cocci@archiver.kernel.org>; Wed,  8 Jul 2020 12:54:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 08A2020775
+	by mail.kernel.org (Postfix) with ESMTPS id 9B25B206C3
+	for <cocci@archiver.kernel.org>; Wed,  8 Jul 2020 12:54:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9B25B206C3
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 068CsSjT008225;
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 068CsTJq008976;
 	Wed, 8 Jul 2020 14:54:30 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id ED8117831;
-	Wed,  8 Jul 2020 14:54:28 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 6C0CF7848;
+	Wed,  8 Jul 2020 14:54:29 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 78F027849
+ by systeme.lip6.fr (Postfix) with ESMTPS id CE5787859
  for <cocci@systeme.lip6.fr>; Wed,  8 Jul 2020 14:54:26 +0200 (CEST)
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk
- [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 068CsPln005830
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 068CsMbH007543
  (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
- for <cocci@systeme.lip6.fr>; Wed, 8 Jul 2020 14:54:25 +0200 (CEST)
+ for <cocci@systeme.lip6.fr>; Wed, 8 Jul 2020 14:54:23 +0200 (CEST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
- (Authenticated sender: jaskaran_singh) with ESMTPSA id 99DF22A577B
+ (Authenticated sender: jaskaran_singh) with ESMTPSA id EA60A2A5779
 From: Jaskaran Singh <jaskaran.singh@collabora.com>
 To: cocci@systeme.lip6.fr
-Date: Wed,  8 Jul 2020 18:23:44 +0530
-Message-Id: <20200708125357.8998-9-jaskaran.singh@collabora.com>
+Date: Wed,  8 Jul 2020 18:23:42 +0530
+Message-Id: <20200708125357.8998-7-jaskaran.singh@collabora.com>
 X-Mailer: git-send-email 2.21.3
 In-Reply-To: <20200708125357.8998-1-jaskaran.singh@collabora.com>
 References: <20200708125357.8998-1-jaskaran.singh@collabora.com>
 MIME-Version: 1.0
 X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 08 Jul 2020 14:54:30 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Wed, 08 Jul 2020 14:54:25 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Wed, 08 Jul 2020 14:54:23 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78
-Subject: [Cocci] [PATCH 08/20] parsing_cocci: iso_pattern: Wrap SmPL
+X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
+Subject: [Cocci] [PATCH 06/20] parsing_cocci: compute_lines: Wrap SmPL
 	Attributes
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
@@ -68,157 +66,145 @@ Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
 Attributes are wrapped in the SmPL AST. Reflect these changes in
-iso_pattern.ml.
+compute_lines.ml.
 
 Signed-off-by: Jaskaran Singh <jaskaran.singh@collabora.com>
 ---
- parsing_cocci/iso_pattern.ml | 68 ++++++++++++++----------------------
- 1 file changed, 27 insertions(+), 41 deletions(-)
+ parsing_cocci/compute_lines.ml | 42 +++++++++++++++++++---------------
+ 1 file changed, 24 insertions(+), 18 deletions(-)
 
-diff --git a/parsing_cocci/iso_pattern.ml b/parsing_cocci/iso_pattern.ml
-index 6cd5f1cb..40fd67e8 100644
---- a/parsing_cocci/iso_pattern.ml
-+++ b/parsing_cocci/iso_pattern.ml
-@@ -759,14 +759,10 @@ let match_maker checks_needed context_required whencode_allowed =
- 		   match_ident fielda fieldb]
- 	  | (Ast0.Cast(lp1,tya,attra,rp1,expa),
-              Ast0.Cast(lp,tyb,attrb,rp,expb)) ->
--              if (List.length attra = List.length attrb &&
--                  List.fold_left2 (fun p a b -> p && mcode_equal a b) true
--                  attra attrb)
--              then
- 	      conjunct_many_bindings
- 		[check_mcode lp1 lp; check_mcode rp1 rp;
-+                  match_attributes attra attrb;
- 		  match_typeC tya tyb; match_expr expa expb]
--              else return false
- 	  | (Ast0.SizeOfExpr(szf1,expa),Ast0.SizeOfExpr(szf,expb)) ->
- 	      conjunct_bindings (check_mcode szf1 szf) (match_expr expa expb)
- 	  | (Ast0.SizeOfType(szf1,lp1,tya,rp1),
-@@ -940,27 +936,23 @@ let match_maker checks_needed context_required whencode_allowed =
- 	  match (up,Ast0.unwrap d) with
- 	    (Ast0.Init(stga,tya,ida,attra,eq1,inia,sc1),
- 	     Ast0.Init(stgb,tyb,idb,attrb,eq,inib,sc)) ->
--	       if bool_match_option mcode_equal stga stgb &&
--                 (List.length attra = List.length attrb &&
--                  List.fold_left2 (fun p a b -> p && mcode_equal a b) true
--                    attra attrb) (* no metavars *)
-+	       if bool_match_option mcode_equal stga stgb
- 	       then
- 		 conjunct_many_bindings
- 		   [check_mcode eq1 eq; check_mcode sc1 sc;
- 		     match_option check_mcode stga stgb;
- 		     match_typeC tya tyb; match_ident ida idb;
-+                     match_attributes attra attrb;
- 		     match_init inia inib]
- 	       else return false
- 	  | (Ast0.UnInit(stga,tya,ida,attra,sc1),
- 	     Ast0.UnInit(stgb,tyb,idb,attrb,sc)) ->
--	      if bool_match_option mcode_equal stga stgb &&
--                (List.length attra = List.length attrb &&
--                 List.fold_left2 (fun p a b -> p && mcode_equal a b) true
--                   attra attrb) (* no metavars *)
-+	      if bool_match_option mcode_equal stga stgb
- 	      then
- 		conjunct_many_bindings
- 		  [check_mcode sc1 sc; match_option check_mcode stga stgb;
--		    match_typeC tya tyb; match_ident ida idb]
-+		    match_typeC tya tyb; match_ident ida idb;
-+                    match_attributes attra attrb]
- 	      else return false
- 	  | (Ast0.FunProto(fninfo1,name1,lp1,params1,va1a,rp1,sem1),
- 	     Ast0.FunProto(fninfo,name,lp,params,va1b,rp,sem)) ->
-@@ -973,17 +965,15 @@ let match_maker checks_needed context_required whencode_allowed =
-                  ]
- 	  | (Ast0.MacroDecl(stga,namea,lp1,argsa,rp1,attra,sc1),
- 	     Ast0.MacroDecl(stgb,nameb,lp,argsb,rp,attrb,sc)) ->
--	       if bool_match_option mcode_equal stga stgb &&
--                 (List.length attra = List.length attrb &&
--                  List.fold_left2 (fun p a b -> p && mcode_equal a b) true
--                    attra attrb) (* no metavars *)
-+	       if bool_match_option mcode_equal stga stgb
- 	       then
- 		 conjunct_many_bindings
- 		   [match_ident namea nameb;
- 		     check_mcode lp1 lp; check_mcode rp1 rp;
- 		     check_mcode sc1 sc;
- 		     match_dots match_expr is_elist_matcher do_elist_match
--		       argsa argsb]
-+                       argsa argsb;
-+                     match_attributes attra attrb]
- 	       else return false
- 	  | (Ast0.MacroDeclInit(stga,namea,lp1,argsa,rp1,eq1,ini1,sc1),
- 	     Ast0.MacroDeclInit(stgb,nameb,lp,argsb,rp,eq,ini,sc)) ->
-@@ -999,12 +989,10 @@ let match_maker checks_needed context_required whencode_allowed =
- 		     match_init ini1 ini]
- 	       else return false
- 	  | (Ast0.TyDecl(tya,attra,sc1),Ast0.TyDecl(tyb,attrb,sc)) ->
--	      if (List.length attra = List.length attrb &&
--                  List.fold_left2 (fun p a b -> p && mcode_equal a b) true
--                    attra attrb) (* no metavars *)
--              then
--	        conjunct_bindings (check_mcode sc1 sc) (match_typeC tya tyb)
--              else return false
-+              conjunct_many_bindings
-+                  [check_mcode sc1 sc;
-+                    match_typeC tya tyb;
-+                    match_attributes attra attrb]
- 	  | (Ast0.Typedef(stga,tya,ida,sc1),Ast0.Typedef(stgb,tyb,idb,sc)) ->
- 	      conjunct_bindings (check_mcode sc1 sc)
- 		(conjunct_bindings (match_typeC tya tyb) (match_typeC ida idb))
-@@ -1180,21 +1168,11 @@ let match_maker checks_needed context_required whencode_allowed =
- 	then
- 	  match (up,Ast0.unwrap p) with
- 	    (Ast0.VoidParam(tya,attra),Ast0.VoidParam(tyb,attrb)) ->
--               if (List.length attra = List.length attrb &&
--                 List.fold_left2 (fun p a b -> p && mcode_equal a b) true
--                 attra attrb)
--               then
--                 match_typeC tya tyb
--               else return false
-+               conjunct_bindings (match_typeC tya tyb)
-+                   (match_attributes attra attrb)
- 	  | (Ast0.Param(tya,ida,attra),Ast0.Param(tyb,idb,attrb)) ->
--               if (List.length attra = List.length attrb &&
--                 List.fold_left2 (fun p a b -> p && mcode_equal a b) true
--                 attra attrb)
--              then
--	        conjunct_bindings (match_typeC tya tyb)
-+	      conjunct_bindings (match_typeC tya tyb)
- 		  (match_option match_ident ida idb)
--              else
--                return false
- 	  | (Ast0.PComma(c1),Ast0.PComma(c)) -> check_mcode c1 c
- 	  | (Ast0.Pdots(d1),Ast0.Pdots(d)) -> check_mcode d1 d
- 	  | (Ast0.OptParam(parama),Ast0.OptParam(paramb)) ->
-@@ -1427,9 +1405,7 @@ let match_maker checks_needed context_required whencode_allowed =
- 	  then conjunct_bindings (check_mcode ia ib) (loop (resta,restb))
- 	  else return false
-       |	(Ast0.FAttr(ia)::resta,Ast0.FAttr(ib)::restb) ->
--	  if mcode_equal ia ib
--	  then conjunct_bindings (check_mcode ia ib) (loop (resta,restb))
--	  else return false
-+          conjunct_bindings (match_attributes [ia] [ib]) (loop (resta,restb))
-       |	(x::resta,((y::_) as restb)) ->
- 	  (match compare x y with
- 	    -1 -> return false
-@@ -1438,6 +1414,16 @@ let match_maker checks_needed context_required whencode_allowed =
-       |	_ -> return false in
-     loop (patterninfo,cinfo)
+diff --git a/parsing_cocci/compute_lines.ml b/parsing_cocci/compute_lines.ml
+index 4f273307..4420e952 100644
+--- a/parsing_cocci/compute_lines.ml
++++ b/parsing_cocci/compute_lines.ml
+@@ -428,7 +428,7 @@ let rec expression e =
+   | Ast0.Cast(lp,ty,attr,rp,exp) ->
+       let lp = normal_mcode lp in
+       let exp = expression exp in
+-      let attr = List.map normal_mcode attr in
++      let attr = List.map attribute attr in
+       let rp = normal_mcode rp in
+       mkres e (Ast0.Cast(lp,typeC ty,attr,rp,exp)) (promote_mcode lp) exp
+   | Ast0.SizeOfExpr(szf,exp) ->
+@@ -672,7 +672,7 @@ and declaration d =
+   | Ast0.Init(stg,ty,id,attr,eq,exp,sem) ->
+       let ty = typeC ty in
+       let id = ident id in
+-      let attr = List.map normal_mcode attr in
++      let attr = List.map attribute attr in
+       let eq = normal_mcode eq in
+       let exp = initialiser exp in
+       let sem = normal_mcode sem in
+@@ -686,7 +686,7 @@ and declaration d =
+   | Ast0.UnInit(stg,ty,id,attr,sem) ->
+       let ty = typeC ty in
+       let id = ident id in
+-      let attr = List.map normal_mcode attr in
++      let attr = List.map attribute attr in
+       let sem = normal_mcode sem in
+       (match stg with
+ 	None ->
+@@ -715,13 +715,13 @@ and declaration d =
+ 	| Ast0.FStorage(stg)::_ -> mkres d res (promote_mcode stg) right
+ 	| Ast0.FType(ty)::_ -> mkres d res ty right
+ 	| Ast0.FInline(inline)::_ -> mkres d res (promote_mcode inline) right
+-	| Ast0.FAttr(attr)::_ -> mkres d res (promote_mcode attr) right)
++	| Ast0.FAttr(attr)::_ -> mkres d res attr right)
+   | Ast0.MacroDecl(stg,name,lp,args,rp,attr,sem) ->
+       let name = ident name in
+       let lp = normal_mcode lp in
+       let args = dots is_exp_dots (Some(promote_mcode lp)) expression args in
+       let rp = normal_mcode rp in
+-      let attr = List.map normal_mcode attr in
++      let attr = List.map attribute attr in
+       let sem = normal_mcode sem in
+       (match stg with
+ 	None ->
+@@ -749,7 +749,7 @@ and declaration d =
+ 	    (promote_mcode x) (promote_mcode sem))
+   | Ast0.TyDecl(ty,attr,sem) ->
+       let ty = typeC ty in
+-      let attr = List.map normal_mcode attr in
++      let attr = List.map attribute attr in
+       let sem = normal_mcode sem in
+       mkres d (Ast0.TyDecl(ty,attr,sem)) ty (promote_mcode sem)
+   | Ast0.Typedef(stg,ty,id,sem) ->
+@@ -907,6 +907,13 @@ and initialiser_list prev = dots is_init_dots prev initialiser
+ (* for export *)
+ and initialiser_dots x = dots is_init_dots None initialiser x
  
-+  and match_attribute a1 a2 =
-+    match (Ast0.unwrap a1,Ast0.unwrap a2) with
-+      (Ast0.Attribute(attr1),Ast0.Attribute(attr2)) ->
-+        check_mcode attr1 attr2
++and attribute a =
++  match Ast0.unwrap a with
++    Ast0.Attribute(attr) ->
++      let ln = promote_mcode attr in
++      mkres a (Ast0.Attribute(attr)) ln ln
 +
-+  and match_attributes a1 a2 =
-+    match_list match_attribute
-+     (function _ -> false) (function _ -> failwith "")
-+     a1 a2
 +
-   and match_case_line pattern c =
-     if not(checks_needed) || not(context_required) || is_context c
-     then
+ (* --------------------------------------------------------------------- *)
+ (* Parameter *)
+ 
+@@ -918,30 +925,30 @@ and is_param_dots p =
+ and parameterTypeDef p =
+   match Ast0.unwrap p with
+     Ast0.VoidParam(ty,attr) ->
+-      let attr = List.map normal_mcode attr in
++      let attr = List.map attribute attr in
+       let ty = typeC ty in
+       (match attr with
+         [] -> mkres p (Ast0.VoidParam(ty,attr)) ty ty
+       | l ->
+           let lattr = List.hd (List.rev l) in
+-          mkres p (Ast0.VoidParam(ty,attr)) ty (promote_mcode lattr))
++          mkres p (Ast0.VoidParam(ty,attr)) ty lattr)
+   | Ast0.Param(ty,Some id,attr) ->
+       let id = ident id in
+       let ty = typeC ty in
+-      let attr = List.map normal_mcode attr in
++      let attr = List.map attribute attr in
+       (match attr with
+         [] -> mkres p (Ast0.Param(ty,Some id,attr)) ty id
+       | l ->
+           let lattr = List.hd (List.rev l) in
+-          mkres p (Ast0.Param(ty,Some id,attr)) ty (promote_mcode lattr))
++          mkres p (Ast0.Param(ty,Some id,attr)) ty lattr)
+   | Ast0.Param(ty,None,attr) ->
+-      let attr = List.map normal_mcode attr in
++      let attr = List.map attribute attr in
+       let ty = typeC ty in
+       (match attr with
+         [] -> mkres p (Ast0.Param(ty,None,attr)) ty ty
+       | l ->
+           let lattr = List.hd (List.rev l) in
+-          mkres p (Ast0.Param(ty,None,attr)) ty (promote_mcode lattr))
++          mkres p (Ast0.Param(ty,None,attr)) ty lattr)
+   | Ast0.MetaParam(name,a,b) ->
+       let name = normal_mcode name in
+       let ln = promote_mcode name in
+@@ -1297,7 +1304,7 @@ let rec statement s =
+ 	| Ast0.FStorage(stg)::_ -> mkres s res (promote_mcode stg) right
+ 	| Ast0.FType(ty)::_ -> mkres s res ty right
+ 	| Ast0.FInline(inline)::_ -> mkres s res (promote_mcode inline) right
+-	| Ast0.FAttr(attr)::_ -> mkres s res (promote_mcode attr) right)
++	| Ast0.FAttr(attr)::_ -> mkres s res attr right)
+ 
+     | Ast0.Include(inc,stm) ->
+ 	let inc = normal_mcode inc in
+@@ -1359,11 +1366,10 @@ and leftfninfo fninfo name bef = (* cases on what is leftmost *)
+        Ast0.FInline(set_mcode_info inline (Ast0.get_info inlinfo))::rest,
+        name)
+   | Ast0.FAttr(attr)::rest ->
+-      let (leftinfo,attrinfo) =
+-	promote_to_statement_start (promote_mcode attr) bef in
+-      (leftinfo,
+-       Ast0.FAttr(set_mcode_info attr (Ast0.get_info attrinfo))::rest,
+-       name)
++      let attr = attribute attr in
++      let (leftinfo,attr) =
++	promote_to_statement_start attr bef in
++      (leftinfo,Ast0.FAttr(attr)::rest,name)
+ 
+ and pragmainfo pi =
+   match Ast0.unwrap pi with
 -- 
 2.21.3
 
