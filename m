@@ -7,45 +7,44 @@ X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54072C433E1
-	for <cocci@archiver.kernel.org>; Sun, 26 Jul 2020 14:16:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA159C433E1
+	for <cocci@archiver.kernel.org>; Sun, 26 Jul 2020 14:45:17 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A25AE2070B
-	for <cocci@archiver.kernel.org>; Sun, 26 Jul 2020 14:16:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 459F92065F
+	for <cocci@archiver.kernel.org>; Sun, 26 Jul 2020 14:45:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="EN2MsiN+"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A25AE2070B
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="DTh+lZ3n"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 459F92065F
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 06QEGW87003846;
-	Sun, 26 Jul 2020 16:16:32 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 06QEj5nq026296;
+	Sun, 26 Jul 2020 16:45:05 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 2E499777B;
-	Sun, 26 Jul 2020 16:16:32 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id D0E45777B;
+	Sun, 26 Jul 2020 16:45:05 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id CD3143F6C
- for <cocci@systeme.lip6.fr>; Sun, 26 Jul 2020 15:52:22 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id B27173F6C
+ for <cocci@systeme.lip6.fr>; Sun, 26 Jul 2020 16:30:29 +0200 (CEST)
 Received: from mout.web.de (mout.web.de [212.227.15.14])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 06QDqIeZ020218
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 06QEUTqs011857
  (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO)
- for <cocci@systeme.lip6.fr>; Sun, 26 Jul 2020 15:52:18 +0200 (CEST)
+ for <cocci@systeme.lip6.fr>; Sun, 26 Jul 2020 16:30:29 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1595771537;
- bh=gMIDRroIJTtDQvx6AfMCih/+BdE3UFkKCmIf50fa1SU=;
- h=X-UI-Sender-Class:Cc:Subject:To:From:Date;
- b=EN2MsiN+ZvVof9BfWTel6E6M2nKRmhNCxHKAaEDbTiioLRs9z6sdW48mmyjjn1tnj
- IxKqlWcJzkk5ErReufsTRmSlkj9AsHwyakqZfJHeOBZID5o6D0PTkj6LM2ZJEBvKlU
- SSk4YG3wq2+RX9U/b6X1gZtCuApYJuoJ9TGNaGi8=
+ s=dbaedf251592; t=1595773829;
+ bh=PTfAGn3oJp9rZj6BbufkDnZOn+zCBXiEviJg6z/okqc=;
+ h=X-UI-Sender-Class:Cc:Subject:From:To:Date;
+ b=DTh+lZ3nm3YHhKeXmUB/Hh2LFGllSRSTNTnbQc4VQkBbAcsBUJsq5LYLJf95BovoI
+ YrSm61PUtuAucCMY62U3+kJ/YjUl8bxHMRwMzZBShfbqbuFKE6umymnb0TWKu85z4P
+ oKT+NwBOmy5UwPCbFL3Dr8xqAEZYaSqbbBAJ7yLA=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([78.48.103.185]) by smtp.web.de (mrweb004
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0MHuv7-1jw7Ey2vkL-003aLA; Sun, 26
- Jul 2020 15:52:17 +0200
-To: Jaskaran Singh <jaskaran.singh@collabora.com>
+Received: from [192.168.1.2] ([78.48.103.185]) by smtp.web.de (mrweb002
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0Lxx4O-1ktki83NmG-015Ewg; Sun, 26
+ Jul 2020 16:30:28 +0200
 From: Markus Elfring <Markus.Elfring@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
@@ -90,41 +89,42 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <e0df5e31-bf24-0876-f485-e274db6000aa@web.de>
-Date: Sun, 26 Jul 2020 15:52:17 +0200
+To: Jaskaran Singh <jaskaran.singh@collabora.com>
+Message-ID: <25fb4894-65d3-dc57-dbfd-93d3482d8fee@web.de>
+Date: Sun, 26 Jul 2020 16:30:28 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
 Content-Language: en-GB
-X-Provags-ID: V03:K1:EIxflP/VhCtD3S+KGFT6F80oNxql1B5R+tJiY1MEjBm6wcm/Fat
- bbnbZcxYiO2Q51cNWXX7bkm9JwKIM7B9UqSv17v/twNkM/zg3X6+9CP2V8G6pV1q5+KqhVn
- fTfWc+xu79jmM5D+ZJTtegTxhbgF5hRfYm4tQ3FYLeF2LbbE1DC56FLLKb/IzHCapxBdWEu
- BkBdwWIlWDyMzQMsyzcuQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:9KJAwdHtaUQ=:Va4HR1/tOhCj7RAHYXlp/p
- WKmW1H4EP393YjS/yY/IqSYt5zoXS47g72Vy/yB4qKaZ593OtRR9fSxvKt1SYwmEmmIKV2zNP
- ATlC4m6Ll906LqNwxecI/1aG6rSVH9LqPfcA3dcunNINWRq0sJ9k1eCS78wypfrlmW813fx3a
- yDMfAuEszxOXJLnExZMKKzQyxm5I6oSKppl6STdZ0FgSuVLNW57GEfQgAOaGPNGWNWlQsYpK8
- yFXIbQZHtEmPJ0VJKcFYTkWZiY8F9OkoO9lCNPFDofHW3Yhy2wPahqiroACcbCkiceVSz9kK8
- gdYnXY/IX64r9Ni/jEOMLCVuOiaEQE4SmNaB4DL/tCEqmTS8bsGJiCgA5tgX5NERZEEyREB3y
- EJ6AZE/v795zcYkLm3fEIpaUxgnf0zkLVePov+a8W89AqIOKyYLfaMSksa+MfsDvJwGM04lyL
- hvxX4moscC5CVcUjc2LS+uPdbbMWClqwpsaKXeZWeju+cp3Udj1limAwZvfzGdWBLKiNW2tGq
- EKLZ+wQQQhjlMeFGsu9fwxQ1aB/Dykfcb4AG30OUeasE+FKXeJckH4nJ7OREGUhS42wz+puHy
- DGf1wLOt9y+Tqzd526aWixDVtAjN8pST6w4JuAIirVYkrp6Ad+HSHJkDk8Yfg8pgKErZwkY5e
- vspjRDifORTX5U9ZP2Xx/7AuTs0DQWjfmoYXQFDEBVdQ1+yN6GRl9v87mVVKsm0eTUxDWtBQG
- 7OhA0W3c3L2kTlfupAW82PnP39QRU7oNcz0HuWcPCH+Duf0q4SGq1++XaJju5JijMF7De+yIv
- 2SN0J8R4ScEkuF7gjS7RQiBP6wsW1ASQFdPLunsNwdRZhUaDsLeWyrlsKoNUVqGtd6F9WfQII
- qjMJwvnhKASXQH8vy/uiiDQu2Ejcuvf98CWzk0Ob+EBgsomM3c6HyscZbFZ4LfQlMITkceGUI
- JjzSbs2Vjs7OZW1xZ1AwSAd9NkuGQ+rvBe4FKH+JRiULvpe0G9lynyQQ+oGOOf7u7A01ZDWCJ
- XOLEkpOPgEccJrVO55ZH5XbC7UWACP9SQCdBIh9JsvE86kirS1j6NK9evtXYglhvhVgXKQmhb
- x82TTJVkDMMfWEF/8jhjL605TKAQE23fEJqLT3sVbQIknTJD5rhXT6AdnfJrDvsiRUvj9wc8p
- jWbNURbPRk4PscvdohjvfD9Nc+GpdoPWQC6MBSaaSxAicJuGTDcEBeq1QjIVEAn/6Jbu8zQlf
- yDUAk9laPZPx0T5jbiOJZNUeSZjdy47jZhja8kg==
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 26 Jul 2020 16:16:32 +0200 (CEST)
+X-Provags-ID: V03:K1:FxbtM4JhB0CgU1WX4ZlftaPDFkImdfVdQtEq3tVbhNTaO+wZDPL
+ CVumcJcbrojXgqSjIp8eiI3fRt5Yec4nVL9924zgRP9FwDII0Kbw6b89J2FQShKH+wzGc7K
+ EQalXcf0VifFYyv3/YJcfEaAdvYjqNGN8PRySyMb7wZLqF4ppKGA5r6QVO9Z+LVc7DjZBUM
+ bL5KPpHB7YjNkcohU45dw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:tdlWBrBwAK4=:AnNNmZ3g9sGh7kA+54CIiI
+ 0wdSycVdMG6/9jZMy0wYYcCT7TGkXoV2rfDzOQhpN3+pHAKurCz5pLKA+8dDo0AFwzNG0CcMX
+ g38bR5geXixFPErZkM3Y1dmj05AJ0mcwu0uw4zYGfh1YSXa3G6voV8ho7dGXl+movnhIPiZb3
+ JmBE7FdCsKAKLcDhcRUjm+TJ72n5Dlgn/krvzu1QgYDv1ulmcad5ipf2W+sU9CeQMbYBPscWg
+ qAGZqTcoCLIfTct1D5EBsF9UTo08BoNdS/KnkxjaGzBOgJT81A9oSGDe98Lbj1ZCPBM5wrDIA
+ aLIXgAYlJdDQyCWCkth3W2T5SG0TnilJiFWUq9CUzjW91cxgSU4u8j80HpnJTtVYxF/qjmW5e
+ emqxJvDSpTeR3RjD4bO8NJLdhzRhuwQRTjDP8OuJeFA8lQManSG7WLJzjV4+Tt0VSdYRPeljP
+ 3hbl7bs8YuZMgq68GEqOW+FBao1jjXxkAnmYl0gT+XllK7Zjzwsak9Yq1jPPH160fH50ZVK7O
+ gFH0dsLT6NZGfb4LVykA48nkrlscXrO/cwf64u/FQD6Waq39Z3+i/xuRB69LxrpNuUNmKHWqE
+ bi9xp2sO7LV56K0xuEJ2h0V5El7D1KjX9INmxn5yhnLFCjXicnYGGdLeJNrl3DBoi04mg5gKj
+ UlJXViXe5FeD0vVRVbqBk5oepenPgBRJH1ljtftt+l1q/DtG7ojvTJI/YlLajpkUPQrvkFUk9
+ kLyjHhxTqtMVdF1K0mU9ax/cTaA3Vi0yKLA4F4TE6pmW1YxmpwUoVyij7jMQsdulCXvNajrKl
+ matL38j8YrlIcJ2tK6zN7BFY4nWN76W0hShrlMOVK0f+jYTgy7VFwgNcYk/yBFUxZXeyj43Hj
+ IufxqEPq2t1lu+e0VReRSt67GNHASvsLPb0HQBD6jAFYUM6DEEeOpUxJXjA9eM5BGtxOPrVph
+ RJsc/PF5mQ85rgcOitQVhXH6r5eZUzqnXcPSisJFCuTStLGdSJYhenTKUzibaweaiZqD7L6g9
+ bZJH5BaGVKjtTBdhf7ebKaoXnds+xlNXJpL8MQQ+0OK1fsPPW3BOtY4fg1E1wLMQ70xMMm8DF
+ ZB4GsLMwsrsth3pVdxbc8aiPdw1cTFe3n3GJNboD01aDJMS1wDQlqHJuhDlK+JMlVRg2z/VA/
+ YunBW1J2fnpPgj4k8d7PJ5yVlX0UmzDf4oW5VU6KF/sLi3TqksOa2It7SiAAlogm3btOLziHY
+ sVwy/mj+oIXTHfL8w+UzXy0vH1w+nq+mQVBpSYA==
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 26 Jul 2020 16:45:06 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sun, 26 Jul 2020 15:52:18 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Sun, 26 Jul 2020 16:30:29 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Mailman-Approved-At: Sun, 26 Jul 2020 16:16:30 +0200
+X-Mailman-Approved-At: Sun, 26 Jul 2020 16:45:03 +0200
 Cc: cocci@systeme.lip6.fr
 Subject: Re: [Cocci] [PATCH 42/43] tests: Add test case to match meta
  attribute
@@ -144,12 +144,15 @@ Content-Transfer-Encoding: base64
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-4oCmCj4gKysrIGIvdGVzdHMvbWV0YWF0dHIuYwo+IEBAIC0wLDAgKzEsNSBAQAo+ICtpbnQgbWFp
-bigpIHsKPiArCWludCBiIF9fYXR0cl9fID0gMTsKPiArCWludCBiID0gMTsKPiArCXJldHVybiAw
-Owo+ICt9CgoqIFNob3VsZCBzdWNoIHRlc3QgY29kZSByZWFsbHkgd29yayB3aXRoIGEgcmVwZWF0
-ZWQgZGVmaW5pdGlvbiBvZgogIHRoZSB2YXJpYWJsZSDigJxi4oCdPwoKKiBXb3VsZCB5b3UgbGlr
-ZSB0byB0ZXN0IGhlcmUgaWYgdGhlIGlkZW50aWZpZXIg4oCcYuKAnSBzaG91bGQgYmUgaGFuZGxl
-ZAogIGFzIGFuIGF0dHJpYnV0ZSBmb3IgdGhlIHZhcmlhYmxlIOKAnF9fYXR0cl9f4oCdPwoKUmVn
-YXJkcywKTWFya3VzCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fCkNvY2NpIG1haWxpbmcgbGlzdApDb2NjaUBzeXN0ZW1lLmxpcDYuZnIKaHR0cHM6Ly9zeXN0
-ZW1lLmxpcDYuZnIvbWFpbG1hbi9saXN0aW5mby9jb2NjaQo=
+4oCmCj4gKysrIGIvdGVzdHMvbWV0YWF0dHIuY29jY2kKPiBAQCAtMCwwICsxLDkgQEAKPiArQEAK
+PiArYXR0cmlidXRlIG5hbWUgX19hdHRyX187Cj4gK2F0dHJpYnV0ZSBhOwo+ICtpZGVudGlmaWVy
+IGI7Cj4gK0BACj4gKwo+ICstCWludAo+ICsrCWNoYXIKPiArICBiIGEgPSAxOwoKSSBoYXZlIGdv
+dCB1bmRlcnN0YW5kaW5nIGRpZmZpY3VsdGllcyBmb3IgdGhpcyB0ZXN0IFNtUEwgc2NyaXB0LgpJ
+IGludGVycHJldCBzdWNoIFNtUEwgY29kZSBpbiB0aGUgd2F5IHRoYXQgdGhlIG1ldGF2YXJpYWJs
+ZSDigJxfX2F0dHJfX+KAnQppcyBkZWNsYXJlZCB3aGlsZSBpdCBpcyBub3QgdXNlZCBmdXJ0aGVy
+LgoKV2lsbCB0aGUgZGlzdGluY3Rpb24gYmV0d2VlbiB0aGUgbWV0YXZhcmlhYmxlIHR5cGVzIOKA
+nGF0dHJpYnV0ZeKAnQphbmQg4oCcYXR0cmlidXRlIG5hbWXigJ0gdHJpZ2dlciBhbnkgZXh0ZW5z
+aW9ucyBmb3IgdGhlIHNvZnR3YXJlIGRvY3VtZW50YXRpb24/CgpSZWdhcmRzLApNYXJrdXMKX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KQ29jY2kgbWFpbGlu
+ZyBsaXN0CkNvY2NpQHN5c3RlbWUubGlwNi5mcgpodHRwczovL3N5c3RlbWUubGlwNi5mci9tYWls
+bWFuL2xpc3RpbmZvL2NvY2NpCg==
