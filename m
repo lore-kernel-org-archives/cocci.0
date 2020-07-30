@@ -6,54 +6,52 @@ X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20B34C433E0
-	for <cocci@archiver.kernel.org>; Thu, 30 Jul 2020 19:28:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE427C433E0
+	for <cocci@archiver.kernel.org>; Thu, 30 Jul 2020 20:15:45 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9EAA02083B
-	for <cocci@archiver.kernel.org>; Thu, 30 Jul 2020 19:28:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9EAA02083B
+	by mail.kernel.org (Postfix) with ESMTPS id 4512C20829
+	for <cocci@archiver.kernel.org>; Thu, 30 Jul 2020 20:15:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4512C20829
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 06UJS9r9029387;
-	Thu, 30 Jul 2020 21:28:09 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 06UKFVDN019304;
+	Thu, 30 Jul 2020 22:15:31 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id E6C6274BA;
-	Thu, 30 Jul 2020 21:28:08 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 74C8174BA;
+	Thu, 30 Jul 2020 22:15:31 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id ADD5E3D0F
- for <cocci@systeme.lip6.fr>; Thu, 30 Jul 2020 21:28:06 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 89E0E3D0F
+ for <cocci@systeme.lip6.fr>; Thu, 30 Jul 2020 22:15:30 +0200 (CEST)
 Received: from mail2-relais-roc.national.inria.fr
  (mail2-relais-roc.national.inria.fr [192.134.164.83])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 06UJS6cL009621
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 06UKFUgQ021880
  (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
- for <cocci@systeme.lip6.fr>; Thu, 30 Jul 2020 21:28:06 +0200 (CEST)
-X-IronPort-AV: E=Sophos;i="5.75,415,1589234400"; d="scan'208";a="461952951"
+ for <cocci@systeme.lip6.fr>; Thu, 30 Jul 2020 22:15:30 +0200 (CEST)
+X-IronPort-AV: E=Sophos;i="5.75,415,1589234400"; d="scan'208";a="461955542"
 Received: from abo-173-121-68.mrs.modulonet.fr (HELO hadrien) ([85.68.121.173])
  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 30 Jul 2020 21:27:32 +0200
-Date: Thu, 30 Jul 2020 21:27:32 +0200 (CEST)
+ 30 Jul 2020 22:15:26 +0200
+Date: Thu, 30 Jul 2020 22:15:26 +0200 (CEST)
 From: Julia Lawall <julia.lawall@inria.fr>
 X-X-Sender: jll@hadrien
-To: Markus Elfring <Markus.Elfring@web.de>
-In-Reply-To: <75532a99-4498-c64a-de34-c9033782aa9e@web.de>
-Message-ID: <alpine.DEB.2.22.394.2007302125580.2548@hadrien>
-References: <75532a99-4498-c64a-de34-c9033782aa9e@web.de>
+To: Denis Efremov <efremov@linux.com>
+In-Reply-To: <20200730140751.8635-1-efremov@linux.com>
+Message-ID: <alpine.DEB.2.22.394.2007302214160.2548@hadrien>
+References: <20200605204237.85055-1-efremov@linux.com>
+ <20200730140751.8635-1-efremov@linux.com>
 User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 30 Jul 2020 21:28:09 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 30 Jul 2020 22:15:31 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Thu, 30 Jul 2020 21:28:06 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Thu, 30 Jul 2020 22:15:30 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Michal Marek <michal.lkml@markovi.net>,
-        Gilles Muller <Gilles.Muller@lip6.fr>, kernel-janitors@vger.kernel.org,
-        Nicolas Palix <nicolas.palix@imag.fr>, linux-kernel@vger.kernel.org,
-        Coccinelle <cocci@systeme.lip6.fr>
+Cc: cocci@systeme.lip6.fr, linux-kernel@vger.kernel.org
 Subject: Re: [Cocci] [PATCH v4] coccinelle: api: add kvfree script
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
@@ -71,14 +69,24 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-> > +msg = "WARNING: kmalloc is used to allocate this memory at line %s" % (k[0].line)
-> > +coccilib.org.print_todo(p[0], msg)
->
-> * I find the diagnostic text insufficient.
+Actually, the message looks fine.  Sorry for the noise about that.
 
-I also find the message not very informative.
+However there is a problem in the kfree case:
 
-All of the other comments are not useful, and some are simply incorrect.
+> +@kfree depends on !patch@
+> +expression E;
+> +position v != choice.vok;
+> +position p;
+> +@@
+> +
+> +* E = \(vmalloc@v\|vzalloc@v\|vmalloc_user@v\|vmalloc_node@v\|vzalloc_node@v\|
+> +        vmalloc_exec@v\|vmalloc_32@v\|vmalloc_32_user@v\|__vmalloc@v\|
+> +        __vmalloc_node_range@v\|__vmalloc_node@v\)(...)
+> +  ... when != !is_vmalloc_addr(E)
+> +      when any
+> +* \(kfree\|kzfree\|kvfree\)(E)
+
+p is not used.  The last line should be (E)@p.
 
 julia
 _______________________________________________
