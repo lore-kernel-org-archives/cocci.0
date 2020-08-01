@@ -1,76 +1,58 @@
-Return-Path: <SRS0=+rvL=BK=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=js+q=BL=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 317E5C433DF
-	for <cocci@archiver.kernel.org>; Fri, 31 Jul 2020 21:00:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4942C433E0
+	for <cocci@archiver.kernel.org>; Sat,  1 Aug 2020 20:36:36 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 87CAC208E4
-	for <cocci@archiver.kernel.org>; Fri, 31 Jul 2020 21:00:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 87CAC208E4
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux.com
+	by mail.kernel.org (Postfix) with ESMTPS id 182F220725
+	for <cocci@archiver.kernel.org>; Sat,  1 Aug 2020 20:36:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 182F220725
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 06VL0dVR006751;
-	Fri, 31 Jul 2020 23:00:39 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 071KaCmP020298;
+	Sat, 1 Aug 2020 22:36:12 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 08A2D74BA;
-	Fri, 31 Jul 2020 23:00:39 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id DF2557428;
+	Sat,  1 Aug 2020 22:36:11 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id D6BAF4121
- for <cocci@systeme.lip6.fr>; Fri, 31 Jul 2020 23:00:36 +0200 (CEST)
-Received: from mail-lj1-f195.google.com (mail-lj1-f195.google.com
- [209.85.208.195])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 06VL0ZcA015805
- (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Fri, 31 Jul 2020 23:00:36 +0200 (CEST)
-Received: by mail-lj1-f195.google.com with SMTP id t6so20833382ljk.9
- for <cocci@systeme.lip6.fr>; Fri, 31 Jul 2020 14:00:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=H/j7iupmhc9JT5gKdbzmUb9JaFhkdwdq+aVyKAG2Hh4=;
- b=fHz7qTvwqvsHOgTz/kXWhCLChFqGAEmbS0a3kP2nCo25QmLoo8A4xY6w6QdaDR9MOS
- GKkNzrKTAGTrjSXcbtESqkyhNZIKHfvsZXnbR1kPzrnZhvfCa+E61P+SrYUR/CxJxB6E
- j8xNZe2zgZIhJxWnTU4H+waHYF0OpKPnAaju3S2yxmSmVc/4cB203t5sEbMTbmlL5zED
- bCLjcW5qIhv7PTFGxi22lkl6rhyuLG/RpG2/V2TpRg2a23LMpXUavenzC64D/JRiauHf
- bV195WGi6L8fkiHVt2UCW2ro8dHK7q4y77ITCvrORpuf8f6PGR0bdWrh7ETIAFJobPuk
- HwPw==
-X-Gm-Message-State: AOAM531GvuYZlyP6ptlguY3qZwpX+tG214OJ8PuA8a27f6hzHuuTNjwI
- u+aF8dYG0cJWDQeFObmwRro=
-X-Google-Smtp-Source: ABdhPJyU6HRZNhCt1HodRVlUYGmY7ZMaWk3rCkzeVitfbC2eSQ4q3KdZJhg14l9MlU4DFehMIbJfyw==
-X-Received: by 2002:a2e:7019:: with SMTP id l25mr2350105ljc.256.1596229235438; 
- Fri, 31 Jul 2020 14:00:35 -0700 (PDT)
-Received: from localhost.localdomain (broadband-37-110-38-130.ip.moscow.rt.ru.
- [37.110.38.130])
- by smtp.googlemail.com with ESMTPSA id l26sm2185737lfj.22.2020.07.31.14.00.34
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 31 Jul 2020 14:00:34 -0700 (PDT)
-From: Denis Efremov <efremov@linux.com>
-To: Julia Lawall <julia.lawall@inria.fr>
-Date: Sat,  1 Aug 2020 00:00:26 +0300
-Message-Id: <20200731210026.7186-1-efremov@linux.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200605204237.85055-1-efremov@linux.com>
-References: <20200605204237.85055-1-efremov@linux.com>
+ by systeme.lip6.fr (Postfix) with ESMTPS id EAB974084
+ for <cocci@systeme.lip6.fr>; Sat,  1 Aug 2020 22:36:09 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr
+ (mail3-relais-sop.national.inria.fr [192.134.164.104])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 071Ka8Mh027442
+ (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
+ for <cocci@systeme.lip6.fr>; Sat, 1 Aug 2020 22:36:08 +0200 (CEST)
+X-IronPort-AV: E=Sophos;i="5.75,423,1589234400"; d="scan'208";a="355776692"
+Received: from abo-173-121-68.mrs.modulonet.fr (HELO hadrien) ([85.68.121.173])
+ by mail3-relais-sop.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 01 Aug 2020 22:36:07 +0200
+Date: Sat, 1 Aug 2020 22:36:07 +0200 (CEST)
+From: Julia Lawall <julia.lawall@inria.fr>
+X-X-Sender: jll@hadrien
+To: Jaskaran Singh <jaskaran.singh@collabora.com>
+In-Reply-To: <20200726125141.17787-1-jaskaran.singh@collabora.com>
+Message-ID: <alpine.DEB.2.22.394.2008012235440.14815@hadrien>
+References: <20200726125141.17787-1-jaskaran.singh@collabora.com>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 31 Jul 2020 23:00:39 +0200 (CEST)
-X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Fri, 31 Jul 2020 23:00:36 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 01 Aug 2020 22:36:12 +0200 (CEST)
+X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [132.227.60.2]); Sat, 01 Aug 2020 22:36:08 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: cocci@systeme.lip6.fr, linux-kernel@vger.kernel.org
-Subject: [Cocci] [PATCH v6] coccinelle: api: add kvfree script
+Cc: cocci@systeme.lip6.fr
+Subject: Re: [Cocci] [PATCH 00/43] cocci: Add support for meta attributes to
+	SmPL
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -87,223 +69,128 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Check that alloc and free types of functions match each other.
 
-Signed-off-by: Denis Efremov <efremov@linux.com>
----
-Changes in v2:
- - Lines are limited to 80 characters where possible
- - Confidence changed from High to Medium because of 
-   fs/btrfs/send.c:1119 false-positive
- - __vmalloc_area_node() explicitly excluded from analysis
-   instead of !(file in "mm/vmalloc.c") condition
-Changes in v3:
- - prints style in org && report modes changed for python2
-Changes in v4:
- - missing msg argument to print_todo fixed
-Changes in v5:
- - fix position p in kfree rule
- - move @kok and @v positions in choice rule after the arguments
- - remove kvmalloc suggestions
-Changes in v6:
- - more asterisks added in context mode
- - second @kok added to the choice rule
 
- scripts/coccinelle/api/kvfree.cocci | 182 ++++++++++++++++++++++++++++
- 1 file changed, 182 insertions(+)
- create mode 100644 scripts/coccinelle/api/kvfree.cocci
+On Sun, 26 Jul 2020, Jaskaran Singh wrote:
 
-diff --git a/scripts/coccinelle/api/kvfree.cocci b/scripts/coccinelle/api/kvfree.cocci
-new file mode 100644
-index 000000000000..f43cda5b0d5b
---- /dev/null
-+++ b/scripts/coccinelle/api/kvfree.cocci
-@@ -0,0 +1,182 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+///
-+/// Check that kvmalloc'ed memory is freed by kfree functions,
-+/// vmalloc'ed by vfree functions and kvmalloc'ed by kvfree
-+/// functions.
-+///
-+// Confidence: Medium
-+// Copyright: (C) 2020 Denis Efremov ISPRAS
-+// Options: --no-includes --include-headers
-+//
-+
-+virtual patch
-+virtual report
-+virtual org
-+virtual context
-+
-+@initialize:python@
-+@@
-+# low-level memory api
-+filter = frozenset(['__vmalloc_area_node'])
-+
-+def relevant(p):
-+    return not (filter & {el.current_element for el in p})
-+
-+@choice@
-+expression E, E1;
-+position kok, vok;
-+@@
-+
-+(
-+  if (...) {
-+    ...
-+    E = \(kmalloc\|kzalloc\|krealloc\|kcalloc\|
-+          kmalloc_node\|kzalloc_node\|kmalloc_array\|
-+          kmalloc_array_node\|kcalloc_node\)(...)@kok
-+    ...
-+  } else {
-+    ...
-+    E = \(vmalloc\|vzalloc\|vmalloc_user\|vmalloc_node\|
-+          vzalloc_node\|vmalloc_exec\|vmalloc_32\|
-+          vmalloc_32_user\|__vmalloc\|__vmalloc_node_range\|
-+          __vmalloc_node\)(...)@vok
-+    ...
-+  }
-+|
-+  E = \(kmalloc\|kzalloc\|krealloc\|kcalloc\|kmalloc_node\|kzalloc_node\|
-+        kmalloc_array\|kmalloc_array_node\|kcalloc_node\)(...)@kok
-+  ... when != E = E1
-+      when any
-+  if (\(!E\|E == NULL\)) {
-+    ...
-+    E = \(vmalloc\|vzalloc\|vmalloc_user\|vmalloc_node\|
-+          vzalloc_node\|vmalloc_exec\|vmalloc_32\|
-+          vmalloc_32_user\|__vmalloc\|__vmalloc_node_range\|
-+          __vmalloc_node\)(...)@vok
-+    ...
-+  }
-+)
-+
-+@vfree depends on !patch@
-+expression E;
-+position k != choice.kok;
-+position p;
-+@@
-+
-+* E = \(kmalloc\|kzalloc\|krealloc\|kcalloc\|kmalloc_node\|
-+*       kzalloc_node\|kmalloc_array\|kmalloc_array_node\|
-+*       kcalloc_node\)(...)@k
-+  ... when != if (...) { ... E = \(vmalloc\|vzalloc\|vmalloc_user\|vmalloc_node\|vzalloc_node\|vmalloc_exec\|vmalloc_32\|vmalloc_32_user\|__vmalloc\|__vmalloc_node_range\|__vmalloc_node\)(...); ... }
-+      when != is_vmalloc_addr(E)
-+      when any
-+* \(vfree\|vfree_atomic\|kvfree\)(E)@p
-+
-+@pvfree depends on patch exists@
-+expression E;
-+position k != choice.kok;
-+@@
-+
-+  E = \(kmalloc\|kzalloc\|krealloc\|kcalloc\|kmalloc_node\|
-+        kzalloc_node\|kmalloc_array\|kmalloc_array_node\|
-+        kcalloc_node\)(...)@k
-+  ... when != if (...) { ... E = \(vmalloc\|vzalloc\|vmalloc_user\|vmalloc_node\|vzalloc_node\|vmalloc_exec\|vmalloc_32\|vmalloc_32_user\|__vmalloc\|__vmalloc_node_range\|__vmalloc_node\)(...); ... }
-+      when != is_vmalloc_addr(E)
-+      when any
-+- \(vfree\|vfree_atomic\|kvfree\)(E)
-++ kfree(E)
-+
-+@kfree depends on !patch@
-+expression E;
-+position v != choice.vok;
-+position p;
-+@@
-+
-+* E = \(vmalloc\|vzalloc\|vmalloc_user\|vmalloc_node\|vzalloc_node\|
-+*       vmalloc_exec\|vmalloc_32\|vmalloc_32_user\|__vmalloc\|
-+*       __vmalloc_node_range\|__vmalloc_node\)(...)@v
-+  ... when != !is_vmalloc_addr(E)
-+      when any
-+* \(kfree\|kzfree\|kvfree\)(E)@p
-+
-+@pkfree depends on patch exists@
-+expression E;
-+position v != choice.vok;
-+@@
-+
-+  E = \(vmalloc\|vzalloc\|vmalloc_user\|vmalloc_node\|vzalloc_node\|
-+        vmalloc_exec\|vmalloc_32\|vmalloc_32_user\|__vmalloc\|
-+        __vmalloc_node_range\|__vmalloc_node\)(...)@v
-+  ... when != !is_vmalloc_addr(E)
-+      when any
-+- \(kfree\|kvfree\)(E)
-++ vfree(E)
-+
-+@kvfree depends on !patch@
-+expression E;
-+position p, k;
-+@@
-+
-+* E = \(kvmalloc\|kvzalloc\|kvcalloc\|kvzalloc_node\|kvmalloc_node\|
-+*       kvmalloc_array\)(...)@k
-+  ... when != is_vmalloc_addr(E)
-+      when any
-+* \(kfree\|kzfree\|vfree\|vfree_atomic\)(E)@p
-+
-+@pkvfree depends on patch exists@
-+expression E;
-+@@
-+
-+  E = \(kvmalloc\|kvzalloc\|kvcalloc\|kvzalloc_node\|kvmalloc_node\|
-+        kvmalloc_array\)(...)
-+  ... when != is_vmalloc_addr(E)
-+      when any
-+- \(kfree\|vfree\)(E)
-++ kvfree(E)
-+
-+@script: python depends on report@
-+k << vfree.k;
-+p << vfree.p;
-+@@
-+
-+msg = "WARNING: kmalloc is used to allocate this memory at line %s" % (k[0].line)
-+coccilib.report.print_report(p[0], msg)
-+
-+@script: python depends on org@
-+k << vfree.k;
-+p << vfree.p;
-+@@
-+
-+msg = "WARNING: kmalloc is used to allocate this memory at line %s" % (k[0].line)
-+coccilib.org.print_todo(p[0], msg)
-+
-+@script: python depends on report@
-+v << kfree.v;
-+p << kfree.p;
-+@@
-+
-+msg = "WARNING: vmalloc is used to allocate this memory at line %s" % (v[0].line)
-+coccilib.report.print_report(p[0], msg)
-+
-+@script: python depends on org@
-+v << kfree.v;
-+p << kfree.p;
-+@@
-+
-+msg = "WARNING: vmalloc is used to allocate this memory at line %s" % (v[0].line)
-+coccilib.org.print_todo(p[0], msg)
-+
-+@script: python depends on report@
-+k << kvfree.k;
-+p << kvfree.p;
-+@@
-+
-+msg = "WARNING: kvmalloc is used to allocate this memory at line %s" % (k[0].line)
-+coccilib.report.print_report(p[0], msg)
-+
-+@script: python depends on org@
-+k << kvfree.k;
-+p << kvfree.p;
-+@@
-+
-+msg = "WARNING: kvmalloc is used to allocate this memory at line %s" % (k[0].line)
-+coccilib.org.print_todo(p[0], msg)
--- 
-2.26.2
+> This patch series aims to add support for meta attributes in SmPL.
+> Currently, only meta attributes in context and minus code are supported.
+>
+> Changes include adding the MetaAttribute and MetaAttributeDecl constructors to
+> the SmPL ASTs and the MetaAttributeVal constructor to the C AST.
+>
+> Two test cases are included for detecting and removing meta attributes.
 
+Applied.
+
+Is this the end of atributes?
+
+julia
+
+>
+> Jaskaran Singh (43):
+>       parsing_cocci: ast0_cocci: Add MetaAttribute & MetaAttributeDecl
+>       parsing_cocci: parser: Parse meta attributes and metaattr decls
+>       parsing_cocci: parse_cocci: Reflect MetaAttribute & MetaAttributeDecl
+>       parsing_cocci: ast_cocci: Add MetaAttribute & MetaAttributeDecl
+>       parsing_cocci: iso_pattern: Reflect MetaAttribute & MetaAttributeDecl
+>       parsing_c: unparse_hrule: Reflect MetaAttribute & MetaAttributeDecl
+>       parsing_cocci: pretty_print_cocci: Reflect MetaAttribute & MetaAttributeDecl
+>       ocaml: coccilib: Reflect MetaAttribute & MetaAttributeDecl
+>       ocaml: yes_prepare_ocamlcocci: Reflect MetaAttribute & MetaAttributeDecl
+>       parsing_c: ast_c: Add MetaAttributeVal
+>       parsing_c: unparse_hrule: Reflect MetaAttributeVal
+>       engine: cocci_vs_c: Reflect MetaAttributeVal
+>       engine: pattern_c: Reflect MetaAttributeVal
+>       engine: pretty_print_engine: Add MetaAttributeVal
+>       ocaml: coccilib: Reflect MetaAttributeVal
+>       ocaml: ocamlcocci_aux: Reflect MetaAttributeVal
+>       ocaml: run_ocamlcocci: Reflect MetaAttributeVal
+>       python: pycocci_aux: Reflect MetaAttributeVal
+>       parsing_cocci: visitor_ast0: Reflect MetaAttribute
+>       parsing_cocci: check_meta: Reflect MetaAttribute
+>       parsing_cocci: adjust_pragmas: Reflect MetaAttribute
+>       parsing_cocci: context_neg: Reflect MetaAttribute
+>       parsing_cocci: compute_lines: Reflect MetaAttribute
+>       parsing_cocci: iso_pattern: Reflect MetaAttribute
+>       parsing_cocci: function_prototypes: Reflect MetaAttribute
+>       parsing_cocci: arity: Reflect MetaAttribute
+>       parsing_cocci: unitary_ast0: Reflect MetaAttribute
+>       parsing_cocci: unparse_ast0: Reflect MetaAttribute
+>       parsing_cocci: ast0toast: Reflect MetaAttribute
+>       parsing_cocci: visitor_ast: Reflect MetaAttribute
+>       parsing_cocci: cleanup_rules: Reflect MetaAttribute
+>       parsing_cocci: free_vars: Reflect MetaAttribute
+>       parsing_cocci: get_constants: Reflect MetaAttribute
+>       parsing_cocci: get_constants2: Reflect MetaAttribute
+>       parsing_cocci: index: Reflect MetaAttribute
+>       parsing_cocci: pretty_print_cocci: Reflect MetaAttribute
+>       parsing_cocci: safe_for_multi_decls: Reflect MetaAttribute
+>       parsing_cocci: unify_ast: Reflect MetaAttribute
+>       parsing_c: unparse_cocci: Reflect MetaAttribute
+>       engine: cocci_vs_c: Reflect MetaAttribute
+>       tools: spgen: Reflect MetaAttribute
+>       tests: Add test case to match meta attribute
+>       tests: Add test case to remove a meta attribute
+>
+>  engine/cocci_vs_c.ml                  |   23 ++++++++++++++---
+>  engine/pattern_c.ml                   |    6 ++++
+>  engine/pretty_print_engine.ml         |    1
+>  ocaml/coccilib.ml                     |    1
+>  ocaml/coccilib.mli                    |    7 +++++
+>  ocaml/ocamlcocci_aux.ml               |    2 +
+>  ocaml/run_ocamlcocci.ml               |    1
+>  ocaml/yes_prepare_ocamlcocci.ml       |    1
+>  parsing_c/ast_c.ml                    |    1
+>  parsing_c/ast_c.mli                   |    1
+>  parsing_c/lib_parsing_c.ml            |    3 ++
+>  parsing_c/lib_parsing_c.mli           |    3 ++
+>  parsing_c/pretty_print_c.ml           |   12 ++++++++
+>  parsing_c/pretty_print_c.mli          |    5 +++
+>  parsing_c/unparse_cocci.ml            |    6 ++++
+>  parsing_c/unparse_hrule.ml            |    5 +++
+>  parsing_cocci/adjust_pragmas.ml       |    3 ++
+>  parsing_cocci/arity.ml                |   29 ++++++++++++++-------
+>  parsing_cocci/ast0_cocci.ml           |    1
+>  parsing_cocci/ast0_cocci.mli          |    1
+>  parsing_cocci/ast0toast.ml            |    4 ++
+>  parsing_cocci/ast_cocci.ml            |    3 ++
+>  parsing_cocci/ast_cocci.mli           |    2 +
+>  parsing_cocci/check_meta.ml           |   27 ++++++++++++++-----
+>  parsing_cocci/cleanup_rules.ml        |   10 ++++++-
+>  parsing_cocci/compute_lines.ml        |   14 ++++++----
+>  parsing_cocci/context_neg.ml          |   18 ++++++++-----
+>  parsing_cocci/data.ml                 |    1
+>  parsing_cocci/data.mli                |    1
+>  parsing_cocci/free_vars.ml            |   28 ++++++++++++++++++--
+>  parsing_cocci/function_prototypes.ml  |   10 ++++++-
+>  parsing_cocci/get_constants.ml        |    7 ++++-
+>  parsing_cocci/get_constants2.ml       |    9 +++---
+>  parsing_cocci/index.ml                |    3 +-
+>  parsing_cocci/iso_pattern.ml          |   46 +++++++++++++++++++++++++++++-----
+>  parsing_cocci/lexer_cocci.mll         |   12 ++++++++
+>  parsing_cocci/parse_aux.ml            |    4 ++
+>  parsing_cocci/parse_cocci.ml          |   11 ++++++--
+>  parsing_cocci/parser_cocci_menhir.mly |   25 ++++++++++++------
+>  parsing_cocci/pretty_print_cocci.ml   |    3 ++
+>  parsing_cocci/safe_for_multi_decls.ml |    1
+>  parsing_cocci/unify_ast.ml            |    2 +
+>  parsing_cocci/unitary_ast0.ml         |    8 +++++
+>  parsing_cocci/unparse_ast0.ml         |    1
+>  parsing_cocci/visitor_ast.ml          |    7 +++--
+>  parsing_cocci/visitor_ast0.ml         |    5 ++-
+>  python/pycocci_aux.ml                 |    2 +
+>  tests/metaattr.c                      |    5 +++
+>  tests/metaattr.cocci                  |    9 ++++++
+>  tests/metaattr.res                    |    5 +++
+>  tests/remove_metaattr.c               |    5 +++
+>  tests/remove_metaattr.cocci           |    9 ++++++
+>  tests/remove_metaattr.res             |    5 +++
+>  tools/spgen/source/meta_variable.ml   |    8 +++++
+>  54 files changed, 357 insertions(+), 65 deletions(-)
+>
+>
+>
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
