@@ -4,62 +4,62 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99606C433DF
-	for <cocci@archiver.kernel.org>; Mon,  3 Aug 2020 11:34:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2FD9C433E0
+	for <cocci@archiver.kernel.org>; Mon,  3 Aug 2020 11:45:29 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3D0B420738
-	for <cocci@archiver.kernel.org>; Mon,  3 Aug 2020 11:34:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3D0B420738
+	by mail.kernel.org (Postfix) with ESMTPS id 548042065C
+	for <cocci@archiver.kernel.org>; Mon,  3 Aug 2020 11:45:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 548042065C
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 073BXow6014497;
-	Mon, 3 Aug 2020 13:33:50 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 073BjITh018825;
+	Mon, 3 Aug 2020 13:45:18 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id E908D76BF;
-	Mon,  3 Aug 2020 13:33:49 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 0E1D376BF;
+	Mon,  3 Aug 2020 13:45:18 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id C051641F5
- for <cocci@systeme.lip6.fr>; Mon,  3 Aug 2020 13:33:47 +0200 (CEST)
-Received: from mail-lf1-f67.google.com (mail-lf1-f67.google.com
- [209.85.167.67])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 073BXlTv024683
+ by systeme.lip6.fr (Postfix) with ESMTPS id 4380241F5
+ for <cocci@systeme.lip6.fr>; Mon,  3 Aug 2020 13:45:17 +0200 (CEST)
+Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com
+ [209.85.208.171])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 073BjGQ4001450
  (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Mon, 3 Aug 2020 13:33:47 +0200 (CEST)
-Received: by mail-lf1-f67.google.com with SMTP id c15so2966097lfi.3
- for <cocci@systeme.lip6.fr>; Mon, 03 Aug 2020 04:33:47 -0700 (PDT)
+ for <cocci@systeme.lip6.fr>; Mon, 3 Aug 2020 13:45:16 +0200 (CEST)
+Received: by mail-lj1-f171.google.com with SMTP id t6so26339018ljk.9
+ for <cocci@systeme.lip6.fr>; Mon, 03 Aug 2020 04:45:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:reply-to:to:cc:references:from:autocrypt:subject
+ h=x-gm-message-state:reply-to:subject:to:cc:references:from:autocrypt
  :message-id:date:user-agent:mime-version:in-reply-to
  :content-language:content-transfer-encoding;
- bh=yLvQHbDDcDSdTAlGRE1r+Sz6maYqq+oxTf1OHc7d3mU=;
- b=bwl61o5b2w29Mu0WEgQ7PJ0+DCs/Diq1HGjJYjTAzBy3wA/rDxfyt4H5yJEBXE0GgX
- nykaL/qn/zSXdPxeT55yF+++mcuvwdC52qfI7BIKvcPsHBfMSkYE1FAsl2u2fajfwVuT
- Jz2mpPPNTlMekeSJA0ZgUyGvAEnujHUzVfQUEvT6LTgKr2D3l+/xY1GTmMlOuqIc3jHe
- legtw+J8m5ryICe0kzxt5w5+4Sr5Qhg6UMDNUUyr6QSGDJ4y/EAEvtY1ZKJQZYRKrX6v
- f/xgOsdzYivJJcMnMv8dN67+gQv092s3rEU82h9TDqeJDZ4r0ymKb2XZxwxNQ9gfZZ+2
- 9s+w==
-X-Gm-Message-State: AOAM531fDBBjYB5Z7dJQQEdT3ATmIWo+3Yu2KypNs4yWDB5+wsyny2la
- NC0NWecrH9IaQnFOsmaOeQ3IwxGM
-X-Google-Smtp-Source: ABdhPJyLfJ3AmPtgty+R2eOMJvBx7CveHovmC6L+ce6NbJ5iJFqLhoB26bxRrsswY9ZZ+2EKG168Gw==
-X-Received: by 2002:a19:4f11:: with SMTP id d17mr8314517lfb.48.1596454426749; 
- Mon, 03 Aug 2020 04:33:46 -0700 (PDT)
+ bh=Wgz/Io1GfjZYtYGC7Rm9doT12fGmxzEVVO30k3CbLqw=;
+ b=Ch4JEOcvLrkCmtGanpq52EeMYb2KEgUAS0eMHN/WYkk7s6hcWeuklMucZpGioTcFKD
+ c3Y4Jw2fRUWdSA/DBBq7o0yHZYer96pXG+FAjOvKnfnq2LtdSQ2LfydjprUH1NdWJe/3
+ kwvzp8ZJWfo8QocqvcZzNkqgA4DmpCgw8Mr8MAf86r8Y+A+HoyxL8Zim95xjqg3WJCq0
+ 1xirIJ2k10bMMySCNsWeqOiWcrFdpDozs3RTsaQSDKv7fweD2dImvJRWBfa5JUZMIY1y
+ UdAwoHZO0AaGhknbfba4mbomivBpjy53706hPmY04O0kCWCPGmBIDFKavDKevJOKjX/T
+ zQsw==
+X-Gm-Message-State: AOAM530y5UW9/zvhCn1laEyLNJsXhyFUCxzUStbKHj6oKpvqwwyEazzG
+ EyDLOmm+3RWR/fxWwurSZFPLRZE3
+X-Google-Smtp-Source: ABdhPJwMGcRUIDwVwhfs8ZZNwUQF+Mn7JLKyv13M3hWhgrw//DNPni35Az6u5vgtHmAASeNItaC/0w==
+X-Received: by 2002:a2e:9886:: with SMTP id b6mr7112805ljj.258.1596455116340; 
+ Mon, 03 Aug 2020 04:45:16 -0700 (PDT)
 Received: from [10.68.32.147] (broadband-37-110-38-130.ip.moscow.rt.ru.
  [37.110.38.130])
- by smtp.gmail.com with ESMTPSA id k25sm4131981ljk.87.2020.08.03.04.33.45
+ by smtp.gmail.com with ESMTPSA id s8sm3660814ljd.105.2020.08.03.04.45.15
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Mon, 03 Aug 2020 04:33:46 -0700 (PDT)
+ Mon, 03 Aug 2020 04:45:15 -0700 (PDT)
 To: Julia Lawall <julia.lawall@inria.fr>
 References: <20200605204237.85055-1-efremov@linux.com>
  <20200731210026.7186-1-efremov@linux.com>
- <alpine.DEB.2.22.394.2008022142550.2531@hadrien>
 From: Denis Efremov <efremov@linux.com>
 Autocrypt: addr=efremov@linux.com; keydata=
  mQINBFsJUXwBEADDnzbOGE/X5ZdHqpK/kNmR7AY39b/rR+2Wm/VbQHV+jpGk8ZL07iOWnVe1
@@ -104,16 +104,16 @@ Autocrypt: addr=efremov@linux.com; keydata=
  EahrGMfRngbdp/mKs9aBR56ECMfFFUPyI3VJsNbgpcIJjV/0N+JdJKQpJ/4uQ2zNm0wH/RU8
  CRJvEwtKemX6fp/zLI36Gvz8zJIjSBIEqCb7vdgvWarksrhmi6/Jay5zRZ03+k6YwiqgX8t7
  ANwvYa1h1dQ36OiTqm1cIxRCGl4wrypOVGx3OjCar7sBLD+NkwO4RaqFvdv0xuuy4x01VnOF
-Message-ID: <a8d8eade-1d98-b8d9-7c66-bd05b22af751@linux.com>
-Date: Mon, 3 Aug 2020 14:33:45 +0300
+Message-ID: <8171ffcd-9f60-26a8-3c6a-4356297a12d1@linux.com>
+Date: Mon, 3 Aug 2020 14:45:14 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.22.394.2008022142550.2531@hadrien>
+In-Reply-To: <20200731210026.7186-1-efremov@linux.com>
 Content-Language: en-US
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 03 Aug 2020 13:33:50 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 03 Aug 2020 13:45:18 +0200 (CEST)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Mon, 03 Aug 2020 13:33:47 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Mon, 03 Aug 2020 13:45:17 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: cocci@systeme.lip6.fr, linux-kernel@vger.kernel.org
@@ -135,65 +135,17 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
+Is there a difference from cocci point of view between:
 
+... when != !is_vmalloc_addr(E)
 
-On 8/2/20 11:24 PM, Julia Lawall wrote:
->> +@initialize:python@
->> +@@
->> +# low-level memory api
->> +filter = frozenset(['__vmalloc_area_node'])
->> +
->> +def relevant(p):
->> +    return not (filter & {el.current_element for el in p})
-> 
-> Is this used?
+and 
 
-I'll remove it in v8. Or do you want me to add iterate_dir_item() in the list?
+... when != is_vmalloc_addr(E)
 
-> 
-> Otherwise, I think it would be good to not warn about a use of kvfree
-> if that use is reachable from a kvmalloc.  There seems to be such a false
-> positive in fs/btrfs/send.c, on line 1118.
+Should the latter one be used in most cases?
 
-I don't know how to handle this case without position filter.
-It's too complex. In iterate_dir_item() there is:
-buf = kmalloc(buf_len, GFP_KERNEL);
-while(...) {
-	if (...) {
-		if (is_vmalloc_addr(buf)) {
-			vfree(buf);
-			...
-		} else {
-			char *tmp = krealloc(buf, ...);
-
-			if (!tmp)
-				kfree(buf);
-			...
-		}
-		if (!buf) {
-			buf = kvmalloc(buf_len, GFP_KERNEL);
-			...
-		}
-	}
-}
-kvfree(buf);
-
-Adding "when != kvfree(E)" is not enough:
-* E = \(kvmalloc\|kvzalloc\|kvcalloc\|kvzalloc_node\|kvmalloc_node\|
-*       kvmalloc_array\)(...)@k
-	... when != is_vmalloc_addr(E)
-+	when != kvfree(E)
-	when any
-* \(kfree\|kzfree\|vfree\|vfree_atomic\)(E)@p
-
-> 
-> It also seems that when there are both a kmalloc and a vmalloc, there is
-> no warning if kfree or vfree is used.  Is that intentional?
-> 
-
-No, I will try to address it in v8.
-
-Regards,
+Thanks,
 Denis
 _______________________________________________
 Cocci mailing list
