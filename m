@@ -7,63 +7,63 @@ X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB55DC433DF
-	for <cocci@archiver.kernel.org>; Fri,  7 Aug 2020 14:06:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20302C433DF
+	for <cocci@archiver.kernel.org>; Fri,  7 Aug 2020 14:08:13 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8581422CA1
-	for <cocci@archiver.kernel.org>; Fri,  7 Aug 2020 14:06:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id B2DB82224D
+	for <cocci@archiver.kernel.org>; Fri,  7 Aug 2020 14:08:12 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="gzEnvgjP"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8581422CA1
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="EPabNIip"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B2DB82224D
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linuxfoundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 077E67Ga012228;
-	Fri, 7 Aug 2020 16:06:07 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 077E7pKq016480;
+	Fri, 7 Aug 2020 16:07:51 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 0FAE541F5;
-	Fri,  7 Aug 2020 16:06:07 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 9651841F5;
+	Fri,  7 Aug 2020 16:07:51 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 3C8A64084
- for <cocci@systeme.lip6.fr>; Fri,  7 Aug 2020 16:06:05 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id DC0044084
+ for <cocci@systeme.lip6.fr>; Fri,  7 Aug 2020 16:07:49 +0200 (CEST)
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 077E61Re002704
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 077E7liE011714
  (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO)
- for <cocci@systeme.lip6.fr>; Fri, 7 Aug 2020 16:06:02 +0200 (CEST)
+ for <cocci@systeme.lip6.fr>; Fri, 7 Aug 2020 16:07:48 +0200 (CEST)
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl
  [83.86.89.107])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id A7DE72224D;
- Fri,  7 Aug 2020 14:06:00 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 0689522CF6;
+ Fri,  7 Aug 2020 14:07:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1596809161;
- bh=bgJEpYRF1nnoXvVsQB4a5VWt04oYujltFmSVvWVbtbk=;
+ s=default; t=1596809267;
+ bh=EyhdrNR9ecLwjRnvHIIjWGUTnkfvO9ZqKxIScy65X98=;
  h=Subject:To:Cc:From:Date:From;
- b=gzEnvgjPJOyyT24QWk6o71Pn1zkHTvj8mHCFT8l/teqIgBV0LZT1nrSmp029zNr+X
- j1uQSFqEupclWnJBWTs99Z1y6BhV1At0HTbSYkxDhs1e+rt3hzM+GyN7Ld6tAThGPC
- SPcJGNL0EaCJs85Yhh83VXEVeWy1LI1SxrocXFPg=
+ b=EPabNIipr/KdQOU5Mg33JkcV1yTOUk2ikhrTBLtcUKtrMrkBeO+nL9NUxFGd5nH1+
+ EGiTe++fMtsALGrmcJ7dPJmvra/owSrhZIw0bZ9DpP3ettIg9kxaXUV4nxkIMZ/Jop
+ kZCYOLIjvxV5JRLBu08Hedq1fmFzZXdf4KEAzpx4=
 To: cocci@systeme.lip6.fr, gregkh@linuxfoundation.org, jeyu@kernel.org,
         julia.lawall@inria.fr, maennich@google.com, skhan@linuxfoundation.org,
         yuehaibing@huawei.com
 From: <gregkh@linuxfoundation.org>
-Date: Fri, 07 Aug 2020 16:03:53 +0200
-Message-ID: <15968090331046@kroah.com>
+Date: Fri, 07 Aug 2020 16:04:11 +0200
+Message-ID: <1596809051140121@kroah.com>
 MIME-Version: 1.0
 X-stable: commit
 X-Patchwork-Hint: ignore 
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 07 Aug 2020 16:06:07 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 07 Aug 2020 16:07:51 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Fri, 07 Aug 2020 16:06:02 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Fri, 07 Aug 2020 16:07:49 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: stable-commits@vger.kernel.org
 Subject: [Cocci] Patch "scripts: add dummy report mode to
-	add_namespace.cocci" has been added to the 5.4-stable tree
+	add_namespace.cocci" has been added to the 5.7-stable tree
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -85,12 +85,12 @@ This is a note to let you know that I've just added the patch titled
 
     scripts: add dummy report mode to add_namespace.cocci
 
-to the 5.4-stable tree which can be found at:
+to the 5.7-stable tree which can be found at:
     http://www.kernel.org/git/?p=linux/kernel/git/stable/stable-queue.git;a=summary
 
 The filename of the patch is:
      scripts-add-dummy-report-mode-to-add_namespace.cocci.patch
-and it can be found in the queue-5.4 subdirectory.
+and it can be found in the queue-5.7 subdirectory.
 
 If you, or anyone else, feels it should not be added to the stable tree,
 please let <stable@vger.kernel.org> know about it.
@@ -167,7 +167,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 +@@
 --- a/scripts/nsdeps
 +++ b/scripts/nsdeps
-@@ -23,7 +23,7 @@ fi
+@@ -29,7 +29,7 @@ fi
  
  generate_deps_for_ns() {
  	$SPATCH --very-quiet --in-place --sp-file \
@@ -180,7 +180,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 Patches currently in stable-queue which might be from maennich@google.com are
 
-queue-5.4/scripts-add-dummy-report-mode-to-add_namespace.cocci.patch
+queue-5.7/scripts-add-dummy-report-mode-to-add_namespace.cocci.patch
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
