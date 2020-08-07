@@ -2,68 +2,146 @@ Return-Path: <SRS0=YRku=BR=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+X-Spam-Status: No, score=-17.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20302C433DF
-	for <cocci@archiver.kernel.org>; Fri,  7 Aug 2020 14:08:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB27C433DF
+	for <cocci@archiver.kernel.org>; Fri,  7 Aug 2020 16:14:31 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B2DB82224D
-	for <cocci@archiver.kernel.org>; Fri,  7 Aug 2020 14:08:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id A3AC52065E
+	for <cocci@archiver.kernel.org>; Fri,  7 Aug 2020 16:14:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="EPabNIip"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B2DB82224D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linuxfoundation.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=embeddedor.com header.i=@embeddedor.com header.b="cMXt9s/y"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A3AC52065E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=embeddedor.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 077E7pKq016480;
-	Fri, 7 Aug 2020 16:07:51 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 077GEFfo029246;
+	Fri, 7 Aug 2020 18:14:15 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 9651841F5;
-	Fri,  7 Aug 2020 16:07:51 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 8EE7441F5;
+	Fri,  7 Aug 2020 18:14:15 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id DC0044084
- for <cocci@systeme.lip6.fr>; Fri,  7 Aug 2020 16:07:49 +0200 (CEST)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 077E7liE011714
+ by systeme.lip6.fr (Postfix) with ESMTPS id C00604084
+ for <cocci@systeme.lip6.fr>; Fri,  7 Aug 2020 18:14:13 +0200 (CEST)
+Received: from gateway31.websitewelcome.com (gateway31.websitewelcome.com
+ [192.185.144.97])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 077GEAB0016487
  (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO)
- for <cocci@systeme.lip6.fr>; Fri, 7 Aug 2020 16:07:48 +0200 (CEST)
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl
- [83.86.89.107])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 0689522CF6;
- Fri,  7 Aug 2020 14:07:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1596809267;
- bh=EyhdrNR9ecLwjRnvHIIjWGUTnkfvO9ZqKxIScy65X98=;
- h=Subject:To:Cc:From:Date:From;
- b=EPabNIipr/KdQOU5Mg33JkcV1yTOUk2ikhrTBLtcUKtrMrkBeO+nL9NUxFGd5nH1+
- EGiTe++fMtsALGrmcJ7dPJmvra/owSrhZIw0bZ9DpP3ettIg9kxaXUV4nxkIMZ/Jop
- kZCYOLIjvxV5JRLBu08Hedq1fmFzZXdf4KEAzpx4=
-To: cocci@systeme.lip6.fr, gregkh@linuxfoundation.org, jeyu@kernel.org,
-        julia.lawall@inria.fr, maennich@google.com, skhan@linuxfoundation.org,
-        yuehaibing@huawei.com
-From: <gregkh@linuxfoundation.org>
-Date: Fri, 07 Aug 2020 16:04:11 +0200
-Message-ID: <1596809051140121@kroah.com>
+ for <cocci@systeme.lip6.fr>; Fri, 7 Aug 2020 18:14:12 +0200 (CEST)
+Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
+ by gateway31.websitewelcome.com (Postfix) with ESMTP id 6569862F1B
+ for <cocci@systeme.lip6.fr>; Fri,  7 Aug 2020 11:12:30 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22]) by cmsmtp with SMTP
+ id 44yskQPcELFNk44ysk6GP2; Fri, 07 Aug 2020 11:12:30 -0500
+X-Authority-Reason: mc=1
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+ In-Reply-To:MIME-Version:Date:Message-ID:Subject:From:References:Cc:To:Sender
+ :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+ Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+ List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=6up/JMIolI+wenx9BcFdojlYDQlQMQG5E+IbFWuYMgg=; b=cMXt9s/yW+SxXLjUBDSOT5iZfU
+ mZYughJ4iw5AErfhQVBMLUrVVmN5ELTzk7iu3q4BaNLYOLmYC0bnAzlBc6jyJzwc8/TOJh5/as38M
+ OtbgrKZtDryUf7XZH3oPz8ZK+cMTvpBjw2Up5LCNnSW2uMPBYkK8JIb9df3WpfmEqWvpvTfdykUMJ
+ oLfYRZ/uNOf/yFb9rUj/0A246OY0veDmh0MC1HcRmNQoWvB4IYy0+1P7gNOIdKRbBE3MIIvuB3/6B
+ M5gbx8P4ePo6GHT7b92ThslzlDMIBJ2aqJYyXUNZUzSyTwQzlFEMgbIAISOVBtHmhcMzFxE0/Ymft
+ rCg8YcDA==;
+Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:35412
+ helo=[192.168.15.2])
+ by gator4166.hostgator.com with esmtpsa (TLS1.2) tls
+ TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (Exim 4.93)
+ (envelope-from <gustavo@embeddedor.com>)
+ id 1k44yr-003As7-UI; Fri, 07 Aug 2020 11:12:29 -0500
+To: Denis Efremov <efremov@linux.com>, Julia Lawall <julia.lawall@inria.fr>
+References: <20200806220342.25426-1-efremov@linux.com>
+From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Autocrypt: addr=gustavo@embeddedor.com; keydata=
+ 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
+ AP7RWS474w==
+Message-ID: <ba11ddd9-8bd0-456d-26d3-b8157eedcdb5@embeddedor.com>
+Date: Fri, 7 Aug 2020 11:18:50 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-stable: commit
-X-Patchwork-Hint: ignore 
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 07 Aug 2020 16:07:51 +0200 (CEST)
+In-Reply-To: <20200806220342.25426-1-efremov@linux.com>
+Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse,
+ please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - systeme.lip6.fr
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.162.31.110
+X-Source-L: No
+X-Exim-ID: 1k44yr-003As7-UI
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.2])
+ [187.162.31.110]:35412
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 3
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 07 Aug 2020 18:14:16 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Fri, 07 Aug 2020 16:07:49 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Fri, 07 Aug 2020 18:14:12 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: stable-commits@vger.kernel.org
-Subject: [Cocci] Patch "scripts: add dummy report mode to
-	add_namespace.cocci" has been added to the 5.7-stable tree
+Cc: "Gustavo A . R . Silva" <gustavoars@kernel.org>, cocci@systeme.lip6.fr,
+        Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org
+Subject: Re: [Cocci] [RFC PATCH] coccinelle: misc: add flexible_array.cocci
+	script
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -80,107 +158,239 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
+Hi Denis,
 
-This is a note to let you know that I've just added the patch titled
+Thanks a lot for working on this. Please, see some comments below...
 
-    scripts: add dummy report mode to add_namespace.cocci
+On 8/6/20 17:03, Denis Efremov wrote:
+> Commit 68e4cd17e218 ("docs: deprecated.rst: Add zero-length and one-element
+> arrays") marks one-element and zero-length arrays as deprecated. Kernel
+> code should always use "flexible array members" instead.
+> 
+> The script warns about one-element and zero-length arrays in structs.
+> 
+> Cc: Kees Cook <keescook@chromium.org>
+> Cc: Gustavo A. R. Silva <gustavoars@kernel.org>
+> Signed-off-by: Denis Efremov <efremov@linux.com>
+> ---
+> 
+> Currently, it's just a draft. I've placed a number of questions in the
+> script and marked them as TODO. Kees, Gustavo, if you could help me with
+> my questions I think that this rule will be enough to close:
+> https://github.com/KSPP/linux/issues/76
+> 
+> BTW, I it's possible to not warn about files in uapi folder if
+> this is relevant. Do I need to do it in the script?
+> 
 
-to the 5.7-stable tree which can be found at:
-    http://www.kernel.org/git/?p=linux/kernel/git/stable/stable-queue.git;a=summary
+I think the script should warn about new additions of zero-length/one-element
+arrays in UAPI.
 
-The filename of the patch is:
-     scripts-add-dummy-report-mode-to-add_namespace.cocci.patch
-and it can be found in the queue-5.7 subdirectory.
+>  scripts/coccinelle/misc/flexible_array.cocci | 158 +++++++++++++++++++
+>  1 file changed, 158 insertions(+)
+>  create mode 100644 scripts/coccinelle/misc/flexible_array.cocci
+> 
+> diff --git a/scripts/coccinelle/misc/flexible_array.cocci b/scripts/coccinelle/misc/flexible_array.cocci
+> new file mode 100644
+> index 000000000000..1e7165c79e60
+> --- /dev/null
+> +++ b/scripts/coccinelle/misc/flexible_array.cocci
+> @@ -0,0 +1,158 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +///
+> +/// Zero-length and one-element arrays are deprecated, see
+> +/// Documentation/process/deprecated.rst
+> +/// Flexible-array members should be used instead.
+> +///
+> +//
+> +// Confidence: High
+> +// Copyright: (C) 2020 Denis Efremov ISPRAS.
+> +// Comments:
+> +// Options: --no-includes --include-headers
+> +
+> +virtual context
+> +virtual report
+> +virtual org
+> +virtual patch
+> +
+> +@r depends on !patch@
+> +identifier name, size, array;
+> +// TODO: We can additionally restrict size and array to:
+> +// identifier size =~ ".*(num|len|count|size|ncpus).*";
+> +// identifier array !~ ".*(pad|reserved).*";
+> +// Do we need it?
+> +type TS, TA;
+> +position p;
+> +@@
+> +
+> +(
+> +  // This will also match: typedef struct name { ...
+> +  // However nested structs are not matched, i.e.:
+> +  //   struct name1 { struct name2 { int s; int a[0]; } st; int i; }
+> +  // will not be matched. Do we need to handle it?
 
-If you, or anyone else, feels it should not be added to the stable tree,
-please let <stable@vger.kernel.org> know about it.
+It's fine. I think this would be a different script. One that
+exclusively look for all three: zero-length, one-element arrays
+and flexible array members in nested structures because
+"A structure containing a flexible array member, or a union
+containing such a structure (possibly recursively), may not be
+a member of a structure or an element of an array. (However
+these uses are permitted by GCC as extensions.)"[1]
 
+> +  struct name {
+> +    ...      // TODO: Maybe simple ... is enough? It will match structs with a
 
-From 55c7549819e438f40a3ef1d8ac5c38b73390bcb7 Mon Sep 17 00:00:00 2001
-From: Matthias Maennich <maennich@google.com>
-Date: Thu, 4 Jun 2020 18:41:45 +0200
-Subject: scripts: add dummy report mode to add_namespace.cocci
+Yep; simple is always better at first. :)
 
-From: Matthias Maennich <maennich@google.com>
+> +    TS size; // single field, e.g.
+> +    ...      // https://elixir.bootlin.com/linux/v5.8/source/arch/arm/include/uapi/asm/setup.h#L127
+> +(
+> +*    TA array@p[0];
+> +|
+> +     // TODO: It seems that there are exception cases for array[1], e.g.
+> +     //  https://elixir.bootlin.com/linux/v5.8/source/arch/powerpc/boot/rs6000.h#L152
+> +     //  https://elixir.bootlin.com/linux/v5.8/source/include/uapi/linux/cdrom.h#L292
+> +     //  https://elixir.bootlin.com/linux/v5.8/source/drivers/net/wireless/ath/ath6kl/usb.c#L108
+> +     // We could either drop array[1] checking from this rule or
+> +     // restrict array name with regexp and add, for example, an "allowlist"
+> +     // with struct names where we allow this code pattern.
+> +     // TODO: How to handle: u8 data[1][MAXLEN_PSTR6]; ?
+> +*    TA array@p[1];
+> +)
+> +  };
+> +|
+> +  struct {
+> +    ...
+> +    TS size;
+> +    ...
+> +(
+> +*    TA array@p[0];
+> +|
+> +*    TA array@p[1];
+> +)
+> +  };
+> +|
+> +  // TODO: do we need to handle unions?
 
-commit 55c7549819e438f40a3ef1d8ac5c38b73390bcb7 upstream.
+Yep; we should warn about this in unions, too.
 
-When running `make coccicheck` in report mode using the
-add_namespace.cocci file, it will fail for files that contain
-MODULE_LICENSE. Those match the replacement precondition, but spatch
-errors out as virtual.ns is not set.
+However, I think unions cannot have members with
+incomplete type, so we should not suggest the use
+of flexible-array members in unions, because
+flexible arrays have incomplete type.
 
-In order to fix that, add the virtual rule nsdeps and only do search and
-replace if that rule has been explicitly requested.
+> +  union name {
+> +    ...
+> +    TS size;
+> +    ...
+> +(
+> +*    TA array@p[0];
+> +|
+> +*    TA array@p[1];
+> +)
+> +  };
+> +|
+> +  union {
+> +    ...
+> +    TS size;
+> +    ...
+> +(
+> +*    TA array@p[0];
+> +|
+> +*    TA array@p[1];
+> +)
+> +  };
+> +)
+> +
+> +// FIXME: Patch mode doesn't work as expected.
+> +// Coccinelle handles formatting incorrectly.
+> +// Patch mode in this rule should be disabled until
+> +// proper formatting will be supported.
+> +@depends on patch exists@
+> +identifier name, size, array;
+> +type TS, TA;
+> +@@
+> +
+> +(
+> +  struct name {
+> +    ...
+> +    TS size;
+> +    ...
+> +(
+> +-    TA array[0];
+> +|
+> +-    TA array[1];
+> +)
+> ++    TA array[];
+> +  };
+> +|
+> +  struct {
+> +    ...
+> +    TS size;
+> +    ...
+> +(
+> +-    TA array[0];
+> +|
+> +-    TA array[1];
+> +)
+> ++    TA array[];
+> +  };
+> +|
+> +  union name {
+> +    ...
+> +    TS size;
+> +    ...
+> +(
+> +-    TA array[0];
+> +|
+> +-    TA array[1];
+> +)
+> ++    TA array[];
+> +  };
+> +|
+> +  union {
+> +    ...
+> +    TS size;
+> +    ...
+> +(
+> +-    TA array[0];
+> +|
+> +-    TA array[1];
+> +)
+> ++    TA array[];
 
-In order to make spatch happy in report mode, we also need a dummy rule,
-as otherwise it errors out with "No rules apply". Using a script:python
-rule appears unrelated and odd, but this is the shortest I could come up
-with.
+This is not allowed, neither is GCC[2] nor in Clang[3].
 
-Adjust scripts/nsdeps accordingly to set the nsdeps rule when run trough
-`make nsdeps`.
+> +  };
+> +)
+> +
+> +@script: python depends on report@
+> +p << r.p;
+> +@@
+> +
+> +msg = "WARNING: use flexible-array member instead"
+> +coccilib.report.print_report(p[0], msg)
+> +
+> +@script: python depends on org@
+> +p << r.p;
+> +@@
+> +
+> +msg = "WARNING: use flexible-array member instead"
+> +coccilib.org.print_todo(p, msg)
+> 
 
-Suggested-by: Julia Lawall <julia.lawall@inria.fr>
-Fixes: c7c4e29fb5a4 ("scripts: add_namespace: Fix coccicheck failed")
-Cc: YueHaibing <yuehaibing@huawei.com>
-Cc: jeyu@kernel.org
-Cc: cocci@systeme.lip6.fr
-Cc: stable@vger.kernel.org
-Signed-off-by: Matthias Maennich <maennich@google.com>
-Reported-by: Shuah Khan <skhan@linuxfoundation.org>
-Acked-by: Julia Lawall <julia.lawall@inria.fr>
-Link: https://lore.kernel.org/r/20200604164145.173925-1-maennich@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+I wonder if it might be worth it to also point people to
+the documentation in deprecated.rst (commit 68e4cd17e218
+("docs: deprecated.rst: Add zero-length and one-element arrays")),
+once helpdesk generates the official documentation for 5.9-rc1.
 
----
- scripts/coccinelle/misc/add_namespace.cocci |    8 +++++++-
- scripts/nsdeps                              |    2 +-
- 2 files changed, 8 insertions(+), 2 deletions(-)
+Thanks
+--
+Gustavo
 
---- a/scripts/coccinelle/misc/add_namespace.cocci
-+++ b/scripts/coccinelle/misc/add_namespace.cocci
-@@ -6,6 +6,7 @@
- /// add a missing namespace tag to a module source file.
- ///
- 
-+virtual nsdeps
- virtual report
- 
- @has_ns_import@
-@@ -16,10 +17,15 @@ MODULE_IMPORT_NS(ns);
- 
- // Add missing imports, but only adjacent to a MODULE_LICENSE statement.
- // That ensures we are adding it only to the main module source file.
--@do_import depends on !has_ns_import@
-+@do_import depends on !has_ns_import && nsdeps@
- declarer name MODULE_LICENSE;
- expression license;
- identifier virtual.ns;
- @@
- MODULE_LICENSE(license);
- + MODULE_IMPORT_NS(ns);
-+
-+// Dummy rule for report mode that would otherwise be empty and make spatch
-+// fail ("No rules apply.")
-+@script:python depends on report@
-+@@
---- a/scripts/nsdeps
-+++ b/scripts/nsdeps
-@@ -29,7 +29,7 @@ fi
- 
- generate_deps_for_ns() {
- 	$SPATCH --very-quiet --in-place --sp-file \
--		$srctree/scripts/coccinelle/misc/add_namespace.cocci -D ns=$1 $2
-+		$srctree/scripts/coccinelle/misc/add_namespace.cocci -D nsdeps -D ns=$1 $2
- }
- 
- generate_deps() {
-
-
-Patches currently in stable-queue which might be from maennich@google.com are
-
-queue-5.7/scripts-add-dummy-report-mode-to-add_namespace.cocci.patch
+[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+[2] https://godbolt.org/z/Kajd7e
+[3] https://godbolt.org/z/dvKMYb
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
