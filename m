@@ -1,147 +1,74 @@
-Return-Path: <SRS0=YRku=BR=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=2tmj=BS=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	UNPARSEABLE_RELAY autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB27C433DF
-	for <cocci@archiver.kernel.org>; Fri,  7 Aug 2020 16:14:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05EAEC433DF
+	for <cocci@archiver.kernel.org>; Sat,  8 Aug 2020 11:35:50 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A3AC52065E
-	for <cocci@archiver.kernel.org>; Fri,  7 Aug 2020 16:14:30 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=embeddedor.com header.i=@embeddedor.com header.b="cMXt9s/y"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A3AC52065E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=embeddedor.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6F12C2065E
+	for <cocci@archiver.kernel.org>; Sat,  8 Aug 2020 11:35:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6F12C2065E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 077GEFfo029246;
-	Fri, 7 Aug 2020 18:14:15 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 078BZSKl016707;
+	Sat, 8 Aug 2020 13:35:28 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 8EE7441F5;
-	Fri,  7 Aug 2020 18:14:15 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 839BB76BF;
+	Sat,  8 Aug 2020 13:35:28 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id C00604084
- for <cocci@systeme.lip6.fr>; Fri,  7 Aug 2020 18:14:13 +0200 (CEST)
-Received: from gateway31.websitewelcome.com (gateway31.websitewelcome.com
- [192.185.144.97])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 077GEAB0016487
- (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO)
- for <cocci@systeme.lip6.fr>; Fri, 7 Aug 2020 18:14:12 +0200 (CEST)
-Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
- by gateway31.websitewelcome.com (Postfix) with ESMTP id 6569862F1B
- for <cocci@systeme.lip6.fr>; Fri,  7 Aug 2020 11:12:30 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22]) by cmsmtp with SMTP
- id 44yskQPcELFNk44ysk6GP2; Fri, 07 Aug 2020 11:12:30 -0500
-X-Authority-Reason: mc=1
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
- In-Reply-To:MIME-Version:Date:Message-ID:Subject:From:References:Cc:To:Sender
- :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
- Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
- List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=6up/JMIolI+wenx9BcFdojlYDQlQMQG5E+IbFWuYMgg=; b=cMXt9s/yW+SxXLjUBDSOT5iZfU
- mZYughJ4iw5AErfhQVBMLUrVVmN5ELTzk7iu3q4BaNLYOLmYC0bnAzlBc6jyJzwc8/TOJh5/as38M
- OtbgrKZtDryUf7XZH3oPz8ZK+cMTvpBjw2Up5LCNnSW2uMPBYkK8JIb9df3WpfmEqWvpvTfdykUMJ
- oLfYRZ/uNOf/yFb9rUj/0A246OY0veDmh0MC1HcRmNQoWvB4IYy0+1P7gNOIdKRbBE3MIIvuB3/6B
- M5gbx8P4ePo6GHT7b92ThslzlDMIBJ2aqJYyXUNZUzSyTwQzlFEMgbIAISOVBtHmhcMzFxE0/Ymft
- rCg8YcDA==;
-Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:35412
- helo=[192.168.15.2])
- by gator4166.hostgator.com with esmtpsa (TLS1.2) tls
- TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (Exim 4.93)
- (envelope-from <gustavo@embeddedor.com>)
- id 1k44yr-003As7-UI; Fri, 07 Aug 2020 11:12:29 -0500
-To: Denis Efremov <efremov@linux.com>, Julia Lawall <julia.lawall@inria.fr>
-References: <20200806220342.25426-1-efremov@linux.com>
-From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Autocrypt: addr=gustavo@embeddedor.com; keydata=
- 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
- AP7RWS474w==
-Message-ID: <ba11ddd9-8bd0-456d-26d3-b8157eedcdb5@embeddedor.com>
-Date: Fri, 7 Aug 2020 11:18:50 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+ by systeme.lip6.fr (Postfix) with ESMTPS id A29A9428B
+ for <cocci@systeme.lip6.fr>; Sat,  8 Aug 2020 13:35:27 +0200 (CEST)
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk
+ [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 078BZQrA021115
+ (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
+ for <cocci@systeme.lip6.fr>; Sat, 8 Aug 2020 13:35:27 +0200 (CEST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+ (Authenticated sender: jaskaran_singh) with ESMTPSA id 94A172992E4
+Message-ID: <e9cd0456be597be5c028c4173d2212f593efb3d3.camel@collabora.com>
+From: Jaskaran Singh <jaskaran.singh@collabora.com>
+To: Markus Elfring <Markus.Elfring@web.de>,
+        Julia Lawall
+ <julia.lawall@inria.fr>
+Date: Sat, 08 Aug 2020 17:05:20 +0530
+In-Reply-To: <04cb5eb3-bed8-9e8e-255b-fbae06144016@web.de>
+References: <e4f3c4e8-03e8-dbc2-5871-0d111b3086a4@web.de>
+ <alpine.DEB.2.22.394.2008020904310.2531@hadrien>
+ <eead5e2a-da8d-83cd-eeb4-f193702b800f@web.de>
+ <alpine.DEB.2.22.394.2008021348430.2531@hadrien>
+ <82af6b44-ea09-b86f-81f7-e96e8594a31d@web.de>
+ <alpine.DEB.2.22.394.2008021513010.2531@hadrien>
+ <065fee88-5206-5d9b-c83c-4e6a20aefd85@web.de>
+ <alpine.DEB.2.22.394.2008021632210.2531@hadrien>
+ <8f357aa0-7811-a5b8-a061-814899654e88@web.de>
+ <alpine.DEB.2.22.394.2008021733340.2531@hadrien>
+ <c1822815-456f-316d-93b5-88beb55a0d69@web.de>
+ <alpine.DEB.2.22.394.2008021814220.2531@hadrien>
+ <74a5a472-4431-46e7-bd8b-95886f031c93@web.de>
+ <alpine.DEB.2.22.394.2008021859010.2531@hadrien>
+ <3474ebf5-c902-63e9-8244-08a0f3407b72@web.de>
+ <ba1f8a2dc9e079bc01fc2037f1246f25cd956ee5.camel@collabora.com>
+ <04cb5eb3-bed8-9e8e-255b-fbae06144016@web.de>
+Organization: Collabora
+User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
 MIME-Version: 1.0
-In-Reply-To: <20200806220342.25426-1-efremov@linux.com>
-Content-Language: en-US
-X-AntiAbuse: This header was added to track abuse,
- please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - systeme.lip6.fr
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.162.31.110
-X-Source-L: No
-X-Exim-ID: 1k44yr-003As7-UI
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.2])
- [187.162.31.110]:35412
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 3
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 07 Aug 2020 18:14:16 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 08 Aug 2020 13:35:29 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Fri, 07 Aug 2020 18:14:12 +0200 (CEST)
+ (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
+ Sat, 08 Aug 2020 13:35:27 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: "Gustavo A . R . Silva" <gustavoars@kernel.org>, cocci@systeme.lip6.fr,
-        Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org
-Subject: Re: [Cocci] [RFC PATCH] coccinelle: misc: add flexible_array.cocci
-	script
+X-Scanned-By: MIMEDefang 2.78
+Cc: cocci@systeme.lip6.fr
+Subject: Re: [Cocci] [00/43] cocci: Add support for meta attributes to SmPL
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -158,239 +85,17 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Hi Denis,
-
-Thanks a lot for working on this. Please, see some comments below...
-
-On 8/6/20 17:03, Denis Efremov wrote:
-> Commit 68e4cd17e218 ("docs: deprecated.rst: Add zero-length and one-element
-> arrays") marks one-element and zero-length arrays as deprecated. Kernel
-> code should always use "flexible array members" instead.
+On Sat, 2020-08-08 at 13:33 +0200, Markus Elfring wrote:
+> > Probably a pretty printing mistake. I'll fix this.
 > 
-> The script warns about one-element and zero-length arrays in structs.
-> 
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: Gustavo A. R. Silva <gustavoars@kernel.org>
-> Signed-off-by: Denis Efremov <efremov@linux.com>
-> ---
-> 
-> Currently, it's just a draft. I've placed a number of questions in the
-> script and marked them as TODO. Kees, Gustavo, if you could help me with
-> my questions I think that this rule will be enough to close:
-> https://github.com/KSPP/linux/issues/76
-> 
-> BTW, I it's possible to not warn about files in uapi folder if
-> this is relevant. Do I need to do it in the script?
+> How do you think about to clarify any related software dependencies?
 > 
 
-I think the script should warn about new additions of zero-length/one-element
-arrays in UAPI.
+What do you mean?
 
->  scripts/coccinelle/misc/flexible_array.cocci | 158 +++++++++++++++++++
->  1 file changed, 158 insertions(+)
->  create mode 100644 scripts/coccinelle/misc/flexible_array.cocci
-> 
-> diff --git a/scripts/coccinelle/misc/flexible_array.cocci b/scripts/coccinelle/misc/flexible_array.cocci
-> new file mode 100644
-> index 000000000000..1e7165c79e60
-> --- /dev/null
-> +++ b/scripts/coccinelle/misc/flexible_array.cocci
-> @@ -0,0 +1,158 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +///
-> +/// Zero-length and one-element arrays are deprecated, see
-> +/// Documentation/process/deprecated.rst
-> +/// Flexible-array members should be used instead.
-> +///
-> +//
-> +// Confidence: High
-> +// Copyright: (C) 2020 Denis Efremov ISPRAS.
-> +// Comments:
-> +// Options: --no-includes --include-headers
-> +
-> +virtual context
-> +virtual report
-> +virtual org
-> +virtual patch
-> +
-> +@r depends on !patch@
-> +identifier name, size, array;
-> +// TODO: We can additionally restrict size and array to:
-> +// identifier size =~ ".*(num|len|count|size|ncpus).*";
-> +// identifier array !~ ".*(pad|reserved).*";
-> +// Do we need it?
-> +type TS, TA;
-> +position p;
-> +@@
-> +
-> +(
-> +  // This will also match: typedef struct name { ...
-> +  // However nested structs are not matched, i.e.:
-> +  //   struct name1 { struct name2 { int s; int a[0]; } st; int i; }
-> +  // will not be matched. Do we need to handle it?
+> Regards,
+> Markus
 
-It's fine. I think this would be a different script. One that
-exclusively look for all three: zero-length, one-element arrays
-and flexible array members in nested structures because
-"A structure containing a flexible array member, or a union
-containing such a structure (possibly recursively), may not be
-a member of a structure or an element of an array. (However
-these uses are permitted by GCC as extensions.)"[1]
-
-> +  struct name {
-> +    ...      // TODO: Maybe simple ... is enough? It will match structs with a
-
-Yep; simple is always better at first. :)
-
-> +    TS size; // single field, e.g.
-> +    ...      // https://elixir.bootlin.com/linux/v5.8/source/arch/arm/include/uapi/asm/setup.h#L127
-> +(
-> +*    TA array@p[0];
-> +|
-> +     // TODO: It seems that there are exception cases for array[1], e.g.
-> +     //  https://elixir.bootlin.com/linux/v5.8/source/arch/powerpc/boot/rs6000.h#L152
-> +     //  https://elixir.bootlin.com/linux/v5.8/source/include/uapi/linux/cdrom.h#L292
-> +     //  https://elixir.bootlin.com/linux/v5.8/source/drivers/net/wireless/ath/ath6kl/usb.c#L108
-> +     // We could either drop array[1] checking from this rule or
-> +     // restrict array name with regexp and add, for example, an "allowlist"
-> +     // with struct names where we allow this code pattern.
-> +     // TODO: How to handle: u8 data[1][MAXLEN_PSTR6]; ?
-> +*    TA array@p[1];
-> +)
-> +  };
-> +|
-> +  struct {
-> +    ...
-> +    TS size;
-> +    ...
-> +(
-> +*    TA array@p[0];
-> +|
-> +*    TA array@p[1];
-> +)
-> +  };
-> +|
-> +  // TODO: do we need to handle unions?
-
-Yep; we should warn about this in unions, too.
-
-However, I think unions cannot have members with
-incomplete type, so we should not suggest the use
-of flexible-array members in unions, because
-flexible arrays have incomplete type.
-
-> +  union name {
-> +    ...
-> +    TS size;
-> +    ...
-> +(
-> +*    TA array@p[0];
-> +|
-> +*    TA array@p[1];
-> +)
-> +  };
-> +|
-> +  union {
-> +    ...
-> +    TS size;
-> +    ...
-> +(
-> +*    TA array@p[0];
-> +|
-> +*    TA array@p[1];
-> +)
-> +  };
-> +)
-> +
-> +// FIXME: Patch mode doesn't work as expected.
-> +// Coccinelle handles formatting incorrectly.
-> +// Patch mode in this rule should be disabled until
-> +// proper formatting will be supported.
-> +@depends on patch exists@
-> +identifier name, size, array;
-> +type TS, TA;
-> +@@
-> +
-> +(
-> +  struct name {
-> +    ...
-> +    TS size;
-> +    ...
-> +(
-> +-    TA array[0];
-> +|
-> +-    TA array[1];
-> +)
-> ++    TA array[];
-> +  };
-> +|
-> +  struct {
-> +    ...
-> +    TS size;
-> +    ...
-> +(
-> +-    TA array[0];
-> +|
-> +-    TA array[1];
-> +)
-> ++    TA array[];
-> +  };
-> +|
-> +  union name {
-> +    ...
-> +    TS size;
-> +    ...
-> +(
-> +-    TA array[0];
-> +|
-> +-    TA array[1];
-> +)
-> ++    TA array[];
-> +  };
-> +|
-> +  union {
-> +    ...
-> +    TS size;
-> +    ...
-> +(
-> +-    TA array[0];
-> +|
-> +-    TA array[1];
-> +)
-> ++    TA array[];
-
-This is not allowed, neither is GCC[2] nor in Clang[3].
-
-> +  };
-> +)
-> +
-> +@script: python depends on report@
-> +p << r.p;
-> +@@
-> +
-> +msg = "WARNING: use flexible-array member instead"
-> +coccilib.report.print_report(p[0], msg)
-> +
-> +@script: python depends on org@
-> +p << r.p;
-> +@@
-> +
-> +msg = "WARNING: use flexible-array member instead"
-> +coccilib.org.print_todo(p, msg)
-> 
-
-I wonder if it might be worth it to also point people to
-the documentation in deprecated.rst (commit 68e4cd17e218
-("docs: deprecated.rst: Add zero-length and one-element arrays")),
-once helpdesk generates the official documentation for 5.9-rc1.
-
-Thanks
---
-Gustavo
-
-[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-[2] https://godbolt.org/z/Kajd7e
-[3] https://godbolt.org/z/dvKMYb
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
