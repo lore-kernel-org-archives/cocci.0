@@ -1,78 +1,87 @@
-Return-Path: <SRS0=Y7kI=BT=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=13qy=BU=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31DFBC433DF
-	for <cocci@archiver.kernel.org>; Sun,  9 Aug 2020 21:27:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73CFBC433E0
+	for <cocci@archiver.kernel.org>; Mon, 10 Aug 2020 03:36:33 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 844DF206A2
-	for <cocci@archiver.kernel.org>; Sun,  9 Aug 2020 21:27:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 844DF206A2
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux.com
+	by mail.kernel.org (Postfix) with ESMTPS id C2E55206A5
+	for <cocci@archiver.kernel.org>; Mon, 10 Aug 2020 03:36:32 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hZZA48cM"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C2E55206A5
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 079LRDlO013504;
-	Sun, 9 Aug 2020 23:27:13 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 07A3a8lw009494;
+	Mon, 10 Aug 2020 05:36:08 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 60E56428B;
-	Sun,  9 Aug 2020 23:27:13 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id B39FB7780;
+	Mon, 10 Aug 2020 05:36:08 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 3AC834084
- for <cocci@systeme.lip6.fr>; Sun,  9 Aug 2020 23:27:11 +0200 (CEST)
-Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com
- [209.85.208.169])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 079LRAPv007390
+ by systeme.lip6.fr (Postfix) with ESMTPS id D2A79428B
+ for <cocci@systeme.lip6.fr>; Mon, 10 Aug 2020 05:36:03 +0200 (CEST)
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:443])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 07A3a2Jh003394
  (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Sun, 9 Aug 2020 23:27:10 +0200 (CEST)
-Received: by mail-lj1-f169.google.com with SMTP id i10so7518532ljn.2
- for <cocci@systeme.lip6.fr>; Sun, 09 Aug 2020 14:27:10 -0700 (PDT)
+ for <cocci@systeme.lip6.fr>; Mon, 10 Aug 2020 05:36:03 +0200 (CEST)
+Received: by mail-pf1-x443.google.com with SMTP id d188so4445605pfd.2
+ for <cocci@systeme.lip6.fr>; Sun, 09 Aug 2020 20:36:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=from:to:cc:subject:date:message-id;
+ bh=JFAWZL3XKX6Rdo4RbRzrFxaKT9BePCdBiZQrkEkEJNk=;
+ b=hZZA48cMt/V39oIeRhUZvKftiP1Y3WtJ1M8Mti87hTjJtv8KE0ug9COHh/NLqA7zJH
+ Fb1Uk/7lPM+p20gG2EFRi0nljC8aCLw4p7IWAButFyFB1+fCO/rBDfab4Htb9lQhtxA5
+ 6NvoKqFvPb6rIIhtjIg/vX7RwmgHz7AwVE63AIov0RDCynq9kKArBKX1TfzpQoKhTwRB
+ amGbugjkzHEQy1JbBVAEvm9bDntOSp4DAESPBUlGPcL3cIJKo1P7Jnt1hqLPQIiT9tPE
+ Mi3X8nsqEP/G0uQzoxUogVUSsLhFilijQukOPXyEIKD7ESyzZShmSoQeAPMj3GXjpK/P
+ g05Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=V+0cPGM3bRsE7YkU0y2eQl4qVGY5GO2VaxSnu9p+qWk=;
- b=RGYfDqBqHfAXSt6v7dQSkxCmMknJ8w5kWxAvdsO4Jd+R7IwVTWUmPkQ+vtCBva9xDA
- lt7IsAqiylNhYp3ykEityleXUwGbTNSHkJApzZds4xbHi/079a/FbTNoc5RtfVWzWEQf
- Hup7wl4UtGg8dS2bkUxKl+jvvTDf1gFFUy+nDG5owitBUnVCHqbbn/ErWbApqXFe/bH2
- Sn7NDfZPK31iTnKcmtprx5JpFXaNe/2Ymv/E9EP2t56EVxQ58maVoIZWazBCC4PgZEij
- 55SPfFxpURjsdpOpnlUoMgiNFmcMdGH+5eFxnlgicHKMpfPNR/05FIxOSby4R7r2Ebk6
- 4q9Q==
-X-Gm-Message-State: AOAM532mvYNN4Ma06wbxAJlMhXAnWGpqqGfFAm+7PIVhPFsOd01H7+Wg
- XPoNavo3f7JMvkn3Mv9hCgk=
-X-Google-Smtp-Source: ABdhPJywEO7G7AjBEBjlke7hxs6urEH6pmbyTMrO5IqAjs+lVoCFfvgzB6RBDCyMWzMcpThbsBF+9w==
-X-Received: by 2002:a2e:9bc8:: with SMTP id w8mr10166240ljj.351.1597008429929; 
- Sun, 09 Aug 2020 14:27:09 -0700 (PDT)
-Received: from localhost.localdomain (broadband-37-110-38-130.ip.moscow.rt.ru.
- [37.110.38.130])
- by smtp.googlemail.com with ESMTPSA id b204sm9684239lfd.48.2020.08.09.14.27.08
+ h=x-gm-message-state:from:to:cc:subject:date:message-id;
+ bh=JFAWZL3XKX6Rdo4RbRzrFxaKT9BePCdBiZQrkEkEJNk=;
+ b=qkcnbnjVXTFbycqX9HM5Mofwq0nN5sJiIj35BTQ/oC06GW1hGgUBuusYzNMetTTo/p
+ mANUcQ+3TzkuS3TbmYTcSEcSsgAELTM15RPd4TXC+e6GOZNO+m3o6vpzYiW2Da7LzlZy
+ 6aXGz7DdUKkx9vlimn7qNlzI2224oeKaw+xNh/7xcA9VbZDlmvwrv0DgOuT1fajn2Z0p
+ XSa8tWykxMsilY/7bqzVgG6TpNdpW2B630ypsZaoHtGKMxGVYmERlffaIZMh5BizVCiJ
+ euuLs0ZcViJdSn8rT8ZXsaym+XB+e+imyaU7ib9iyen+tFGPZ7ULnTPa4JlPvHORAGSq
+ NK6g==
+X-Gm-Message-State: AOAM530IgRzAov8r0XBekYDlKwxSwLOHJ37hj+fSWD0fKOuWk7yzyNir
+ 1QNrtlnsalOkSsMhQ5LhVs0=
+X-Google-Smtp-Source: ABdhPJw0cvnU+p29bHW4t3kYfsJFAKfg5Jwve+8dj/jgXDaeWWIoWs86vkwnoX7x8comgAKVcdf/WA==
+X-Received: by 2002:a63:ce15:: with SMTP id y21mr20841600pgf.163.1597030561176; 
+ Sun, 09 Aug 2020 20:36:01 -0700 (PDT)
+Received: from localhost.localdomain ([49.207.62.124])
+ by smtp.gmail.com with ESMTPSA id n1sm14390378pfu.2.2020.08.09.20.35.58
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sun, 09 Aug 2020 14:27:09 -0700 (PDT)
-From: Denis Efremov <efremov@linux.com>
-To: Julia Lawall <julia.lawall@inria.fr>
-Date: Mon, 10 Aug 2020 00:26:55 +0300
-Message-Id: <20200809212655.58457-1-efremov@linux.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200806220342.25426-1-efremov@linux.com>
-References: <20200806220342.25426-1-efremov@linux.com>
-MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 09 Aug 2020 23:27:14 +0200 (CEST)
+ Sun, 09 Aug 2020 20:36:00 -0700 (PDT)
+From: Sumera Priyadarsini <sylphrenadin@gmail.com>
+To: Julia.Lawall@lip6.fr
+Date: Mon, 10 Aug 2020 09:05:54 +0530
+Message-Id: <20200810033554.11212-1-sylphrenadin@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 10 Aug 2020 05:36:09 +0200 (CEST)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sun, 09 Aug 2020 23:27:10 +0200 (CEST)
+ (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
+ Mon, 10 Aug 2020 05:36:03 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Kees Cook <keescook@chromium.org>,
-        "Gustavo A . R . Silva" <gustavoars@kernel.org>, cocci@systeme.lip6.fr,
-        linux-kernel@vger.kernel.org
-Subject: [Cocci] [PATCH v2] coccinelle: misc: add flexible_array.cocci script
+X-Scanned-By: MIMEDefang 2.78
+Cc: michal.lkml@markovi.net, linux-doc@vger.kernel.org, corbet@lwn.net,
+        gregkh@linuxfoundation.org, Gilles.Muller@lip6.fr,
+        nicolas.palix@imag.fr, cocci@systeme.lip6.fr
+Subject: [Cocci] [PATCH v2] documentation: coccinelle: Improve command
+	example for make C={1, 2}
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -84,141 +93,58 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Commit 68e4cd17e218 ("docs: deprecated.rst: Add zero-length and one-element
-arrays") marks one-element and zero-length arrays as deprecated. Kernel
-code should always use "flexible array members" instead.
+Modify coccinelle documentation to further clarify
+the usage of the makefile C variable flag by coccicheck.
 
-The script warns about one-element and zero-length arrays in structs.
+Signed-off-by: Sumera Priyadarsini <sylphrenadin@gmail.com>
 
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Gustavo A. R. Silva <gustavoars@kernel.org>
-Signed-off-by: Denis Efremov <efremov@linux.com>
 ---
 Changes in v2:
- - all uapi headers are now filtered-out. Unfortunately, coccinelle
-   doesn't provide structure names in Location.current_element.
-   For structures the field is always "something_else". Thus, there is
-   no easy way to create a list of existing structures in uapi headers
-   and suppress the warning only for them, but not for the newly added
-   uapi structures.
- - The pattern doesn't require 2+ fields in a structure/union anymore.
-   Now it also checks single field structures/unions.
- - The pattern simplified and now uses disjuction in array elements
-   (Thanks, Markus)
- - Unions are removed from patch mode
- - one-element arrays are removed from patch mode. Correct patch may
-   involve turning the array to a simple field instead of a flexible
-   array.
+        - Change the message tone to imperative as suggested by Markus
+Elfring
+	- Add examples for using a specific file and explain in detail
+the usage of the C variable, as suggested by Julia Lawall
+---
+ Documentation/dev-tools/coccinelle.rst | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-On the current master branch, the rule generates:
- - context: https://gist.github.com/evdenis/e2b4323491f9eff35376372df07f723c
- - patch: https://gist.github.com/evdenis/46081da9d68ecefd07edc3769cebcf32
-
- scripts/coccinelle/misc/flexible_array.cocci | 88 ++++++++++++++++++++
- 1 file changed, 88 insertions(+)
- create mode 100644 scripts/coccinelle/misc/flexible_array.cocci
-
-diff --git a/scripts/coccinelle/misc/flexible_array.cocci b/scripts/coccinelle/misc/flexible_array.cocci
-new file mode 100644
-index 000000000000..bf6dcda1783e
---- /dev/null
-+++ b/scripts/coccinelle/misc/flexible_array.cocci
-@@ -0,0 +1,88 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+///
-+/// Zero-length and one-element arrays are deprecated, see
-+/// Documentation/process/deprecated.rst
-+/// Flexible-array members should be used instead.
-+///
-+//
-+// Confidence: High
-+// Copyright: (C) 2020 Denis Efremov ISPRAS.
-+// Comments:
-+// Options: --no-includes --include-headers
+diff --git a/Documentation/dev-tools/coccinelle.rst b/Documentation/dev-tools/coccinelle.rst
+index 6c791af1c859..bbcb4f7e8b5c 100644
+--- a/Documentation/dev-tools/coccinelle.rst
++++ b/Documentation/dev-tools/coccinelle.rst
+@@ -175,13 +175,20 @@ For example, to check drivers/net/wireless/ one may write::
+     make coccicheck M=drivers/net/wireless/
+ 
+ To apply Coccinelle on a file basis, instead of a directory basis, the
+-following command may be used::
++C flag is used. The C flag is a variable used by the makefile
++to select which files to work with. This flag can be used to
++run scripts for the entire kernel, a specific directory,
++or for a single file. For example, to check drivers/bluetooth/bfusb.c,
+ 
+-    make C=1 CHECK="scripts/coccicheck"
++The value 1 is passed to the C flag to check for files that make considers
++need to be recompiled.::
+ 
+-To check only newly edited code, use the value 2 for the C flag, i.e.::
++    make C=1 CHECK="scripts/coccicheck" "drivers/bluetooth/bfusb.o"
+ 
+-    make C=2 CHECK="scripts/coccicheck"
++The value 2 is passed to the C flag to check for files regardless of
++whether they need to be recompiled or not.::
 +
-+virtual context
-+virtual report
-+virtual org
-+virtual patch
-+
-+@initialize:python@
-+@@
-+def relevant(positions):
-+    for p in positions:
-+        if "uapi" in p.file:
-+             return False
-+    return True
-+
-+@r depends on !patch@
-+identifier name, array;
-+type T;
-+position p : script:python() { relevant(p) };
-+@@
-+
-+(
-+  struct name {
-+    ...
-+*   T array@p[\(0\|1\)];
-+  };
-+|
-+  struct {
-+    ...
-+*   T array@p[\(0\|1\)];
-+  };
-+|
-+  union name {
-+    ...
-+*   T array@p[\(0\|1\)];
-+  };
-+|
-+  union {
-+    ...
-+*   T array@p[\(0\|1\)];
-+  };
-+)
-+
-+@depends on patch exists@
-+identifier name, array;
-+type T;
-+position p : script:python() { relevant(p) };
-+@@
-+
-+(
-+  struct name {
-+    ...
-+    T array@p[
-+-       0
-+    ];
-+  };
-+|
-+  struct {
-+    ...
-+    T array@p[
-+-       0
-+    ];
-+  };
-+)
-+
-+@script: python depends on report@
-+p << r.p;
-+@@
-+
-+msg = "WARNING: use flexible-array member instead"
-+coccilib.report.print_report(p[0], msg)
-+
-+@script: python depends on org@
-+p << r.p;
-+@@
-+
-+msg = "WARNING: use flexible-array member instead"
-+coccilib.org.print_todo(p, msg)
++    make C=2 CHECK="scripts/coccicheck" "drivers/bluetooth/bfusb.o"
+ 
+ In these modes, which work on a file basis, there is no information
+ about semantic patches displayed, and no commit message proposed.
 -- 
-2.26.2
+2.17.1
 
 _______________________________________________
 Cocci mailing list
