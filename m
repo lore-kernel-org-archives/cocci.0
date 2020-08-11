@@ -2,67 +2,61 @@ Return-Path: <SRS0=8ujx=BV=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,FSL_HELO_FAKE,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C336C433DF
-	for <cocci@archiver.kernel.org>; Tue, 11 Aug 2020 09:04:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C796C433DF
+	for <cocci@archiver.kernel.org>; Tue, 11 Aug 2020 19:54:08 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B8A3120781
-	for <cocci@archiver.kernel.org>; Tue, 11 Aug 2020 09:04:05 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="CTz1ud+H"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B8A3120781
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 64BE720782
+	for <cocci@archiver.kernel.org>; Tue, 11 Aug 2020 19:54:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 64BE720782
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 07B93pew028681;
-	Tue, 11 Aug 2020 11:03:51 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 07BJrkkB005592;
+	Tue, 11 Aug 2020 21:53:46 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 31A544084;
-	Tue, 11 Aug 2020 11:03:51 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id BC1914084;
+	Tue, 11 Aug 2020 21:53:46 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 161305F8F
- for <cocci@systeme.lip6.fr>; Tue, 11 Aug 2020 01:45:56 +0200 (CEST)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 07ANjrba011553
- (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO)
- for <cocci@systeme.lip6.fr>; Tue, 11 Aug 2020 01:45:54 +0200 (CEST)
-Received: from gmail.com (unknown [104.132.1.76])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id D2C52206E9;
- Mon, 10 Aug 2020 23:45:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1597103153;
- bh=0rxBVqCiXgW++BolD15LIj72xU68nplEsQ5hkeWVWVQ=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=CTz1ud+HOuPoIC7aMP4WSRgEG5Zfd6eMQZF2bQX0t4JdLzfoYrlzTA7YSMpFkIjVx
- aa7UhJId7cyPnxqhc82q8BuppGaIKbH/D/IX2/iR7XRBjeJsn3T+J49U0gMlktSTeU
- tAJiI0iEe9zkaGuNogJUtdcvFga3DWOITLsFZB6I=
-Date: Mon, 10 Aug 2020 16:45:51 -0700
-From: Eric Biggers <ebiggers@kernel.org>
-To: Julia Lawall <julia.lawall@inria.fr>
-Message-ID: <20200810234551.GA851736@gmail.com>
-References: <20200604140805.111613-1-efremov@linux.com>
- <20200717115709.543882-1-efremov@linux.com>
- <alpine.DEB.2.22.394.2007172239130.2837@hadrien>
+ by systeme.lip6.fr (Postfix) with ESMTPS id B74FD3C97
+ for <cocci@systeme.lip6.fr>; Tue, 11 Aug 2020 21:53:44 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr
+ (mail3-relais-sop.national.inria.fr [192.134.164.104])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 07BJriQ9027956
+ (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
+ for <cocci@systeme.lip6.fr>; Tue, 11 Aug 2020 21:53:44 +0200 (CEST)
+X-IronPort-AV: E=Sophos;i="5.76,301,1592863200"; d="scan'208";a="356370612"
+Received: from abo-173-121-68.mrs.modulonet.fr (HELO hadrien) ([85.68.121.173])
+ by mail3-relais-sop.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 11 Aug 2020 21:53:43 +0200
+Date: Tue, 11 Aug 2020 21:53:42 +0200 (CEST)
+From: Julia Lawall <julia.lawall@inria.fr>
+X-X-Sender: jll@hadrien
+To: Sumera Priyadarsini <sylphrenadin@gmail.com>
+In-Reply-To: <20200811002350.5553-1-sylphrenadin@gmail.com>
+Message-ID: <alpine.DEB.2.22.394.2008112153280.4263@hadrien>
+References: <20200811002350.5553-1-sylphrenadin@gmail.com>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.22.394.2007172239130.2837@hadrien>
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 11 Aug 2020 11:03:51 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 11 Aug 2020 21:53:47 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Tue, 11 Aug 2020 01:45:54 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Tue, 11 Aug 2020 21:53:44 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Mailman-Approved-At: Tue, 11 Aug 2020 11:03:49 +0200
-Cc: cocci@systeme.lip6.fr, linux-kernel@vger.kernel.org
-Subject: Re: [Cocci] [PATCH v4] coccinelle: api: add kzfree script
+Cc: michal.lkml@markovi.net, Gilles.Muller@lip6.fr, gregkh@linuxfoundation.org,
+        nicolas.palix@imag.fr, corbet@lwn.net, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
+        cocci@systeme.lip6.fr
+Subject: Re: [Cocci] [PATCH v4] documentation: coccinelle: Improve command
+ example for make C={1, 2}
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -79,21 +73,65 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-On Fri, Jul 17, 2020 at 10:39:20PM +0200, Julia Lawall wrote:
-> 
-> 
-> On Fri, 17 Jul 2020, Denis Efremov wrote:
-> 
-> > Check for memset()/memzero_explicit() followed by kfree()/vfree()/kvfree().
-> >
-> > Signed-off-by: Denis Efremov <efremov@linux.com>
-> 
-> Applied.
 
-FYI, this new script is already outdated, since kzfree() has been renamed to
-kfree_sensitive().
 
-- Eric
+On Tue, 11 Aug 2020, Sumera Priyadarsini wrote:
+
+> Modify coccinelle documentation to further clarify
+> the usage of the makefile C variable by coccicheck.
+>
+> Signed-off-by: Sumera Priyadarsini <sylphrenadin@gmail.com>
+
+Acked-by: Julia Lawall <julia.lawall@inria.fr>
+
+Thanks.
+
+
+>
+> ---
+> Changes in v4:
+>         - Modify commit message to clarify C is a variable
+> ---
+>  Documentation/dev-tools/coccinelle.rst | 15 +++++++++++----
+>  1 file changed, 11 insertions(+), 4 deletions(-)
+>
+> diff --git a/Documentation/dev-tools/coccinelle.rst b/Documentation/dev-tools/coccinelle.rst
+> index 6c791af1c859..74c5e6aeeff5 100644
+> --- a/Documentation/dev-tools/coccinelle.rst
+> +++ b/Documentation/dev-tools/coccinelle.rst
+> @@ -175,13 +175,20 @@ For example, to check drivers/net/wireless/ one may write::
+>      make coccicheck M=drivers/net/wireless/
+>
+>  To apply Coccinelle on a file basis, instead of a directory basis, the
+> -following command may be used::
+> +C variable is used by the makefile to select which files to work with.
+> +This variable can be used to run scripts for the entire kernel, a
+> +specific directory, or for a single file.
+>
+> -    make C=1 CHECK="scripts/coccicheck"
+> +For example, to check drivers/bluetooth/bfusb.c, the value 1 is
+> +passed to the C variable to check files that make considers
+> +need to be compiled.::
+>
+> -To check only newly edited code, use the value 2 for the C flag, i.e.::
+> +    make C=1 CHECK=scripts/coccicheck drivers/bluetooth/bfusb.o
+>
+> -    make C=2 CHECK="scripts/coccicheck"
+> +The value 2 is passed to the C variable to check files regardless of
+> +whether they need to be compiled or not.::
+> +
+> +    make C=2 CHECK=scripts/coccicheck drivers/bluetooth/bfusb.o
+>
+>  In these modes, which work on a file basis, there is no information
+>  about semantic patches displayed, and no commit message proposed.
+> --
+> 2.17.1
+>
+> _______________________________________________
+> Cocci mailing list
+> Cocci@systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
+>
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
