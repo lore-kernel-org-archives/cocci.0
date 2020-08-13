@@ -2,63 +2,74 @@ Return-Path: <SRS0=BNCH=BX=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.5 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6499CC433E1
-	for <cocci@archiver.kernel.org>; Thu, 13 Aug 2020 10:58:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17AFAC433DF
+	for <cocci@archiver.kernel.org>; Thu, 13 Aug 2020 22:49:51 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E6BC020771
-	for <cocci@archiver.kernel.org>; Thu, 13 Aug 2020 10:58:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E6BC020771
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
+	by mail.kernel.org (Postfix) with ESMTPS id 63BBD20771
+	for <cocci@archiver.kernel.org>; Thu, 13 Aug 2020 22:49:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 63BBD20771
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 07DAvtp3005132;
-	Thu, 13 Aug 2020 12:57:55 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 07DMnXWt020511;
+	Fri, 14 Aug 2020 00:49:33 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 939FB7780;
-	Thu, 13 Aug 2020 12:57:55 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 97D617780;
+	Fri, 14 Aug 2020 00:49:33 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 68C954084
- for <cocci@systeme.lip6.fr>; Thu, 13 Aug 2020 12:57:54 +0200 (CEST)
-Received: from mail2-relais-roc.national.inria.fr
- (mail2-relais-roc.national.inria.fr [192.134.164.83])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 07DAvrH1009469
- (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
- for <cocci@systeme.lip6.fr>; Thu, 13 Aug 2020 12:57:53 +0200 (CEST)
-X-IronPort-AV: E=Sophos;i="5.76,308,1592863200"; d="scan'208";a="463349984"
-Received: from abo-173-121-68.mrs.modulonet.fr (HELO hadrien) ([85.68.121.173])
- by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 13 Aug 2020 12:57:53 +0200
-Date: Thu, 13 Aug 2020 12:57:52 +0200 (CEST)
-From: Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
-To: Sumera Priyadarsini <sylphrenadin@gmail.com>
-In-Reply-To: <CACAkLuqo+CJeyvVZ0oaN=6SqQNxXinfv8t6FNPyORO=GCCvstA@mail.gmail.com>
-Message-ID: <alpine.DEB.2.22.394.2008131257180.19118@hadrien>
-References: <20200812182722.4553-1-sylphrenadin@gmail.com>
- <alpine.DEB.2.22.394.2008122211330.2468@hadrien>
- <CACAkLuqo+CJeyvVZ0oaN=6SqQNxXinfv8t6FNPyORO=GCCvstA@mail.gmail.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 006814084
+ for <cocci@systeme.lip6.fr>; Fri, 14 Aug 2020 00:49:31 +0200 (CEST)
+Received: from mail-lj1-f195.google.com (mail-lj1-f195.google.com
+ [209.85.208.195])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 07DMnUbx028412
+ (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
+ for <cocci@systeme.lip6.fr>; Fri, 14 Aug 2020 00:49:30 +0200 (CEST)
+Received: by mail-lj1-f195.google.com with SMTP id w25so7928827ljo.12
+ for <cocci@systeme.lip6.fr>; Thu, 13 Aug 2020 15:49:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=zRuFWtkWuwr1fLeCDAALQlbW5AVE5mdsmWUm923k4q8=;
+ b=LNnpw0VkHy8B+t/SDhD8W+B3QQ4mrziaHHa8Q71E9esFuPE5v5p4ya8/A+EEv90Z72
+ eDkkhYlIg2DDc/29seBEC1+LxHWQd3wkjIRbjdWJIFph8hE0aaMpmPGofB8Vkkv33Ens
+ uQ6qEG0MBLDMS0LwpTlvXTSod7WUCqlfiQSDaJMfNRMZJVYN7ELDqrN61atSaFIaaTw7
+ J6d5BW8jgFPmC0DL4YdA+WpkituVIGjUZXwGSTamU23f1H9IddnHJfbblELTuzQlIZm9
+ +ZJ82sJ94rkvlvV9ud+YzLzr7NCHWI47keXIlckfBk5WSnzMYQ0WhY4zYp9OHpnuzg7W
+ I2wA==
+X-Gm-Message-State: AOAM533AmqkqeLsWE98V5yW7VMLPEYPoH0jUV07f0iciZhflOl72526f
+ JwpYq+Ls9bAafL7wl6G0hcQ=
+X-Google-Smtp-Source: ABdhPJx3I1oXFuJyHp1H99mgT8ya1lFbn5hsF3jqLcfTg4TI2hcnAqSBv7GcBsPjzql7PfCxh8bLFw==
+X-Received: by 2002:a2e:9a93:: with SMTP id p19mr4925lji.67.1597358970302;
+ Thu, 13 Aug 2020 15:49:30 -0700 (PDT)
+Received: from localhost.localdomain (broadband-37-110-38-130.ip.moscow.rt.ru.
+ [37.110.38.130])
+ by smtp.googlemail.com with ESMTPSA id v20sm1375718lji.64.2020.08.13.15.49.29
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 13 Aug 2020 15:49:29 -0700 (PDT)
+From: Denis Efremov <efremov@linux.com>
+To: Julia Lawall <julia.lawall@inria.fr>
+Date: Fri, 14 Aug 2020 01:49:07 +0300
+Message-Id: <20200813224907.447354-1-efremov@linux.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-2144651173-1597316273=:19118"
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 13 Aug 2020 12:57:55 +0200 (CEST)
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Thu, 13 Aug 2020 12:57:53 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 14 Aug 2020 00:49:34 +0200 (CEST)
+X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [132.227.60.2]); Fri, 14 Aug 2020 00:49:31 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: michal.lkml@markovi.net, Gilles.Muller@lip6.fr, gregkh@linuxfoundation.org,
-        nicolas.palix@imag.fr, linux-kernel@vger.kernel.org,
-        cocci@systeme.lip6.fr
-Subject: Re: [Cocci] [PATCH] scripts: coccicheck: Change default value for
- parallelism
+Cc: cocci@systeme.lip6.fr, linux-kernel@vger.kernel.org
+Subject: [Cocci] [PATCH] coccinelle: api: add sprintf() support to
+	device_attr_show
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -70,119 +81,78 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+It's safe to use sprintf() for simple cases in device_attr_show
+type of functions. Add support for sprintf() in patch mode to
+the device_attr_show.cocci script to print numbers and pointers.
 
---8323329-2144651173-1597316273=:19118
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Signed-off-by: Denis Efremov <efremov@linux.com>
+---
+Interesting enough that with this patch coccinelle starts to skip
+patch generation in some cases. For example, it skips patch for
+drivers/base/core.c This is an unexpected result for me.
 
+ scripts/coccinelle/api/device_attr_show.cocci | 30 +++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-
-On Thu, 13 Aug 2020, Sumera Priyadarsini wrote:
-
->
->
-> On Thu, 13 Aug, 2020, 1:45 AM Julia Lawall, <julia.lawall@inria.fr> wrote:
->
->
->       On Wed, 12 Aug 2020, Sumera Priyadarsini wrote:
->
->       > By default, coccicheck utilizes all available threads to implement
->       > parallelisation. However, when hyperthreading is enabled, this leads
->       > to all threads per core being occupied resulting in longer wall-clock
->       > times and higher power consumption.
->
->       I have the feeling that the above sentence is not quite optimal.
->       Actually, using all of the available hardware threads would not be a bad
->       thing, if it was giving a benefit.  The point is that it doesn't.  It
->       makes the performance worse instead.
->
->
-> How does this sound? 
->  
-> However, when all available threads are used, a decrease in performance was noted. The elapsed time was minimum when at most one thread per core was used. 
-
-This looks better, thanks.
-
-julia
-
->
->
->
->
->       > Hence, to improve performance,
->       > modify coccicheck to use only one thread per core atmost.
->
->       "atmost" is not a word.  It would be clearer to say "to use at most one
->       thread per core".
->
->       > In the cases where the total number of threads is more than 8 and
->       > hyperthreading is enabled, it was observed that optimum performance
->       > is achieved around one-fourth of the total number of cores.
->       > Modify the script further to accommodate this use case.
->
->       It would be nice to give some performance numbers and some information
->       about the machine used.
->
->
-> Alright, will add this. 
->
->
->       thanks,
->       julia
->
->       >
->       > Signed-off-by: Sumera Priyadarsini <sylphrenadin@gmail.com>
->       > ---
->       >  scripts/coccicheck | 9 +++++++++
->       >  1 file changed, 9 insertions(+)
->       >
->       > diff --git a/scripts/coccicheck b/scripts/coccicheck
->       > index e04d328210ac..dd228dcc915e 100755
->       > --- a/scripts/coccicheck
->       > +++ b/scripts/coccicheck
->       > @@ -75,8 +75,17 @@ else
->       >          OPTIONS="--dir $KBUILD_EXTMOD $COCCIINCLUDE"
->       >      fi
->       >
->       > +    # Use only one thread per core by default if hyperthreading is enabled
->       > +    THREADS_PER_CORE=$(lscpu | grep "Thread(s) per core: " | tr -cd [:digit:])
->       >      if [ -z "$J" ]; then
->       >          NPROC=$(getconf _NPROCESSORS_ONLN)
->       > +     if [ $THREADS_PER_CORE -gt 1 -a $NPROC -gt 2 ] ; then
->       > +             if [ $NPROC -gt 8 ] ; then
->       > +                     NPROC=$((NPROC/4))
->       > +             else
->       > +                     NPROC=$((NPROC/2))
->       > +             fi
->       > +     fi
->       >      else
->       >          NPROC="$J"
->       >      fi
->       > --
->       > 2.17.1
->       >
->       > _______________________________________________
->       > Cocci mailing list
->       > Cocci@systeme.lip6.fr
->       > https://systeme.lip6.fr/mailman/listinfo/cocci
->       >
->
->
->
---8323329-2144651173-1597316273=:19118
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+diff --git a/scripts/coccinelle/api/device_attr_show.cocci b/scripts/coccinelle/api/device_attr_show.cocci
+index d8ec4bb8ac41..1248b8c76cfe 100644
+--- a/scripts/coccinelle/api/device_attr_show.cocci
++++ b/scripts/coccinelle/api/device_attr_show.cocci
+@@ -30,15 +30,45 @@ ssize_t show(struct device *dev, struct device_attribute *attr, char *buf)
+ 
+ @rp depends on patch@
+ identifier show, dev, attr, buf;
++constant str;
+ @@
+ 
+ ssize_t show(struct device *dev, struct device_attribute *attr, char *buf)
+ {
+ 	<...
++(
++	return
++-		snprintf
+++		sprintf
++			(buf,
++-			\(PAGE_SIZE\|PAGE_SIZE - 1\),
++			str);
++|
++	return
++-		snprintf
+++		sprintf
++			(buf,
++-			\(PAGE_SIZE\|PAGE_SIZE - 1\),
++			\("%i"\|"%i\n"\|"%li"\|"%li\n"\|"%lli"\|"%lli\n"\|
++			  "%d"\|"%d\n"\|"%ld"\|"%ld\n"\|"%lld"\|"%lld\n"\|
++			  "%u"\|"%u\n"\|"%lu"\|"%lu\n"\|"%llu"\|"%llu\n"\|
++			  "%x"\|"%x\n"\|"%lx"\|"%lx\n"\|"%llx"\|"%llx\n"\|
++			  "%X"\|"%X\n"\|"%lX"\|"%lX\n"\|"%llX"\|"%llX\n"\|
++			  "0x%x"\|"0x%x\n"\|"0x%lx"\|"0x%lx\n"\|"0x%llx"\|"0x%llx\n"\|
++			  "0x%X"\|"0x%X\n"\|"0x%lX"\|"0x%lX\n"\|"0x%llX"\|"0x%llX\n"\|
++			  "%02x\n"\|"%03x\n"\|"%04x\n"\|"%08x\n"\|
++			  "%02X\n"\|"%03X\n"\|"%04X\n"\|"%08X\n"\|
++			  "0x%02x\n"\|"0x%03x\n"\|"0x%04x\n"\|"0x%08x\n"\|
++			  "0x%02X\n"\|"0x%03X\n"\|"0x%04X\n"\|"0x%08X\n"\|
++			  "%zd"\|"%zd\n"\|"%zu"\|"%zu\n"\|"%zx"\|"%zx\n"\|
++			  "%c"\|"%c\n"\|"%p"\|"%p\n"\|"%pU\n"\|"%pUl\n"\|"%hu\n"\),
++			...);
++|
+ 	return
+ -		snprintf
+ +		scnprintf
+ 			(...);
++)
+ 	...>
+ }
+ 
+-- 
+2.26.2
 
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
 https://systeme.lip6.fr/mailman/listinfo/cocci
-
---8323329-2144651173-1597316273=:19118--
