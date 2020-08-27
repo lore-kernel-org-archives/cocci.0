@@ -1,128 +1,82 @@
-Return-Path: <SRS0=82Ge=CE=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=x4mb=CF=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D252C433E3
-	for <cocci@archiver.kernel.org>; Wed, 26 Aug 2020 08:13:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68236C433DF
+	for <cocci@archiver.kernel.org>; Thu, 27 Aug 2020 18:16:20 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A825B20825
-	for <cocci@archiver.kernel.org>; Wed, 26 Aug 2020 08:13:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A825B20825
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux.com
+	by mail.kernel.org (Postfix) with ESMTPS id B5A822177B
+	for <cocci@archiver.kernel.org>; Thu, 27 Aug 2020 18:16:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B5A822177B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=perches.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 07Q8CtYS024155;
-	Wed, 26 Aug 2020 10:12:55 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 07RIG0HE024206;
+	Thu, 27 Aug 2020 20:16:00 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 5752A777D;
-	Wed, 26 Aug 2020 10:12:55 +0200 (CEST)
-Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
+	by systeme.lip6.fr (Postfix) with ESMTP id B613A4316;
+	Thu, 27 Aug 2020 20:16:00 +0200 (CEST)
+Received: from osiris.lip6.fr (osiris.lip6.fr [132.227.60.30])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id CEE493F6C
- for <cocci@systeme.lip6.fr>; Wed, 26 Aug 2020 10:12:53 +0200 (CEST)
-Received: from mail-lj1-f195.google.com (mail-lj1-f195.google.com
- [209.85.208.195])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 07Q8CqV9025258
- (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Wed, 26 Aug 2020 10:12:53 +0200 (CEST)
-Received: by mail-lj1-f195.google.com with SMTP id y2so1322028ljc.1
- for <cocci@systeme.lip6.fr>; Wed, 26 Aug 2020 01:12:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:reply-to:subject:to:cc:references:from:autocrypt
- :message-id:date:user-agent:mime-version:in-reply-to
- :content-language:content-transfer-encoding;
- bh=72bxPu2qgb+boTSMMXTu0lwksF6qBFYOp8FbwrUctMM=;
- b=cP9ktKKIDdOXfUYKwGL4xQhKsSvEfBMPHHQaAcSOMsB+a6qx7zJoods2LcTafTeDRH
- XsXP14NXPb4lVOTz/pCJEPN4HnqH0jgsp4UW3C4/NtWdGzQaWB+/JVUIJKqpEvFoPSzH
- 6z7Pjm6eTkwtcoD+HC1D4hEaEAjsZU5qMHqUtDPSaVz0TjiVLS8H7rA37B5Xn1K+/6Fy
- iga0YK2IRpDr1py2sybDKItc75YyHDrH3mowhKgVzch3xQMpM5N6Ic73E8u/f/g0ZVbM
- JRh+EOMWysQ8tUHn7AGINdw7a3cJYwQnCMZps6siykvHPG3Uxb+VmQmDAViKdTxPNO3l
- FwKg==
-X-Gm-Message-State: AOAM531FfK33erz2j/Shc3Ak5+qb1O3aDVVthIv5MkmFpWY5ZP2ildNI
- VOOAIREpfCBFk1rZzWl9LTI=
-X-Google-Smtp-Source: ABdhPJxIXuKDO6EfPMe5sP3QVOnaj2F0qBAJA5rXqGOvHPthnMbFKRqZFIrhaGa+bYjUNKqILH+JBw==
-X-Received: by 2002:a2e:8999:: with SMTP id c25mr6927638lji.430.1598429572333; 
- Wed, 26 Aug 2020 01:12:52 -0700 (PDT)
-Received: from [10.68.32.147] (broadband-37-110-38-130.ip.moscow.rt.ru.
- [37.110.38.130])
- by smtp.gmail.com with ESMTPSA id 10sm337358ljn.22.2020.08.26.01.12.51
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Wed, 26 Aug 2020 01:12:51 -0700 (PDT)
-To: Julia Lawall <julia.lawall@inria.fr>
-References: <20200604140805.111613-1-efremov@linux.com>
- <20200811074953.73994-1-efremov@linux.com>
-From: Denis Efremov <efremov@linux.com>
-Autocrypt: addr=efremov@linux.com; keydata=
- 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
-Message-ID: <3da343e9-bf5f-abe4-8b43-af98bd72e131@linux.com>
-Date: Wed, 26 Aug 2020 11:12:50 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+ by systeme.lip6.fr (Postfix) with ESMTPS id D2B813C97
+ for <cocci@systeme.lip6.fr>; Thu, 27 Aug 2020 20:15:58 +0200 (CEST)
+Received: from smtprelay.hostedemail.com (smtprelay0027.hostedemail.com
+ [216.40.44.27])
+ by osiris.lip6.fr (8.15.2/8.15.2) with ESMTPS id 07RIFu2T021608
+ (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO)
+ for <cocci@systeme.lip6.fr>; Thu, 27 Aug 2020 20:15:57 +0200 (CEST)
+Received: from smtprelay.hostedemail.com (10.5.19.251.rfc1918.com
+ [10.5.19.251])
+ by smtpgrave08.hostedemail.com (Postfix) with ESMTP id EB8281801B862
+ for <cocci@systeme.lip6.fr>; Thu, 27 Aug 2020 16:58:49 +0000 (UTC)
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net
+ [216.40.38.60])
+ by smtprelay01.hostedemail.com (Postfix) with ESMTP id 68626100E7B46;
+ Thu, 27 Aug 2020 16:58:42 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-HE-Tag: air51_610ed3a2706e
+X-Filterd-Recvd-Size: 5803
+Received: from XPS-9350.home (unknown [47.151.133.149])
+ (Authenticated sender: joe@perches.com)
+ by omf11.hostedemail.com (Postfix) with ESMTPA;
+ Thu, 27 Aug 2020 16:58:40 +0000 (UTC)
+Message-ID: <5d1dfb9b031130d4d20763ec621233a19d6a88a2.camel@perches.com>
+From: Joe Perches <joe@perches.com>
+To: Alex Dewar <alex.dewar90@gmail.com>,
+        Rasmus Villemoes
+ <linux@rasmusvillemoes.dk>,
+        cocci <cocci@systeme.lip6.fr>
+Date: Thu, 27 Aug 2020 09:58:39 -0700
+In-Reply-To: <20200827144846.yauuttjaqtxaldxg@lenovo-laptop>
+References: <20200824222322.22962-1-alex.dewar90@gmail.com>
+ <48f2dc90-7852-eaf1-55d7-2c85cf954688@rasmusvillemoes.dk>
+ <20200827071537.GA168593@kroah.com>
+ <20200827131819.7rcl2f5js3hkoqj2@lenovo-laptop>
+ <def24e9e-018c-9712-0d07-d4cbc84f07d9@rasmusvillemoes.dk>
+ <20200827144846.yauuttjaqtxaldxg@lenovo-laptop>
+User-Agent: Evolution 3.36.4-0ubuntu1 
 MIME-Version: 1.0
-In-Reply-To: <20200811074953.73994-1-efremov@linux.com>
-Content-Language: en-US
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 26 Aug 2020 10:12:56 +0200 (CEST)
-X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Wed, 26 Aug 2020 10:12:53 +0200 (CEST)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 27 Aug 2020 20:16:01 +0200 (CEST)
+X-Greylist: Delayed for 01:17:05 by milter-greylist-4.4.3 (osiris.lip6.fr
+ [132.227.60.30]); Thu, 27 Aug 2020 20:15:57 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: cocci@systeme.lip6.fr, linux-kernel@vger.kernel.org
-Subject: Re: [Cocci] [PATCH] coccinelle: api: update kzfree script to
-	kfree_sensitive
+X-Scanned-By: MIMEDefang 2.78 on 132.227.60.30
+Cc: Kees Cook <keescook@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        accessrunner-general@lists.sourceforge.net
+Subject: Re: [Cocci] [PATCH] usb: atm: don't use snprintf() for sysfs attrs
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
-Reply-To: efremov@linux.com
 List-Id: <cocci.systeme.lip6.fr>
 List-Unsubscribe: <https://systeme.lip6.fr/mailman/options/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=unsubscribe>
@@ -136,104 +90,98 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Ping?
+On Thu, 2020-08-27 at 15:48 +0100, Alex Dewar wrote:
+> On Thu, Aug 27, 2020 at 03:41:06PM +0200, Rasmus Villemoes wrote:
+> > On 27/08/2020 15.18, Alex Dewar wrote:
+> > > On Thu, Aug 27, 2020 at 09:15:37AM +0200, Greg Kroah-Hartman wrote:
+> > > > On Thu, Aug 27, 2020 at 08:42:06AM +0200, Rasmus Villemoes wrote:
+> > > > > On 25/08/2020 00.23, Alex Dewar wrote:
+> > > > > > kernel/cpu.c: don't use snprintf() for sysfs attrs
+> > > > > > 
+> > > > > > As per the documentation (Documentation/filesystems/sysfs.rst),
+> > > > > > snprintf() should not be used for formatting values returned by sysfs.
+> > > > > > 
+> > > > > 
+> > > > > Can we have a sysfs_sprintf() (could just be a macro that does sprintf)
+> > > > > to make it clear to the next reader that we know we're in a sysfs show
+> > > > > method? It would make auditing uses of sprintf() much easier.
+> > > > 
+> > > > Code churn to keep code checkers quiet for pointless reasons?  What
+> > > > could go wrong with that...
+> > 
+> > I did not (mean to) suggest replacing existing sprintf() calls in sysfs
+> > show methods. But when changes _are_ being made, such as when replacing
+> > snprintf() calls for whatever reasons, can we please not make it harder
+> > for people doing manual audits (those are "code checkers" as well, I
+> > suppose, but they do tend to only make noise when finding something).
+> > 
+> > > > It should be pretty obvious to any reader that you are in a sysfs show
+> > > > method, as almost all of them are trivially tiny and obvious.
+> > 
+> > git grep doesn't immediately show that, not even with a suitable -C
+> > argument, as you can't really know the potential callers unless you open
+> > the file and see that the function is only assigned as a .show method.
+> > And even that can be a pain because it's all hidden behind five levels
+> > of magic macros that build identifiers with ##.
+> > 
+> > > Perhaps I should have mentioned this in the commit message, but the problem
+> > > is that snprintf() doesn't return the number of bytes written to the
+> > > destination buffer,
+> > 
+> > I'm perfectly well aware of that, TYVM (you may want to 'git log
+> > --author Villemoes lib/vsprintf.c').
+> > 
+> >  but the number of bytes that *would have been written if
+> > > they fitted*, which may be more than the bounds specified [1]. So "return
+> > > snprintf(...)" for sysfs attributes is an antipattern. If you need bounded
+> > > string ops, scnprintf() is the way to go. Using snprintf() can give a
+> > > false sense of security, because it isn't necessarily safe.
+> > 
+> > Huh? This all seems utterly irrelevant WRT a change that replaces
+> > PAGE_SIZE by INT_MAX (because that's what sprintf() is going to pretend
+> > you passed). You get the same return value.
+> > 
+> > But I'm not at all concerned about whether one passes the proper buffer
+> > size or not in sysfs show methods; with my embedded hat on, I'm all for
+> > saving a few bytes of .text here and there. The problem, as far as I'm
+> > concerned, is merely that adding sprintf() callers makes it harder to
+> > find the problematic sprintf() instances.
+> > 
+> 
+> Apologies, I think I might have expressed myself poorly, being a kernel noob
+> ;-). I know that this is a stylistic change rather than a functional
+> one -- I meant that I was hoping that it would be helpful to get rid of bad
+> uses of snprintf().
+> 
+> I really like your idea of helper methods though :-). If in show()
+> methods we could have something like:
+> 	return sysfs_itoa(buf, i);
+> in place of:
+> 	return sprintf(buf, "%d\n", i);
+> 
+> ... then we wouldn't be introducing any new calls to sprintf() as you
+> say, but we'd still be removing a call to snprintf() (which also may be
+> problematic). Plus we'd have type checking on the argument.
+> 
+> For returning strings, we could have a bounded and unbounded variant of
+> the function. As it seems like only single values should be returned via
+> sysfs, if we did things this way then it would only be these
+> string-returning functions which could cause buffer overflow problems
+> and kernel devs could focus their attention accordingly...
+> 
+> What do people think? I'm happy to have a crack, provided this is
+> actually a sensible thing to do! I'm looking for a newbie-level project
+> to get started with.
 
-On 8/11/20 10:49 AM, Denis Efremov wrote:
-> Commit 453431a54934 ("mm, treewide: rename kzfree() to kfree_sensitive()")
-> renames kzfree to kfree_sensitive and uses memzero_explicit(...) instead of
-> memset(..., 0, ...) internally. Update cocci script to reflect these
-> changes.
-> 
-> Signed-off-by: Denis Efremov <efremov@linux.com>
-> ---
-> Julia, I think you can squash this commit with original script, or I can
-> resend the whole script since it's not merged to the mainline.
-> 
->  .../{kzfree.cocci => kfree_sensitive.cocci}   | 29 +++++++++----------
->  1 file changed, 13 insertions(+), 16 deletions(-)
->  rename scripts/coccinelle/api/{kzfree.cocci => kfree_sensitive.cocci} (70%)
-> 
-> diff --git a/scripts/coccinelle/api/kzfree.cocci b/scripts/coccinelle/api/kfree_sensitive.cocci
-> similarity index 70%
-> rename from scripts/coccinelle/api/kzfree.cocci
-> rename to scripts/coccinelle/api/kfree_sensitive.cocci
-> index 33625bd7cec9..e4a066a0b77d 100644
-> --- a/scripts/coccinelle/api/kzfree.cocci
-> +++ b/scripts/coccinelle/api/kfree_sensitive.cocci
-> @@ -1,13 +1,13 @@
->  // SPDX-License-Identifier: GPL-2.0-only
->  ///
-> -/// Use kzfree, kvfree_sensitive rather than memset or
-> -/// memzero_explicit followed by kfree
-> +/// Use kfree_sensitive, kvfree_sensitive rather than memset or
-> +/// memzero_explicit followed by kfree.
->  ///
->  // Confidence: High
->  // Copyright: (C) 2020 Denis Efremov ISPRAS
->  // Options: --no-includes --include-headers
->  //
-> -// Keywords: kzfree, kvfree_sensitive
-> +// Keywords: kfree_sensitive, kvfree_sensitive
->  //
->  
->  virtual context
-> @@ -18,7 +18,8 @@ virtual report
->  @initialize:python@
->  @@
->  # kmalloc_oob_in_memset uses memset to explicitly trigger out-of-bounds access
-> -filter = frozenset(['kmalloc_oob_in_memset', 'kzfree', 'kvfree_sensitive'])
-> +filter = frozenset(['kmalloc_oob_in_memset',
-> +		    'kfree_sensitive', 'kvfree_sensitive'])
->  
->  def relevant(p):
->      return not (filter & {el.current_element for el in p})
-> @@ -56,17 +57,13 @@ type T;
->  - memzero_explicit@m((T)E, size);
->    ... when != E
->        when strict
-> -// TODO: uncomment when kfree_sensitive will be merged.
-> -// Only this case is commented out because developers
-> -// may not like patches like this since kzfree uses memset
-> -// internally (not memzero_explicit).
-> -//(
-> -//- kfree(E)@p;
-> -//+ kfree_sensitive(E);
-> -//|
-> +(
-> +- kfree(E)@p;
-> ++ kfree_sensitive(E);
-> +|
->  - \(vfree\|kvfree\)(E)@p;
->  + kvfree_sensitive(E, size);
-> -//)
-> +)
->  
->  @rp_memset depends on patch@
->  expression E, size;
-> @@ -80,7 +77,7 @@ type T;
->        when strict
->  (
->  - kfree(E)@p;
-> -+ kzfree(E);
-> ++ kfree_sensitive(E);
->  |
->  - \(vfree\|kvfree\)(E)@p;
->  + kvfree_sensitive(E, size);
-> @@ -91,11 +88,11 @@ p << r.p;
->  @@
->  
->  coccilib.report.print_report(p[0],
-> -  "WARNING: opportunity for kzfree/kvfree_sensitive")
-> +  "WARNING: opportunity for kfree_sensitive/kvfree_sensitive")
->  
->  @script:python depends on org@
->  p << r.p;
->  @@
->  
->  coccilib.org.print_todo(p[0],
-> -  "WARNING: opportunity for kzfree/kvfree_sensitive")
-> +  "WARNING: opportunity for kfree_sensitive/kvfree_sensitive")
-> 
+Not a bad idea.
+
+Coccinelle should be able to transform the various .show
+methods to something sysfs_ prefixed in a fairly automated
+way.
+
+
+
+
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
