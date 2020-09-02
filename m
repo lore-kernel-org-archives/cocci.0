@@ -2,56 +2,60 @@ Return-Path: <SRS0=bt/u=CL=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB9F0C433E2
-	for <cocci@archiver.kernel.org>; Wed,  2 Sep 2020 06:52:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42953C433E2
+	for <cocci@archiver.kernel.org>; Wed,  2 Sep 2020 07:29:06 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 294822067C
-	for <cocci@archiver.kernel.org>; Wed,  2 Sep 2020 06:52:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 294822067C
+	by mail.kernel.org (Postfix) with ESMTPS id DA79D2072A
+	for <cocci@archiver.kernel.org>; Wed,  2 Sep 2020 07:29:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DA79D2072A
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0826puwG027341;
-	Wed, 2 Sep 2020 08:51:56 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0827O3kB016184;
+	Wed, 2 Sep 2020 09:24:03 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 44808742E;
-	Wed,  2 Sep 2020 08:51:56 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id EB79C742E;
+	Wed,  2 Sep 2020 09:24:02 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id CA0B13F6C
- for <cocci@systeme.lip6.fr>; Wed,  2 Sep 2020 08:51:54 +0200 (CEST)
-Received: from mail3-relais-sop.national.inria.fr
- (mail3-relais-sop.national.inria.fr [192.134.164.104])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 0826psAm000818
+ by systeme.lip6.fr (Postfix) with ESMTPS id 98B083F6C
+ for <cocci@systeme.lip6.fr>; Wed,  2 Sep 2020 09:24:01 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr
+ (mail2-relais-roc.national.inria.fr [192.134.164.83])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 0827O0lO028185
  (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
- for <cocci@systeme.lip6.fr>; Wed, 2 Sep 2020 08:51:54 +0200 (CEST)
-X-IronPort-AV: E=Sophos;i="5.76,359,1592863200"; d="scan'208";a="357858231"
+ for <cocci@systeme.lip6.fr>; Wed, 2 Sep 2020 09:24:01 +0200 (CEST)
+X-IronPort-AV: E=Sophos;i="5.76,359,1592863200"; d="scan'208";a="465666314"
 Received: from abo-173-121-68.mrs.modulonet.fr (HELO hadrien) ([85.68.121.173])
- by mail3-relais-sop.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 02 Sep 2020 08:51:47 +0200
-Date: Wed, 2 Sep 2020 08:51:42 +0200 (CEST)
+ by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 02 Sep 2020 09:24:00 +0200
+Date: Wed, 2 Sep 2020 09:24:00 +0200 (CEST)
 From: Julia Lawall <julia.lawall@inria.fr>
 X-X-Sender: jll@hadrien
-To: Denis Efremov <efremov@linux.com>
-In-Reply-To: <20200902044059.7133-1-efremov@linux.com>
-Message-ID: <alpine.DEB.2.22.394.2009020851310.2528@hadrien>
-References: <20200902044059.7133-1-efremov@linux.com>
+To: Markus Elfring <Markus.Elfring@web.de>
+In-Reply-To: <99e82f65-e02e-988a-4e78-4d438ff8e28e@web.de>
+Message-ID: <alpine.DEB.2.22.394.2009020921500.2528@hadrien>
+References: <99e82f65-e02e-988a-4e78-4d438ff8e28e@web.de>
 User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 02 Sep 2020 08:51:56 +0200 (CEST)
+Content-Type: multipart/mixed; boundary="8323329-1962328576-1599031440=:2528"
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 02 Sep 2020 09:24:03 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Wed, 02 Sep 2020 08:51:54 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Wed, 02 Sep 2020 09:24:01 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: cocci@systeme.lip6.fr, linux-kernel@vger.kernel.org
+Cc: Michal Marek <michal.lkml@markovi.net>, Kees Cook <keescook@chromium.org>,
+        Gilles Muller <Gilles.Muller@lip6.fr>,
+        Nicolas Palix <nicolas.palix@imag.fr>, kernel-janitors@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-kernel@vger.kernel.org, Coccinelle <cocci@systeme.lip6.fr>
 Subject: Re: [Cocci] [PATCH] coccinelle: ifnullfree: add vfree(),
  kvfree*() functions
 X-BeenThere: cocci@systeme.lip6.fr
@@ -65,65 +69,84 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-1962328576-1599031440=:2528
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 
 
-On Wed, 2 Sep 2020, Denis Efremov wrote:
 
-> Extend the list of free functions with kvfree(), kvfree_sensitive(),
-> vfree().
+On Wed, 2 Sep 2020, Markus Elfring wrote:
+
+> …
+> > +++ b/scripts/coccinelle/free/ifnullfree.cocci
+> > @@ -20,8 +20,14 @@ expression E;
+> >  - if (E != NULL)
+> >  (
+> >    kfree(E);
+> > +|
+> > +  kvfree(E);
+> >  |
+> >    kfree_sensitive(E);
+> > +|
+> > +  kvfree_sensitive(E, ...);
+> > +|
+> > +  vfree(E);
+> >  |
+> >    debugfs_remove(E);
+> >  |
 >
-> Signed-off-by: Denis Efremov <efremov@linux.com>
+> Would you ever get into the development mood to move the source code search
+> specification “(E);” out of the SmPL disjunction (as it happened for the rule “r”)?
+>
+>
+> > @@ -42,9 +48,10 @@ position p;
+> >  @@
+> >
+> >  * if (E != NULL)
+> > -*	\(kfree@p\|kfree_sensitive@p\|debugfs_remove@p\|debugfs_remove_recursive@p\|
+> > +*	\(kfree@p\|kvfree@p\|kfree_sensitive@p\|kvfree_sensitive@p\|vfree@p\|
+> > +*         debugfs_remove@p\|debugfs_remove_recursive@p\|
+> >  *         usb_free_urb@p\|kmem_cache_destroy@p\|mempool_destroy@p\|
+> > -*         dma_pool_destroy@p\)(E);
+> > +*         dma_pool_destroy@p\)(E, ...);
+> …
+>
+> How do you think about to attach the position variable to the opening parenthesis
+> instead of each function name?
+>
+> +*         dma_pool_destroy\)(@p E, ...);
 
-Applied, thanks.
+While it probably impacts few people, this is a really bad idea for org
+mode, because org mode colors the thing that the position variable is
+attached to.  Having the ( colored would not be very visible.
+
+But even for report mode, this is probably not a good idea for the rare
+case where the function name and the argument list are on different lines.
 
 julia
 
-> ---
->  scripts/coccinelle/free/ifnullfree.cocci | 11 +++++++++--
->  1 file changed, 9 insertions(+), 2 deletions(-)
->
-> diff --git a/scripts/coccinelle/free/ifnullfree.cocci b/scripts/coccinelle/free/ifnullfree.cocci
-> index 2045391e36a0..285b92d5c665 100644
-> --- a/scripts/coccinelle/free/ifnullfree.cocci
-> +++ b/scripts/coccinelle/free/ifnullfree.cocci
-> @@ -20,8 +20,14 @@ expression E;
->  - if (E != NULL)
->  (
->    kfree(E);
-> +|
-> +  kvfree(E);
->  |
->    kfree_sensitive(E);
-> +|
-> +  kvfree_sensitive(E, ...);
-> +|
-> +  vfree(E);
->  |
->    debugfs_remove(E);
->  |
-> @@ -42,9 +48,10 @@ position p;
->  @@
->
->  * if (E != NULL)
-> -*	\(kfree@p\|kfree_sensitive@p\|debugfs_remove@p\|debugfs_remove_recursive@p\|
-> +*	\(kfree@p\|kvfree@p\|kfree_sensitive@p\|kvfree_sensitive@p\|vfree@p\|
-> +*         debugfs_remove@p\|debugfs_remove_recursive@p\|
->  *         usb_free_urb@p\|kmem_cache_destroy@p\|mempool_destroy@p\|
-> -*         dma_pool_destroy@p\)(E);
-> +*         dma_pool_destroy@p\)(E, ...);
->
->  @script:python depends on org@
->  p << r.p;
-> --
-> 2.26.2
 >
 >
+> Would the number of function call parameters influence such SmPL code any more?
+>
+> Regards,
+> Markus
+>
+--8323329-1962328576-1599031440=:2528
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
 https://systeme.lip6.fr/mailman/listinfo/cocci
+
+--8323329-1962328576-1599031440=:2528--
