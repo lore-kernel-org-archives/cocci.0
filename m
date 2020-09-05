@@ -2,46 +2,45 @@ Return-Path: <SRS0=yqrS=CO=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0956C43461
-	for <cocci@archiver.kernel.org>; Sat,  5 Sep 2020 07:39:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1710C433E2
+	for <cocci@archiver.kernel.org>; Sat,  5 Sep 2020 09:54:26 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DCC3920760
-	for <cocci@archiver.kernel.org>; Sat,  5 Sep 2020 07:39:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DCC3920760
+	by mail.kernel.org (Postfix) with ESMTPS id EC924206E7
+	for <cocci@archiver.kernel.org>; Sat,  5 Sep 2020 09:54:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EC924206E7
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0857d9SD017540;
-	Sat, 5 Sep 2020 09:39:09 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0859rwc4029318;
+	Sat, 5 Sep 2020 11:53:58 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id CE236742E;
-	Sat,  5 Sep 2020 09:39:09 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 2FD80742E;
+	Sat,  5 Sep 2020 11:53:58 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 7AFB46717
- for <cocci@systeme.lip6.fr>; Sat,  5 Sep 2020 09:39:07 +0200 (CEST)
-Received: from mail3-relais-sop.national.inria.fr
- (mail3-relais-sop.national.inria.fr [192.134.164.104])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0857d5BH017871
- for <cocci@systeme.lip6.fr>; Sat, 5 Sep 2020 09:39:05 +0200 (CEST)
-X-IronPort-AV: E=Sophos;i="5.76,359,1592863200"; d="scan'208";a="358156309"
+ by systeme.lip6.fr (Postfix) with ESMTPS id 365BE6717
+ for <cocci@systeme.lip6.fr>; Sat,  5 Sep 2020 11:53:56 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr
+ (mail2-relais-roc.national.inria.fr [192.134.164.83])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0859rt8g022688
+ for <cocci@systeme.lip6.fr>; Sat, 5 Sep 2020 11:53:55 +0200 (CEST)
+X-IronPort-AV: E=Sophos;i="5.76,359,1592863200"; d="scan'208";a="466202000"
 Received: from abo-173-121-68.mrs.modulonet.fr (HELO hadrien) ([85.68.121.173])
- by mail3-relais-sop.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 05 Sep 2020 09:39:04 +0200
-Date: Sat, 5 Sep 2020 09:39:04 +0200 (CEST)
+ by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 05 Sep 2020 11:53:55 +0200
+Date: Sat, 5 Sep 2020 11:53:55 +0200 (CEST)
 From: Julia Lawall <julia.lawall@inria.fr>
 X-X-Sender: jll@hadrien
 To: Markus Elfring <Markus.Elfring@web.de>
-In-Reply-To: <afbbc6f1-ca60-e780-0139-d944165e456f@web.de>
-Message-ID: <alpine.DEB.2.22.394.2009050937480.2363@hadrien>
+In-Reply-To: <26349832-57a8-4c6e-efc9-0febd5650922@web.de>
+Message-ID: <alpine.DEB.2.22.394.2009051153300.2363@hadrien>
 References: <ed9a8046-4c21-e849-f68b-9e08991b701d@web.de>
  <8e76e81f-970b-b1f7-840d-10506dc3311a@linux.com>
  <alpine.DEB.2.22.394.2008151229540.2446@hadrien>
@@ -54,12 +53,14 @@ References: <ed9a8046-4c21-e849-f68b-9e08991b701d@web.de>
  <1e60d36d-7f2b-98eb-5fe3-9729b97ba360@web.de>
  <alpine.DEB.2.22.394.2008171829080.2416@hadrien>
  <afbbc6f1-ca60-e780-0139-d944165e456f@web.de>
+ <alpine.DEB.2.22.394.2009050937480.2363@hadrien>
+ <26349832-57a8-4c6e-efc9-0febd5650922@web.de>
 User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-687145294-1599291545=:2363"
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 05 Sep 2020 09:39:10 +0200 (CEST)
+Content-Type: multipart/mixed; boundary="8323329-2005601436-1599299635=:2363"
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 05 Sep 2020 11:53:58 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sat, 05 Sep 2020 09:39:05 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Sat, 05 Sep 2020 11:53:55 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: Coccinelle <cocci@systeme.lip6.fr>
@@ -82,7 +83,7 @@ Errors-To: cocci-bounces@systeme.lip6.fr
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-687145294-1599291545=:2363
+--8323329-2005601436-1599299635=:2363
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8BIT
 
@@ -90,51 +91,35 @@ Content-Transfer-Encoding: 8BIT
 
 On Sat, 5 Sep 2020, Markus Elfring wrote:
 
-> >>> What clarifications?
-> >>
-> >> Did you notice that my suggestion for the SmPL script variant “scripts/coccinelle/api/device_attr_show.cocci”
-> >> can generate a patch?
-> >> https://lore.kernel.org/cocci/0a9015b6-9037-59c5-31f2-cd2b32c86b50@linux.com/
-> >>
-> >> Unfortunately, it seems that this transformation approach produces also
-> >> an inappropriate test result so far.
-> >> Do we expect that the first part of the SmPL disjunction should match
-> >> (for the source file “drivers/base/core.c” for example)?
-> >
-> > This semantic patch triggers the same problem as the original one,
+> > The clarification will be continued when you provide a small semantic
+> > patch and a C file that causes a problem.
 >
-> This view is interesting.
+> I imagine that a patch review was still running.
 >
 >
-> > and should benefit from the same solution.
+> > I'm not going to hunt in years
 >
-> I noticed the commit “improve andany optimization” yesterday.
-> https://github.com/coccinelle/coccinelle/commit/1a5502d4be8db0623b5acead974943098bdcbf57
+> This action is not needed here.
 >
-> The change description contains the following information.
 >
-> “…
-> It also makes the test failing_andany work, which did not work previously.
-> …”
+> > of mail archives to find it.
 >
-> I would hope for further positive consequences. Thus I have tried
-> the software “Coccinelle 1.0.8-00168-gc4048513” out again.
-> But I observe that the expected patch is still not generated
-> if a special SmPL disjunction should be applied in my test case.
-> The expected test result is displayed if a source code search
-> should be performed according to extracted code from the first branch
-> of such a disjunction (so that no disjunction is specified in
-> the SmPL script variant).
+> Have you got ongoing difficulties with safe issue tracking?
 >
-> How will the clarification be continued?
+> Please use the information also from available archive interfaces.
+> https://lore.kernel.org/cocci/0a9015b6-9037-59c5-31f2-cd2b32c86b50@linux.com/
+> https://systeme.lip6.fr/pipermail/cocci/2020-August/008120.html
+>
+>
+> > If you want something to happen you have to provide that information now.
+>
+> Would you like to test the software any further with the attached SmPL script variant
+> (and the previously mentioned Linux source file “drivers/base/core.c” for example)?
 
-The clarification will be continued when you provide a small semantic
-patch and a C file that causes a problem.  I'm not going to hunt in years
-of mail archives to find it.  If you want something to happen you have to
-provide that information now.
+That is a big file.  What part of it is of concern?
 
 julia
---8323329-687145294-1599291545=:2363
+--8323329-2005601436-1599299635=:2363
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -145,4 +130,4 @@ Cocci mailing list
 Cocci@systeme.lip6.fr
 https://systeme.lip6.fr/mailman/listinfo/cocci
 
---8323329-687145294-1599291545=:2363--
+--8323329-2005601436-1599299635=:2363--
