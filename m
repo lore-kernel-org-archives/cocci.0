@@ -2,50 +2,56 @@ Return-Path: <SRS0=fIkn=DB=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-11.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66CFEC4363D
-	for <cocci@archiver.kernel.org>; Thu, 24 Sep 2020 12:53:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1B38C4363D
+	for <cocci@archiver.kernel.org>; Thu, 24 Sep 2020 12:54:27 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0E68B20708
-	for <cocci@archiver.kernel.org>; Thu, 24 Sep 2020 12:53:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id AA56F20708
+	for <cocci@archiver.kernel.org>; Thu, 24 Sep 2020 12:54:24 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="mcE2YO1n"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0E68B20708
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="Bq+bpKmZ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AA56F20708
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 08OCrIXT010622;
-	Thu, 24 Sep 2020 14:53:18 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 08OCrnLN010923;
+	Thu, 24 Sep 2020 14:53:49 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id CFC99778D;
-	Thu, 24 Sep 2020 14:53:18 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 5F1BB778D;
+	Thu, 24 Sep 2020 14:53:49 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id C76B34452
- for <cocci@systeme.lip6.fr>; Thu, 24 Sep 2020 14:45:35 +0200 (CEST)
-Received: from mout.web.de (mout.web.de [212.227.15.14])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 08OCjZxf018101;
- Thu, 24 Sep 2020 14:45:35 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id A7A585F8F
+ for <cocci@systeme.lip6.fr>; Wed, 23 Sep 2020 19:00:37 +0200 (CEST)
+Received: from mout.web.de (mout.web.de [212.227.15.3])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 08NH0ZFE010244;
+ Wed, 23 Sep 2020 19:00:35 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1600951534;
- bh=TDP+pHWLC04c+4nstjmJ/mZI6PbOGrNr4PK+Wb6n93w=;
- h=X-UI-Sender-Class:To:Cc:Subject:From:Date;
- b=mcE2YO1npak1aN8C2iImrvTYqYmMdQn2SNJr2g8JL8MLJqkJScO/pZncdF0BPW9gm
- T1qGFp+GWpiNdlt5UlDhvHfKv6i0uu3TJp6Cr2AYi7NE7F3rmPmh4QMflBJJcTLOTI
- WSrd+Hkqcoz227XUb3/8Ot8a1PSDrlic0L/I9qpc=
+ s=dbaedf251592; t=1600880420;
+ bh=HIB6ACSShB4DcEeM+ykjDxPf//JC6kKqOqPKnr0Dh90=;
+ h=X-UI-Sender-Class:To:From:Subject:Cc:Date;
+ b=Bq+bpKmZYAcGlwcsXJObJbBSmpxrJoXejdb+bLii5454mih8Q2wdzfzkbWaKwtP5z
+ JAV2EFU31Myoq1DrHzHomIZ0JGryyoFqDU5UUZpcwW7uif64FsupDSJ1NhQfE1fFLL
+ wNtP0SC61ZR/d7sBKUR5b1ZOKZPlF7C1FaLscY14=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([93.132.48.46]) by smtp.web.de (mrweb002
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0Le4js-1kmoHi1VDY-00pvSH; Thu, 24
- Sep 2020 14:45:34 +0200
-To: Sumera Priyadarsini <sylphrenadin@gmail.com>,
-        Coccinelle <cocci@systeme.lip6.fr>
+Received: from [192.168.1.2] ([78.48.138.166]) by smtp.web.de (mrweb002
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0Ls9F9-1kS1Wd0TUt-013riW; Wed, 23
+ Sep 2020 19:00:20 +0200
+To: Coccinelle <cocci@systeme.lip6.fr>, Gilles Muller <Gilles.Muller@lip6.fr>,
+        Julia Lawall <Julia.Lawall@lip6.fr>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nicolas Palix
+ <nicolas.palix@imag.fr>,
+        Stephen Boyd <swboyd@chromium.org>, kernel-janitors@vger.kernel.org
 From: Markus Elfring <Markus.Elfring@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
@@ -90,47 +96,52 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <5a74b3c5-c0e9-1426-c477-72bb86bcf5ed@web.de>
-Date: Thu, 24 Sep 2020 14:45:25 +0200
+Message-ID: <dbb7be9c-788e-c5bd-b4b2-d709e3bd5e8b@web.de>
+Date: Wed, 23 Sep 2020 19:00:16 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
 Content-Language: en-GB
-X-Provags-ID: V03:K1:zf65oCXw6vQzDrRb3HaTKWAA/p/la1/fhZ/kSGmbeaY+7j28Wkw
- sg1kqOG209UN1VSzQ9OmwWBG5QmqOjjFPHon6tGe168Ly8zxBY5kVVayfRDQNdp+BnysL0x
- JVzpY+hFmTV3of1WPW55aAIKmDJzKYHfiqXACXYp7Fmau6XRTmzUKOFfQt4LGsTagKVA+Vd
- zDn1IQwypwKJB0qt/dT5Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:gfw033XUEr8=:yYoxKWoscg2lJ/N5kfdMW2
- JT2oj/JcH/oVnjdrzqzgO+f6GKnR/nvkHbKw23wCk12zDMZemj7YMMySb58wNwUaEu0Nn5a39
- 5UHyRMtj702cqTaUXbN2IF/VOJtJEDGAVoZBu4JaZpEYqVc3rPdvvtguSwp0A686I1QsvO19c
- PIwjLz2r234HcmENPeAhjRPugR5UrGDt5GhlCnu7NdoUqGixpvaipA9n2AyvvrVhU6OthNCsg
- HNknKC4dJ5CaWWYe2DrIX1YKHDRzh8NMaZrKhXPQL33ms618pfoVKunmrdIQlVfRQapthgG+6
- rpeQMLQeS5rmYlKVYz7MR9QaSbV2IAJk3kYGv/+r0qiYWYHtTZNSW4QDDrTnR6J+91Hzd9bXM
- RVnymevNdNF9swX3SzE9F67UoCeHq8U7+mbUp+AhogkYR5iN88xH1DVWrE770YhojeV6JuNNd
- yRG9j15M8usihnMqMtdpian5soEhqAMcYb0JMF9EG7mK6uihHG9i6Xqg2cwbB2H0bzlpPnJxs
- w3zRdBc0C5HS536iGyCLOWwUCLMvSV3tWoJhniCBE0GcIYjaNer8B2kkSGsboR3UarWh3+Oas
- BnBW01mIyIzbyoGf7WH6+1K2NJLXitSkoWpGJaG8Xmoj6nDv+0DSHJiwRUhikXQ6OkkY43sCD
- uvEZgTFg1QpPMOum783JfhjXXjuKydsxC2U0wwKa84Jf10GUr7g/qGRFYYa54ckXE+hjzc9Ny
- 9wjU9/Wk9XYmHW6Iw4yDUgibWYcY6xzwqZTdG8IHi09GT/ZCaUx1rAxsPJqhOxNEWiAEQyjbq
- 3oCKg8fYDaerd8Hgzxu4FJpxOE1fddfkoEP7hjEKz2liGOVkpB12gkDVfy8MWFDMiASlPlyiX
- rvHRHvHfOf6Caltui6xyoqzG+yXy4bNDli9UggEA8jqkZn5LMf/MdcH2Dc9pUSt9pyNyvDVTJ
- HjLT3On1CbqKSZfBY+KTiU8VlxJlApePhncDhEl47ATRvRHLavQs/pMAjlfpDxtcrZE/44gQo
- RQZeDblxuOl1AW3GrtwTqNcfatWCu0DipFJjMFtmtyzEWQtRGgiI99Qjt3be+xY32v5iO0CbB
- XnCxW/xEeEGVFZWU60BJ/+U1svJQRHJ9OTJHdQwdGPtDhLsbEqjQ64+XS+ZMT3lbqi6nMPcao
- zcBEvXPJFIrks6ad4veSohrO4XHwr0NdcNQRk2p8QU5dtDvPrmEDWUfWU7P/5BTLnQEQpKr7E
- Viz3zVM4QJQy5oX1vFh5RpDb5UNtGLJpGhp2hnw==
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 24 Sep 2020 14:53:19 +0200 (CEST)
+X-Provags-ID: V03:K1:88QIFrrRdMUoCDyB4bETW5GnjhmQidSs5SdetizH/soenqCT9O2
+ 6UE9VNxj5tIh/IRzG20eYN/DG1guxS/CJlwmQj+DDweYJi86R9WRbUUk1fBI9G78V5IY9kd
+ X68HGejyBNuY5jHjhw5I5aPisEIZ5uQzTI5pgK57PjEG634onNITqi0DVCmLgZOS9v38GOp
+ Jphz1n8neCuSZDWtFhM5g==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:2jzmdMn/uSY=:pH8lEfUYHJ4GHwpF7siR5c
+ Tt+1/HVswby359FO88cnlkWiHvVEcXQmPOIqfAtuijAYGyOYElHrjZ9gWivbcn7g4F9U9YzdK
+ 1bPpw80yrvEvhmbVIhwkkn/dcYj2aHpHO0cBH6LpehKn6rAY3/ZYuatij5dovUWeczKE0vw6Q
+ nF4hqtxVcPuJK/11RW/jiKoOVToXrQR1KWZ3EregK1gJi1qaNfNfAklimpMO69e1pWfKM9z0m
+ t1VNeEM9BEHeg8j7HRxDaUZXUwEDTXTpM5RtnNxg+G2P395bTYHhr4Eti6dJOtWakeUcVilSl
+ dV/5fMv7DP2wayw1c1CXRCTMV6L0EKTrS09KC0Lqg+ZlGVprWdGE8uJt3dtFFrv267+q48HIE
+ g68O8md/CPhGfpitNtXRhmVadIwJUJIaHkGQvD4YHJsiiDDs1Y2frN29LMI1s2EF/xbp+6u+B
+ 1VXPRUaQMu2vHN0y0J7D/fzxfgwWFIX9s2UPNDsb++VuBG4JNghQ1vxX3WwxoJBD0MX9174ZT
+ +DB+FTn5JXp1ifSxZQGpH3sSBXshKeg3HS/xYWCrfLQWwQvvbQCUV4irh1J1k2cMo5U1Z7s2z
+ jmN4Gl8BrD8XHkVyre0mQsT8Wkp1E8Y/cBgmLzykTtxBsF7Bopf7pv9Jd19ebTyDQy9Duf8dp
+ kPTbsl6x3L68uXv1JkobDu36xRGpprs7vPg0RC7+Vte3+YmPXR7DUf0/v/hgIp8Uh3GDmOkvQ
+ 7cLZzLYGNLXQS66GiDXHWImiUHjaX7RnanTlv0sTYh8y3lmLByfFeCsP1JyDNXmTbZrnhDuFq
+ st/cvyx8g4nwnyH3w1hs1NhR+D53vApm9u5Q+e0iuCbivo+vHgGzFAl5RKF0vwdMTq0LLy3Bx
+ mctpdzwec/2ObPlyzJrv330eQ6foKfcErpO+rQZzDJ0KT2DvbhtVLa2Ru4BGcNkoBCqABn1DR
+ 8iiiWRA0P+uRgOcablGe88zOW4qQ4PACqDhqo9seWRMMnzbUURLiuBG7m8sxx3r5RaTMYpG1a
+ CMoms9bIPY0fGc7PfQPlweF7n5DQU252Q07TpxqxuxrxQHa/EcN/DKZu+o6wV8UjiM04sRBLY
+ 6/m18Nsw0KozFcrx2w0ZFo9wovnf+zZVoHEPm9Yfi+uWg41Pl6xkURPplPml1PsSe7l47qmxv
+ Q6tuCIzYNNLpgCO8yRTW405zOQT7iAqsyZCSZTPxIsYMD0gFyPnX02rb3dHYTxxIlNNzoj3KJ
+ 12TSAdHof12uEuWrVnqn65gaJsnAA9i4LP0dI1g==
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 24 Sep 2020 14:53:49 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Thu, 24 Sep 2020 14:45:35 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Wed, 23 Sep 2020 19:00:36 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Mailman-Approved-At: Thu, 24 Sep 2020 14:53:17 +0200
-Cc: Michal Marek <michal.lkml@markovi.net>,
-        Gilles Muller <Gilles.Muller@lip6.fr>,
-        Nicolas Palix <nicolas.palix@imag.fr>, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>
-Subject: Re: [Cocci] [PATCH] coccinelle: iterators: Add for_each_child.cocci
-	script
+X-Mailman-Approved-At: Thu, 24 Sep 2020 14:53:48 +0200
+Cc: Rob Herring <robh@kernel.org>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andrzej Hajda <a.hajda@samsung.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Mark Brown <broonie@kernel.org>, Russell King <linux@armlinux.org.uk>,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [Cocci] =?utf-8?q?=5BPATCH=5D_Coccinelle=3A_api=3A_Add_SmPL_scrip?=
+ =?utf-8?b?dCDigJx1c2VfcGxhdGZvcm1fZ2V0X2lycS5jb2NjaeKAnQ==?=
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -147,80 +158,136 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-> +// Confidence: High
+From: Markus Elfring <elfring@users.sourceforge.net>
+Date: Wed, 23 Sep 2020 18:30:25 +0200
 
-Will an addition like the following be helpful?
+A wrapper function is available since the commit 7723f4c5ecdb8d832f049f8483beb0d1081cedf6
+("driver core: platform: Add an error message to platform_get_irq*()").
+Provide design options for the adjustment of affected source code
+by the means of the semantic patch language (Coccinelle software).
 
+Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+---
+ .../coccinelle/api/use_platform_get_irq.cocci | 107 ++++++++++++++++++
+ 1 file changed, 107 insertions(+)
+ create mode 100644 scripts/coccinelle/api/use_platform_get_irq.cocci
+
+diff --git a/scripts/coccinelle/api/use_platform_get_irq.cocci b/scripts/coccinelle/api/use_platform_get_irq.cocci
+new file mode 100644
+index 000000000000..0a0b27a3cd1a
+--- /dev/null
++++ b/scripts/coccinelle/api/use_platform_get_irq.cocci
+@@ -0,0 +1,107 @@
++// SPDX-License-Identifier: GPL-2.0
++/// Simplify a function call combination by using a known wrapper function.
++//
++// Keywords: wrapper function conversion IRQ resources
++// Confidence: High
 +// Options: --no-includes --include-headers
++
++virtual context, patch, report, org
++
++@depends on context@
++expression device, error_code, index, irq, resource, x;
++identifier ri;
++type t;
++@@
++(
++*resource = platform_get_resource(device, IORESOURCE_IRQ, index);
++*if (resource == NULL)
++*{
++*   dev_err(&device->dev, ...);
++*   return error_code;
++*}
++ irq =
++*      resource->start
++ ;
++|
++*t ri = platform_get_resource(device, IORESOURCE_IRQ, index);
++ ... when != ri
++     when != device = x
++*if (ri == NULL)
++*{
++*   dev_err(&device->dev, ...);
++*   return error_code;
++*}
++ irq =
++*      ri->start
++ ;
++)
++
++@depends on patch@
++expression device, error_code, index, irq, resource, x;
++identifier ri;
++type t;
++@@
++(
++-resource = platform_get_resource(device, IORESOURCE_IRQ, index);
++-if (resource == NULL)
++-{
++-   dev_err(&device->dev, ...);
++-   return error_code;
++-}
++ irq =
++-      resource->start
+++      platform_get_irq(device, index)
++ ;
+++if (irq < 0)
+++   return irq;
++|
++-t ri = platform_get_resource(device, IORESOURCE_IRQ, index);
++ ... when != ri
++     when != device = x
++-if (ri == NULL)
++-{
++-   dev_err(&device->dev, ...);
++-   return error_code;
++-}
++ irq =
++-      ri->start
+++      platform_get_irq(device, index)
++ ;
+++if (irq < 0)
+++   return irq;
++)
++
++@or depends on org || report@
++expression device, error_code, index, irq, resource, x;
++identifier ri;
++position p;
++type t;
++@@
++(resource = platform_get_resource(device, IORESOURCE_IRQ, index);
++ if (resource == NULL)
++ {
++    dev_err(&device->dev, ...);
++    return error_code;
++ }
++ irq = resource->start@p;
++|
++ t ri = platform_get_resource(device, IORESOURCE_IRQ, index);
++ ... when != ri
++     when != device = x
++ if (ri == NULL)
++ {
++    dev_err(&device->dev, ...);
++    return error_code;
++ }
++ irq = ri->start@p;
++)
++
++@script:python depends on org@
++p << or.p;
++@@
++coccilib.org.print_todo(p[0], "WARNING: opportunity for platform_get_irq()")
++
++@script:python depends on report@
++p << or.p;
++@@
++coccilib.report.print_report(p[0], "WARNING: opportunity for platform_get_irq()")
+--
+2.28.0
 
-
-> +@r@
-> +local idexpression n;
-> +expression e1,e2;
-> +iterator name for_each_node_by_name, for_each_node_by_type,
-> +for_each_compatible_node, for_each_matching_node,
-> +for_each_matching_node_and_match, for_each_child_of_node,
-> +for_each_available_child_of_node, for_each_node_with_property;
-> +iterator i;
-> +statement S;
-> +expression list [n1] es;
-> +@@
-> +
-> +(
-> +(
-> +for_each_node_by_name(n,e1) S
-> +|
-> +for_each_node_by_type(n,e1) S
-> +|
-> +for_each_compatible_node(n,e1,e2) S
-> +|
-> +for_each_matching_node(n,e1) S
-> +|
-> +for_each_matching_node_and_match(n,e1,e2) S
-> +|
-> +for_each_child_of_node(e1,n) S
-> +|
-> +for_each_available_child_of_node(e1,n) S
-> +|
-> +for_each_node_with_property(n,e1) S
-> +)
-> +&
-> +i(es,n,...) S
-> +)
-
-How do you think about to use the following SmPL code variant?
-
-@r@
-local idexpression n;
-expression e1, e2;
-expression list [n1] es;
-iterator name for_each_node_by_name,
-              for_each_node_by_type,
-              for_each_node_with_property,
-              for_each_matching_node,
-              for_each_matching_node_and_match,
-              for_each_compatible_node,
-              for_each_child_of_node,
-              for_each_available_child_of_node;
-iterator i;
-statement S;
-@@
-(
-(for_each_node_by_name(n,e1) S
-|for_each_node_by_type(n,e1) S
-|for_each_matching_node(n,e1) S
-|for_each_node_with_property(n,e1) S
-|for_each_compatible_node(n,e1,e2) S
-|for_each_matching_node_and_match(n,e1,e2) S
-|for_each_child_of_node(e1,n) S
-|for_each_available_child_of_node(e1,n) S
-)
-&i(es,n,...) S
-)
-
-
-Regards,
-Markus
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
