@@ -2,107 +2,87 @@ Return-Path: <SRS0=mWdE=DZ=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01646C433E7
-	for <cocci@archiver.kernel.org>; Sun, 18 Oct 2020 20:15:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA1B2C433DF
+	for <cocci@archiver.kernel.org>; Sun, 18 Oct 2020 20:15:55 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2FC0622269
-	for <cocci@archiver.kernel.org>; Sun, 18 Oct 2020 20:15:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id AEA292226B
+	for <cocci@archiver.kernel.org>; Sun, 18 Oct 2020 20:15:54 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="KeiQwrW9"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2FC0622269
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="fBWMtzF2"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AEA292226B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 09IKFV91007113;
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 09IKFVDu002212;
 	Sun, 18 Oct 2020 22:15:31 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id CF3AE77CD;
+	by systeme.lip6.fr (Postfix) with ESMTP id 5E1167797;
 	Sun, 18 Oct 2020 22:15:31 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id E03B874CE
- for <cocci@systeme.lip6.fr>; Sun, 18 Oct 2020 22:07:54 +0200 (CEST)
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [63.128.21.124])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 09IK7rM1017220
- for <cocci@systeme.lip6.fr>; Sun, 18 Oct 2020 22:07:54 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1603051673;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=NTLZYWawMA/L7zMDVfD3OfVMnCwMIaw3VHURN6LV+Y0=;
- b=KeiQwrW9sPfr+vR6uMFXkyS2kaqOocIRRR+FWQlSwyfTkQXxjiPahAzVW1ddnTIJ+gsEiG
- 7JlOsTK0WYxPs0HsZtFCA4ptTn3Ti7MJM5yMW5puegDD8Nv8p5F43mFpt6c88Q4nYR7dIF
- uDfZmDlKk4T9UueSRtetz4GmOrcJ1Ww=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-318-Dclq17YnOz6JvcOuTVzdDQ-1; Sun, 18 Oct 2020 16:07:51 -0400
-X-MC-Unique: Dclq17YnOz6JvcOuTVzdDQ-1
-Received: by mail-qk1-f199.google.com with SMTP id m126so5933431qkd.13
- for <cocci@systeme.lip6.fr>; Sun, 18 Oct 2020 13:07:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-transfer-encoding
- :content-language;
- bh=NTLZYWawMA/L7zMDVfD3OfVMnCwMIaw3VHURN6LV+Y0=;
- b=M9pcpn+rn12YtJfcAFFWq5z6tKyO4PLMUGwm6qytS1+pyUy+QQM5tdbQa4iYHrMiYS
- rvtR55E3tzmNiOOwgbyp+n3SCbOt86IwsDHMfrlfCU7AI7sJpzSs9N/Lh4O0uzW7Jpw3
- oWfhIdRFBdHV+3mVXtvUW4QG7XxFkB5JZQ7722ceLg9Tes/ejf3OvSG9uGdfusanTOba
- QDMRQvB+T3EdHYsEMl2rNxK9QdxvUEhvpGaheQU3V8inD5NkRZ6BTmvlHO+Dm2WjmKoA
- 6kQTgjjjApku+RJ8k6Nk5eOfQ0TxfqwWbL0vPptwbbU9+Kd6LgicktoFKc5dh3ijp+pu
- 2lEg==
-X-Gm-Message-State: AOAM530kd+BqDryn8O9yMidfTqG6h7EzPt5Y5Bvr5oHz4yFMWSJaX6jR
- 1E1YhYG6FUwPCFgyy9P5HmGs2U421TSkj+PnU739Oiqid0cE1/9MISqLYotrOnLC5fRA4OvEl29
- +gHBRcPQh3mq2JhI=
-X-Received: by 2002:a05:620a:2018:: with SMTP id
- c24mr13315169qka.154.1603051670699; 
- Sun, 18 Oct 2020 13:07:50 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyOPFqVFv2ElM0J+6h4M5OMFvrz9WjHO0/gGrsguFVm71lDcwnpUchKmvulX5ZULsK/1q+uCQ==
-X-Received: by 2002:a05:620a:2018:: with SMTP id
- c24mr13315160qka.154.1603051670423; 
- Sun, 18 Oct 2020 13:07:50 -0700 (PDT)
-Received: from trix.remote.csb (075-142-250-213.res.spectrum.com.
- [75.142.250.213])
- by smtp.gmail.com with ESMTPSA id 29sm3462782qks.28.2020.10.18.13.07.49
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Sun, 18 Oct 2020 13:07:49 -0700 (PDT)
-To: Joe Perches <joe@perches.com>, Andrew Morton <akpm@linux-foundation.org>
-References: <20201017160928.12698-1-trix@redhat.com>
- <f530b7aeecbbf9654b4540cfa20023a4c2a11889.camel@perches.com>
- <alpine.DEB.2.22.394.2010172016370.9440@hadrien>
- <dfe24da760056e31d90ff639b47c494263b5f4a7.camel@perches.com>
-From: Tom Rix <trix@redhat.com>
-Message-ID: <a15ada1f-9bad-612e-e841-934bff088f38@redhat.com>
-Date: Sun, 18 Oct 2020 13:07:48 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+ by systeme.lip6.fr (Postfix) with ESMTPS id 205AC74CE
+ for <cocci@systeme.lip6.fr>; Sun, 18 Oct 2020 18:46:57 +0200 (CEST)
+Received: from mout.web.de (mout.web.de [212.227.17.11])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 09IGktF2000377;
+ Sun, 18 Oct 2020 18:46:55 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+ s=dbaedf251592; t=1603039614;
+ bh=yK1PJ/gOJq+OOk51w81zO9ptHCKwDVH4mV0AA4IoLoA=;
+ h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+ b=fBWMtzF2F5S0i2Fh6xHrvf0RLadwYn/kMvesHIb93lVeqtPbrTWfc3Mq+Zn+I24pI
+ mqH5gLn7dtMogfPz6Dl60HPzFHndhdOq6T26WgdKQlDflL+FWZGpQKlHk9ZL4yh9fX
+ o4ESTZBYiu9ACHy3XkOun5zIZ8TpagWCJK1LTAjg=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from sonne.localnet ([93.133.46.65]) by smtp.web.de (mrweb101
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0MGAG3-1kh4Fl1e2Z-00FAWv; Sun, 18
+ Oct 2020 18:46:54 +0200
+From: Markus Elfring <Markus.Elfring@web.de>
+To: Julia Lawall <julia.lawall@inria.fr>, Denis Efremov <efremov@linux.com>,
+        Coccinelle <cocci@systeme.lip6.fr>
+Date: Sun, 18 Oct 2020 18:46:53 +0200
+Message-ID: <51716926.XVqqe9kqm5@sonne>
+In-Reply-To: <alpine.DEB.2.22.394.2010181819210.2759@hadrien>
+References: <3528117.7ODa3CK5J5@sonne> <2774601.u91sIFNy1E@sonne>
+ <alpine.DEB.2.22.394.2010181819210.2759@hadrien>
 MIME-Version: 1.0
-In-Reply-To: <dfe24da760056e31d90ff639b47c494263b5f4a7.camel@perches.com>
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=trix@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
+X-Provags-ID: V03:K1:KmSLS3+kP863ygiP8Yd5E3bTEEyHc3ud2fbvs4O7DoQbuTchfFt
+ sSG429O9X1CwPMwQj8/zNs2faDBJFePDY2BM8Duf2BZzlURWXtLaKHDNmpvdD84RUG+Tt2p
+ SWo+BQsc5FYBPmWn7BbP8PjN4fJ5HIwKiMERTnbS+GPygBqdBZMdVS0VX6qKnofjmDuCdGh
+ sQT7H0tEFCbDwYhxtI4AQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:QeQBaokREIg=:3tbjgltXZhtvuGh8tffmCl
+ t2KdLjZW4VphcQsHrr3qB9DXx/zujl3Isye2TcHE0XWA3NoP1b48eUamCuI0WJJ7NSH2eQ3is
+ Tqdl7rwh79t/9CaLFBNIJBDi9mJ9z8cEYb0JFkqk+laQWms6SM+O+Zafy5cHt50qA/44SX/aQ
+ 0xJMSE4ksgEGwVv0eYZMvDhpadOMLURcnSevWA5uawNgzAdp3Dc0NR+BSnfD6kqsRoe7y4zU6
+ Vwckx9eYihws567ehy4EOl1HzKzIi1c09E1fCSD9dBJHsojN4UairJtQ63uLz71SDdg8npDY9
+ TUeG4IddEhITI5jvNIm5pyhnrZ7AVuChF2D9J4M6sFiXlRQ6Nym567hw1SZ//XOKcnV/XCPXB
+ gQyIVRaRbNdrepbdZG7D+A6ghkes841YZxbgKnBLVKMzzvfwOqPczi/HS21ctikyLicmTvL0D
+ 0OS5a+QuP7k+EoXDGj6AamiU7h8LBoLSFPsYjT4blrLNtIYTHlaAlhIQH4nCwL8sAGTonE1eB
+ RIsJY19kojoeu+ZcCwmcqzpH0ZWwygTJOigAJVGsFAPpbtwuBnJ9qjfHwlnh7PhLySH2oyM0r
+ R6dexNZQ4mN2l+VSZkvFOK+InFDmDia2mIsG2K+bxLMOfCGZQRjCBHCsNqPHtNCLrVnKGxB8d
+ yqf48eKcztRelD31nyhdauC1XCvbo8SiVHUHcM5GoVQbdSoJQZ+Qce2BaVoNE0FqfKx08nHVS
+ AUOZFLP/e/4/PsdQg4qzKhfVJfQZUI6y6/fdBGLgHP0Jcs+fGarteO2Dc9tuDHNA7+zvsBOxE
+ X1a/Py8lZiaXuFD+ukY59LIHkO/uVbuub4oK3APB2dCgZX8LxqCdBigjhhMFh8yNHFecQsIXR
+ lhBPoGM3M5hx4Wwif/Mw==
 X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 18 Oct 2020 22:15:31 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sun, 18 Oct 2020 22:07:54 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Sun, 18 Oct 2020 18:46:55 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Mailman-Approved-At: Sun, 18 Oct 2020 22:15:29 +0200
-Cc: linux-kernel@vger.kernel.org, cocci <cocci@systeme.lip6.fr>
-Subject: Re: [Cocci] [PATCH] checkpatch: Allow --fix removal of unnecessary
- break statements
+X-Mailman-Approved-At: Sun, 18 Oct 2020 22:15:30 +0200
+Cc: Michal Marek <michal.lkml@markovi.net>,
+        Gilles Muller <Gilles.Muller@lip6.fr>,
+        Nicolas Palix <nicolas.palix@imag.fr>, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Alexander Popov <alex.popov@linux.com>
+Subject: Re: [Cocci] Determination of an usage statistic for memory
+	allocation calls
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -114,65 +94,24 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-I like!
-
-On 10/18/20 12:49 PM, Joe Perches wrote:
-> switch/case use of break after a return or goto is unnecessary.
->
-> There is an existing warning for these uses, so add a --fix option too.
->
-> Signed-off-by: Joe Perches <joe@perches.com>
-> ---
->
-> For today's next, this would remove ~300 instances like:
->
-> 	case FOO:
-> 		return bar;
-> 		break;
-> or
-> 	case FOO:
-> 		goto bar;
-> 		break;
->
->  scripts/checkpatch.pl | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
->
-> diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
-> index fab38b493cef..22263b278e87 100755
-> --- a/scripts/checkpatch.pl
-> +++ b/scripts/checkpatch.pl
-> @@ -3678,8 +3678,11 @@ sub process {
->  		if ($sline =~ /^\+([\t]+)break\s*;\s*$/) {
->  			my $tabs = $1;
->  			if ($prevline =~ /^\+$tabs(?:goto|return)\b/) {
-
-could add a '|break' here to catch the couple
-
-break;
-
-break;
-
-Reviewed-by: Tom Rix <trix@redhat.com>
-
-> -				WARN("UNNECESSARY_BREAK",
-> -				     "break is not useful after a goto or return\n" . $hereprev);
-> +				if (WARN("UNNECESSARY_BREAK",
-> +					 "break is not useful after a goto or return\n" . $hereprev) &&
-> +				    $fix) {
-> +					fix_delete_line($fixlinenr, $rawline);
-> +				}
->  			}
->  		}
->  
->
->
-
-_______________________________________________
-Cocci mailing list
-Cocci@systeme.lip6.fr
-https://systeme.lip6.fr/mailman/listinfo/cocci
+PiA+IENhbiBzdWNoIGZhY3RzIGluZmx1ZW5jZSB0aGUgc3BlY2lmaWNhdGlvbiBvZiBlZmZpY2ll
+bnQgU21QTCBkaXNqdW5jdGlvbnMgYW5vdGhlciBiaXQ/Cj4gCj4gT24gbXkgbWFjaGluZSwgcHV0
+dGluZyB0aGUgdGhyZWUgZnVuY3Rpb25zIHRoYXQgeW91IGhhdmUgZm91ZG4gdG8gYmUgdGhlCj4g
+bW9zdCBmcmVxdWVudCBhdCB0aGUgZW5kIG9mIGVhY2ggZGlzanVuY3Rpb24gaGFzIG5vIGltcGFj
+dCBvbiB0aGUgcGVyZm9ybWFuY2UuCgpJIHByb3Bvc2UgdG8gcmVjb25zaWRlciB0aGlzIHZpZXcu
+CgoKPiBTbyB3aGF0IGRvIHlvdSBzdWdnZXN0PwoKMS4gSSB3b3VsZCBhcHByZWNpYXRlIGlmIHlv
+dSB3b3VsZCBzaGFyZSBtb3JlIHRlY2huaWNhbCBkZXRhaWxzIGFib3V0IHlvdXIgdGVzdCBlbnZp
+cm9ubWVudAogICBmb3IgYSBzYWZlciBjb21wYXJpc29uLgoKMi4gVGhlIG9ic2VydmVkIHNvZnR3
+YXJlIGJlaGF2aW91ciBjYW4gYmUgY2xhcmlmaWVkIGZ1cnRoZXIsIGNhbid0IGl0PwogICBBc3Bl
+Y3RzIGxpa2UgdGhlIGZvbGxvd2luZyBjYW4gdHJpZ2dlciBjb3JyZXNwb25kaW5nIGRldmVsb3Bt
+ZW50IGNvbnNpZGVyYXRpb25zLgogICAqIOKAnG5vdGljYWJsZeKAnSBkaWZmZXJlbmNlcyAoZGVw
+ZW5kaW5nIG9uIHRoZSBydW4gdGltZSBlbnZpcm9ubWVudCkKICAgKiBtZWFzdXJhYmxlIGVmZmVj
+dHMKICAgKiBtYXRoZW1hdGljYWwgcHJvcGVydGllcyBvZiBhbiBhbGdvcml0aG0KClJlZ2FyZHMs
+Ck1hcmt1cwoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+CkNvY2NpIG1haWxpbmcgbGlzdApDb2NjaUBzeXN0ZW1lLmxpcDYuZnIKaHR0cHM6Ly9zeXN0ZW1l
+LmxpcDYuZnIvbWFpbG1hbi9saXN0aW5mby9jb2NjaQo=
