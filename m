@@ -2,62 +2,90 @@ Return-Path: <SRS0=peAA=EA=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75F75C388F7
-	for <cocci@archiver.kernel.org>; Sun, 25 Oct 2020 20:27:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9FE2C388F7
+	for <cocci@archiver.kernel.org>; Sun, 25 Oct 2020 20:55:19 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AFC3C22284
-	for <cocci@archiver.kernel.org>; Sun, 25 Oct 2020 20:27:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AFC3C22284
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
+	by mail.kernel.org (Postfix) with ESMTPS id 10B3422284
+	for <cocci@archiver.kernel.org>; Sun, 25 Oct 2020 20:55:18 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="hiAyX/hr"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 10B3422284
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 09PKRUax029374;
-	Sun, 25 Oct 2020 21:27:30 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 09PKsw68029849;
+	Sun, 25 Oct 2020 21:54:58 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id B98E25C18;
-	Sun, 25 Oct 2020 21:27:30 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 2FAD35C18;
+	Sun, 25 Oct 2020 21:54:58 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 0D2F95C16
- for <cocci@systeme.lip6.fr>; Sun, 25 Oct 2020 21:27:29 +0100 (CET)
-Received: from mail2-relais-roc.national.inria.fr
- (mail2-relais-roc.national.inria.fr [192.134.164.83])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 09PKRSZf028930
- for <cocci@systeme.lip6.fr>; Sun, 25 Oct 2020 21:27:28 +0100 (CET)
-X-IronPort-AV: E=Sophos;i="5.77,417,1596492000"; d="scan'208";a="474226999"
-Received: from 173.121.68.85.rev.sfr.net (HELO hadrien) ([85.68.121.173])
- by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 25 Oct 2020 21:27:27 +0100
-Date: Sun, 25 Oct 2020 21:27:27 +0100 (CET)
-From: Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
-To: Markus Elfring <Markus.Elfring@web.de>
-In-Reply-To: <bee0c5df-8f28-ee9d-99e2-abbf84df76e6@web.de>
-Message-ID: <alpine.DEB.2.22.394.2010252122320.2714@hadrien>
+ by systeme.lip6.fr (Postfix) with ESMTPS id D8D205C16
+ for <cocci@systeme.lip6.fr>; Sun, 25 Oct 2020 21:45:36 +0100 (CET)
+Received: from mout.web.de (mout.web.de [217.72.192.78])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 09PKjauG022421;
+ Sun, 25 Oct 2020 21:45:36 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+ s=dbaedf251592; t=1603658734;
+ bh=XpHzDDphpGg8/UbUK1m3E36mNaylukbZlKLFkPPatW8=;
+ h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+ b=hiAyX/hrN2bZwnfh1uPjjJrSpkbR2x0pAH/pMUidBHNkrpKvoOQtgGfv4AgapyVN/
+ IAIYYIUNrqZxbWMWbQrs+sSzvkF5frB2tI4OAEwJwE5LKEPjvg+ekOCWS9KXDt6qCV
+ kBF2Tr9aXbXOmsPej1TjH3hhLuvBH1dGVU9Z9kMI=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([2.244.86.219]) by smtp.web.de (mrweb105
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 1MG994-1kcHb82UzE-00Gf7N; Sun, 25
+ Oct 2020 21:45:34 +0100
+To: Julia Lawall <julia.lawall@inria.fr>, Coccinelle <cocci@systeme.lip6.fr>
 References: <0d1575b0-ab37-663e-2464-278fd76280b5@web.de>
  <alpine.DEB.2.22.394.2010251924290.2714@hadrien>
  <8f58a94e-b093-a587-c56a-a0ea0fc1f3ea@web.de>
  <alpine.DEB.2.22.394.2010251955280.2714@hadrien>
  <bee0c5df-8f28-ee9d-99e2-abbf84df76e6@web.de>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+ <alpine.DEB.2.22.394.2010252122320.2714@hadrien>
+From: Markus Elfring <Markus.Elfring@web.de>
+Message-ID: <f32d351f-24a0-be5f-2905-1828943a6512@web.de>
+Date: Sun, 25 Oct 2020 21:45:33 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1179668747-1603657647=:2714"
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 25 Oct 2020 21:27:31 +0100 (CET)
+In-Reply-To: <alpine.DEB.2.22.394.2010252122320.2714@hadrien>
+Content-Language: en-GB
+X-Provags-ID: V03:K1:zA5eNEJ96XyR5WBFOZV1K46lyETuuWhU07mEm3e1MEyMpcMj4iw
+ na2jGIiII5gRS03enf07utUZfaKvOvmoJxHFrzoKcl5T34d+4bGPkAV4J4r1r0+lNttu/+c
+ 0a1Yc4YqziFiuYm70NM5xf8B83BE4Qme16AUwBDq/EFBqR4hYzN/XZuBuI6NsreX5TvBnLI
+ 0w1ACwVCn59RQqP3u5sow==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Bhyy0d6qwho=:aIvyh2WTMransmz0x5wCS9
+ LJfaumrjcJ6zZQ8KbPfsbKmZ1e1Iwf8iiWv1iKWD4mxSESg2P9LopnhkWSChsv7Mm7hX4Lt0g
+ +Q6y/cgOjsAnN/sGOscinisr7UEmjxAUoFk/8myFRA4r+1miJ/CYStKFgCQ6L4ZteiI10Q7F6
+ nrtLcCM0vE0U7JcBtsgxiZIYVft9xsj7xCZ//8lAbxdsmP6ljmVyq+efUpYUAIpwrq9s6hDSp
+ 4KN6R3ppmASHctTMsgBzkehO5crx68RAC1sVMMX+uORA5FzAg3Q5JxqPtQKgZQuE7POOfeiG2
+ FAB+DC+bHNw5BW/tzKhkfJ2W/XT+myrv8DCeHr6Th2VJ1n2s/OwP9Y5YAOQ6kSXvj6Kno/E2q
+ cyory42r8BEHHjPRGcQ/o747lcAmqlurisLER6l3oTObKBxCnbOy8GOwzLX/ZB8pbi4CtH1gX
+ a8SQRFTeKKyCGUwbW5lV/Ww7JTdNSk7sH5ELtpzhzfi8SIvAL90lqhpYo4tPFuJpVjLQEnd11
+ OUEcJSPWOe537hmbrrK1x+cv1XLUenpuavRRjOgLJjFjwFz+PKCi1p2mNBcaAF50fStvYjbRQ
+ qZ9z0Ung0QxsFCieI5xLGSBSpmUI4dMisWke6JZUnA5brVBIeI8c2/tmJP6Tuz45dphWWAbMt
+ 3c73VBPb/9+0RoNUy3Rmpc6xsPbHFzmvePGW0uXc3gXJPI5AGFtdCeR8Dr/FSEc2ukNswVyac
+ CGaWTN9CD0cegZnhLc+Q/1jkoWDJx+2Nd88qqZnU3+3a92vGl6DgEclMLj3SHwvdQ/5j/RXQ/
+ GcSelkDS4zlYMcm7c6jy8JGEL/R4V4xWDZ2ogWIWjf97oNzwS4aKoSwuUWOOoyRZa9Q+aN4zx
+ j9JqOM3iGkH1mAeiMDxA==
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 25 Oct 2020 21:54:58 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sun, 25 Oct 2020 21:27:28 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Sun, 25 Oct 2020 21:45:36 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Michal Marek <michal.lkml@markovi.net>,
-        Gilles Muller <Gilles.Muller@lip6.fr>,
-        Nicolas Palix <nicolas.palix@imag.fr>, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Coccinelle <cocci@systeme.lip6.fr>
+X-Mailman-Approved-At: Sun, 25 Oct 2020 21:54:56 +0100
+Cc: kernel-janitors@vger.kernel.org, Michal Marek <michal.lkml@markovi.net>,
+        Nicolas Palix <nicolas.palix@imag.fr>, linux-kernel@vger.kernel.org,
+        Gilles Muller <Gilles.Muller@lip6.fr>
 Subject: Re: [Cocci]
  =?utf-8?q?Coccinelle=3A_null=3A_Optimise_disjunctions_in_?=
  =?utf-8?b?U21QTCBzY3JpcHQg4oCcZW5vLmNvY2Np4oCd?=
@@ -72,98 +100,48 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+> In the patch case, the user and system time are essentially identical.
+> In the context case, the difference in user time is 2 seconds out of 9.5
+> minutes, 0.3%.
 
---8323329-1179668747-1603657647=:2714
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-
+This was just a single test run example.
 
 
-On Sun, 25 Oct 2020, Markus Elfring wrote:
+> In the patch case, the real time is a bit slower.
 
-> >> Would you become interested to configure a representative test environment
-> >> for safe comparisons of corresponding run time characteristics
-> >> of the affected software?
-> >
-> > In what sense could the comparison possibly be unsafe?
+I wonder about such an interpretation.
+
+
+> But I believe that this is due to the time to read in the data from the file system.
+
+I assume that I could reduce such an influence a bit if I would put
+(my) Linux repository into a RAM disk.
+
+
+> I also had a number like that, but the difference disappeared
+> when I reran it afterwards, which meant running that case in the same conditions
+> as the others.
 >
-> * Our test systems are obviously different.
->   Thus concerns can be considered for reproducibility of test results
->   on other possible configurations.
->
-> * We share only a tiny fraction of technical information which would probably
->   be needed for “benchmarks”.
->
->
-> > Just use time and run spatch on whatever machine you want.
->
-> fring@Sonne:~/Projekte/Linux/next-patched>
-> elfring@Sonne:~/Projekte/Linux/next-patched> git checkout next-20201023 && XX=$(date) && time spatch -D patch --timeout 9 --jobs 4 --chunksize 1 --include-headers --no-includes --dir . scripts/coccinelle/null/eno.cocci > ~/Projekte/Bau/Linux/scripts/Coccinelle/call_checks/20201023/eno1.diff 2> ~/Projekte/Bau/Linux/scripts/Coccinelle/call_checks/20201023/eno1-errors.txt; YY=$(date) && echo "$XX | $YY"
-> …
-> real	2m54,266s
-> user	10m15,553s
-> sys	0m4,004s
-> So 25. Okt 20:53:56 CET 2020 | So 25. Okt 20:56:51 CET 2020
-> elfring@Sonne:~/Projekte/Linux/next-patched> git checkout next-20201023 && XX=$(date) && time spatch -D context --timeout 9 --jobs 4 --chunksize 1 --include-headers --no-includes --dir . scripts/coccinelle/null/eno.cocci > ~/Projekte/Bau/Linux/scripts/Coccinelle/call_checks/20201023/eno2.txt 2> ~/Projekte/Bau/Linux/scripts/Coccinelle/call_checks/20201023/eno2-errors.txt; YY=$(date) && echo "$XX | $YY"
-> …
-> real	2m38,494s
-> user	9m39,364s
-> sys	0m4,094s
-> So 25. Okt 20:58:05 CET 2020 | So 25. Okt 21:00:44 CET 2020
-> elfring@Sonne:~/Projekte/Linux/next-patched> git checkout optimise_disjunction_in_eno.cocci-1 && XX=$(date) && time spatch -D patch --timeout 9 --jobs 4 --chunksize 1 --include-headers --no-includes --dir . scripts/coccinelle/null/eno.cocci > ~/Projekte/Bau/Linux/scripts/Coccinelle/call_checks/20201023/eno3.diff 2> ~/Projekte/Bau/Linux/scripts/Coccinelle/call_checks/20201023/eno3-errors.txt; YY=$(date) && echo "$XX | $YY"
-> …
-> real	2m46,097s
-> user	10m15,467s
-> sys	0m3,984s
-> So 25. Okt 21:00:56 CET 2020 | So 25. Okt 21:03:42 CET 2020
-> elfring@Sonne:~/Projekte/Linux/next-patched> git checkout optimise_disjunction_in_eno.cocci-1 && XX=$(date) && time spatch -D context --timeout 9 --jobs 4 --chunksize 1 --include-headers --no-includes --dir . scripts/coccinelle/null/eno.cocci > ~/Projekte/Bau/Linux/scripts/Coccinelle/call_checks/20201023/eno4.txt 2> ~/Projekte/Bau/Linux/scripts/Coccinelle/call_checks/20201023/eno4-errors.txt; YY=$(date) && echo "$XX | $YY"
-> …
-> real	2m41,472s
-> user	9m37,492s
-> sys	0m3,834s
+> In the context case, the real time is slightly slower with your patch.
 
-In the patch case, the user and system time are essentially identical.  In
-the context case, the difference in user time is 2 seconds out of 9.5
-minutes, 0.3%.
+I guess that the small variations from such a test approach can eventually become
+more interesting.
 
-In the patch case, the real time is a bit slower.  But I believe that this
-is due to the time to read in the data from the file system.  I also had a
-number like that, but the difference disappeared when I reran it
-afterwards, which meant running that case in the same conditions as the
-others.
 
-In the context case, the real time is slightly slower with your patch.
+> So I see no compelling evidence for making the change.
 
-So I see no compelling evidence for making the change.
+This can be.
 
-julia
+Should any other differences become more significant?
 
-> So 25. Okt 21:03:56 CET 2020 | So 25. Okt 21:06:37 CET 2020
->
->
-> > Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz
->
-> AMD Phenom(tm) II X4 850 Processor
->
-> Will any other aspects become relevant?
->
-> Regards,
-> Markus
->
---8323329-1179668747-1603657647=:2714
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Regards,
+Markus
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
 https://systeme.lip6.fr/mailman/listinfo/cocci
-
---8323329-1179668747-1603657647=:2714--
