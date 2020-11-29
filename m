@@ -2,46 +2,45 @@ Return-Path: <SRS0=5OGr=FD=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB8E3C3E8C5
-	for <cocci@archiver.kernel.org>; Sun, 29 Nov 2020 15:18:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2F6BC3E8C5
+	for <cocci@archiver.kernel.org>; Sun, 29 Nov 2020 15:53:17 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 13D792080C
-	for <cocci@archiver.kernel.org>; Sun, 29 Nov 2020 15:18:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 13D792080C
+	by mail.kernel.org (Postfix) with ESMTPS id CEB6520829
+	for <cocci@archiver.kernel.org>; Sun, 29 Nov 2020 15:53:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CEB6520829
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0ATFIBpq007515;
-	Sun, 29 Nov 2020 16:18:11 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0ATFqtb3006182;
+	Sun, 29 Nov 2020 16:52:55 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 1E4B4779F;
-	Sun, 29 Nov 2020 16:18:11 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 3FCAA779F;
+	Sun, 29 Nov 2020 16:52:55 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 557AD454B
- for <cocci@systeme.lip6.fr>; Sun, 29 Nov 2020 16:18:09 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 6041D454B
+ for <cocci@systeme.lip6.fr>; Sun, 29 Nov 2020 16:52:53 +0100 (CET)
 Received: from mail3-relais-sop.national.inria.fr
  (mail3-relais-sop.national.inria.fr [192.134.164.104])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0ATFI8n7025066
- for <cocci@systeme.lip6.fr>; Sun, 29 Nov 2020 16:18:08 +0100 (CET)
-X-IronPort-AV: E=Sophos;i="5.78,379,1599516000"; d="scan'208";a="365985304"
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 0ATFqqPm012283
+ for <cocci@systeme.lip6.fr>; Sun, 29 Nov 2020 16:52:52 +0100 (CET)
+X-IronPort-AV: E=Sophos;i="5.78,379,1599516000"; d="scan'208";a="365986351"
 Received: from 173.121.68.85.rev.sfr.net (HELO hadrien) ([85.68.121.173])
  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 29 Nov 2020 16:18:08 +0100
-Date: Sun, 29 Nov 2020 16:18:08 +0100 (CET)
+ 29 Nov 2020 16:52:51 +0100
+Date: Sun, 29 Nov 2020 16:52:51 +0100 (CET)
 From: Julia Lawall <julia.lawall@inria.fr>
 X-X-Sender: jll@hadrien
 To: Markus Elfring <Markus.Elfring@web.de>
-In-Reply-To: <beeb673b-65b5-fdef-f300-c86a4bd0abc7@web.de>
-Message-ID: <alpine.DEB.2.22.394.2011291617340.2671@hadrien>
+In-Reply-To: <cf0e2d68-d76b-5892-b97e-36a270732028@web.de>
+Message-ID: <alpine.DEB.2.22.394.2011291652000.2671@hadrien>
 References: <13b38013-8d4f-55fa-3c0e-ead782031659@web.de>
  <alpine.DEB.2.22.394.2011281844070.2725@hadrien>
  <feb351dc-537f-0f83-d9ec-cf16796ac0ee@web.de>
@@ -58,12 +57,14 @@ References: <13b38013-8d4f-55fa-3c0e-ead782031659@web.de>
  <79d4245d-6f34-7b8d-d632-99afcc1d228a@web.de>
  <alpine.DEB.2.22.394.2011291543520.2671@hadrien>
  <beeb673b-65b5-fdef-f300-c86a4bd0abc7@web.de>
+ <alpine.DEB.2.22.394.2011291617340.2671@hadrien>
+ <cf0e2d68-d76b-5892-b97e-36a270732028@web.de>
 User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-892006503-1606663088=:2671"
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 29 Nov 2020 16:18:11 +0100 (CET)
+Content-Type: multipart/mixed; boundary="8323329-1887534753-1606665172=:2671"
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sun, 29 Nov 2020 16:52:56 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sun, 29 Nov 2020 16:18:08 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Sun, 29 Nov 2020 16:52:52 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: Coccinelle <cocci@systeme.lip6.fr>
@@ -85,7 +86,7 @@ Errors-To: cocci-bounces@systeme.lip6.fr
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-892006503-1606663088=:2671
+--8323329-1887534753-1606665172=:2671
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8BIT
 
@@ -93,34 +94,26 @@ Content-Transfer-Encoding: 8BIT
 
 On Sun, 29 Nov 2020, Markus Elfring wrote:
 
-> >>> I think it would suffice to iterate over a rule that ensures that the
-> >>> pattern of interest does not occur before the place where it is matched.
-> >>
-> >> It seems that I stumble still on understanding difficulties for the application
-> >> of “iteration” according to the SmPL meaning.
-> >>
-> >> Something should provide elements with which an iteration step can work finally.
-> >> I find it challenging to extract such information from mentioned demo scripts.
-> >> https://github.com/coccinelle/coccinelle/blob/730dbb034559b3e549ec0b2973cd0400a3fa072f/docs/manual/cocci_syntax.tex#L1981
+> >> I guess that I know the set of identifiers already for which a transformation
+> >> loop could be performed.
+> >> I am unsure about the way to integrate such items into a “demonstrated”
+> >> data processing approach so far.
 > >
-> > When you rule matches, ie you make a change, then you can run Coccinelle
-> > again on the result, by calling something like the add_if_not_present
-> > function shown in the example.
+> > I think that the only part of the functionality that you need is
+> >
+> > it = Iteration()
+> > it.register()
 >
-> I find this information only partly reasonable.
->
-> I guess that I know the set of identifiers already for which a transformation
-> loop could be performed.
-> I am unsure about the way to integrate such items into a “demonstrated”
-> data processing approach so far.
+> Where should I specify the known function names for which a transformation
+> should be tried?
 
-I think that the only part of the functionality that you need is
+In your rule.  In the place of A, in my example.
 
-it = Iteration()
-it.register()
+I would still suggest to have one rule per function, rather than trying to
+do everything at once.
 
 julia
---8323329-892006503-1606663088=:2671
+--8323329-1887534753-1606665172=:2671
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -131,4 +124,4 @@ Cocci mailing list
 Cocci@systeme.lip6.fr
 https://systeme.lip6.fr/mailman/listinfo/cocci
 
---8323329-892006503-1606663088=:2671--
+--8323329-1887534753-1606665172=:2671--
