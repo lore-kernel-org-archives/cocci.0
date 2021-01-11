@@ -1,83 +1,75 @@
-Return-Path: <SRS0=u1YL=GM=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=qIOj=GO=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 277D4C433DB
-	for <cocci@archiver.kernel.org>; Sat,  9 Jan 2021 09:10:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65DE7C433E0
+	for <cocci@archiver.kernel.org>; Mon, 11 Jan 2021 20:06:46 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4F6A223A3A
-	for <cocci@archiver.kernel.org>; Sat,  9 Jan 2021 09:10:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4F6A223A3A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4E64422CB1
+	for <cocci@archiver.kernel.org>; Mon, 11 Jan 2021 20:06:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4E64422CB1
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 1099ALMA001589;
-	Sat, 9 Jan 2021 10:10:21 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 10BK6HK3029870;
+	Mon, 11 Jan 2021 21:06:17 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 765CE77A3;
-	Sat,  9 Jan 2021 10:10:21 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 4419977B8;
+	Mon, 11 Jan 2021 21:06:17 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id A6DD9454B
- for <cocci@systeme.lip6.fr>; Sat,  9 Jan 2021 10:10:19 +0100 (CET)
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 1099AI4W026831
- for <cocci@systeme.lip6.fr>; Sat, 9 Jan 2021 10:10:19 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1610183418;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=knQafjxd+bKwdSM4pmnsIxjF+ty++e9tJTrqnBNkuAE=;
- b=Up4KA/Sb+wexbs/J2f29N7JzI2p2J5oZuG9Bb7H6i2XbQnR5u26bOlEhMgEO6VCautcWDO
- BoLPGJRz6JjVRKaHHbDzcGAfJWgbAJqAoIGxmz9eVcw+2JCBb5RZrjUTJ4WAejtRI3esiW
- ps7yeiDqLeYWEXq9fs70MRZ6IjWEyqE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-439-84PBNUESP8ucsqRiWmKTDQ-1; Sat, 09 Jan 2021 04:10:13 -0500
-X-MC-Unique: 84PBNUESP8ucsqRiWmKTDQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
- [10.5.11.22])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D6EF3800D55;
- Sat,  9 Jan 2021 09:10:11 +0000 (UTC)
-Received: from localhost (ovpn-114-98.ams2.redhat.com [10.36.114.98])
- by smtp.corp.redhat.com (Postfix) with ESMTP id A3D3F10013BD;
- Sat,  9 Jan 2021 09:10:10 +0000 (UTC)
-Date: Sat, 9 Jan 2021 09:10:09 +0000
-From: "Richard W.M. Jones" <rjones@redhat.com>
-To: Thierry Martinez <Thierry.Martinez@inria.fr>
-Message-ID: <20210109091009.GK30079@redhat.com>
-References: <20210105190008.GB27779@redhat.com>
- <alpine.DEB.2.22.394.2101082341230.2796@hadrien>
- <ow4mtxjyqhx.fsf@inria.fr>
+ by systeme.lip6.fr (Postfix) with ESMTPS id 7B7AC74B6
+ for <cocci@systeme.lip6.fr>; Mon, 11 Jan 2021 21:06:15 +0100 (CET)
+Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com
+ [209.85.208.170])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 10BK6FPf021580
+ for <cocci@systeme.lip6.fr>; Mon, 11 Jan 2021 21:06:15 +0100 (CET)
+Received: by mail-lj1-f170.google.com with SMTP id f17so233809ljg.12
+ for <cocci@systeme.lip6.fr>; Mon, 11 Jan 2021 12:06:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:to:from:subject:message-id:date:user-agent
+ :mime-version:content-language:content-transfer-encoding;
+ bh=tEqCbKvyInYudB1ntu8rKmkiwI+IpFsdCWrD+LJEiKI=;
+ b=ZU8Zzgo/V6omHAtGGTvnQzRmYvDINkY9ZtctO94DJxz9qZbpX4kHwG2ekNh1F7g5QC
+ P/0RJqcwLlE1Z94h7zrlpygrNWJqHU/4Qa5VRtBookL2Ts2Y4zqO4KeXpJAg+ZnVaAQL
+ +D7fMwmw6B/XvMWvMk3yIiNviTCpGiI40Up1VW60fA7AJ7cbMHIH2Cwk96u1XQ/GzU/Q
+ 4Vwze5uC0SUHqaVdbG4UxZYRa7GgA883r3hHvUQgxkYXH9jiNDQ5GCZpK/6UxUXQEsUS
+ WB3cnbgzrpUZYKMa4X/HfibqDbGiIKym+Ci0uEQ3P88HfA61W5SKrkWo9F7DRljLqaom
+ aIsw==
+X-Gm-Message-State: AOAM533gMfJbma2jKiRWatGQMbdjViN9ZmBCzuqvPFqwtCSctA1psJQo
+ E4P7DM2YvU3pVkYynizpQlv331RfZjOo4Q==
+X-Google-Smtp-Source: ABdhPJxccL8USHFdMSNpD1++++vHlr9PT/srapqkitlnDmEJdb0oD4oG2lH3tmPKkwHX6K0yoLCXuA==
+X-Received: by 2002:a2e:50c:: with SMTP id 12mr499448ljf.226.1610395574231;
+ Mon, 11 Jan 2021 12:06:14 -0800 (PST)
+Received: from [10.68.32.192] (broadband-188-32-236-56.ip.moscow.rt.ru.
+ [188.32.236.56])
+ by smtp.gmail.com with ESMTPSA id r8sm84683ljp.12.2021.01.11.12.06.13
+ for <cocci@systeme.lip6.fr>
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Mon, 11 Jan 2021 12:06:13 -0800 (PST)
+To: Coccinelle <cocci@systeme.lip6.fr>
+From: Denis Efremov <efremov@linux.com>
+Message-ID: <854fdad7-cf2d-49d8-571c-1ac64fa90fb6@linux.com>
+Date: Mon, 11 Jan 2021 23:06:12 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-In-Reply-To: <ow4mtxjyqhx.fsf@inria.fr>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+Content-Language: en-US
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 11 Jan 2021 21:06:17 +0100 (CET)
+X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [132.227.60.2]); Mon, 11 Jan 2021 21:06:15 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=rjones@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Disposition: inline
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 09 Jan 2021 10:10:21 +0100 (CET)
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sat, 09 Jan 2021 10:10:19 +0100 (CET)
-Cc: cocci@systeme.lip6.fr
-Subject: Re: [Cocci] Python 3.10 again: _Py_fopen deprecated
+Subject: [Cocci] How to match function-like macro calls,
+	e.g. RTA_ALIGN(rta->rta_len)?
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -89,96 +81,46 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-On Sat, Jan 09, 2021 at 12:10:18AM +0100, Thierry Martinez wrote:
-> Hi, Richard.
-> =
+Hi,
 
-> Thank you very much for your two successive reports about
-> incompatibilities between pyml and Python 3.10. They should have been
-> fixed now.
-> =
+Let's suppose I want to match otx_cpt_aead_cbc_aes_sha_setkey() function from
+drivers/crypto/marvell/octeontx/otx_cptvf_algs.c file (linux kernel).
 
-> Richard:
-> >> What I don't understand from the pyxml code is why we use these
-> >> internal Python functions at all, instead of calling regular C
-> >> functions like fopen etc.  In fact it seems like for Python 2 we did
-> >> call fopen ...
-> =
+My pattern:
+@exists@
+identifier rta, param, key, keylen;
+position p;
+@@
 
-> Indeed, for Python 2, there is a fallback to fopen since Py_fopen is not
-> available.  When Py_fopen or Py_wfopen are available, we prefer to use
-> them because they handle the Windows special case.
+otx_cpt_aead_cbc_aes_sha_setkey(...,
+	unsigned char *key, unsigned int keylen)
+{
+	...
+*	if (RTA_PAYLOAD(rta) < sizeof(*param))@p
+		goto badkey;
+	...
+*	key += RTA_ALIGN(rta->rta_len);
+*	keylen -= RTA_ALIGN(rta->rta_len);
+	...
+}
 
-Oh I see, that makes sense.
+$ spatch --no-includes --include-headers --cocci-file test.cocci drivers/crypto/marvell/octeontx/otx_cptvf_algs.c
+init_defs_builtins: /usr/lib64/coccinelle/standard.h
+minus: parse error: 
+  File "test.cocci", line 13, column 9, charpos = 219
+  around = 'RTA_ALIGN',
+  whole content = *     key += RTA_ALIGN(rta->rta_len);
 
-Rich.
 
-> Best regards.
-> -- =
+What can I do to match RTA_ALIGN(...) lines?
 
-> Thierry.
-> =
-
-> Julia Lawall=C2=A0:
-> > On Tue, 5 Jan 2021, Richard W.M. Jones wrote:
-> >
-> >> Firstly a gentle reminder that there's a patch waiting to be applied:
-> >> https://systeme.lip6.fr/pipermail/cocci/2020-November/thread.html#8398
-> >>
-> >> Different from that patch, but still related to Python 3.10, we've got
-> >> another bug report here:
-> >> https://bugzilla.redhat.com/show_bug.cgi?id=3D1912931
-> >>
-> >> This time _Py_fopen has been deprecated, replaced by _Py_wfopen or
-> >> _Py_fopen_obj.  It's unclear which is better.  The two functions are
-> >> documented here:
-> >> https://github.com/python/cpython/blob/master/Python/fileutils.c#L1418
-> >>
-> >> What I don't understand from the pyxml code is why we use these
-> >> internal Python functions at all, instead of calling regular C
-> >> functions like fopen etc.  In fact it seems like for Python 2 we did
-> >> call fopen ...
-> >
-> > Everything should be up to date now on github.  Thanks for your help.
-> > Thierry will contact you directly about the choice of fopen.
-> >
-> > julia
-> >
-> >>
-> >> Rich.
-> >>
-> >> --
-> >> Richard Jones, Virtualization Group, Red Hat http://people.redhat.com/=
-~rjones
-> >> Read my programming and virtualization blog: http://rwmj.wordpress.com
-> >> Fedora Windows cross-compiler. Compile Windows programs, test, and
-> >> build Windows installers. Over 100 libraries supported.
-> >> http://fedoraproject.org/wiki/MinGW
-> >>
-> >> _______________________________________________
-> >> Cocci mailing list
-> >> Cocci@systeme.lip6.fr
-> >> https://systeme.lip6.fr/mailman/listinfo/cocci
-> >>
-> > _______________________________________________
-> > Cocci mailing list
-> > Cocci@systeme.lip6.fr
-> > https://systeme.lip6.fr/mailman/listinfo/cocci
-
--- =
-
-Richard Jones, Virtualization Group, Red Hat http://people.redhat.com/~rjon=
-es
-Read my programming and virtualization blog: http://rwmj.wordpress.com
-virt-p2v converts physical machines to virtual machines.  Boot with a
-live CD or over the network (PXE) and turn machines into KVM guests.
-http://libguestfs.org/virt-v2v
-
+Thanks,
+Denis
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
