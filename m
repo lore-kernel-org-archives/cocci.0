@@ -2,71 +2,55 @@ Return-Path: <SRS0=/q4u=HO=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D721AC433DB
-	for <cocci@archiver.kernel.org>; Fri, 12 Feb 2021 07:51:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0DAFC433E0
+	for <cocci@archiver.kernel.org>; Fri, 12 Feb 2021 14:05:26 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1BC1C64E13
-	for <cocci@archiver.kernel.org>; Fri, 12 Feb 2021 07:51:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1BC1C64E13
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linuxfoundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id A59EF61490
+	for <cocci@archiver.kernel.org>; Fri, 12 Feb 2021 14:05:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A59EF61490
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 11C7pevd029701;
-	Fri, 12 Feb 2021 08:51:40 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 11CE52hR010306;
+	Fri, 12 Feb 2021 15:05:02 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id C385577AC;
-	Fri, 12 Feb 2021 08:51:40 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id EE17477AC;
+	Fri, 12 Feb 2021 15:05:01 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 6CD0B3B26
- for <cocci@systeme.lip6.fr>; Fri, 12 Feb 2021 08:34:14 +0100 (CET)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 11C7YCJh018970
- for <cocci@systeme.lip6.fr>; Fri, 12 Feb 2021 08:34:13 +0100 (CET)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D2F6E64DDF;
- Fri, 12 Feb 2021 07:34:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
- s=korg; t=1613115251;
- bh=neLigVsdoN+CYxyJjxX/qAVzIuWLkdZyDMtjMwYqrLI=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=HXxvvzoLkjPDeR3JvcBQ0yM6umQwZkmsCLbD2ensoMiDSwJ12mr5vWKrB0DrZiHW7
- Gekvt4dNU/S+p5AIGSg4dt+0WYDyTcu/6XVXII5HxZO1gqLk/3yDI3Wlulmpn0zOJp
- 7rgsu6cSkxMG72w51fu99lYoEdiG5ZacmY648UG0=
-Date: Fri, 12 Feb 2021 08:34:09 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Rob Herring <robh@kernel.org>
-Message-ID: <YCYvcUNiPoG/ipyj@kroah.com>
-References: <20210211232745.1498137-1-robh@kernel.org>
+ by systeme.lip6.fr (Postfix) with ESMTPS id 010633B26
+ for <cocci@systeme.lip6.fr>; Fri, 12 Feb 2021 15:05:00 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr
+ (mail3-relais-sop.national.inria.fr [192.134.164.104])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 11CE4vGh005559
+ for <cocci@systeme.lip6.fr>; Fri, 12 Feb 2021 15:04:57 +0100 (CET)
+X-IronPort-AV: E=Sophos;i="5.81,173,1610406000"; d="scan'208";a="372900469"
+Received: from 173.121.68.85.rev.sfr.net (HELO hadrien) ([85.68.121.173])
+ by mail3-relais-sop.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 12 Feb 2021 15:04:56 +0100
+Date: Fri, 12 Feb 2021 15:04:56 +0100 (CET)
+From: Julia Lawall <julia.lawall@inria.fr>
+X-X-Sender: jll@hadrien
+To: Denis Efremov <efremov@linux.com>
+In-Reply-To: <0c2a01f3-e48b-fc67-78b4-f061026aec42@linux.com>
+Message-ID: <alpine.DEB.2.22.394.2102121504100.9350@hadrien>
+References: <0c2a01f3-e48b-fc67-78b4-f061026aec42@linux.com>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20210211232745.1498137-1-robh@kernel.org>
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 12 Feb 2021 08:51:41 +0100 (CET)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 12 Feb 2021 15:05:02 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Fri, 12 Feb 2021 08:34:13 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Fri, 12 Feb 2021 15:04:57 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Mailman-Approved-At: Fri, 12 Feb 2021 08:51:38 +0100
-Cc: cocci@systeme.lip6.fr, devicetree@vger.kernel.org,
-        Michal Marek <michal.lkml@markovi.net>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>, linuxppc-dev@lists.ozlabs.org,
-        Nicolas Palix <nicolas.palix@imag.fr>,
-        Patrice Chotard <patrice.chotard@st.com>, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, Paul Mackerras <paulus@samba.org>,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-arm-kernel@lists.infradead.org, Felipe Balbi <balbi@kernel.org>
-Subject: Re: [Cocci] [PATCH v2 0/2] of: of_device.h cleanups
+Cc: cocci@systeme.lip6.fr
+Subject: Re: [Cocci] Backward compatibility issue
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -83,12 +67,40 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-On Thu, Feb 11, 2021 at 05:27:43PM -0600, Rob Herring wrote:
-> This is a couple of cleanups for of_device.h. They fell out from my
-> attempt at decoupling of_device.h and of_platform.h which is a mess
-> and I haven't finished, but there's no reason to wait on these.
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+On Thu, 11 Feb 2021, Denis Efremov wrote:
+
+> Hi, one of my patterns started to fail tests on latest coccinelle.
+> I've bisected the commit that introduces "error". It's:
+> commit db60e916633d2cb3ae31140364783fdf85ed10f4
+> "make information about SmPL iterator and declarer names available to the C parser"
+>
+> To reproduce the error:
+> $ cd linux
+> $ git checkout 5b01014759991887b1e450c9def01e58c02ab81b
+> $ wget https://raw.githubusercontent.com/evdenis/cvehound/master/cvehound/cve/CVE-2016-9793.cocci
+> $ spatch -D detect --cocci-file CVE-2016-9793.cocci net/core/sock.c
+> # spatch before db60e916633d2cb3ae31140364783fdf85ed10f4 will find the match
+> net/core/sock.c:718:16-17: ERROR: CVE-2016-9793
+> net/core/sock.c:754:16-17: ERROR: CVE-2016-9793
+> ...
+> # spatch >= db60e916633d2cb3ae31140364783fdf85ed10f4 will not match the same code
+
+If you change typedef u32 to symbol u32, it should be good.  It is no use
+to Coccinelle to know that u32 is a typedef in this code.
+
+julia
+
+
+>
+> Thanks,
+> Denis
+> _______________________________________________
+> Cocci mailing list
+> Cocci@systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
+>
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
