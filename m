@@ -2,78 +2,74 @@ Return-Path: <SRS0=pxvX=HV=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09085C433DB
-	for <cocci@archiver.kernel.org>; Fri, 19 Feb 2021 09:07:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A933C433E0
+	for <cocci@archiver.kernel.org>; Fri, 19 Feb 2021 09:25:12 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5FE8C64EAF
-	for <cocci@archiver.kernel.org>; Fri, 19 Feb 2021 09:07:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5FE8C64EAF
+	by mail.kernel.org (Postfix) with ESMTPS id AC06064DD3
+	for <cocci@archiver.kernel.org>; Fri, 19 Feb 2021 09:25:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AC06064DD3
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 11J97ZgO023490;
-	Fri, 19 Feb 2021 10:07:35 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 11J9OnUO020871;
+	Fri, 19 Feb 2021 10:24:49 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 0D3C877C0;
-	Fri, 19 Feb 2021 10:07:35 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 942BC77C0;
+	Fri, 19 Feb 2021 10:24:49 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 820CA3E64
- for <cocci@systeme.lip6.fr>; Fri, 19 Feb 2021 10:07:33 +0100 (CET)
-Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com
- [209.85.208.175])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 11J97W9B028621
- for <cocci@systeme.lip6.fr>; Fri, 19 Feb 2021 10:07:33 +0100 (CET)
-Received: by mail-lj1-f175.google.com with SMTP id a17so16467900ljq.2
- for <cocci@systeme.lip6.fr>; Fri, 19 Feb 2021 01:07:33 -0800 (PST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 4A8803E64
+ for <cocci@systeme.lip6.fr>; Fri, 19 Feb 2021 10:24:47 +0100 (CET)
+Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com
+ [209.85.208.174])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 11J9OkkG009269
+ for <cocci@systeme.lip6.fr>; Fri, 19 Feb 2021 10:24:46 +0100 (CET)
+Received: by mail-lj1-f174.google.com with SMTP id c17so16741947ljn.0
+ for <cocci@systeme.lip6.fr>; Fri, 19 Feb 2021 01:24:46 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=xyq5nG2yr38aemsnJfNSmiVO/9QJ0+e2d+IFGadQ8SI=;
- b=rHWrHH5NB77Vw6xfQU67qbUQydhhhw7rqejYkWAzRb6K2q2kPyZDeqigAl3fJS2f9a
- QbuUz15oG9YstIv8PjWfH27I6SMTsYd88kZhgZYCI53r7TaqhZRhpzcFoxSZ1VQJsEm+
- vLB3EgUFmGR9osQZjNaEjP/oGVJIP+0yqm6pCdm87/LVQSaHPMhctK3Q5RUJrN6HoQ2S
- p+67ffltwA8h4uksYgbhwQQnGMEUlIVL1UmG7nbgcMxTrDs+mU5cWxZn0CvrasI6OinY
- oMf542TooCycN9wWFvJHBysiAQCLodGkhqepQt/mD8EsyBDtCUXvWdbEgWAVrFvWL96b
- q+Dw==
-X-Gm-Message-State: AOAM532T2hep0j90cCJmRwK/sdeiSB+LqbPBOY4hE+/U1mcRd+EKZIOW
- yfwN4UObbbVPK43Elgq4Uzttpa980sCerw==
-X-Google-Smtp-Source: ABdhPJyh5xjPIJcNbDRYZFGZdha1/lEiSWn8YXBXcjs4x5PCv6Jf96UBIOZJyxu9rGD+IAsWBb48xw==
-X-Received: by 2002:a2e:9c94:: with SMTP id x20mr5246491lji.366.1613725652675; 
- Fri, 19 Feb 2021 01:07:32 -0800 (PST)
-Received: from [10.68.32.147] (broadband-188-32-236-56.ip.moscow.rt.ru.
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=7+1XXFxtp0NTyFOGv6KWqg5UlcFRsTicQF0RpwlPL7Q=;
+ b=WM6iXgOYx6e264oJ+qNWtOI9bNcwdA6RwoXE/cxLQ30fOlalXAXicN3pC+PoQZfnPu
+ Xgz/1m8/8l9OKcSleerx6Zx3zIJqYozrgc7zlUKkhSKv5S0s3pTgVSimlod5dyEH7fEg
+ HtJqdw+R2DibUMcAJE27LjHN5ksEWYnNm7Bkoi1Mku8BJVe8v2a7kMAQEnfjzjOD6n5/
+ o5W06Axps3fzkY57kFDMutfbplaLOLsVEnSLhaRDT4cZ9+jlO+tBcXgbdwxapwKeF2MA
+ ZKBAm3lXoWhMO6jEy/ESGZi6/mlyO/cHnEZf/LwsRnTljUrtTQ/6FZgLOTyiZ+xnc4/O
+ WLIg==
+X-Gm-Message-State: AOAM530gPmSU0IpMUTHiXfs+eRvQn8eRFCuQrqo1Iq84lG8Fo+SeHl4D
+ sXBh0mvs83ByvFGYLus9tb0=
+X-Google-Smtp-Source: ABdhPJy1UPI6F6L2u+sjkmiZ9cEBWFrfgN8EzY9HIRoikI0eGFQFvwW2jgOdsDrq84Z/XyGJMHrw6A==
+X-Received: by 2002:ac2:4a72:: with SMTP id q18mr5212436lfp.335.1613726686615; 
+ Fri, 19 Feb 2021 01:24:46 -0800 (PST)
+Received: from localhost.localdomain (broadband-188-32-236-56.ip.moscow.rt.ru.
  [188.32.236.56])
- by smtp.gmail.com with ESMTPSA id l23sm911213ljg.72.2021.02.19.01.07.31
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Fri, 19 Feb 2021 01:07:32 -0800 (PST)
-To: Julia Lawall <julia.lawall@inria.fr>
-References: <20210216080133.455456-1-efremov@linux.com>
- <20210219090520.8812-1-efremov@linux.com>
+ by smtp.googlemail.com with ESMTPSA id 21sm868769lfo.238.2021.02.19.01.24.45
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 19 Feb 2021 01:24:46 -0800 (PST)
 From: Denis Efremov <efremov@linux.com>
-Message-ID: <d12393d9-982c-53f5-9db6-0397aef95179@linux.com>
-Date: Fri, 19 Feb 2021 12:07:39 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+To: Julia Lawall <julia.lawall@inria.fr>
+Date: Fri, 19 Feb 2021 12:24:48 +0300
+Message-Id: <20210219092448.13760-1-efremov@linux.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210216080133.455456-1-efremov@linux.com>
+References: <20210216080133.455456-1-efremov@linux.com>
 MIME-Version: 1.0
-In-Reply-To: <20210219090520.8812-1-efremov@linux.com>
-Content-Language: en-US
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 19 Feb 2021 10:07:35 +0100 (CET)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 19 Feb 2021 10:24:50 +0100 (CET)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Fri, 19 Feb 2021 10:07:33 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Fri, 19 Feb 2021 10:24:46 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: cocci@systeme.lip6.fr, linux-kernel@vger.kernel.org
-Subject: Re: [Cocci] [PATCH v2] coccinelle: misc: add minmax script
+Subject: [Cocci] [PATCH v2] coccinelle: misc: add swap script
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -90,256 +86,128 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Sorry for wrong thread, I'll resend v2 to the right one.
+Check for opencoded swap() implementation.
 
-Denis
+Signed-off-by: Denis Efremov <efremov@linux.com>
+---
+Changes in v2:
+ - additional patch rule to drop excessive {}
+ - fix indentation in patch mode by anchoring ;
 
-On 2/19/21 12:05 PM, Denis Efremov wrote:
-> Check for opencoded min(), max() implementations.
-> 
-> Signed-off-by: Denis Efremov <efremov@linux.com>
-> ---
-> 
-> Changes in v2:
->  - <... ...> instead of ... when any
->  - org mode reports fixed
->  - patch rule to drop excessive ()
-> 
->  scripts/coccinelle/misc/minmax.cocci | 224 +++++++++++++++++++++++++++
->  1 file changed, 224 insertions(+)
->  create mode 100644 scripts/coccinelle/misc/minmax.cocci
-> 
-> diff --git a/scripts/coccinelle/misc/minmax.cocci b/scripts/coccinelle/misc/minmax.cocci
-> new file mode 100644
-> index 000000000000..61d6b61fd82c
-> --- /dev/null
-> +++ b/scripts/coccinelle/misc/minmax.cocci
-> @@ -0,0 +1,224 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +///
-> +/// Check for opencoded min(), max() implementations.
-> +/// Generated patches sometimes require adding a cast to fix compile warning.
-> +/// Warnings/patches scope intentionally limited to a function body.
-> +///
-> +// Confidence: Medium
-> +// Copyright: (C) 2021 Denis Efremov ISPRAS
-> +// Options: --no-includes --include-headers
-> +//
-> +// Keywords: min, max
-> +//
-> +
-> +
-> +virtual report
-> +virtual org
-> +virtual context
-> +virtual patch
-> +
-> +@rmax depends on !patch@
-> +identifier func;
-> +expression x, y;
-> +binary operator cmp = {>, >=};
-> +position p;
-> +@@
-> +
-> +func(...)
-> +{
-> +	<...
-> +*	x cmp@p y ? x : y
-> +	...>
-> +}
-> +
-> +@rmaxif depends on !patch@
-> +identifier func;
-> +expression x, y;
-> +expression max_val;
-> +binary operator cmp = {>, >=};
-> +position p;
-> +@@
-> +
-> +func(...)
-> +{
-> +	<...
-> +*	if (x cmp@p y) {
-> +*		max_val = x;
-> +*	} else {
-> +*		max_val = y;
-> +*	}
-> +	...>
-> +}
-> +
-> +@rmin depends on !patch@
-> +identifier func;
-> +expression x, y;
-> +binary operator cmp = {<, <=};
-> +position p;
-> +@@
-> +
-> +func(...)
-> +{
-> +	<...
-> +*	x cmp@p y ? x : y
-> +	...>
-> +}
-> +
-> +@rminif depends on !patch@
-> +identifier func;
-> +expression x, y;
-> +expression min_val;
-> +binary operator cmp = {<, <=};
-> +position p;
-> +@@
-> +
-> +func(...)
-> +{
-> +	<...
-> +*	if (x cmp@p y) {
-> +*		min_val = x;
-> +*	} else {
-> +*		min_val = y;
-> +*	}
-> +	...>
-> +}
-> +
-> +@pmax depends on patch@
-> +identifier func;
-> +expression x, y;
-> +binary operator cmp = {>=, >};
-> +position p;
-> +@@
-> +
-> +func@p(...)
-> +{
-> +	<...
-> +-	x cmp y ? x : y
-> ++	max(x, y)
-> +	...>
-> +}
-> +
-> +@pmaxif depends on patch@
-> +identifier func;
-> +expression x, y;
-> +expression max_val;
-> +binary operator cmp = {>=, >};
-> +position p;
-> +@@
-> +
-> +func@p(...)
-> +{
-> +	<...
-> +-	if (x cmp y) {
-> +-		max_val = x;
-> +-	} else {
-> +-		max_val = y;
-> +-	}
-> ++	max_val = max(x, y);
-> +	...>
-> +}
-> +
-> +@pmin depends on patch@
-> +identifier func;
-> +expression x, y;
-> +binary operator cmp = {<=, <};
-> +position p;
-> +@@
-> +
-> +func@p(...)
-> +{
-> +	<...
-> +-	x cmp y ? x : y
-> ++	min(x, y)
-> +	...>
-> +}
-> +
-> +@pminif depends on patch@
-> +identifier func;
-> +expression x, y;
-> +expression min_val;
-> +binary operator cmp = {<=, <};
-> +position p;
-> +@@
-> +
-> +func@p(...)
-> +{
-> +	<...
-> +-	if (x cmp y) {
-> +-		min_val = x;
-> +-	} else {
-> +-		min_val = y;
-> +-	}
-> ++	min_val = min(x, y);
-> +	...>
-> +}
-> +
-> +@depends on (pmax || pmaxif || pmin || pminif)@
-> +identifier func;
-> +expression x, y;
-> +position p;
-> +// FIXME: Coccinelle consumes all available ram and
-> +// and timeouts on every file.
-> +// position p = { pmin.p, pminif.p, pmax.p, pmaxif.p };
-> +@@
-> +
-> +func@p(...)
-> +{
-> +	<...
-> +(
-> +-	(min((x), (y)))
-> ++	min(x, y)
-> +|
-> +-	(max((x), (y)))
-> ++	max(x, y)
-> +)
-> +	...>
-> +}
-> +
-> +@script:python depends on report@
-> +p << rmax.p;
-> +@@
-> +
-> +coccilib.report.print_report(p[0], "WARNING opportunity for max()")
-> +
-> +@script:python depends on org@
-> +p << rmax.p;
-> +@@
-> +
-> +coccilib.org.print_todo(p[0], "WARNING opportunity for max()")
-> +
-> +@script:python depends on report@
-> +p << rmaxif.p;
-> +@@
-> +
-> +coccilib.report.print_report(p[0], "WARNING opportunity for max()")
-> +
-> +@script:python depends on org@
-> +p << rmaxif.p;
-> +@@
-> +
-> +coccilib.org.print_todo(p[0], "WARNING opportunity for max()")
-> +
-> +@script:python depends on report@
-> +p << rmin.p;
-> +@@
-> +
-> +coccilib.report.print_report(p[0], "WARNING opportunity for min()")
-> +
-> +@script:python depends on org@
-> +p << rmin.p;
-> +@@
-> +
-> +coccilib.org.print_todo(p[0], "WARNING opportunity for min()")
-> +
-> +@script:python depends on report@
-> +p << rminif.p;
-> +@@
-> +
-> +coccilib.report.print_report(p[0], "WARNING opportunity for min()")
-> +
-> +@script:python depends on org@
-> +p << rminif.p;
-> +@@
-> +
-> +coccilib.org.print_todo(p[0], "WARNING opportunity for min()")
-> 
+ scripts/coccinelle/misc/swap.cocci | 101 +++++++++++++++++++++++++++++
+ 1 file changed, 101 insertions(+)
+ create mode 100644 scripts/coccinelle/misc/swap.cocci
+
+diff --git a/scripts/coccinelle/misc/swap.cocci b/scripts/coccinelle/misc/swap.cocci
+new file mode 100644
+index 000000000000..d5da9888c222
+--- /dev/null
++++ b/scripts/coccinelle/misc/swap.cocci
+@@ -0,0 +1,101 @@
++// SPDX-License-Identifier: GPL-2.0-only
++///
++/// Check for opencoded swap() implementation.
++///
++// Confidence: High
++// Copyright: (C) 2021 Denis Efremov ISPRAS
++// Options: --no-includes --include-headers
++//
++// Keywords: swap
++//
++
++virtual patch
++virtual org
++virtual report
++virtual context
++
++@r depends on !patch@
++identifier tmp;
++expression a, b;
++type T;
++position p;
++@@
++
++(
++* T tmp;
++|
++* T tmp = 0;
++|
++* T *tmp = NULL;
++)
++... when != tmp
++* tmp = a;
++* a = b;@p
++* b = tmp;
++... when != tmp
++
++@rpvar depends on patch@
++identifier tmp;
++expression a, b;
++type T;
++@@
++
++(
++- T tmp;
++|
++- T tmp = 0;
++|
++- T *tmp = NULL;
++)
++... when != tmp
++- tmp = a;
++- a = b;
++- b = tmp
+++ swap(a, b)
++  ;
++... when != tmp
++
++
++@rp depends on patch@
++identifier tmp;
++expression a, b;
++@@
++
++- tmp = a;
++- a = b;
++- b = tmp
+++ swap(a, b)
++  ;
++
++@depends on (rpvar || rp)@
++@@
++
++(
++  for (...;...;...)
++- {
++	swap(...);
++- }
++|
++  while (...)
++- {
++	swap(...);
++- }
++|
++  if (...)
++- {
++	swap(...);
++- }
++)
++
++
++@script:python depends on report@
++p << r.p;
++@@
++
++coccilib.report.print_report(p[0], "WARNING opportunity for swap()")
++
++@script:python depends on org@
++p << r.p;
++@@
++
++coccilib.org.print_todo(p[0], "WARNING opportunity for swap()")
+-- 
+2.26.2
+
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
