@@ -7,69 +7,69 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EDBBC433DB
-	for <cocci@archiver.kernel.org>; Fri, 19 Feb 2021 09:06:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34769C433DB
+	for <cocci@archiver.kernel.org>; Fri, 19 Feb 2021 09:07:05 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5F4F964EAF
-	for <cocci@archiver.kernel.org>; Fri, 19 Feb 2021 09:06:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5F4F964EAF
+	by mail.kernel.org (Postfix) with ESMTPS id 3863E64EB1
+	for <cocci@archiver.kernel.org>; Fri, 19 Feb 2021 09:07:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3863E64EB1
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 11J95dJl012248;
-	Fri, 19 Feb 2021 10:05:39 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 11J96o8F024829;
+	Fri, 19 Feb 2021 10:06:50 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id E72E677C0;
-	Fri, 19 Feb 2021 10:05:38 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 8851777C0;
+	Fri, 19 Feb 2021 10:06:50 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id AAC743E64
- for <cocci@systeme.lip6.fr>; Fri, 19 Feb 2021 10:05:36 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 6BE093E64
+ for <cocci@systeme.lip6.fr>; Fri, 19 Feb 2021 10:06:49 +0100 (CET)
 Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com
  [209.85.208.181])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 11J95aMS025147
- for <cocci@systeme.lip6.fr>; Fri, 19 Feb 2021 10:05:36 +0100 (CET)
-Received: by mail-lj1-f181.google.com with SMTP id c17so16485676ljn.0
- for <cocci@systeme.lip6.fr>; Fri, 19 Feb 2021 01:05:36 -0800 (PST)
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 11J96m3F029580
+ for <cocci@systeme.lip6.fr>; Fri, 19 Feb 2021 10:06:49 +0100 (CET)
+Received: by mail-lj1-f181.google.com with SMTP id g1so10455170ljj.13
+ for <cocci@systeme.lip6.fr>; Fri, 19 Feb 2021 01:06:48 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
  bh=4SYuc31NBuKizkQQlJfdfOc2gXxQ85QiVTeukEPxaJo=;
- b=iEA4UIS6HzYyRmD7iMZEzn9O/qQnxdLkOVFcjEG7xEc3slkAOWCfGCUp47337+Da+C
- 9pLCi+X0DEwwV7pxrbhm5kQdcicSYB5ZSIA0Z7ZP2uYnrFA0hLIDszWWkIU/Y1Lvcjzg
- HT2SLcR+QCj927jjjvb7qZQmOVVmSd4fyK8PN5nQ0Vq2+EGbamfQ6cUuu/R5bvsGjKfy
- xFPaYDDcU8pzIZnzG/qNysyVqw9AC3YPhNuKpDisfR+PC4kQpYlyx4WTnjfwL4jaOBh/
- DHB/EYDAYebOHkZSFGcq15UCIgM+VNL5wqNDimd4evHw8uZUopIoDsqZETntfOsCFYtz
- ITNg==
-X-Gm-Message-State: AOAM533m3iWFguCFlLgd+L88mtjXYCapY0x56wMzSCLn98OJyHrM6ww1
- EYYdMCBx5q5XyIGx8LiH3Mg=
-X-Google-Smtp-Source: ABdhPJxk/zPhW0YoA4R5eXWF9hptagCSADw59N9qPWU/Z5oCVrDLkYhTL8UTXmkD8zdkmp8hXAetfA==
-X-Received: by 2002:a2e:95c8:: with SMTP id y8mr2486238ljh.419.1613725535773; 
- Fri, 19 Feb 2021 01:05:35 -0800 (PST)
+ b=ormQc0j8An0btSeUa0iFYkyR8gdU6HzUKanQATaVi52X63IqbTTnIxn3xlINcal/56
+ 7PTvO2eVjtgBIw8v3YPk3V+FmLL/mv03uTEc7KWQk3v8leLmXese0jcdK+0On5eOnvMn
+ fubn8WYdy9hiDoWSTX/N8HEqdSclIpeJMJoBmKXxNI3j1mbF5FEqzcjv0q0bl6sg/25D
+ 0CXASuCvNhXMWAMER4N+SLdwAgOM6d9baFuoh7nhejROn1j84NqgMhFFabrwJhTKzMTX
+ N72ThaX9jsdLyZBOqqTBMP/vFx1ojbBmhiCvImXypPNqYVdxvPG7HSUd+MIZGWztx05u
+ SjDw==
+X-Gm-Message-State: AOAM532TU1PaRBPbExBW8LO1g8Ra50hvOax8IMD0+eayTZDtDpYVvI9x
+ Y1uPzCRjuaIMUzoNmFLgsN8=
+X-Google-Smtp-Source: ABdhPJyIr4pTFDSmke4G+1GbuqxxKbKpF9BGX1DDqXlPLYXDGwLdp2OQf47rvm9/PnFToJGmQhhu9A==
+X-Received: by 2002:a19:ae02:: with SMTP id f2mr4955335lfc.129.1613725608666; 
+ Fri, 19 Feb 2021 01:06:48 -0800 (PST)
 Received: from localhost.localdomain (broadband-188-32-236-56.ip.moscow.rt.ru.
  [188.32.236.56])
- by smtp.googlemail.com with ESMTPSA id a20sm162635lji.77.2021.02.19.01.05.34
+ by smtp.googlemail.com with ESMTPSA id a10sm304097lfd.135.2021.02.19.01.06.47
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 19 Feb 2021 01:05:34 -0800 (PST)
+ Fri, 19 Feb 2021 01:06:48 -0800 (PST)
 From: Denis Efremov <efremov@linux.com>
 To: Julia Lawall <julia.lawall@inria.fr>
-Date: Fri, 19 Feb 2021 12:05:20 +0300
-Message-Id: <20210219090520.8812-1-efremov@linux.com>
+Date: Fri, 19 Feb 2021 12:06:55 +0300
+Message-Id: <20210219090655.8985-1-efremov@linux.com>
 X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210216080133.455456-1-efremov@linux.com>
-References: <20210216080133.455456-1-efremov@linux.com>
+In-Reply-To: <20210216160326.1341741-1-efremov@linux.com>
+References: <20210216160326.1341741-1-efremov@linux.com>
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 19 Feb 2021 10:05:39 +0100 (CET)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 19 Feb 2021 10:06:50 +0100 (CET)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Fri, 19 Feb 2021 10:05:36 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Fri, 19 Feb 2021 10:06:49 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: cocci@systeme.lip6.fr, linux-kernel@vger.kernel.org
-Subject: [Cocci] [PATCH v2] coccinelle: misc: add minmax script
+Subject: [Cocci] [PATCH v2 RESEND] coccinelle: misc: add minmax script
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
