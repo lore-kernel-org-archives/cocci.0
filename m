@@ -2,80 +2,66 @@ Return-Path: <SRS0=Rern=IA=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C3E5C433E0
-	for <cocci@archiver.kernel.org>; Tue,  2 Mar 2021 15:07:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D8EFC433E0
+	for <cocci@archiver.kernel.org>; Tue,  2 Mar 2021 21:22:08 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 755E361477
-	for <cocci@archiver.kernel.org>; Tue,  2 Mar 2021 15:07:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 755E361477
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5FF0C64F23
+	for <cocci@archiver.kernel.org>; Tue,  2 Mar 2021 21:22:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5FF0C64F23
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=perches.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 122F7Ofn006980;
-	Tue, 2 Mar 2021 16:07:24 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 122LLdw8008929;
+	Tue, 2 Mar 2021 22:21:39 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 4A33E77CC;
-	Tue,  2 Mar 2021 16:07:24 +0100 (CET)
-Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
+	by systeme.lip6.fr (Postfix) with ESMTP id 30F0677CC;
+	Tue,  2 Mar 2021 22:21:39 +0100 (CET)
+Received: from osiris.lip6.fr (osiris.lip6.fr [132.227.60.30])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 1E1CE5DC3
- for <cocci@systeme.lip6.fr>; Tue,  2 Mar 2021 16:07:23 +0100 (CET)
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [63.128.21.124])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 122F7M5n024152
- for <cocci@systeme.lip6.fr>; Tue, 2 Mar 2021 16:07:22 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1614697642;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=mZ2+CiXAnq95erx9FqPUSNSCvvFQGSn29ZecdYN07k8=;
- b=BoNqDAfWawTQoBrdj1MweuzfVkIi6nSZEEYq/GbBlCiHYWEH0J6vIXQIUuIWy6dV7JRc/j
- CeLqK0CM96CyF2iE5p/FANgRk/aWTke2XtdnWYVF2r4Ix7qSS5JdYcMR634a7+T4FIbGdd
- 1+gNtCHjKd48fMIs5m08Nw42I1CAzvA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-536-VJtNnZZbPXe5MUbUV46U_g-1; Tue, 02 Mar 2021 10:07:10 -0500
-X-MC-Unique: VJtNnZZbPXe5MUbUV46U_g-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
- [10.5.11.11])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 432EC18A225C;
- Tue,  2 Mar 2021 15:07:09 +0000 (UTC)
-Received: from localhost (ovpn-112-87.ams2.redhat.com [10.36.112.87])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 861C618996;
- Tue,  2 Mar 2021 15:07:08 +0000 (UTC)
-Date: Tue, 2 Mar 2021 15:07:07 +0000
-From: "Richard W.M. Jones" <rjones@redhat.com>
-To: Julia Lawall <julia.lawall@inria.fr>
-Message-ID: <20210302150707.GE26415@redhat.com>
-References: <20210302114208.GA1818@redhat.com>
- <alpine.DEB.2.22.394.2103021551510.2906@hadrien>
+ by systeme.lip6.fr (Postfix) with ESMTPS id 52C245DC3
+ for <cocci@systeme.lip6.fr>; Tue,  2 Mar 2021 22:21:37 +0100 (CET)
+Received: from smtprelay.hostedemail.com (smtprelay0127.hostedemail.com
+ [216.40.44.127])
+ by osiris.lip6.fr (8.15.2/8.15.2) with ESMTP id 122LLZUQ019217
+ for <cocci@systeme.lip6.fr>; Tue, 2 Mar 2021 22:21:36 +0100 (CET)
+Received: from smtprelay.hostedemail.com (10.5.19.251.rfc1918.com
+ [10.5.19.251])
+ by smtpgrave08.hostedemail.com (Postfix) with ESMTP id BD9B61807BE60
+ for <cocci@systeme.lip6.fr>; Tue,  2 Mar 2021 17:42:56 +0000 (UTC)
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net
+ [216.40.38.60])
+ by smtprelay05.hostedemail.com (Postfix) with ESMTP id E7A51181B3E89;
+ Tue,  2 Mar 2021 17:42:53 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-HE-Tag: home60_3c159ee276be
+X-Filterd-Recvd-Size: 4972
+Received: from [192.168.1.159] (unknown [47.151.137.21])
+ (Authenticated sender: joe@perches.com)
+ by omf16.hostedemail.com (Postfix) with ESMTPA;
+ Tue,  2 Mar 2021 17:42:52 +0000 (UTC)
+Message-ID: <053b06c47f08631675c295b5c893b90be4248347.camel@perches.com>
+From: Joe Perches <joe@perches.com>
+To: kernelnewbies <kernelnewbies@kernelnewbies.org>,
+        kernel-janitors
+ <kernel-janitors@vger.kernel.org>,
+        cocci <cocci@systeme.lip6.fr>
+Date: Tue, 02 Mar 2021 09:42:51 -0800
+User-Agent: Evolution 3.38.1-1 
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.22.394.2103021551510.2906@hadrien>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 02 Mar 2021 22:21:39 +0100 (CET)
+X-Greylist: Delayed for 03:00:02 by milter-greylist-4.4.3 (osiris.lip6.fr
+ [132.227.60.30]); Tue, 02 Mar 2021 22:21:36 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=rjones@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Disposition: inline
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 02 Mar 2021 16:07:24 +0100 (CET)
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Tue, 02 Mar 2021 16:07:22 +0100 (CET)
-Cc: cocci@systeme.lip6.fr
-Subject: Re: [Cocci] A few build failures with OCaml 4.12.0
+X-Scanned-By: MIMEDefang 2.78 on 132.227.60.30
+Cc: LKML <linux-kernel@vger.kernel.org>
+Subject: [Cocci] linux-kernel janitorial RFP: Mark static arrays as const
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -92,21 +78,94 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-On Tue, Mar 02, 2021 at 03:52:21PM +0100, Julia Lawall wrote:
-> This problem is fixed now in the github version.
+Here is a possible opportunity to reduce data usage in the kernel.
 
-Yup, can confirm it now works with git @ 3dc5d027b448
+$ git grep -P -n '^static\s+(?!const|struct)(?:\w+\s+){1,3}\w+\s*\[\s*\]' drivers/ | \
+  grep -v __initdata | \
+  wc -l
+3250
 
-Thanks,
+Meaning there are ~3000 declarations of arrays with what appears to be
+file static const content that are not marked const.
 
-Rich.
+So there are many static arrays that could be marked const to move the
+compiled object code from data to text minimizing the total amount of
+exposed r/w data.
 
--- 
-Richard Jones, Virtualization Group, Red Hat http://people.redhat.com/~rjones
-Read my programming and virtualization blog: http://rwmj.wordpress.com
-virt-p2v converts physical machines to virtual machines.  Boot with a
-live CD or over the network (PXE) and turn machines into KVM guests.
-http://libguestfs.org/virt-v2v
+However, I do not know of a mechanism using coccinelle to determine
+whether or not any of these static declarations are ever modified.
+
+So it appears that each instance of these declarations might need
+manual inspection.
+
+But for arrays declared inside functions, it's much more likely that
+the static declaration without const is done with the intent to modify
+the array:
+
+(note the difference in the git grep with a leading '^\s+')
+
+$ git grep -Pn '^\s+static\s+(?!const|struct)(?:\w+\s+){1,3}\w+\s*\[\s*\]' drivers/ | \
+  grep -v __initdata | \
+  wc -l
+323
+
+------------- For instance: (head -10 of the git grep for file statics)
+
+drivers/accessibility/speakup/keyhelp.c:18:static u_short masks[] = { 32, 16, 8, 4, 2, 1 };
+drivers/accessibility/speakup/keyhelp.c:26:static u_char funcvals[] = {
+drivers/accessibility/speakup/main.c:2059:static spkup_hand spkup_handler[] = {
+drivers/accessibility/speakup/speakup_acntpc.c:35:static unsigned int synth_portlist[] = { 0x2a8, 0 };
+drivers/accessibility/speakup/speakup_decpc.c:133:static int synth_portlist[] = { 0x340, 0x350, 0x240, 0x250, 0 };
+drivers/accessibility/speakup/speakup_dectlk.c:110:static int ap_defaults[] = {122, 89, 155, 110, 208, 240, 200, 106, 306};
+drivers/accessibility/speakup/speakup_dectlk.c:111:static int g5_defaults[] = {86, 81, 86, 84, 81, 80, 83, 83, 73};
+drivers/accessibility/speakup/speakup_dtlk.c:34:static unsigned int synth_portlist[] = {
+drivers/accessibility/speakup/speakup_keypc.c:34:static unsigned int synth_portlist[] = { 0x2a8, 0 };
+drivers/acpi/ac.c:137:static enum power_supply_property ac_props[] = {
+
+For drivers/accessibility/speakup/keyhelp.c:18:static u_short masks[] = { 32, 16, 8, 4, 2, 1 };
+
+masks is only used in static function say_key and should be const and
+perhaps the declaration might be better moved into that function.
+
+For drivers/accessibility/speakup/keyhelp.c:26:static u_char funcvals[] = {
+
+funcvals is only used in static function spk_handle_help and should be const
+and perhaps the declaration might be better moved into that function.
+
+For drivers/accessibility/speakup/main.c:2059:static spkup_hand spkup_handler[] = {
+
+spkup_handler is only used in static function do_spkup and should be const
+and perhaps the declaration might be better moved into that function.
+
+etc... for speakup
+
+For drivers/acpi/ac.c:137:static enum power_supply_property ac_props[] = {
+
+array ac_props is assigned as a reference in acpi_ac_add as a 
+"const enum power_supply_property *" member of a struct power_supply_desc.
+
+------------- For instance: (head -10 of the git grep for function statics)
+
+drivers/acpi/apei/apei-base.c:781:	static u8 whea_uuid_str[] = "ed855e0c-6c90-47bf-a62a-26de0fc5ad5c";
+drivers/block/amiflop.c:1051:	static unsigned char CRCTable1[] = {
+drivers/block/amiflop.c:1070:	static unsigned char CRCTable2[] = {
+drivers/block/drbd/drbd_nl.c:872:	static char units[] = { 'K', 'M', 'G', 'T', 'P', 'E' };
+drivers/block/drbd/drbd_proc.c:224:	static char write_ordering_chars[] = {
+drivers/block/drbd/drbd_receiver.c:4363:	static enum drbd_conns c_tab[] = {
+drivers/char/pcmcia/synclink_cs.c:3717:	static unsigned char patterns[] =
+drivers/cpufreq/intel_pstate.c:1515:	static int silvermont_freq_table[] = {
+drivers/cpufreq/intel_pstate.c:1530:	static int airmont_freq_table[] = {
+drivers/dma/xgene-dma.c:360:	static u8 flyby_type[] = {
+
+Some of these could be const, but some could not.  For instance:
+
+For drivers/acpi/apei/apei-base.c:781:	static u8 whea_uuid_str[] = "ed855e0c-6c90-47bf-a62a-26de0fc5ad5c";
+
+whea_uuid_str is assigned as a reference in "int apei_osc_setup(void)"
+a struct acpi_osc_context where .uuid_str is not declared as const char *.
+
+
+
 
 _______________________________________________
 Cocci mailing list
