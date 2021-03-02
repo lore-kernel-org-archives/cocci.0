@@ -2,54 +2,78 @@ Return-Path: <SRS0=Rern=IA=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADAE0C433E0
-	for <cocci@archiver.kernel.org>; Tue,  2 Mar 2021 14:53:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C3E5C433E0
+	for <cocci@archiver.kernel.org>; Tue,  2 Mar 2021 15:07:53 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 64267600CD
-	for <cocci@archiver.kernel.org>; Tue,  2 Mar 2021 14:53:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 64267600CD
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
+	by mail.kernel.org (Postfix) with ESMTPS id 755E361477
+	for <cocci@archiver.kernel.org>; Tue,  2 Mar 2021 15:07:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 755E361477
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 122Eqxqe025458;
-	Tue, 2 Mar 2021 15:52:59 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 122F7Ofn006980;
+	Tue, 2 Mar 2021 16:07:24 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id DC55077CC;
-	Tue,  2 Mar 2021 15:52:58 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 4A33E77CC;
+	Tue,  2 Mar 2021 16:07:24 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id A68A75DC3
- for <cocci@systeme.lip6.fr>; Tue,  2 Mar 2021 15:52:56 +0100 (CET)
-Received: from mail3-relais-sop.national.inria.fr
- (mail3-relais-sop.national.inria.fr [192.134.164.104])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 122EqtOr015815
- for <cocci@systeme.lip6.fr>; Tue, 2 Mar 2021 15:52:55 +0100 (CET)
-X-IronPort-AV: E=Sophos;i="5.81,216,1610406000"; d="scan'208";a="374537071"
-Received: from 173.121.68.85.rev.sfr.net (HELO hadrien) ([85.68.121.173])
- by mail3-relais-sop.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 02 Mar 2021 15:52:21 +0100
-Date: Tue, 2 Mar 2021 15:52:21 +0100 (CET)
-From: Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
-To: "Richard W.M. Jones" <rjones@redhat.com>
-In-Reply-To: <20210302114208.GA1818@redhat.com>
-Message-ID: <alpine.DEB.2.22.394.2103021551510.2906@hadrien>
+ by systeme.lip6.fr (Postfix) with ESMTPS id 1E1CE5DC3
+ for <cocci@systeme.lip6.fr>; Tue,  2 Mar 2021 16:07:23 +0100 (CET)
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [63.128.21.124])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 122F7M5n024152
+ for <cocci@systeme.lip6.fr>; Tue, 2 Mar 2021 16:07:22 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1614697642;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=mZ2+CiXAnq95erx9FqPUSNSCvvFQGSn29ZecdYN07k8=;
+ b=BoNqDAfWawTQoBrdj1MweuzfVkIi6nSZEEYq/GbBlCiHYWEH0J6vIXQIUuIWy6dV7JRc/j
+ CeLqK0CM96CyF2iE5p/FANgRk/aWTke2XtdnWYVF2r4Ix7qSS5JdYcMR634a7+T4FIbGdd
+ 1+gNtCHjKd48fMIs5m08Nw42I1CAzvA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-536-VJtNnZZbPXe5MUbUV46U_g-1; Tue, 02 Mar 2021 10:07:10 -0500
+X-MC-Unique: VJtNnZZbPXe5MUbUV46U_g-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
+ [10.5.11.11])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 432EC18A225C;
+ Tue,  2 Mar 2021 15:07:09 +0000 (UTC)
+Received: from localhost (ovpn-112-87.ams2.redhat.com [10.36.112.87])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 861C618996;
+ Tue,  2 Mar 2021 15:07:08 +0000 (UTC)
+Date: Tue, 2 Mar 2021 15:07:07 +0000
+From: "Richard W.M. Jones" <rjones@redhat.com>
+To: Julia Lawall <julia.lawall@inria.fr>
+Message-ID: <20210302150707.GE26415@redhat.com>
 References: <20210302114208.GA1818@redhat.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+ <alpine.DEB.2.22.394.2103021551510.2906@hadrien>
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 02 Mar 2021 15:52:59 +0100 (CET)
+In-Reply-To: <alpine.DEB.2.22.394.2103021551510.2906@hadrien>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
+X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=rjones@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Disposition: inline
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 02 Mar 2021 16:07:24 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Tue, 02 Mar 2021 15:52:55 +0100 (CET)
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
+ (isis.lip6.fr [132.227.60.2]); Tue, 02 Mar 2021 16:07:22 +0100 (CET)
 Cc: cocci@systeme.lip6.fr
 Subject: Re: [Cocci] A few build failures with OCaml 4.12.0
 X-BeenThere: cocci@systeme.lip6.fr
@@ -68,82 +92,22 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-This problem is fixed now in the github version.
+On Tue, Mar 02, 2021 at 03:52:21PM +0100, Julia Lawall wrote:
+> This problem is fixed now in the github version.
 
-Thanks again Richard and Markus for the report.
+Yup, can confirm it now works with git @ 3dc5d027b448
 
-julia
+Thanks,
 
-On Tue, 2 Mar 2021, Richard W.M. Jones wrote:
+Rich.
 
-> ocamlfind ocamlopt -c -package result -package seq -bin-annot -no-alias-deps -I . -alert -deprecated stdcompat__arg_s.mli -o stdcompat__arg_s.cmi
-> File "stdcompat__arg_s.mli", lines 3-17, characters 0-38:
->  3 | type spec = Arg.spec =
->  4 |   | Unit of (unit -> unit)
->  5 |   | Bool of (bool -> unit)
->  6 |   | Set of bool ref
->  7 |   | Clear of bool ref
-> ...
-> 14 |   | Tuple of spec list
-> 15 |   | Symbol of string list * (string -> unit)
-> 16 |   | Rest of (string -> unit)
-> 17 |   | Expand of (string -> string array).
-> Error: This variant or record definition does not match that of type Arg.spec
->        Constructors number 14 have different names, Rest_all and Expand.
->
-> There is a new Rest_all constructor:
->
-> https://github.com/ocaml/ocaml/blob/500d8dc8296d09305b5413f140c63ffee1de111d/stdlib/arg.mli#L92
->
-> ----------------------------------------------------------------------
->
-> ocamlfind ocamlopt -c -package result -package seq -bin-annot -no-alias-deps -I . -alert -deprecated stdcompat__spacetime_s.mli -o stdcompat__spacetime_s.cmi
-> File "stdcompat__spacetime_s.mli", line 3, characters 16-32:
-> 3 | module Series = Spacetime.Series
->                     ^^^^^^^^^^^^^^^^
-> Error: Unbound module Spacetime
->
-> This module was removed in OCaml commit
-> 540996d21ee3793a1cecce252c81fb76a6b9fd61.
->
-> ----------------------------------------------------------------------
->
-> ocamlfind ocamlc -c -package result -package seq -bin-annot -no-alias-deps -I . -alert -deprecated stdcompat__ephemeron.ml -o stdcompat__ephemeron.cmo
-> File "stdcompat__ephemeron.ml", line 1:
-> Error: The implementation stdcompat__ephemeron.ml
->        does not match the interface stdcompat__ephemeron.cmi:
->        ...
->        At position module type S = <here>
->        Type declarations do not match:
->          type 'a t
->        is not included in
->          type !'a t
->        Their variances do not agree.
->        File "hashtbl.mli", line 335, characters 4-14: Expected declaration
->        File "stdcompat__ephemeron_s.mli", line 6, characters 4-13:
->          Actual declaration
->
-> Not sure about this one but AFAICT cocci doesn't use this module.
->
-> ----------------------------------------------------------------------
->
-> I made a patch to workaround the issues in Fedora, but it's a pure hack:
->
->   https://src.fedoraproject.org/rpms/coccinelle/tree/rawhide
->
-> Rich.
->
-> --
-> Richard Jones, Virtualization Group, Red Hat http://people.redhat.com/~rjones
-> Read my programming and virtualization blog: http://rwmj.wordpress.com
-> libguestfs lets you edit virtual machines.  Supports shell scripting,
-> bindings from many languages.  http://libguestfs.org
->
-> _______________________________________________
-> Cocci mailing list
-> Cocci@systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+-- 
+Richard Jones, Virtualization Group, Red Hat http://people.redhat.com/~rjones
+Read my programming and virtualization blog: http://rwmj.wordpress.com
+virt-p2v converts physical machines to virtual machines.  Boot with a
+live CD or over the network (PXE) and turn machines into KVM guests.
+http://libguestfs.org/virt-v2v
+
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
