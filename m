@@ -1,57 +1,73 @@
-Return-Path: <SRS0=Rern=IA=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=yhX/=IB=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF46DC433DB
-	for <cocci@archiver.kernel.org>; Tue,  2 Mar 2021 21:41:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D2FBC433E0
+	for <cocci@archiver.kernel.org>; Wed,  3 Mar 2021 07:12:46 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CFABC64F32
-	for <cocci@archiver.kernel.org>; Tue,  2 Mar 2021 21:41:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CFABC64F32
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
+	by mail.kernel.org (Postfix) with ESMTPS id 0F1A664EBD
+	for <cocci@archiver.kernel.org>; Wed,  3 Mar 2021 07:12:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0F1A664EBD
+Authentication-Results: mail.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=petrovitsch.priv.at
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 122LfZOo009879;
-	Tue, 2 Mar 2021 22:41:35 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 1237CCpq025303;
+	Wed, 3 Mar 2021 08:12:12 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 0858C77CC;
-	Tue,  2 Mar 2021 22:41:35 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 0923B77CC;
+	Wed,  3 Mar 2021 08:12:12 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id E4D325DC3
- for <cocci@systeme.lip6.fr>; Tue,  2 Mar 2021 22:41:33 +0100 (CET)
-Received: from mail2-relais-roc.national.inria.fr
- (mail2-relais-roc.national.inria.fr [192.134.164.83])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 122LfXxk017503
- for <cocci@systeme.lip6.fr>; Tue, 2 Mar 2021 22:41:33 +0100 (CET)
-X-IronPort-AV: E=Sophos;i="5.81,217,1610406000"; d="scan'208";a="495775783"
-Received: from 173.121.68.85.rev.sfr.net (HELO hadrien) ([85.68.121.173])
- by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 02 Mar 2021 22:41:32 +0100
-Date: Tue, 2 Mar 2021 22:41:32 +0100 (CET)
-From: Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
+ by systeme.lip6.fr (Postfix) with ESMTPS id 9B22A5DC3
+ for <cocci@systeme.lip6.fr>; Tue,  2 Mar 2021 23:47:06 +0100 (CET)
+Received: from esgaroth.petrovitsch.at (esgaroth.petrovitsch.at
+ [IPv6:2a01:4f8:120:527b:6876:2a4f:a044:62ad] (may be forged))
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 122Ml598004077
+ for <cocci@systeme.lip6.fr>; Tue, 2 Mar 2021 23:47:05 +0100 (CET)
+Received: from thorin.petrovitsch.priv.at (80-110-91-187.cgn.dynamic.surfer.at
+ [80.110.91.187]) (authenticated bits=0)
+ by esgaroth.petrovitsch.at (8.16.1/8.16.1) with ESMTPSA id 122MIGmL914592
+ (version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT);
+ Tue, 2 Mar 2021 23:18:16 +0100
+DKIM-Filter: OpenDKIM Filter v2.11.0 esgaroth.petrovitsch.at 122MIGmL914592
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=petrovitsch.priv.at;
+ s=default; t=1614723497;
+ bh=+MVoVMUVm8capWlNcUWJStxtBvOtui4ewlEULmYwlXE=;
+ h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+ b=fS0wk1Xm132rltWm/1oyGznxEdWPToAqz2hoNZC11FcfHkqVTyx9yXdHBtk/KQgYu
+ CUW9zFrgfDiXTM+mo+IlrHMlPPr9NFHKgyMAaMTebilLaUnd2681oIcofQtw1oWtZW
+ WSq3taGbZHYFOVrfZvd+8Y37Sy4pPgxmVrownKX4=
+X-Info-sendmail: I was here
 To: Joe Perches <joe@perches.com>
-In-Reply-To: <053b06c47f08631675c295b5c893b90be4248347.camel@perches.com>
-Message-ID: <alpine.DEB.2.22.394.2103022241050.2906@hadrien>
 References: <053b06c47f08631675c295b5c893b90be4248347.camel@perches.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+From: Bernd Petrovitsch <bernd@petrovitsch.priv.at>
+Bimi-Selector: v=BIMI1; s=default
+Message-ID: <22d22edd-4213-0f57-d801-1c570f04ec05@petrovitsch.priv.at>
+Date: Tue, 2 Mar 2021 23:18:09 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Tue, 02 Mar 2021 22:41:35 +0100 (CET)
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Tue, 02 Mar 2021 22:41:33 +0100 (CET)
+In-Reply-To: <053b06c47f08631675c295b5c893b90be4248347.camel@perches.com>
+Content-Language: en-US
+X-DCC-x.dcc-servers-Metrics: esgaroth.petrovitsch.priv.at 104; Body=5 Fuz1=5
+ Fuz2=5
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 03 Mar 2021 08:12:12 +0100 (CET)
+X-Greylist: Delayed for 00:28:39 by milter-greylist-4.4.3 (isis.lip6.fr
+ [IPv6:2001:660:3302:283c:0:0:0:2]); Tue, 02 Mar 2021 23:47:05 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: LKML <linux-kernel@vger.kernel.org>,
+X-Scanned-By: MIMEDefang 2.78
+X-Mailman-Approved-At: Wed, 03 Mar 2021 08:12:09 +0100
+Cc: cocci <cocci@systeme.lip6.fr>,
         kernel-janitors <kernel-janitors@vger.kernel.org>,
-        cocci <cocci@systeme.lip6.fr>,
+        LKML <linux-kernel@vger.kernel.org>,
         kernelnewbies <kernelnewbies@kernelnewbies.org>
 Subject: Re: [Cocci] linux-kernel janitorial RFP: Mark static arrays as const
 X-BeenThere: cocci@systeme.lip6.fr
@@ -70,48 +86,12 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
+Hi all!
 
-
-On Tue, 2 Mar 2021, Joe Perches wrote:
-
-> Here is a possible opportunity to reduce data usage in the kernel.
-
-Does it actually reduce data usage?
-
-julia
-
->
-> $ git grep -P -n '^static\s+(?!const|struct)(?:\w+\s+){1,3}\w+\s*\[\s*\]' drivers/ | \
->   grep -v __initdata | \
->   wc -l
-> 3250
->
-> Meaning there are ~3000 declarations of arrays with what appears to be
-> file static const content that are not marked const.
->
-> So there are many static arrays that could be marked const to move the
-> compiled object code from data to text minimizing the total amount of
-> exposed r/w data.
->
-> However, I do not know of a mechanism using coccinelle to determine
-> whether or not any of these static declarations are ever modified.
->
-> So it appears that each instance of these declarations might need
-> manual inspection.
->
-> But for arrays declared inside functions, it's much more likely that
-> the static declaration without const is done with the intent to modify
-> the array:
->
-> (note the difference in the git grep with a leading '^\s+')
->
-> $ git grep -Pn '^\s+static\s+(?!const|struct)(?:\w+\s+){1,3}\w+\s*\[\s*\]' drivers/ | \
->   grep -v __initdata | \
->   wc -l
-> 323
->
+On 02/03/2021 18:42, Joe Perches wrote:
+[...]
 > ------------- For instance: (head -10 of the git grep for file statics)
->
+> 
 > drivers/accessibility/speakup/keyhelp.c:18:static u_short masks[] = { 32, 16, 8, 4, 2, 1 };
 > drivers/accessibility/speakup/keyhelp.c:26:static u_char funcvals[] = {
 > drivers/accessibility/speakup/main.c:2059:static spkup_hand spkup_handler[] = {
@@ -122,57 +102,18 @@ julia
 > drivers/accessibility/speakup/speakup_dtlk.c:34:static unsigned int synth_portlist[] = {
 > drivers/accessibility/speakup/speakup_keypc.c:34:static unsigned int synth_portlist[] = { 0x2a8, 0 };
 > drivers/acpi/ac.c:137:static enum power_supply_property ac_props[] = {
->
+> 
 > For drivers/accessibility/speakup/keyhelp.c:18:static u_short masks[] = { 32, 16, 8, 4, 2, 1 };
->
-> masks is only used in static function say_key and should be const and
-> perhaps the declaration might be better moved into that function.
->
-> For drivers/accessibility/speakup/keyhelp.c:26:static u_char funcvals[] = {
->
-> funcvals is only used in static function spk_handle_help and should be const
-> and perhaps the declaration might be better moved into that function.
->
-> For drivers/accessibility/speakup/main.c:2059:static spkup_hand spkup_handler[] = {
->
-> spkup_handler is only used in static function do_spkup and should be const
-> and perhaps the declaration might be better moved into that function.
->
-> etc... for speakup
->
-> For drivers/acpi/ac.c:137:static enum power_supply_property ac_props[] = {
->
-> array ac_props is assigned as a reference in acpi_ac_add as a
-> "const enum power_supply_property *" member of a struct power_supply_desc.
->
-> ------------- For instance: (head -10 of the git grep for function statics)
->
-> drivers/acpi/apei/apei-base.c:781:	static u8 whea_uuid_str[] = "ed855e0c-6c90-47bf-a62a-26de0fc5ad5c";
-> drivers/block/amiflop.c:1051:	static unsigned char CRCTable1[] = {
-> drivers/block/amiflop.c:1070:	static unsigned char CRCTable2[] = {
-> drivers/block/drbd/drbd_nl.c:872:	static char units[] = { 'K', 'M', 'G', 'T', 'P', 'E' };
-> drivers/block/drbd/drbd_proc.c:224:	static char write_ordering_chars[] = {
-> drivers/block/drbd/drbd_receiver.c:4363:	static enum drbd_conns c_tab[] = {
-> drivers/char/pcmcia/synclink_cs.c:3717:	static unsigned char patterns[] =
-> drivers/cpufreq/intel_pstate.c:1515:	static int silvermont_freq_table[] = {
-> drivers/cpufreq/intel_pstate.c:1530:	static int airmont_freq_table[] = {
-> drivers/dma/xgene-dma.c:360:	static u8 flyby_type[] = {
->
-> Some of these could be const, but some could not.  For instance:
->
-> For drivers/acpi/apei/apei-base.c:781:	static u8 whea_uuid_str[] = "ed855e0c-6c90-47bf-a62a-26de0fc5ad5c";
->
-> whea_uuid_str is assigned as a reference in "int apei_osc_setup(void)"
-> a struct acpi_osc_context where .uuid_str is not declared as const char *.
->
->
->
->
-> _______________________________________________
-> Cocci mailing list
-> Cocci@systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
+
+Looking at the examples: Just s/^static /static const / in the lines
+reported by the grep's above and see if it compiles (and save space)?
+
+MfG,
+	Bernd
+-- 
+Bernd Petrovitsch                  Email : bernd@petrovitsch.priv.at
+     There is NO CLOUD, just other people's computers. - FSFE
+                     LUGA : http://www.luga.at
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
