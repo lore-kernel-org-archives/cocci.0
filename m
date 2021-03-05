@@ -2,74 +2,89 @@ Return-Path: <SRS0=0wmz=ID=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,HK_RANDOM_FROM,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFE85C433E0
-	for <cocci@archiver.kernel.org>; Fri,  5 Mar 2021 08:19:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E308C433E0
+	for <cocci@archiver.kernel.org>; Fri,  5 Mar 2021 17:30:37 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4A41365014
-	for <cocci@archiver.kernel.org>; Fri,  5 Mar 2021 08:19:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4A41365014
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux.com
+	by mail.kernel.org (Postfix) with ESMTPS id 415CF6507A
+	for <cocci@archiver.kernel.org>; Fri,  5 Mar 2021 17:30:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 415CF6507A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 1258JPLH015607;
-	Fri, 5 Mar 2021 09:19:25 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 125HUGor015271;
+	Fri, 5 Mar 2021 18:30:16 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 03AE977CC;
-	Fri,  5 Mar 2021 09:19:25 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 3014077CC;
+	Fri,  5 Mar 2021 18:30:16 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 13BC05DC3
- for <cocci@systeme.lip6.fr>; Fri,  5 Mar 2021 09:19:24 +0100 (CET)
-Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com
- [209.85.208.180])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 1258JNKG017118
- for <cocci@systeme.lip6.fr>; Fri, 5 Mar 2021 09:19:23 +0100 (CET)
-Received: by mail-lj1-f180.google.com with SMTP id h4so1710123ljl.0
- for <cocci@systeme.lip6.fr>; Fri, 05 Mar 2021 00:19:23 -0800 (PST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id B1B6B5DC3
+ for <cocci@systeme.lip6.fr>; Fri,  5 Mar 2021 18:17:56 +0100 (CET)
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:72a])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 125HHuRJ022815
+ for <cocci@systeme.lip6.fr>; Fri, 5 Mar 2021 18:17:56 +0100 (CET)
+Received: by mail-qk1-x72a.google.com with SMTP id f124so2695850qkj.5
+ for <cocci@systeme.lip6.fr>; Fri, 05 Mar 2021 09:17:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=A4GojBV1azni2+AJjaknXBA1yM5ht5Ee/paoV+0Jysc=;
+ b=M0LYqmDE0f+k4CUl7h5kgKc2Bs3DxjiAZKPIu835Qg7BKBWjgS/7Ca9oaBZuvYrbUH
+ JExpaQ9R/gYjZ9rry38yaxypuQp1tb0tSYWOZmRDwSAqdF8OBDMvxl/YzZ5qwecorMw4
+ /D0TTo/FMSJMqkD4ej6+Zic0kJPLcifQWH6NKm1976jhq/e0nKLrCKsZSxXg2+kXZvWX
+ a468quJoLTOP6xg2Lyd2C1sxpKzk8jOSgCv+x+7Ix3++rM5DWa4l77LjgpLylszNzr5Q
+ ZXygsHdBJOeLUglNr1m4DFoRf+CKjsnoOPD/rHXY9PC7mJqw1GklNfpXFfgKr1s8Bqu6
+ VePg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=7XRAtGgHFapF9tffRIfz1dXxRDSD82LqpiHt4CHnG+I=;
- b=uLC85giWvmRn+av34Y+mGnhhuYO4ysOfqAISYu1jMPmY/2LlC1UiZREAvrxZIJPZm0
- S1V4dWrh/dctWA4KMVedbcVQkwdJygfBC7tae+aLbMWaORqFrNr/wz98kKfwSbb17Ea9
- 5jniKirCw1Eisd6g3GN7km+ZfQ6klcGdTNB6VhBaKDgfOeaH14fd/d98+a/84OTDuaLv
- ju0TxTKGoBYIgCUYhYVb6CzyrmV/CDPRsEvavZBd2CCvCPWlwrNfWLmAY3NWTHtcXcy9
- sc1GCe6HCWsy8kG92WcuN1MBb+ad7gg5jPCprHvtBgR4F591Zb1Ms0eDMl3VaMYI94JT
- LljA==
-X-Gm-Message-State: AOAM533qLcJml4oc1kj/ba5d/Bi6cyzwNbiBOP8wBipi9G8X6OTykXzc
- NcePCbIUXDZNqAi+hAgrzacVuOWUbACKmg==
-X-Google-Smtp-Source: ABdhPJw2R5rlkuLDcbpZVPlXAG3oBxCCi+2zpkb3QB9mdGcZB9maGd1JhSnhgqr3YVQSOj1X36PLNA==
-X-Received: by 2002:a2e:9004:: with SMTP id h4mr4549253ljg.326.1614932363219; 
- Fri, 05 Mar 2021 00:19:23 -0800 (PST)
-Received: from localhost.. (broadband-188-32-236-56.ip.moscow.rt.ru.
- [188.32.236.56])
- by smtp.googlemail.com with ESMTPSA id s6sm209273lfg.242.2021.03.05.00.19.22
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=A4GojBV1azni2+AJjaknXBA1yM5ht5Ee/paoV+0Jysc=;
+ b=XntTTpS9d3ICMAbG+WjlYwKqBxklkoCbiX2YC4T5qq63dVWjks+5AFdI0tzhsrFA4c
+ kt9pc25VvbRUH2hjbar3N5Vw5chEwzvFBw62ogUxuLp4/ZePwgqzlDspStEBhsQyPe9V
+ jVIPUmRFPjWgs1LJbKP/3/IeZ3Zy+rO/7Rwq4b8U+alpcxrTtEs0Do4VpW3Wz5P6Kdhn
+ 1q+y3DDFbeMLPCGbTFboQ3/qJdUcbNT7hPz70EQmGwEjdO9rtTUEjAV+5hcTh8J1sLmy
+ Topmbrr/EJVK4SlwjwYEdIEEUdQredP8B/YWXjYdrIKVe7rZ8/0NEbxFsT3bxxEiXQ3J
+ LPaw==
+X-Gm-Message-State: AOAM530IHi2IY/VQqrSRX1McGDSl60uP9m6OnDL7sLAHJdR0lbzFJlZp
+ uim5HjZB6zInJwIv88PQgbY=
+X-Google-Smtp-Source: ABdhPJwT+EvlaLHk/joeZCd9rd6+eK6gkosD4VeDV7qYVLIjMr9FbyEeKgEzpebYCwvaNIezXYOssA==
+X-Received: by 2002:a05:620a:1323:: with SMTP id
+ p3mr9884313qkj.175.1614964675731; 
+ Fri, 05 Mar 2021 09:17:55 -0800 (PST)
+Received: from darkstar.example.net ([2804:d45:9905:9600:c57:100:d8b8:6ad3])
+ by smtp.gmail.com with ESMTPSA id e15sm2289357qti.79.2021.03.05.09.17.53
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 05 Mar 2021 00:19:22 -0800 (PST)
-From: Denis Efremov <efremov@linux.com>
-To: Julia Lawall <julia.lawall@inria.fr>
-Date: Fri,  5 Mar 2021 13:16:40 +0300
-Message-Id: <20210305101640.7717-1-efremov@linux.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210216160326.1341741-1-efremov@linux.com>
-References: <20210216160326.1341741-1-efremov@linux.com>
+ Fri, 05 Mar 2021 09:17:55 -0800 (PST)
+From: Davidson Francis <davidsondfgl@gmail.com>
+To: Julia Lawall <Julia.Lawall@inria.fr>,
+        Gilles Muller <Gilles.Muller@inria.fr>,
+        Nicolas Palix <nicolas.palix@imag.fr>,
+        Michal Marek <michal.lkml@markovi.net>
+Date: Fri,  5 Mar 2021 14:15:58 -0300
+Message-Id: <20210305171558.6192-1-davidsondfgl@gmail.com>
+X-Mailer: git-send-email 2.29.1
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 05 Mar 2021 09:19:25 +0100 (CET)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 05 Mar 2021 18:30:16 +0100 (CET)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Fri, 05 Mar 2021 09:19:23 +0100 (CET)
+ (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
+ Fri, 05 Mar 2021 18:17:56 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: cocci@systeme.lip6.fr, linux-kernel@vger.kernel.org
-Subject: [Cocci] [PATCH v3] coccinelle: misc: add minmax script
+X-Scanned-By: MIMEDefang 2.78
+X-Mailman-Approved-At: Fri, 05 Mar 2021 18:30:14 +0100
+Cc: Davidson Francis <davidsondfgl@gmail.com>, cocci@systeme.lip6.fr,
+        linux-kernel@vger.kernel.org
+Subject: [Cocci] [PATCH] scripts: coccicheck: Fix chain mode in coccicheck
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -86,253 +101,45 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Check for opencoded min(), max() implementations.
+As described in the Coccinelle documentation (Documentation/dev-tools/
+coccinelle.rst), chain mode should try patch, report, context, and org
+modes until one of them succeed.
 
-Signed-off-by: Denis Efremov <efremov@linux.com>
+It turns out that currently, the 'run_cmd_parmap' function, by failing
+to run $SPATCH, rather than returning an error code, kills the execution
+of the script by executing the exit command, rather than returning the
+error code.
+
+This way, when running coccicheck in chain mode, as in:
+    $ make coccicheck MODE=chain
+
+the first .cocci file that does not support one of the virtual rules
+stops the execution of the makefile, rather than trying the remaining
+rules as specified in the documentation.
+
+Therefore, modify the coccicheck script to return the error code,
+rather than terminating the script.
+
+Signed-off-by: Davidson Francis <davidsondfgl@gmail.com>
 ---
-Changes in v2:
- - <... ...> instead of ... when any
- - org mode reports fixed
- - patch rule to drop excessive ()
-Changes in v3:
- - "depends on patch && (pmax || pmaxif || pmin || pminif)" fixed
+ scripts/coccicheck | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- scripts/coccinelle/misc/minmax.cocci | 224 +++++++++++++++++++++++++++
- 1 file changed, 224 insertions(+)
- create mode 100644 scripts/coccinelle/misc/minmax.cocci
-
-diff --git a/scripts/coccinelle/misc/minmax.cocci b/scripts/coccinelle/misc/minmax.cocci
-new file mode 100644
-index 000000000000..f577f08d1e6e
---- /dev/null
-+++ b/scripts/coccinelle/misc/minmax.cocci
-@@ -0,0 +1,224 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+///
-+/// Check for opencoded min(), max() implementations.
-+/// Generated patches sometimes require adding a cast to fix compile warning.
-+/// Warnings/patches scope intentionally limited to a function body.
-+///
-+// Confidence: Medium
-+// Copyright: (C) 2021 Denis Efremov ISPRAS
-+// Options: --no-includes --include-headers
-+//
-+// Keywords: min, max
-+//
-+
-+
-+virtual report
-+virtual org
-+virtual context
-+virtual patch
-+
-+@rmax depends on !patch@
-+identifier func;
-+expression x, y;
-+binary operator cmp = {>, >=};
-+position p;
-+@@
-+
-+func(...)
-+{
-+	<...
-+*	x cmp@p y ? x : y
-+	...>
-+}
-+
-+@rmaxif depends on !patch@
-+identifier func;
-+expression x, y;
-+expression max_val;
-+binary operator cmp = {>, >=};
-+position p;
-+@@
-+
-+func(...)
-+{
-+	<...
-+*	if (x cmp@p y) {
-+*		max_val = x;
-+*	} else {
-+*		max_val = y;
-+*	}
-+	...>
-+}
-+
-+@rmin depends on !patch@
-+identifier func;
-+expression x, y;
-+binary operator cmp = {<, <=};
-+position p;
-+@@
-+
-+func(...)
-+{
-+	<...
-+*	x cmp@p y ? x : y
-+	...>
-+}
-+
-+@rminif depends on !patch@
-+identifier func;
-+expression x, y;
-+expression min_val;
-+binary operator cmp = {<, <=};
-+position p;
-+@@
-+
-+func(...)
-+{
-+	<...
-+*	if (x cmp@p y) {
-+*		min_val = x;
-+*	} else {
-+*		min_val = y;
-+*	}
-+	...>
-+}
-+
-+@pmax depends on patch@
-+identifier func;
-+expression x, y;
-+binary operator cmp = {>=, >};
-+position p;
-+@@
-+
-+func@p(...)
-+{
-+	<...
-+-	x cmp y ? x : y
-++	max(x, y)
-+	...>
-+}
-+
-+@pmaxif depends on patch@
-+identifier func;
-+expression x, y;
-+expression max_val;
-+binary operator cmp = {>=, >};
-+position p;
-+@@
-+
-+func@p(...)
-+{
-+	<...
-+-	if (x cmp y) {
-+-		max_val = x;
-+-	} else {
-+-		max_val = y;
-+-	}
-++	max_val = max(x, y);
-+	...>
-+}
-+
-+@pmin depends on patch@
-+identifier func;
-+expression x, y;
-+binary operator cmp = {<=, <};
-+position p;
-+@@
-+
-+func@p(...)
-+{
-+	<...
-+-	x cmp y ? x : y
-++	min(x, y)
-+	...>
-+}
-+
-+@pminif depends on patch@
-+identifier func;
-+expression x, y;
-+expression min_val;
-+binary operator cmp = {<=, <};
-+position p;
-+@@
-+
-+func@p(...)
-+{
-+	<...
-+-	if (x cmp y) {
-+-		min_val = x;
-+-	} else {
-+-		min_val = y;
-+-	}
-++	min_val = min(x, y);
-+	...>
-+}
-+
-+@depends on patch && (pmax || pmaxif || pmin || pminif)@
-+identifier func;
-+expression x, y;
-+position p;
-+// FIXME: Coccinelle consumes all available ram and
-+// and timeouts on every file.
-+// position p = { pmin.p, pminif.p, pmax.p, pmaxif.p };
-+@@
-+
-+func@p(...)
-+{
-+	<...
-+(
-+-	(min((x), (y)))
-++	min(x, y)
-+|
-+-	(max((x), (y)))
-++	max(x, y)
-+)
-+	...>
-+}
-+
-+@script:python depends on report@
-+p << rmax.p;
-+@@
-+
-+coccilib.report.print_report(p[0], "WARNING opportunity for max()")
-+
-+@script:python depends on org@
-+p << rmax.p;
-+@@
-+
-+coccilib.org.print_todo(p[0], "WARNING opportunity for max()")
-+
-+@script:python depends on report@
-+p << rmaxif.p;
-+@@
-+
-+coccilib.report.print_report(p[0], "WARNING opportunity for max()")
-+
-+@script:python depends on org@
-+p << rmaxif.p;
-+@@
-+
-+coccilib.org.print_todo(p[0], "WARNING opportunity for max()")
-+
-+@script:python depends on report@
-+p << rmin.p;
-+@@
-+
-+coccilib.report.print_report(p[0], "WARNING opportunity for min()")
-+
-+@script:python depends on org@
-+p << rmin.p;
-+@@
-+
-+coccilib.org.print_todo(p[0], "WARNING opportunity for min()")
-+
-+@script:python depends on report@
-+p << rminif.p;
-+@@
-+
-+coccilib.report.print_report(p[0], "WARNING opportunity for min()")
-+
-+@script:python depends on org@
-+p << rminif.p;
-+@@
-+
-+coccilib.org.print_todo(p[0], "WARNING opportunity for min()")
+diff --git a/scripts/coccicheck b/scripts/coccicheck
+index 65fee63aeadb..15711bd43395 100755
+--- a/scripts/coccicheck
++++ b/scripts/coccicheck
+@@ -153,7 +153,7 @@ run_cmd_parmap() {
+ 	err=$?
+ 	if [[ $err -ne 0 ]]; then
+ 		echo "coccicheck failed"
+-		exit $err
++		return $err
+ 	fi
+ }
+ 
 -- 
-2.26.2
+2.29.1
 
 _______________________________________________
 Cocci mailing list
