@@ -1,90 +1,58 @@
-Return-Path: <SRS0=0wmz=ID=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=bgrw=IE=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,HK_RANDOM_FROM,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E308C433E0
-	for <cocci@archiver.kernel.org>; Fri,  5 Mar 2021 17:30:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1254FC433E0
+	for <cocci@archiver.kernel.org>; Sat,  6 Mar 2021 14:09:25 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 415CF6507A
-	for <cocci@archiver.kernel.org>; Fri,  5 Mar 2021 17:30:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 415CF6507A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 258C865000
+	for <cocci@archiver.kernel.org>; Sat,  6 Mar 2021 14:09:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 258C865000
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 125HUGor015271;
-	Fri, 5 Mar 2021 18:30:16 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 126E8w1E017062;
+	Sat, 6 Mar 2021 15:08:58 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 3014077CC;
-	Fri,  5 Mar 2021 18:30:16 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 785D977CC;
+	Sat,  6 Mar 2021 15:08:58 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id B1B6B5DC3
- for <cocci@systeme.lip6.fr>; Fri,  5 Mar 2021 18:17:56 +0100 (CET)
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com
- [IPv6:2607:f8b0:4864:20:0:0:0:72a])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 125HHuRJ022815
- for <cocci@systeme.lip6.fr>; Fri, 5 Mar 2021 18:17:56 +0100 (CET)
-Received: by mail-qk1-x72a.google.com with SMTP id f124so2695850qkj.5
- for <cocci@systeme.lip6.fr>; Fri, 05 Mar 2021 09:17:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=A4GojBV1azni2+AJjaknXBA1yM5ht5Ee/paoV+0Jysc=;
- b=M0LYqmDE0f+k4CUl7h5kgKc2Bs3DxjiAZKPIu835Qg7BKBWjgS/7Ca9oaBZuvYrbUH
- JExpaQ9R/gYjZ9rry38yaxypuQp1tb0tSYWOZmRDwSAqdF8OBDMvxl/YzZ5qwecorMw4
- /D0TTo/FMSJMqkD4ej6+Zic0kJPLcifQWH6NKm1976jhq/e0nKLrCKsZSxXg2+kXZvWX
- a468quJoLTOP6xg2Lyd2C1sxpKzk8jOSgCv+x+7Ix3++rM5DWa4l77LjgpLylszNzr5Q
- ZXygsHdBJOeLUglNr1m4DFoRf+CKjsnoOPD/rHXY9PC7mJqw1GklNfpXFfgKr1s8Bqu6
- VePg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=A4GojBV1azni2+AJjaknXBA1yM5ht5Ee/paoV+0Jysc=;
- b=XntTTpS9d3ICMAbG+WjlYwKqBxklkoCbiX2YC4T5qq63dVWjks+5AFdI0tzhsrFA4c
- kt9pc25VvbRUH2hjbar3N5Vw5chEwzvFBw62ogUxuLp4/ZePwgqzlDspStEBhsQyPe9V
- jVIPUmRFPjWgs1LJbKP/3/IeZ3Zy+rO/7Rwq4b8U+alpcxrTtEs0Do4VpW3Wz5P6Kdhn
- 1q+y3DDFbeMLPCGbTFboQ3/qJdUcbNT7hPz70EQmGwEjdO9rtTUEjAV+5hcTh8J1sLmy
- Topmbrr/EJVK4SlwjwYEdIEEUdQredP8B/YWXjYdrIKVe7rZ8/0NEbxFsT3bxxEiXQ3J
- LPaw==
-X-Gm-Message-State: AOAM530IHi2IY/VQqrSRX1McGDSl60uP9m6OnDL7sLAHJdR0lbzFJlZp
- uim5HjZB6zInJwIv88PQgbY=
-X-Google-Smtp-Source: ABdhPJwT+EvlaLHk/joeZCd9rd6+eK6gkosD4VeDV7qYVLIjMr9FbyEeKgEzpebYCwvaNIezXYOssA==
-X-Received: by 2002:a05:620a:1323:: with SMTP id
- p3mr9884313qkj.175.1614964675731; 
- Fri, 05 Mar 2021 09:17:55 -0800 (PST)
-Received: from darkstar.example.net ([2804:d45:9905:9600:c57:100:d8b8:6ad3])
- by smtp.gmail.com with ESMTPSA id e15sm2289357qti.79.2021.03.05.09.17.53
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 05 Mar 2021 09:17:55 -0800 (PST)
-From: Davidson Francis <davidsondfgl@gmail.com>
-To: Julia Lawall <Julia.Lawall@inria.fr>,
-        Gilles Muller <Gilles.Muller@inria.fr>,
-        Nicolas Palix <nicolas.palix@imag.fr>,
-        Michal Marek <michal.lkml@markovi.net>
-Date: Fri,  5 Mar 2021 14:15:58 -0300
-Message-Id: <20210305171558.6192-1-davidsondfgl@gmail.com>
-X-Mailer: git-send-email 2.29.1
+ by systeme.lip6.fr (Postfix) with ESMTPS id 04BC9571B
+ for <cocci@systeme.lip6.fr>; Sat,  6 Mar 2021 15:08:57 +0100 (CET)
+Received: from mail2-relais-roc.national.inria.fr
+ (mail2-relais-roc.national.inria.fr [192.134.164.83])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 126E8uh7011090
+ for <cocci@systeme.lip6.fr>; Sat, 6 Mar 2021 15:08:56 +0100 (CET)
+X-IronPort-AV: E=Sophos;i="5.81,228,1610406000"; d="scan'208";a="496489458"
+Received: from 173.121.68.85.rev.sfr.net (HELO hadrien) ([85.68.121.173])
+ by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 06 Mar 2021 15:08:56 +0100
+Date: Sat, 6 Mar 2021 15:08:56 +0100 (CET)
+From: Julia Lawall <julia.lawall@inria.fr>
+X-X-Sender: jll@hadrien
+To: Denis Efremov <efremov@linux.com>
+In-Reply-To: <20210219090655.8985-1-efremov@linux.com>
+Message-ID: <alpine.DEB.2.22.394.2103061503290.2976@hadrien>
+References: <20210216160326.1341741-1-efremov@linux.com>
+ <20210219090655.8985-1-efremov@linux.com>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 05 Mar 2021 18:30:16 +0100 (CET)
-X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Fri, 05 Mar 2021 18:17:56 +0100 (CET)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 06 Mar 2021 15:08:59 +0100 (CET)
+X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [132.227.60.2]); Sat, 06 Mar 2021 15:08:56 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78
-X-Mailman-Approved-At: Fri, 05 Mar 2021 18:30:14 +0100
-Cc: Davidson Francis <davidsondfgl@gmail.com>, cocci@systeme.lip6.fr,
-        linux-kernel@vger.kernel.org
-Subject: [Cocci] [PATCH] scripts: coccicheck: Fix chain mode in coccicheck
+X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
+Cc: cocci@systeme.lip6.fr, linux-kernel@vger.kernel.org
+Subject: Re: [Cocci] [PATCH v2 RESEND] coccinelle: misc: add minmax script
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -101,46 +69,90 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-As described in the Coccinelle documentation (Documentation/dev-tools/
-coccinelle.rst), chain mode should try patch, report, context, and org
-modes until one of them succeed.
 
-It turns out that currently, the 'run_cmd_parmap' function, by failing
-to run $SPATCH, rather than returning an error code, kills the execution
-of the script by executing the exit command, rather than returning the
-error code.
 
-This way, when running coccicheck in chain mode, as in:
-    $ make coccicheck MODE=chain
+On Fri, 19 Feb 2021, Denis Efremov wrote:
 
-the first .cocci file that does not support one of the virtual rules
-stops the execution of the makefile, rather than trying the remaining
-rules as specified in the documentation.
+> Check for opencoded min(), max() implementations.
+>
+> Signed-off-by: Denis Efremov <efremov@linux.com>
+> ---
+>
+> Changes in v2:
+>  - <... ...> instead of ... when any
+>  - org mode reports fixed
+>  - patch rule to drop excessive ()
+>
+>  scripts/coccinelle/misc/minmax.cocci | 224 +++++++++++++++++++++++++++
+>  1 file changed, 224 insertions(+)
+>  create mode 100644 scripts/coccinelle/misc/minmax.cocci
+>
+> diff --git a/scripts/coccinelle/misc/minmax.cocci b/scripts/coccinelle/misc/minmax.cocci
+> new file mode 100644
+> index 000000000000..61d6b61fd82c
+> --- /dev/null
+> +++ b/scripts/coccinelle/misc/minmax.cocci
+> @@ -0,0 +1,224 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +///
+> +/// Check for opencoded min(), max() implementations.
+> +/// Generated patches sometimes require adding a cast to fix compile warning.
+> +/// Warnings/patches scope intentionally limited to a function body.
+> +///
+> +// Confidence: Medium
+> +// Copyright: (C) 2021 Denis Efremov ISPRAS
+> +// Options: --no-includes --include-headers
+> +//
+> +// Keywords: min, max
+> +//
+> +
+> +
+> +virtual report
+> +virtual org
+> +virtual context
+> +virtual patch
+> +
+> +@rmax depends on !patch@
+> +identifier func;
+> +expression x, y;
+> +binary operator cmp = {>, >=};
+> +position p;
+> +@@
+> +
+> +func(...)
+> +{
+> +	<...
+> +*	x cmp@p y ? x : y
 
-Therefore, modify the coccicheck script to return the error code,
-rather than terminating the script.
+The rule below indicated with FIXME is supposed to deal with the
+possibility of () that are unnecessary when using min and max.  It doesn't
+work, because <... P ...> allow P to match 0 or more times, and thus
+func@p matches every function.
 
-Signed-off-by: Davidson Francis <davidsondfgl@gmail.com>
----
- scripts/coccicheck | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+A simpler solution is to just allow arbitrary () in the pattern, eg:
 
-diff --git a/scripts/coccicheck b/scripts/coccicheck
-index 65fee63aeadb..15711bd43395 100755
---- a/scripts/coccicheck
-+++ b/scripts/coccicheck
-@@ -153,7 +153,7 @@ run_cmd_parmap() {
- 	err=$?
- 	if [[ $err -ne 0 ]]; then
- 		echo "coccicheck failed"
--		exit $err
-+		return $err
- 	fi
- }
- 
--- 
-2.29.1
+  (x) cmp@p (y) ? (x) : (y)
 
+That will allow each occurrence of x and y to occur with and without
+parentheses.  In the submitted  semantic patch, the () issue was only
+considered in the patch case.  But it actually affects the purely matching
+cases too, because () can be used at one occurrence, but not the other.
+
+> +@script:python depends on report@
+> +p << rmax.p;
+> +@@
+> +
+> +coccilib.report.print_report(p[0], "WARNING opportunity for max()")
+
+p is an array because it can be bound to different positions on different
+control-flow paths.  Notably this occurs with <... ...>.  If there are
+multiple occurrences of the pattern, there will be one match that contains
+all of them.  Thus the reporting code should be:
+
+for p0 in p:
+  coccilib.report.print_report(p0, "WARNING opportunity for max()")
+
+julia
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
