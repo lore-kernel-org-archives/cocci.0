@@ -2,74 +2,62 @@ Return-Path: <SRS0=PEvY=IQ=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2525C433E0
-	for <cocci@archiver.kernel.org>; Thu, 18 Mar 2021 18:26:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9218EC433DB
+	for <cocci@archiver.kernel.org>; Thu, 18 Mar 2021 19:24:52 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B164B64E22
-	for <cocci@archiver.kernel.org>; Thu, 18 Mar 2021 18:26:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B164B64E22
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=xteddy.org
+	by mail.kernel.org (Postfix) with ESMTPS id BA6DE64F30
+	for <cocci@archiver.kernel.org>; Thu, 18 Mar 2021 19:24:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BA6DE64F30
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 12IIQUuu015724;
-	Thu, 18 Mar 2021 19:26:30 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 12IJOPtm003031;
+	Thu, 18 Mar 2021 20:24:25 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id C938C77CD;
-	Thu, 18 Mar 2021 19:26:30 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 32E9C77CD;
+	Thu, 18 Mar 2021 20:24:25 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 66A8F5DC3
- for <cocci@systeme.lip6.fr>; Thu, 18 Mar 2021 19:26:29 +0100 (CET)
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com
- [IPv6:2607:f8b0:4864:20:0:0:0:235])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 12IIQSle009782
- for <cocci@systeme.lip6.fr>; Thu, 18 Mar 2021 19:26:28 +0100 (CET)
-Received: by mail-oi1-x235.google.com with SMTP id i81so479426oif.6
- for <cocci@systeme.lip6.fr>; Thu, 18 Mar 2021 11:26:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xteddy-org.20150623.gappssmtp.com; s=20150623;
- h=mime-version:from:date:message-id:subject:to;
- bh=x2qxa8JuYHrajaauySVPr74EAf7kMKbaJIyNiv0DkJg=;
- b=fGEri5zb6kBOr608xj/7abKqwcDYidxPY2TiUtzCvZFHDwe9ZYPC7aMiNDP/ZvO5U+
- pWdKYfqZKqCiOr82rjGiZ0BE7ZAg02z21uVL2VFH5/nFilf+JWn5xGuCRRuOR6MMtvX8
- J6qsD4FNUTYaSI6j+HCEqypYc71X8jBfwXi/v8b2DCvHNQAaZ91n5a2aFx0cXYbHquUI
- fceT77q0MOuUyX86+kBfQbzsyePmDe3Q4GBqq0Wwbqx0jIDw4kGKDfGHDQoZvc63897/
- mv4HpmLtrk/zxSNdI4A+jYj10kKsBABNaVsjvW5H2jOQZUpG0wc6pcmub0yv0vNDe1W0
- JhPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
- bh=x2qxa8JuYHrajaauySVPr74EAf7kMKbaJIyNiv0DkJg=;
- b=hErhqEKKzR3/o8lklYFVgi4e4qwMmpUKMVEy45gcHYgMmxo1AQhBVoE08k6VLK5UnK
- Y712B3fIvPW+qHnPHb0yUz+SX9/nmxoofG5z1TOhaJUCzhRonNlvb7YDAqPNzX/dMohd
- ygL5V+D3XPKy8h2aKXGHG/N+6f1Y9q6DomMjJmalwFrBplCuxLH482qOAeogYvsjLUzI
- Qr4aA1CduP5JEHXuWwvG3ZoiRAsHRBUzmxDoPCXR6lBfDLpmMRe/hA2MlBCMDow154+1
- PxkK7KOi3iYSPjQ9dzKDhw4n9znfl0nGPTin2lXlqjOpvIfgz+FoWZPj7HC0vPwoLJYF
- qEwA==
-X-Gm-Message-State: AOAM533fVfipXQZkt7cHPQGpsVwOqzz0frs1x0SR8Y2hqdo9DUUjmU2x
- AhYcNh6M8Lb0UwlQZ2+zs6nIM8sXZYdjclu0NdQdmRpVXubWr+8h
-X-Google-Smtp-Source: ABdhPJzGKoavK0IdzE7UX4ACos3xQM6QmML5k1PYgy5r1SqPpnWW8Y9MguWBgRml4CZ+rGRQdnnteLjRBCuD5E5kusg=
-X-Received: by 2002:aca:f13:: with SMTP id 19mr4024522oip.56.1616091988075;
- Thu, 18 Mar 2021 11:26:28 -0700 (PDT)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 0C5765DC3
+ for <cocci@systeme.lip6.fr>; Thu, 18 Mar 2021 20:24:23 +0100 (CET)
+Received: from mail2-relais-roc.national.inria.fr
+ (mail2-relais-roc.national.inria.fr [192.134.164.83])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 12IJOMic029246
+ for <cocci@systeme.lip6.fr>; Thu, 18 Mar 2021 20:24:22 +0100 (CET)
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3AQ8GrK6/z2J4P/Uk3xRduk+GDdb1zdoIgy1kn?=
+ =?us-ascii?q?xilNYDZSddGVkN3roe8S0gX6hC1UdHYrn92BP6foewK5ybde544NMbC+GDT3oW?=
+ =?us-ascii?q?fAFvAG0aLO4R3FXxf/+OlUyLt6f8FFY+HYIFBmga/BjzWQPM0nxLC8npyAoevF?=
+ =?us-ascii?q?1X9iQUVLRshbjztRLgaeHglISBJdBZw/faDshPZvnDardXQJYsnTPBBsNYWum/?=
+ =?us-ascii?q?TwiJnkbRQabiRXizWmsDXA0t/HOind9gsCVXd1za0692/en0jC+ry7qP2g0Hbn?=
+ =?us-ascii?q?pgjuxqUTtNz9ysZSQOyg4/JlUQnEu0KTSsBMe5DqhkFNnMifrGwF1Pngyi1QR/?=
+ =?us-ascii?q?hb4XvNcm+yuhvgwWDboVAT10M=3D?=
+X-IronPort-AV: E=Sophos;i="5.81,259,1610406000"; d="scan'208";a="498756359"
+Received: from 173.121.68.85.rev.sfr.net (HELO hadrien) ([85.68.121.173])
+ by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 18 Mar 2021 20:24:22 +0100
+Date: Thu, 18 Mar 2021 20:24:22 +0100 (CET)
+From: Julia Lawall <julia.lawall@inria.fr>
+X-X-Sender: jll@hadrien
+To: Thomas Adam <thomas@xteddy.org>
+In-Reply-To: <CAOhcEPYTkAqYM4q4p6q=nvF3eS6QX_-ajRykn08YfnOK9+VHUg@mail.gmail.com>
+Message-ID: <alpine.DEB.2.22.394.2103182020110.2984@hadrien>
+References: <CAOhcEPYTkAqYM4q4p6q=nvF3eS6QX_-ajRykn08YfnOK9+VHUg@mail.gmail.com>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-From: Thomas Adam <thomas@xteddy.org>
-Date: Thu, 18 Mar 2021 18:26:13 +0000
-Message-ID: <CAOhcEPYTkAqYM4q4p6q=nvF3eS6QX_-ajRykn08YfnOK9+VHUg@mail.gmail.com>
-To: Coccinelle <cocci@systeme.lip6.fr>
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 18 Mar 2021 19:26:31 +0100 (CET)
-X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
- Thu, 18 Mar 2021 19:26:29 +0100 (CET)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 18 Mar 2021 20:24:26 +0100 (CET)
+X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [132.227.60.2]); Thu, 18 Mar 2021 20:24:22 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78
-Subject: [Cocci] Removing the last return statement from a void function
+X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
+Cc: Coccinelle <cocci@systeme.lip6.fr>
+Subject: Re: [Cocci] Removing the last return statement from a void function
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -86,58 +74,92 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Hello all,
 
-I've another Coccinelle question I'm hoping you can help me with.  The
-codebase I'm working on is old, and has some interesting styles which
-by themselves probably don't cause any problems, but newer C compilers
-are now starting to flag them.
 
-In particular, there seems to be a pattern in this code base of using
-explicit `return;` statements at the end of void functions.  Here's an
-example:
+On Thu, 18 Mar 2021, Thomas Adam wrote:
 
-static void broadcast_mini_icon(FvwmWindow *fw)
-{
-    if (!FMiniIconsSupported)
-    {
-        return;
-    }
-    if (fw->mini_pixmap_file && fw->mini_icon)
-    {
-        BroadcastFvwmPicture( M_MINI_ICON, FW_W(fw),
-            FW_W_FRAME(fw), (unsigned long)fw,
-            fw->mini_icon, fw->mini_pixmap_file);
-    }
-    return;
-}
+> Hello all,
+>
+> I've another Coccinelle question I'm hoping you can help me with.  The
+> codebase I'm working on is old, and has some interesting styles which
+> by themselves probably don't cause any problems, but newer C compilers
+> are now starting to flag them.
+>
+> In particular, there seems to be a pattern in this code base of using
+> explicit `return;` statements at the end of void functions.  Here's an
+> example:
+>
+> static void broadcast_mini_icon(FvwmWindow *fw)
+> {
+>     if (!FMiniIconsSupported)
+>     {
+>         return;
+>     }
+>     if (fw->mini_pixmap_file && fw->mini_icon)
+>     {
+>         BroadcastFvwmPicture( M_MINI_ICON, FW_W(fw),
+>             FW_W_FRAME(fw), (unsigned long)fw,
+>             fw->mini_icon, fw->mini_pixmap_file);
+>     }
+>     return;
+> }
+>
+> Here you can see the last return statement is not necessary.
+>
+> I'm trying to make coccinelle recognise this and remove such cases.
+> Here's what I've tried:
+>
+> @@
+> identifier f;
+> @@
+>
+> void f(...) {
+>   <...
+> - return;
+> ...>
+>
+> }
+>
+> ... which sort of works, but proceeds to remove *all* `return;`
+> statements from void functions, rather than the last occurance in the
+> function.
+>
+> Am I on the right track with this approach, or do I need to do
+> something more creative?
 
-Here you can see the last return statement is not necessary.
+The ... in Coccinelle is based on control flow, so it is a bit hard to
+find the return at the bottom of the function.  Actually, from
+Coccinelle's point of view, all returns are at the bottom of the function,
+because one leaves the function after a return.
 
-I'm trying to make coccinelle recognise this and remove such cases.
-Here's what I've tried:
+You can try the following:
 
-@@
+@r@
+position p;
 identifier f;
-@@
-
-void f(...) {
-  <...
-- return;
-...>
-
 }
 
-... which sort of works, but proceeds to remove *all* `return;`
-statements from void functions, rather than the last occurance in the
-function.
+f(...) {
+<...
+{ .. return@p; }
+...>
+}
 
-Am I on the right track with this approach, or do I need to do
-something more creative?
+@@
+position p != r.p;
+@@
 
-Thanks once more for your help.
+- return@p;
 
-Thomas
+Basically the first rule collects the position of all returns that are
+inside a { }, and then the second rule removes the others.
+
+However there is an isomorphism that makes a pattern with { ... S } match
+just S, for any S, which you don't want.  So you can make an empty file
+called empty.iso, and then run the rule with the command-line argument
+--iso-file empty.iso
+
+julia
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
