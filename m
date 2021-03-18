@@ -1,80 +1,84 @@
-Return-Path: <SRS0=Sj7A=IP=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=PEvY=IQ=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7323C433E0
-	for <cocci@archiver.kernel.org>; Wed, 17 Mar 2021 20:51:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9290C433E6
+	for <cocci@archiver.kernel.org>; Thu, 18 Mar 2021 18:19:42 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 08F4A64E74
-	for <cocci@archiver.kernel.org>; Wed, 17 Mar 2021 20:51:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 08F4A64E74
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux.com
+	by mail.kernel.org (Postfix) with ESMTPS id E091C64F1D
+	for <cocci@archiver.kernel.org>; Thu, 18 Mar 2021 18:19:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E091C64F1D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=xteddy.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 12HKptsb023911;
-	Wed, 17 Mar 2021 21:51:55 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 12IIJbZp007254;
+	Thu, 18 Mar 2021 19:19:37 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 3233F77CD;
-	Wed, 17 Mar 2021 21:51:55 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id E335A77CD;
+	Thu, 18 Mar 2021 19:19:36 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 4307924DD
- for <cocci@systeme.lip6.fr>; Wed, 17 Mar 2021 21:51:53 +0100 (CET)
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com
- [209.85.128.46])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 12HKpquB023000
- for <cocci@systeme.lip6.fr>; Wed, 17 Mar 2021 21:51:52 +0100 (CET)
-Received: by mail-wm1-f46.google.com with SMTP id
- d8-20020a1c1d080000b029010f15546281so1847128wmd.4
- for <cocci@systeme.lip6.fr>; Wed, 17 Mar 2021 13:51:52 -0700 (PDT)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 64CF25DC3
+ for <cocci@systeme.lip6.fr>; Thu, 18 Mar 2021 19:19:35 +0100 (CET)
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com
+ [IPv6:2607:f8b0:4864:20:0:0:0:329])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 12IIJYJT013132
+ for <cocci@systeme.lip6.fr>; Thu, 18 Mar 2021 19:19:34 +0100 (CET)
+Received: by mail-ot1-x329.google.com with SMTP id
+ g8-20020a9d6c480000b02901b65ca2432cso6082055otq.3
+ for <cocci@systeme.lip6.fr>; Thu, 18 Mar 2021 11:19:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xteddy-org.20150623.gappssmtp.com; s=20150623;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=TYNakGTPquo8aXpjNIhEudilkwZE05CouyogomB1bwI=;
+ b=gZXSTX+IZTEn530l/fzS62w2LkE1+PyY8QTPRpStPqavNLRlHwYjMEsOEN1+iV8dmf
+ svU+bmEeaqPbrMvia4MgCqgNq+UvMMSvctpFgrN0VUxGUOunch77pEq97B+XStGQG1Sr
+ lAHmysZ10RhlDun/PmOvQIAUQEyvAMHE4n7wJj6IAcpB4J7ziE8daTZZ1uCoqnQtMpDi
+ fm9zAoYIzcRgQsp6ss34bidtBsY7ZcML+V1enNgcUn+M1lMox/TaNLKqcE36Oq+9D9Fy
+ 0Y61PGcRbjmJt35Ki8sRiKvjANSfFFK7PRDp5Rakh6U2dzLltpcurX3OD1oZqju58c0q
+ Ihgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=KHqTGihzkCvfAf9aq/hAEymBXcX05DET6DSMVLmYdCQ=;
- b=NVtgHI5Ou0MgFzslUdtt29d+eRhedg5r6C56SeOMBJ+7h7tk2df41RV1cIYnM8iA2x
- cI7lt+ZWFZh8zWQKBCk5RmMOmRGYzagbuGb8Uey9lmWIF85TT/kS2VSou1TOJQc5ZmD6
- obdp87aPz3QvHXyecmwpq6pqj5mCiucRYF3vSxrT9kwIjaVH0/u9X8fRJLw7fDSp9Oe+
- mKR2JddRT5jCcbNU9TxdjO/v8QuV4uUPPC1w5BWzYixM8UAztOPMMhhxuJ/YadLHAxjS
- JdRsJbdeK2jTUUG8ttd7MgyKrkUO0FC55pvdAF3ooeOliUvW7YOQOD0v/wIAgh5jKSX1
- 1Guw==
-X-Gm-Message-State: AOAM530rdZ2s2ygcf7CArETb4BHmtm+0lTAz5q732qOj7XsqcROt1ND2
- RyLnQAXSHcbLlyhYByhfxOJZQ71tUEl+tUl2
-X-Google-Smtp-Source: ABdhPJxyCaOB5XPMQT87NHObtKT+mE0Qof9kJ7HJp/+8cgroRyJ3BNPSKbNCuvSAAsLYeEvlgGJOmA==
-X-Received: by 2002:a1c:6605:: with SMTP id a5mr559530wmc.85.1616014312549;
- Wed, 17 Mar 2021 13:51:52 -0700 (PDT)
-Received: from [10.68.32.147] (broadband-188-32-236-56.ip.moscow.rt.ru.
- [188.32.236.56])
- by smtp.gmail.com with ESMTPSA id h8sm95645wrt.94.2021.03.17.13.51.51
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Wed, 17 Mar 2021 13:51:52 -0700 (PDT)
-To: Julia Lawall <julia.lawall@inria.fr>
-References: <c62bd578-1f83-d876-d6f1-cc39513ecbd9@linux.com>
- <alpine.DEB.2.22.394.2103172131210.2981@hadrien>
-From: Denis Efremov <efremov@linux.com>
-Message-ID: <e905626c-f1f5-fb30-b823-8f27e0128983@linux.com>
-Date: Wed, 17 Mar 2021 23:52:03 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=TYNakGTPquo8aXpjNIhEudilkwZE05CouyogomB1bwI=;
+ b=DhK1IsmMdBUUIBKukykmYtwoyu072LcT1d/309dF231nCErD/TcQJVLyM+CXGbkLXw
+ T4vGjh/FqyCRXflnPUfcyjWdm95WeBzHBk4nsTRRBFnTn6kiKZ91bQaDosyAqJPvEdaw
+ wcR3LI8x09HT/lXXkdy82Syby9gPa0tJFBudDpUyONEnGSd4DOAne0kn44JUN8uUwqe6
+ fkMG6Hc5NTS/TOaTapxdpMpDNIT7CJMTWyV/rYDqpJJzJr99Q3kXpqvGU4J3bvtr2t8Q
+ +bd+f5IvzjnZJDXh08tv4VbfoTr8Rlm51KRyoNTPdHgkkvzdG9DG1VFVBFPixBpdaYDZ
+ g/VQ==
+X-Gm-Message-State: AOAM533FveEuGK0+x8xuqXa0GxnL46J+fa8KjkhSNSLe6IknCISz1UyC
+ FYJY2plUDunHwC8Yl6Kb3sFjD0bWcjvvHu+a65fw3A==
+X-Google-Smtp-Source: ABdhPJwiZNGnS8Rxkc38CbnarZPqjWphg1/ohEyJmDYkxRpz2BVKxCgDyVnnT+x/vq4rU9p379xXOiMcp9gH0tUaF9E=
+X-Received: by 2002:a9d:798a:: with SMTP id h10mr8376452otm.170.1616091573779; 
+ Thu, 18 Mar 2021 11:19:33 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.22.394.2103172131210.2981@hadrien>
-Content-Language: en-US
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 17 Mar 2021 21:51:56 +0100 (CET)
+References: <CAOhcEPbTH-oTTn1OUkgoYf2GaBKaCYjwpWuhrdNRkNQ0uZ_r4A@mail.gmail.com>
+ <20210314061001.GA993@kunai> <alpine.DEB.2.22.394.2103141016010.2986@hadrien>
+ <CAOhcEPZx4tNocG4TJvQKg_6e6kyJPbWGtj52TaGhJqHD36ZfYw@mail.gmail.com>
+ <CALogXGW1-EbJo4_8HhtWbv02aYWgKpMwJeXuDasrsZ2HPDVJhg@mail.gmail.com>
+ <alpine.DEB.2.22.394.2103160820280.2872@hadrien>
+In-Reply-To: <alpine.DEB.2.22.394.2103160820280.2872@hadrien>
+From: Thomas Adam <thomas@xteddy.org>
+Date: Thu, 18 Mar 2021 18:19:18 +0000
+Message-ID: <CAOhcEPbxcy7eZ_kXTWiC_u7EX_VPo56xKTu9g6nS1OwDLp+4zQ@mail.gmail.com>
+To: Julia Lawall <julia.lawall@inria.fr>
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 18 Mar 2021 19:19:37 +0100 (CET)
 X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Wed, 17 Mar 2021 21:51:52 +0100 (CET)
+ (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
+ Thu, 18 Mar 2021 19:19:34 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: cocci@systeme.lip6.fr
-Subject: Re: [Cocci] Incorrect match with when != condition
+X-Scanned-By: MIMEDefang 2.78
+Cc: Coccinelle <cocci@systeme.lip6.fr>
+Subject: Re: [Cocci] Replacing a struct member with a function call
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -86,42 +90,78 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
+Hi all,
 
+Thanks for your help.  This is now resolved!
 
-On 3/17/21 11:32 PM, Julia Lawall wrote:
-> 
-> 
-> On Wed, 17 Mar 2021, Denis Efremov wrote:
-> 
->> Hi,
->>
->> I'm trying to write the check to detect the absence of commit
->> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit?id=51b2ee7d006a736a9126e8111d1f24e4fd0afaa6
->> in kernel. The pattern can be:
->>
->> @err exists@
->> identifier namlen, dchild, dparent, exp;
->> position p;
->> statement S;
->> @@
->>
->> compose_entry_fh(..., int namlen, ...)
->> {
->> 	...
->> 	if (namlen == 2) {
->> *		dchild =@p dget_parent(dparent);
->> 		... when != dparent == exp->ex_path.dentry
-> 
-> add when forall here.  There does exist a path that does not contain the
-> dparent == exp->ex_path.dentry test.  That is the path that takesthe first
-> goto out.
+Kindly,
+Thomas
 
-This solved the problem, thanks!
+On Tue, 16 Mar 2021 at 07:20, Julia Lawall <julia.lawall@inria.fr> wrote:
+>
+>
+>
+> On Mon, 15 Mar 2021, Mansour Moufid wrote:
+>
+> > On Sun, Mar 14, 2021, 20:43 Thomas Adam <thomas@xteddy.org> wrote:
+> >       Hello,
+> >
+> >       I can see I was as clear as mud with my explanation -- apologies
+> >       for
+> >       that, so let me try again.
+> >
+> >       In my original example:
+> >
+> >       struct monitor {
+> >           struct {
+> >               int width;
+> >               int height
+> >           } virtual;
+> >       };
+> >
+> >       ... the members width and height aren't required any more, as
+> >       they're
+> >       actually computable generically, and don't belong in that
+> >       struct.
+> >       Instead, I have separate functions which can provide those
+> >       values.
+> >
+> >       So where I have in code, statements such as:
+> >
+> >       struct monitor *m = this_monitor();
+> >       int foo = m->virutal.width;
+> >
+> >       I want to be able to substitute "m->virtual.width" with a
+> >       function
+> >       call "get_width()" -- which does not involve "struct monitor" at
+> >       all.
+> >       Indeed, the semantic patch I'm trying to apply now looks like
+> >       this:
+> >
+> >       @@
+> >       struct monitor *m;
+> >       @@
+> >
+> >       - m->virtual.width;
+> >       + get_width();
+> >
+> >       ... and although spatch doesn't tell me of any errors, when I
+> >       run it
+> >       over my codebase, no modifications are made.  So clearly I'm
+> >       still
+> >       doing something wrong.
+> >
+> >
+> > Remove the semi-colons. ;)
+>
+> Good catch :)
+>
+> julia
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
