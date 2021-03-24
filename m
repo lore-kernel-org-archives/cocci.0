@@ -1,4 +1,4 @@
-Return-Path: <SRS0=zZu6=IS=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=fnKQ=IW=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
@@ -7,58 +7,57 @@ X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 045A4C433DB
-	for <cocci@archiver.kernel.org>; Sat, 20 Mar 2021 21:31:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1947C433C1
+	for <cocci@archiver.kernel.org>; Wed, 24 Mar 2021 20:16:39 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 02B4561920
-	for <cocci@archiver.kernel.org>; Sat, 20 Mar 2021 21:31:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 02B4561920
+	by mail.kernel.org (Postfix) with ESMTPS id 0602661A0D
+	for <cocci@archiver.kernel.org>; Wed, 24 Mar 2021 20:16:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0602661A0D
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 12KLVPaR026120;
-	Sat, 20 Mar 2021 22:31:25 +0100 (CET)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 12OKGXbE013525;
+	Wed, 24 Mar 2021 21:16:33 +0100 (CET)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 43D1577CD;
-	Sat, 20 Mar 2021 22:31:25 +0100 (CET)
+	by systeme.lip6.fr (Postfix) with ESMTP id 9125977CA;
+	Wed, 24 Mar 2021 21:16:33 +0100 (CET)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 41FCA24DD
- for <cocci@systeme.lip6.fr>; Sat, 20 Mar 2021 22:31:23 +0100 (CET)
+ by systeme.lip6.fr (Postfix) with ESMTPS id EB30D3E8A
+ for <cocci@systeme.lip6.fr>; Wed, 24 Mar 2021 21:16:31 +0100 (CET)
 Received: from mail3-relais-sop.national.inria.fr
  (mail3-relais-sop.national.inria.fr [192.134.164.104])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 12KLVMS5008550
- for <cocci@systeme.lip6.fr>; Sat, 20 Mar 2021 22:31:22 +0100 (CET)
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3AhJXV267h1n4gSWqyaQPXwHrXdLJzesId70hD?=
- =?us-ascii?q?6mlaTxtJfsuE0/2/hfhz73HJoRsyeFVlo9CPP6GcXWjRnKQe3aA9NaqvNTOLhE?=
- =?us-ascii?q?KGN4dnhLGD/xTEGzfistJbz7tqaaJkCNb9ZGIK6PrSxQmjDpIdx8Oa+7qjnufU?=
- =?us-ascii?q?wzNVSxt2ApsQiztRLia+PglISBJdBZw/faDw2uNiqyC7cXoaKuSXb0NrY8H5q9?=
- =?us-ascii?q?fGlI3rbHc9bnZN1CC0gSqs+PrGFXGjr3QjeghC3Ks49iz9mxH5j5/T1M2T8APW?=
- =?us-ascii?q?1GPY8v1t+efJ990rPr3vtuElbhHhkByhaogkZq2asFkO0YeS1Go=3D?=
-X-IronPort-AV: E=Sophos;i="5.81,265,1610406000"; d="scan'208";a="376348230"
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 12OKGVeU024792
+ for <cocci@systeme.lip6.fr>; Wed, 24 Mar 2021 21:16:31 +0100 (CET)
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3Agtl5mq0h1werp35a+9f/ogqjBFMkLtp033Aq?=
+ =?us-ascii?q?2lEZdDV+dMuEm8ey2MkKzBOcskd0ZFgMkc2NUZPqfVry7phwiLN6AZ6DW03ctH?=
+ =?us-ascii?q?KsPMVe6+LZogHIPw3b2qpj2bx7c654YeeAaGRSqcrh+gG3H5IB7bC8kJyAvuvV?=
+ =?us-ascii?q?w3dzQQwCUcgJ0y5DBgmWCUFwTgVdbKBJd6a03NZNpDarZB0sAPiTO39tZYT+ju?=
+ =?us-ascii?q?HQmImjSRALAANP0njtsRqYrI+/KRSe0xsEOgkj/Z4p+wH+/DDE2g=3D=3D?=
+X-IronPort-AV: E=Sophos;i="5.81,275,1610406000"; d="scan'208";a="376775116"
 Received: from 173.121.68.85.rev.sfr.net (HELO hadrien) ([85.68.121.173])
  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 20 Mar 2021 22:31:22 +0100
-Date: Sat, 20 Mar 2021 22:31:21 +0100 (CET)
+ 24 Mar 2021 21:16:30 +0100
+Date: Wed, 24 Mar 2021 21:16:30 +0100 (CET)
 From: Julia Lawall <julia.lawall@inria.fr>
 X-X-Sender: jll@hadrien
 To: Denis Efremov <efremov@linux.com>
-In-Reply-To: <20210309063903.13231-1-efremov@linux.com>
-Message-ID: <alpine.DEB.2.22.394.2103202231080.3075@hadrien>
-References: <20210216160326.1341741-1-efremov@linux.com>
- <20210309063903.13231-1-efremov@linux.com>
+In-Reply-To: <20210308191215.1362498-1-efremov@linux.com>
+Message-ID: <alpine.DEB.2.22.394.2103242116040.7838@hadrien>
+References: <20210308191215.1362498-1-efremov@linux.com>
 User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 20 Mar 2021 22:31:27 +0100 (CET)
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 24 Mar 2021 21:16:35 +0100 (CET)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sat, 20 Mar 2021 22:31:22 +0100 (CET)
+ (isis.lip6.fr [132.227.60.2]); Wed, 24 Mar 2021 21:16:31 +0100 (CET)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: cocci@systeme.lip6.fr, linux-kernel@vger.kernel.org
-Subject: Re: [Cocci] [PATCH v5] coccinelle: misc: add minmax script
+Subject: Re: [Cocci] [PATCH] coccinelle: misc: restrict patch mode in
+ flexible_array.cocci
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -77,246 +76,72 @@ Errors-To: cocci-bounces@systeme.lip6.fr
 
 
 
-On Tue, 9 Mar 2021, Denis Efremov wrote:
+On Mon, 8 Mar 2021, Denis Efremov wrote:
 
-> Check for opencoded min(), max() implementations.
+> Skip patches generation for structs/unions with a single field.
+> Changing a zero-length array to a flexible array member in a struct
+> with no named members breaks the compilation. However, reporting
+> such cases is still valuable, e.g. commit 637464c59e0b
+> ("ACPI: NFIT: Fix flexible_array.cocci warnings").
 >
 > Signed-off-by: Denis Efremov <efremov@linux.com>
 
-Applied, thanks.
+Applied.  I changed the log message to remove "/unions", since the change
+doesn't mention unions.
 
 julia
 
 > ---
-> Changes in v2:
->  - <... ...> instead of ... when any
->  - org mode reports fixed
->  - patch rule to drop excessive ()
-> Changes in v3:
->  - "depends on patch && (pmax || pmaxif || pmin || pminif)" fixed
-> Changes in v4:
->  - refarmatting rule removed
->  - () brackets added to the patch rules to omit excessive ones
->  - org/report prints changed to cycle (for p0 in p: ...)
-> Changes in v5:
->  - parentheses droppped in pminif and pmaxif rules (max_val = x ...)
+>  scripts/coccinelle/misc/flexible_array.cocci | 23 ++++++++++++++++++--
+>  1 file changed, 21 insertions(+), 2 deletions(-)
 >
->  scripts/coccinelle/misc/minmax.cocci | 206 +++++++++++++++++++++++++++
->  1 file changed, 206 insertions(+)
->  create mode 100644 scripts/coccinelle/misc/minmax.cocci
+> diff --git a/scripts/coccinelle/misc/flexible_array.cocci b/scripts/coccinelle/misc/flexible_array.cocci
+> index 947fbaff82a9..f427fd68ed2d 100644
+> --- a/scripts/coccinelle/misc/flexible_array.cocci
+> +++ b/scripts/coccinelle/misc/flexible_array.cocci
+> @@ -51,21 +51,40 @@ position p : script:python() { relevant(p) };
+>    };
+>  )
 >
-> diff --git a/scripts/coccinelle/misc/minmax.cocci b/scripts/coccinelle/misc/minmax.cocci
-> new file mode 100644
-> index 000000000000..eccdd3eb3452
-> --- /dev/null
-> +++ b/scripts/coccinelle/misc/minmax.cocci
-> @@ -0,0 +1,206 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +///
-> +/// Check for opencoded min(), max() implementations.
-> +/// Generated patches sometimes require adding a cast to fix compile warning.
-> +/// Warnings/patches scope intentionally limited to a function body.
-> +///
-> +// Confidence: Medium
-> +// Copyright: (C) 2021 Denis Efremov ISPRAS
-> +// Options: --no-includes --include-headers
-> +//
-> +// Keywords: min, max
-> +//
-> +
-> +
-> +virtual report
-> +virtual org
-> +virtual context
-> +virtual patch
-> +
-> +@rmax depends on !patch@
-> +identifier func;
-> +expression x, y;
-> +binary operator cmp = {>, >=};
-> +position p;
+> +@only_field depends on patch@
+> +identifier name, array;
+> +type T;
+> +position q;
 > +@@
 > +
-> +func(...)
-> +{
-> +	<...
-> +*	((x) cmp@p (y) ? (x) : (y))
-> +	...>
-> +}
+> +(
+> +  struct name {@q
+> +    T array[0];
+> +  };
+> +|
+> +  struct {@q
+> +    T array[0];
+> +  };
+> +)
 > +
-> +@rmaxif depends on !patch@
-> +identifier func;
-> +expression x, y;
-> +expression max_val;
-> +binary operator cmp = {>, >=};
-> +position p;
-> +@@
-> +
-> +func(...)
-> +{
-> +	<...
-> +*	if ((x) cmp@p (y)) {
-> +*		max_val = (x);
-> +*	} else {
-> +*		max_val = (y);
-> +*	}
-> +	...>
-> +}
-> +
-> +@rmin depends on !patch@
-> +identifier func;
-> +expression x, y;
-> +binary operator cmp = {<, <=};
-> +position p;
-> +@@
-> +
-> +func(...)
-> +{
-> +	<...
-> +*	((x) cmp@p (y) ? (x) : (y))
-> +	...>
-> +}
-> +
-> +@rminif depends on !patch@
-> +identifier func;
-> +expression x, y;
-> +expression min_val;
-> +binary operator cmp = {<, <=};
-> +position p;
-> +@@
-> +
-> +func(...)
-> +{
-> +	<...
-> +*	if ((x) cmp@p (y)) {
-> +*		min_val = (x);
-> +*	} else {
-> +*		min_val = (y);
-> +*	}
-> +	...>
-> +}
-> +
-> +@pmax depends on patch@
-> +identifier func;
-> +expression x, y;
-> +binary operator cmp = {>=, >};
-> +@@
-> +
-> +func(...)
-> +{
-> +	<...
-> +-	((x) cmp (y) ? (x) : (y))
-> ++	max(x, y)
-> +	...>
-> +}
-> +
-> +@pmaxif depends on patch@
-> +identifier func;
-> +expression x, y;
-> +expression max_val;
-> +binary operator cmp = {>=, >};
-> +@@
-> +
-> +func(...)
-> +{
-> +	<...
-> +-	if ((x) cmp (y)) {
-> +-		max_val = x;
-> +-	} else {
-> +-		max_val = y;
-> +-	}
-> ++	max_val = max(x, y);
-> +	...>
-> +}
-> +
-> +@pmin depends on patch@
-> +identifier func;
-> +expression x, y;
-> +binary operator cmp = {<=, <};
-> +@@
-> +
-> +func(...)
-> +{
-> +	<...
-> +-	((x) cmp (y) ? (x) : (y))
-> ++	min(x, y)
-> +	...>
-> +}
-> +
-> +@pminif depends on patch@
-> +identifier func;
-> +expression x, y;
-> +expression min_val;
-> +binary operator cmp = {<=, <};
-> +@@
-> +
-> +func(...)
-> +{
-> +	<...
-> +-	if ((x) cmp (y)) {
-> +-		min_val = x;
-> +-	} else {
-> +-		min_val = y;
-> +-	}
-> ++	min_val = min(x, y);
-> +	...>
-> +}
-> +
-> +@script:python depends on report@
-> +p << rmax.p;
-> +@@
-> +
-> +for p0 in p:
-> +	coccilib.report.print_report(p0, "WARNING opportunity for max()")
-> +
-> +@script:python depends on org@
-> +p << rmax.p;
-> +@@
-> +
-> +for p0 in p:
-> +	coccilib.org.print_todo(p0, "WARNING opportunity for max()")
-> +
-> +@script:python depends on report@
-> +p << rmaxif.p;
-> +@@
-> +
-> +for p0 in p:
-> +	coccilib.report.print_report(p0, "WARNING opportunity for max()")
-> +
-> +@script:python depends on org@
-> +p << rmaxif.p;
-> +@@
-> +
-> +for p0 in p:
-> +	coccilib.org.print_todo(p0, "WARNING opportunity for max()")
-> +
-> +@script:python depends on report@
-> +p << rmin.p;
-> +@@
-> +
-> +for p0 in p:
-> +	coccilib.report.print_report(p0, "WARNING opportunity for min()")
-> +
-> +@script:python depends on org@
-> +p << rmin.p;
-> +@@
-> +
-> +for p0 in p:
-> +	coccilib.org.print_todo(p0, "WARNING opportunity for min()")
-> +
-> +@script:python depends on report@
-> +p << rminif.p;
-> +@@
-> +
-> +for p0 in p:
-> +	coccilib.report.print_report(p0, "WARNING opportunity for min()")
-> +
-> +@script:python depends on org@
-> +p << rminif.p;
-> +@@
-> +
-> +for p0 in p:
-> +	coccilib.org.print_todo(p0, "WARNING opportunity for min()")
+>  @depends on patch@
+>  identifier name, array;
+>  type T;
+>  position p : script:python() { relevant(p) };
+> +// position @q with rule "only_field" simplifies
+> +// handling of bitfields, arrays, etc.
+> +position q != only_field.q;
+>  @@
+>
+>  (
+> -  struct name {
+> +  struct name {@q
+>      ...
+>      T array@p[
+>  -       0
+>      ];
+>    };
+>  |
+> -  struct {
+> +  struct {@q
+>      ...
+>      T array@p[
+>  -       0
 > --
 > 2.26.2
 >
