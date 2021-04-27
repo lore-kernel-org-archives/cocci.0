@@ -1,76 +1,76 @@
-Return-Path: <SRS0=OWXH=JZ=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=jsWv=J2=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F052FC433ED
-	for <cocci@archiver.kernel.org>; Wed, 28 Apr 2021 06:04:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55E43C433ED
+	for <cocci@archiver.kernel.org>; Thu, 29 Apr 2021 18:13:57 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5500F613EE
-	for <cocci@archiver.kernel.org>; Wed, 28 Apr 2021 06:04:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5500F613EE
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8933D6145D
+	for <cocci@archiver.kernel.org>; Thu, 29 Apr 2021 18:13:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8933D6145D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 13S643eQ022195;
-	Wed, 28 Apr 2021 08:04:03 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 13TIDpQn023680;
+	Thu, 29 Apr 2021 20:13:51 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id BFA7E7634;
-	Wed, 28 Apr 2021 08:04:03 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 818D67634;
+	Thu, 29 Apr 2021 20:13:51 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 63AD574DE
- for <cocci@systeme.lip6.fr>; Wed, 28 Apr 2021 08:04:02 +0200 (CEST)
-Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com
- [209.85.167.45])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 13S641MG011417
- (version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=OK)
- for <cocci@systeme.lip6.fr>; Wed, 28 Apr 2021 08:04:02 +0200 (CEST)
-Received: by mail-lf1-f45.google.com with SMTP id 12so97001880lfq.13
- for <cocci@systeme.lip6.fr>; Tue, 27 Apr 2021 23:04:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=cvKqJAsDp0hVwDeBdNNZxr3x2/ARRj4tE0SxrkqqX3k=;
- b=N2b55lgBsIYCT3wLxLjr84KU7/5sUMTWUQjCX0Y4Wc0/EZLzQIupH28jU66NGe1nBw
- m32WLt5CBAplqgkea67wDLCaZ6qKSYTPXBXEcrL89BvW3MGj8hLPW3FhwPnNsmemgo80
- doei69RjM5MSOlC/LVON5MQUa8rL06uETOEm/Xyf+wnrRvhD2GUW8cgQBeOpl/lD4SvG
- Hv1mCYv1pNMpImYiJByy9lbknoPnFDu3wzOm3s1nwa1qmFr2KGpaOIzW0OiSbZXKhyS/
- hK0vJsX3ksELHx1NZh2qa0wy2f/FiS2siPDKvzpU7CenTWSJGmlGroLprS986WhN61i+
- UR2A==
-X-Gm-Message-State: AOAM530CYA+d7ANB4B7mj+YgiSoAJzxWJn74oGQTFT3yoWAf6YEvNd9D
- eEJh6Ou9jWkZxhDH0gIRyMU=
-X-Google-Smtp-Source: ABdhPJw/nA6FH2uObm/AiJzOWE/0qdvWWBNoTXCn5Zk44FXeMnRESfOreomZJGLVLPz2Os3MNmty8w==
-X-Received: by 2002:a05:6512:717:: with SMTP id
- b23mr6357504lfs.210.1619589841375; 
- Tue, 27 Apr 2021 23:04:01 -0700 (PDT)
-Received: from black.localdomain (broadband-188-32-236-56.ip.moscow.rt.ru.
- [188.32.236.56])
- by smtp.googlemail.com with ESMTPSA id b29sm943745ljf.87.2021.04.27.23.04.00
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 27 Apr 2021 23:04:00 -0700 (PDT)
-From: Denis Efremov <efremov@linux.com>
-To: Julia Lawall <Julia.Lawall@lip6.fr>
-Date: Wed, 28 Apr 2021 09:03:50 +0300
-Message-Id: <20210428060350.57661-1-efremov@linux.com>
-X-Mailer: git-send-email 2.30.2
+ by systeme.lip6.fr (Postfix) with ESMTPS id ABA8C3DD8
+ for <cocci@systeme.lip6.fr>; Tue, 27 Apr 2021 17:01:08 +0200 (CEST)
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 13RF17jD015175
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO)
+ for <cocci@systeme.lip6.fr>; Tue, 27 Apr 2021 17:01:08 +0200 (CEST)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C505961040;
+ Tue, 27 Apr 2021 15:01:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1619535665;
+ bh=OC4/qlmmod8S1lp4PDb7I6TD9Zf4cbEBS/O+ifD0CFQ=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=k3ZJQ/B5fBrjM7stmhRy3sKAI7pPXzCGfphXxuM91qf8WP88jPmGCo9wC/Yiq2Ywc
+ 8Qfv75UYGgTKww4mPmPx1Dxp/jlSkd+tPFlkYaTcADVKOxITL5t1VYTQDF8DY2Qqpb
+ APTB1w+nNUnTVWdfsq8pEllfc3CiGcSI+C7F5QGQZNKesmTC41Ei89BwP5gS/kTnYk
+ jpu3a8zip71uxCdcF0GgrCFOcM/LJq9bBq0/A7oBdwU63u7waEcRiodWNXGLHjQ3CL
+ BlBNvWeSZRpXO4z7ziDX3BKsEL72DPc0Va9egV7OnEsON3tFPebZCozZpqUgKefNNS
+ AAuk6w1w8USgA==
+Received: from johan by xi.lan with local (Exim 4.93.0.4)
+ (envelope-from <johan@kernel.org>)
+ id 1lbPDC-0002xR-Na; Tue, 27 Apr 2021 17:01:19 +0200
+Date: Tue, 27 Apr 2021 17:01:18 +0200
+From: Johan Hovold <johan@kernel.org>
+To: Julia Lawall <julia.lawall@inria.fr>
+Message-ID: <YIgnPkx3NEsOITZH@hovoldconsulting.com>
+References: <20210426185404.2466195-1-Julia.Lawall@inria.fr>
+ <YIgPNRiaz2Jup+PT@hovoldconsulting.com>
+ <alpine.DEB.2.22.394.2104271542170.5173@hadrien>
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 28 Apr 2021 08:04:04 +0200 (CEST)
-X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Wed, 28 Apr 2021 08:04:02 +0200 (CEST)
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.22.394.2104271542170.5173@hadrien>
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 29 Apr 2021 20:13:52 +0200 (CEST)
+X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [132.227.60.2]); Tue, 27 Apr 2021 17:01:08 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: cocci@systeme.lip6.fr, linux-kernel@vger.kernel.org
-Subject: [Cocci] [RESEND PATCH] coccinelle: misc: minmax: suppress patch
-	generation for err returns
+X-Mailman-Approved-At: Thu, 29 Apr 2021 20:13:50 +0200
+Cc: Michal Marek <michal.lkml@markovi.net>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        kernel-janitors@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Nicolas Palix <nicolas.palix@imag.fr>, linux-kernel@vger.kernel.org,
+        cocci@systeme.lip6.fr
+Subject: Re: [Cocci] [PATCH v2] coccinelle: api: semantic patch to use
+ pm_runtime_resume_and_get
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -87,60 +87,44 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-There is a standard idiom for "if 'ret' holds an error, return it":
-	return ret < 0 ? ret : 0;
+On Tue, Apr 27, 2021 at 03:44:25PM +0200, Julia Lawall wrote:
+> On Tue, 27 Apr 2021, Johan Hovold wrote:
+> 
+> > On Mon, Apr 26, 2021 at 08:54:04PM +0200, Julia Lawall wrote:
+> > > pm_runtime_get_sync keeps a reference count on failure, which can lead
+> > > to leaks.  pm_runtime_resume_and_get drops the reference count in the
+> > > failure case.  This rule very conservatively follows the definition of
+> > > pm_runtime_resume_and_get to address the cases where the reference
+> > > count is unlikely to be needed in the failure case.
+> > >
+> > > pm_runtime_resume_and_get was introduced in
+> > > commit dd8088d5a896 ("PM: runtime: Add pm_runtime_resume_and_get to
+> > > deal with usage counter")
+> > >
+> > > Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
+> >
+> > As I've said elsewhere, not sure trying to do a mass conversion of this
+> > is a good idea. People may not be used to the interface, but it is
+> > consistent and has its use. The recent flurry of conversions show that
+> > those also risk introducing new bugs in code that is currently tested
+> > and correct.
+> 
+> I looked some of the patches you commented on, and this rule would not
+> have transformed those cases.  This rule is very restricted to ensure that
+> the transformed code follows the behavior of the new function.
 
-Developers prefer to keep the things as they are because stylistic
-change to "return min(ret, 0);" breaks readability.
+Ah, ok. I didn't look too closely at the semantic patch itself and
+wrongly associated it with the all-or-nothing media subsystem
+conversions.
 
-Let's suppress automatic generation for this type of patches.
+Thanks for clarifying further in v3 too.
 
-Signed-off-by: Denis Efremov <efremov@linux.com>
----
- scripts/coccinelle/misc/minmax.cocci | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
+Still a bit worried that this will push the cleanup crew to send more
+broken patches since it sends a signal that pm_runtime_get_sync() is
+always wrong. But guess there's not much to do about that now after
+having added pm_runtime_resume_and_get() in the first place.
 
-diff --git a/scripts/coccinelle/misc/minmax.cocci b/scripts/coccinelle/misc/minmax.cocci
-index eccdd3eb3452..fcf908b34f27 100644
---- a/scripts/coccinelle/misc/minmax.cocci
-+++ b/scripts/coccinelle/misc/minmax.cocci
-@@ -116,16 +116,32 @@ func(...)
- 	...>
- }
- 
-+// Don't generate patches for errcode returns.
-+@errcode depends on patch@
-+position p;
-+identifier func;
-+expression x;
-+binary operator cmp = {<, <=};
-+@@
-+
-+func(...)
-+{
-+	<...
-+	return ((x) cmp@p 0 ? (x) : 0);
-+	...>
-+}
-+
- @pmin depends on patch@
- identifier func;
- expression x, y;
- binary operator cmp = {<=, <};
-+position p != errcode.p;
- @@
- 
- func(...)
- {
- 	<...
---	((x) cmp (y) ? (x) : (y))
-+-	((x) cmp@p (y) ? (x) : (y))
- +	min(x, y)
- 	...>
- }
--- 
-2.30.2
-
+Johan
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
