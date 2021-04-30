@@ -2,73 +2,97 @@ Return-Path: <SRS0=OUc2=KA=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF679C433B4
-	for <cocci@archiver.kernel.org>; Wed,  5 May 2021 08:58:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B511C43460
+	for <cocci@archiver.kernel.org>; Wed,  5 May 2021 08:58:49 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0432861157
+	by mail.kernel.org (Postfix) with ESMTPS id 07BA7613BA
 	for <cocci@archiver.kernel.org>; Wed,  5 May 2021 08:58:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0432861157
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 07BA7613BA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 1458wibF008749;
-	Wed, 5 May 2021 10:58:44 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 1458wh4N002719;
+	Wed, 5 May 2021 10:58:43 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 06C837801;
-	Wed,  5 May 2021 10:58:44 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 8C7B477DD;
+	Wed,  5 May 2021 10:58:43 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 041033783
- for <cocci@systeme.lip6.fr>; Wed,  5 May 2021 10:44:45 +0200 (CEST)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 1458igeW024292
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO)
- for <cocci@systeme.lip6.fr>; Wed, 5 May 2021 10:44:43 +0200 (CEST)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 886BE611AE;
- Wed,  5 May 2021 08:44:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1620204281;
- bh=z440MLLOO4SJA+ueCYGzYqDld3Rl/TPdNEGP6iE8Utw=;
- h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
- b=c8jcZziBFNTcFefF+TkDwjbao3SKwIkgiLelPlbex6qxJ0e7EX6Tct8B8NV5oIWRg
- bD5Ji/KrDk4q3AiWeSVTGYnKCoUlj/0VKXrerhcb2iPtcMELM2kCK3y/M8tBPsECXN
- QZP4Px8WqxrfVnIcm6m877//NZCw0r2XSTAzp8GuZB21B/lV87X1qOqonU4gaGEXUF
- 2eaScP6o+Jfv9BuqiCU/WsxueRNZOmpvbiT6V7L3u2iR9yCpRtfU8LsTwguT+wAkvk
- qIyb0WIOV0JlsGDzAmqWvVimnpVjf0qLYPAEc+q/mO2Q8O2O1i/Sf8GRQDF9fyxmSg
- p7TgJigcRnVVw==
-Date: Wed, 5 May 2021 10:44:34 +0200
-From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-To: Julia Lawall <Julia.Lawall@inria.fr>
-Message-ID: <20210505104434.7d7838f0@coco.lan>
-In-Reply-To: <20210429174343.2509714-1-Julia.Lawall@inria.fr>
+ by systeme.lip6.fr (Postfix) with ESMTPS id 56D2D3DD8
+ for <cocci@systeme.lip6.fr>; Fri, 30 Apr 2021 18:26:14 +0200 (CEST)
+Received: from mout.web.de (mout.web.de [212.227.15.3])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 13UGQDPP029870
+ (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO)
+ for <cocci@systeme.lip6.fr>; Fri, 30 Apr 2021 18:26:13 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+ s=dbaedf251592; t=1619799955;
+ bh=xM7j+OV8aiUK2+R/QEx2Vlbi5StDWt01Pzwkw4ysC2A=;
+ h=X-UI-Sender-Class:To:Cc:References:From:Subject:Date:In-Reply-To;
+ b=LuUZ3+WMYqVFpk2gWguVey865tzZadLhJqiZrn/nYATtVuwnD8zUUl4wC7wKWo6XQ
+ TnHOhTgsMhODE6tn7n61Y1EKr9oNIPZzcvyenvtfVJ7QEf5hoA1hxmhOAmgJyYBax5
+ M44HWsq5lTdPW4GWYiVLB0ISs8aQ2+WNBlppsuug=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([78.49.73.65]) by smtp.web.de (mrweb001
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0Letkl-1lE92i0zJn-00qgER; Fri, 30
+ Apr 2021 18:25:55 +0200
+To: Julia Lawall <Julia.Lawall@inria.fr>, Johan Hovold <johan@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nicolas Palix
+ <nicolas.palix@imag.fr>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Zhang Qilong <zhangqilong3@huawei.com>
 References: <20210429174343.2509714-1-Julia.Lawall@inria.fr>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+From: Markus Elfring <Markus.Elfring@web.de>
+Message-ID: <7c6ef35f-b9ec-face-467b-ac1b29a3a3c3@web.de>
+Date: Fri, 30 Apr 2021 18:25:42 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.0
 MIME-Version: 1.0
+In-Reply-To: <20210429174343.2509714-1-Julia.Lawall@inria.fr>
+Content-Language: en-GB
+X-Provags-ID: V03:K1:WQHhlnyiFSUZPNJ/oGT5+0rBoiNuSZ1qeuwOBePIp6oRQh+H3pr
+ xwUnLG8X22cefxQAgbHFQnds9lltpjNWqMLGQV6gw3i9aKOEcbWoWf9RUGJII6OELoV9FG2
+ mdzvubhFvId7/4fCsBMWMxWCRLCLoJzW1udjaLmiB74Cxd+E3y1MDxWX3WyBniEAOC8o/6T
+ 1Q5ZJoMGP6d9MXAMN8iIg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:EGGiqhxmyoo=:YsJAa4vtoS1BC2rSff5jFP
+ PwF7uCgnTr+6IID7977g8DTaG/p8dgCWFLx81/9Zp7kQZSBCNl4sA/rTtk6ZvYFyhhcHcw5Gs
+ /aMizZptHkYxOBmwN0cs2iZRhFFWf8PDf8XvM82RpuxlNn0mar1b+giRObr+8XU246lucYZ9U
+ Ch7DNLezSzxK2wu2jxu8sR6qy3CbNaM7YPUJ6Lc4hDngBN2g0y79V/RzFwhRqV17DMz2YAQYX
+ qXnaaDF0POwPHd7dTVbbqloniciovU3P7jvjM8f8kNwYQLh5G7SnGuSNT2T4iIQ+cA4b6/ka5
+ sP9gLqI92gww5xdGaDtkr9aw6+fbh2I3b54V8WO7NUyPmY5N4UFkHfZ+vnts8vWQPdojoFEh3
+ Ni6Ku6f1gyngOK+Q3boViROMn8CnwaSFHMRq301qooavIrpTR7mGj5Km70udHilX6ylAvx9cJ
+ kV6rT9F+77MNL1hMZW3KOarKpn5vHbogwFTzf+FE18UfX3zVCWutqDBx1TcEF1Ob72iIpv2EA
+ +mJ/rHssRnTwH24VebC5T5PnLBJY3QJgeLFUbL33/QsNOV+gxQu1iSZdbRRLzq8+eMFQ/+dkc
+ QxqcScOordWiaB1uG+z0jK9Dajho+DgMqyOM3ZpER3QaSJTnOTq2PbeO5vrhgheOjjKpsuAM/
+ LHl8XH4oBKNEmVlrFaUNQzfMhEOhv2MKLaTGRjHhfuP2yAlKC6ComHnjOHVoLtPMLtWIU7kzg
+ 9tEPfedrLaBHQxwHLYP4zyKZX3Te1S7lL286UVZ1LORh07NqOYYNWAEJUtDTUCDeIBcwDBv+f
+ 5sUuH/PEN2c6MkAF/OXPXylcuofNsETfQqN2tdG4VFNKBh4t5tpL3nT7yjVd4w0RPLKArabFk
+ AOTnffxqyW0lg6gFp4ZNdEZAf47hqX2/vqpq0X8jb296E7otJzbPYnuLbhp/T7yo4XNdoRiHQ
+ B82E3Z+MgF2+cQMEryNglqGdvumxOnyevaeTf6oKCTNXXK03BMF/KD5/X8DlWGHzXKNIgKeCE
+ KTUbfcGnOQ+QCAltZV6SN3LqWBNyshF2cMXOAVGwutCjqnqkbMhKtr7IfLrH2O12trcrVdmRt
+ OmOiEYYCVEoc746Et1P97aHs+R3nLO5FBBIqby7aHpNOHguEY9vfv1dkQhIF5k8UobWRP9DQq
+ V3LZK9w/jXTkLs5JTa9uq6Jr5CxRyiksTIn2wbmbLbeOnheSNIwlyYPUgawdxGTdX54aFoOns
+ NbkD/dszUZqtj/oGJ
 X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Wed, 05 May 2021 10:58:44 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Wed, 05 May 2021 10:44:44 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Fri, 30 Apr 2021 18:26:13 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Mailman-Approved-At: Wed, 05 May 2021 10:58:42 +0200
-Cc: Michal Marek <michal.lkml@markovi.net>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        kernel-janitors@vger.kernel.org,
-        Zhang Qilong <zhangqilong3@huawei.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Nicolas Palix <nicolas.palix@imag.fr>, linux-kernel@vger.kernel.org,
-        Johan Hovold <johan@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>, cocci@systeme.lip6.fr,
-        Dan Carpenter <dan.carpenter@oracle.com>
+Cc: kernel-janitors@vger.kernel.org, cocci@systeme.lip6.fr,
+        linux-kernel@vger.kernel.org
 Subject: Re: [Cocci] [PATCH v5] coccinelle: api: semantic patch to use
  pm_runtime_resume_and_get
 X-BeenThere: cocci@systeme.lip6.fr
@@ -82,187 +106,18 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-Hi Julia,
-
-Em Thu, 29 Apr 2021 19:43:43 +0200
-Julia Lawall <Julia.Lawall@inria.fr> escreveu:
-
-> pm_runtime_get_sync keeps a reference count on failure, which can lead
-> to leaks.  pm_runtime_resume_and_get drops the reference count in the
-> failure case.  This rule very conservatively follows the definition of
-> pm_runtime_resume_and_get to address the cases where the reference
-> count is unlikely to be needed in the failure case.  Specifically, the
-> change is only done when pm_runtime_get_sync is followed immediately
-> by an if and when the branch of the if is immediately a call to
-> pm_runtime_put_noidle (like in the definition of
-> pm_runtime_resume_and_get) or something that is likely a print
-> statement followed by a pm_runtime_put_noidle call.  The patch
-> case appears somewhat more complicated, because it also deals with the
-> cases where {}s need to be removed.
-> 
-> pm_runtime_resume_and_get was introduced in
-> commit dd8088d5a896 ("PM: runtime: Add pm_runtime_resume_and_get to
-> deal with usage counter")
-> 
-> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
-> Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-
-First of all, thanks for doing that! It sounds a lot better to have
-a script doing the check than newbies trying to address it manually,
-as there are several aspects to be considered on such replacement.
-
-> 
-> ---
-> v5: print a message with the new function name, as suggested by Markus Elfring
-> v4: s/pm_runtime_resume_and_get/pm_runtime_put_noidle/ as noted by John Hovold
-> v3: add the people who signed off on commit dd8088d5a896, expand the log message
-> v2: better keyword
-> 
->  scripts/coccinelle/api/pm_runtime_resume_and_get.cocci |  153 +++++++++++++++++
->  1 file changed, 153 insertions(+)
-> 
-> diff --git a/scripts/coccinelle/api/pm_runtime_resume_and_get.cocci b/scripts/coccinelle/api/pm_runtime_resume_and_get.cocci
-> new file mode 100644
-> index 000000000000..3387cb606f9b
-> --- /dev/null
-> +++ b/scripts/coccinelle/api/pm_runtime_resume_and_get.cocci
-> @@ -0,0 +1,153 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +///
-> +/// Use pm_runtime_resume_and_get.
-> +/// pm_runtime_get_sync keeps a reference count on failure,
-> +/// which can lead to leaks.  pm_runtime_resume_and_get
-> +/// drops the reference count in the failure case.
-> +/// This rule addresses the cases where the reference count
-> +/// is unlikely to be needed in the failure case.
-> +///
-> +// Confidence: High
-
-Long story short, I got a corner case where the script is doing
-the wrong thing.
-
----
-
-A detailed explanation follows:
-
-As you know, I'm doing some manual work to address issues related
-to pm_runtime_get() on media.
-
-There, I found a corner case: There is a functional difference
-between:
-
-	ret = pm_runtime_get_sync(&client->dev);
-        if (ret < 0) {
-                pm_runtime_put_noidle(&client->dev);
-		return ret;
-	}
-
-and:
-	ret = pm_runtime_resume_and_get(&client->dev);
-        if (ret < 0)
-		return ret;
-
-On success, pm_runtime_get_sync() can return either 0 or 1.
-When 1 is returned, it means that the driver was already resumed.
-
-pm_runtime_resume_and_get(), on the other hand, don't have the same
-behavior. On success, it always return zero.
-
-IMO, this is actually a good thing, as it helps to address a common
-mistake:
-
-	ret = pm_runtime_get_sync(&client->dev);
-	/*
-	 * or, even worse: 
-	 * ret = some_function_that_calls_pm_runtime_get_sync(); 
-	 */
-
-        if (ret) {
-                pm_runtime_put_noidle(&client->dev);
-		return ret;
-	}
-
-FYI, Dan pointed one media driver to me those days with the above
-issue at the imx334 driver, which I'm fixing on my patch series. 
-
--
-
-Anyway, after revisiting my patches, I found several cases that were 
-doing things like:
-
-	int ret;
-
-	ret = pm_runtime_get_sync(dev);
-	pm_runtime_put_noidle(dev);		/* Or without it, on drivers with unbalanced get/put */
-
-	return ret > 0 ? 0 : ret;
-
-Which can be replaced by just:
-
-	return pm_runtime_resume_and_get(&ctx->gsc_dev->pdev->dev);
-
-Yet, I found a single corner case on media where a driver is actually 
-using the positive return: the ccs-core camera sensor driver.
-
-There, the driver checks the past state of RPM. If the
-device was indeed suspended, the driver restores the hardware
-controls (on V4L2, a control is something like brightness, 
-contrast, etc) to the last used value set.
-
-This is the right thing to be done there, as setting values
-to such hardware can be a slow operation, as it is done via I2C.
-
-So, this particular driver checks if the RPM returned 0 or 1,
-in order to check the previous RPM state before get.
-
-In this particular case, replacing:
-	pm_runtime_get_sync()
-with
-	pm_runtime_resume_and_get()
-
-Will make part of the code unreachable. 
-
-While it won't break this specific driver, It could have
-cause troubles if the logic there were different.
-
-In any case, I tested the coccinelle script, and it produces
-this change:
-
- static int ccs_pm_get_init(struct ccs_sensor *sensor)
- {
-        struct i2c_client *client = v4l2_get_subdevdata(&sensor->src->sd);
-        int rval;
- 
--       rval = pm_runtime_get_sync(&client->dev);
--       if (rval < 0) {
--               pm_runtime_put_noidle(&client->dev);
-+       rval = pm_runtime_resume_and_get(&client->dev);
-+       if (rval < 0)
- 
-                return rval;
--       } else if (!rval) {
-+       else if (!rval) {
-                rval = v4l2_ctrl_handler_setup(&sensor->pixel_array->
-                                               ctrl_handler);
-                if (rval)
-                        return rval;
- 
-                return v4l2_ctrl_handler_setup(&sensor->src->ctrl_handler);
-        }
- 
-        return 0;
-
-which will make v4l2_ctrl_handler_setup() to always being called,
-even if the device was already resumed.
-
-Thanks,
-Mauro
-_______________________________________________
-Cocci mailing list
-Cocci@systeme.lip6.fr
-https://systeme.lip6.fr/mailman/listinfo/cocci
+PiB2NTogcHJpbnQgYSBtZXNzYWdlIHdpdGggdGhlIG5ldyBmdW5jdGlvbiBuYW1lLCBhcyBzdWdn
+ZXN0ZWQgYnkg4oCmCgpUaGFua3MgZm9yIGFub3RoZXIgc21hbGwgYWRqdXN0bWVudC4KVGh1cyBJ
+IGZpbmQgYW4gb3RoZXIgdmVyc2lvbiBudW1iZXIgY29uc2lzdGVudCBpbiB0aGUgcGF0Y2ggc3Vi
+amVjdC4KCkRvIHlvdSBjYXJlIHRvIGluZmx1ZW5jZSB0aGUgcnVuIHRpbWUgY2hhcmFjdGVyaXN0
+aWNzIGEgYml0IG1vcmUKZm9yIHN1Y2ggYSBzY3JpcHQgdmFyaWFudCBieSByZWR1Y2luZyB0aGUg
+bnVtYmVyIG9mIFNtUEwgcnVsZXMKYWNjb3JkaW5nIHRvIHNvZnR3YXJlIGRlc2lnbiBwb3NzaWJp
+bGl0aWVzIHdpdGggU21QTCBkaXNqdW5jdGlvbnM/CgpSZWdhcmRzLApNYXJrdXMKX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KQ29jY2kgbWFpbGluZyBsaXN0
+CkNvY2NpQHN5c3RlbWUubGlwNi5mcgpodHRwczovL3N5c3RlbWUubGlwNi5mci9tYWlsbWFuL2xp
+c3RpbmZvL2NvY2NpCg==
