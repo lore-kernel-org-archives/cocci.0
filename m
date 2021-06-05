@@ -6,53 +6,54 @@ X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96A97C47082
-	for <cocci@archiver.kernel.org>; Sat,  5 Jun 2021 19:13:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 394D8C47082
+	for <cocci@archiver.kernel.org>; Sat,  5 Jun 2021 19:30:24 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A2D746136D
-	for <cocci@archiver.kernel.org>; Sat,  5 Jun 2021 19:13:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A2D746136D
+	by mail.kernel.org (Postfix) with ESMTPS id 3AB4D6138C
+	for <cocci@archiver.kernel.org>; Sat,  5 Jun 2021 19:30:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3AB4D6138C
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 155JDA36020511;
-	Sat, 5 Jun 2021 21:13:10 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 155JUIKE005513;
+	Sat, 5 Jun 2021 21:30:18 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 988F17501;
-	Sat,  5 Jun 2021 21:13:10 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 2D6CF7501;
+	Sat,  5 Jun 2021 21:30:18 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 86EF374E8
- for <cocci@systeme.lip6.fr>; Sat,  5 Jun 2021 21:13:08 +0200 (CEST)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 738B574E8
+ for <cocci@systeme.lip6.fr>; Sat,  5 Jun 2021 21:30:16 +0200 (CEST)
 Received: from mail2-relais-roc.national.inria.fr
  (mail2-relais-roc.national.inria.fr [192.134.164.83])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 155JD73T015238
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 155JUF0e026298
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
- for <cocci@systeme.lip6.fr>; Sat, 5 Jun 2021 21:13:07 +0200 (CEST)
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3A+Krlj6wQmyx29w1lFRBgKrPwWb1zdoMgy1kn?=
- =?us-ascii?q?xilNoHNuHvBw+/rCoB1k73HJYV8qMRlKpTnqAsa9qB3nn6JI3Q=3D=3D?=
-X-IronPort-AV: E=Sophos;i="5.83,251,1616454000"; d="scan'208";a="511913761"
+ for <cocci@systeme.lip6.fr>; Sat, 5 Jun 2021 21:30:15 +0200 (CEST)
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3A0PTowKGvcdlhxhucpLqE78eALOsnbusQ8zAX?=
+ =?us-ascii?q?PiFKOHhom6Oj/PxG8M5w6fawslcssRIb6LW90cu7IU80nKQdibX5f43SPzUO01?=
+ =?us-ascii?q?HHEGgN1+ffKnHbak/D398Y5ONbf69yBMaYNzVHpMzxiTPWL+od?=
+X-IronPort-AV: E=Sophos;i="5.83,251,1616454000"; d="scan'208";a="511914244"
 Received: from 173.121.68.85.rev.sfr.net (HELO hadrien) ([85.68.121.173])
  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 05 Jun 2021 21:13:07 +0200
-Date: Sat, 5 Jun 2021 21:13:06 +0200 (CEST)
+ 05 Jun 2021 21:30:06 +0200
+Date: Sat, 5 Jun 2021 21:30:06 +0200 (CEST)
 From: Julia Lawall <julia.lawall@inria.fr>
 X-X-Sender: jll@hadrien
 To: "Jason A. Donenfeld" <Jason@zx2c4.com>
 In-Reply-To: <YLvDVI9TCEVoL16r@zx2c4.com>
-Message-ID: <alpine.DEB.2.22.394.2106052111360.32368@hadrien>
+Message-ID: <alpine.DEB.2.22.394.2106052129440.32368@hadrien>
 References: <CAHmME9rRQmSLkU6ELNiC=pr-D7CGjdyw27_oXdBp+hMdn8WQ5Q@mail.gmail.com>
  <alpine.DEB.2.22.394.2106051335410.25155@hadrien>
  <YLvDVI9TCEVoL16r@zx2c4.com>
 User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1137960262-1622920387=:32368"
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 05 Jun 2021 21:13:11 +0200 (CEST)
+Content-Type: multipart/mixed; boundary="8323329-1728434706-1622921406=:32368"
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 05 Jun 2021 21:30:20 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sat, 05 Jun 2021 21:13:07 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Sat, 05 Jun 2021 21:30:15 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 Cc: cocci@systeme.lip6.fr
@@ -75,7 +76,7 @@ Errors-To: cocci-bounces@systeme.lip6.fr
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-1137960262-1622920387=:32368
+--8323329-1728434706-1622921406=:32368
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8BIT
 
@@ -93,6 +94,11 @@ On Sat, 5 Jun 2021, Jason A. Donenfeld wrote:
 > mtx x" in most cases, except one, which is strange. I wonder if it's the
 > parser choking on macros it doesn't understand in the code? Or on
 > something else?
+
+It seems to be choking on the macros...
+
+julia
+
 >
 > Code is here, if you're curious:
 >
@@ -101,14 +107,6 @@ On Sat, 5 Jun 2021, Jason A. Donenfeld wrote:
 > $ spatch.opt --sp-file doit.cocci -j 4 --recursive-includes --include-headers-for-types --include-headers --in-place .
 >
 > I'll keep playing with it to see what's happening...
-
-Thanks for the link to the code.  Maybe you need a -I option to tell it
-where the header files are?  To check for parsing problems, you can say
-spatch --parse-c wireguard-freebsd.  You may need to remove any limit on
-the stacksize.
-
-julia
-
 >
 > Jason
 >
@@ -268,7 +266,7 @@ julia
 > + mtx_destroy
 >    (&x->m)
 >
---8323329-1137960262-1622920387=:32368
+--8323329-1728434706-1622921406=:32368
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -279,4 +277,4 @@ Cocci mailing list
 Cocci@systeme.lip6.fr
 https://systeme.lip6.fr/mailman/listinfo/cocci
 
---8323329-1137960262-1622920387=:32368--
+--8323329-1728434706-1622921406=:32368--
