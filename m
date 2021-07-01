@@ -1,64 +1,71 @@
-Return-Path: <SRS0=WlPR=MC=systeme.lip6.fr=cocci-bounces@kernel.org>
+Return-Path: <SRS0=594F=ME=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 233B0C07E95
-	for <cocci@archiver.kernel.org>; Sat, 10 Jul 2021 20:09:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31F2DC07E99
+	for <cocci@archiver.kernel.org>; Mon, 12 Jul 2021 08:47:09 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 69BEF61353
-	for <cocci@archiver.kernel.org>; Sat, 10 Jul 2021 20:09:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 69BEF61353
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
+	by mail.kernel.org (Postfix) with ESMTPS id 57C7A61006
+	for <cocci@archiver.kernel.org>; Mon, 12 Jul 2021 08:47:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 57C7A61006
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=zx2c4.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=cocci-bounces@systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 16AK9IFs023925;
-	Sat, 10 Jul 2021 22:09:18 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 16C8l4KV026821;
+	Mon, 12 Jul 2021 10:47:04 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id E7E5942CB;
-	Sat, 10 Jul 2021 22:09:17 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id EFCFC776E;
+	Mon, 12 Jul 2021 10:47:03 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 8FABD4065
- for <cocci@systeme.lip6.fr>; Sat, 10 Jul 2021 22:09:16 +0200 (CEST)
-Received: from mail3-relais-sop.national.inria.fr
- (mail3-relais-sop.national.inria.fr [192.134.164.104])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 16AK9GBL020783
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
- for <cocci@systeme.lip6.fr>; Sat, 10 Jul 2021 22:09:16 +0200 (CEST)
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3Ay1++66M4chlPfMBcTsajsMiBIKoaSvp037BL?=
- =?us-ascii?q?7TEUdfU7SKelfqyV9sjzkCWUtN9zYgBEpTnjAsm9qBrnnPZICMsqTNSftWLd1l?=
- =?us-ascii?q?dAQrsP0WKv+UyDJwTOst8Y76tmfqRkYeecMXFxh6/BjzWFLw=3D=3D?=
-X-IronPort-AV: E=Sophos;i="5.84,229,1620684000"; d="scan'208";a="387686079"
-Received: from 173.121.68.85.rev.sfr.net (HELO hadrien) ([85.68.121.173])
- by mail3-relais-sop.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 10 Jul 2021 22:09:15 +0200
-Date: Sat, 10 Jul 2021 22:09:15 +0200 (CEST)
-From: Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
-To: Joe Perches <joe@perches.com>
-In-Reply-To: <afd3a282ca57a4a400c8bae9879a7c57bc507c59.camel@perches.com>
-Message-ID: <alpine.DEB.2.22.394.2107102207560.46528@hadrien>
-References: <08b89608cfb1280624d1a89ead6547069f9a4c31.camel@perches.com>
- <alpine.DEB.2.22.394.2107102149140.46528@hadrien>
- <afd3a282ca57a4a400c8bae9879a7c57bc507c59.camel@perches.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 3106B3FE7
+ for <cocci@systeme.lip6.fr>; Mon, 12 Jul 2021 10:47:02 +0200 (CEST)
+Received: from mail.zx2c4.com (mail.zx2c4.com [104.131.123.232])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 16C8l0Ml020171
+ (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK)
+ for <cocci@systeme.lip6.fr>; Mon, 12 Jul 2021 10:47:01 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105; 
+ t=1625148058;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=1XU5W9Hv8QC05Kv7GHUyRXP19OBBrfP8IZdKfcKJoEI=;
+ b=f30uiiWL4SQaIQfatFAscd5gjwlKX38U9bjuod6svsdokXSs7FXRoRN2ss1/XX+JLG7VQq
+ P07FO4dtZGMDbzf5/JNFNgJBd7efgXLsoIiXmK/hgCrqEAThlplHcYuEcfxV4JMWHCdIfU
+ 4daS9uAxV3vJQF6tK/dk7J/LwwTnCUw=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 071b0854
+ (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO) for <cocci@systeme.lip6.fr>;
+ Thu, 1 Jul 2021 14:00:58 +0000 (UTC)
+Received: by mail-yb1-f175.google.com with SMTP id o139so10962284ybg.9
+ for <cocci@systeme.lip6.fr>; Thu, 01 Jul 2021 07:00:57 -0700 (PDT)
+X-Gm-Message-State: AOAM532vmf7FLDzrZbqrfmlKpGPPmj3Rx8eaMapdGP4+EfIAv1hwBEzk
+ TbHCnLn4vgSQQmod7007LZ1ljOi+ANs1aisAz/U=
+X-Google-Smtp-Source: ABdhPJzHm2xKWzV/kVvA+2Bb5MQbgL0FILEi0hhOiVkSImkG5eVib3hrfOcEijLheRK688gCJHTb+Au3QE9DkjMqkDA=
+X-Received: by 2002:a25:acde:: with SMTP id x30mr10545413ybd.123.1625148057344; 
+ Thu, 01 Jul 2021 07:00:57 -0700 (PDT)
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Sat, 10 Jul 2021 22:09:18 +0200 (CEST)
+References: <471a429f-76aa-44af-19d4-10f53992866d@johannesthoma.com>
+In-Reply-To: <471a429f-76aa-44af-19d4-10f53992866d@johannesthoma.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date: Thu, 1 Jul 2021 16:00:45 +0200
+X-Gmail-Original-Message-ID: <CAHmME9rsyz8ntO9K8Kc7jxLP6zZcB1xHgXPp+gf5bi27zXBj8Q@mail.gmail.com>
+Message-ID: <CAHmME9rsyz8ntO9K8Kc7jxLP6zZcB1xHgXPp+gf5bi27zXBj8Q@mail.gmail.com>
+To: johannes@johannesthoma.com
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 12 Jul 2021 10:47:04 +0200 (CEST)
 X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Sat, 10 Jul 2021 22:09:16 +0200 (CEST)
+ (isis.lip6.fr [132.227.60.2]); Mon, 12 Jul 2021 10:47:01 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: kernel-janitors@vger.kernel.org, cocci <cocci@systeme.lip6.fr>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [Cocci] cocci script to convert linux-kernel allocs with
- BITS_TO_LONGS to bitmap_alloc
+Cc: cocci@systeme.lip6.fr, Philipp Reisner <philipp.reisner@linbit.com>
+Subject: Re: [Cocci] wireguard project looking for coccinelles to assist
+ with Linux->NT conversion (WinDRBD)
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -75,42 +82,42 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
+Hi Johannes,
 
+On Thu, Jul 1, 2021 at 3:42 PM Johannes Thoma
+<johannes@johannesthoma.com> wrote:
+> The approach we use attempts to minimize patches to the original
+> source code and use a compatibility layer to map the Linux
+> interfaces (and behaviour) to the Windows NT interfaces (and
+> behaviour). Since we use Microsoft's C compiler to build the
+> project we need to patch some compiler specific things (like
+> MS C does not know gcc's typeof)
+> My advice would be to keep the compat.h header (and related
+> files) so that the changes to the Linux sources are kept
+> at a minimum.
 
-On Sat, 10 Jul 2021, Joe Perches wrote:
+I have no desire nor plans to do this at all in any way, shape, or
+form. The compat.h header is going away, and the whole project will be
+transformed into native NT code, without Linuxisms. That is why I sent
+the email to the cocci mailing list -- because we're going to
+transform every inch of the code base. The goal is to have a totally
+separate development path, to intentionally allow the implementations
+to diverge and integrate well with the unique kernel paradigms of each
+respective kernel. We've done that throughout the project - to
+OpenBSD, FreeBSD, Userspace in two languages, and now to NT. In each
+place, we prefer native implementations that make use of native
+runtime facilities. We even take that approach with UIs, using native
+OS toolkits, rather than trying to use something like Qt or Electron.
+So, the compat.h stuff is definitely going away.
 
-> On Sat, 2021-07-10 at 21:50 +0200, Julia Lawall wrote:
-> > On Fri, 9 Jul 2021, Joe Perches wrote:
-> >
-> > > Here is a cocci script to convert various types of bitmap allocations
-> > > that use BITS_TO_LONGS to the more typical bitmap_alloc functions.
-> > >
-> > > Perhaps something like it could be added to scripts/coccinelle.
-> > > The diff produced by the script is also below.
-> > >
-> > > $ cat bitmap_allocs.cocci
-> > > // typical uses of bitmap allocations
-> []
-> > > @@
-> > > expression val;
-> > > expression e1;
-> > > expression e2;
-> > > @@
-> > >
-> > > -	val = kcalloc(BITS_TO_LONGS(e1), sizeof(*val), e2)
-> > > +	val = bitmap_zalloc(e1, e2)
-> >
-> > Is there something that guarantees that val has a type that has a size that
-> > is the same as a long?
->
-> no, but afaict, all do.
+With that said, it looks like you've built up an impressive
+translation layer! (FYI, from brief perusal it looks like your RCU
+implementation has some issues; I'll send you a link to mine when it's
+ready -- it's fully lockless like Linux's. And your get_random_bytes
+looks like a security vulnerability. We can talk about NT-specific
+stuff offlist though.)
 
-It might be nicer for the val metavariable to be declared as
-{long,unsigned long} val;, although that might lose some results if the
-type is something else that has the same size.  I can check what is the
-impact of adding that constraint.
-
-julia
+Jason
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
