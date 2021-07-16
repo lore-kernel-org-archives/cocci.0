@@ -2,64 +2,80 @@ Return-Path: <SRS0=v5gi=MW=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81408C4338F
-	for <cocci@archiver.kernel.org>; Fri, 30 Jul 2021 10:58:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2955DC4338F
+	for <cocci@archiver.kernel.org>; Fri, 30 Jul 2021 10:59:58 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DF62C60F0F
-	for <cocci@archiver.kernel.org>; Fri, 30 Jul 2021 10:58:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org DF62C60F0F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
+	by mail.kernel.org (Postfix) with ESMTPS id 92CDC60FE7
+	for <cocci@archiver.kernel.org>; Fri, 30 Jul 2021 10:59:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 92CDC60FE7
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 16UAwldK023178;
-	Fri, 30 Jul 2021 12:58:47 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 16UAxsac023569;
+	Fri, 30 Jul 2021 12:59:54 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id DB2827779;
-	Fri, 30 Jul 2021 12:58:46 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 65DEF7779;
+	Fri, 30 Jul 2021 12:59:54 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id 9E7173FE7
- for <cocci@systeme.lip6.fr>; Fri, 30 Jul 2021 12:58:45 +0200 (CEST)
-Received: from mail3-relais-sop.national.inria.fr
- (mail3-relais-sop.national.inria.fr [192.134.164.104])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 16UAwewb014251
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
- for <cocci@systeme.lip6.fr>; Fri, 30 Jul 2021 12:58:41 +0200 (CEST)
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3A2eBEUquv5/I2tx8aNsVdyL8A7skDr9V00zEX?=
- =?us-ascii?q?/kB9WHVpm62j+/xG+c5x6faaslkssQ4b9+xoVJPgfZr3z/5ICPAqTNSftVDdyQ?=
- =?us-ascii?q?mVxeJZnO7fKkPbaknDH7VmpMBdmsFFYbXN5D5B/KDHCWKDfurIruPszEhd792u?=
- =?us-ascii?q?tkuFNTsaE52JZGxCe32m+sccfng9OXKBf6Dsm/Z6mw=3D=3D?=
-X-IronPort-AV: E=Sophos;i="5.84,281,1620684000"; d="scan'208";a="389360966"
-Received: from dt-lawall.paris.inria.fr ([128.93.67.65])
- by mail3-relais-sop.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 30 Jul 2021 12:58:40 +0200
-Date: Fri, 30 Jul 2021 12:58:40 +0200 (CEST)
-From: Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: julia@hadrien
-To: Daniel Thompson <daniel.thompson@linaro.org>
-In-Reply-To: <20210730095856.2038286-1-daniel.thompson@linaro.org>
-Message-ID: <alpine.DEB.2.22.394.2107301257470.52326@hadrien>
-References: <20210730095856.2038286-1-daniel.thompson@linaro.org>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+ by systeme.lip6.fr (Postfix) with ESMTPS id DC3FC3F5A
+ for <cocci@systeme.lip6.fr>; Fri, 16 Jul 2021 11:31:05 +0200 (CEST)
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com
+ [IPv6:2a00:1450:4864:20:0:0:0:12c])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 16G9V3UK013006
+ (version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=OK)
+ for <cocci@systeme.lip6.fr>; Fri, 16 Jul 2021 11:31:04 +0200 (CEST)
+Received: by mail-lf1-x12c.google.com with SMTP id g22so3028556lfu.0
+ for <cocci@systeme.lip6.fr>; Fri, 16 Jul 2021 02:31:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:from:date:message-id:subject:to;
+ bh=dcnboaz2KVm8+pj1VAu33I8AMFm21L+DwfHTbvB+hpw=;
+ b=c3+YR73aOtD5SvsTihYJaIHgPkWRvPvayY1/8GhGkHj98XLeHVilYtp0ICfw8ryqXA
+ BVkIr6qgXy196NEGSZzQJkIvr7T52944dUtReD1COvt7Keo8w1XAo41L24yxvk0wjzAw
+ Sa5oyFohDez9ri5so2sPpP1AbRk1R7Ouf9frxYFXY7PzJQqBl+X6xY8HGWoyKRn/znE3
+ TSdR/CDxShhZTGQVXspkpT0P4WWITYRMd6KPIwxg/hdPm3zypYpvDPg+jvCsJj0EDPSL
+ UNVekrG8gZgQOVixt29actzOX/UPqUUauLL8YT4IC/X98I7Zl3gDeJhEGemptoq0hD8H
+ gpBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+ bh=dcnboaz2KVm8+pj1VAu33I8AMFm21L+DwfHTbvB+hpw=;
+ b=oTzrt9DIfG6MLNi2M5+D9Wztm/pXuiXvwCQsMy0/UPI7fJp8KASipV1Q5ig3SY1lDF
+ KecNBk0JKlyTXK3MCLwT5FFqOsjE2iWczMGctG23hgLJT4PG0j4kKkQs6vS1x6Xrgcdd
+ 9u2Ba/DynvnWtafeq135TwSysRFT2ud6JqxTyVlNtAkShv3DqMiSIZB2cSpNbe1IfAhc
+ nrzIV8o31szeqPLgIHAH999k1uQJdIcyOtFpxZDlI1fYvQ0GVObKmlZZr3Vr4Xw+NU9f
+ Y0tRc1fSjbuhm6wWMsrxK0pn9t1mL3SYPDwF96UlTH5Wf44m+oG//r6OX1HXgEJgxUX8
+ dw4Q==
+X-Gm-Message-State: AOAM5311m4sjdSTgVUGC2gcWvdKXGhGsDnRaw3Fx+nCiSu9sbYf31wnl
+ o/LG1UU5MgNGsgWT7xAT7nvHAja5T0uO+o2X/r2kgMTN1cM=
+X-Google-Smtp-Source: ABdhPJz8K2GlhaXoMlvA+iKOwh7NCkrSotVQstwEjEn0owoE5QfpT/IDEDDlv4iwlU2nK11qe+d2v6FNPOsfowwVmww=
+X-Received: by 2002:a05:6512:400b:: with SMTP id
+ br11mr6961429lfb.36.1626427863463; 
+ Fri, 16 Jul 2021 02:31:03 -0700 (PDT)
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 30 Jul 2021 12:58:47 +0200 (CEST)
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Fri, 30 Jul 2021 12:58:41 +0200 (CEST)
+Received: by 2002:ab3:4a06:0:0:0:0:0 with HTTP; Fri, 16 Jul 2021 02:31:03
+ -0700 (PDT)
+From: =?UTF-8?B?QW5kcmV3IPCfkb0gIFlvdXJ0Y2hlbmtv?= <ayourtch@gmail.com>
+Date: Fri, 16 Jul 2021 09:31:03 +0000
+Message-ID: <CAPi140P-O0B+BiAa7i+WbdfmG3HnA3yCZdy4+SeKa=2jRreTyg@mail.gmail.com>
+To: cocci@systeme.lip6.fr
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Fri, 30 Jul 2021 12:59:54 +0200 (CEST)
+X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
+ Fri, 16 Jul 2021 11:31:04 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: Michal Marek <michal.lkml@markovi.net>,
-        Nicolas Palix <nicolas.palix@imag.fr>, cocci@systeme.lip6.fr,
-        linux-kernel@vger.kernel.org
-Subject: Re: [Cocci] [PATCH] scripts: coccinelle: allow list_entry_is_head()
- to use pos
+X-Scanned-By: MIMEDefang 2.78
+X-Mailman-Approved-At: Fri, 30 Jul 2021 12:59:52 +0200
+Subject: [Cocci] how to make substitutions at the end of the function,
+ vs. the end of the block ?
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -76,67 +92,162 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
+Hi all,
+
+I work on the VPP project (http://fd.io/ - open source software
+dataplane), and yesterday tried to use coccinelle to make a relatively
+non-trivial change
+as in the mail https://lists.fd.io/g/vpp-dev/message/17532 - it seemed
+to be a very good candidate - boring enough to be painful to do by
+hand, complex enough to make sed inadequate for it.
+
+I came up with this semantic patch:
 
 
-On Fri, 30 Jul 2021, Daniel Thompson wrote:
+@ detect_func @
+identifier CLI_FN, AVM, AIN, ACMD;
+fresh identifier LAIN = "line_" ## AIN;
 
-> Currently use_after_iter.cocci generates false positives for code of the
-> following form:
-> ~~~
-> 	list_for_each_entry(d, &ddata->irq_list, node) {
-> 		if (irq == d->irq)
-> 			break;
-> 	}
->
-> 	if (list_entry_is_head(d, &ddata->irq_list, node))
-> 		return IRQ_NONE;
-> ~~~
-> [This specific example comes from drivers/power/supply/cpcap-battery.c]
->
-> Most list macros use list_entry_is_head() as loop exit condition meaning it
-> is not unsafe to reuse pos (a.k.a. d) in the code above.
->
-> Let's avoid reporting these cases.
->
-> Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-> ---
->
-> Notes:
->     I'm pretty much a complete beginner w.r.t. SmPL. This is written
->     entirely by finding previous fixes and emulating them!
->
->     However I did test it by running the checker across the current kernel
->     tree. The changes reduced the error count by four... which was small
->     enough for me to eyeball each one and check they match the pattern I
->     was targetting.
+statement S1;
 
-This looks fine.  Thanks for the proposal.
+typedef clib_error_t, vlib_main_t, unformat_input_t, vlib_cli_command_t;
+@@
 
-julia
+static clib_error_t *CLI_FN (vlib_main_t * AVM, unformat_input_t *
+AIN, vlib_cli_command_t * ACMD)
+{
++ clib_error_t *e = 0;
++  unformat_input_t *LAIN;
+...
++ if (!unformat_user (AIN, unformat_line_input, LAIN)) {
++    return 0;
++ }
++
+-  while (unformat_check_input (AIN) != UNFORMAT_END_OF_INPUT)
++ while (unformat_check_input (LAIN) != UNFORMAT_END_OF_INPUT)
+S1
+<...
+- return ERR;
++ e = ERR;
++ goto done;
+...>
++done:
++ unformat_free(LAIN);
++ return e;
+}
 
->
->  scripts/coccinelle/iterators/use_after_iter.cocci | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/scripts/coccinelle/iterators/use_after_iter.cocci b/scripts/coccinelle/iterators/use_after_iter.cocci
-> index 9be48b520879..676edd562eef 100644
-> --- a/scripts/coccinelle/iterators/use_after_iter.cocci
-> +++ b/scripts/coccinelle/iterators/use_after_iter.cocci
-> @@ -123,6 +123,8 @@ hlist_for_each_entry_safe(c,...) S
->  |
->  list_remove_head(x,c,...)
->  |
-> +list_entry_is_head(c,...)
-> +|
->  sizeof(<+...c...+>)
->  |
->   &c->member
->
-> base-commit: 2734d6c1b1a089fb593ef6a23d4b70903526fe0c
-> --
-> 2.30.2
->
->
+
+I attempt to run it on this test file:
+
+ubuntu@vpp-dev:~$ cat ~/test.c
+static clib_error_t *
+syn_filter_enable_disable_command_fn (vlib_main_t * vm,
+				      unformat_input_t * input,
+				      vlib_cli_command_t * cmd)
+{
+  vnet_main_t *vnm = vnet_get_main ();
+  u32 sw_if_index = ~0;
+  int enable_disable = 1;
+  int rv;
+
+  while (unformat_check_input (input) != UNFORMAT_END_OF_INPUT)
+    {
+      if (unformat (input, "disable"))
+	enable_disable = 0;
+      else if (unformat (input, "%U", unformat_vnet_sw_interface,
+			 vnm, &sw_if_index))
+	;
+      else
+	break;
+    }
+
+  if (sw_if_index == ~0)
+    return clib_error_return (0, "Please specify an interface...");
+
+  rv = syn_filter_enable_disable (sw_if_index, enable_disable);
+
+  switch (rv)
+    {
+    case 0:
+      break;
+
+    case VNET_API_ERROR_INVALID_SW_IF_INDEX:
+      return clib_error_return
+	(0, "Invalid interface, only works on physical ports");
+      break;
+
+    case VNET_API_ERROR_UNIMPLEMENTED:
+      return clib_error_return (0,
+				"Device driver doesn't support redirection");
+      break;
+
+    case VNET_API_ERROR_INVALID_VALUE:
+      return clib_error_return (0, "feature arc not found");
+
+    case VNET_API_ERROR_INVALID_VALUE_2:
+      return clib_error_return (0, "feature node not found");
+
+    default:
+      return clib_error_return (0, "syn_filter_enable_disable returned %d",
+				rv);
+    }
+  return 0;
+}
+ubuntu@vpp-dev:~$
+
+
+However, when I run it, the "done: " label, etc. gets inserted twice:
+
+ubuntu@vpp-dev:~$ spatch --sp-file /tmp/rules.sp
+--allow-inconsistent-paths  ~/test.c
+init_defs_builtins: /usr/bin/../lib/coccinelle/standard.h
+HANDLING: /home/ubuntu/test.c
+diff =
+--- /home/ubuntu/test.c
++++ /tmp/cocci-output-56896-8f35c5-test.c
+@@ -3,12 +3,18 @@ syn_filter_enable_disable_command_fn (vl
+ 				      unformat_input_t * input,
+ 				      vlib_cli_command_t * cmd)
+ {
++  clib_error_t *e = 0;
++  unformat_input_t *line_input;
+   vnet_main_t *vnm = vnet_get_main ();
+   u32 sw_if_index = ~0;
+   int enable_disable = 1;
+   int rv;
+
+-  while (unformat_check_input (input) != UNFORMAT_END_OF_INPUT)
++  if (!unformat_user(input, unformat_line_input, line_input)) {
++      return 0;
++  }
++
++while (unformat_check_input(line_input) != UNFORMAT_END_OF_INPUT)
+     {
+       if (unformat (input, "disable"))
+ 	enable_disable = 0;
+@@ -48,6 +54,12 @@ syn_filter_enable_disable_command_fn (vl
+     default:
+       return clib_error_return (0, "syn_filter_enable_disable returned %d",
+ 				rv);
+-    }
++    done:
++      unformat_free(line_input);
++      return e;
++  }
+   return 0;
++done:
++  unformat_free(line_input);
++  return e;
+ }
+ubuntu@vpp-dev:~$
+
+
+I get a feeling I am missing something fundamental - but RTFM did not
+help much... Could anyone please nudge me in the correct direction ?
+
+Thanks a lot!
+
+--a
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
