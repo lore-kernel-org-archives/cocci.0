@@ -2,62 +2,81 @@ Return-Path: <SRS0=EbQ7=MO=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5775C4338F
-	for <cocci@archiver.kernel.org>; Thu, 22 Jul 2021 20:11:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05D33C4338F
+	for <cocci@archiver.kernel.org>; Thu, 22 Jul 2021 21:21:33 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D4C3260EB5
-	for <cocci@archiver.kernel.org>; Thu, 22 Jul 2021 20:11:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org D4C3260EB5
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
+	by mail.kernel.org (Postfix) with ESMTPS id 217AA60EB5
+	for <cocci@archiver.kernel.org>; Thu, 22 Jul 2021 21:21:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 217AA60EB5
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 16MKB30O009087;
-	Thu, 22 Jul 2021 22:11:03 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 16MLLSZO007006;
+	Thu, 22 Jul 2021 23:21:28 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id 07CF97783;
-	Thu, 22 Jul 2021 22:11:03 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id E1C467783;
+	Thu, 22 Jul 2021 23:21:27 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id DCCF43FE7
- for <cocci@systeme.lip6.fr>; Thu, 22 Jul 2021 22:11:01 +0200 (CEST)
-Received: from mail2-relais-roc.national.inria.fr
- (mail2-relais-roc.national.inria.fr [192.134.164.83])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 16MKB0Z1003083
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
- for <cocci@systeme.lip6.fr>; Thu, 22 Jul 2021 22:11:00 +0200 (CEST)
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3AkKASV678tHKvy6NIcQPXwHPXdLJyesId70hD?=
- =?us-ascii?q?6qm+c31om6uj5qaTdZUgpHjJYVMqMk3I9ursBEDtex/hHNtOkOos1VnLZnibhI?=
- =?us-ascii?q?LqFvAe0WPaqweQZBEWj9Qtq5uIEZIfNDSANykfsS+g2njALz9I+rDum5xAx92u?=
- =?us-ascii?q?rUuFKzsEV0gK1XYdNu/0KCNLrSB9dOsEPavZyMpbhiaqPU8aZt68ARA+LpL+ju?=
- =?us-ascii?q?yOupL6QAIMQyUq4gmWjT+u9dfBYmOl9yZbfTNT4KsotVPImQzh5qmlrrWSxxLG?=
- =?us-ascii?q?23XIhq4m6OfJ+59sBNGslsNQEDnqhwqyDb4RI4G/gA=3D=3D?=
-X-IronPort-AV: E=Sophos;i="5.84,262,1620684000"; d="scan'208";a="521138992"
-Received: from 173.121.68.85.rev.sfr.net (HELO hadrien) ([85.68.121.173])
- by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 22 Jul 2021 22:11:00 +0200
-Date: Thu, 22 Jul 2021 22:11:00 +0200 (CEST)
-From: Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
-To: =?UTF-8?Q?Andrew_=F0=9F=91=BD__Yourtchenko?= <ayourtch@gmail.com>
-In-Reply-To: <CAPi140Mgk8zEk9vStbBU4Hh6oEMU2i6Kaji502AojELjFCR1OA@mail.gmail.com>
-Message-ID: <alpine.DEB.2.22.394.2107222203110.42931@hadrien>
-References: <CAPi140Mgk8zEk9vStbBU4Hh6oEMU2i6Kaji502AojELjFCR1OA@mail.gmail.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 29C743FE7
+ for <cocci@systeme.lip6.fr>; Thu, 22 Jul 2021 23:21:26 +0200 (CEST)
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com
+ [IPv6:2a00:1450:4864:20:0:0:0:229])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 16MLLOVh012713
+ (version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=OK)
+ for <cocci@systeme.lip6.fr>; Thu, 22 Jul 2021 23:21:24 +0200 (CEST)
+Received: by mail-lj1-x229.google.com with SMTP id j1so9087683ljo.10
+ for <cocci@systeme.lip6.fr>; Thu, 22 Jul 2021 14:21:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+ :cc:content-transfer-encoding;
+ bh=g6sNWSdE0tq2OkRtGQh6+e38yfvm5JVjb5zJodCT/wk=;
+ b=qnPm8PPKjpO2T3qDzClnenaOuAblHpSiTkmEuWiVHIRhpIJoHLcSr71z2nrVfEyJRV
+ Vh2xkpxsfUmpRjex8mv7AOmXMSGVaAAB9vBNVFvLoe8D7jONRxV28r5t1DFNV4ePccCz
+ 8+yBLTSGl4HCClTRiDpBgobugBVZHUPTc50Y/DcOSoW4PPZ8N91klXL+ec1viGzesTkJ
+ PvDwF9rdTYEToTl5g5AdL6Q7GwEnmhqZUiasAeJh/T2X7FHDmXAdZ085U6qEUMRxcqWg
+ 4K7JKAdSb+qFcZ3CFcF/tDYwyvrcLYacJfSyXucgJGG/gCyIflgGRPGflclwnQZw3Q6M
+ OoZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+ :message-id:subject:to:cc:content-transfer-encoding;
+ bh=g6sNWSdE0tq2OkRtGQh6+e38yfvm5JVjb5zJodCT/wk=;
+ b=JGELZlkoELAmA2ptG7UG3ga0JoHnmsmWGTgNRTvi0lv1uwZ+EjrpgsS7Jwqqia0+7u
+ AHu1vsS3llDNWlnRPE7qLIP0sYknJGcRNfalMiiAI2tig/LTdlDrL+HZBS3WbzDGMABu
+ QoClKBjwMROY8Qnn1tj1lCxldfT4EkLUztKY942x2HcTQKOZ6vuUNFY4mYszP+yO3GSG
+ c/TO283Ev/GBoJZQiuI7GfXF9PdbFYlBRjl6+y61edMDqhmAhxbgUyigYePGFYvb4czy
+ a6UBjYQ2rdsWxXG7pAWzqHOfbiRroruhr9OYgBg1SJjizvZuAzPAbAJxvnN6lhInYx6i
+ bK2w==
+X-Gm-Message-State: AOAM530lCib5UzyjDevXzU32OgDcCeV7QSjVNYX3sbHxesLpi+g89lPQ
+ LvPaXZ9NgPSdzHSY9RmJxwLqvJ+wK+ejzbeRLy8=
+X-Google-Smtp-Source: ABdhPJxDGZ+XvL8owSDp1aOXmDgG0typMnvC/5b24dIDfzi9NsFL0QsGNY5GKHvXJ6pKMH4M3Iw2sPD9UaQglNXSF8Y=
+X-Received: by 2002:a2e:80c6:: with SMTP id r6mr1347652ljg.138.1626988883688; 
+ Thu, 22 Jul 2021 14:21:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-2007497743-1626984660=:42931"
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 22 Jul 2021 22:11:03 +0200 (CEST)
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Thu, 22 Jul 2021 22:11:00 +0200 (CEST)
+Received: by 2002:ab3:4a06:0:0:0:0:0 with HTTP; Thu, 22 Jul 2021 14:21:23
+ -0700 (PDT)
+In-Reply-To: <alpine.DEB.2.22.394.2107222203110.42931@hadrien>
+References: <CAPi140Mgk8zEk9vStbBU4Hh6oEMU2i6Kaji502AojELjFCR1OA@mail.gmail.com>
+ <alpine.DEB.2.22.394.2107222203110.42931@hadrien>
+From: =?UTF-8?B?QW5kcmV3IPCfkb0gIFlvdXJ0Y2hlbmtv?= <ayourtch@gmail.com>
+Date: Thu, 22 Jul 2021 21:21:23 +0000
+Message-ID: <CAPi140Ns4Qo1V=MqSUS46oJvO_0jgG5rPFuu0EvNrYw_3LoN0g@mail.gmail.com>
+To: Julia Lawall <julia.lawall@inria.fr>
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Thu, 22 Jul 2021 23:21:28 +0200 (CEST)
+X-Greylist: Sender DNS name whitelisted, not delayed by milter-greylist-4.4.3
+ (isis.lip6.fr [IPv6:2001:660:3302:283c:0:0:0:2]);
+ Thu, 22 Jul 2021 23:21:24 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
+X-Scanned-By: MIMEDefang 2.78
 Cc: cocci <cocci@systeme.lip6.fr>
 Subject: Re: [Cocci] how to make substitutions at the end of the function,
  vs. the end of each block ?
@@ -72,217 +91,163 @@ List-Post: <mailto:cocci@systeme.lip6.fr>
 List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
 List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
  <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-2007497743-1626984660=:42931
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-
-
-
-On Thu, 22 Jul 2021, Andrew 👽  Yourtchenko wrote:
-
-> Hi all,
->
-> I work on the VPP project (http://fd.io/ - open source software
-> dataplane), and  tried to use coccinelle to make a relatively
-> non-trivial change
-> as in the mail https://lists.fd.io/g/vpp-dev/message/17532 - it seemed
-> to be a very good candidate - boring enough to be painful to do by
-> hand, complex enough to make sed inadequate for it.
-
-Thanks for trying Coccinelle :)
-
->
-> I came up with this semantic patch:
->
->
-> @ detect_func @
-> identifier CLI_FN, AVM, AIN, ACMD;
-> fresh identifier LAIN = "line_" ## AIN;
->
-> statement S1;
->
-> typedef clib_error_t, vlib_main_t, unformat_input_t, vlib_cli_command_t;
-> @@
->
-> static clib_error_t *CLI_FN (vlib_main_t * AVM, unformat_input_t *
-> AIN, vlib_cli_command_t * ACMD)
-> {
-> + clib_error_t *e = 0;
-> +  unformat_input_t *LAIN;
-> ...
-> + if (!unformat_user (AIN, unformat_line_input, LAIN)) {
-> +    return 0;
-> + }
-> +
-> -  while (unformat_check_input (AIN) != UNFORMAT_END_OF_INPUT)
-> + while (unformat_check_input (LAIN) != UNFORMAT_END_OF_INPUT)
-> S1
-> <...
-> - return ERR;
-> + e = ERR;
-> + goto done;
-> ...>
-> +done:
-> + unformat_free(LAIN);
-> + return e;
-> }
-
-The problem has to do with the fact that Coccinelle is actually oriented
-around control-flow graphs. So it doesn't know which end of a control-flow
-path is actually the end of the function.
-
-You can try adjusting the line <... above as follows:
-
-<... when != true exp
-     when exists
-
-exp should be declared as an expression metavariable.  The when != true
-thing means that the path cannot cross a true branch across a test of an
-expression that matches exp (ie any expression).  The when exists means
-that the paths through this region of code are considered individually.
-
-I'm not certain that this will work in every case.  It will be necessary
-to check the results carefully.
-
-Another possible hack is to first replace every return under and if,
-while, etc by something else, and then rewrite all of the returns in a
-third rule afterwards.  This is pretty ugly, but may be more reliable.
-
-julia
-
->
-> I attempt to run it on this test file:
->
-> ubuntu@vpp-dev:~$ cat ~/test.c
-> static clib_error_t *
-> syn_filter_enable_disable_command_fn (vlib_main_t * vm,
->                                       unformat_input_t * input,
->                                       vlib_cli_command_t * cmd)
-> {
->   vnet_main_t *vnm = vnet_get_main ();
->   u32 sw_if_index = ~0;
->   int enable_disable = 1;
->   int rv;
->
->   while (unformat_check_input (input) != UNFORMAT_END_OF_INPUT)
->     {
->       if (unformat (input, "disable"))
->         enable_disable = 0;
->       else if (unformat (input, "%U", unformat_vnet_sw_interface,
->                          vnm, &sw_if_index))
->         ;
->       else
->         break;
->     }
->
->   if (sw_if_index == ~0)
->     return clib_error_return (0, "Please specify an interface...");
->
->   rv = syn_filter_enable_disable (sw_if_index, enable_disable);
->
->   switch (rv)
->     {
->     case 0:
->       break;
->
->     case VNET_API_ERROR_INVALID_SW_IF_INDEX:
->       return clib_error_return
->         (0, "Invalid interface, only works on physical ports");
->       break;
->
->     case VNET_API_ERROR_UNIMPLEMENTED:
->       return clib_error_return (0,
->                                 "Device driver doesn't support redirection");
->       break;
->
->     case VNET_API_ERROR_INVALID_VALUE:
->       return clib_error_return (0, "feature arc not found");
->
->     case VNET_API_ERROR_INVALID_VALUE_2:
->       return clib_error_return (0, "feature node not found");
->
->     default:
->       return clib_error_return (0, "syn_filter_enable_disable returned %d",
->                                 rv);
->     }
->   return 0;
-> }
-> ubuntu@vpp-dev:~$
->
->
-> However, when I run it, the "done: " label, etc. gets inserted twice:
->
-> ubuntu@vpp-dev:~$ spatch --sp-file /tmp/rules.sp
-> --allow-inconsistent-paths  ~/test.c
-> init_defs_builtins: /usr/bin/../lib/coccinelle/standard.h
-> HANDLING: /home/ubuntu/test.c
-> diff =
-> --- /home/ubuntu/test.c
-> +++ /tmp/cocci-output-56896-8f35c5-test.c
-> @@ -3,12 +3,18 @@ syn_filter_enable_disable_command_fn (vl
->                                       unformat_input_t * input,
->                                       vlib_cli_command_t * cmd)
->  {
-> +  clib_error_t *e = 0;
-> +  unformat_input_t *line_input;
->    vnet_main_t *vnm = vnet_get_main ();
->    u32 sw_if_index = ~0;
->    int enable_disable = 1;
->    int rv;
->
-> -  while (unformat_check_input (input) != UNFORMAT_END_OF_INPUT)
-> +  if (!unformat_user(input, unformat_line_input, line_input)) {
-> +      return 0;
-> +  }
-> +
-> +while (unformat_check_input(line_input) != UNFORMAT_END_OF_INPUT)
->      {
->        if (unformat (input, "disable"))
->         enable_disable = 0;
-> @@ -48,6 +54,12 @@ syn_filter_enable_disable_command_fn (vl
->      default:
->        return clib_error_return (0, "syn_filter_enable_disable returned %d",
->                                 rv);
-> -    }
-> +    done:
-> +      unformat_free(line_input);
-> +      return e;
-> +  }
->    return 0;
-> +done:
-> +  unformat_free(line_input);
-> +  return e;
->  }
-> ubuntu@vpp-dev:~$
->
->
-> I get a feeling I am missing something fundamental - but RTFM did not
-> help much... What am I doing wrong / missing ?
-> Could anyone please nudge me in the correct direction ?
->
-> Thanks a lot!
->
-> --a
-> _______________________________________________
-> Cocci mailing list
-> Cocci@systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
---8323329-2007497743-1626984660=:42931
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-Cocci mailing list
-Cocci@systeme.lip6.fr
-https://systeme.lip6.fr/mailman/listinfo/cocci
-
---8323329-2007497743-1626984660=:42931--
+SGkgSnVsaWEsCgp0aGFua3MgYSBsb3QgZm9yIHN1Y2ggYSBxdWljayByZXBseSEgOikKCkkgdHJp
+ZWQgdGhpczoKCnlvdXJ0Y2hAYXlvdXJ0Y2gtbG54On4vY29jY2kkIGRpZmYgLWMgcGF0Y2gtb2xk
+LmNvY2NpIHBhdGNoLW5ldy5jb2NjaQoqKiogcGF0Y2gtb2xkLmNvY2NpCTIwMjEtMDctMjIgMjI6
+NDE6MTkuNTE2OTU3ODc4ICswMjAwCi0tLSBwYXRjaC1uZXcuY29jY2kJMjAyMS0wNy0yMiAyMjo0
+MTo1Mi42MjUxODQzNDEgKzAyMDAKKioqKioqKioqKioqKioqCioqKiAzLDggKioqKgotLS0gMyw5
+IC0tLS0KICBmcmVzaCBpZGVudGlmaWVyIExBSU4gPSAibGluZV8iICMjIEFJTjsKCiAgc3RhdGVt
+ZW50IFMxOworIGV4cHJlc3Npb24gZXhwOwoKICB0eXBlZGVmIGNsaWJfZXJyb3JfdCwgdmxpYl9t
+YWluX3QsIHVuZm9ybWF0X2lucHV0X3QsIHZsaWJfY2xpX2NvbW1hbmRfdDsKICBAQAoqKioqKioq
+KioqKioqKioKKioqIDIwLDMwICoqKioKICAtICB3aGlsZSAodW5mb3JtYXRfY2hlY2tfaW5wdXQg
+KEFJTikgIT0gVU5GT1JNQVRfRU5EX09GX0lOUFVUKQogICsgd2hpbGUgKHVuZm9ybWF0X2NoZWNr
+X2lucHV0IChMQUlOKSAhPSBVTkZPUk1BVF9FTkRfT0ZfSU5QVVQpCiAgUzEKISA8Li4uCiAgLSBy
+ZXR1cm4gRVJSOwogICsgZSA9IEVSUjsKICArIGdvdG8gZG9uZTsKISAuLi4+CiAgK2RvbmU6CiAg
+KyB1bmZvcm1hdF9mcmVlKExBSU4pOwogICsgcmV0dXJuIGU7Ci0tLSAyMSwzMiAtLS0tCiAgLSAg
+d2hpbGUgKHVuZm9ybWF0X2NoZWNrX2lucHV0IChBSU4pICE9IFVORk9STUFUX0VORF9PRl9JTlBV
+VCkKICArIHdoaWxlICh1bmZvcm1hdF9jaGVja19pbnB1dCAoTEFJTikgIT0gVU5GT1JNQVRfRU5E
+X09GX0lOUFVUKQogIFMxCiEgPC4uLiB3aGVuICE9IHRydWUgZXhwCiEgICAgICB3aGVuIGV4aXN0
+cwogIC0gcmV0dXJuIEVSUjsKICArIGUgPSBFUlI7CiAgKyBnb3RvIGRvbmU7CiEgLi4uPgogICtk
+b25lOgogICsgdW5mb3JtYXRfZnJlZShMQUlOKTsKICArIHJldHVybiBlOwpheW91cnRjaEBheW91
+cnRjaC1sbng6fi9jb2NjaSQKCkFuZCB0aGUgcmVzdWx0IHdhcyB0aGUgc2FtZS4uLiBidXQgSSBh
+bSBub3cgc2VlaW5nIGFub3RoZXIgYnVnIGluIG15Cm9yaWdpbmFsIHBhdGNoIC0gKm5vbmUqIG9m
+IHRoZSByZXR1cm4gc3RhdGVtZW50cyB3aXRoaW4gdGhlIHN3aXRjaCgpCnN0YXRlbWVudCBhcmUg
+cmVwbGFjZWQgYXMgd2VsbC4uLiBhbmQgc29tZXdoYXQgc3RhcnQgdG8gZ2V0IHRoZSBpZGVhCm9m
+IHdoeSB0aGUgaWRlYSBvZiB1c2luZyB0aGUgLS1hbGxvdy1pbmNvbnNpc3RlbnQtcGF0aHMgbWF5
+IG5vdCBoYXZlCmJlZW4gYSBnb29kIG9uZSA6KQoKIHNwYXRjaCAtLXNwLWZpbGUgcGF0Y2gtbmV3
+LmNvY2NpIGZpbGUuYwppbml0X2RlZnNfYnVpbHRpbnM6IC91c3IvYmluLy4uL2xpYi9jb2NjaW5l
+bGxlL3N0YW5kYXJkLmgKSEFORExJTkc6IGZpbGUuYwpkZXRlY3RfZnVuYzogbm9kZSA4NDogfTFb
+MV0gaW4gc3luX2ZpbHRlcl9lbmFibGVfZGlzYWJsZV9jb21tYW5kX2ZuCnJlYWNoYWJsZSBieSBp
+bmNvbnNpc3RlbnQgY29udHJvbC1mbG93IHBhdGhzCgpJIGFtIG5vdCBzdXJlIEkgZ3JvayB0aGUg
+fTFbMV0gbm90YXRpb24gd2VsbCwgYnV0IG15IGh1bmNoIGlzIHRoYXQgaXQKZ2V0cyBsb3N0IHNv
+bWV3aGVyZSBhcm91bmQgdGhhdCBzd2l0Y2goKSBzdGF0ZW1lbnQsIGFuZCBJIGp1c3QgdG9sZCBp
+dAoiY29udGludWUgYW55d2F5Iiwgc28gaXQgaXMgaGFyZCB0byBjb21wbGFpbiB0aGUgcmVzdWx0
+IG1heSBiZQp1bmV4cGVjdGVkIDotKQoKRGVidWdnaW5nIGl0IGEgYml0IG1vcmUsIHRob3VnaCBJ
+IHRoaW5rIGkgZm91bmQgYXQgbGVhc3QgdGhlIGlzc3VlIG9mCnRoZSAiaW5jb25zaXN0ZW50IHBh
+dGhzIiAtIHRoZXJlIGlzIGEgInJldHVybiIgaW5zaWRlIGEgY2FzZQpzdGF0ZW1lbnQsIGZvbGxv
+d2VkIGJ5IGJyZWFrLiBJIGNvcHlwYXN0ZWQgdGhlIGV4YW1wbGUgZmlsZSBmcm9tIGEKbG9uZ2Vy
+IHByb2R1Y3Rpb24gY29kZSBhbmQgZGlkbid0IGNoZWNrLiBUaGF0IGJyZWFrIGlzIGNvcnJlY3Rs
+eQpkZXRlY3RlZCBhcyBkZWFkIGNvZGUsIGJ1dCBzZWVtcyB0byBtYWtlIHRoZSBhbmFseXNpcyBl
+bmdpbmUgZ2l2ZSB1cCA/ClRoZXJlIGFyZSBhY3R1YWxseSB0d28gb2YgdGhvc2UgInJldHVybjsg
+YnJlYWsiIHNlcXVlbmNlcy4gQWZ0ZXIgSQpyZW1vdmUgdGhlICJicmVhayIsIEkgY2FuIHBlcmZv
+cm0gdGhlIHBhdGNoaW5nIHdpdGhvdXQgdGhlCiJpbmNvbnNpc3RlbnQgY29udHJvbCBmbG93IHBh
+dGgiIGVycm9yLCBidXQgdGhlIHJlc3VsdCBpcyBleGFjdGx5IHRoZQpzYW1lIGFzIGluIHRoZSBi
+ZWdpbm5pbmcuLi4KCkkgbWlzc2VkIHRoZSBmYWN0IHRoYXQgdGhlICJyZXR1cm4gRVJSIiB3ZXJl
+IGFjdHVhbGx5IG5vdCByZXBsYWNlZCBvbgp0aGlzIGV4YW1wbGUgYXQgYWxsLCBzbyBuYXR1cmFs
+bHkgdHJ5aW5nIHRoZSAiaGFja3kiIGFwcHJvYWNoIGRpZG4ndAp3b3JrIGVpdGhlci4uLiBJIHRo
+aW5rIEkgYW0gc3RpbGwgbm90IGZ1bGx5IGdldHRpbmcgdGhlIHJlbGF0aW9uc2hpcApiZXR3ZWVu
+IHRoZSBzZW1hbnRpYyBwYXRjaCBzeW50YXggYW5kIHRoZSBjb2RlIHBhdGhzLCBpIHdpbGwgZ2l2
+ZQphbm90aGVyIHJlYWQgdG8gdGhlIGRvY3MgYW5kIHNlZSBpZiB0aGV5IGV2ZW50dWFsbHkgc2lu
+ayBpbi4uLiA6LSkKClRoZSBiYXNpYyBleGFtcGxlcyBpbiB0aGUgZG9jIHNlZW0gdG8gYmUgcHJl
+dHR5IHN0cmFpZ2h0Zm9yd2FyZCwgYnV0CnRoZSBtb3ZlIHRvIGEgbW9yZSBjb21wbGljYXRlZCBj
+YXNlcyBsaWtlIHRoaXMgc2VlbXMgdG8gaW50cm9kdWNlIGEKbWVudGFsIGJ1bXAsIEkgdGhpbmsg
+SSBqdXN0IG5lZWQgdG8gcGVyc2lzdCBvbiBpdCBhIGJpdCBtb3JlIDotKQoKLS1hCgoKCgoKT24g
+Ny8yMi8yMSwgSnVsaWEgTGF3YWxsIDxqdWxpYS5sYXdhbGxAaW5yaWEuZnI+IHdyb3RlOgo+Cj4K
+PiBPbiBUaHUsIDIyIEp1bCAyMDIxLCBBbmRyZXcg8J+RvSAgWW91cnRjaGVua28gd3JvdGU6Cj4K
+Pj4gSGkgYWxsLAo+Pgo+PiBJIHdvcmsgb24gdGhlIFZQUCBwcm9qZWN0IChodHRwOi8vZmQuaW8v
+IC0gb3BlbiBzb3VyY2Ugc29mdHdhcmUKPj4gZGF0YXBsYW5lKSwgYW5kICB0cmllZCB0byB1c2Ug
+Y29jY2luZWxsZSB0byBtYWtlIGEgcmVsYXRpdmVseQo+PiBub24tdHJpdmlhbCBjaGFuZ2UKPj4g
+YXMgaW4gdGhlIG1haWwgaHR0cHM6Ly9saXN0cy5mZC5pby9nL3ZwcC1kZXYvbWVzc2FnZS8xNzUz
+MiAtIGl0IHNlZW1lZAo+PiB0byBiZSBhIHZlcnkgZ29vZCBjYW5kaWRhdGUgLSBib3JpbmcgZW5v
+dWdoIHRvIGJlIHBhaW5mdWwgdG8gZG8gYnkKPj4gaGFuZCwgY29tcGxleCBlbm91Z2ggdG8gbWFr
+ZSBzZWQgaW5hZGVxdWF0ZSBmb3IgaXQuCj4KPiBUaGFua3MgZm9yIHRyeWluZyBDb2NjaW5lbGxl
+IDopCj4KPj4KPj4gSSBjYW1lIHVwIHdpdGggdGhpcyBzZW1hbnRpYyBwYXRjaDoKPj4KPj4KPj4g
+QCBkZXRlY3RfZnVuYyBACj4+IGlkZW50aWZpZXIgQ0xJX0ZOLCBBVk0sIEFJTiwgQUNNRDsKPj4g
+ZnJlc2ggaWRlbnRpZmllciBMQUlOID0gImxpbmVfIiAjIyBBSU47Cj4+Cj4+IHN0YXRlbWVudCBT
+MTsKPj4KPj4gdHlwZWRlZiBjbGliX2Vycm9yX3QsIHZsaWJfbWFpbl90LCB1bmZvcm1hdF9pbnB1
+dF90LCB2bGliX2NsaV9jb21tYW5kX3Q7Cj4+IEBACj4+Cj4+IHN0YXRpYyBjbGliX2Vycm9yX3Qg
+KkNMSV9GTiAodmxpYl9tYWluX3QgKiBBVk0sIHVuZm9ybWF0X2lucHV0X3QgKgo+PiBBSU4sIHZs
+aWJfY2xpX2NvbW1hbmRfdCAqIEFDTUQpCj4+IHsKPj4gKyBjbGliX2Vycm9yX3QgKmUgPSAwOwo+
+PiArICB1bmZvcm1hdF9pbnB1dF90ICpMQUlOOwo+PiAuLi4KPj4gKyBpZiAoIXVuZm9ybWF0X3Vz
+ZXIgKEFJTiwgdW5mb3JtYXRfbGluZV9pbnB1dCwgTEFJTikpIHsKPj4gKyAgICByZXR1cm4gMDsK
+Pj4gKyB9Cj4+ICsKPj4gLSAgd2hpbGUgKHVuZm9ybWF0X2NoZWNrX2lucHV0IChBSU4pICE9IFVO
+Rk9STUFUX0VORF9PRl9JTlBVVCkKPj4gKyB3aGlsZSAodW5mb3JtYXRfY2hlY2tfaW5wdXQgKExB
+SU4pICE9IFVORk9STUFUX0VORF9PRl9JTlBVVCkKPj4gUzEKPj4gPC4uLgo+PiAtIHJldHVybiBF
+UlI7Cj4+ICsgZSA9IEVSUjsKPj4gKyBnb3RvIGRvbmU7Cj4+IC4uLj4KPj4gK2RvbmU6Cj4+ICsg
+dW5mb3JtYXRfZnJlZShMQUlOKTsKPj4gKyByZXR1cm4gZTsKPj4gfQo+Cj4gVGhlIHByb2JsZW0g
+aGFzIHRvIGRvIHdpdGggdGhlIGZhY3QgdGhhdCBDb2NjaW5lbGxlIGlzIGFjdHVhbGx5IG9yaWVu
+dGVkCj4gYXJvdW5kIGNvbnRyb2wtZmxvdyBncmFwaHMuIFNvIGl0IGRvZXNuJ3Qga25vdyB3aGlj
+aCBlbmQgb2YgYSBjb250cm9sLWZsb3cKPiBwYXRoIGlzIGFjdHVhbGx5IHRoZSBlbmQgb2YgdGhl
+IGZ1bmN0aW9uLgo+Cj4gWW91IGNhbiB0cnkgYWRqdXN0aW5nIHRoZSBsaW5lIDwuLi4gYWJvdmUg
+YXMgZm9sbG93czoKPgo+IDwuLi4gd2hlbiAhPSB0cnVlIGV4cAo+ICAgICAgd2hlbiBleGlzdHMK
+Pgo+IGV4cCBzaG91bGQgYmUgZGVjbGFyZWQgYXMgYW4gZXhwcmVzc2lvbiBtZXRhdmFyaWFibGUu
+ICBUaGUgd2hlbiAhPSB0cnVlCj4gdGhpbmcgbWVhbnMgdGhhdCB0aGUgcGF0aCBjYW5ub3QgY3Jv
+c3MgYSB0cnVlIGJyYW5jaCBhY3Jvc3MgYSB0ZXN0IG9mIGFuCj4gZXhwcmVzc2lvbiB0aGF0IG1h
+dGNoZXMgZXhwIChpZSBhbnkgZXhwcmVzc2lvbikuICBUaGUgd2hlbiBleGlzdHMgbWVhbnMKPiB0
+aGF0IHRoZSBwYXRocyB0aHJvdWdoIHRoaXMgcmVnaW9uIG9mIGNvZGUgYXJlIGNvbnNpZGVyZWQg
+aW5kaXZpZHVhbGx5Lgo+Cj4gSSdtIG5vdCBjZXJ0YWluIHRoYXQgdGhpcyB3aWxsIHdvcmsgaW4g
+ZXZlcnkgY2FzZS4gIEl0IHdpbGwgYmUgbmVjZXNzYXJ5Cj4gdG8gY2hlY2sgdGhlIHJlc3VsdHMg
+Y2FyZWZ1bGx5Lgo+Cj4gQW5vdGhlciBwb3NzaWJsZSBoYWNrIGlzIHRvIGZpcnN0IHJlcGxhY2Ug
+ZXZlcnkgcmV0dXJuIHVuZGVyIGFuZCBpZiwKPiB3aGlsZSwgZXRjIGJ5IHNvbWV0aGluZyBlbHNl
+LCBhbmQgdGhlbiByZXdyaXRlIGFsbCBvZiB0aGUgcmV0dXJucyBpbiBhCj4gdGhpcmQgcnVsZSBh
+ZnRlcndhcmRzLiAgVGhpcyBpcyBwcmV0dHkgdWdseSwgYnV0IG1heSBiZSBtb3JlIHJlbGlhYmxl
+Lgo+Cj4ganVsaWEKPgo+Pgo+PiBJIGF0dGVtcHQgdG8gcnVuIGl0IG9uIHRoaXMgdGVzdCBmaWxl
+Ogo+Pgo+PiB1YnVudHVAdnBwLWRldjp+JCBjYXQgfi90ZXN0LmMKPj4gc3RhdGljIGNsaWJfZXJy
+b3JfdCAqCj4+IHN5bl9maWx0ZXJfZW5hYmxlX2Rpc2FibGVfY29tbWFuZF9mbiAodmxpYl9tYWlu
+X3QgKiB2bSwKPj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB1bmZvcm1h
+dF9pbnB1dF90ICogaW5wdXQsCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgdmxpYl9jbGlfY29tbWFuZF90ICogY21kKQo+PiB7Cj4+ICAgdm5ldF9tYWluX3QgKnZubSA9
+IHZuZXRfZ2V0X21haW4gKCk7Cj4+ICAgdTMyIHN3X2lmX2luZGV4ID0gfjA7Cj4+ICAgaW50IGVu
+YWJsZV9kaXNhYmxlID0gMTsKPj4gICBpbnQgcnY7Cj4+Cj4+ICAgd2hpbGUgKHVuZm9ybWF0X2No
+ZWNrX2lucHV0IChpbnB1dCkgIT0gVU5GT1JNQVRfRU5EX09GX0lOUFVUKQo+PiAgICAgewo+PiAg
+ICAgICBpZiAodW5mb3JtYXQgKGlucHV0LCAiZGlzYWJsZSIpKQo+PiAgICAgICAgIGVuYWJsZV9k
+aXNhYmxlID0gMDsKPj4gICAgICAgZWxzZSBpZiAodW5mb3JtYXQgKGlucHV0LCAiJVUiLCB1bmZv
+cm1hdF92bmV0X3N3X2ludGVyZmFjZSwKPj4gICAgICAgICAgICAgICAgICAgICAgICAgIHZubSwg
+JnN3X2lmX2luZGV4KSkKPj4gICAgICAgICA7Cj4+ICAgICAgIGVsc2UKPj4gICAgICAgICBicmVh
+azsKPj4gICAgIH0KPj4KPj4gICBpZiAoc3dfaWZfaW5kZXggPT0gfjApCj4+ICAgICByZXR1cm4g
+Y2xpYl9lcnJvcl9yZXR1cm4gKDAsICJQbGVhc2Ugc3BlY2lmeSBhbiBpbnRlcmZhY2UuLi4iKTsK
+Pj4KPj4gICBydiA9IHN5bl9maWx0ZXJfZW5hYmxlX2Rpc2FibGUgKHN3X2lmX2luZGV4LCBlbmFi
+bGVfZGlzYWJsZSk7Cj4+Cj4+ICAgc3dpdGNoIChydikKPj4gICAgIHsKPj4gICAgIGNhc2UgMDoK
+Pj4gICAgICAgYnJlYWs7Cj4+Cj4+ICAgICBjYXNlIFZORVRfQVBJX0VSUk9SX0lOVkFMSURfU1df
+SUZfSU5ERVg6Cj4+ICAgICAgIHJldHVybiBjbGliX2Vycm9yX3JldHVybgo+PiAgICAgICAgICgw
+LCAiSW52YWxpZCBpbnRlcmZhY2UsIG9ubHkgd29ya3Mgb24gcGh5c2ljYWwgcG9ydHMiKTsKPj4g
+ICAgICAgYnJlYWs7Cj4+Cj4+ICAgICBjYXNlIFZORVRfQVBJX0VSUk9SX1VOSU1QTEVNRU5URUQ6
+Cj4+ICAgICAgIHJldHVybiBjbGliX2Vycm9yX3JldHVybiAoMCwKPj4gICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAiRGV2aWNlIGRyaXZlciBkb2Vzbid0IHN1cHBvcnQKPj4gcmVkaXJl
+Y3Rpb24iKTsKPj4gICAgICAgYnJlYWs7Cj4+Cj4+ICAgICBjYXNlIFZORVRfQVBJX0VSUk9SX0lO
+VkFMSURfVkFMVUU6Cj4+ICAgICAgIHJldHVybiBjbGliX2Vycm9yX3JldHVybiAoMCwgImZlYXR1
+cmUgYXJjIG5vdCBmb3VuZCIpOwo+Pgo+PiAgICAgY2FzZSBWTkVUX0FQSV9FUlJPUl9JTlZBTElE
+X1ZBTFVFXzI6Cj4+ICAgICAgIHJldHVybiBjbGliX2Vycm9yX3JldHVybiAoMCwgImZlYXR1cmUg
+bm9kZSBub3QgZm91bmQiKTsKPj4KPj4gICAgIGRlZmF1bHQ6Cj4+ICAgICAgIHJldHVybiBjbGli
+X2Vycm9yX3JldHVybiAoMCwgInN5bl9maWx0ZXJfZW5hYmxlX2Rpc2FibGUgcmV0dXJuZWQKPj4g
+JWQiLAo+PiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHJ2KTsKPj4gICAgIH0KPj4g
+ICByZXR1cm4gMDsKPj4gfQo+PiB1YnVudHVAdnBwLWRldjp+JAo+Pgo+Pgo+PiBIb3dldmVyLCB3
+aGVuIEkgcnVuIGl0LCB0aGUgImRvbmU6ICIgbGFiZWwsIGV0Yy4gZ2V0cyBpbnNlcnRlZCB0d2lj
+ZToKPj4KPj4gdWJ1bnR1QHZwcC1kZXY6fiQgc3BhdGNoIC0tc3AtZmlsZSAvdG1wL3J1bGVzLnNw
+Cj4+IC0tYWxsb3ctaW5jb25zaXN0ZW50LXBhdGhzICB+L3Rlc3QuYwo+PiBpbml0X2RlZnNfYnVp
+bHRpbnM6IC91c3IvYmluLy4uL2xpYi9jb2NjaW5lbGxlL3N0YW5kYXJkLmgKPj4gSEFORExJTkc6
+IC9ob21lL3VidW50dS90ZXN0LmMKPj4gZGlmZiA9Cj4+IC0tLSAvaG9tZS91YnVudHUvdGVzdC5j
+Cj4+ICsrKyAvdG1wL2NvY2NpLW91dHB1dC01Njg5Ni04ZjM1YzUtdGVzdC5jCj4+IEBAIC0zLDEy
+ICszLDE4IEBAIHN5bl9maWx0ZXJfZW5hYmxlX2Rpc2FibGVfY29tbWFuZF9mbiAodmwKPj4gICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB1bmZvcm1hdF9pbnB1dF90ICogaW5w
+dXQsCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdmxpYl9jbGlfY29t
+bWFuZF90ICogY21kKQo+PiAgewo+PiArICBjbGliX2Vycm9yX3QgKmUgPSAwOwo+PiArICB1bmZv
+cm1hdF9pbnB1dF90ICpsaW5lX2lucHV0Owo+PiAgICB2bmV0X21haW5fdCAqdm5tID0gdm5ldF9n
+ZXRfbWFpbiAoKTsKPj4gICAgdTMyIHN3X2lmX2luZGV4ID0gfjA7Cj4+ICAgIGludCBlbmFibGVf
+ZGlzYWJsZSA9IDE7Cj4+ICAgIGludCBydjsKPj4KPj4gLSAgd2hpbGUgKHVuZm9ybWF0X2NoZWNr
+X2lucHV0IChpbnB1dCkgIT0gVU5GT1JNQVRfRU5EX09GX0lOUFVUKQo+PiArICBpZiAoIXVuZm9y
+bWF0X3VzZXIoaW5wdXQsIHVuZm9ybWF0X2xpbmVfaW5wdXQsIGxpbmVfaW5wdXQpKSB7Cj4+ICsg
+ICAgICByZXR1cm4gMDsKPj4gKyAgfQo+PiArCj4+ICt3aGlsZSAodW5mb3JtYXRfY2hlY2tfaW5w
+dXQobGluZV9pbnB1dCkgIT0gVU5GT1JNQVRfRU5EX09GX0lOUFVUKQo+PiAgICAgIHsKPj4gICAg
+ICAgIGlmICh1bmZvcm1hdCAoaW5wdXQsICJkaXNhYmxlIikpCj4+ICAgICAgICAgZW5hYmxlX2Rp
+c2FibGUgPSAwOwo+PiBAQCAtNDgsNiArNTQsMTIgQEAgc3luX2ZpbHRlcl9lbmFibGVfZGlzYWJs
+ZV9jb21tYW5kX2ZuICh2bAo+PiAgICAgIGRlZmF1bHQ6Cj4+ICAgICAgICByZXR1cm4gY2xpYl9l
+cnJvcl9yZXR1cm4gKDAsICJzeW5fZmlsdGVyX2VuYWJsZV9kaXNhYmxlIHJldHVybmVkCj4+ICVk
+IiwKPj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBydik7Cj4+IC0gICAgfQo+PiAr
+ICAgIGRvbmU6Cj4+ICsgICAgICB1bmZvcm1hdF9mcmVlKGxpbmVfaW5wdXQpOwo+PiArICAgICAg
+cmV0dXJuIGU7Cj4+ICsgIH0KPj4gICAgcmV0dXJuIDA7Cj4+ICtkb25lOgo+PiArICB1bmZvcm1h
+dF9mcmVlKGxpbmVfaW5wdXQpOwo+PiArICByZXR1cm4gZTsKPj4gIH0KPj4gdWJ1bnR1QHZwcC1k
+ZXY6fiQKPj4KPj4KPj4gSSBnZXQgYSBmZWVsaW5nIEkgYW0gbWlzc2luZyBzb21ldGhpbmcgZnVu
+ZGFtZW50YWwgLSBidXQgUlRGTSBkaWQgbm90Cj4+IGhlbHAgbXVjaC4uLiBXaGF0IGFtIEkgZG9p
+bmcgd3JvbmcgLyBtaXNzaW5nID8KPj4gQ291bGQgYW55b25lIHBsZWFzZSBudWRnZSBtZSBpbiB0
+aGUgY29ycmVjdCBkaXJlY3Rpb24gPwo+Pgo+PiBUaGFua3MgYSBsb3QhCj4+Cj4+IC0tYQo+PiBf
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwo+PiBDb2NjaSBt
+YWlsaW5nIGxpc3QKPj4gQ29jY2lAc3lzdGVtZS5saXA2LmZyCj4+IGh0dHBzOi8vc3lzdGVtZS5s
+aXA2LmZyL21haWxtYW4vbGlzdGluZm8vY29jY2kKPj4KX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX18KQ29jY2kgbWFpbGluZyBsaXN0CkNvY2NpQHN5c3RlbWUu
+bGlwNi5mcgpodHRwczovL3N5c3RlbWUubGlwNi5mci9tYWlsbWFuL2xpc3RpbmZvL2NvY2NpCg==
