@@ -2,61 +2,64 @@ Return-Path: <SRS0=dEn7=MZ=systeme.lip6.fr=cocci-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+	UNPARSEABLE_RELAY,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0189CC4338F
-	for <cocci@archiver.kernel.org>; Mon,  2 Aug 2021 18:05:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C1F7C4338F
+	for <cocci@archiver.kernel.org>; Mon,  2 Aug 2021 19:26:16 +0000 (UTC)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2A82E60F51
-	for <cocci@archiver.kernel.org>; Mon,  2 Aug 2021 18:05:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 2A82E60F51
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
+	by mail.kernel.org (Postfix) with ESMTPS id C653960F51
+	for <cocci@archiver.kernel.org>; Mon,  2 Aug 2021 19:26:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C653960F51
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=perches.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=systeme.lip6.fr
 Received: from systeme.lip6.fr (systeme.lip6.fr [132.227.104.7])
-	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 172I5bYc006673;
-	Mon, 2 Aug 2021 20:05:37 +0200 (CEST)
+	by isis.lip6.fr (8.15.2/8.15.2) with ESMTP id 172JQCEx027867;
+	Mon, 2 Aug 2021 21:26:12 +0200 (CEST)
 Received: from systeme.lip6.fr (systeme.lip6.fr [127.0.0.1])
-	by systeme.lip6.fr (Postfix) with ESMTP id BBB06750F;
-	Mon,  2 Aug 2021 20:05:37 +0200 (CEST)
+	by systeme.lip6.fr (Postfix) with ESMTP id 457BE750F;
+	Mon,  2 Aug 2021 21:26:12 +0200 (CEST)
 Received: from isis.lip6.fr (isis.lip6.fr [132.227.60.2])
  (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by systeme.lip6.fr (Postfix) with ESMTPS id B273E3783
- for <cocci@systeme.lip6.fr>; Mon,  2 Aug 2021 20:05:35 +0200 (CEST)
-Received: from mail2-relais-roc.national.inria.fr
- (mail2-relais-roc.national.inria.fr [192.134.164.83])
- by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 172I5ZeU001517
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
- for <cocci@systeme.lip6.fr>; Mon, 2 Aug 2021 20:05:35 +0200 (CEST)
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3ALAramq4WWqDjMMnINAPXwNXXdLJyesId70hD?=
- =?us-ascii?q?6qkRc203TiX2rbHKoB1273HJYVUqOE3I5+rwWpVoKEm0nfUe3WB2B9aftWLd1F?=
- =?us-ascii?q?dAQrsO0WKb+VLdJxE=3D?=
-X-IronPort-AV: E=Sophos;i="5.84,289,1620684000"; d="scan'208";a="522520154"
-Received: from 173.121.68.85.rev.sfr.net (HELO hadrien) ([85.68.121.173])
- by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 02 Aug 2021 20:05:34 +0200
-Date: Mon, 2 Aug 2021 20:05:33 +0200 (CEST)
-From: Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
-To: Joe Perches <joe@perches.com>
-In-Reply-To: <5e170252bf759dc90888de34fbad3291a70b58de.camel@perches.com>
-Message-ID: <alpine.DEB.2.22.394.2108022000400.19470@hadrien>
-References: <ab04588b3b0c2bfa6942beb9069754ce59f2551b.camel@perches.com>
- <alpine.DEB.2.22.394.2108021933170.19470@hadrien>
- <5e170252bf759dc90888de34fbad3291a70b58de.camel@perches.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+ by systeme.lip6.fr (Postfix) with ESMTPS id 29FCC3783
+ for <cocci@systeme.lip6.fr>; Mon,  2 Aug 2021 21:26:10 +0200 (CEST)
+Received: from smtprelay.hostedemail.com (smtprelay0022.hostedemail.com
+ [216.40.44.22])
+ by isis.lip6.fr (8.15.2/8.15.2) with ESMTPS id 172JQ5nj001594
+ (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO)
+ for <cocci@systeme.lip6.fr>; Mon, 2 Aug 2021 21:26:06 +0200 (CEST)
+Received: from smtprelay.hostedemail.com (10.5.19.251.rfc1918.com
+ [10.5.19.251])
+ by smtpgrave02.hostedemail.com (Postfix) with ESMTP id 88DA31802CCCE
+ for <cocci@systeme.lip6.fr>; Mon,  2 Aug 2021 17:00:32 +0000 (UTC)
+Received: from omf06.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+ by smtprelay01.hostedemail.com (Postfix) with ESMTP id 7D75A100E7B52;
+ Mon,  2 Aug 2021 17:00:28 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by
+ omf06.hostedemail.com (Postfix) with ESMTPA id E4E662448B4; 
+ Mon,  2 Aug 2021 17:00:27 +0000 (UTC)
+Message-ID: <ab04588b3b0c2bfa6942beb9069754ce59f2551b.camel@perches.com>
+From: Joe Perches <joe@perches.com>
+To: cocci <cocci@systeme.lip6.fr>
+Date: Mon, 02 Aug 2021 10:00:26 -0700
+User-Agent: Evolution 3.40.0-1 
 MIME-Version: 1.0
-X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 02 Aug 2021 20:05:38 +0200 (CEST)
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.4.3
- (isis.lip6.fr [132.227.60.2]); Mon, 02 Aug 2021 20:05:35 +0200 (CEST)
+X-Rspamd-Server: rspamout03
+X-Rspamd-Queue-Id: E4E662448B4
+X-Stat-Signature: 9tg1wmtu85gepmmdjsof9ep84mkt6ko6
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1+nPFRaiLS2JvfQ+2Jz3V+1x5/vRhiJLWA=
+X-HE-Tag: 1627923627-81141
+X-Greylist: Sender IP whitelisted, Sender e-mail whitelisted, not delayed by milter-greylist-4.4.3 (isis.lip6.fr [132.227.60.2]); Mon, 02 Aug 2021 21:26:12 +0200 (CEST)
+X-Greylist: Delayed for 01:42:04 by milter-greylist-4.4.3 (isis.lip6.fr
+ [132.227.60.2]); Mon, 02 Aug 2021 21:26:06 +0200 (CEST)
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
 X-Scanned-By: MIMEDefang 2.78 on 132.227.60.2
-Cc: cocci <cocci@systeme.lip6.fr>
-Subject: Re: [Cocci] Coccinelle: Length/Size of char array?
+Subject: [Cocci] Coccinelle: Length/Size of char array?
 X-BeenThere: cocci@systeme.lip6.fr
 X-Mailman-Version: 2.1.13
 Precedence: list
@@ -73,102 +76,53 @@ Content-Transfer-Encoding: 7bit
 Sender: cocci-bounces@systeme.lip6.fr
 Errors-To: cocci-bounces@systeme.lip6.fr
 
+Is it possible to determine the length of a matched char array and use
+the length in a test?
 
+For instance, add something like a test to show only the instances
+where a src buffer overruns a dest buffer.
 
-On Mon, 2 Aug 2021, Joe Perches wrote:
+void foo(void)
+{
+	char foo[5];
 
-> On Mon, 2021-08-02 at 19:35 +0200, Julia Lawall wrote:
-> >
-> > On Mon, 2 Aug 2021, Joe Perches wrote:
-> >
-> > > Is it possible to determine the length of a matched char array and use
-> > > the length in a test?
-> > >
-> > > For instance, add something like a test to show only the instances
-> > > where a src buffer overruns a dest buffer.
-> > >
-> > > void foo(void)
-> > > {
-> > > 	char foo[5];
-> > >
-> > > 	strcpy(foo, "fits");
-> > > }
-> > >
-> > > it would be useful to see only the instances where the dest
-> > > buffer would be overrun like:
-> > >
-> > > void foo(void)
-> > > {
-> > > 	char foo[5];
-> > >
-> > > 	strcpy(foo, "doesn't fit");
-> > > }
-> > >
-> > > ---
-> > >
-> > > This would find all instances of a constant src array into non-pointer dst:
-> > >
-> > > @@
-> > > char [] dest;
-> > > constant char [] src;
-> > > @@
-> > >
-> > > *	strcpy(dest, src)
-> > >
-> > > ---
-> > >
-> > > Is there a mexhanism like:
-> > >
-> > > @@
-> > > char [] dest;
-> > > constant char [] src;
-> > > @@
-> > >
-> > > 	when (some cocci grammar testing length(dest) < length(src))
-> > > *	strcpy(dest, src)
-> >
-> > You can match the size and the string, and then use python or ocaml code
-> > to do the needed comparisons.
->
-> Pardon the question, but how do you determine the size?
+	strcpy(foo, "fits");
+}
 
-In the case of a local variable, you can do:
+it would be useful to see only the instances where the dest
+buffer would be overrun like:
 
-@r@
-constant int n;
-identifier i;
-constant char [] c;
-position p1,p2;
+void foo(void)
+{
+	char foo[5];
+
+	strcpy(foo, "doesn't fit");
+}
+
+---
+
+This would find all instances of a constant src array into non-pointer dst:
+
+@@
+char [] dest;
+constant char [] src;
 @@
 
-char i@p1[n];
-... when exists
-strcpy@p2(i,c);
+*	strcpy(dest, src)
 
-@script:ocaml@
-p1 << r.p1;
-p2 << r.p2;
-n << r.n;
-c << r.c;
+---
+
+Is there a mexhanism like:
+
+@@
+char [] dest;
+constant char [] src;
 @@
 
-if string_of_int n < String.length c
-then ...
+	when (some cocci grammar testing length(dest) < length(src))
+*	strcpy(dest, src)
 
-A similar script can be written in python.
 
-If the array is allocated somewhere else, it would be more complicated.
-
-julia
-
->
-> > Does it occur often enough that the string
-> > is explicit in the call to make it worth it?
->
-> The idea is just to find defects/buffer overruns.
->
->
->
 _______________________________________________
 Cocci mailing list
 Cocci@systeme.lip6.fr
