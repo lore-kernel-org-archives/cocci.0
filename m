@@ -2,110 +2,108 @@ Return-Path: <SRS0=V3/9=PR=inria.fr=cocci-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 488C2C433EF
-	for <cocci@archiver.kernel.org>; Fri, 29 Oct 2021 19:12:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 450EDC433F5
+	for <cocci@archiver.kernel.org>; Fri, 29 Oct 2021 19:12:15 +0000 (UTC)
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 59C4360F9B
-	for <cocci@archiver.kernel.org>; Fri, 29 Oct 2021 19:12:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 59C4360F9B
+	by mail.kernel.org (Postfix) with ESMTPS id 92C1960E76
+	for <cocci@archiver.kernel.org>; Fri, 29 Oct 2021 19:12:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 92C1960E76
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=inria.fr
-IronPort-Data: =?us-ascii?q?A9a23=3AXCDvjK2YAiofPmEAN/bD5cNwkn2cJEfYwER7XOP?=
- =?us-ascii?q?LsXnJ1Whx0zwOmzcaXjvSPfqPNjHweNFzaomxpk8DvpDVydE2QQE+nZ1PZyIT+?=
- =?us-ascii?q?JCdXbx1DW+pYnjMdpWbJK5fAnR3huDodKjYdVeB4EfyWlTdhSMkj/jRHuCtULS?=
- =?us-ascii?q?s1h1ZHmeIdg9w0HqPpMZp2uaEsfDha++8kYuaT//3YDdJ6BYoWo4g0J9vnTs01?=
- =?us-ascii?q?BjEVJz0iXRlDRxDlAe2e3D4l/vzL4npR5fzatE88uJX24/+IL+FEmPxp3/BC/u?=
- =?us-ascii?q?+g7PjewsLRKTTNE6AkBK6WYD72EgE93d0i/hhcqNCMS+7iB3Q9zx14N5KvpexD?=
- =?us-ascii?q?AA2OKDWsOUbSRhRVS9kVUFD0OadeCHv6Zb7I0ruNiGEL+9VJEoxNoYZ0u9tCmF?=
- =?us-ascii?q?P6/ECbjMAdBaOg6Sx2r3TYuNtnd8yIsfDM4YWu3UmxjbcZd4tRp3FTqPi6tpR3?=
- =?us-ascii?q?TN2jcdLdd7Sbsxfa3xwbRDEYhRKIX8YDZs/mKGjgXyXWzFRtlOZvq0x72bcyCR?=
- =?us-ascii?q?+1bHsNJzefdnibclY2F2fu3DPuW/+GBwcKN2Z4TWA+3OowOTImEvTU5kPELmp3?=
- =?us-ascii?q?vFth1KXyyoYDxh+fVG2p/S1i02ic9JSKkoZvDAppqspnGSgSt76RDW6oHWAuRk?=
- =?us-ascii?q?HHdFXFoUS5AiLy6fQpQKUFGMNSDlpbN0gvdUxAzsw2TehlNPzBCdzt6WVD3ia+?=
- =?us-ascii?q?7eRsjq2NSUPBWsDYyUFUU0O5NyLnW2ZpnojVf57Cqm5y9n0Ai392C3T/G4/ga8?=
- =?us-ascii?q?ShIgFzc2GEZn8q2rEjvD0osQdv1y/srqZ0z5E?=
 X-IronPort-AV: E=Sophos;i="5.87,193,1631570400"; 
-   d="scan'208";a="1211802"
+   d="scan'208";a="1212171"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 29 Oct 2021 21:05:07 +0200
+  by mail2-relais-roc.national.inria.fr with ESMTP; 29 Oct 2021 21:06:15 +0200
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 7F5CEE02D4; Fri, 29 Oct 2021 21:05:07 +0200 (CEST)
-Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by sympa.inria.fr (Postfix) with ESMTPS id C2329E0072
-	for <cocci@sympa.inria.fr>; Fri, 29 Oct 2021 21:05:04 +0200 (CEST)
-Authentication-Results: mail3-smtp-sop.national.inria.fr; spf=None smtp.pra=mcgrof@infradead.org; spf=None smtp.mailfrom=mcgrof@infradead.org; spf=None smtp.helo=postmaster@bombadil.infradead.org
-IronPort-PHdr: =?us-ascii?q?A9a23=3A3gBxchMldn/HKUXtjD0l6nbtDRdPi9zP1u491JM?=
- =?us-ascii?q?rhvp0f7i5+Ny6ZQqDv60r3QaCANqTwskHotKei7rnV20E7MTJm1E5W7sIaSU4j?=
- =?us-ascii?q?94LlRcrGs+PBB6zBvfraysnAJYKDwc9rDm0PkdPBcnxeUDZrGGs4j4OABX/Mhd?=
- =?us-ascii?q?+KvjoFoLIgMm7yfy+94fXbglVizawYbF/JwiqoAvMscUbnZFsIbsrxBvTpXtId?=
- =?us-ascii?q?eVWxWd2Kl+Wgh3x+MS+8oN9/ipJo/4u+NJOXqv8f6QjULxXFy8mPHwv5M3qrhb?=
- =?us-ascii?q?MUw2C7WYBX2oMkxpIBw/F7AzmXpr0ryD3uPZx1DWcMMbrS70/RDas4LpxSBLwh?=
- =?us-ascii?q?ikJNyA3/nzUhMN/kK1UvQmhqgdjw4LIfI2ZKOZycr/Dcd4cWGFPXtxRVytEAo6?=
- =?us-ascii?q?kaYUPEusBPf1FpITjp1sBtx6+ChKyC+P1zj9HnH723asn2OkmFAHJwAMgH8gJs?=
- =?us-ascii?q?HTat9j1N7kdUfqzzKbWyTXPdfRW2S3y6IXRdB0qvP6DU65qf8XL1UkvCx3Kjk+?=
- =?us-ascii?q?WqYH9Oz6Y1PgAv3aV4eZ+WuyhhXArpgFyrzWuyckhiIjEi4wIxl7E8Sh0wYg7K?=
- =?us-ascii?q?NmlRUNnYNOpDZReuiCHOoV4X84sTWdlszs0xL0BvJ60ZikKyJI/yh7cdfOHaY6?=
- =?us-ascii?q?I7QznVOqLJjd4nn1ldbSijBix6Uit0vDwW8233VpQsyZInNvBumoT2xDP9MSLU?=
- =?us-ascii?q?OZx80mv1DuJygvd8PtLIVoumqreM5MhwqA/lp4UsUnbBSD2n0D2g7SMeUo5++i?=
- =?us-ascii?q?o7/7rYrTgpp+SLY97kBzxPbo0lcOiG+g4NRIOX2eD9eS90r3s41H5Ta1XgvAyk?=
- =?us-ascii?q?aTVqo3WKMoZq6KjHQNZzpgv5wyiAzqo3tkUhXwHI0hEeBKDgYjpIVbOIPXgAPe?=
- =?us-ascii?q?6n1usny1rx/fIPrD6A5XNKHbDkK37crlg9UFT0hc8wcpY55JOBbENOOjzVVPpt?=
- =?us-ascii?q?NzEEh85NBS5zPrgCNphyoweWHmCArSZMaPXqV+H/PgjI+iKZI8PuTbyMeIp5/D?=
- =?us-ascii?q?0jSxxpVhIdq6i1po/aXaiH/0gLV/KT2Drh4IlDGYR9iE+RenghUeGWD9VLyK3V?=
- =?us-ascii?q?K0m4T8TC4+8C4rHAIe3j+rSj2+AApRKazUeWRi3GnDyetDcMx/jQCOULNVonjE?=
- =?us-ascii?q?NWf6mUYBzjXlGVSfwzL9tJ+bV/msZs5z53dR47uGVkgs9p2Qc5yG10meDVWh4k?=
- =?us-ascii?q?2oEATgs0/InyXE=3D?=
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3ANBJgf6B1RqSx/zDlHem955DYdb4zR+YMi2TD?=
- =?us-ascii?q?83oBKyC9E/bo9PxG+c5x6faaslsssR0b9exoW5PhfZq/z/9ICOAqVN/JYODIgh?=
- =?us-ascii?q?rMEGgI1+XfKlPbdBHDyg=3D=3D?=
+	id 3243DE027E; Fri, 29 Oct 2021 21:06:15 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id C65BEE0072
+	for <cocci@sympa.inria.fr>; Fri, 29 Oct 2021 21:06:10 +0200 (CEST)
+Authentication-Results: mail2-smtp-roc.national.inria.fr; spf=None smtp.pra=mcgrof@infradead.org; spf=None smtp.mailfrom=mcgrof@infradead.org; spf=None smtp.helo=postmaster@bombadil.infradead.org
+IronPort-PHdr: =?us-ascii?q?A9a23=3Ai5zBJRbWPzsN2nJvYZJ5jB3/LTHB0IqcDmcuAno?=
+ =?us-ascii?q?PtbtCf+yZ8oj4OwSHvLMx1gePB9mGoKse26L/iOPJYSQ4+5GPsXQPItRndiQur?=
+ =?us-ascii?q?oEopTEmG9OPEkbhLfTnPGQQFcVGU0J5rTngaRAGUMnxaEfPrXKs8DUcBgvwNRZ?=
+ =?us-ascii?q?vJuTyB4Xek9m72/q99pHNfwlEniSxbLxyIRm5sAndqMobipZ+J6gszRfEvmFGc?=
+ =?us-ascii?q?PlMy2NyIlKTkRf85sOu85Nm7i9dpfEv+dNeXKvjZ6g3QqBWAzogM2Au+c3krgL?=
+ =?us-ascii?q?DQheV5nsdSWoZjBxFCBXY4R7gX5fxtiz6tvdh2CSfIMb7Q6w4VSik4qx2ThLjl?=
+ =?us-ascii?q?SUJOCMj8GzPhMJ+jLxVrg+iqRNw34HbfZqVOeFifq/BYd8WWXZNUtpPWyFHH4i?=
+ =?us-ascii?q?yb5EPD+0EPetAqYf9uloOrQCjDgSyBOPg0DpIiWTo0q0g1+QuCwDG3Ao9FN8Jt?=
+ =?us-ascii?q?XTbsNr1NL0VUeC716TIzivMb+lQ2Tjj7IjEaBchoeuDXb9pd8fa1EYgGR/fgFq?=
+ =?us-ascii?q?KtYzlIy2a1v4Ls2WD7edsSP6jhW4jpgx1rTWi2Nsgh5THi44Ly13J+jl0zYUoK?=
+ =?us-ascii?q?NCmSEB2fN6qHZVRuiyEKoZ7TN0uTn91tCg0y7ALu5i2dzUExpQgwh7Qcf2Hc46?=
+ =?us-ascii?q?Q7x3+SumeOjZ4i2hjeL6lgBay60egx+vhXce3yFZHtjdJn93Pu3wXyhDe5MqKR?=
+ =?us-ascii?q?uFj8ku9xzqDzR3f5+9KLE0yiKHVMYQuwqQqmZoWqUnDHjH5mEHxjKKObUok/e2?=
+ =?us-ascii?q?o5P/9bbr7p5+cM5V4igD4MqQggMywG/k3PRYUUGeG4+i806fj/ULhTLVLiP05j?=
+ =?us-ascii?q?LXZvYjHKckfpaO1GRJZ34gh5hqlETuqzMoUkWMaIF9Ldh+Ll43pNEvPIPD8A/e?=
+ =?us-ascii?q?/mVOskDJzyvDDIrLhDY/NLn/NkLr6fLZ97UBcyBApwt9C+Z1bEKwOLOj0Wk/ru?=
+ =?us-ascii?q?9zUFgU5PBCsw+b7FNV90ZsTVn6IAqCFLKzSsESF5vkvIumJfI8aoizxK/kj5/7?=
+ =?us-ascii?q?0jH82g0URfaez3chfVHftFfNtKESxYHz2g95HH31ZkBA5SbnOlVyZGRVTbnO4U?=
+ =?us-ascii?q?rg47zA9QNajBojZQY6Fg7Gb2iq/WJpMaTYVWRi3DX70etDcCL83YyWIL5o5+tT?=
+ =?us-ascii?q?lfbKmToUo2RCq8g78xaBuIufd9msfr52xjLCdCMXSkx8o/DB5Bsjb1HuCHTkcd?=
+ =?us-ascii?q?oYgRjk4xqlzrEVxjFCZ3vog68E=3D?=
+IronPort-Data: =?us-ascii?q?A9a23=3AK7vZBaIEtrkyf9f7FE+RtpQlxSXFcZb7ZxGrkP8?=
+ =?us-ascii?q?bfHC4hz0l3zMOy2EZDWiDOP/ZNjOjc9p/Ody+/BkFv5+Hyqc2QQE+nZ1PZyIT+?=
+ =?us-ascii?q?JCdXbx1DW+pYnjMdpWbJK5fAnR3huDodKjYdVeB4EfyWlTdhSMkj/jRHuCtULS?=
+ =?us-ascii?q?s1h1ZHGeIdg9x0XqPpMZi2uaEsfDha++8kYuaT//3YDdJ6BYoWo4g0J9vnTs01?=
+ =?us-ascii?q?BjEVJz0iXRlDRxDlAe2e3D4l/vzL4npR5fzatE88uJX24/+IL+FEmPxp3/BC/u?=
+ =?us-ascii?q?vlbPxe0ELRvjTOwaUg3ZbUqTkhQJNzsAw+v9qZLxFMhgR0W3T2Ykqk72htrToI?=
+ =?us-ascii?q?estFqjHl/4aXTFZFS9kNKFL8bOBJmKw2SCW5xScKiG1nK0G4EYeZ9ZAorkpWAm?=
+ =?us-ascii?q?i78cwIzcGZRGrnPOz2Lv9S+92h81lItODAW+1kmU4mGyfV+J/FMiFG7GQsIceh?=
+ =?us-ascii?q?Wdu2NQVSK6YOt5GPBNxSj/FRTFPHHYeLq4kuvPx3iynN2VMwL6OjaAw5mLawA1?=
+ =?us-ascii?q?1lrnrPsDcdtGDSYNShEnwm44PxEyhajlyCTBV4WPtHrOQau7zcefTUoUXHrS09?=
+ =?us-ascii?q?/osgVud3GUfBRQaE1yhrpFVT2bWt813cyQpFugG9MDeN3BHivH8WROiqXKJtxJ?=
+ =?us-ascii?q?aXMBfewH/wGlh1YKMizt0xQE4ovppadoorsY6SDUmkFiTkLsFwBQHXKK9ERqgy?=
+ =?us-ascii?q?1tfkd9+1eX544PPie/ogDbpO+Xenbw=3D?=
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3AggJxJap0nW6AHWs2YAKyU18aV5o6eYIsimQD?=
+ =?us-ascii?q?101hICG9Vvbo9fxG/c5rtiMc7Qx7ZJhOo7290cW7LU80lqQU3WByB9aftWDd0Q?=
+ =?us-ascii?q?PDEGhM1/qG/9SKIUPDH4BmuptdTw=3D=3D?=
 X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0CaAAASaxphmIXKicZagQmBWYMiVjsxh?=
- =?us-ascii?q?AGQD1MKBoEkGopxhlGKLIIHAQMBDTUMBAEBh04CHQYGMAkOAQIEFQEBBQEBAQI?=
- =?us-ascii?q?BAwMEARMBAQEBAQEBAQkLEAY6JIVoDYI1IoQsBgEBOBA+Iiw0gnEBgmEmD6dqg?=
- =?us-ascii?q?TOBAYIHAQEGgT4BAwOGPQMGgTqOGhx9gRCBS4I4B4stgyaCACwgNIExkgmMdII?=
- =?us-ascii?q?MmwmCEoMyBYo4lECmdaJPmQeBYIIUfQiDJBM9GQ6NdgEBAYkthWokLwIBNQIGC?=
- =?us-ascii?q?wEBAwmJdQEB?=
-X-IPAS-Result: =?us-ascii?q?A0CaAAASaxphmIXKicZagQmBWYMiVjsxhAGQD1MKBoEkGop?=
- =?us-ascii?q?xhlGKLIIHAQMBDTUMBAEBh04CHQYGMAkOAQIEFQEBBQEBAQIBAwMEARMBAQEBA?=
- =?us-ascii?q?QEBAQkLEAY6JIVoDYI1IoQsBgEBOBA+Iiw0gnEBgmEmD6dqgTOBAYIHAQEGgT4?=
- =?us-ascii?q?BAwOGPQMGgTqOGhx9gRCBS4I4B4stgyaCACwgNIExkgmMdIIMmwmCEoMyBYo4l?=
- =?us-ascii?q?ECmdaJPmQeBYIIUfQiDJBM9GQ6NdgEBAYkthWokLwIBNQIGCwEBAwmJdQEB?=
-X-IronPort-AV: E=Sophos;i="5.84,326,1620684000"; 
-   d="scan'208";a="397783730"
-X-MGA-submission: =?us-ascii?q?MDHZb5U1ehAiol4anQboL+hWJ2al9EUi77rUmW?=
- =?us-ascii?q?LGPYMtHKNEc8ONJCKTY9frjwsNWtOkaN1RnzlbP5JCPVl03pnQRK/GGp?=
- =?us-ascii?q?iYRv1shdMGsWED5VDSJZWg2bx86QQpSW7+kY7GP2H4eD7EvrL+qwAoaQ?=
- =?us-ascii?q?RA2Qd9BeDwMT0tpVS8BZMcNQ=3D=3D?=
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0CrAAAlRXxhmIXKicZaHgEBCxIMQIFOC?=
+ =?us-ascii?q?4MhVjsxkzJTCgaBP4sLkR+CBwEDAQ03CgQBAYdUAh0GBjEIDgECBBUBAQUBAQE?=
+ =?us-ascii?q?CAQMDBAETAQEBAQEBAQEJCxAGOiSFaA2CNSKELAYBATcBED4iLIMlAYJhJg+vH?=
+ =?us-ascii?q?oEzgQGCCAEBBoFSQYVMAwaBOo49HH2BEIFLgzKCYwSCK4Uwj14qAoI9oTSdOYM?=
+ =?us-ascii?q?9BZ8mpyaQb4UfpiiBYgGCEn0IgyRRGQ+OIIkGhWokMAI2AgYLAQEDCZJvAQE?=
+X-IPAS-Result: =?us-ascii?q?A0CrAAAlRXxhmIXKicZaHgEBCxIMQIFOC4MhVjsxkzJTCga?=
+ =?us-ascii?q?BP4sLkR+CBwEDAQ03CgQBAYdUAh0GBjEIDgECBBUBAQUBAQECAQMDBAETAQEBA?=
+ =?us-ascii?q?QEBAQEJCxAGOiSFaA2CNSKELAYBATcBED4iLIMlAYJhJg+vHoEzgQGCCAEBBoF?=
+ =?us-ascii?q?SQYVMAwaBOo49HH2BEIFLgzKCYwSCK4Uwj14qAoI9oTSdOYM9BZ8mpyaQb4Ufp?=
+ =?us-ascii?q?iiBYgGCEn0IgyRRGQ+OIIkGhWokMAI2AgYLAQEDCZJvAQE?=
+X-IronPort-AV: E=Sophos;i="5.87,193,1631570400"; 
+   d="scan'208";a="1212170"
+X-MGA-submission: =?us-ascii?q?MDGO2ECz/vlhKN5jMBLw0NFZWQSnpp2LW9GxRi?=
+ =?us-ascii?q?NslGiJgptN0h+4uCmPoQLmGQNUhf1597MuKChKwJypetKUKbwS0Toq5W?=
+ =?us-ascii?q?zF4xMRDcoxeWmLCfW17hdanimuWysb0erCPeRBa4o2HfgWN8pZHYqcKK?=
+ =?us-ascii?q?8xWFR3pjDC9+EoXZYY8uMWug=3D=3D?=
 Received: from bombadil.infradead.org ([198.137.202.133])
-  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 Oct 2021 21:05:03 +0200
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 Oct 2021 21:06:08 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=bombadil.20210309; h=Sender:Content-Type:MIME-Version:
-	Message-ID:Subject:To:From:Date:Reply-To:Cc:Content-Transfer-Encoding:
+	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
 	Content-ID:Content-Description:In-Reply-To:References;
-	bh=rJhTNv0glWcupbiFG2dydx99CKXAdoECtzIvxJos1WM=; b=0REIjk6fOqM9olqyi4tdTrVy1o
-	nubOuzbUNZ5w+g/KIChP+EcIJy9b49hrN6qgAzg+rSNphWEsh62j5a5IWuG3WPVnWcEEfSS+K/X01
-	mKxSC0I9IQsKLbhhDCTqrawojaQRUQC2T0fIX/CL5feSQ9GH3apzVkxJMC6EkYSxIxXw85f9fgUj/
-	uf4L5d3flE96BAdu6P4rkJpwucX3SCGWEF3bUd6TmBEXM52mIwYbwj6XYjjIy1wPtzV8baU4ZrEhn
-	k7Qj6lsQJGusI7rO1oyidnxKN8yYTR4wrC7djWdW0Di4UDZxQhKnI+mxzxM06FqQHxIJx9PnhogwM
-	uffafaPQ==;
+	bh=EPbQpob5CMU27sGWaJMoqO1WYQOI9+BnLtKFzV3IQoI=; b=C5ZfDk4WJJf6xCQqLtgrPsm/vw
+	+/DUzkNLZ3w6DlGRR7RE3CKoWUfF4S3Bv2MG82aZKM//TrAeUGneypeWNphH3w1jEt6y0GDCHneBl
+	0V3aJMn0059VgrbVxVylbIuTEQ91ZHPBY2OF8j9ea9CnMXa/5NLssU+OpPWFIf9S8IZ8aiAv82pXq
+	TPGmCoahu2OSutvsJIsUaqVg2yWc54iQxsyLzl7/wJtZkIVHFgSaBd2QuVO9AW/yLGzfxDpubNU/R
+	xUGAH/BqR1IGsBQ8thodCDTyPkM2lJ0+t43b3G+ugMI9IkZs1xaqozVi18KxAJtJR77U6oK320HgU
+	h/8vStZA==;
 Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-	id 1mgXBV-00BuyL-Mc
-	for cocci@inria.fr; Fri, 29 Oct 2021 19:05:01 +0000
-Date: Fri, 29 Oct 2021 12:05:01 -0700
+	id 1mgXCX-00BvEo-0c; Fri, 29 Oct 2021 19:06:05 +0000
+Date: Fri, 29 Oct 2021 12:06:04 -0700
 From: Luis Chamberlain <mcgrof@kernel.org>
 To: cocci@inria.fr
-Message-ID: <YXxF3dpLb8M0aZoI@bombadil.infradead.org>
+Cc: Luis Chamberlain <mcgrof@kernel.org>
+Message-ID: <YXxGHEuS0zi+sbft@bombadil.infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Sender: cocci-request@inria.fr
-Subject: [cocci] Python iteration to look for possible sysfs deadlocks
- (resend)
+Subject: [cocci] Cannot infer Python version: when no /usr/bin/python
+ symlink is found (resend)
 Reply-To: Luis Chamberlain <mcgrof@kernel.org>
 X-Loop: cocci@inria.fr
-X-Sequence: 49
+X-Sequence: 50
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -117,301 +115,30 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <http://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <http://sympa.inria.fr/sympa/arcsearch_id/cocci/2021-10/YXxF3dpLb8M0aZoI%40bombadil.infradead.org>
+Archived-At: <http://sympa.inria.fr/sympa/arcsearch_id/cocci/2021-10/YXxGHEuS0zi%2Bsbft%40bombadil.infradead.org>
 
-It is possible to deadlock the kernel if the same lock is used
-on module exit and syfs ops. I've proposed a way to fix this [0],
-however it not clear how wide spread this issue is, and so it would
-be best to avoid the fix so to avoid the complexity the fix requires.
+Debian and OpenSUSE Tumblweed no longer have the /usr/bin/python
+symlink, at least this is explained and spelled out on the Debian
+Python Policy [0]. This guideline specifically requests that scripts
+do not use `/usr/bin/env`, do not use `/usr/bin/python` and instead
+use the exact version desired.
 
-[0] https://lkml.kernel.org/r/20210927163805.808907-10-mcgrof@kernel.org
+When running coccinelle on a system without this /usr/bin/python
+symlink Coccinelle will complain when using a python script on a cocci
+file:
 
-A full hunt would involve using any lock, and iteration on module exit
-and also on the sysfs ops, as each could have indirect calls which do
-use a lock.
+Cannot infer Python version
 
-An attempt to just look for the deadlock candidates with 2 level of
-indirection follows:
+Fixing this is just to create the symlink, but I *really* don't want
+to do that. And so I think we may need to support:
 
-@ finds_module_exit @
-identifier exit_fn;
-declarer name module_exit;
-@@
+script:python3
+initialize:python3
 
-module_exit(exit_fn);
+Maybe it makes sense then to always look for python2 if a version is
+not specified, and if that does not exist look for python3 as new
+systems may not have python2.
 
-@ exit_fn_locks @
-identifier finds_module_exit.exit_fn;
-identifier mutex, spinlock;
-@@
+[0] https://www.debian.org/doc/packaging-manuals/python-policy/ch-python.html#s-interpreter
 
-exit_fn(...)
-{
-	...
-(
-	mutex_lock(&mutex);
-|
-	spin_lock(&spinlock);
-)
-	...
-}
-
-@ exit_indirect_call_level_1 @
-identifier finds_module_exit.exit_fn;
-identifier indirect_fn;
-@@
-
-exit_fn(...)
-{
-	...
-	indirect_fn(...)
-	...
-}
-
-@ ind_call_level_1 @
-identifier exit_indirect_call_level_1.indirect_fn;
-identifier ind_mutex, ind_spinlock;
-@@
-
-indirect_fn(...)
-{
-	...
-(
-	mutex_lock(&ind_mutex);
-|
-	spin_lock(&ind_spinlock);
-)
-	...
-}
-
-@ indirect_call_level_2 @
-identifier exit_indirect_call_level_1.indirect_fn;
-identifier indirect_fn_2;
-@@
-
-indirect_fn(...)
-{
-	...
-	indirect_fn_2(...)
-	...
-}
-
-@ ind_call_level_2 @
-identifier indirect_call_level_2.indirect_fn_2;
-identifier ind_mutex_2, ind_spinlock_2;
-@@
-
-indirect_fn_2(...)
-{
-	...
-(
-	mutex_lock(&ind_mutex_2);
-|
-	spin_lock(&ind_spinlock_2);
-)
-	...
-}
-
-
-@ any_store @
-identifier fn_store;
-identifier exit_fn_locks.mutex, exit_fn_locks.spinlock;
-identifier dev, attr, buf, len;
-identifier ind_call_level_1.ind_mutex, ind_call_level_1.ind_spinlock;
-identifier ind_call_level_2.ind_mutex_2, ind_call_level_2.ind_spinlock_2;
-@@
-
-ssize_t fn_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t len)
-{
-	...
-(
--	mutex_lock(&mutex);
-+	mutex_lock_deadlock(&mutex);
-|
--	mutex_lock(&ind_mutex);
-+	mutex_lock_deadlock(&ind_mutex);
-|
--	spin_lock(&spinlock);
-+	spin_lock_deadlock(&spinlock);
-|
--	spin_lock(&ind_spinlock);
-+	spin_lock_deadlock(&ind_spinlock);
-|
--	mutex_lock(&ind_mutex_2);
-+	mutex_lock_deadlock(&ind_mutex_2);
-|
--	spin_lock(&ind_spinlock_2);
-+	spin_lock_deadlock(&ind_spinlock_2);
-)
-	...
-}
-
-@ any_show @
-identifier fn_show;
-identifier exit_fn_locks.mutex, exit_fn_locks.spinlock;
-identifier dev, attr, buf;
-identifier ind_call_level_1.ind_mutex, ind_call_level_1.ind_spinlock;
-identifier ind_call_level_2.ind_mutex_2, ind_call_level_2.ind_spinlock_2;
-@@
-
-ssize_t fn_show(struct device *dev, struct device_attribute *attr, const char *buf)
-{
-	...
-(
--	mutex_lock(&mutex);
-+	mutex_lock_deadlock(&mutex);
-|
--	mutex_lock(&ind_mutex);
-+	mutex_lock_deadlock(&ind_mutex);
-|
--	spin_lock(&spinlock);
-+	spin_lock_deadlock(&spinlock);
-|
--	spin_lock(&ind_spinlock);
-+	spin_lock_deadlock(&ind_spinlock);
-|
--	mutex_lock(&ind_mutex_2);
-+	mutex_lock_deadlock(&ind_mutex_2);
-|
--	spin_lock(&ind_spinlock_2);
-+	spin_lock_deadlock(&ind_spinlock_2);
-)
-	...
-}
-
-
-And so obviously this can go on forever. It doesn't address indirect
-uses of a lock on the sysfs ops either. An attempt to use iteration
-follows, however this seems to fall short of what I want, any
-recommendations?
-
-virtual after_start
-
-@initialize:python@
-@@
-
-seen = set()
-
-@ finds_module_exit @
-identifier exit_fn;
-declarer name module_exit;
-@@
-
-module_exit(exit_fn);
-
-@ exit_fn_locks @
-identifier finds_module_exit.exit_fn;
-identifier mutex, spinlock;
-@@
-
-exit_fn(...)
-{
-	...
-(
-	mutex_lock(&mutex);
-|
-	spin_lock(&spinlock);
-)
-	...
-}
-
-@ exit_indirect_fn depends on finds_module_exit && after_start exists @
-identifier finds_module_exit.exit_fn;
-identifier virtual.fn;
-position p;
-@@
-
-exit_fn(...)
-{
-	...
-	fn@p(...)
-	...
-}
-
-@ ind_call depends on finds_module_exit @
-identifier indirect_fn;
-identifier ind_mutex, ind_spinlock;
-position p;
-@@
-
-indirect_fn@p(...)
-{
-	...
-(
-	mutex_lock(&ind_mutex);
-|
-	spin_lock(&ind_spinlock);
-)
-	...
-}
-
-@ any_store depends on finds_module_exit && (exit_fn_locks || ind_call) @
-identifier fn_store;
-identifier exit_fn_locks.mutex, exit_fn_locks.spinlock;
-identifier dev, attr, buf, len;
-identifier ind_call.ind_mutex, ind_call.ind_spinlock;
-@@
-
-ssize_t fn_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t len)
-{
-	...
-(
--	mutex_lock(&mutex);
-+	mutex_lock_deadlock(&mutex);
-|
--	mutex_lock(&ind_mutex);
-+	mutex_lock_deadlock(&ind_mutex);
-|
--	spin_lock(&spinlock);
-+	spin_lock_deadlock(&spinlock);
-|
--	spin_lock(&ind_spinlock);
-+	spin_lock_deadlock(&ind_spinlock);
-)
-	...
-}
-
-@ any_show depends on finds_module_exit && (exit_fn_locks || ind_call) @
-identifier fn_show;
-identifier exit_fn_locks.mutex, exit_fn_locks.spinlock;
-identifier dev, attr, buf;
-identifier ind_call.ind_mutex, ind_call.ind_spinlock;
-@@
-
-ssize_t fn_show(struct device *dev, struct device_attribute *attr, const char *buf)
-{
-	...
-(
--	mutex_lock(&mutex);
-+	mutex_lock_deadlock(&mutex);
-|
--	mutex_lock(&ind_mutex);
-+	mutex_lock_deadlock(&ind_mutex);
-|
--	spin_lock(&spinlock);
-+	spin_lock_deadlock(&spinlock);
-|
--	spin_lock(&ind_spinlock);
-+	spin_lock_deadlock(&ind_spinlock);
-)
-	...
-}
-
-@script:python depends on exit_indirect_fn @
-indirect_fn << ind_call.indirect_fn;
-p << ind_call.p;
-@@
-
-if fn not in seen:
-    seen.add(indirect_fn)
-    it = Iteration()
-    it.set_files([p[0].file])
-    it.add_virtual_rule(after_start)
-    it.add_virtual_identifier(fn, indirect_fn)
-    it.register()
-
-@script:python@
-p << exit_indirect_fn.p;
-@@
-
-cocci.print_main("indirect call shares lock with sysfs store or show", p)
+  Luis
