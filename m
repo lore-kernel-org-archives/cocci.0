@@ -2,133 +2,66 @@ Return-Path: <SRS0=6LBi=PW=inria.fr=cocci-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCB06C433F5
-	for <cocci@archiver.kernel.org>; Wed,  3 Nov 2021 11:55:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE616C433EF
+	for <cocci@archiver.kernel.org>; Wed,  3 Nov 2021 11:56:51 +0000 (UTC)
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F204C60F5A
-	for <cocci@archiver.kernel.org>; Wed,  3 Nov 2021 11:55:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org F204C60F5A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=web.de
+	by mail.kernel.org (Postfix) with ESMTPS id 99CB0610FC
+	for <cocci@archiver.kernel.org>; Wed,  3 Nov 2021 11:56:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 99CB0610FC
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=inria.fr
-IronPort-Data: =?us-ascii?q?A9a23=3AlcDOpq64kRniLZE2fW+4UwxRtCnGchMFZxGqfqr?=
- =?us-ascii?q?LsXjdYENSgjxSz2EcCD+CbKrbY2f9KN93O9i3o0pXuMSDmtRhQFM5pCpnJ55og?=
- =?us-ascii?q?ZqcVI7Bdi8cHAvLc5adFBo/hykmh2ipwPkcFhcwnT/wdOi+xZVA/fvQHOOlUba?=
- =?us-ascii?q?fYnoZqTJME0/NtzoywobVvaY42bBVMyvV0T/Di5W31G2Ng1aYAUpIg063ky6Di?=
- =?us-ascii?q?dyp0N8uUvPSUtgQ1LPWvyF94JvyvshdJVOgKmVfNrbSq+ouUNiEEm3lExcFUrt?=
- =?us-ascii?q?Jk57gY0gSS/jTOxKPgzxYQcBOgDAb/Hx0g/19baRGLx4J011lnPgooDlJnZe3Q?=
- =?us-ascii?q?gwoe6rTnukHexheCSB3e6NckFPCCSHg4JLKlBCun3zEhq8G4FsNFYYf8e12KWh?=
- =?us-ascii?q?U/vwZNj0XKBOOneS7xPS8UOYErs4iN9L6Mo03tXRpzDWfBvEjKbjIRKjM6Nlw0?=
- =?us-ascii?q?zI5h8QIFvHbD+IVYDwpblLfYhlLO14SE7oxme6pgj/0dDgwgF6cu6s7+G/VwAJ?=
- =?us-ascii?q?+1JDiNdPUfpqBQsA9tkqV4HnB4nbwRBodLtGZ1TuD2n2pj+7L2yj8Xeo6H6al8?=
- =?us-ascii?q?vp7qFKUwWMXBVsdUl7TifO0jEOyWtFDA0wZ+ywj67I1/0+wJvH2Wxq/u1aGvhU?=
- =?us-ascii?q?YXN1LVeY97WmlxqPS4gudQGwJXDVIbtsOsM4wTCYtkFiTkLvBDjx1saaJTmqds?=
- =?us-ascii?q?L2ToDO3JiERIWIYTSsFSwEE/5/op4Rbs/5lZr6PC4atlNr5XDXx2CyHtzVn1/M?=
- =?us-ascii?q?Si9QK3uO15zj6b/uXjsChZmYICs//BApJNj9EWbM=3D?=
+IronPort-Data: =?us-ascii?q?A9a23=3AHbsxr6LyW0CPgTqKFE+RwJQlxSXFcZb7ZxGrkP8?=
+ =?us-ascii?q?bfHC8hj0q02RWyzEdCGmPb6yKM2qmedB/bImx80wFu5CBzoNqS1BcGVNFHysb8?=
+ =?us-ascii?q?5KdbTi6Bh6tZH3KdpWroHqKXqzyU/GYRCwPZiKa9kjF3oTJ9yEmjPjRHuGkUoY?=
+ =?us-ascii?q?oBwgqLeNaYHZ44f5cs75h6mJYqYDR7zKl4bsekeWHULOW82Ic3lYv1k62gEgHU?=
+ =?us-ascii?q?MIeF98vlgdWifhj5DcynpSOZX4VDfnZw3DQGuG4EgMmLtsvwo1V/kuBl/ssIsi?=
+ =?us-ascii?q?0l67yNEwMWL/bewaU4pZUc/H40l4T/WprjPx9baREAatUo2zhc9RZw9JGvp31T?=
+ =?us-ascii?q?hgvM7fkmeIHUhAeHTsW0ahuoeCWfyPu6aR/yGWDKRMA2c5GB0Y9Noww8/x8AWB?=
+ =?us-ascii?q?Q+OZeKz0XaB2HweWsz9qTQOh3ndUtIuHkOYoevjdryjSxJf0hTJbORY3F4NZZ2?=
+ =?us-ascii?q?HE7gcUmNfrXYYwbLyVuaBDBahhUElgSAZM62uyvgxHXfzRGqV6Ooqw77WfX5AN?=
+ =?us-ascii?q?02bnpdtHSf7SiScgThUGFtGuA9GPjDxcGNdq3xj+M83bqjejK9QvwQ58WEKyQ+?=
+ =?us-ascii?q?fltj1megGcUDXU+X1a9rPW4iVKWW99eLUFS4C0lrrNa3EevSd7mdx+4q3qDuQV?=
+ =?us-ascii?q?aUN1Ve8U24QeMx66S5wuLDWECSRZFadovrshwQiYlvneCn8noHiBoqL3TQ3WQ9?=
+ =?us-ascii?q?rKLpDe+NDI9KW4Eby4YCwAC5rHeTCsb5v7UZs55F6LwitzuBTzr3mna6ik4nbQ?=
+ =?us-ascii?q?ay8ARv5hXNGvv21qEzqUlhCZsjukPYl+Y0w=3D=3D?=
 X-IronPort-AV: E=Sophos;i="5.87,205,1631570400"; 
-   d="scan'208";a="1796135"
+   d="scan'208";a="1796390"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 03 Nov 2021 12:55:16 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 03 Nov 2021 12:56:49 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 20BB3E02AF; Wed,  3 Nov 2021 12:55:15 +0100 (CET)
+	id E101EE02AF; Wed,  3 Nov 2021 12:56:48 +0100 (CET)
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by sympa.inria.fr (Postfix) with ESMTPS id 08C77E004C
-	for <cocci@sympa.inria.fr>; Wed,  3 Nov 2021 12:55:13 +0100 (CET)
-Authentication-Results: mail3-smtp-sop.national.inria.fr; spf=None smtp.pra=Markus.Elfring@web.de; spf=Pass smtp.mailfrom=Markus.Elfring@web.de; spf=None smtp.helo=postmaster@mout.web.de
-IronPort-PHdr: =?us-ascii?q?A9a23=3AAVkqvRZnXZ55jtHw1E2ZWHH/LTEc0IqcDmcuAno?=
- =?us-ascii?q?PtbtCf+yZ8oj4OwSHvLMx1gePDNyQtq0MotGVmpioYXYH75eFvSJKW713fDhBt?=
- =?us-ascii?q?/8rmRc9CtWOE0zxIa2iRSU7GMNfSA0tpCnjYgBaF8nkelLdvGC54yIMFRXjLwp?=
- =?us-ascii?q?1Ifn+FpLPg8it2O2+5YHfbx9MiTagbr9/LBe7phjNu8cLhodvNrw/wQbTrHtSf?=
- =?us-ascii?q?ORWy2JoJVaNkBv5+8y94p1t/TlOtvw478JPXrn0cKo+TbxDETQpKHs169HxtRn?=
- =?us-ascii?q?CVgSA+H0RWXgLnxVSAgjF6Bb6Xortsib/q+Fw1jWWMdHwQLspXzmp8qVlRwLyi?=
- =?us-ascii?q?CofNDA3/m7YhcJtgqxbvhyhqR5wzJLbboyOKPp+Z7nQcc8GSWdPXMtcUTFKDIO?=
- =?us-ascii?q?mb4sICuoMJeFWoJPnp1sNsBu+HhSnCuzryj9GnH/23Ks60+s8GgzB2wIvBcgOs?=
- =?us-ascii?q?HfJrNXuLqscXuS1zKfSzTXCafNW1izw6YbWfR86u/2DQKx/fNPXxEIyGAzLkk+?=
- =?us-ascii?q?eppb5PzOJyOsNqW6b4vJ9We+rl2IppAB8rySty8kshIfHiZwYx0zG+Ct5zos4J?=
- =?us-ascii?q?d22RUp0b9K6HpZcqjyWOolqT888XW1ltyk3x78JtJKleiUB1ZcpxwbHZvCZboS?=
- =?us-ascii?q?E/AjvWPiPLTp6nn5pZbCyiwyv/US+0uHxUse53ExXoidLnNTArG0B2wDN5sSdV?=
- =?us-ascii?q?Pdw/kGs0iuV2Q/J8OFLO0U0mLLbK5E/xr4wkYIesUHEHi/rhEX6lqGXeVs/9eS?=
- =?us-ascii?q?y9uvofK3qpp6aN4BqlgHzKroiltGhDegiLAQCQWqW9f6h2LDh50H1XatGguUzk?=
- =?us-ascii?q?qbDsZDaIcobprS+Aw9Qyost7AywDy2l0NQFhnkLNl1LeBaJj4jzOlHOJv/4AOy?=
- =?us-ascii?q?xgluyizhn3e3JMaP5DpXXMnfDiKvhfap660NE1AUzysxQ6I5VCrwaO/LyWkrxt?=
- =?us-ascii?q?MTCARMjMgy0xfznCNRn2Y8EV2KPGPzRDKSHuliD7eMHIu+WZYZTtiyuBeIi4qv?=
- =?us-ascii?q?LhGU6hERVUK2nx5oRZzjsO/18IFiCJ1fojM0AF2gioQc0CuDn3g7RGQVPbmq/C?=
- =?us-ascii?q?vpvrgowD5irWN+rrm+Fn7GLmiu2TMQ+joVuFV2GV3vlJd3ssxYkbSWPPol+nzZ?=
- =?us-ascii?q?CWbXzE+cc?=
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3Az7RmX696GRWe7XsR4Gtuk+D2I+orL9Y04lQ7?=
- =?us-ascii?q?vn2ZOiYlEfBw8Pre5cjztCWE7gr5PUtKpTnuAsa9qB/nhPxICMwqTNCftWrd1l?=
- =?us-ascii?q?dATrsP0WKK+VSJdhEWtNQtsZuIGJIfNDSfNykesS+32miF+81L+qj+zElEv5ak?=
- =?us-ascii?q?859VJzsaEZ2JZGpCYDqmLg=3D=3D?=
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0AHAgASaxphhwwR49RaHgEBCxIMQIFOC?=
- =?us-ascii?q?4MNbDoxhEePSYF3hEiGVoZwigqBfAsBAwENPgECBAEBhFgJAoJrAh0HAQQyBw4?=
- =?us-ascii?q?BAgQVAQEFAQEBAgEDAwQBEwEBAQwNDgg6JIVoDYI1IoNsAwMjFQgBAREnDwsaA?=
- =?us-ascii?q?iYCAlcTCAEBgm2CVQEDM6d3gTGBAYIHAQEGglqCER8sIlCBWgmBECqNcycQgVV?=
- =?us-ascii?q?EgTyCTjA+hERNgkqCZMVOLQeCAIErgTcLnHsGFCaDUwGRdQ4GkRi7VoFnBYIIM?=
- =?us-ascii?q?xokgzhQGQ6OIBmEDIosQDI4AgYBCgEBAwlsAQGJBwEB?=
-X-IPAS-Result: =?us-ascii?q?A0AHAgASaxphhwwR49RaHgEBCxIMQIFOC4MNbDoxhEePSYF?=
- =?us-ascii?q?3hEiGVoZwigqBfAsBAwENPgECBAEBhFgJAoJrAh0HAQQyBw4BAgQVAQEFAQEBA?=
- =?us-ascii?q?gEDAwQBEwEBAQwNDgg6JIVoDYI1IoNsAwMjFQgBAREnDwsaAiYCAlcTCAEBgm2?=
- =?us-ascii?q?CVQEDM6d3gTGBAYIHAQEGglqCER8sIlCBWgmBECqNcycQgVVEgTyCTjA+hERNg?=
- =?us-ascii?q?kqCZMVOLQeCAIErgTcLnHsGFCaDUwGRdQ4GkRi7VoFnBYIIMxokgzhQGQ6OIBm?=
- =?us-ascii?q?EDIosQDI4AgYBCgEBAwlsAQGJBwEB?=
+	by sympa.inria.fr (Postfix) with ESMTPS id E13BEE004C
+	for <cocci@sympa.inria.fr>; Wed,  3 Nov 2021 12:56:46 +0100 (CET)
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3A7Y5zYquCZttWxtYz03YYGFeg7skCCYMji2hC?=
+ =?us-ascii?q?6mlwRA09T+WxjMqunOsW2FvdlV8qKTYdcKO7Sdu9qBLnhO1ICOYqTMmftWPd2V?=
+ =?us-ascii?q?dAErsSprcKrweQZxEXGIZmpONdm4YXMqywMbFRt7e13OEheOxQheVuyciT9KXj?=
+ =?us-ascii?q?J50Ed3ArV0gY1XY7Nu/5KDwHeOAlP+tHKHPG3LsM1nedkB0sB6zRaxVrP5mh1r?=
+ =?us-ascii?q?i78OOAEHh2fm9dmXOzZFWTmcjH+jejr1sjulh0sMAfGAb+4nHED+mYwoCGIiG3?=
+ =?us-ascii?q?7R6b0306orXc4+oGP8CKgtUYMXHUlwilIL55U7m5tjYvrIiUmSIXueiJmBsmN9?=
+ =?us-ascii?q?l+8DfpY2+45SH10w3bzT4y5xbZuCqlaXCIm72weNvkMaAx5/MgTjLpr00n+Nlm?=
+ =?us-ascii?q?2qNKwG7xjesZMS/9?=
 X-IronPort-AV: E=Sophos;i="5.84,326,1620684000"; 
-   d="scan'208";a="398124249"
-X-MGA-submission: =?us-ascii?q?MDGXWrn7d4uVDLK1j9HQkBSR9bTa4OM7azwJ8y?=
- =?us-ascii?q?TofVY+0RiyB4zXocS+R/jzAACy6rwB7z0REbRWOrs75GJ3NIc1btVefC?=
- =?us-ascii?q?SRP0HE1ljRGZpMw8lZcaK00d+L6effTTBNxHV7GUqI3KqBvGHs0UbwLD?=
- =?us-ascii?q?2x2rsIXJQJ4bSn507pPi7e5A=3D=3D?=
-Received: from mout.web.de ([212.227.17.12])
-  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Nov 2021 12:55:12 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-	s=dbaedf251592; t=1635940511;
-	bh=6G7FAXeVqY19E48o+RTwBlSUJ7JgjZBDz+/Q14l+sRI=;
-	h=X-UI-Sender-Class:Date:Subject:From:To:References:In-Reply-To;
-	b=l7R+nzfNrZRaiSQR1tPGLYPCDVKjnc75UBUI+olObND/rF+Ui3/0YP2CDTFe0+6v8
-	 0ALjMwcqqeKhuIWs2ry0be77eyZiE2v2AdjrcMqN6ltZDgqv+0v4RLGyp5FBj1VrVr
-	 IOUoS0TzJBWelw6NXbT0iY33CRngSuGr6GwG/WNE=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([93.133.102.25]) by smtp.web.de (mrweb103
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0M57Vi-1mXq2T1OAQ-00zC8T for
- <cocci@inria.fr>; Wed, 03 Nov 2021 12:55:11 +0100
-Message-ID: <40d3e13c-0b1c-cf12-efd9-007532039d72@web.de>
-Date: Wed, 3 Nov 2021 12:55:10 +0100
+   d="scan'208";a="398124397"
+Received: from 173.121.68.85.rev.sfr.net (HELO hadrien) ([85.68.121.173])
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Nov 2021 12:56:46 +0100
+Date: Wed, 3 Nov 2021 12:56:46 +0100 (CET)
+From: Julia Lawall <julia.lawall@inria.fr>
+X-X-Sender: jll@hadrien
+To: Markus Elfring <Markus.Elfring@web.de>
+cc: cocci@inria.fr
+In-Reply-To: <40d3e13c-0b1c-cf12-efd9-007532039d72@web.de>
+Message-ID: <alpine.DEB.2.22.394.2111031256000.3289@hadrien>
+References: <b2aa6f7a-2169-143c-59c4-bab1830126bf@web.de> <40d3e13c-0b1c-cf12-efd9-007532039d72@web.de>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Content-Language: en-GB
-From: Markus Elfring <Markus.Elfring@web.de>
-To: cocci@inria.fr
-References: <b2aa6f7a-2169-143c-59c4-bab1830126bf@web.de>
-In-Reply-To: <b2aa6f7a-2169-143c-59c4-bab1830126bf@web.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:wKAOyPU0o3Rd2z7yYkInb7cUdLoTjs3+palbeNFCapQxsKJ4MBQ
- djGS1bG6vRp1sVAJJFvn41Ws+MeDUSKy6atPz/XLMCPVfiSED7/fjVLUH+THpxoDPMMP15n
- vDgdWalYJnrg1PdMFjK9M0XKQWJVl9cjwZiipF5+KfVWlm6oMllbA3rbVbbYfij1mBmKKu3
- 5+614eDnsGpp4y9SfUDZQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:x1kWIuITh3Y=:65v9YvsFQXvPDBJl5PpyE+
- nNQWTpeaW2u9L1CdlpY/+Tyrl+tXPQzPNltRBSpb9V28mjVlOFfvOD+pUx8icQ7AtcDZCFBZ4
- OIzyfXVSfJEjErkIf7/t4asyDzQ/5oF0ihOqluDf4PX18uG4CbiSx/Mltj1GAFqgNzvF3CF4+
- 34KgwD3dQHZ0vpwCkFjCEjpvFEt8HOTyLROfP8eQe24ymklYsdpLL0eH5Xm8bVqf8gNGdRFFU
- Q+vLjUkLxAFGE1k0oEvNTOsSD5Nr6YdgXqexRqT/0jGd8msBBulB3VP1n+pKWYeCyVJdHbIwD
- pqbvSAfbiFFg8HPOJNGEUa9xkkn1FKc6FXfPIsFu1ZmaUCQzq6scdlG/05lFCLZYa3Hurhj4k
- QZXfOoJ9b2rsIfqOhnnqQHTcGFQK2ZDC6iYUMePo5pGOZzX/HKxtAl+Rkdtv/4C8TDnlW5yW4
- UrKojs4CLNkAVk2pS3855er9O+F5sfKdOWvcLAYbe9xRhBLMYyYaeCpQ/pkL5Pbqhm2PTSS3K
- ElFG6HUjDDAPXfpbU/H9uctUb8mWLU7Qjc38WclKp+zWOpOt2+T63czREzbtcoQK8Z/53TakL
- WYlmV4C7xXDl3kKbn9/NS0wUPyYlHq5r8waGWyzHMcvz/9hwHLqM00LffTssyA7+0Vdcwv4na
- jpYZ7W8W1dC6RL5hOxytGO3bxy1ThJNzBkOZxRZi9usUnscNaW1jGCKcjMPldPmUIZMJkauZH
- YHtV3e9UVKhsFp+cpxTqq+4xrDhwDUh+qPcn1iLNNQl5Ld9Cg+/Sxkn9IluKdQ511GpgkxzOr
- wX/bqdQ2ET44ORV+Fz/naq2asix+UrE6UCQDyq3Wn7f8wq+iC8CcHEYDypPIRdwLF6mDAfrC7
- Gwe8Kir9inoMckVwlC+Scilv1CM+4mk7HdOwnGtdv9hnMdcAA4p78nuGNNVNmnr4rOcRg5Cyv
- TvnM05ho5A9Z4XMAKQuqESKWhgs1zps+dGrv40rMU1QZfUG0XxFvz8rEPySlcm//PeCBVyfoy
- kEYeJbOl+8uc/ZnNo9eZqZgJz98q7I2Z0b4BVmy0UIwQQGPRQS6cmt9/a7VmC9L5pp9CS7PSg
- JPJ/WU5Wtv0Dsg=
+Content-Type: multipart/mixed; boundary="8323329-1258557722-1635940606=:3289"
 Subject: Re: [cocci] Checking parts of binary computations with SmPL?
-Reply-To: Markus Elfring <Markus.Elfring@web.de>
+Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 59
+X-Sequence: 60
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -141,18 +74,31 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <http://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <http://sympa.inria.fr/sympa/arcsearch_id/cocci/2021-11/40d3e13c-0b1c-cf12-efd9-007532039d72%40web.de>
+Archived-At: <http://sympa.inria.fr/sympa/arcsearch_id/cocci/2021-11/alpine.DEB.2.22.394.2111031256000.3289%40hadrien>
 
-> *idex =3D left_ex bo rigth_ex;
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Such a search pattern looks usable (in principle).
-Source code places should be found then where one binary operator is appli=
-ed
-at least for computations so that their values will be stored somewhere.
-But I guess that it is unclear then how many code would be matched by
-the metavariable =E2=80=9Cleft_ex=E2=80=9D (and/or =E2=80=9Crigth_ex=E2=80=
-=9D).
-Is such a system detail improvable anyhow?
+--8323329-1258557722-1635940606=:3289
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-Regards,
-Markus
+
+
+On Wed, 3 Nov 2021, Markus Elfring wrote:
+
+> > *idex = left_ex bo rigth_ex;
+>
+> Such a search pattern looks usable (in principle).
+> Source code places should be found then where one binary operator is applied
+> at least for computations so that their values will be stored somewhere.
+> But I guess that it is unclear then how many code would be matched by
+> the metavariable “left_ex” (and/or “rigth_ex”).
+> Is such a system detail improvable anyhow?
+
+Coccinelle parses the code according to the standard precedence rules.  So
+there is no ambiguity.  bo will match whatever is at the root of the parse
+tree.
+
+julia
+--8323329-1258557722-1635940606=:3289--
