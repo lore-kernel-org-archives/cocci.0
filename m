@@ -2,59 +2,61 @@ Return-Path: <SRS0=AtCD=PY=inria.fr=cocci-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 897B4C433F5
-	for <cocci@archiver.kernel.org>; Fri,  5 Nov 2021 19:21:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B2E9C433F5
+	for <cocci@archiver.kernel.org>; Fri,  5 Nov 2021 20:56:52 +0000 (UTC)
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B7CAC6124A
-	for <cocci@archiver.kernel.org>; Fri,  5 Nov 2021 19:21:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org B7CAC6124A
+	by mail.kernel.org (Postfix) with ESMTPS id EBBD460EDF
+	for <cocci@archiver.kernel.org>; Fri,  5 Nov 2021 20:56:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org EBBD460EDF
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=inria.fr
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=inria.fr
+IronPort-Data: =?us-ascii?q?A9a23=3AwxWJiKmnSZSvURX2eYAgT/Lo5gyQJ0RdPkR7XQ2?=
+ =?us-ascii?q?eYbTBsI5bpzIPzDAeCmqPOfeIZGejf4gibIS19EtTvJKGmtRrSQZu+CA2RRqmi?=
+ =?us-ascii?q?+KVXIXDdh+Y0wC6d5CYEho/t63yUjRxRSwNZie0SiyFb/6x8hGQ6YnSHuClUbe?=
+ =?us-ascii?q?cZ3gqLeNZYHxJZSxLyrdRbrFA0YDR7zOl4bsekuWHULOX82Yc3lE8t8pvnChSU?=
+ =?us-ascii?q?MHa41v0iLCRicdj5zcyn1FNZH4WyDrYw3HQGuG4FcbiLwrPIS3Qw4/Xw/stIov?=
+ =?us-ascii?q?NfrfTaVwPWreUPA6Ui3MQVbLKbhpq/3ZilPdgcqNCMwEO1W3hc9NZkb2hsbS7T?=
+ =?us-ascii?q?gwiP+jLh+IQSTFZFTt/NOtI4tcrJFDl65HKlxeYG5fr67A0ZK0sBqUT/e18AEl?=
+ =?us-ascii?q?H7/cYKS4AdFaAiviwzbb9TfNj7uwpLdLwLY0Rkn5lxDDdS/0hRPjrSKLH49Je9?=
+ =?us-ascii?q?Dg1j8FKW/3ZYqIxZTNpKhaGfBxLPlYeDYkWk+Khh325eDpdwHqZrLQ273PUygB?=
+ =?us-ascii?q?/37zFP9/ce9jMTsJQ9m6UqyTd+HnrC1cRM8aSzyaE9Fqjg+bOmWXwX4d6PLaj6?=
+ =?us-ascii?q?/pukXWcwWscDBBQXly+ydGzh0izV9NcN2QU9ysooO4o80eoVbHVVBm/p2WsvB4?=
+ =?us-ascii?q?XX91XCKsx7wTl4qbd5QeUAi4AQyxKYdohnMs3QzUw0RmOhdyBLTdvqryOVXWF9?=
+ =?us-ascii?q?vGeqj6yPDccKWMPfwcATA0P4sWlq4Y25i8j5P4L/LWdlsfyFXT0wiuWoTMj3uV?=
+ =?us-ascii?q?VjMgR1qz980qvvt5lnbCRJiZd2+kddjPNAttFWbOY?=
 X-IronPort-AV: E=Sophos;i="5.87,212,1631570400"; 
-   d="scan'208";a="2245804"
+   d="scan'208";a="2251026"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 05 Nov 2021 20:21:46 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 05 Nov 2021 21:56:48 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 264BDE006A; Fri,  5 Nov 2021 20:21:46 +0100 (CET)
-Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by sympa.inria.fr (Postfix) with ESMTPS id BD51DE004C
-	for <cocci@sympa.inria.fr>; Fri,  5 Nov 2021 20:21:42 +0100 (CET)
-IronPort-Data: =?us-ascii?q?A9a23=3ANTwbM6KpgubjlpoeFE+RHJclxSXFcZb7ZxGrkP8?=
- =?us-ascii?q?bfHC7hTgr0D0FnTNLXm2HOa6PZGWjf9pwao/i9kID7JXWyYNqS1BcGVNFHysb8?=
- =?us-ascii?q?5KdbTi6Bh6tZH3KdpWroHqKXqzyU/GYRCwPZiKa9kjF3oTJ9yEmjPjRHuekU4Y?=
- =?us-ascii?q?oBwgqLeNaYHZ44f5cs75h6mJYqYDR7zKl4bsekeWHULOW82Ic3lYv1k62gEgHU?=
- =?us-ascii?q?MIeF98vlgdWifhj5DcynpSOZX4VDfnZw3DQGuG4EgMmLtsvwo1V/kuBl/ssIsu?=
- =?us-ascii?q?hyeqkN1UQRdY+PyDe2jwPAfDk20kT4HVog87XN9JFAatTowmJnt1r0sQLkJWqV?=
- =?us-ascii?q?QYvM7/kmeIHUhAeHTsW0ahuouWbfCfu7qR/yGWDKRMA2c5GB0Y9Noww4fdyGWg?=
- =?us-ascii?q?I9PoCKTlLYArrr+e9z6i8RMFvi94lIc2tO5kQ0kyMZxmx4e0OT5feHvSPvOhd3?=
- =?us-ascii?q?Tgqw5AeWK+EP49AOGsqNU6RJRNFKhEPEpUulevugHTjGwC0YWm9/cIfi1U/BiQ?=
- =?us-ascii?q?tuFQ1DOfoRw=3D=3D?=
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3AymJnra592ObrBi4mgwPXwPjXdLJyesId70hD?=
- =?us-ascii?q?6qm+c3Nom6uj5qSTdZUgpHrJYVkqOE3I9ersBIChRjfG+Ydx8c0NO96ZPTUO21?=
- =?us-ascii?q?HYTr2Kj7GSoAEIcheWntK1l50KT0EUMrPN5DZB4frS3BO1CJIpztWB7cmT79vj?=
- =?us-ascii?q?8w=3D=3D?=
-X-IronPort-AV: E=Sophos;i="5.87,212,1631570400"; 
-   d="scan'208";a="2245797"
-Received: from fou59-1_migr-88-120-199-129.fbx.proxad.net (HELO pl347-pro) ([88.120.199.129])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Nov 2021 20:21:39 +0100
-References: <YXxGHEuS0zi+sbft@bombadil.infradead.org>
-User-agent: mu4e 1.4.15; emacs 27.2
-From: Thierry Martinez <Thierry.Martinez@inria.fr>
-To: Luis Chamberlain <mcgrof@kernel.org>
-Cc: cocci@inria.fr
-In-reply-to: <YXxGHEuS0zi+sbft@bombadil.infradead.org>
-Date: Fri, 05 Nov 2021 20:21:37 +0100
-Message-ID: <ow4bl2ys91a.fsf@inria.fr>
+	id D19E3E006B; Fri,  5 Nov 2021 21:56:48 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 06BEFE004C
+	for <cocci@sympa.inria.fr>; Fri,  5 Nov 2021 21:56:43 +0100 (CET)
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3ALo2N7qvq5BMjKhLYioxEdCvD7skDcdV00zEX?=
+ =?us-ascii?q?/kB9WHVpm62j5qSTdZsgviMc5Ax6ZJhko7G90cq7MBbhHPxOgbX5VI3KNDUO+l?=
+ =?us-ascii?q?HYT72KhrGN/9SPIUHDH6JmpMVdWpk7OZnLAV92gd2S2mSFOtwrqePpzJyV?=
+X-IronPort-AV: E=Sophos;i="5.84,326,1620684000"; 
+   d="scan'208";a="398383018"
+Received: from 173.121.68.85.rev.sfr.net (HELO hadrien) ([85.68.121.173])
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Nov 2021 21:56:42 +0100
+Date: Fri, 5 Nov 2021 21:56:42 +0100 (CET)
+From: Julia Lawall <julia.lawall@inria.fr>
+X-X-Sender: jll@hadrien
+To: Vlastimil Babka <vbabka@suse.cz>
+cc: cocci@inria.fr
+In-Reply-To: <17a7a40f-b736-e0ea-02ae-1b03ef4483bf@suse.cz>
+Message-ID: <alpine.DEB.2.22.394.2111052154260.3000@hadrien>
+References: <17a7a40f-b736-e0ea-02ae-1b03ef4483bf@suse.cz>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [cocci] Cannot infer Python version: when no /usr/bin/python
- symlink is found (resend)
-Reply-To: Thierry Martinez <Thierry.Martinez@inria.fr>
+Content-Type: text/plain; charset=US-ASCII
+Subject: Re: [cocci] Need some help with spatch
+Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 75
+X-Sequence: 76
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -67,65 +69,34 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <http://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <http://sympa.inria.fr/sympa/arcsearch_id/cocci/2021-11/ow4bl2ys91a.fsf%40inria.fr>
+Archived-At: <http://sympa.inria.fr/sympa/arcsearch_id/cocci/2021-11/alpine.DEB.2.22.394.2111052154260.3000%40hadrien>
 
-Luis Chamberlain:
-> Cannot infer Python version
+> 4) unnecessary indentation changes for multiline function declarations or calls
+>
+> This is the least critical, but maybe there's a way to preserve original
+> indentation and not do reindenting like this?
+>
+> -static inline bool cmpxchg_double_slab(struct kmem_cache *s, struct page *page,
+> -               void *freelist_old, unsigned long counters_old,
+> -               void *freelist_new, unsigned long counters_new,
+> -               const char *n)
+> +static inline bool cmpxchg_double_slab(struct kmem_cache *s,
+> +                                      struct slab *slab,
+> +                                      void *freelist_old,
+> +                                      unsigned long counters_old,
+> +                                      void *freelist_new,
+> +                                      unsigned long counters_new,
+> +                                      const char *n)
 
-I was not able to reproduce this error: are you sure that it is due to a
-missing /usr/bin/python symlink? This error message should appear when
-libpython3-dev is missing (and I have to admit we should change for a
-better error message!).
+You can try the --smpl-spacing argument.  The original idea of that was
+that people might like to put eg
 
-For instance, the following Dockerfile succeeds=20
++ if ( x )
 
-$ cat >Dockerfile <<EOF
-FROM debian:latest
-RUN apt-get update
-RUN apt-get install --yes ocaml ocaml-findlib libpython3-dev curl autoconf \
-    automake make
-RUN curl --remote-name --location \
-    https://gitlab.inria.fr/coccinelle/coccinelle/-/archive/1.1.1/coccinell=
-e-1.1.1.tar.bz2
-RUN tar --extract --file coccinelle-1.1.1.tar.bz2
-WORKDIR coccinelle-1.1.1
-RUN autoreconf
-RUN ./configure
-RUN make
-RUN cd tests && \
-    ../spatch.opt --sp-file countcalls_python.cocci countcalls_python.c
-RUN test ! -f /usr/bin/python
-EOF
+Without the --smpl-spacing argument, Coccinelle would drop the spaces
+around x.  With the argument, the code will be written as is.  But for
+your case, it seems that --smpl-spacing also eliminates the reindentation
+of function headers and function calls, when one of the
+parameters/arguments changes.
 
-Cheers.
---=20
-Thierry.
-
-Luis Chamberlain=C2=A0:
-> Debian and OpenSUSE Tumblweed no longer have the /usr/bin/python
-> symlink, at least this is explained and spelled out on the Debian
-> Python Policy [0]. This guideline specifically requests that scripts
-> do not use `/usr/bin/env`, do not use `/usr/bin/python` and instead
-> use the exact version desired.
->
-> When running coccinelle on a system without this /usr/bin/python
-> symlink Coccinelle will complain when using a python script on a cocci
-> file:
->
-> Cannot infer Python version
->
-> Fixing this is just to create the symlink, but I *really* don't want
-> to do that. And so I think we may need to support:
->
-> script:python3
-> initialize:python3
->
-> Maybe it makes sense then to always look for python2 if a version is
-> not specified, and if that does not exist look for python3 as new
-> systems may not have python2.
->
-> [0] https://www.debian.org/doc/packaging-manuals/python-policy/ch-python.=
-html#s-interpreter
->
->   Luis
-
+julia
