@@ -4,28 +4,28 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 96B68C433EF
-	for <cocci@archiver.kernel.org>; Sun,  6 Feb 2022 18:14:48 +0000 (UTC)
-X-IronPort-AV: E=Sophos;i="5.88,347,1635199200"; 
-   d="scan'208";a="19948547"
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 76F79C433F5
+	for <cocci@archiver.kernel.org>; Sun,  6 Feb 2022 18:43:14 +0000 (UTC)
+X-IronPort-AV: E=Sophos;i="5.88,348,1635199200"; 
+   d="scan'208";a="19950115"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 06 Feb 2022 19:14:46 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 06 Feb 2022 19:43:12 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 82845E0384; Sun,  6 Feb 2022 19:14:46 +0100 (CET)
+	id 566FEE0380; Sun,  6 Feb 2022 19:43:12 +0100 (CET)
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by sympa.inria.fr (Postfix) with ESMTPS id D15E1E037F
-	for <cocci@sympa.inria.fr>; Sun,  6 Feb 2022 19:14:42 +0100 (CET)
-X-IronPort-AV: E=Sophos;i="5.88,347,1635199200"; 
-   d="scan'208";a="5153149"
+	by sympa.inria.fr (Postfix) with ESMTPS id 73CACE037F
+	for <cocci@sympa.inria.fr>; Sun,  6 Feb 2022 19:43:11 +0100 (CET)
+X-IronPort-AV: E=Sophos;i="5.88,348,1635199200"; 
+   d="scan'208";a="5153849"
 Received: from 173.121.68.85.rev.sfr.net (HELO hadrien) ([85.68.121.173])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2022 19:14:42 +0100
-Date: Sun, 6 Feb 2022 19:14:42 +0100 (CET)
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2022 19:43:11 +0100
+Date: Sun, 6 Feb 2022 19:43:10 +0100 (CET)
 From: Julia Lawall <julia.lawall@inria.fr>
 X-X-Sender: jll@hadrien
 To: Denis Efremov <efremov@linux.com>
 cc: cocci@inria.fr
 In-Reply-To: <cd9a37f0-9a90-1df5-cec7-853a783e5538@linux.com>
-Message-ID: <alpine.DEB.2.22.394.2202061914110.3126@hadrien>
+Message-ID: <alpine.DEB.2.22.394.2202061941500.3126@hadrien>
 References: <cd9a37f0-9a90-1df5-cec7-853a783e5538@linux.com>
 User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
@@ -33,7 +33,7 @@ Content-Type: text/plain; charset=US-ASCII
 Subject: Re: [cocci] spatch 1.1.1 segmentation fault report
 Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 123
+X-Sequence: 124
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -46,7 +46,7 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <http://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <http://sympa.inria.fr/sympa/arcsearch_id/cocci/2022-02/alpine.DEB.2.22.394.2202061914110.3126%40hadrien>
+Archived-At: <http://sympa.inria.fr/sympa/arcsearch_id/cocci/2022-02/alpine.DEB.2.22.394.2202061941500.3126%40hadrien>
 
 
 
@@ -85,7 +85,15 @@ On Sun, 6 Feb 2022, Denis Efremov wrote:
 > 0 files match
 > [1]    152475 segmentation fault (core dumped)  spatch segfault.cocci test
 
-Thanks for the report.  I will check on it.  I don't think I have often
-tried running spatch on no files...
+I tried 1.1.1 with the options --enable-opt --enable-ocaml --enable-python
+--enable-pcre-syntax --enable-pcre, but it seems to work find for me.
+Does the problem go away if there is a file in the directory?  If you
+remove the python code?
 
 julia
+
+>
+>
+> Best Regards,
+> Denis Efremov
+>
