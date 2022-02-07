@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C97C9C433EF
-	for <cocci@archiver.kernel.org>; Mon,  7 Feb 2022 09:54:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BD94FC433EF
+	for <cocci@archiver.kernel.org>; Mon,  7 Feb 2022 12:06:28 +0000 (UTC)
 X-IronPort-AV: E=Sophos;i="5.88,349,1635199200"; 
-   d="scan'208";a="20032329"
+   d="scan'208";a="20063376"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 07 Feb 2022 10:54:21 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 07 Feb 2022 13:06:27 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id CDD8FE0384; Mon,  7 Feb 2022 10:54:20 +0100 (CET)
+	id 89BA2E0384; Mon,  7 Feb 2022 13:06:26 +0100 (CET)
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by sympa.inria.fr (Postfix) with ESMTPS id 25C09E037F
-	for <cocci@sympa.inria.fr>; Mon,  7 Feb 2022 10:54:15 +0100 (CET)
+	by sympa.inria.fr (Postfix) with ESMTPS id 027E4E037F
+	for <cocci@sympa.inria.fr>; Mon,  7 Feb 2022 13:06:24 +0100 (CET)
 X-IronPort-AV: E=Sophos;i="5.88,349,1635199200"; 
-   d="scan'208";a="5198559"
+   d="scan'208";a="5214074"
 Received: from 173.121.68.85.rev.sfr.net (HELO hadrien) ([85.68.121.173])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 10:54:15 +0100
-Date: Mon, 7 Feb 2022 10:54:14 +0100 (CET)
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 13:06:25 +0100
+Date: Mon, 7 Feb 2022 13:06:24 +0100 (CET)
 From: Julia Lawall <julia.lawall@inria.fr>
 X-X-Sender: jll@hadrien
 To: Denis Efremov <efremov@linux.com>
 cc: cocci@inria.fr
-In-Reply-To: <bb419c62-f560-e918-2eb2-94f489a93f4a@linux.com>
-Message-ID: <alpine.DEB.2.22.394.2202071053010.3105@hadrien>
+In-Reply-To: <efdc5e18-fdc4-56d6-f78e-0e47fe24ef02@linux.com>
+Message-ID: <alpine.DEB.2.22.394.2202071304300.3105@hadrien>
 References: <cd9a37f0-9a90-1df5-cec7-853a783e5538@linux.com> <alpine.DEB.2.22.394.2202061941500.3126@hadrien> <f07ed61b-96e5-d99f-dc0f-d3f39b8291bf@linux.com> <alpine.DEB.2.22.394.2202062047220.3126@hadrien> <412f6138-c5de-38f4-553b-6b34a0650005@linux.com>
- <alpine.DEB.2.22.394.2202062158390.3126@hadrien> <efdc5e18-fdc4-56d6-f78e-0e47fe24ef02@linux.com> <alpine.DEB.2.22.394.2202070752260.3105@hadrien> <bb419c62-f560-e918-2eb2-94f489a93f4a@linux.com>
+ <alpine.DEB.2.22.394.2202062158390.3126@hadrien> <efdc5e18-fdc4-56d6-f78e-0e47fe24ef02@linux.com>
 User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Subject: Re: [cocci] spatch 1.1.1 segmentation fault report
 Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 133
+X-Sequence: 134
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -47,94 +47,40 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <http://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <http://sympa.inria.fr/sympa/arcsearch_id/cocci/2022-02/alpine.DEB.2.22.394.2202071053010.3105%40hadrien>
+Archived-At: <http://sympa.inria.fr/sympa/arcsearch_id/cocci/2022-02/alpine.DEB.2.22.394.2202071304300.3105%40hadrien>
 
-
-
-On Mon, 7 Feb 2022, Denis Efremov wrote:
-
+> I removed the @p variable and reduced the cocci file to
+> @err@
+> @@
 >
+> amd_energy_is_visible(...)
+> {
+> *       return 0444;
+> }
 >
-> On 2/7/22 09:56, Julia Lawall wrote:
-> >> I checked that the problem persist on latest commit
-> >> b2a4b9b77157 parsing_c: print correct attributes in pretty_print_c.ml
-> >>
-> >> and bisected the crash to commit
-> >> 7b79a2415a8c6e8b1c39a8183bf732fdc6d00453 is the first bad commit
-> >> commit 7b79a2415a8c6e8b1c39a8183bf732fdc6d00453
-> >> Author: Corentin De Souza <corentin.de-souza@inria.fr>
-> >> Date:   Tue May 25 19:21:51 2021 +0200
-> >>
-> >>     parsing_c: detect macro iterators from their bodies
-> >>
-> >>     This uses the same strategy as macro statements (see
-> >>     https://gitlab.inria.fr/coccinelle/coccinelle/-/merge_requests/92).
-> >>     The goal is to do fix https://gitlab.inria.fr/coccinelle/coccinelle/-/issues/24
-> >>
-> >>     The next commit will finally fix the assign_expr rule in the parser, removing
-> >>     the conflicts it introduced while not breaking test
-> >>     assign_deref_funcall_in_macro_it.
-> >>
-> >>  parsing_c/cpp_token_c.ml | 39 ++++++++++++++++++++++++++++++---------
-> >>  parsing_c/parser_c.mly   |  3 ++-
-> >>  2 files changed, 32 insertions(+), 10 deletions(-)
-> >
-> > Thanks for all of the investigation.  I'll take a look at this commit, but
-> > from the subject it seems hard to imagine how it would affect python...
-> >
-> > Could you take a look at the core to see if indicates what function caused
-> > the problem?
+> @script:python@
+> @@
 >
-> Core was generated by `spatch segfault.cocci empty_dir'.
-> Program terminated with signal SIGSEGV, Segmentation fault.
-> #0  0x0000000000aa8b7e in pydecref (v=<optimized out>) at pyml_stubs.c:247
-> 247     pyml_stubs.c: Directory not empty.
-> (gdb) bt
+> and it still crashes.
+> $ mkdir empty_dir
+> $ spatch segfault.cocci empty_dir
+> init_defs_builtins: /home/work/.opam/4.11.2/lib/coccinelle/standard.h
+> no inferred keywords
+> [2]    240209 segmentation fault (core dumped)  spatch segfault.cocci empty_dir
+>
+> $ touch empty_dir/file
+> $ spatch segfault.cocci empty_dir
+> init_defs_builtins: /home/work/.opam/4.11.2/lib/coccinelle/standard.h
+> no inferred keywords
+> [2]    240269 segmentation fault (core dumped)  spatch segfault.cocci empty_dir
+>
+> $ echo "void amd_energy_is_visible(void) { return 0444; }" > empty_dir/file
+> $ spatch segfault.cocci empty_dir
+> init_defs_builtins: /home/work/.opam/4.11.2/lib/coccinelle/standard.h
+> no inferred keywords
+> [2]    240363 segmentation fault (core dumped)  spatch segfault.cocci empty_dir
 
-Does your pyml come from the bundle in Coccinelle or from opam?
-
-In my spatch 1.1.1 code, line 247 is just a variable declaration.
+A strange thing is that you have the message "no inferred keywords" and in
+another mssage you had a message about 0 files.  But I have nothing.
 
 julia
-
-> #0  0x0000000000aa8b7e in pydecref (v=<optimized out>) at pyml_stubs.c:247
-> #1  0x0000000000ac5cee in caml_empty_minor_heap () at minor_gc.c:409
-> #2  0x0000000000ac610c in caml_gc_dispatch () at minor_gc.c:475
-> #3  0x0000000000ac61fe in caml_check_urgent_gc (extra_root=<optimized out>, extra_root@entry=1) at minor_gc.c:572
-> #4  0x0000000000ac6293 in caml_alloc_small_dispatch (wosize=2, flags=flags@entry=1, nallocs=nallocs@entry=1,
->     encoded_alloc_lens=encoded_alloc_lens@entry=0x0) at minor_gc.c:516
-> #5  0x0000000000ac7831 in caml_alloc_small (wosize=wosize@entry=2, tag=tag@entry=0) at alloc.c:68
-> #6  0x0000000000acd6ef in caml_ml_out_channels_list (unit=<optimized out>) at io.c:512
-> #7  0x0000000000a47005 in camlStdlib__flush_all_231 () at stdlib.ml:349
-> #8  0x00000000005ffeaf in camlStd_exit__entry () at stdlib.ml:556
-> #9  0x00000000005f5199 in caml_program ()
-> #10 0x0000000000ae0860 in caml_start_program ()
-> #11 0x0000000000ae0be4 in caml_startup_common (argv=0x7ffcf50f98c8, pooling=<optimized out>, pooling@entry=0) at startup_nat.c:160
-> #12 0x0000000000ae0c5b in caml_startup_exn (argv=<optimized out>) at startup_nat.c:165
-> #13 caml_startup (argv=<optimized out>) at startup_nat.c:170
-> #14 caml_main (argv=<optimized out>) at startup_nat.c:177
-> #15 0x00000000005f3ddc in main (argc=<optimized out>, argv=<optimized out>) at main.c:44
->
->
-> >
-> > Do you have parmap installed on your machine or are you using the bundled
-> > version?
->
-> I guess it's in my system:
->
-> configure: configuring package parmap
-> checking for OCaml findlib package parmap... found
-> ...
-> cp /home/work/.opam/4.11.2/lib/parmap/parmap.cmi ocaml/parmap.cmi
-> if test -f /home/work/.opam/4.11.2/lib/parmap/parmap.cmx; then \
->         cp /home/work/.opam/4.11.2/lib/parmap/parmap.cmx ocaml/parmap.cmx; \
-> fi
->
-> >
-> > Could use test with the bytecode version of Coccinelle?  I think that
-> > would come without the --enable-opt option.
-> >
->
-> When I build spatch with --disable-opt there is no crash.
->
->
