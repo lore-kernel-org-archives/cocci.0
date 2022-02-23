@@ -4,36 +4,36 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 34E3EC433EF
-	for <cocci@archiver.kernel.org>; Wed, 23 Feb 2022 08:16:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D55D2C433EF
+	for <cocci@archiver.kernel.org>; Wed, 23 Feb 2022 08:20:41 +0000 (UTC)
 X-IronPort-AV: E=Sophos;i="5.88,390,1635199200"; 
-   d="scan'208";a="22777702"
+   d="scan'208";a="22778533"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 23 Feb 2022 09:16:50 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 23 Feb 2022 09:20:40 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 38F63E0358; Wed, 23 Feb 2022 09:16:50 +0100 (CET)
+	id 2A481E0356; Wed, 23 Feb 2022 09:20:40 +0100 (CET)
 Received: from mail3-smtp-sop.national.inria.fr (mail3-smtp-sop.national.inria.fr [192.134.164.98])
-	by sympa.inria.fr (Postfix) with ESMTPS id 2FA76E00A8
-	for <cocci@sympa.inria.fr>; Wed, 23 Feb 2022 09:16:46 +0100 (CET)
+	by sympa.inria.fr (Postfix) with ESMTPS id 0FECEE00A8
+	for <cocci@sympa.inria.fr>; Wed, 23 Feb 2022 09:20:35 +0100 (CET)
 X-IronPort-AV: E=Sophos;i="5.88,390,1635199200"; 
-   d="scan'208";a="6724363"
+   d="scan'208";a="6724695"
 Received: from 203.107.68.85.rev.sfr.net (HELO hadrien) ([85.68.107.203])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 09:16:46 +0100
-Date: Wed, 23 Feb 2022 09:16:45 +0100 (CET)
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 09:20:35 +0100
+Date: Wed, 23 Feb 2022 09:20:34 +0100 (CET)
 From: Julia Lawall <julia.lawall@inria.fr>
 X-X-Sender: jll@hadrien
 To: Morgan Green <morgangreen@hotmail.com>
 cc: "cocci@inria.fr" <cocci@inria.fr>
-In-Reply-To: <DS7PR19MB5853BC1DDFC7F8D92CF26115AC3C9@DS7PR19MB5853.namprd19.prod.outlook.com>
-Message-ID: <alpine.DEB.2.22.394.2202230914490.2977@hadrien>
-References: <DS7PR19MB5853BC1DDFC7F8D92CF26115AC3C9@DS7PR19MB5853.namprd19.prod.outlook.com>
+In-Reply-To: <DS7PR19MB5853948767791AEA2E6E290FAC3C9@DS7PR19MB5853.namprd19.prod.outlook.com>
+Message-ID: <alpine.DEB.2.22.394.2202230917570.2977@hadrien>
+References: <DS7PR19MB5853948767791AEA2E6E290FAC3C9@DS7PR19MB5853.namprd19.prod.outlook.com>
 User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Subject: Re: [cocci] spatch 1.1.1 hang
+Content-Type: multipart/mixed; boundary="8323329-969376123-1645604434=:2977"
+Subject: Re: [cocci] C++ support
 Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 147
+X-Sequence: 148
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -46,17 +46,62 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <http://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <http://sympa.inria.fr/sympa/arcsearch_id/cocci/2022-02/alpine.DEB.2.22.394.2202230914490.2977%40hadrien>
+Archived-At: <http://sympa.inria.fr/sympa/arcsearch_id/cocci/2022-02/alpine.DEB.2.22.394.2202230917570.2977%40hadrien>
+
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-969376123-1645604434=:2977
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
 
 
 
 On Wed, 23 Feb 2022, Morgan Green wrote:
 
-> In a message earlier today about C++ support I mentioned an unrelated spatch hang. I've now figured out how to reproduce it with a simple C test case:
+> Thank you for the incredible tool!
 >
-> spatch --sp-file test.cocci test.c
+> I'm attempting to use it to clean up a large C++ code base. I'm aware that Coccinelle has minimal C++ support, but decided to try it anyway. The code I'm working with sticks to the basic C++ features so I thought it might be sufficient. It mostly works when I pass --c++ to spatch, but there are a few basic C++ things that cause parse errors:
 >
-> ---- test.cocci
+> 1) constructor definitions with initializer lists
+> 2) class definitions
+>
+> Class definitions failing to parse prevents functions that are defined inside a class definition from being parsed and it also prevents functions that contain an embedded class definition from being parsed.
+>
+> Here is a minimal C++ source file that demonstrates all the problematic cases:
+>
+> ----
+> class foo {
+>     foo(int val);
+>     void do_nothing() {}
+>     int val;
+> };
+
+Would it suffice to ignore the "class foo {" and then parse the thing
+inside as normal top-level definitions?
+
+I see already that you have foo that has no return type.  Is that correct.
+
+>
+> foo::foo(int val) : val(val) {}
+>
+> void bar() {
+>     class bar_internal_class {
+>     } local;
+> }
+
+I think that this would be harder to add.  Currently we don't support
+nested function definitions.
+
+julia
+
+> ----
+>
+> Is there any chance support for that C++ syntax could be added? In my case support for parsing constructors with initializer lists would be a big improvement. I don't actually need to be able to do any transformations on initializer lists, but it would be great if my rules could be applied to the bodies of constructors with initializer lists.
+>
+> I'm also hitting an unrelated issue where spatch appears to be getting stuck in an infinite loop. I've let it run for an hour so far. That seems to be triggered by the following rule:
+>
+> ----
 > @@ @@
 > {
 > ...
@@ -67,22 +112,10 @@ On Wed, 23 Feb 2022, Morgan Green wrote:
 > }
 > - ...
 > }
-> ---- test.c
-> void foo() {
->     if(1) {
->         return;
->     }
->
->     while(loop_test) {
->         if(junk) continue;
->     }
-> }
 > ----
 >
-> It seems to reproduce whenever there is a loop that contains a continue statement after an if(1) { return; }.
-
-I suspect that the if(1) { return; } doesn't cause the loop.  It just
-causes the function to be considered at all, because it is in your
-pattern.  Thanks for the report.  I'll take a look.
-
-julia
+> Unfortunately I have not been able to reproduce that with a stripped down test case. So far I've only seen it happen when running spatch (version 1.1.1) on one specific ~3000 line source file. With a stripped down test case that rule successfully removes the if(1) check and everything after the body of the if in the containing block. Am I doing something wrong or hitting a bug?
+>
+> Thanks,
+> Morgan
+--8323329-969376123-1645604434=:2977--
