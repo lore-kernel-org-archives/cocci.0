@@ -4,131 +4,135 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6957DC433EF
-	for <cocci@archiver.kernel.org>; Mon,  7 Mar 2022 01:56:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9D3B9C433EF
+	for <cocci@archiver.kernel.org>; Mon,  7 Mar 2022 01:57:30 +0000 (UTC)
 X-IronPort-AV: E=Sophos;i="5.90,160,1643670000"; 
-   d="scan'208";a="24664405"
+   d="scan'208";a="24664459"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 07 Mar 2022 02:56:03 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 07 Mar 2022 02:57:29 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 81A5FE00CB; Mon,  7 Mar 2022 02:56:03 +0100 (CET)
+	id EF841E00D9; Mon,  7 Mar 2022 02:57:28 +0100 (CET)
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by sympa.inria.fr (Postfix) with ESMTPS id 9F477E004B
-	for <cocci@sympa.inria.fr>; Mon,  7 Mar 2022 02:55:58 +0100 (CET)
+	by sympa.inria.fr (Postfix) with ESMTPS id 87981E004B
+	for <cocci@sympa.inria.fr>; Mon,  7 Mar 2022 02:57:27 +0100 (CET)
 Authentication-Results: mail2-smtp-roc.national.inria.fr; spf=None smtp.pra=cocci@lists.ewheeler.net; spf=None smtp.mailfrom=cocci@lists.ewheeler.net; spf=None smtp.helo=postmaster@mx.ewheeler.net
-IronPort-SDR: F8ob3FWSnvKmcElFTuUgI4+02FEBTJANmHQ3rkkKk0OVZqRUTYskKpB+bBDJEg7MgCgnVb5i1L
- C1dInBthlRpXWTkNfzKPs4p1ZSjndvCF5Qz+MKfxgLspALtysEvo8cNCKA9ZN6m+TLcjdoEHg8
- OZdkGCpEIO0FCpRJ8IVRlECC2Zk5OHvCuczOjZAkVdKefmghEzekEM1FhqKI5Ti3pis3gTt8L5
- lrJISzSUqW6bH6tMD/0VpQVEAoQkS2XNu8LBhXcXieh3MikA/IuG7wVSOFaalqD+9ggSyAznS/
- jykAoeN0JTn7syRcQYpzy3dX
-X-IPAS-Result: =?us-ascii?q?A0DbBQAiZSVi/0Xcza1agQmBWoIoB4FNAQEBKQQLlAuFT?=
- =?us-ascii?q?ps1CwEDAQ1BBAEBiSQCHQYGMwYOAQIEAQEBAQMCAwEBAQEBAQMBAQUBAQECA?=
- =?us-ascii?q?QECAwQBgQgsAWMBZwGBTgGBeQYEPYI1IoQZE4UUgxesRYEBMoEBiXuBPI5vH?=
- =?us-ascii?q?ECBTYFIgkeGAIUyBJYGNoEDgxiiD54Sg1OfVhoug3OSUTeRL5ZVpnmBPzgmg?=
- =?us-ascii?q?VkfFBoIJgo7gmpNAQIBAgEMAQICAQIBAgECAQgBAQIBjXQBMxaOTyABAQFpA?=
+IronPort-SDR: zvaOBPgE6NkW2uCHXo+QlR6OV5p9r4M4KktVCLXk4f9LT2xtRsH/47oMVInS9xzCJYChwVEOtp
+ d1Hxmx7E2Xrarb7/qww+pqj2Y1OMzfdOXdz+nKjqXQW3AY7R+CJ6bb+HvhhnQWklb8NFYUz63l
+ 00XtqASEHkJ0QMBy0nwSYpfQS0r6wjOGF9zcfX9lYrKwcwLyu/xrpC6kCaytLNVNrIOHrZqJvP
+ IgBsQESYl69zwmmxOIWHYD7Zr+5d0rG7yKZNLlUkkOc0Je/NGbY+EOHokeEraF8GGZd+Kyruca
+ e2A/1QT8WC0r3l3ancA8eeNR
+X-IPAS-Result: =?us-ascii?q?A0CRBgAiZSVi/0Xcza1agQmEAgeBTQEBASkEC0STR4Ion?=
+ =?us-ascii?q?lsLAQMBDUEEAQGFBwKEGwIdBgY0EwECBAEBAQEDAgMBAQEBAQEDAQEFAQEBA?=
+ =?us-ascii?q?gEBAgMEAYEILAFjAWcBgU4BgXkGBD2CNSKDbAYnE08fATFXGYMEgxesRYEBM?=
+ =?us-ascii?q?oEBiXuBPI5IJxxAgU2CUYc+hTIElyGCfKJJnhKDU59wLpZEkWaWVaZ5gT85J?=
+ =?us-ascii?q?YFZHxQaCCYKO4JpTgECAQIBDAECAgECAQIBAgEIAQECAY4oFo5PIAEBATE4A?=
  =?us-ascii?q?gYLAQEDCZF/AQE?=
-IronPort-PHdr: A9a23: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
- aVTMq9rWXFiB9+flioPRiETmjiLacOH9k/Uxw==
-IronPort-Data: A9a23:us8urK1wbyL9MD3WhvbD5cx3kn2cJEfYwER7XKvMYLTBsI5bpzEFy
- jNLUWvQOveMZWagKIskOd6z8UsFvJ/cy4NmSAI53Hw8FHgiRejtVY3IdB+oV8+xBpSeFxw/t
- 512hv3odp1coqr0/0/1WlTZhSAgk/nOH9IQMcacUsxLbVYMpBwJ1FQyw4bVvqYy2YLjW1jV5
- 4uoyyHiEAbNNwBcYjp8B52r80sHUMTa4Fv0aXRjDRzjlAa2e0g9VPrzF4npR5fLatU88tqBe
- gr25OrRElU1UPsaIojNfr7TKiXmS1NJVOSEoiI+t6OK2nCuqsGuu0o2HKJ0VKtZt9mGt9ZBl
- vcOrsSpdQkSMpTsvf0/VAAJSAgraMWq+JefSZS+mcmDiUDZc3bhx/h0Skc7IeX0+M4uXjoIr
- 6RFbmpXNlbd1opaw5rjIgVors8kJ8LqFIceoW17izzGDfsrRZ3ZBaPH+be02R9q2p4QQaqGO
- 6L1bxJMMwvFZxsSIm0JBcw1pv+yuGLyIwdH/Qf9Sa0fuDSNl10ugNABKuH9cduBTsR9hVedv
- muA/mLjAxhcOsb39Nae2ne8wOLQnS72XI8IUru16paGnWF/2EQVOEM0FkDjuMW3sUKHe/dGC
- UsNq3EH+P1aGFOQcvHxWBixoXihtxEaWsZNH+BS1Dxh2pY48C7CWTdZFm8phMgO8Z5pFWZzh
- zdlivuwXWQ32IB5X05x4Vt9kN9fES0Fa2IdZSIJSQYfpd/uvOnfby4jrP44QcZZbfWvRVkcJ
- gxmSwBn3d0uYTYjjfnTwLw+q2vES1igZlddCv/rdmyk9BhlQ4Wuepal71PWhd4ZctrHEwja5
- yBUypjBhAzrMX1qvHfSKNjh4Znzuqjt3MP03jaD4KXNBxz2pyD4LN8AiN2PDEp2MssJfTLzY
- UnY/FsIjKK/z1PxBZKaouuZVawX8EQXPY+9B6CMM4EXOcAZmc3u1HgGWHN8FlvFyCAE+ZzT8
- 7/CGSp1JXpFW6lh0hSsQOIRje0iyiwknDOBQZHg0w/h3KWeaXORRK1DNlaSN7hr4KSBqQTT0
- tBeK8rTkUkECrWjO3WO/N5BN00OIFg6GYvy9Z5deNmDFRU6SmsvPPncnOE6cIt/kqUIyOqRp
- iOhWlVVwUbUjGHcLVnYcWhqbb7iBM4trX8yMSE2E0yv3nwvPdSm4KsFLstlebg86PclwOF0Q
- vQBdt/GBPlTE2yV9zMYZJj7jYpjaBXy317VZXL4OWRmcsc5FQLT+9Licg/+zwU0D3K65Zkkv
- rmt9gLHWp5dFQ5sO8bhd679xV2Gu3VAyvl5WFHFI4QNdRy0opRqMSH4ktQ+P9oIdUfY3jKf2
- gubXUUYqO3Kr9Nn+dXFn/nZ/YK5VeZhHkdXG2TBq7C7KXCCrGakxIZBVseOfCzcDTmoo//6O
- LwJlvysYucamFtqspZnF+g5x6wJ5+zw++1QwDNiESiZdF+sEL5hfyeLhJEdqq1Xy7ZFkgKqQ
- UbTqMJCMLCENZ+3ClIXPwZ5PO2P2etNx2vX/bI4P0X36St65vyBXFkLZ0uAjylULb1UNoI5w
- L575JVMs1Hm1kMnYoSckyRZ12WQNXheAa8pgZEtH9O5gAQczFwfM4fXDTX74czRZowUYFUqO
- DKdmIHLm69YmhjZa3M2GHXAtQaHaU/iZPyeIJ4+y1W1dh7tg+9x0QJR/DkzQx4TyBhbuw621
- q6HKGUtTZhiPR8x7CSAY4xoMwVAHwGCvEHuy1YEkGDDCU+lSgQh6YH71fmlpCgkHqE1QtSf1
- LWZ03r+Fzv1fMz82iYoH0hot5QPiDC3GhLqwKiaIihOI3X2jfcJTENjiarkZiYL2f8MuXA=
-IronPort-HdrOrdr: A9a23:LFIkraPkkxdnAcBcTtGjsMiBIKoaSvp037BL7TEUdfQ2Gvb2qy
- nAppomPHPP6Qr5O0tQ/OxoWpPwI080nKQdieJ9UYtKNzOW21dAQrsD0WI8+VfdJxE=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23:kuDtEq9F7wo9LDXfBb+CDrUDn3iTJUtcMsCJ2f8bNWPcYEJGY0x3y
+ jEbDz3Sbq3cYWv9c9Anbo/k8RkE7cXUxoBiSFE4qilEQiMRo6IpJ/zJdxaqZ3v6wu7rFR88s
+ Z1GMrEsCOhuExcwcz/0auCJQUFUjP3OHvylYAL9EngZqTVMEU/Nsjo+3b9h6mJUqYLhWVnV4
+ ous+5e31GKNglaYDEpEs8pvlzs05JweiBtA1rDpTa0jUPf2zhH5PbpHTU2DByOQrrp8QoZWc
+ 93+IISRpQs1yfuC5uSNyd4XemVSKlLb0JPnZnB+A8BOiTAazsA+PzpS2Pc0MS9qZzu1c99Zy
+ MQXhYWxCiwSfe7sgrgHQSNzLSJRBPgTkFPHCSDXXc27yl2AfmTszvhqAVtwO4AEkgp1KTgRr
+ rpCcG1LNErbwbznqF64YrEEasALJ87gN4I3vnB70SqfAOkmTJ3HTr+M49JEtNs1rpoSQ6iCO
+ 5dGAdZpRBr+XEJzZglGMYs/nsr13njmIxdSpF3A8MLb5ECIkFIqgee9WDbPQfSBQs5en26Dt
+ 2fe9iL4BAsbPZqR01K4HmmEg/+JkDz7VY8WGaf+8PN26LGO+oANIB0HD2uioLqSsQ39e8gDM
+ V4u0RQtgpFnoSRHUeLBdxG/pXeFuDsVVNxRD/A25Wmx90bE3+qKLjNbEWMZObTKoOdzFGN6j
+ AbY9z/8LWU36OX9dJ6LyluDQdqP1cU9KH9EaDAEQAYB7sOlpowv5v4ucjqBOPXk5jEWMWusq
+ 9xvkMTZr+xJ5fPnL43hoTj6b8uE//Akjmcdv207pF6N4AJjf5KCbIe181Xd5vsoBN/HEgfc7
+ SNfw5jPvL9m4XSxeMulG7plIV1Uz6zYblUwf3Ywd3Xey9hd0yX/I9sBv2EWyLZBP9kEdDLtb
+ VXSvwgUvMY7AZdZRfQfXm9wYux0pZXd+SPNDaiFPoITOcEqLGdqPkhGPCat4owkq2B0+YlXB
+ HtRWZ/E4a8yBfs1wTyoaf0a1LN3lCkyyXmKFcL/zg+7yvyTe36YRLMIKh2IY/xgtPGIpwDc8
+ tB+McqWykwFDLakOnSOrdcefQIQMHw2JZHqsMgJJOSNFQpRBz1zAfHmx758KZdumL5Yl7qW8
+ yjlCFNY0lf2mVbONR6ONiJ4cLrqUJsm9SA7MCUgMEyGwX8mZYrzvq4Te4FuLesj9fd/1rh5U
+ PkIdsGNGLJJRyieo2YRapz0rYpDchW3hFvUY3H/OGVmI8dtHlWb9MXlcw3j8Dg1IhC27cZu8
+ ae90g77QIYYQ1owBsjhaMWwkwG7s08blb8gREDPONRSJRvhqdA4Nyzrg/YrCMgQMhGflCCC3
+ gObDBpE9+nAp4g5rIvAiaye9tr7Fvs4E1VaEmTf4KzwMyTGpzLxzYhFWeeOXDbcSGKtovn5P
+ 70Ilq2lPa1VhktOvqp9D61vk/A06ezvkKAGnA5qK3PGMgawAbR6L3jbg8QW7v9RxqVUsBedU
+ 16U/oUIIq2APc7oTAwLKAw+YrjR3P0YgGCPv/ElZkjl5CJ6+LedF0NfI0DU2iBaKbJ0NqIjw
+ Psg4ZRKsFbn10N2a9vW3DpJ82msL2AbV/t1vJ8tALj01lghxGZEbMGOESTx+pyONotBaxF4P
+ j+OiaPerL1A3U6eIWErHH3A0Oc1aU7iY/yWIIvu5mhlm+YpQtcyzFtc7jQ6QwBY1FNB3v4b1
+ q2H8aFqDf3mwtuqrJErs6OQ98VpAByC5le3xkQJmWDdQlPuUGHRRIH41SBh42hBm1+xvVFnE
+ HWwzGf+TS2scd7x0yY2VFQjrfH/JTC0Gssuh+j/d/m481IGjfYJT0Ngiafka/cqPC/puHD6m
+ A==
+IronPort-HdrOrdr: A9a23:DnGY+a7DNnTjP1Y37APXwMTXdLJyesId70hD6qkRc20yTiT7//
+ rAoB1173HJYVoqOU3I3OrwWpVoIkmskqKdg7NhWItKNTOO0ADEQL2Kr7GSpwEIcBeOldK1u5
+ 0BT0GgMrfNMWQ=
 X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-AV: E=Sophos;i="5.90,160,1643670000"; 
-   d="scan'208";a="24664404"
-X-MGA-submission: =?us-ascii?q?MDFK1/7IbRX2ArKPErwRxXrJCTXeOn6YEGP9pa?=
- =?us-ascii?q?ZKWfA4tzExnv5j49ewMfH2YgLETklFBUy/8TpUBeOAsBL8tfbR1Wd5gY?=
- =?us-ascii?q?pfFImMWXYX+OKSZqVPf2pT41E/fv45XrF9VosXBwXTnIXdtMq3BE8LKc?=
- =?us-ascii?q?GqHFqsRzjT/IYpg8W3V1b/8Q=3D=3D?=
+   d="scan'208";a="24664457"
+X-MGA-submission: =?us-ascii?q?MDEPlzIJaq9LWOyjAtgTkOj7c1P2vN2jsO6XOT?=
+ =?us-ascii?q?TwZtqqDvRyzUTYypRE6h1n60QJiTsLyPAHY/EdwCvBCGBl96YFSi7wTT?=
+ =?us-ascii?q?Tnsg0fYdElI3ZgUGHnZCmDV43GR/3BXMfT8+JftGkpGJnL3NaDcWz/GZ?=
+ =?us-ascii?q?x7w19cmXhYnfqhKW7Gws9KLA=3D=3D?=
 Received: from mx.ewheeler.net ([173.205.220.69])
-  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 02:55:57 +0100
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 02:57:26 +0100
 Received: from localhost (localhost [127.0.0.1])
-	by mx.ewheeler.net (Postfix) with ESMTP id DEA5B4A
-	for <cocci@inria.fr>; Sun,  6 Mar 2022 17:55:54 -0800 (PST)
+	by mx.ewheeler.net (Postfix) with ESMTP id 5A0FA4A
+	for <cocci@inria.fr>; Sun,  6 Mar 2022 17:57:24 -0800 (PST)
 X-Virus-Scanned: amavisd-new at ewheeler.net
 Received: from mx.ewheeler.net ([127.0.0.1])
 	by localhost (mx.ewheeler.net [127.0.0.1]) (amavisd-new, port 10024)
-	with LMTP id 1iWaCh68IjPp for <cocci@inria.fr>;
-	Sun,  6 Mar 2022 17:55:54 -0800 (PST)
+	with LMTP id 3fT7XFWqhluC for <cocci@inria.fr>;
+	Sun,  6 Mar 2022 17:57:20 -0800 (PST)
 Received: from localhost (localhost [127.0.0.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mx.ewheeler.net (Postfix) with ESMTPSA id 151B639
-	for <cocci@inria.fr>; Sun,  6 Mar 2022 17:55:54 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mx.ewheeler.net 151B639
-Date: Sun, 6 Mar 2022 17:55:51 -0800 (PST)
+	by mx.ewheeler.net (Postfix) with ESMTPSA id 08BA839
+	for <cocci@inria.fr>; Sun,  6 Mar 2022 17:57:20 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mx.ewheeler.net 08BA839
+Date: Sun, 6 Mar 2022 17:57:18 -0800 (PST)
 From: Eric Wheeler <cocci@lists.ewheeler.net>
 To: cocci@inria.fr
-Message-ID: <ed1d7d30-461-8822-7fd2-e1701534c29b@ewheeler.net>
+In-Reply-To: <df8a810-dcb1-4bf2-178d-178943e6e458@ewheeler.net>
+Message-ID: <caa0adde-7dd-e571-fa2-ee2a650b328@ewheeler.net>
+References: <df8a810-dcb1-4bf2-178d-178943e6e458@ewheeler.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Subject: [cocci] Does SmPL for functions with prototype disjunctions need to
- be complete?
+Subject: [cocci] [PATCH v2] Fix support for "complex double" in parameter
+ lists
 Reply-To: Eric Wheeler <cocci@lists.ewheeler.net>
 X-Loop: cocci@inria.fr
-X-Sequence: 175
+X-Sequence: 176
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -141,90 +145,90 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <http://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <http://sympa.inria.fr/sympa/arcsearch_id/cocci/2022-03/ed1d7d30-461-8822-7fd2-e1701534c29b%40ewheeler.net>
+Archived-At: <http://sympa.inria.fr/sympa/arcsearch_id/cocci/2022-03/caa0adde-7dd-e571-fa2-ee2a650b328%40ewheeler.net>
 
-This seems to work when the body of the funciton is defined in each disjunction:
+From: Eric Wheeler <cocci@linux.ewheeler.net>
+Author: Eric Wheeler <cocci@linux.ewheeler.net>
+Date:   Sun Mar 6 16:55:32 2022 -0800
 
-	@ prefix_nec_arg @
-	type T;
-	identifier F, j;
-	typedef nec_t;
-	parameter list PL;
-	@@
-	( 
-	T F(
-	-void
-	+nec_t *nec
-	 )
-	{
-	... when exists
-	    when any
-	nec->j
-	... when exists
-	    when any
-	}
-	| 
-	T F(
-	+nec_t *nec
-	 )
-	{
-	... when exists
-	    when any
-	nec->j
-	... when exists
-	    when any
-	} 
-	| 
-	T F(
-	+nec_t *nec,
-	PL
-	 )
-	{
-	... when exists
-	    when any
-	nec->j
-	... when exists
-	    when any
-	}
-	)
+    Fix support for complex double in parameter lists
+    
+    It seems that `parameter list` does _not_ support `complex double`,
+    but it _does_ support `double complex`.  Coccinelle already supports
+    `double complex` and `float complex` so this commit adds grammar support
+    for the reverse of `complex double` and `complex float`.
+    
+    With this SmPL:
+    
+            @ rule1 @
+            type T;
+            identifier F, j;
+            typedef nec_t;
+            parameter list PL;
+            @@
+    
+            T F(
+            +nec_t *nec,
+            PL
+             )
+            {
+            ... when exists
+                    when any
+            nec->j
+            ... when exists
+                    when any
+            }
+    
+    This works:
+    
+            void qdsrc( int is, double complex v, double complex *e )
+            {
+              is--;
+              i= nec->data.icon1[is];
+            }
+    
+    but this did not:
+    
+            void qdsrc( int is, complex double v, complex double *e )
+            {
+              is--;
+              i= nec->data.icon1[is];
+            }
+    
+    Patch v2: Fixed error: "strange type2, maybe because of weird order: complex double"
+      when patching this example function:
+    	static void Near_Field_Total( complex double ex, complex double ey, complex double ez, int nfeh, int idx )
+    	{
+    		nec->x++;
+    		return;
+    	}
 
-But placing the function body after the disjunction block did not, even 
-though it is easier to read and does not duplicate content:
+diff --git a/engine/cocci_vs_c.ml b/engine/cocci_vs_c.ml
+index 019ee3b..8c1fe8e 100644
+--- a/engine/cocci_vs_c.ml
++++ b/engine/cocci_vs_c.ml
+@@ -408,7 +408,9 @@ let split_signb_baseb_ii (baseb, ii) =
+   | B.FloatType (B.CFloat),["float",i1] -> None, [i1]
+   | B.FloatType (B.CDouble),["double",i1] -> None, [i1]
+   | B.FloatType (B.CFloatComplex),["float",i1;"complex",i2] -> None, [i1;i2]
++  | B.FloatType (B.CFloatComplex),["complex",i1;"float",i2] -> None, [i1;i2]
+   | B.FloatType (B.CDoubleComplex),["double",i1;"complex",i2] -> None, [i1;i2]
++  | B.FloatType (B.CDoubleComplex),["complex",i1;"double",i2] -> None, [i1;i2]
+   | B.FloatType (B.CLongDouble),["long",i1;"double",i2] -> None,[i1;i2]
+   | B.FloatType (B.CLongDoubleComplex),["long",i1;"double",i2;"complex",i3] ->
+       None,[i1;i2;i3]
+diff --git a/parsing_c/parser_c.mly b/parsing_c/parser_c.mly
+index 949c0bf..22fe5e7 100644
+--- a/parsing_c/parser_c.mly
++++ b/parsing_c/parser_c.mly
+@@ -1270,7 +1270,9 @@ type_spec2:
+  | Tfloat               { Right3 (BaseType (FloatType CFloat)),  [$1]}
+  | Tdouble              { Right3 (BaseType (FloatType CDouble)), [$1] }
+  | Tfloat Tcomplex      { Right3 (BaseType (FloatType CFloatComplex)),  [$1;$2]}
++ | Tcomplex Tfloat      { Right3 (BaseType (FloatType CFloatComplex)),  [$1;$2]}
+  | Tdouble Tcomplex     { Right3 (BaseType (FloatType CDoubleComplex)), [$1;$2] }
++ | Tcomplex Tdouble     { Right3 (BaseType (FloatType CDoubleComplex)), [$1;$2] }
+  | Tsize_t              { Right3 (BaseType SizeType),            [$1] }
+  | Tssize_t             { Right3 (BaseType SSizeType),           [$1] }
+  | Tptrdiff_t           { Right3 (BaseType PtrDiffType),         [$1] }
 
-	@ prefix_nec_arg @
-	type T;
-	identifier F, j;
-	typedef nec_t;
-	parameter list PL;
-	@@
-	( 
-	T F(
-	-void
-	+nec_t *nec
-	 )
-	| 
-	T F(
-	+nec_t *nec
-	 )
-	| 
-	T F(
-	+nec_t *nec,
-	PL
-	 )
-	)
-	{
-	... when exists
-	    when any
-	nec->j
-	... when exists
-	    when any
-	}
-
-Is that expected?  
-
-It means there must be a longer SmPL, which is ok, but for my own 
-curiosity: is there a shorter form?
-
-
---
-Eric Wheeler
