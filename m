@@ -4,19 +4,18 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 082A7C433EF
-	for <cocci@archiver.kernel.org>; Sat, 19 Mar 2022 20:12:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 01CB3C433EF
+	for <cocci@archiver.kernel.org>; Sat, 19 Mar 2022 20:13:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=date:from:to:cc:in-reply-to:message-id:references:
-   mime-version:subject:reply-to:sender:list-id:list-help:
-   list-subscribe:list-unsubscribe:list-post:list-owner:
-   list-archive;
-  bh=RIThztDeLEmkfYylMYnOTllUG9hauODAoIYQJWHhSwc=;
-  b=ApwYhGkqYwM+t0Bcq4sLw/pD9DPcvIg/fNFXAfDP6HZHNQ09sFehrsUY
-   Ui46Uw49STn0zHpkFKxCMpeVeBIaC8Zh4oPAEX2qKtYtZq70N2xxsCkUa
-   GuyMhY1gycwq+MJasqAAZJx+2HhRAfD5c0h4aKFLYYOwZoOrmGHI9qqME
-   0=;
+  h=date:from:to:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=N0o5OUk9Igt2Fg1jWHiZAtrOfRcWr/zhQaYBCluOWeE=;
+  b=Vej6SASm3vwX1TYzCsjtu8zQ+TFYZX2ELJ2zsRdRKHiJ44YXy2Pwv1Su
+   oTshNfe7HDzQy4zlGbNklYOcvkvI6zH5t3aEmql26FQU0/z4lZdwpjZM0
+   6ODNX2m3t4OA/s5r8uDW8gVFNxOIg8pMU49SB37ZUGVBzpWyibYLORnQ1
+   c=;
 Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
   domain of cocci-owner@inria.fr is inclined to not designate
   128.93.162.160 as permitted sender) identity=mailfrom;
@@ -33,44 +32,40 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   receiver=mail2-relais-roc.national.inria.fr;
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
-Authentication-Results: mail2-relais-roc.national.inria.fr; spf=SoftFail smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=pass (signature verified) header.i=@inria.fr
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=SoftFail smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@inria.fr
 X-IronPort-AV: E=Sophos;i="5.90,195,1643670000"; 
-   d="scan'208";a="27025300"
+   d="scan'208";a="27025335"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 19 Mar 2022 21:12:56 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 19 Mar 2022 21:13:18 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 3988BE020F; Sat, 19 Mar 2022 21:12:56 +0100 (CET)
-Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by sympa.inria.fr (Postfix) with ESMTPS id 04A75E0069
-	for <cocci@sympa.inria.fr>; Sat, 19 Mar 2022 21:12:51 +0100 (CET)
+	id 1AED8E020F; Sat, 19 Mar 2022 21:13:18 +0100 (CET)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id 74DF9E0069
+	for <cocci@sympa.inria.fr>; Sat, 19 Mar 2022 21:13:16 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=RIThztDeLEmkfYylMYnOTllUG9hauODAoIYQJWHhSwc=;
-  b=eJWVHO4DB9EODADiMumHvMEwxLTe3QVH4N+RVHDKSFE64TRQgCiGIqBe
-   LhoWyRV0PdSIMHHnkMft42sycCPt+/npmXeEaesihMWn1o7trFm6BKSuU
-   cIYsvmlClpN+rphInlCwuUCw04JOr11JW4Y4nFjsN7jCbwCr2rHTJ3L6/
-   M=;
+  h=date:from:to:subject:message-id:mime-version;
+  bh=N0o5OUk9Igt2Fg1jWHiZAtrOfRcWr/zhQaYBCluOWeE=;
+  b=JVZSqL8qDr8vhM+XGYgKGZterFZ7D/B4R1hGg/hpICi5b4hFLyPTUzU7
+   iJeb0BACvp5Fy4TragoV9Kgq4mYnBFR9MsDmrSgByoXgjmRmSFBZKa0Ol
+   Vd+4+Vc8U7zLsma2rYek7ljgho6wdcsWpflN/LA7MMehVT+vnfxSmyfK0
+   k=;
 X-IronPort-AV: E=Sophos;i="5.90,195,1643670000"; 
-   d="scan'208";a="9038086"
+   d="scan'208";a="27025334"
 Received: from 203.107.68.85.rev.sfr.net (HELO hadrien) ([85.68.107.203])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2022 21:12:50 +0100
-Date: Sat, 19 Mar 2022 21:12:50 +0100 (CET)
+  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2022 21:13:16 +0100
+Date: Sat, 19 Mar 2022 21:13:16 +0100 (CET)
 From: Julia Lawall <julia.lawall@inria.fr>
 X-X-Sender: jll@hadrien
-To: Eric Wheeler <cocci@lists.ewheeler.net>
-cc: Markus Elfring <Markus.Elfring@web.de>, cocci@inria.fr
-In-Reply-To: <6a41b56e-84bb-ead8-87c3-6d2d4421df7c@ewheeler.net>
-Message-ID: <alpine.DEB.2.22.394.2203192110540.3204@hadrien>
-References: <30124bde-34e-65ca-d5bc-fc3255ccda3@ewheeler.net> <alpine.DEB.2.22.394.2203190922070.3204@hadrien> <66b66e5a-c024-7d0b-c84c-d780d5ce41f6@web.de> <6a41b56e-84bb-ead8-87c3-6d2d4421df7c@ewheeler.net>
+To: cocci@inria.fr
+Message-ID: <alpine.DEB.2.22.394.2203192112520.3204@hadrien>
 User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Subject: Re: [cocci] Bug with '*' to display a match on the subsequent rule.
+Subject: [cocci] C++
 Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 254
+X-Sequence: 255
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -83,31 +78,8 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <http://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <http://sympa.inria.fr/sympa/arcsearch_id/cocci/2022-03/alpine.DEB.2.22.394.2203192110540.3204%40hadrien>
+Archived-At: <http://sympa.inria.fr/sympa/arcsearch_id/cocci/2022-03/alpine.DEB.2.22.394.2203192112520.3204%40hadrien>
 
-
-
-On Sat, 19 Mar 2022, Eric Wheeler wrote:
-
-> On Sat, 19 Mar 2022, Markus Elfring wrote:
-> > > You can't mix * and + in a single semantic patch.  The patch you get would
-> > > be strange.  There would be a + for the code that you want to add and a -
-> > > for the code that you want to highlight.
-> >
-> >
-> > How do you think to provide a better error message from the Coccinelle software
-> > for a questionable mixture of SmPL data processing indicators?
->
-> Its true, that would be nice.  I spent 20 minutes trying to figure out
-> what I had wrong with my SmPL.  I had added the * for debugging and forgot
-> about it.  After reducing it down to nothing it became clear that '*' was
-> the issue.
->
-> A friendly error like "You can't mix * and + in a single semantic patch.
-> The patch you get would be strange" would be useful ;)
-
-This has been fixed.  It resulted from a well intentioned but incorrect
-attempt to provide file names and line numbers for this kind of problem,
-which resulted in discarding the actual error message.
+There have been some improvements in the parsing of class definitions.
 
 julia
