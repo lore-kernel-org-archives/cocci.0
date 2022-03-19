@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DFA09C433EF
-	for <cocci@archiver.kernel.org>; Sat, 19 Mar 2022 19:39:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 082A7C433EF
+	for <cocci@archiver.kernel.org>; Sat, 19 Mar 2022 20:12:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:in-reply-to:message-id:references:
    mime-version:subject:reply-to:sender:list-id:list-help:
    list-subscribe:list-unsubscribe:list-post:list-owner:
    list-archive;
-  bh=3FC4FihtNANtmzSxY3dRUhOwj7j2BDE+SwC80lGJgMA=;
-  b=nN4LmZ7mhav6huy2JQkR8qHY2txw/s76LdSjgqlkvsQribGymHufnhNg
-   Gdl6TFlhf8jMJM6oyNQl/ygyjEregV878jLAJ96uDZlUuLG6ZufMeSBjE
-   C/d+pg5xmsq0SoqRA9ABZ9x8gwUzII7EzipWTizymW+yRrmMRx/0YOM7x
-   c=;
+  bh=RIThztDeLEmkfYylMYnOTllUG9hauODAoIYQJWHhSwc=;
+  b=ApwYhGkqYwM+t0Bcq4sLw/pD9DPcvIg/fNFXAfDP6HZHNQ09sFehrsUY
+   Ui46Uw49STn0zHpkFKxCMpeVeBIaC8Zh4oPAEX2qKtYtZq70N2xxsCkUa
+   GuyMhY1gycwq+MJasqAAZJx+2HhRAfD5c0h4aKFLYYOwZoOrmGHI9qqME
+   0=;
 Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
   domain of cocci-owner@inria.fr is inclined to not designate
   128.93.162.160 as permitted sender) identity=mailfrom;
@@ -35,43 +35,42 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
 Authentication-Results: mail2-relais-roc.national.inria.fr; spf=SoftFail smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=pass (signature verified) header.i=@inria.fr
 X-IronPort-AV: E=Sophos;i="5.90,195,1643670000"; 
-   d="scan'208";a="27021873"
+   d="scan'208";a="27025300"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 19 Mar 2022 20:39:10 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 19 Mar 2022 21:12:56 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id E22ACE0210; Sat, 19 Mar 2022 20:39:09 +0100 (CET)
-Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by sympa.inria.fr (Postfix) with ESMTPS id 4DEEEE0069
-	for <cocci@sympa.inria.fr>; Sat, 19 Mar 2022 20:39:09 +0100 (CET)
+	id 3988BE020F; Sat, 19 Mar 2022 21:12:56 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 04A75E0069
+	for <cocci@sympa.inria.fr>; Sat, 19 Mar 2022 21:12:51 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=3FC4FihtNANtmzSxY3dRUhOwj7j2BDE+SwC80lGJgMA=;
-  b=Z6VShvpS6Cf5p/OgOzTxohAN94FAGSXkspIa4BwolFdU92rUqejXzs+s
-   NXlla2k+V9O+sRM+6CnfTpvBnI3XM71fhxS5fSjkyGejXxZW5aKpjFxLx
-   aQQXCDKbfk8DAfHQtB9NNq7gNcFiXv1OM/CCQUn6eAOMEvAMI5jDC+AsN
-   w=;
+  bh=RIThztDeLEmkfYylMYnOTllUG9hauODAoIYQJWHhSwc=;
+  b=eJWVHO4DB9EODADiMumHvMEwxLTe3QVH4N+RVHDKSFE64TRQgCiGIqBe
+   LhoWyRV0PdSIMHHnkMft42sycCPt+/npmXeEaesihMWn1o7trFm6BKSuU
+   cIYsvmlClpN+rphInlCwuUCw04JOr11JW4Y4nFjsN7jCbwCr2rHTJ3L6/
+   M=;
 X-IronPort-AV: E=Sophos;i="5.90,195,1643670000"; 
-   d="scan'208";a="27021872"
+   d="scan'208";a="9038086"
 Received: from 203.107.68.85.rev.sfr.net (HELO hadrien) ([85.68.107.203])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2022 20:39:09 +0100
-Date: Sat, 19 Mar 2022 20:39:09 +0100 (CET)
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2022 21:12:50 +0100
+Date: Sat, 19 Mar 2022 21:12:50 +0100 (CET)
 From: Julia Lawall <julia.lawall@inria.fr>
 X-X-Sender: jll@hadrien
 To: Eric Wheeler <cocci@lists.ewheeler.net>
-cc: cocci@inria.fr
-In-Reply-To: <a9b43b8f-7f87-5e55-fa98-cfd888848b7@ewheeler.net>
-Message-ID: <alpine.DEB.2.22.394.2203192038220.3204@hadrien>
-References: <a9b43b8f-7f87-5e55-fa98-cfd888848b7@ewheeler.net>
+cc: Markus Elfring <Markus.Elfring@web.de>, cocci@inria.fr
+In-Reply-To: <6a41b56e-84bb-ead8-87c3-6d2d4421df7c@ewheeler.net>
+Message-ID: <alpine.DEB.2.22.394.2203192110540.3204@hadrien>
+References: <30124bde-34e-65ca-d5bc-fc3255ccda3@ewheeler.net> <alpine.DEB.2.22.394.2203190922070.3204@hadrien> <66b66e5a-c024-7d0b-c84c-d780d5ce41f6@web.de> <6a41b56e-84bb-ead8-87c3-6d2d4421df7c@ewheeler.net>
 User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Subject: Re: [cocci] Using `parallel` to run over lots of .c files and
- avoiding stack overflows.
+Subject: Re: [cocci] Bug with '*' to display a match on the subsequent rule.
 Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 253
+X-Sequence: 254
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -84,38 +83,31 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <http://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <http://sympa.inria.fr/sympa/arcsearch_id/cocci/2022-03/alpine.DEB.2.22.394.2203192038220.3204%40hadrien>
+Archived-At: <http://sympa.inria.fr/sympa/arcsearch_id/cocci/2022-03/alpine.DEB.2.22.394.2203192110540.3204%40hadrien>
 
 
 
 On Sat, 19 Mar 2022, Eric Wheeler wrote:
 
-> Hi All,
+> On Sat, 19 Mar 2022, Markus Elfring wrote:
+> > > You can't mix * and + in a single semantic patch.  The patch you get would
+> > > be strange.  There would be a + for the code that you want to add and a -
+> > > for the code that you want to highlight.
+> >
+> >
+> > How do you think to provide a better error message from the Coccinelle software
+> > for a questionable mixture of SmPL data processing indicators?
 >
-> Just a quick tip for others (like me) who are new to Coccinelle:
+> Its true, that would be nice.  I spent 20 minutes trying to figure out
+> what I had wrong with my SmPL.  I had added the * for debugging and forgot
+> about it.  After reducing it down to nothing it became clear that '*' was
+> the issue.
 >
-> You might already use this, but if not, here's a hint for doing lots of
-> replacements in parallel:
->
-> 	parallel -j24 spatch --sp-file smpl.cocci {} --in-place ::: *.c
->
-> If the SmPL depends on interactions between files then `parallel` won't
-> work, but if the changes work per-file then it runs much faster with lots
-> of big .c files.
->
-> In cases where you do need to run over lots of files and they _do_
-> interact, you might get a Stack Overflow error.  In this case set
-> something like this for 1GB of stack space:
-> 	ulimit -s $((1024*1024))
->
-> In my case spatch needed 1GB of stack and 2.4GB of RAM.  It took a few
-> minutes and finished thousands of replacements!
->
-> Julia, you might add this to documentation if you think it would be
-> useful.
+> A friendly error like "You can't mix * and + in a single semantic patch.
+> The patch you get would be strange" would be useful ;)
 
-I'm not sure what you are trying to do.  You can give spatch the name of a
-directory and the argument -j N for a number for cores N, ad it will run
-in parallel on the files in the directroy.
+This has been fixed.  It resulted from a well intentioned but incorrect
+attempt to provide file names and line numbers for this kind of problem,
+which resulted in discarding the actual error message.
 
 julia
