@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 78C68C433EF
-	for <cocci@archiver.kernel.org>; Sun,  3 Apr 2022 16:27:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 109E5C433EF
+	for <cocci@archiver.kernel.org>; Sun,  3 Apr 2022 16:44:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=date:from:to:cc:in-reply-to:message-id:references:
-   mime-version:subject:reply-to:sender:list-id:list-help:
-   list-subscribe:list-unsubscribe:list-post:list-owner:
-   list-archive;
-  bh=f4amluIFrlGxxOXuQP2lgpEamNUaVxV75Dyx54/yhzM=;
-  b=FaUWzPTYbejmwwNXHQUZ+xWzBs72OuIfRpUnGcvjWELg77oHti6hsbOu
-   UojVsL99E1j8RhPvJays1nGuQyjvaPmELiDJ+SrCkkNKwv5bOIPTp0hzw
-   gt+Tp7A9oDk8N2DYtyl17glzEHdOFkDpNgQXfirpGCRG0Jbn1DPlJh3St
-   c=;
+  h=message-id:date:mime-version:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=Wbtwe9c/c4JotPvkp3h0n4Nf9apvcAyf9BWl7G5HwqY=;
+  b=WD44blHVObD88GuEF8eaMm+1Db5B11NRFB0ufbBZQwkKEzEv2TrfMwac
+   jeeiaaVXp2iv61FQFDHQ2aMBST0n480L/JDsj6kVooSv34drw3BR5TW4z
+   6+DIH/NhlyWo9CUzje/WdjOIe8QvZdoipebW86/Gzlr5ju8+7vxvJXsPh
+   g=;
 Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
   domain of cocci-owner@inria.fr is inclined to not designate
   128.93.162.160 as permitted sender) identity=mailfrom;
@@ -33,45 +33,72 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   receiver=mail2-relais-roc.national.inria.fr;
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
-Authentication-Results: mail2-relais-roc.national.inria.fr; spf=SoftFail smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=pass (signature verified) header.i=@inria.fr
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=SoftFail smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=pass (signature verified) header.i=@univ-grenoble-alpes.fr
 X-IronPort-AV: E=Sophos;i="5.90,231,1643670000"; 
-   d="scan'208";a="29754398"
+   d="scan'208";a="29755204"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 03 Apr 2022 18:27:44 +0200
+  by mail2-relais-roc.national.inria.fr with ESMTP; 03 Apr 2022 18:44:49 +0200
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 9D58AE0297; Sun,  3 Apr 2022 18:27:44 +0200 (CEST)
-Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by sympa.inria.fr (Postfix) with ESMTPS id 381A8E00A8
-	for <cocci@sympa.inria.fr>; Sun,  3 Apr 2022 18:27:42 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=inria.fr; s=dc;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=f4amluIFrlGxxOXuQP2lgpEamNUaVxV75Dyx54/yhzM=;
-  b=nvBlzDVKl9ME5KBSO/uzXw54SSqjfxvZC436LJ14c6Lg4Q/5STv7njg1
-   +R9h5H4WgyMu086jvs2nflCP/Qiuvpvia0OA/yDHdm+zEa2Cx0ruoP89y
-   LlBBs368AlYBlQE77VOoxZXwpYfjbDfXJZh/mHIFdxOuAv38EBALrf1qy
-   s=;
+	id 2663CE033B; Sun,  3 Apr 2022 18:44:49 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id A9980E00A8
+	for <cocci@sympa.inria.fr>; Sun,  3 Apr 2022 18:44:44 +0200 (CEST)
+IronPort-SDR: WVOXezlIEy2pF+Hh/Gj+Sxbq4gi4BJDBhH0aFc8P0rwZjjSHdsWm9xssziIfkf82L/03rmFIYN
+ X2hNfHbOqpEaP6nzaaalIEf4UEXGvIEms2tjQ0AvvYb66qN1GlNXABBQU039hHpb9BbLwjF55y
+ pyM1GeFviPQOopSxa6mIA7Ac9yBYUJVICom2VRj1wv6B4iTY74lqym9O7HwEm89jRBTTZUocmD
+ HvP9uu5LsZmNXSfL01iL835+s0cjN84AJ219gewF9jSC0XqfNKdKgQKNsKdJYccZbZYS5RMN5t
+ XLjjs2bd7AUZy9WX6u6s82r3
 X-IronPort-AV: E=Sophos;i="5.90,231,1643670000"; 
-   d="scan'208";a="10414589"
-Received: from 203.107.68.85.rev.sfr.net (HELO hadrien) ([85.68.107.203])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2022 18:27:42 +0200
-Date: Sun, 3 Apr 2022 18:27:41 +0200 (CEST)
-From: Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
-To: =?ISO-8859-15?Q?=C6var_Arnfj=F6r=F0_Bjarmason?= <avarab@gmail.com>
-cc: Eric Wheeler <cocci@lists.ewheeler.net>, cocci@inria.fr
-In-Reply-To: <220403.86bkxikuwy.gmgdl@evledraar.gmail.com>
-Message-ID: <alpine.DEB.2.22.394.2204031823000.3114@hadrien>
-References: <a9b43b8f-7f87-5e55-fa98-cfd888848b7@ewheeler.net> <220403.86bkxikuwy.gmgdl@evledraar.gmail.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+   d="scan'208";a="29755198"
+X-MGA-submission: =?us-ascii?q?MDEe/fseI/xQj6t3R3cWWROyqYiFMp6BpBb1XB?=
+ =?us-ascii?q?wFgHQnc3btYTc6QHpIa1p1K9MxZjqZe6S9+Oymh5AZnU0XtH3BLnjwsd?=
+ =?us-ascii?q?XExJRoYQMC1eu7DTc5nICzWrwt9HTQUm/cCZcXeJwPc0KSd/98L25vB1?=
+ =?us-ascii?q?xkHHxMJA8+9svv1tvobNzM/Q=3D=3D?=
+Received: from zm-mta-out-3.u-ga.fr ([152.77.200.56])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2022 18:44:44 +0200
+Received: from mailhub.u-ga.fr (mailhub-1.u-ga.fr [129.88.178.98])
+	by zm-mta-out-3.u-ga.fr (Postfix) with ESMTP id 2E4DA402AA;
+	Sun,  3 Apr 2022 18:44:44 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+	d=univ-grenoble-alpes.fr; s=2020; t=1649004284;
+	bh=aGgVtM/+11Xtk1P5ipHQHpj1yc/aLAuwao3xL9R2/vc=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=DWz9k9kz+6tJtB08/6K3StnykpUCM9KrUuyXNBz8Ygwg3um6XrjlJYLDaDqjM0/8y
+	 WAB37NXTrrKuH+UwcWYdw4UDlAuFcsmxrNI7tI1q5RhTyfKdNg4LF/XgCAHWIdlJRz
+	 HjRG05WJqHkrG9loXt5yCY98v5YfKbY+4eN7vGSWVyFevcRGwZ8XdOuZz4xqFDCKaY
+	 LlQeN1BoaBGhxrEchUv+6NiKpDjuUli2ap3DXpGPJMpduSoYGhQxpL5Y7vEeoueOnJ
+	 MmqFL/rZoSnJJ85Lsj3U/WE5sYtxxW6q/d2QQRTk9RixxlLm9gfGK/LNTJ/nGMEnzw
+	 /IKdiqtq8EELA==
+Received: from smtps.univ-grenoble-alpes.fr (smtps3.u-ga.fr [195.83.24.62])
+	by mailhub.u-ga.fr (Postfix) with ESMTP id 2C52C1000AD;
+	Sun,  3 Apr 2022 18:44:44 +0200 (CEST)
+Received: from [147.171.161.135] (pers-161-135.vpn.u-ga.fr [147.171.161.135])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits))
+	(No client certificate requested)
+	(Authenticated sender: palixn@univ-grenoble-alpes.fr)
+	by smtps.univ-grenoble-alpes.fr (Postfix) with ESMTPSA id 149AB4005E;
+	Sun,  3 Apr 2022 18:44:44 +0200 (CEST)
+Message-ID: <4715acb0-7b7a-9671-bd15-e5dfd36af74e@univ-grenoble-alpes.fr>
+Date: Sun, 3 Apr 2022 18:44:43 +0200
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1172631434-1649003261=:3114"
-Subject: Re: [cocci] using gcc & clang -MF to reduce spatch work (was: Using
- `parallel` [...])
-Reply-To: Julia Lawall <julia.lawall@inria.fr>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: fr
+To: Eric Wheeler <cocci@lists.ewheeler.net>
+Cc: cocci@inria.fr
+References: <4f40e17b-67ed-97f0-10ca-41285d7c3d1a@ewheeler.net>
+ <alpine.DEB.2.22.394.2204022320520.3208@hadrien>
+ <9a8c392a-413b-afc0-16c5-a013e403372b@web.de>
+From: Nicolas Palix <nicolas.palix@univ-grenoble-alpes.fr>
+In-Reply-To: <9a8c392a-413b-afc0-16c5-a013e403372b@web.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Greylist: Whitelist-UGA SMTP Authentifie (palixn@univ-grenoble-alpes.fr) via submission-587 ACL (41)
+Subject: Re: [cocci] Completing documentation for SmPL scripting interfaces
+Reply-To: Nicolas Palix <nicolas.palix@univ-grenoble-alpes.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 350
+X-Sequence: 351
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -84,106 +111,34 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <http://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <http://sympa.inria.fr/sympa/arcsearch_id/cocci/2022-04/alpine.DEB.2.22.394.2204031823000.3114%40hadrien>
+Archived-At: <http://sympa.inria.fr/sympa/arcsearch_id/cocci/2022-04/4715acb0-7b7a-9671-bd15-e5dfd36af74e%40univ-grenoble-alpes.fr>
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On 03/04/2022 16:55, Markus Elfring wrote:
+>>> Also is there a reference for the `coccinelle.` and `cocci.` python calls
+>>> that seem to be available in a script:python section?
+>> There is Coccilib.3cocci, but that is for ocaml.
+>>
+>> My understanding is that there are reflective features in python that let
+>> you find out what functions are available.  python/python_documentation.md
+>> in the source tree also has some information.  Or look at the code in
+>> python/coccilib.
+> 
+> 
+> Would you like to improve the documentation for these programming interfaces?
+> https://gitlab.inria.fr/coccinelle/coccinelle/-/blob/5069eaeadd731ecdd99e7a6f4465c286a2792354/python/python_documentation.md#fields-and-methods-exposed-via-cocci-object
+> https://github.com/coccinelle/coccinelle/blob/31bf3aefce245e43cc58f6b6ff49fc9b8e9084ff/python/python_documentation.md#fields-and-methods-exposed-via-cocci-object
+> 
+> 
+> Should the method â€œcocci.make_expr()â€ be explained also?
 
---8323329-1172631434-1649003261=:3114
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
+An example:
+
+https://gitlab.inria.fr/coccinelle/coccinelle/-/commit/d0666cf3f6faa4516bd42bac1f319d6bc894e32d
+> 
+> Regards,
+> Markus
+> 
 
 
-
-On Sun, 3 Apr 2022, Ævar Arnfjörð Bjarmason wrote:
-
->
-> On Sat, Mar 19 2022, Eric Wheeler wrote:
->
-> > Hi All,
-> >
-> > Just a quick tip for others (like me) who are new to Coccinelle:
-> >
-> > You might already use this, but if not, here's a hint for doing lots of
-> > replacements in parallel:
-> >
-> > 	parallel -j24 spatch --sp-file smpl.cocci {} --in-place ::: *.c
-> >
-> > If the SmPL depends on interactions between files then `parallel` won't
-> > work, but if the changes work per-file then it runs much faster with lots
-> > of big .c files.
-> >
-> > In cases where you do need to run over lots of files and they _do_
-> > interact, you might get a Stack Overflow error.  In this case set
-> > something like this for 1GB of stack space:
-> > 	ulimit -s $((1024*1024))
-> >
-> > In my case spatch needed 1GB of stack and 2.4GB of RAM.  It took a few
-> > minutes and finished thousands of replacements!
-> >
-> > Julia, you might add this to documentation if you think it would be
-> > useful.
->
-> To change the $subject to an alternate approach that may work for you,
-> and that I've been experimenting with.
->
-> If you use GCC or Clang to compile your C code you can use the -MF
-> option to emit a dependency tree for your *.c files, i.e. your compiler
-> is already doing all the work that spatch needs to re-do to find
-> includes.
->
-> But more importantly, if you have 100 files and change a *.h only used
-> by 10 of them, you'll only need to invoke spatch on those 10 files.
->
-> I had a question related to this here on-list in
-> <211116.86h7ccox6b.gmgdl@evledraar.gmail.com>, i.e. you can use
-> --no-includes and instead feed the list of files to be included to
-> spatch. If those files come from your dependencies made with -MF you
-> migth be able to assume they're correct.
->
-> Well, not if your *.o file is newer than your *.c, as it might have
-> grown new includes, but in this sub-example you'd make your *.c.cocci-ok
-> (or whatever) generation depend on the corresponding *.o, or would
-> otherwise compile first (which is much, much faster than spatch,
-> especially with ccache).
->
-> I don't have any stand-alone example for use, sorry, but basically in
-> make syntax something like:
->
-> 	# get dependencies from our last compilation
-> 	-inlude $(wildcard *.mak)
-> 	# next compilation
-> 	%.o: %.c
-> 		$(CC) ... -MF $@.mak -MT $@ -MT $@.cocci-ok $<
-> 	%.o.cocci-ok: %.o
-> 		spatch ...
->
-> I just typed that up now, and there's sure to be syntax errors etc, but
-> I think you get the idea, i.e. you'll save yourself spatch work by
-> bootstrapping from your C compilation.
->
-> Also note that you don't need to run GNU make, if you build with
-> something else you can (with a tiny bit of munging) change the make
-> syntax it emits to just a list of files to depend on (the easiest way to
-> parse it being to invoke a make one-liner to spew it out for you).
->
-> I think it would be really useful if spatch could spew out the list of
-> headers it understood from a given file.
-
-Maybe the --verbose-includes option will help.
-
-There is also the option --use-patch-diff that will check only the
-uncommitted changes in a given directory.
-
-julia
-
->
-> Depending on your compilation (e.g. ifdefs) the two may not 1=1 map, but
-> you could also do this CC trick in reverse, i.e. if you ran spatch first
-> you could feed the resulting dependency graph from spatch to your C
-> compiler.
->
-> In pracice I haven't found reason to worry about that lack of 1=1
-> mapping.
->
---8323329-1172631434-1649003261=:3114--
+-- 
+Nicolas Palix
