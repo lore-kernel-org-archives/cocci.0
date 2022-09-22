@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 69CA2ECAAD8
-	for <cocci@archiver.kernel.org>; Wed, 21 Sep 2022 19:26:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 78AB9C54EE9
+	for <cocci@archiver.kernel.org>; Thu, 22 Sep 2022 12:27:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:in-reply-to:message-id:references:
    mime-version:subject:reply-to:sender:list-id:list-help:
    list-subscribe:list-unsubscribe:list-post:list-owner:
    list-archive;
-  bh=66rcljKTkOZrwZgqNEXo+xZF7AoDxDT9ScP9aV+15Gc=;
-  b=thl9Hk8wm8F/u5vPaa48g7i3LGA0vn4yJcYMbGAo5jWWH1f21vgmYaNd
-   JZfZDYHNCYaTSh+hUnr+R4ulgp2AxFActc2bN5c7BnecPovLcvzS5aTaK
-   rIl/5BON7RLIv8M9DtqwJf+eyaKZ9+R0trKt+FQLLgDMiRyfIRMweEgq9
-   c=;
+  bh=lPloPoZbJjPIgb5mArkM29FxJyDIFGPUMK34rQ1f3EU=;
+  b=cGP6voBZWX7tbufLPBmYqWAzx5243cfB0O/Q+9OUoIrkq6/yyoOtkWRc
+   KtlMR3zs53po0GYBgr0CPu84xpTN6+CuQnL8j6PqIDJckb5cKepadPouR
+   pBKE2sHm50sJU/didAnTu8xVD077Lf00mVWnyveuY6W44e7uUwKgmia/Z
+   E=;
 Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
   domain of cocci-owner@inria.fr is inclined to not designate
   128.93.162.160 as permitted sender) identity=mailfrom;
@@ -33,46 +33,44 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   receiver=mail2-relais-roc.national.inria.fr;
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
-Authentication-Results: mail2-relais-roc.national.inria.fr; spf=SoftFail smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@inria.fr
-X-IronPort-AV: E=Sophos;i="5.93,334,1654552800"; 
-   d="scan'208";a="53913216"
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=SoftFail smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=pass (signature verified) header.i=@inria.fr
+X-IronPort-AV: E=Sophos;i="5.93,335,1654552800"; 
+   d="scan'208";a="54036319"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 21 Sep 2022 21:26:17 +0200
+  by mail2-relais-roc.national.inria.fr with ESMTP; 22 Sep 2022 14:27:27 +0200
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 3B7A2E0120; Wed, 21 Sep 2022 21:26:17 +0200 (CEST)
+	id 06041E0235; Thu, 22 Sep 2022 14:27:27 +0200 (CEST)
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by sympa.inria.fr (Postfix) with ESMTPS id AF0F8E008B
-	for <cocci@sympa.inria.fr>; Wed, 21 Sep 2022 21:26:11 +0200 (CEST)
+	by sympa.inria.fr (Postfix) with ESMTPS id 26335E0090
+	for <cocci@sympa.inria.fr>; Thu, 22 Sep 2022 14:27:25 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=66rcljKTkOZrwZgqNEXo+xZF7AoDxDT9ScP9aV+15Gc=;
-  b=rVC//fao0B9QMsmbV5dysTAr4nSlIY7m9ISq3FAz53+FQ9oxEMyp3Bk8
-   NRkCoHPbjvA3n9vo6pM9oMPUTDPZ/HaE+DkFlbIzz8CmOQPLP9b8cP4o8
-   MZPDwjSxm6NAhj6BmH/2EEVHw851vN4QJNN5u/R6vKSslehwh59e/M3f2
-   s=;
-X-IronPort-AV: E=Sophos;i="5.93,334,1654552800"; 
-   d="scan'208";a="24337809"
-Received: from 51.123.68.85.rev.sfr.net (HELO hadrien) ([85.68.123.51])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2022 21:26:11 +0200
-Date: Wed, 21 Sep 2022 21:26:10 +0200 (CEST)
+  bh=lPloPoZbJjPIgb5mArkM29FxJyDIFGPUMK34rQ1f3EU=;
+  b=Wiipb0ePkikHeaNMl5Xhz7wVgpGvtIqrARmvuBvJ285m/xwal610TPaF
+   pKef0atjqRK3WQ7X51CXY5f4ipoR1C98r10xPNL/QgMyJmbXvdAdu77HY
+   FYD4DXKDr5GFMBJ/vAKlKtRYlKVtCFRI6YzLUoWXuN2KxkAAWE9J2m2nT
+   Y=;
+X-IronPort-AV: E=Sophos;i="5.93,335,1654552800"; 
+   d="scan'208";a="24408251"
+Received: from dt-lawall.paris.inria.fr ([128.93.67.65])
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2022 14:27:25 +0200
+Date: Thu, 22 Sep 2022 14:27:24 +0200 (CEST)
 From: Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-cc: cocci@inria.fr, linux-kernel@vger.kernel.org, 
-    Nicolas Palix <nicolas.palix@imag.fr>
-In-Reply-To: <20220921091341.217365-1-gregkh@linuxfoundation.org>
-Message-ID: <alpine.DEB.2.22.394.2209212125590.2783@hadrien>
-References: <20220921091341.217365-1-gregkh@linuxfoundation.org>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+To: Yuan Can <yuancan@huawei.com>
+cc: Markus Elfring <Markus.Elfring@web.de>, cocci@inria.fr, 
+    Nicolas Palix <nicolas.palix@imag.fr>, kernel-janitors@vger.kernel.org
+In-Reply-To: <1a6f854f-cf97-3f69-a897-cf92328de986@huawei.com>
+Message-ID: <4e1f7b6-5c3f-6973-fdd8-6d294a841d26@inria.fr>
+References: <20220920025820.105924-1-yuancan@huawei.com> <0896e030-5060-08e7-d0de-c63d77c9ef27@web.de> <alpine.DEB.2.22.394.2209202211430.2740@hadrien> <92f6a7e6-cfbb-ee05-bbdd-dfa4c9abad4f@web.de> <1a6f854f-cf97-3f69-a897-cf92328de986@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Subject: Re: [cocci] [PATCH] scripts: coccicheck: use "grep -E" instead of
- "egrep"
+Content-Type: multipart/mixed; boundary="8323329-896390314-1663849644=:3846"
+Subject: Re: [cocci] [v2 1/2] coccinelle: locks: add
+ missing_mutex_init.cocci script
 Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 565
+X-Sequence: 566
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -85,42 +83,46 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2022-09/alpine.DEB.2.22.394.2209212125590.2783%40hadrien>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2022-09/4e1f7b6-5c3f-6973-fdd8-6d294a841d26%40inria.fr>
+
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-896390314-1663849644=:3846
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
 
 
-On Wed, 21 Sep 2022, Greg Kroah-Hartman wrote:
+On Thu, 22 Sep 2022, Yuan Can wrote:
 
-> The latest version of grep claims that egrep is now obsolete so the build
-> now contains warnings that look like:
->         egrep: warning: egrep is obsolescent; using grep -E
-> fix this up by moving the vdso Makefile to use "grep -E" instead.
 >
-> Cc: Julia Lawall <Julia.Lawall@inria.fr>
-> Cc: Nicolas Palix <nicolas.palix@imag.fr>
-> Cc: cocci@inria.fr
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> 在 2022/9/21 4:24, Markus Elfring 写道:
+> > > > > +@r3@
+> > > > > +identifier s, fld;
+> > > > > +position p != {r2.p};
+> > > > Why do you think that such a SmPL constraint would be required?
+> > > >
+> > > >
+> > > > > +@@
+> > > > > +
+> > > > > +struct s {
+> > > > > +  ...
+> > > > > +  struct mutex fld@p;
+> > > > > +  ...
+> > > > > +};
+> > > > Why would the source code search repetition matter here?
+> > > He is searching for a structure that is different from the ones matched
+> > > previously.
+> > How many mutexes (or spin locks) should be initialised before further data
+> > processing can be safely performed with corresponding structures?
+>
+> In my opinion, every mutexes and spin locks needs to be initialised before
+> use.
 
-Applied, thanks.
+I think that the concern is that you require that some spinlock is
+initialized in the file before you are able to find one that is not.  It
+could be good to check this with an artificial test case.
 
-> ---
->  scripts/coccicheck | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/scripts/coccicheck b/scripts/coccicheck
-> index caba0bff6da7..2956fce8fa4f 100755
-> --- a/scripts/coccicheck
-> +++ b/scripts/coccicheck
-> @@ -47,7 +47,7 @@ FLAGS="--very-quiet"
->  # inspected there.
->  #
->  # --profile will not output if --very-quiet is used, so avoid it.
-> -echo $SPFLAGS | egrep -e "--profile|--show-trying" 2>&1 > /dev/null
-> +echo $SPFLAGS | grep -E -e "--profile|--show-trying" 2>&1 > /dev/null
->  if [ $? -eq 0 ]; then
->  	FLAGS="--quiet"
->  fi
-> --
-> 2.37.3
->
->
+julia
+--8323329-896390314-1663849644=:3846--
