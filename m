@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 499CFC4332F
-	for <cocci@archiver.kernel.org>; Wed,  2 Nov 2022 17:17:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 47C01C433FE
+	for <cocci@archiver.kernel.org>; Wed,  2 Nov 2022 17:30:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:in-reply-to:message-id:references:
    mime-version:subject:reply-to:sender:list-id:list-help:
    list-subscribe:list-unsubscribe:list-post:list-owner:
    list-archive;
-  bh=Hwlkw4yAnCdRiQ+TM46iAZW7QPfAAgCdGvGqNHRyplo=;
-  b=ExYTdZ+4qCXvApow/X7pJ75xj3I4jfJyu0LIXVj+ml2oCfCsUvhbQO89
-   /JgNjKgeHzPIWFf5g5QijEYfKPjzG7iwJT/TU58aFDH+TjXivmpvqOuzf
-   daLep/nAhEiIvyQ0FcWNuvIeDGJoy6V5rTOZhZ+z1fNXsOvjPFXlFhjEU
-   4=;
+  bh=ECpukvRfSlSAAS6C+BReorcNu7ueqnIy1mSWR/nYm6c=;
+  b=g4Z8CYEgCrbtjdDAfdxIk8Y/PNLu86GwvH7c7wuTSRhE0WtbMOxloVLE
+   3hRM7w1AxfvyWHwJcl57Sivwp34ZXkdBZ1tYYlB7HDhLKx+6UECUDre7M
+   oRDShcXQ5LIS0toyVI838DpReKzCxT1/Jtd8UsLauXW9uF4582c1MM8w5
+   Y=;
 Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
   domain of cocci-owner@inria.fr is inclined to not designate
   128.93.162.160 as permitted sender) identity=mailfrom;
@@ -35,47 +35,40 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
 Authentication-Results: mail2-relais-roc.national.inria.fr; spf=SoftFail smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=pass (signature verified) header.i=@inria.fr
 X-IronPort-AV: E=Sophos;i="5.95,234,1661810400"; 
-   d="scan'208";a="72701521"
+   d="scan'208";a="72703400"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 02 Nov 2022 18:17:08 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 02 Nov 2022 18:30:27 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 2BD8FE010F; Wed,  2 Nov 2022 18:17:08 +0100 (CET)
-Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by sympa.inria.fr (Postfix) with ESMTPS id 6DF43E002A
-	for <cocci@sympa.inria.fr>; Wed,  2 Nov 2022 18:17:04 +0100 (CET)
+	id 4B386E0307; Wed,  2 Nov 2022 18:30:27 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 3F9D6E002A
+	for <cocci@sympa.inria.fr>; Wed,  2 Nov 2022 18:30:24 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=Hwlkw4yAnCdRiQ+TM46iAZW7QPfAAgCdGvGqNHRyplo=;
-  b=H5UvIVYTfCSfCsJKvK0mipZhvhRzj9y8kKLh86gNspOg4Ze7Dcy8Ys3O
-   gldI0+jMNErr2iMaqtJsOvJMVxpQuEpIvlRQr3v01N3cdqZLlz+mS7Gjt
-   C7nPoQRkj62ttpQ5YKEv4lrhBw4Sk+sBcGeOL2bLmUuZwcB8fjjU6FoCK
-   M=;
+  bh=ECpukvRfSlSAAS6C+BReorcNu7ueqnIy1mSWR/nYm6c=;
+  b=qkWMmb25a+Y6+oSFwUaPh2XtTVVZ6qj98G13/jnxgs+nvxXYmo/U7MDV
+   azMvc5UgT3SDR7NHF66NkYBBdKLzgJutjKAsbIANfI97oZaV/7QTTbv1r
+   E7JPQvoS86MTk9P7DtcQjdBsmKQLoXlJ29AGPR5TVROO3JWDNvC7dj1IN
+   Y=;
 X-IronPort-AV: E=Sophos;i="5.95,234,1661810400"; 
-   d="scan'208";a="72701514"
+   d="scan'208";a="36292523"
 Received: from dt-lawall.paris.inria.fr ([128.93.67.65])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2022 18:17:04 +0100
-Date: Wed, 2 Nov 2022 18:17:04 +0100 (CET)
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2022 18:30:24 +0100
+Date: Wed, 2 Nov 2022 18:30:23 +0100 (CET)
 From: Julia Lawall <julia.lawall@inria.fr>
-To: "Jason A. Donenfeld" <Jason@zx2c4.com>
-cc: Kees Cook <keescook@chromium.org>, cocci@inria.fr, 
-    Linus Torvalds <torvalds@linux-foundation.org>, 
-    Alexey Dobriyan <adobriyan@gmail.com>, akpm@linux-foundation.org, 
-    linux-kernel@vger.kernel.org, mm-commits@vger.kernel.org, 
-    masahiroy@kernel.org, gregkh@linuxfoundation.org, 
-    andriy.shevchenko@linux.intel.com, Stephen Rothwell <sfr@canb.auug.org.au>
-In-Reply-To: <Y1ku+jfRAyezq6Nz@zx2c4.com>
-Message-ID: <b72d866d-1dce-7260-7f1e-54be9fd25e97@inria.fr>
-References: <20221020000356.177CDC433C1@smtp.kernel.org> <Y1EZuQcO8UoN91cX@localhost.localdomain> <CAHmME9prEhkHqQmtDGCSFunNnxiKdE_8FHKiksyqebUN63U81Q@mail.gmail.com> <CAHk-=whFow9Wd6C8htoRUt5wXbwf1i_qbuArBbhXOPqYsTFvtw@mail.gmail.com>
- <CAHmME9qBZqTd0D_gr8nE+DUzCrC0fxZNZK=7u+21jbgtFgAJBg@mail.gmail.com> <CAHk-=wjZDC9o8iwF+bU91Hx40HjGOpMui+VoFCDJkaGCu=rG4A@mail.gmail.com> <202210201151.ECC19BC97A@keescook> <Y1iSYddi3BpP8gvf@zx2c4.com> <Y1ku+jfRAyezq6Nz@zx2c4.com>
+To: Sebastiano Miano <mianosebastiano@gmail.com>
+cc: cocci@inria.fr
+In-Reply-To: <CAMENy5qK-KB1_D-zgh=UyLarKVaup-J0yRdZwTL-fkyn_gQhJg@mail.gmail.com>
+Message-ID: <af27585c-14bc-922e-73bf-b4e1dd83533d@inria.fr>
+References: <CAMENy5qK-KB1_D-zgh=UyLarKVaup-J0yRdZwTL-fkyn_gQhJg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Subject: Re: [cocci] [PATCH -mm] -funsigned-char, x86: make struct
- p4_event_bind::cntr signed array
+Subject: Re: [cocci] Replace custom function multiple times
 Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 698
+X-Sequence: 699
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -88,71 +81,97 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2022-11/b72d866d-1dce-7260-7f1e-54be9fd25e97%40inria.fr>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2022-11/af27585c-14bc-922e-73bf-b4e1dd83533d%40inria.fr>
 
 
 
-On Wed, 26 Oct 2022, Jason A. Donenfeld wrote:
+On Wed, 2 Nov 2022, Sebastiano Miano wrote:
 
-> On Wed, Oct 26, 2022 at 03:50:25AM +0200, Jason A. Donenfeld wrote:
-> > The traditional objdump comparison does work, though. It produces a good
+> Hello,
 >
-> Another thing that appears to work well is just using Coccinelle
-> scripts. I've had some success just scrolling through the results of:
+> I am trying to use Coccinelle to replace a function that is called
+> multiple times in the code with a different version whose name is
+> taken from the string variable that is passed as the second parameter.
 >
->     @@
->     char c;
->     expression E;
->     @@
->     (
->     * E > c
->     |
->     * E >= c
->     |
->     * E < c
->     |
->     * E <= c
->     )
+> To explain better, my C code is the following:
 >
-> That also triggers on explicitly signed chars, and examining those
-> reveals that quite a bit of code in the tree already does do the right
-> thing, which is good.
+> #include <string.h>
 >
-> From looking at this and objdump output, it looks like most naked-char
-> usage that isn't for strings is actually already assuming it's unsigned,
-> using it as a byte. I'll continue to churn, and I'm sure I'll miss a few
-> things here and there, but all and all, I don't think this is looking as
-> terrible as I initially feared.
+> static int process(__u64 off) {
+>   MERGE_FUNCTION_OPENED("file.c", "ping_pong", arg1, arg2, arg3, arg4, NULL);
+>   MERGE_FUNCTION_OPENED("file2.c", "ping_pong2", arg1, arg2, arg3, NULL);
+>   return 0;
+> }
 >
-> I'm CC'ing the Coccinelle people to see if they have any nice ideas on
-> improvements. Specifically, the thing we're trying to identify is:
+> I want my code to be transformed into the following version:
 >
->   - Usage of vanilla `char`, without a `signed` or `unsigned` qualifier,
->     where:
+> #include <string.h>
+> #include "file.h"
+>
+> static int process(__u64 off) {
+>   ping_pong(arg1, arg2, arg3, arg4, NULL);
+>   ping_pong2(arg1, arg2, arg3, NULL);
+>   return 0;
+> }
+>
+> where the string that is passed as the second parameter is used as the
+> function name, and all the other arguments are copied as they are.
+>
+> I managed to write a working cocci script (listed below) that is doing the job.
+>
+> @merge_annotation@
+> expression path, fn;
+> @@
+>
+> MERGE_FUNCTION_OPENED(path, fn, ...);
+>
+> @script:python merge_p@
+> path << merge_annotation.path;
+> fn << merge_annotation.fn;
+> new_fn;
+> include_name;
+> @@
+> print "Obtained path: %s and file name: %s" % (path,fn)
+> coccinelle.new_fn = cocci.make_expr(fn.strip('\"'))
+>
+> import os
+> pre, ext = os.path.splitext(path.strip('\"'))
+> p = "%s.h" % (pre)
+>
+> coccinelle.include_name = cocci.make_ident("\n#include \"%s\"" % (p))
+>
+> @c@
+> expression merge_p.new_fn;
+> expression E1, E2;
+> expression list E3;
 
-Try putting
-
-disable optional_qualifier
-
-between the initial @@, to avoid the implicit matching of signed and
-unsigned.
-
->   - It's not being used for characters; and
->   - It's doing something that assumes it is signed, such as various
->     types of comparisons or decrements.
-
-I took a quick look at the article, but I'm not completely sure what you
-are getting at here.  Could you give some examples of what you do and
-don't want to find?
-
-You don't want the case where c is 'x', for some x?
+The problem is here.  You don't put any constraints on the arguments of
+MERGE_FUNCTION_OPENED, so both new variables (ping_pong and ping_pong2)
+affect both calls.  You should use merge_annotation.path and
+merge_annotation.fn to be sure to get only the calls that are related to
+the new names you have made.
 
 julia
 
-> LWN wrote a summary of the general problem, in case that helps describe
-> what would be useful: https://lwn.net/SubscriberLink/911914/f90c2ed1af23cbc4/
+> @@
+> - MERGE_FUNCTION_OPENED(E1, E2, E3);
+> + new_fn(E3);
 >
-> Any nice Cocci tricks for this?
+> @add_include depends on c@
+> identifier merge_p.include_name;
+> @@
 >
-> Jason
+> #include <...>
+> + include_name
+>
+> Unfortunately, this script works only when a single instance of the
+> MERGE_FUNCTION_OPENED(...) function is used. When I use both of them I
+> get a "c: already tagged token:" error.
+> Using "++" instead of "+" removes the error, but produces a code that
+> contains 2 calls to the ping_pong function, and 2 calls to the
+> ping_pong2 function.
+> Any ideas on how to solve this issue?
+>
+> Thanks in advance,
+> Sebastiano
 >
