@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7E82BC4321E
-	for <cocci@archiver.kernel.org>; Sun,  4 Dec 2022 14:01:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C993BC4321E
+	for <cocci@archiver.kernel.org>; Sun,  4 Dec 2022 14:02:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:in-reply-to:message-id:references:
    mime-version:subject:reply-to:sender:list-id:list-help:
    list-subscribe:list-unsubscribe:list-post:list-owner:
    list-archive;
-  bh=qWcLcfXmeF0qmyURBJMPH801aE1TlweX9fGBsZg8X8g=;
-  b=TOnx/rEUe6ueP2m+0jF4AwtrHGuU6ZiNyUT/lTUpSeGX4xzUD92gnPQ2
-   HADlZbM3usy8xgn+rw2GnSauch+YOktP99pr9Q41OExXkQsYA1dvABrqQ
-   58XxIWB1SRxttWRmWNR395qDN6FA6ET/1zibE9oXkRHNA7AwC+YQM1OIM
-   8=;
+  bh=a/tu4vjgPs+JMecKRUmMPlhBZ6HTv1/qoAwNk3q9OfU=;
+  b=SSakpCXTxrg5l4mwVra0IlNxcjA/4PsRqtJYFg7ExjP05m6rsHNwe4Bi
+   24lr3+mSLr1wNPPGLX385nHlxPdMUNqJDlzyu3oJwfl3ThTrE+vkamK3V
+   FDkqCpm+ksSnDxhb8icoltiLFo3xX04zhPvvVQCIyzTjimETBxsAONKXO
+   0=;
 Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
   domain of cocci-owner@inria.fr is inclined to not designate
   128.93.162.160 as permitted sender) identity=mailfrom;
@@ -35,43 +35,42 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
 Authentication-Results: mail2-relais-roc.national.inria.fr; spf=SoftFail smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=pass (signature verified) header.i=@inria.fr
 X-IronPort-AV: E=Sophos;i="5.96,217,1665439200"; 
-   d="scan'208";a="81595840"
+   d="scan'208";a="81595904"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 04 Dec 2022 15:01:43 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 04 Dec 2022 15:02:42 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 8A9B5E0235; Sun,  4 Dec 2022 15:01:43 +0100 (CET)
+	id 0A193E0235; Sun,  4 Dec 2022 15:02:42 +0100 (CET)
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by sympa.inria.fr (Postfix) with ESMTPS id 043DBE013A
-	for <cocci@sympa.inria.fr>; Sun,  4 Dec 2022 15:01:42 +0100 (CET)
+	by sympa.inria.fr (Postfix) with ESMTPS id B7A87E013A
+	for <cocci@sympa.inria.fr>; Sun,  4 Dec 2022 15:02:39 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=qWcLcfXmeF0qmyURBJMPH801aE1TlweX9fGBsZg8X8g=;
-  b=l+QKRME3Zk478AMHJFZoL5KVCMyFH3mRlTEzMiz4/TzLIsFFwIV4TUCL
-   eLwR1KcyP5aYose1Lx3dqlg+Ts3wSqbt2NN5DSP6BysfYVshqIjkKoNKk
-   YtPNmOzT6vzmtf2jntlHG9e3SX8RRP0LzyvpBQj/lnLuhFLU6Z3ba+lMI
-   U=;
+  bh=a/tu4vjgPs+JMecKRUmMPlhBZ6HTv1/qoAwNk3q9OfU=;
+  b=Y+D827FSXVQCtfE2wc8fxLWuNCOGZMOB7W4gdYslapkgujXCr+Peb+Kq
+   sZ7Y4kvl1CpErFG8Y6iG5VkiF1sDlCX742X4fU4aMH+Wq1EtFTRg2iCGY
+   Y3P1kJrhBFChkCGWvs4y5ZOgoJPwX2ztfRwjc3uIVXX/m863iY/krGQ/L
+   g=;
 X-IronPort-AV: E=Sophos;i="5.96,217,1665439200"; 
-   d="scan'208";a="81595839"
+   d="scan'208";a="81595903"
 Received: from 214.123.68.85.rev.sfr.net (HELO hadrien) ([85.68.123.214])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Dec 2022 15:01:42 +0100
-Date: Sun, 4 Dec 2022 15:01:41 +0100 (CET)
+  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Dec 2022 15:02:39 +0100
+Date: Sun, 4 Dec 2022 15:02:39 +0100 (CET)
 From: Julia Lawall <julia.lawall@inria.fr>
 X-X-Sender: jll@hadrien
 To: Derek M Jones <derek@knosof.co.uk>
 cc: cocci@inria.fr
-In-Reply-To: <4145c1bd-ae8f-fe91-9f52-676b2ea9e857@knosof.co.uk>
-Message-ID: <alpine.DEB.2.22.394.2212041501270.3337@hadrien>
-References: <a9cad00c-ede3-338d-da7d-801dab7d51c2@knosof.co.uk> <alpine.DEB.2.22.394.2212040832050.3337@hadrien> <e9d8231c-9b98-6603-4786-7b61809af4d0@knosof.co.uk> <alpine.DEB.2.22.394.2212041426120.3337@hadrien>
- <4145c1bd-ae8f-fe91-9f52-676b2ea9e857@knosof.co.uk>
+In-Reply-To: <414c04de-1014-d41d-dfb6-774a8666f22e@knosof.co.uk>
+Message-ID: <alpine.DEB.2.22.394.2212041501550.3337@hadrien>
+References: <a9cad00c-ede3-338d-da7d-801dab7d51c2@knosof.co.uk> <alpine.DEB.2.22.394.2212040832050.3337@hadrien> <b404ba8b-df56-1f22-c0c4-a3d3be6aea30@web.de> <414c04de-1014-d41d-dfb6-774a8666f22e@knosof.co.uk>
 User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Subject: Re: [cocci] Searching for ++ of volatile variables
+Subject: Re: [cocci] Clarification for SmPL search techniques
 Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 768
+X-Sequence: 769
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -84,23 +83,32 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2022-12/alpine.DEB.2.22.394.2212041501270.3337%40hadrien>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2022-12/alpine.DEB.2.22.394.2212041501550.3337%40hadrien>
 
 
 
 On Sun, 4 Dec 2022, Derek M Jones wrote:
 
-> Julia,
+> Markus,
 >
-> > Maybe
+> > > > I' having the usual problem that occurs when using Coccinelle
+> > > > after a long time away, I cannot find the example I need
 > >
-> > type t;
-> > volatile t V_1;
-> >
-> > Not sure if it works.
+> > Would you get any further development ideas from information in mailing list
+> > archives
+> > or issue trackers?>
 >
-> It works as we hoped it did :-)
+> The problem is that a lot of information is duplicated.
+>
+> I'm probably going to be using Coccinelle a lot next year,
+> and will write a verbose cheat sheet of ideas (as much for
+> me as anyone else).
+>
+> I think a lot more people would use Coccinelle if it had
+> more documentation.
 
-Wow, thanks for letting me know :)
+If you write something that you think others would find helpful, feel free
+to send it along, and we can add it to the web page.
 
+thanks,
 julia
