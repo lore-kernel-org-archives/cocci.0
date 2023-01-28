@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id F2724C27C76
-	for <cocci@archiver.kernel.org>; Sat, 28 Jan 2023 09:50:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C56DBC38142
+	for <cocci@archiver.kernel.org>; Sat, 28 Jan 2023 10:42:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=message-id:from:to:cc:date:in-reply-to:references:
    content-transfer-encoding:mime-version:subject:reply-to:
    sender:list-id:list-help:list-subscribe:list-unsubscribe:
    list-post:list-owner:list-archive;
-  bh=IteiP6sYXpXaMKVfr1qdQ2tTXYW7uhJZWhhCkT0My7g=;
-  b=vikiAe9gTpbXL9ThQf/jlx+wyQJptpqz9ZzU2jJ48M27olbUWB7tu1UD
-   LLEaJbANvUZcZ0rp0NPmiCi/9UWzxDSjIB431AkTDacN9bX6uihFHq19j
-   4o+Cucz5UQ2oP6pj34GQyPMT22cCzW109FTunjaQcF4L4plIF4KQTkKW6
-   s=;
+  bh=AnyX7tYL3g4HdDlH1HEnHYTcPWSVDxo+A0Lr0537HQ4=;
+  b=sfY5Qq2cL4S/UiKV5UsR1YUcrY05/Dgf6X/f1PWlBbKtoBAeQ9/w9H5N
+   bik0RfFGDXPh7jZ7UrCwdbhMbwmvwk8pJ4JckeEct/3VhAiogJGXpsELU
+   BBD5VBmjNyw3gPopQm57dbIM6TuxIkFqZg8iC5PYvgWucgVpKK1L7Cvvx
+   I=;
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
@@ -35,76 +35,77 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
 X-IronPort-AV: E=Sophos;i="5.97,253,1669071600"; 
-   d="scan'208";a="89860322"
+   d="scan'208";a="89863460"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 28 Jan 2023 10:50:03 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 28 Jan 2023 11:42:38 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 1066EE0367; Sat, 28 Jan 2023 10:50:03 +0100 (CET)
-Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by sympa.inria.fr (Postfix) with ESMTPS id 5BE6AE027E
-	for <cocci@sympa.inria.fr>; Sat, 28 Jan 2023 10:25:08 +0100 (CET)
-IronPort-SDR: 63d4e9f3_1D77MX8UFNaRezFchJq19+MpFzmPK9+YLpdDz0WbtSdKHxs
- tiont5+AIvT2s71mEFAuSgfh6GcFklnFiF9MXow==
-X-IPAS-Result: =?us-ascii?q?A0H0BAAN6dRj/0YpCbBaHgEBCxIMQIN8gV4rAwQLhRSIf?=
- =?us-ascii?q?oghAxGdQIFqDwEDAQ1EBAEBhQcChSYeBgY0EwECBAEBAQEDAgMBAQEBAQEDA?=
- =?us-ascii?q?QEFAQEBAgEBAgQEAQECgQYThXWCNykBg38BBSNWEAsYAgIRFQICVwaGNAcBq?=
- =?us-ascii?q?TWBMoEBhHOaZoFngRQsiRGIFUOCDYQ/PoN9Rz+DGYJnBIEFA5FqJ4hWCoE5d?=
- =?us-ascii?q?4ElDoFGgQ8CCQIRSCxCNwMZKx1AAws7Mgo/NQsLSisaGweBBiooFQMEBAMCB?=
- =?us-ascii?q?hMDIAINKDEUBCkTDScmaQkCAyJfBQMDBCgtCSAfBxURJDwHVjgFAg8fNwYDC?=
- =?us-ascii?q?QMCH1ByLhETBQMLFSpHBAg2BQYcNhICCA8SDwYmQw5CGB80EwZcASkLDhEDU?=
- =?us-ascii?q?IFNBC+BXQoGKSaee0QBgQ4BgXBaKy3CdoN+gVKfGDKBRKdrl0+oEIF5JoFZM?=
- =?us-ascii?q?xoIMIMjTgMZD44sFpNDP28CBwsBAQMJjCMBAQ?=
-IronPort-PHdr: A9a23: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
- aVTMqtrU3ljHsTehi4CDScQmibNaIiVpUXkkhA=
-IronPort-Data: A9a23:OxBd2K1FomPInmS1mPbD5ch1kn2cJEfYwER7XKvMYLTBsI5bpzwCn
- 2EdXGmPa67bNzf3f9EgYIi28EkA7MCGnIRqTgJu3Hw8FHgiRejtVY3IdB+oV8+xBpSeFxw/t
+	id CC11DE0367; Sat, 28 Jan 2023 11:42:37 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 21D8FE027E
+	for <cocci@sympa.inria.fr>; Sat, 28 Jan 2023 11:03:50 +0100 (CET)
+IronPort-SDR: 63d4f305_ndwbdTVouydAQ8oBLe1QsFXX7QWxucAplpwJb2oVx9T22ys
+ PIGhl2H7/zEomWrDNXnES1btQd2eQkvwaCN7C6A==
+X-IPAS-Result: =?us-ascii?q?A0EdBABQ8dRj/0YpCbBaHQEBAQEJARIBBQUBQIFPgi2BX?=
+ =?us-ascii?q?isDBAuFFIh+iCQRm1aDVA8BAwENRAQBAYUHAoUmHgYGNBMBAgQBAQEBAwIDA?=
+ =?us-ascii?q?QEBAQEBAwEBBQEBAQIBAQIEBAEBAoEGE4V1gjcpAYN/AQUjBFIQCQIYAgImA?=
+ =?us-ascii?q?gJXBgGGMwcBjROcF38zgQGEc5pmgWeBFCyJEYNlhDBDgg2EPz6ERINYgmcEg?=
+ =?us-ascii?q?QiaZwqBOXiBJQ6BRoEPAgkCEUgsQjcDGSsdQAMLOzIKPzULC0oQGxobB4EGK?=
+ =?us-ascii?q?igVAwQEAwIGEwMgAg0oMRQEKRMNJyZpCQIDImIDAwQoLQkgHwcVESQ8B1Y3A?=
+ =?us-ascii?q?QUCDx83BgMJAwIfT3IuERMFAwsVKkcECDYFBhw2EgIIDxIPBiZEDkI3NBMGX?=
+ =?us-ascii?q?AEpCw4RA1CBTgQvgV0KBikmoE4BG5U5sESDfoFSnxgygUSna5dPIKdwgXkmg?=
+ =?us-ascii?q?VkzGggwgyNOAxkPogU/bwIHAQoBAQMJjCMBAQ?=
+IronPort-PHdr: A9a23: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
+ OmdgCZ+bzhZhMtk+A==
+IronPort-Data: A9a23:fv4bXK2+u9AlNufVwvbD5ch1kn2cJEfYwER7XKvMYLTBsI5bpzwOz
+ jNODDrVa/uNNDH2KNF+YIvgp01V6MXcn95rGVA+3Hw8FHgiRejtVY3IdB+oV8+xBpSeFxw/t
  512hv3odp1coqr0/0/1WlTZhSAgk/vOH9IQMcacUghpXwhoVSw9vhxqnu89k+ZAjMOwa++3k
  YqaT/b3ZRn0hFaYDkpOs/jY8Eo17Kyr0N8llgVWic5j7Ae2e0Y9V8p3yZGZdxPQXoRSF+imc
  OfPpJnRErTxon/Bovv8+lrKWhViroz6ZWBiuVIKM0SWuSWukwRpukoN2FXwXm8M49mBt4gZJ
- NygLvVcQy9xVkHHsLx1vxW1j0iSlECJkVPKCSHXjCCd86HJW1i0nPBrF2UaB4Yd3+0pPnB03
- t8JOglYO3hvh8ruqF66YudlnMEjK9TwMcUUvXxkzTafA/dOrZLrGvqUo44egG522Zgm8fX2P
- 6L1bRJrcR/JSxZIN1MXD9QwnY9Eg1GvIm0F+A/M+sLb5UDM/glf7LrjPeHEIIzTStQFo3+5t
- lnvqjGR7hYyb4XClmHeqRpAnNTnmSrkUYYWPK+58/RwiRuSwHYSAVsYTzOTqv6ygU+WQMNaM
- 0VS+yw0rKF0+lbDczXmdwWxpHONuhNaUN1dF+09rg+MokbJ3+qHLktcETtEc/gKjsQzYDd06
- U6ztPD4FwU65dV5Vkmh3ruTqDqzPw0cImkDeTIIQGM5Dz/L8NhbYvXnHowLLUKlsjHmMWyon
+ NygLvVcQy9xVkHHsLx1vxW1j0iSlECJkVPKCSHXjCCd86HJW3XNhNdnJ0YRBr0//ttHC2dny
+ d04Ji9YO3hvh8ruqF66YudlnMEjK9TwMcUUvXxkzTafA/dOrZLrGvqUo44egG522Zgm8fX2P
+ 6L1bRJrcR/JSxZIN1MXD9QwnY9Eg1GjLWcE8ALM+MLb5UDPz112k4bQEeDOc9uHaOVbu321h
+ l/JqjGR7hYyb4XClmHeqRpAnNTnmSrkUYYWPK+58/RwiRuSwHYSAVsYTzOTqv6ygU+WQMNaM
+ 0VS+yw0rKF0+lbDczXmdwWxpHONuhNaUN1dF+09rg+MokbJ3+qHLmYlCRxIQ9sBj/8RQQEa3
+ Fmgo/LJCyM65dV5Vkmh3ruTqDqzPw0cImkDeTIIQGM5Dz/L8NhbYvXnHowLLUKlsjHmMWyon
  GrR8UDSk51K1JVQh/XTEUXv3mr0zqUlWDLZ8S37cwpJBCtDeYKiY5e04FTHhRqrBN7GEgHe1
  JTos/Se8foPC56MnUSwrAglBLit6v+BPXvXhlNrH55n+TXFF5+fkWJ4u2gWyKRBaJ5sldrVj
  Kn741s5CHh7ZSbCUEOPS9jtY/nGNIC5fTgfatjab8BVfr96fxKd8SdlaCa4hj6yzBhwzftlZ
@@ -130,43 +131,46 @@ IronPort-Data: A9a23:OxBd2K1FomPInmS1mPbD5ch1kn2cJEfYwER7XKvMYLTBsI5bpzwCn
  JbZXVLrQXxeYk0TIA1x6OSefyH7DUqRRcE+d1gY+9lrkD38B2kLKeQad5sHYn2Rfuoey7mgD
  AwhrkN7Yck+YdiAWR777dDjWUGRB4Ti/zs/yiMBpyuphuTfOG9EKLBm+yNg5DF4e1MPCQ1hx
  c42ohXNA/R6/n2lqSv/KBB2bSeLC842Hk41xH0=
-IronPort-HdrOrdr: A9a23:dEpPj606UYhuiPnecsmfeAqjBI0kLtp133Aq2lEZdPWaSKOlfq
- eV7ZYmPH7P+VUssR4b9+xoVJPsfZqYz/9ICOoqTNOftWvd0ldARbsKheDfKn/bexEWndQtrZ
- uIHZITNDS9NykesS/j2njeLz87+qjgzEm3v5am80tQ
+IronPort-HdrOrdr: A9a23:wKIG0qBw6+HxSV7lHemT55DYdb4zR+YMi2TDGXofdfUzSL37qy
+ nOpoV56faaslgssR0b9OxofZPgfZq+z+8Q3WByB92ftWDd0QPCEGgh1+vfKlbbalXDH4BmuZ
+ uIP5IObeEYFWIK6voS+jPIderI3uP3iZyVuQ==
 X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-AV: E=Sophos;i="5.97,253,1669071600"; 
-   d="scan'208";a="89858517"
-X-MGA-submission: =?us-ascii?q?MDFm84v3AKhA34tU6kWShOniWwzM1j5DnIzeg8?=
- =?us-ascii?q?d1hw1sGtOTUf2TTcKOndaIYF6tualOwl1s9LEztOAs2uA0c3VzEGrhNl?=
- =?us-ascii?q?Mc9ssOWby3u/KEJjTBf1BJv1eKUAhQzB68H3JKpvRwXeQg0TsQ+InC2h?=
- =?us-ascii?q?rzPZaiJlbHdtG467kruOhswA=3D=3D?=
+   d="scan'208";a="46240815"
+X-MGA-submission: =?us-ascii?q?MDEe5LBIqlDcmcoXwINYQ/ELIehSfue+rUl6yI?=
+ =?us-ascii?q?cBQsN1q3sAVahod7ofOT4c9IPmo82hhyhlUdI9wlKjlpy8olUPP2ktIT?=
+ =?us-ascii?q?XXfCoXm4xLAS5GX3nbGNHv2E3QxBvdZ2wCjgLIdgMAt5HYa9HDq10NPY?=
+ =?us-ascii?q?U0Ug5nVhklvUdB9hiFKh/17Q=3D=3D?=
 Received: from paleale.coelho.fi (HELO farmhouse.coelho.fi) ([176.9.41.70])
-  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2023 10:25:07 +0100
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2023 11:03:49 +0100
 Received: from 91-155-255-60.elisa-laajakaista.fi ([91.155.255.60] helo=[192.168.100.137])
 	by farmhouse.coelho.fi with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.95)
 	(envelope-from <luca@coelho.fi>)
-	id 1pLhSL-005ym7-2d;
-	Sat, 28 Jan 2023 11:25:06 +0200
-Message-ID: <81b7faa1de8fcc932dc59403b5bf96aa6f204a6f.camel@coelho.fi>
+	id 1pLi3l-005yne-Bt;
+	Sat, 28 Jan 2023 12:03:47 +0200
+Message-ID: <8f3f48170bab688aff69571913dbe27fc195fe1f.camel@coelho.fi>
 From: Luca Coelho <luca@coelho.fi>
-To: Julia Lawall <julia.lawall@inria.fr>
+To: Julia Lawall <julia.lawall@inria.fr>, Markus Elfring
+ <Markus.Elfring@web.de>
 Cc: cocci@inria.fr
-Date: Sat, 28 Jan 2023 11:25:04 +0200
-In-Reply-To: <alpine.DEB.2.22.394.2301281015360.2822@hadrien>
+Date: Sat, 28 Jan 2023 12:03:44 +0200
+In-Reply-To: <alpine.DEB.2.22.394.2301281048270.2822@hadrien>
 References: <df710cc39e1da39521f09827f5528703887e9bce.camel@coelho.fi>
-	  <alpine.DEB.2.22.394.2301272148570.4094@hadrien>
+	 <alpine.DEB.2.22.394.2301272148570.4094@hadrien>
 	 <add79b45c4369d40ced6ae5fb43535e14a7aa792.camel@coelho.fi>
-	 <alpine.DEB.2.22.394.2301281015360.2822@hadrien>
+	 <808cd549-f96d-872d-a4db-30ea33095207@web.de>
+	 <alpine.DEB.2.22.394.2301281048270.2822@hadrien>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.46.3-1 
 MIME-Version: 1.0
 X-Validation-by: julia.lawall@inria.fr
-Subject: Re: [cocci] Nested macros
+Subject: Re: [cocci] Searching for special function implementations with
+ SmPL
 Reply-To: Luca Coelho <luca@coelho.fi>
 X-Loop: cocci@inria.fr
-X-Sequence: 827
+X-Sequence: 828
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -179,118 +183,92 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2023-01/81b7faa1de8fcc932dc59403b5bf96aa6f204a6f.camel%40coelho.fi>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2023-01/8f3f48170bab688aff69571913dbe27fc195fe1f.camel%40coelho.fi>
 
-On Sat, 2023-01-28 at 10:19 +0100, Julia Lawall wrote:
+On Sat, 2023-01-28 at 10:49 +0100, Julia Lawall wrote:
 >=20
-> On Sat, 28 Jan 2023, Luca Coelho wrote:
+> On Sat, 28 Jan 2023, Markus Elfring wrote:
 >=20
-> > On Fri, 2023-01-27 at 21:52 +0100, Julia Lawall wrote:
-> > >=20
-> > > On Fri, 27 Jan 2023, Luca Coelho wrote:
-> > >=20
-> > > > Hi,
-> > > >=20
-> > > > I've been struggling with a change I want to make, so I hope someon=
-e
-> > > > can help.
-> > > >=20
-> > > > Basically I have something like this in the code:
-> > > >=20
-> > > > /* regs below are bits 15:0 */
-> > > > #define _MIPIA_HSYNC_PADDING_COUNT     (_MIPI_MMIO_BASE(dev_priv) +=
- 0xb028)
-> > > > #define _MIPIC_HSYNC_PADDING_COUNT     (_MIPI_MMIO_BASE(dev_priv) +=
- 0xb828)
-> > > > #define MIPI_HSYNC_PADDING_COUNT(port) _MMIO_MIPI(port, _MIPIA_HSYN=
-C_PADDING_COUNT, _MIPIC_HSYNC_PADDING_COUNT)
-> > > >=20
-> > > > As you can see, these macros assume that the calling functions have=
- a
-> > > > local called dev_priv, and I want to fix that.
-> > > >=20
-> > > > So, I'm trying to find all users of macros that have this construct=
-.
-> > > > My problem is matching the nesting in the macros.
-> > > >=20
-> > > > I have tried this:
-> > > >=20
-> > > > @macros_noargs@
-> > > > identifier m;
-> > > > expression e =3D~ "dev_priv";
-> > > > @@
-> > > > #define m <+...e...+>
-> > > >=20
-> > > > @nested_macros@
-> > > > identifier macros_noargs.m;
-> > > > identifier nm;
-> > > > @@
-> > > > #define nm(...) <+...m...+>
-> > > >=20
-> > > > @@
-> > > > identifier nested_macros.nm;
-> > > > @@
-> > > > -nm
-> > > > +foo
-> > > >=20
-> > > > (this last rule is just for testing if anything is matching, obviou=
-sly)
-> > > >=20
-> > > > But the "nested_macros" rule doesn't seem to work.  Does anyone kno=
-w
-> > > > how I can solve this?
-> > >=20
-> > > I think that it works already.  If you add the following code to the =
-.c
-> > > file, then the call gets changed:
-> > >=20
-> > > int main() {
-> > >   MIPI_HSYNC_PADDING_COUNT(12);
-> > > }
-> > >=20
-> > > I think that the problem is that a rule that replaces an identifier b=
-y
-> > > another doesn't match a macro definition.  Is that actually the preci=
-se
-> > > thing you want to do?  Or do you want to do something with the uses o=
-f the
-> > > macro.
+> > > @@
+> > > identifier nested_macros.nm;
+> > > function f;
+> > > identifier dev_priv;
 > >=20
-> > This is the initial thing I want to do:
 > >=20
-> > @@
-> > identifier nested_macros.nm;
-> > function f;
-> > identifier dev_priv;
-> > expression e;
-> > @@
-> > f(...) {
-> > 	...
-> > -	struct drm_i915_private *dev_priv =3D e;
-> > +	struct drm_i915_private *i915 =3D e;
+> > How do you think about to use the following SmPL code variant instead o=
+f
+> > the metavariable type =E2=80=9Cfunction=E2=80=9D?
 > >=20
-> > 	<+...nm(...)...+>
-> > }
 > >=20
-> > And it indeed works with a handcrafted file for testing (attached as
-> > i915_cocci_test.c), but it doesn't work IRL, for instance in the
-> > drivers/gpu/drm/i915/display/vlv_dsi.c file in the kernel (also
-> > attached)...
-> >=20
-> > I would expect there to be a match in the static void
-> > bxt_dsi_get_pipe_config() function...
+> > identifier dev_priv, f;
 >=20
-> To match the function, the semantic patch has to be able to see the macro
-> definitions.  They are not in the .c file.  Maybe you need a command line
-> argument like --all-includes (take into account all of the files mentione=
-d
-> with #include, but not what they include) or --recursive-includes.  You
-> can give a search path if needed with -I.
->=20
-> You can use --debug to get some information about what rules are being
-> matched successfully.
+> Good suggestion,  Function is not really supported.  I think it behaves
+> just like identifier, but it would be better to just use identifier.
+> Function was an idea thta never actually got implemented.
 
-Thanks a lot, Julia! I'll try to play around with the includes.
+Good idea, I generally don't use function, but I'd been trying lots of
+different things before I reached out for help. =F0=9F=99=82 I guess I trie=
+d with
+function at some point and then ended up leaving it there.
+
+Now I tried with f as identifier, but it didn't make a difference.
+
+I can actually match _one_ of the occurrences now, but there are many
+other ones that are not matching...
+
+This is what I'm using:
+
+@macros_noargs@
+identifier m;
+expression e =3D~ "dev_priv";
+@@
+#define m <+...e...+>
+
+@nested_macros@
+identifier macros_noargs.m;
+identifier nm;
+@@
+#define nm(...) <+...m...+>
+
+@@
+identifier nested_macros.nm;
+identifier dev_priv, f;
+expression e;
+@@
+f(...) {
+	...
+-	struct drm_i915_private *dev_priv =3D e;
++	struct drm_i915_private *i915 =3D e;
+
+	<+...
+	nm(...)
+	...+>
+}
+
+...and this is the command line:
+
+spatch --sp-file ~/dev_priv_i915.spatch -I drivers/gpu/drm/i915/display \
+ --recursive-includes --in-place --dir ./drivers/gpu/drm/i915/display
+
+...and this is the only match I get:
+
+HANDLING: ./drivers/gpu/drm/i915/display/intel_display.c
+diff =3D=20
+diff -u -p a/intel_display.c b/intel_display.c
+--- a/intel_display.c
++++ b/intel_display.c
+@@ -3943,7 +3943,7 @@ static bool bxt_get_dsi_transcoder_state
+ 					 struct intel_display_power_domain_set *power_domain_set)
+ {
+ 	struct drm_device *dev =3D crtc->base.dev;
+-	struct drm_i915_private *dev_priv =3D to_i915(dev);
++	struct drm_i915_private *i915 =3D to_i915(dev);
+ 	enum transcoder cpu_transcoder;
+ 	enum port port;
+ 	u32 tmp;
+
+Many other files are handled, but there are no matches, though I
+believe there should be.
 
 --
 Cheers,
