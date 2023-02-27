@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 81385C64ED6
-	for <cocci@archiver.kernel.org>; Sun, 26 Feb 2023 20:33:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 71215C64ED6
+	for <cocci@archiver.kernel.org>; Mon, 27 Feb 2023 08:09:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=date:from:to:cc:message-id:references:mime-version:
-   in-reply-to:subject:reply-to:sender:list-id:list-help:
-   list-subscribe:list-unsubscribe:list-post:list-owner:
-   list-archive;
-  bh=/crFn99iNFrk33n1npMGW81pMHBjB7zpmM/dt9Uwkpo=;
-  b=A6UUAQK297f+G4J73EXMwPP3ssdFMuKS0KyEsPpiLFiZPa0LGQWUvIqG
-   68Jlx+pBycmVwYyBQ8Asj8dXr6+0fp4roPzVpqPfr0I9W6MFY1XXwAxqr
-   4GyvkivTa4AoSlM1sua4BbmacAEwKFZ9OmDcOQewYoek2zg4jqKJ6UKLd
-   w=;
+  h=from:to:cc:date:message-id:mime-version:
+   content-transfer-encoding:subject:reply-to:sender:list-id:
+   list-help:list-subscribe:list-unsubscribe:list-post:
+   list-owner:list-archive;
+  bh=snnxk3R92ahys5e04/EBmiQcmHyLqTEXiwOEel0/hFE=;
+  b=J7rk3iiy2mWzM0YrK6aLQ2gMtdANSLjSMDqCZZ1hP2FBCG6nTMYEJ4Oy
+   ostnjA9UjZpfHEvT/n53Xj6SYpFzwn0HPwL3knv1OxF1lsSl61PKi57VT
+   Y+HUh0fPZ7tyc4zfwgFOpE+qX4I+BVU+SeFVuhIZflVKBuHJ84gq3VVTz
+   Q=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -33,149 +33,209 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   receiver=mail2-relais-roc.national.inria.fr;
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
-Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@mailo.com
-X-IronPort-AV: E=Sophos;i="5.97,330,1669071600"; 
-   d="scan'208";a="94405400"
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@gmail.com
+X-IronPort-AV: E=Sophos;i="5.97,331,1669071600"; 
+   d="scan'208";a="94443191"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 26 Feb 2023 21:33:56 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 27 Feb 2023 09:09:34 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 2AB5EE0151; Sun, 26 Feb 2023 21:33:56 +0100 (CET)
-Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by sympa.inria.fr (Postfix) with ESMTPS id 2611DE00A1
-	for <cocci@sympa.inria.fr>; Sun, 26 Feb 2023 21:22:55 +0100 (CET)
-IronPort-SDR: 63fbbfa0_RSDXN6bGVfDzZJlKXOX8BT0yiPplzyAzF6bi8Sl6xLQB4Xx
- ooHZcNAxy5PtZyUvWfe4xGZxQn9/ibFC9aWQi+A==
-X-IPAS-Result: =?us-ascii?q?A0EJAABlvvtjhw82ttVaGwEBAQEBAQEBBQEBARIBAQEDA?=
- =?us-ascii?q?wEBAUCBOwYBAQELAYIsgV4vBAtGjHKGXIIlA5EPgQqLLoF+DwEDAQ1EBAEBA?=
- =?us-ascii?q?wSEfgKFLwIdBwEEMAkOAQIEAQEBAQMCAwEBAQEBAQMBAQUBAQECAQECBAQBA?=
- =?us-ascii?q?QIQAQEBARkJFwcQDgUihWgNgjcpAXWBCAEBAQEBAQEBAQEBAQEBAQEBAQEWA?=
- =?us-ascii?q?n45AQEdAQEBAQIBJxMGAQE3AQ8LGC4QRwYLCIJ+gwAjB6tbeIEBM4EBgggBA?=
- =?us-ascii?q?QadSYFeCYFAAYxlgmRpeicVBoINgRWBPIFuPoQLhniWLwqBNHSBIw6BQoEJA?=
- =?us-ascii?q?gkCEXGBFQhsggNHAg9GNwNEHUADCzs6PzUUIV6BHCQFAwsVKkcECDYFBhw0E?=
- =?us-ascii?q?QIIDxIPBiZEDkI3NBMGXAEpCw4RA0+BRwQvgWAGASgmmSVDexMUghyTAoNBj?=
- =?us-ascii?q?WOfW4QDoSkEqTQthyiQBKJpDRmFCIFiOoFcTSMVgyJPAxkPjiAZHoM7kAE8M?=
- =?us-ascii?q?TsCBwsBAQMJiHCCWQEB?=
-IronPort-PHdr: A9a23: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
-IronPort-Data: A9a23:LL1udqsf0hbqwU2JGzQzhkZveufnVERaMUV32f8akzHdYApBsoF/q
- tZmKWjVM/rbYmf0KNxybdu2/BkP6sXTn4c3TVE5/CE3Fi0agMeUXt7xwmXYb3rDdJWbJK5Ex
- 5xDMYeYdJhcolv0/ErF3m3J9CEkvU2wbuOgTrSCY0idfCc8IA85kxVvhuUltYBhhNm9Emult
- Mj7yyHlEAbNNwVcbyRFtMpvlDs15K6p4GlC4ARkDRx2lAa2e0c9XMp3yZ6ZdCOQrrl8RoaSW
- +vFxbelyWLVlz9F5gSNz94X2mVTKlLjFVDmZkh+A8BOsTAezsAG6ZvXAdJHAathZ5plqPgqo
- DlFncTYpQ7EpcQgksxFO/VTO3kW0aGrZNYriJVw2CCe5xSuTpfi/xlhJBxsYYsX4PpvOjxL1
- tAcAgoHQFOljtvjldpXSsE07igiBMzwM8ZD/HRpzDXeS/0hRPgvQY2QvIQehWdqwJ0SW6+DD
- yYaQWIHgBDobwdRElIeCZY52uyvgxETdhUJ9A7N+PJuvQA/yiRX9OH3D9DPQOCKasdewGKju
- m7f8XXmV0Ry2Nu3kmbbryLw2YcjhxjTXIsNHbm83uxrhVeJzyoSDgcXXB21u5GRgUm1UNN3M
- F0R4iNorK4o9UXtQMOVYvGjiHufsVtAHd9ZEuk9rgqKz8I4/jp1GEBZFGJHZ8Y6rPRrQB8G0
- nWzlf2qIzVW5ej9pW2myp+Yqja7OC4wJGAEZDMZQQZt3+QPsL3fnTqTHoY4SvTdYsndQ22on
- G3iQD0W3u17sCId60ms1X79695GjqDAVA8ujuk8dj34tlokDGJJTydO7VWe4fsFApyQSFKM1
- EXoduCb9+9LUdeInS2JR6MGG7TBCxe53N/03w8H83oJrW3FF5ufkWZ4u20WyKBBbp9sRNMRS
- BWP0T69HbcKVJdQUYd5YpiqF+MhxrX6GNLuW5j8N4QRPcQqKlXbons3OSZ8OlwBdmBwzsnT3
- r/GKq6R4YoyV8yLMRLrF7xDgdfHOAhgnDm7qW/HI+SPiubAOS7JFt/pwXODZfo48K6A6B7c6
- Ms3Cid540g3bQEKWQGOqdR7BQlScxATXMmmw+QKKLLrClc4SQkJVaSLqZt/INMNokigvryVl
- p1LchQEkwWXaLyuAVniV02Pn5u1B8gg8CxrbHx8VbtqslB6CbuSAG4kX8NfVdEaGCZLlJaYl
- tFVJZ/SMecFUTnd5TUWYL/0qYEoJlzhhhuDM2DhKHIzdoJpDV6BsNL1XBrdxA9XBAqOtOw6v
- +KB0CHfSsE9XAhMNpvdR8+u6FKThkIjvtxOcXHGGfRpQ3W0wrNWc3TwqtQVP/AzLQ7yw2rG9
- gSOXjYdi+r/g64019jrmZG7q5yjArZ8FBACHk3wz7W/BQ/F9EWNnK5CV+epe2jGdWXWoa+NW
- 8Rc/8veAtYmwmlYktNbPe5w7KQc49DPmedr/j58Fi+WU2XxW6JSHHaW+OJu6ItP/+Z9kimrU
- But/tJ6B+24CPn9GgRMGDt/P/Wx7tBKqDz89v9vHV7b4hVw97+5UUl/GRmApSheDbltOrMe3
- uYTl58K2jO7lyYVHI6KvgJM+0SIC04wYaEtm5UZIY3s0wQQ2g5jZ77YAXTI+52hUYhHHXQrB
- T62v5D8oYpg6HDMSFcNMETc/PF8gM0OsS9azVVZKFWunMHEt8AN3xZQ0GoWS11H/AQfi8Z2Y
- 2hiCF1rAaCo4T1TpdNiWlq0EFprHyyp+U3WynoImlbGTkKuaHf/EW0lNcuJ/2Eb62h5fAUHz
- IqHyW3gbynmTPvx0gQ2R0Rhjf7pFv51ySHvh+GlGJ6jM6QhQD+4nJKrW3UEmyHnDew1mkfDg
- +tgp8R0SK/jMB8vs78JMJab2ZsQWSK7CjR7G985x5wwHEbYZD2W8hqNIRroespyetr7wXXhA
- Mlqfs9yRxCy0RiVlQ8iBIkOHe5QvOUo7988aL/UNTY4k7+AnAFI7rPU1AbD3VEOffs/v/o5G
- I3rcxC6LlexnlpRwm/Ek9lFMDG3YP4CfwzN49q2++QoSbMG6eFlTlEs9r6SoX+uERBG+iiMt
- 1jpfJ7mzO1FyKVtkbDzE65FOR6GFNPrWMmM8yGxq95rb+6TAfzRtggQlEbrDz5WMZQVRd5zs
- 7aH6/zz42/oo5c0VDr/t6SaNqwU+/i3YvVbAvj3IFZegyGGfs3muDkH2mKgLK12gMFv3damS
- yS4efmPW4YsAfkF/0Jsag9aDxo5IIb0ZP25pSqC8tK9OiJE2gnDdN6a5XvlaF9ATRAxOrr8N
- F7Ei677rJQQ5oFBHwQNCPxaEod1ag2rE7cvc9rq8yKUFC+0i1eFoaHvjgck9SqNMHSfDcLm+
- tjQc3ASrvhpVH3gl7m1crCevyH7yF54muZ1IgQY8t9yjHaxC2tuwSHx93kZIsk8r8Aw/MiQi
- PLxgK8KDCz8WTMCehL5iDgmdhnKHfQAY78VORRwl355qE6K6EeoBbJg8iAm6HBzEtcmICdLN
- vlGkkDN0tONLl2FiArdCjFXQQuq+x8C+k81xA==
-IronPort-HdrOrdr: A9a23:J+8LDa4JcZdwUd1hMQPXwPTXdLJyesId70hD6qm+c31om+ij5q
- eTdZUgpHvJYVMqM03I9urtBEDtexzhHNtOkO8s1NSZLWzbUQmTXeJfBOLZqlWLJ8S9zJ8+6U
- 4KSchD4bPLY2RSvILXyE2RD8sgqePrzJyV
+	id F1B92E0151; Mon, 27 Feb 2023 09:09:33 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 63D88E00A1
+	for <cocci@sympa.inria.fr>; Mon, 27 Feb 2023 08:54:53 +0100 (CET)
+IronPort-SDR: 63fc61cb_4kTuc9FG6XWSPtrBDBcpKy3ThIk5nszTLQSI0bnbebZ36/2
+ eoohfb7oF6X7Nw0TQEMEeYoqkvTcraju28naKIg==
+X-IPAS-Result: =?us-ascii?q?A0FsFgDaYPxjf7KgVdFSCIJagiuBCVYuBFEEk0p9gSidX?=
+ =?us-ascii?q?oEsPg8BAwELAQE9BQIEAQEDBDcBhEaFMQIdBwEENBMBAgQBAQEBAwIDAQEBA?=
+ =?us-ascii?q?QEBAwEBBQEBAQIBAQIEBAEBAhABARsHGQcODgUkhWgNPxYBgWEpAXVNAzgBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBBAINUh85ASEWI?=
+ =?us-ascii?q?AENARsdAQMSECkzAhEBBQEjEiKCXAGCEF0BAzEDEKJegQRCjEcFAhaBAYIJB?=
+ =?us-ascii?q?oFBAZpIChkoDWgDgVsCAQYJAQiBLgGEV4JnhCpXRoMtgSEbgg2BFYE8giyCI?=
+ =?us-ascii?q?EIEgSEWPIYqBIl2hFqGcwEDAgIDAgIDBgQCAgIFBAIBAwQCDgQOAwEBAgIBA?=
+ =?us-ascii?q?QIECAICAwMCCA8TAwcCAQYFAQMBAgYEAgQBCwIFAgoBAgQBAgICAQUJAQMBA?=
+ =?us-ascii?q?wELAgIHAgMFBgQCAwkFAgEBAwICAg0DAgMCBAEFBQEBEAIGBAkBBgMLAgQBB?=
+ =?us-ascii?q?AMBAgUHAwcDAgICAggEEgIDAgIEBQICAgECBAUCBwYCAQICAgQCAQMCBAICB?=
+ =?us-ascii?q?AICBAMRCgIDBQMOAgICAgIBCQsCAwcEAgMDAQcCAgIBDAEDGAMCAgICAgICA?=
+ =?us-ascii?q?QMHCgQJBAIFAQIBBAsBBQENBAECAgICAgMCAQEDBggGAwoCBwQCAwMGCQ8PC?=
+ =?us-ascii?q?AUDAQQDAgMCAQgLAgMCAgIECAIDAQICAQYCAwECAgECAgELAQECAwUCAhEBA?=
+ =?us-ascii?q?gICAgIBAQIDAgMBBwECAhgGBAUDAwUCAgEEAQICBAQFCwIEAwEBAQICAgIDA?=
+ =?us-ascii?q?gsDBQMBBgMDCgcEAQgCBgMEAgUEAwQEBgICAgICAQQBBgsDAgQEAwMGAwkCA?=
+ =?us-ascii?q?gwCFAIQBAYBBAsLAgQCAgECAgIOAwQGAgMDAgIFCQIEAgICAgIDBgIJBCMDA?=
+ =?us-ascii?q?wIgAwkDBwVJAgkDIw8DCwkIBwwBFigGDAcMKAQ0AQYOBwwHBwYmAQYOBgIGA?=
+ =?us-ascii?q?wQBCgsFBAUIAQIBAQYCBAIHCQwCAQYBBQICAwIBAwICAQUBAwECAgICBQcFA?=
+ =?us-ascii?q?wQFAwoJAwEBBAMCAQIBAgMCAwcDAgQCAwECAwQGBgEJBAYFDQMEAgIBAgEBA?=
+ =?us-ascii?q?wQEBAICAQICAwEEAgIBAQMDAwICAgMEAgMDCwQKBwMDAgEFCwQCAwIBAQMHC?=
+ =?us-ascii?q?QQCAgYBAgQCAgICAgIDAQEDCQQCAQMCAgQDBgIBAgEJBQIBCQMBAgEDBAEDC?=
+ =?us-ascii?q?QECAgQJAgMHBQoCAgICCAICDgMDAgEBBAICBAUJAQIHAgUBAQMFBwICAQICA?=
+ =?us-ascii?q?QQDAQkEAQIDAgEBAxIDAwEEAgUDAw0JBgICAQMCAQ0DAQIBAgMBBQUXAwgHF?=
+ =?us-ascii?q?AMFAgIEBAEHAgIDAwMCAQIJBgEDAQUCDgMCAgQGAQIBAQIDDwUBAQEBFwEDB?=
+ =?us-ascii?q?AIDAQQDAQECAQIDAg4EAQQFDAMQDAIEAQYCCAICAwMBAgMFAQIDBAIBCAoCA?=
+ =?us-ascii?q?gICCQIKAwIDAQMFAQMCCQMBBQECBwIGAQEBAgIIAggCAwsBAwUGAgICAQUCA?=
+ =?us-ascii?q?QICBQMFAgICAgQNAgUCAgIFAQIHBAICAgMBAgIGBQECBwcCBQICAgMDCgQEB?=
+ =?us-ascii?q?wQBAgIBAQUBAgEDAwECBAECAQIFAwYCAgICAQICAQEBCAICAgICAgMEAgiYe?=
+ =?us-ascii?q?U8BFV4aLFAaWwgNEF4CLQOSMgGDGQGLTYIWnSeBRWQLZIMfgVWCeocUjw2Fb?=
+ =?us-ascii?q?RoylwOSNAGXWSCLQ4Fvg2yWMAIEAQEBAwcGECMSgUQjPIEgMxoIGxU7MYI2E?=
+ =?us-ascii?q?zwDGQ+OLBaDUIUUinI0NAIBOAIHCwEBAwmFRYEEbYQBAQE?=
+IronPort-PHdr: A9a23:gJl3ZRA0gi0A6FsqEKm4UyQU5UkY04WdBeb1wqQuh78GSKm/5ZOqZ
+ BWZua8wygaZDM6Cs6IMotGVmp6jcFRI2YyGvnEGfc4EfD4+ouJSoTYdBtWYA1bwNv/gYn9yN
+ s1DUFh44yPzahANS47xaFLIv3K98yMZFAnhOgppPOT1HZPZg9iq2+yo9JDffQVFiCCgbb5xK
+ Bi6ohjdutUVjIB/Nqs/1xzFr2dHdOhR2W5mP0+YkQzm5se38p5j8iBQtOwk+sVdT6j0fLk2Q
+ KJBAjg+PG87+MPktR/YTQuS/XQcSXkZkgBJAwfe8h73WIr6vzbguep83CmaOtD2TawxVD+/4
+ apnVAPkhSEaPDMi7mrZltJ/g75aoBK5phxw3YjUYJ2ONPFjeq/RZM4WSXZdUspUUSFKH4GyY
+ JYVD+cZPehWsZfwqUYAoxW9AgejC+zhxyRUinL1x6A2z/4sHR3a0AEmAtkAsG7UrNLwNKoKT
+ O660KnIzS7bb/xMxDzz9YjIchE8qvyLRrJ/bcrRyVI3FwzflViQponlMCmU1uQJqWSU8+1gV
+ ee2hmMhtgp+rSShyN02hYnVmoIa1ErE9SNhzYooK9O0VE52b9GmHZZOuC+XM4t4TM0/T211t
+ ig3xKMLtYKlcSQWxpor2wLTZ+Gaf4aH4R/uSvudLDV3iX9mZL+ygQu5/0anyu35TMa00VBKo
+ zJGktbSrHAN0QLc6sydRvt65Eeh1jCC3B3Q5OFcOU04i7bXJpo7zrMzlpcfq1nPEy7qlEnsk
+ aObdEYp9vCp5unkeLnrpJCRO5Vphg3jMakigNGzDfo4PwUIQmOV4/6z1Kf58k38WLhKjuM5k
+ q3esJ3CIMQUvK+5AwtM3oY69xazEi6q0NoFkXQFL19JYh2Hj4/uO1HBJPD3E+2zjEirkDdu3
+ /zGP7vhDYvRLnXbjrvtYbJw51RfxQcz19xT+pNZBq0bLP7uWEL8t8TUDhojPAy1x+bnBs991
+ oQbWW+XGa+WLKPSsUSQ5u01OOSMa4oVtyz8K/gh/fLhkXg5mVoFcamvxpQYcGq4Eeh+I0WFf
+ Xrshc8MHXkSsgokUOPqkEGCUSJUZ3uqQ6084S00B56nDYrYXYCsgLmB3D+hEZFMZ2BGDEqME
+ XbyeImeVfcMcjqeItV9nTwcSbihV4gh2AmqtADgxbtoNO7U+ikDuJPi1dh14vbclQso+jBuD
+ sSd1XuNT2BukW8SST82xvM3nUsozlaFzLg9gPFCE9FXz+1GXx18NpPGyeF+TdfoVUaJddCCQ
+ 1eOQ9O8ADh3QMh1i8cDf0tnCf2jiB7Z1ianCrNTkKaEQNQx+a3G2HbZJMtnzXvCkq47gAoIW
+ MxKYFathrVn/kDoB4+Bx16Sl72yfIwT2SfM8CGIym/Y7xIQaxJ5TaiQBSNXXUDRt9msoxqaF
+ 9dGaJwiOwpFkouZL7dSL8bulRNATeviP9LXZySwnX2xDFCG3ODEd5LkLkMa2iiVE00Yi0YL5
+ 3/TLgM+HT+oi23bBT1qU1noZhCk6vFw/UuyVVR81ASWdwtk3rux9AQSgKmHQPMIxrsstyIoq
+ jEyF1G4jJrNE9TVgQ1nce1HZM8lpldK0WWMrwtmIpmpNLxvnHYbegVz+lryjlB5U9oQ18ctq
+ 3wuwUx5LqfwPEppUTSe0NiwP7TWLjK35xWzc+vN3UmY1t+K+6AJ4fB+qlP5vQjvGFBwu3Ngm
+ 8JY1XeR/PCoREIbTI7xX0Ar9hN7u6CSYy8z4JnR3GFtNq/8uyHL2tYgDu8oghi6eNIXPKSBH
+ Q70W8oUYqrmYPchm0OxZzoLOelT8Og/OMbnP/qK1ai3PfpxySq8hDcP64R830SQsitkH7SQj
+ tBVnrfBgFPBDmis3zLD+ojtlItJZC8fBD+6wCngX8tKY7FqOJ0MESGoKtG2wdN3g9jsXWRZ/
+ RitHQBjuofhdByMYlj6xQAV214QpCntgiC41CR9uz4sp6ubmifJxq6xEXhPcn4OX2RkgVr2d
+ MKvhNABREGAYA0glR/j7kH/jfsTtOF0KG/dRl1Ndi79IjR5U6e+gbGFZtZG9JIitSg/vP2UW
+ VmBUfa9phIb13imBG5C3HUgcCnsvJzlnht8gWbbLXBprXOfd9sijRvY4dXdQ7ZW0F9kDGFjg
+ jnMHlGUMNyg/NHSnJDG+uyzTGOuUJRPfDKjl9vR8nvmozQ0WVvmwKD7k8avCQUg1C7ny9RmM
+ EeA5A3xZIXmzeXyMO5qeFVpGE6p7sN7Ho9klY5jzJoU2HUcmtCU5S9dyTa1YYgdgPymKiNSF
+ W1uoZad+gXu1Ux9I2jcwov4Ui7Y2c59f5yhZXtQ3Csh7sdMAaPS7bpenCIzrEDryGCZKfV7g
+ DoZzuMjrXAAhORc8hEmzj6FC5gdGEBZOWrnkBHCvLXc5O1HIX2id7S9zh80htuhF6mLig5ZU
+ Xf9PJwlGGUjptU6O1XK3nrp74jic9SFdtMfuCqflBLYhvRUIpY8xZ9ozWJ3fHjwtno/x6snn
+ ARjiNuk6ZOfJTwnr+qpRwRVPTrva4YP9yHx2OxAy92O0dnKfN0pGy1XDsC1C6v5SHRI6auhb
+ 0HUTHU9sivJR+aZR1TErh449zSXVMn6f3CPeCtHk5M7HEPbfAoHx1pMOVdy1p8hSlL0moq7L
+ BY/tmhXvhmi8lNN0r46aEO5CzuZ/VbyLG9zEcjXLQIKvF4eoR6PbIrGqLo0Rn89nNXprRTRe
+ DXDN0IRUj5PCgrcQAq6dri2uYuZrLPeX7viaaOIOfLX96RfT6van8r+lNs7uW/WZoPXeSA9a
+ p9zkktbASIjQpqfxmVJEn1N0XqKNp/TpQ/gqHcu8Iblq6WtA1ipvczWWvNEONFrsXhamI+lM
+ OidzGZ8IDdcjdYXwGPQjaMYxBgUgj1vcD+kFfIBszTMReTegP0fCRlTcC51OMZSisB0lgBQJ
+ c7WjM/03b9kn7Y0DVlCT1nohsCuY4QDPWi8MFrNAEvDOq6BIHXHxMT+YKX0TrM17q0crxqrp
+ TOSCFPuJByGnjjtEgmzaKRC1X7LehNZv465f1BmDm2iBNPqZxunMcNm2D07xbpn4xGCfWUYM
+ DV6bwZMtujKtXIe0qg5QjIZqCM6fbrh+W7R9eTTJ5cIvOE+By11k7kf+3Em0/5O6zkCQvVpm
+ SzUp9ooole8k+DJxCA0NXgG4jtNmo+Pul1vfKvD8ZwVE23P/AkV5E2fDh0Lo51uDdil6MUyg
+ pDf0bn+LjtP6Yee5cwHG83dM96KKlIkOBvtXSfIVU4LFGH7c27YgENZnbeZ8Xjf/f1Y4tD83
+ ZEJTLFcTlk8EPgXX19kENI1K5ByRjo4kLSfgabgBFK7pRjVAdxG59XJD63CR/roLzmdgP9PY
+ B5amdsQyKwcM4T63wppbVwoxOwi9GLfWNlMpmtqaQpm+S1w
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:3PSdMqM/RYbia8BcTvCjsMiBIKoaSvp037Dk7TEVdfUzSL3iqy
+ nKpp4mPHDP+VEssR0b6LO90cq7MAvhHOBOkO8s1N6ZNWGM2FdARLsC0WKI+UyFJ8SRzJ8+6U
+ 6iScRD4R/LYGSSQfyU3ODBKadY/DBPys6Vuds=
 X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-AV: E=Sophos;i="5.97,330,1669071600"; 
-   d="scan'208";a="94405016"
-X-MGA-submission: =?us-ascii?q?MDGNkSlrYEcXYT3sDKsPvpy/2zKSpAN7h76bgQ?=
- =?us-ascii?q?wCR/TyCosK2Lpp1qC5aXrMYTzeAZdCJVWzp8bMy1/NYT6nSx+XVkXU2c?=
- =?us-ascii?q?A6RBWsN9owLJbXrd+cEw2mfw3MenhI3FKAlzwGigBWbmT1/0hfgKh1Cj?=
- =?us-ascii?q?viTwlzt4Lf1Rxm1OEhE61kIw=3D=3D?=
-Received: from msg-4.mailo.com ([213.182.54.15])
-  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2023 21:22:55 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailo.com; s=mailo;
-	t=1677442974; bh=FRkGvJDmaEz0swKnwZzPE0L9HyhTVuotpdyes0dJpOM=;
-	h=X-EA-Auth:Date:From:To:Cc:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:In-Reply-To;
-	b=jqw+0L6varzZLT18Aylj+/ynQKFNmxTlAHp8XSG3in1t/wYA6y2GZhz83ApBFdnPg
-	 DKA6Z8JCYhcPNoEY5VHhbz7ESqbGEFIJyM6fY7w914G/GmXeAfhk/xJZ/q25BYcPlL
-	 kNIIsmZiISvER+/bs9FZcWng56EeqcG3XMnavuLo=
-Received: by b-6.in.mailobj.net [192.168.90.16] with ESMTP
-	via ip-206.mailobj.net [213.182.55.206]
-	Sun, 26 Feb 2023 21:22:54 +0100 (CET)
-X-EA-Auth: TAIhNcv5bfuO/MsWc1+6zY1h5Un2D9etJ70zxWicPeOZiIPqBBoL5iUIxv+so2EeDpR4HrVZUDaPoN3Gbbke0SdwJA6tU8Fz
-Date: Mon, 27 Feb 2023 01:52:49 +0530
-From: Deepak R Varma <drv@mailo.com>
-To: Julia Lawall <julia.lawall@inria.fr>
-Cc: nicolas palix <nicolas.palix@imag.fr>, cocci <cocci@inria.fr>,
-	linux-kernel <linux-kernel@vger.kernel.org>,
-	Saurabh Singh Sengar <ssengar@microsoft.com>,
-	Praveen Kumar <kumarpraveen@linux.microsoft.com>,
-	Deepak R Varma <drv@mailo.com>
-Message-ID: <Y/u/mV6GUC5+l3m6@ubun2204.myguest.virtualbox.org>
-References: <Y+/DQ6l0pDcxC2c3@ubun2204.myguest.virtualbox.org>
- <597798313.18813704.1677352621708.JavaMail.zimbra@inria.fr>
+X-IronPort-AV: E=Sophos;i="5.97,331,1669071600"; 
+   d="scan'208";a="48684120"
+X-MGA-submission: =?us-ascii?q?MDEg5N10SIiBI3venS4f5p1KVetw0KZJJhK/jN?=
+ =?us-ascii?q?cX2T5VuVynTmP3sNyaEiCT/dOvHkcJizsFGP+WqzNxIfKdYiF4/ZOj3y?=
+ =?us-ascii?q?CrsCmH66YdXhTEXbZ/CxcoD+dsKryz2Q5BQHKcRrx5W4MPWvDdzVZmeb?=
+ =?us-ascii?q?iwz28llYKlu54VEFud7DMdDg=3D=3D?=
+Received: from mail-qt1-f178.google.com ([209.85.160.178])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2023 08:54:51 +0100
+Received: by mail-qt1-f178.google.com with SMTP id h19so5690389qtk.7;
+        Sun, 26 Feb 2023 23:54:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=snnxk3R92ahys5e04/EBmiQcmHyLqTEXiwOEel0/hFE=;
+        b=nthjjN7F18kRwv+48Iyl0RX0Qii5yotlmEg9MWcNO5K0QwP+8FFIjQL4w7Wv8A5eTb
+         H2PF1Q1+CxKx3xdedQGwn5H4V1FmShL/CyteobA5E+wOMrQaz6FHhqFrHFznbtYHxfnj
+         PfOiRHYOwBdahlS7h9PqN3XwNEMmtlmHLJIoEgJfZBMK/Y6ysb9ZfQxZlfU8VtCVoEw0
+         Ly2obf7xDiqbxWrB40nwcRPJPfy3EihV2bN646nX8R3+irNHMhetKfAZYvfwm3YjwccP
+         FL4K0fexvYujbmHOwQpyzpaYtX7oHMv9SlELftHitnCUpsbw1HxuFyYSTR6WLR8T8xsr
+         bMsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=snnxk3R92ahys5e04/EBmiQcmHyLqTEXiwOEel0/hFE=;
+        b=q4GZCP4Zm56wpmBiWh1WelPmZcirhb1Fkst1HIi82pVpr7HYuymuWPWDmXAZ9EPO0H
+         bp+Y+ilIk8VfyqitAAAxm8I5REBbX+nypo3RbCEV+Tr8sec2MxxKWLzMoT/wd2vI44qu
+         NuGObjMlVIAkYqOd7eP2yjZGxDqn05smFHd1H4ub9AD5VtVyJiGUzEqtmUAkxTy25ttG
+         9xyJ+LUzwHZFhUjpdrESSVaWmkwy40Udf4ZWqYWX/rQxnvCaa+crqU97g/Pv0clG9fzX
+         nmszQ3GOMriTrJ2UhhjPNloAuimdJGQY9cTMhpYT6KZ+rrAQK4sfnyx/IHylbytdoaKc
+         Uj3Q==
+X-Gm-Message-State: AO0yUKX0/3j6lE15ILn1WocsnybVWe6i8I5oDEL+7/eyOpLM6hfgDoNy
+	0hh6Ml7t31ihiNzryRFaqwU=
+X-Google-Smtp-Source: AK7set/C5bCr630zyecI6+trMCubXC9xPZO58fw95qgfjznPusl5KIqb7YUlG+Q4SOS0pQEacu6iDw==
+X-Received: by 2002:a05:622a:1a29:b0:3ac:1bd5:b7ad with SMTP id f41-20020a05622a1a2900b003ac1bd5b7admr29204131qtb.33.1677484489581;
+        Sun, 26 Feb 2023 23:54:49 -0800 (PST)
+Received: from MBP.lan ([68.74.118.125])
+        by smtp.gmail.com with ESMTPSA id r23-20020ac85217000000b003b8238114d9sm4235937qtn.12.2023.02.26.23.54.43
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 26 Feb 2023 23:54:49 -0800 (PST)
+From: Schspa Shi <schspa@gmail.com>
+To: linux-kernel@vger.kernel.org,
+	cocci@inria.fr,
+	peterz@infradead.org,
+	mcgrof@kernel.org
+Cc: Schspa Shi <schspa@gmail.com>,
+	Julia Lawall <Julia.Lawall@inria.fr>,
+	Nicolas Palix <nicolas.palix@imag.fr>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Ingo Molnar <mingo@redhat.com>,
+	Juri Lelli <juri.lelli@redhat.com>,
+	Vincent Guittot <vincent.guittot@linaro.org>,
+	Dietmar Eggemann <dietmar.eggemann@arm.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Ben Segall <bsegall@google.com>,
+	Mel Gorman <mgorman@suse.de>,
+	Daniel Bristot de Oliveira <bristot@redhat.com>,
+	Valentin Schneider <vschneid@redhat.com>
+Date: Mon, 27 Feb 2023 15:53:47 +0800
+Message-Id: <20230227075346.69658-1-schspa@gmail.com>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <597798313.18813704.1677352621708.JavaMail.zimbra@inria.fr>
+Content-Transfer-Encoding: 8bit
 X-Validation-by: julia.lawall@inria.fr
-Subject: Re: [cocci] [PATCH] coccinelle: put_device: Include of_node_put to
- avoid false positives
-Reply-To: Deepak R Varma <drv@mailo.com>
+Subject: [cocci] [RFC PATCH] cocci: cpi: add complete api check script
+Reply-To: Schspa Shi <schspa@gmail.com>
 X-Loop: cocci@inria.fr
-X-Sequence: 866
+X-Sequence: 867
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -188,67 +248,317 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2023-02/Y%2Fu%2FmV6GUC5%2Bl3m6%40ubun2204.myguest.virtualbox.org>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2023-02/20230227075346.69658-1-schspa%40gmail.com>
 
-On Sat, Feb 25, 2023 at 08:17:01PM +0100, Julia Lawall wrote:
-> > The node reference increased by of_find_device_by_node() can also be
-> > released by using a call to of_node_put(). Hence when this exists, the
-> > script should not trigger a warning, which otherwise will be a false
-> > positive.
-> 
-> Could you explain more about why of_node_put is sufficient?
+When DECLARE_COMPLETION_ONSTACK was used, the user must to ensure the other
+process won't reference the completion variable on stack. For a
+killable/interruptiable version, we need extra code(add locks/use xchg) to
+ensure this.
 
-You are right. In fact, I think calling of_node_put() for a prior
-of_find_device_by_node() is buggy as a call to of_find_device_by_node()
-increments the kref for the device embedding the node and not the kref of the
-node. Hence a call to put_device() is required to decrement the device kref.
-Calling the of_node_put() attempts to decrement the kref of the node, which I
-think is not correct.
+This patch provide a SmPL script to detect bad
+DECLARE_COMPLETION_ONSTACK(_MAP) API usage, but far from perfect.
 
-May I request any comment on my understanding?
+This is a common problem, and a lot of drivers have simpler problem. The
+fellowing is a list of problems find by this SmPL patch, due to the complex
+use of wait_for_complete* API, there will still be some false negatives and
+false positives. This RFC patch is mainly used to discuss improvement
+methods. If we introduce the wait_for_complete*_onstack API, it will be
+easier to modify these problems, and the patch rules of SmPL will be very
+easy. In the process of trying to write SmPL scripts, I strongly recommend
+introducing two onstack APIs to complete this operation.
 
-Thank you,
-deepak.
+file:/Users/schspa/work/src/linux/drivers/infiniband/ulp/srpt/ib_srpt.c::2962 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/misc/tifm_7xx1.c::268 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/firmware/arm_scmi/driver.c::1001 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/video/fbdev/omap2/omapfb/dss/dispc-compat.c::595 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/video/fbdev/omap2/omapfb/dss/dispc-compat.c::491 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/video/fbdev/omap2/omapfb/dss/dispc-compat.c::538 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/video/fbdev/omap2/omapfb/dss/dispc-compat.c::645 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/video/fbdev/omap2/omapfb/dss/dsi.c::3175 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/video/fbdev/omap2/omapfb/dss/dsi.c::2360 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/video/fbdev/omap2/omapfb/dss/dsi.c::2314 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/video/fbdev/omap2/omapfb/dss/dsi.c::2634 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/gpu/drm/omapdrm/dss/dsi.c::1804 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/gpu/drm/omapdrm/dss/dsi.c::1758 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/gpu/drm/omapdrm/dss/dsi.c::2034 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/net/wireless/marvell/mwl8k.c::2259 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/net/wireless/mediatek/mt7601u/mcu.c::317 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/net/wireless/ti/wlcore/main.c::6674 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/net/wwan/t7xx/t7xx_state_monitor.c::416 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/soc/apple/rtkit.c::647 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/soc/apple/rtkit.c::653 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/soc/qcom/rpmh.c::269 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/scsi/aic94xx/aic94xx_tmf.c::339 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/scsi/snic/snic_ctl.c::242 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/scsi/snic/snic_scsi.c::1811 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/scsi/snic/snic_scsi.c::2266 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/scsi/snic/snic_scsi.c::1603 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/scsi/snic/snic_scsi.c::2073 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/scsi/qla2xxx/qla_os.c::1807 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/scsi/qla2xxx/qla_os.c::1328 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/scsi/ibmvscsi/ibmvfc.c::2466 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/scsi/aic7xxx/aic79xx_osm.c::844 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/scsi/aic7xxx/aic79xx_osm.c::2334 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/scsi/aic7xxx/aic7xxx_osm.c::2297 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/scsi/lpfc/lpfc_nvmet.c::2119 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/scsi/ipr.c::5153 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/scsi/scsi_error.c::1157 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/scsi/hisi_sas/hisi_sas_main.c::1215 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/scsi/hisi_sas/hisi_sas_v2_hw.c::996 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c::867 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/scsi/isci/task.c::317 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/scsi/fnic/fnic_scsi.c::1844 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/scsi/fnic/fnic_scsi.c::2310 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/scsi/fnic/fnic_scsi.c::2086 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/scsi/fnic/fnic_scsi.c::2579 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/ufs/core/ufshcd.c::6752 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/ufs/core/ufshcd.c::4074 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/thunderbolt/ctl.c::604 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/i2c/busses/i2c-hisi.c::206 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/s390/cio/vfio_ccw_drv.c::71 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/slimbus/messaging.c::154 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/slimbus/qcom-ngd-ctrl.c::894 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/slimbus/qcom-ngd-ctrl.c::932 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/slimbus/qcom-ctrl.c::377 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/usb/core/devio.c::1142 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/usb/core/hcd.c::2229 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/spi/spi-hisi-sfc-v3xx.c::337 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/bluetooth/hci_bcm4377.c::955 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/i3c/master/mipi-i3c-hci/cmd_v1.c::336 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/i3c/master/mipi-i3c-hci/cmd_v2.c::278 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/i3c/master/mipi-i3c-hci/core.c::360 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/i3c/master/mipi-i3c-hci/core.c::312 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/i3c/master/mipi-i3c-hci/core.c::238 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/ata/libata-core.c::1558 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/w1/masters/ds1wm.c::285 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/w1/masters/ds1wm.c::233 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/drivers/w1/masters/ds1wm.c::262 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/lib/kunit/try-catch.c::76 was suspected to return a variable on stack
+file:/Users/schspa/work/src/linux/sound/aoa/soundbus/i2sbus/pcm.c::264 was suspected to return a variable on stack
 
-> 
-> thanks,
-> julia
-> 
-> > Also, improve the warning message to include of_node_put too is missing.
-> > 
-> > Signed-off-by: Deepak R Varma <drv@mailo.com>
-> > ---
-> > scripts/coccinelle/free/put_device.cocci | 4 +++-
-> > 1 file changed, 3 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/scripts/coccinelle/free/put_device.cocci
-> > b/scripts/coccinelle/free/put_device.cocci
-> > index f09f1e79bfa6..259195b501aa 100644
-> > --- a/scripts/coccinelle/free/put_device.cocci
-> > +++ b/scripts/coccinelle/free/put_device.cocci
-> > @@ -18,8 +18,10 @@ type T,T1,T2,T3;
-> > 
-> > id = of_find_device_by_node@p1(x)
-> > ... when != e = id
-> > +    when != of_node_put(x)
-> > if (id == NULL || ...) { ... return ...; }
-> > ... when != put_device(&id->dev)
-> > +    when != of_node_put(x)
-> >     when != platform_device_put(id)
-> >     when != if (id) { ... put_device(&id->dev) ... }
-> >     when != e1 = (T)id
-> > @@ -42,7 +44,7 @@ p2 << search.p2;
-> > @@
-> > 
-> > coccilib.report.print_report(p2[0],
-> > -                             "ERROR: missing put_device; call
-> > of_find_device_by_node on line "
-> > +                             "ERROR: missing put_device or of_node_put; call
-> > of_find_device_by_node on line "
-> >                              + p1[0].line
-> >                              + ", but without a corresponding object release within this function.")
-> > 
-> > --
-> > 2.34.1
+To fix this, we can add introducing two new API for this.
 
++
++void complete_on_stack(struct completion **x)
++{
++       struct completion *comp = xchg(*x, NULL);
++
++       if (comp)
++               complete(comp);
++}
++EXPORT_SYMBOL(complete_on_stack);
++
++int __sched wait_for_completion_state_on_stack(struct completion **x,
++                                       unsigned int state)
++{
++       struct completion *comp = *x;
++       int retval;
++
++       retval = wait_for_completion_state(comp, state);
++       if (retval) {
++               if (xchg(*x, NULL))
++                       return retval;
++
++               /*
++                * complete_on_stack will call complete shortly.
++                */
++               wait_for_completion(comp);
++       }
++
++       return retval;
++}
++EXPORT_SYMBOL(wait_for_completion_state_on_stack);
+
+Link: https://lore.kernel.org/all/20221115140233.21981-1-schspa@gmail.com/T/#mf6a41a7009bb47af1b15adf2b7b355e495f609c4
+Link: https://lore.kernel.org/all/7d1021f1-c88e-5a03-3b92-087f9be37491@I-love.SAKURA.ne.jp/
+
+CC: Julia Lawall <Julia.Lawall@inria.fr>
+CC: Nicolas Palix <nicolas.palix@imag.fr>
+CC: Matthias Brugger <matthias.bgg@gmail.com>
+CC: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+CC: Ingo Molnar <mingo@redhat.com>
+CC: Peter Zijlstra <peterz@infradead.org>
+CC: Juri Lelli <juri.lelli@redhat.com>
+CC: Vincent Guittot <vincent.guittot@linaro.org>
+CC: Dietmar Eggemann <dietmar.eggemann@arm.com>
+CC: Steven Rostedt <rostedt@goodmis.org>
+CC: Ben Segall <bsegall@google.com>
+CC: Mel Gorman <mgorman@suse.de>
+CC: Daniel Bristot de Oliveira <bristot@redhat.com>
+CC: Valentin Schneider <vschneid@redhat.com>
+
+Signed-off-by: Schspa Shi <schspa@gmail.com>
+---
+ scripts/coccinelle/api/complete.cocci | 160 ++++++++++++++++++++++++++
+ 1 file changed, 160 insertions(+)
+ create mode 100644 scripts/coccinelle/api/complete.cocci
+
+diff --git a/scripts/coccinelle/api/complete.cocci b/scripts/coccinelle/api/complete.cocci
+new file mode 100644
+index 000000000000..d4cf32187180
+--- /dev/null
++++ b/scripts/coccinelle/api/complete.cocci
+@@ -0,0 +1,160 @@
++// SPDX-License-Identifier: GPL-2.0
++///
++//  Copyright: (C) 2023 Schspa Shi.
++//  Confidence: High
++virtual report
++
++@r1 exists@
++declarer name DECLARE_COMPLETION_ONSTACK;
++declarer name DECLARE_COMPLETION_ONSTACK_MAP;
++position p;
++identifier done;
++identifier func;
++@@
++
++func(...) {
++...
++(
++DECLARE_COMPLETION_ONSTACK(done@p);
++|
++DECLARE_COMPLETION_ONSTACK_MAP(done@p, ...);
++)
++...
++}
++
++@locked exists@
++identifier func=r1.func;
++identifier done=r1.done;
++position p1,p;
++@@
++
++func(...) {
++...
++(
++mutex_lock@p1
++|
++mutex_trylock@p1
++)
++ (...)
++...  when != mutex_unlock(...)
++done@p
++...
++}
++
++
++@elocked exists@
++identifier func=r1.func;
++identifier done=r1.done;
++position p1,p;
++expression e;
++@@
++
++func(...) {
++...
++e = &done;
++...
++(
++mutex_lock@p1
++|
++mutex_trylock@p1
++)
++ (...)
++...  when != mutex_unlock(...)
++e@p
++...
++}
++
++
++@has_wait_for_completion exists@
++position p;
++identifier done;
++identifier func=r1.func;
++identifier fb = { wait_for_completion, wait_for_completion_io};
++expression e;
++@@
++
++func(...) {
++...
++(
++...
++fb(&done@p);
++...
++|
++e = &done;
++...
++fb(e@p);
++)
++...
++}
++
++@has_while_wait exists@
++position p;
++identifier done, ret;
++identifier func=r1.func;
++identifier fb =~ "wait_for_completion.*";
++expression e;
++@@
++
++func(...) {
++...
++while (...) {
++	...
++	ret = fb(&done@p, e);
++	...
++}
++...
++}
++
++@has_while_wait2 exists@
++position p;
++identifier done;
++identifier func=r1.func;
++expression fb =~ "wait_for_completion.*";
++@@
++
++func(...) {
++...
++while (fb(&done@p, ...) == 0) {
++	...
++}
++...
++}
++
++
++@r2 depends on (!has_wait_for_completion && !has_while_wait && !has_while_wait2) exists@
++declarer name DECLARE_COMPLETION_ONSTACK;
++position p!={locked.p, elocked.p};
++identifier done=r1.done;
++identifier func=r1.func;
++expression e;
++@@
++
++func(...) {
++...
++(
++wait_for_completion_interruptible(&done@p)
++|
++wait_for_completion_killable(&done@p)
++|
++wait_for_completion_timeout(&done@p, ...)
++|
++wait_for_completion_io_timeout(&done@p, ...)
++|
++wait_for_completion_interruptible_timeout(&done@p, ...)
++|
++wait_for_completion_killable_timeout(&done@p, ...)
++|
++try_wait_for_completion(&done@p)
++|
++wait_for_completion_timeout(e@p, ...)
++)
++...
++}
++
++
++@script:python depends on report@
++fp << r2.p;
++@@
++
++print('file:{:s}::{:s} was suspected to return a variable on stack'.format(fp[0].file, fp[0].line))
++
+-- 
+2.37.3
 
