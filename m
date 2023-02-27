@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id ED94BC64EC4
-	for <cocci@archiver.kernel.org>; Sat,  4 Mar 2023 16:40:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 097E4C678D5
+	for <cocci@archiver.kernel.org>; Sat,  4 Mar 2023 16:40:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=references:from:to:cc:date:in-reply-to:message-id:
    mime-version:subject:reply-to:sender:list-id:list-help:
    list-subscribe:list-unsubscribe:list-post:list-owner:
    list-archive;
-  bh=ykAX5woDC3mRymPiVbbo2VDyZOKxKj2NLBbdN7+oOMM=;
-  b=s9dYSXqLVSEPsbTa+J97HyPnocwiVrkkGLsIZBmtJVgQdi6dK3NT9fSq
-   qPNppTXUi9rLXQAkU56s9J+WFGGlCIbTIHQGfI/cZ08yq5G9e7GmRyaTm
-   0kkmlba7lfSqLa2wHt02hzMNv8bod7FBbx0z3SpYX6ZKcEV7TldKc6Fp7
-   g=;
+  bh=mZK6LeX7z5VZYct/x3qbpKzfYxbIlheF7rhtEPOT3/8=;
+  b=YopsUGqBAzz5Zvy1XgK4kK/9Kh4cr9LKcBRtdEV8Dk8i4POXv/yFwm6I
+   RT2m9nOPVBtIKgViDOmLIkpjSuNa3/Bc2Kxf0wCvPQkR0ZSxNmm7Ju4v6
+   2X1KiJ9tcIX65bSPEDvh5wuRzWCuSOqzkCCs757Y2FilawoRqK/JJbabG
+   E=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -35,205 +35,206 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
 Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@gmail.com
 X-IronPort-AV: E=Sophos;i="5.98,233,1673910000"; 
-   d="scan'208";a="95427764"
+   d="scan'208";a="95427782"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 04 Mar 2023 17:39:59 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 04 Mar 2023 17:40:00 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 1E714E0385; Sat,  4 Mar 2023 17:40:00 +0100 (CET)
-Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by sympa.inria.fr (Postfix) with ESMTPS id 583B2E00A1
-	for <cocci@sympa.inria.fr>; Mon, 27 Feb 2023 17:32:07 +0100 (CET)
-IronPort-SDR: 63fcdb05_WzHiH0XAbuWkc15D6cL2AE1ok1FYv2BruJXf4mC0TcBXlSd
- A7uZhUJlJ/2rv6CxniEPaqhWOacscHKIq9Vq0LA==
-X-IPAS-Result: =?us-ascii?q?A0FMAwAK2vxjfzOgVdFSCB0BAQEBCQESAQUFAYIPgi2BC?=
- =?us-ascii?q?VYuBFEEk0qCJQOdW4EsPg8BAwEMAT0FAgQBAQMEOIRGAoUwAh0HAQQ0EwECB?=
- =?us-ascii?q?AEBAQEDAgMBAQEBAQEDAQEFAQEBAgEBAgQEAQECEAEBIhkHDg4phWgNgjcpA?=
- =?us-ascii?q?XVNAzgBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBBAINU?=
- =?us-ascii?q?h85AQEdAQEBAQIBEi4BGx0BAwELBgULDQklDwERAhEBBQEOAQ0GEyKCXYJtA?=
- =?us-ascii?q?QMOIwMQoEuBBEKKOIIPBQIWgQGCCQaBQQGaSAoZKA1oA4FbAgEGCQEIgS6EW?=
- =?us-ascii?q?IJnhQFGgy16JxuCDYEVgTyBbj6CIEIEgSEWhmYEiXyEWoZ2AQMCAgMCAgMGB?=
- =?us-ascii?q?AICAgUEAgECBAIOBA4DAQECAgEBAgQIAgIDAwIIDxMDBwIBBgUBAwECBgQCB?=
- =?us-ascii?q?AELAgUCCgECBAECAgIBBQkBAwEDAQwCAgcCAwUGBAIDCQUCAQEDAgICDQMCA?=
- =?us-ascii?q?wIEAQUFAQEQAgYECQEGAwsCBAEEAwECBQcDBwMCAgICCAQSAgMCAgQFAgICA?=
- =?us-ascii?q?QIEBQIHBgIBAgICBAIBAwIEAgIEAgIEAxsCAwUDDgICAgICAQkLAgMHBAIDA?=
- =?us-ascii?q?wEHAgICAQwBAxgDAgICAgICAgEDBwoECQQCBQECAQQLAQUBDQQBAgICAgIDA?=
- =?us-ascii?q?gEBAwYIBgMKAgcEAgMDBgkPDwgFAwEEAwIDAgEICwIDAgICBAgCAwECAgEGA?=
- =?us-ascii?q?gMBAgIBAgIBCwEBAgMFAgIRAQICAgICAQECAwIDAQcBAgIYBgQFAwMFAgIBB?=
- =?us-ascii?q?AECAgQEBQsCBAMBAQECAgICAwILAwUDAQYDAwoHBAEIAgYDBAIFBAMEBAYCA?=
- =?us-ascii?q?gICAgEEAQYLAwIEBAMDBgMJAgIMAhQCEAQGAQQLCwIEAgIBAgICDgMEBgIDA?=
- =?us-ascii?q?wICBQkCBAICAgICAwYCCQQCAgMCAQICBAECBBQPAwMCIAMZKx0CCQMjDwMLC?=
- =?us-ascii?q?QgTFygGDAc0BDQBFBIHBwYmAQEFDgYCBgMEAQoLBQQFCAECAQEGAgQCBwkMA?=
- =?us-ascii?q?gEGAQUCAgMCAQQBAgEGAwECAgICBQcFAwQFAwkKAwEBBAMCAQIBAgMCAwcDA?=
- =?us-ascii?q?gQCAwECAwQGBgEJBAYFDQMEAgIBAgEBAwQEBAICAQICAwEEAgIBAQMDAwICA?=
- =?us-ascii?q?gMEAgMDCwQKBwMDAgEFCwQCAwIBAQMBBgkEAgIGAQIEAgICAgICAwEBAwkEA?=
- =?us-ascii?q?gEDAgIEAwYCAQIBCQUCAQkDAQIBAgEEAQMJAQICBAkCAwcFCgICAgIIAgIOA?=
- =?us-ascii?q?wMCAQEEAgIEBQkBAgcCBQEBAwUHAgIBAgIBBAMBCQQBAgMCAQEDEgMDAQQCB?=
- =?us-ascii?q?QMDDQkGAgIBAwIBDQMBAgECAwEFBRcDCAcUAwUCAgQEAQcCAgMDAwIBAgkGA?=
- =?us-ascii?q?QMBBQIOAwICBAYBAgEBAgMPBQEBAQEXAQMEAgMBBAMBAQIBAgMCDgQBBAUMA?=
- =?us-ascii?q?xwCBAEICAICAwMBAgMFAQIDBAIBCAoCAgICCQIKAwIDAQMFAQMCCQMBBQECB?=
- =?us-ascii?q?wIGAQEBAgICBgIIAgMLAQMFBgIBAgIBBQIBAgIFAwUCAgICBA0CBQICAgUBA?=
- =?us-ascii?q?gcEAgICAwECAgYFAQIHBwIFAgICAwMKBAQHBAEBAQIBAQUBAgEDAwECBAECA?=
- =?us-ascii?q?QIFAwYCAgICAQICAQEBCAICAgICAgMEAgiZEkgHARVeBxMsUBpbCA0QDgVLA?=
- =?us-ascii?q?i0DkgwmATmCYAGLTYIWnSeBRWQLZIMfgVWCeocUjw2GBzKDeoxlhiRFkXCXW?=
- =?us-ascii?q?YtjgW+DbJEfhRECCgcGECMSgUQjPIEgMxoIGxU7MYI2EzwDGQ+OIAwWg1CFF?=
- =?us-ascii?q?IpyNDQCATgCBwsBAQMJhUMmE02FBQEB?=
-IronPort-PHdr: A9a23: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
- pUJTbBfWRo+EfZIUiyN+fQNJZ52WnUvlrvJ1KY1
-IronPort-Data: A9a23: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
-IronPort-HdrOrdr: A9a23:YiBQKaP5mp+bqsBcThOjsMiBIKoaSvp037Dk7TEXdfU1SL3kqy
- nKpp4mPHDP+U8ssR0b6LW9EYmGBWjR7JtkpZQWVI3SJDUO21HYVr2Kj7GSuAEIcheWnoU86U
- 4jSdkcNDSZNzlHZK3BkW+F+rgbsb262Zyzifybx3lgShwCUdAD0+67MGqm+49NKTWuyaBXKH
- NU3KR6mwY=
+	id D63A5E4EBB; Sat,  4 Mar 2023 17:40:00 +0100 (CET)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id DFFBDE00A1
+	for <cocci@sympa.inria.fr>; Mon, 27 Feb 2023 17:41:33 +0100 (CET)
+IronPort-SDR: 63fcdd3b_0YZf3IPzLvBsb/jHjGPdfVlWfsojIhRCleAAr+KBcbIz8Yx
+ Ar0qjDdj7BPYVtx72z4wmppIGQtJelRGrCzFYJg==
+X-IPAS-Result: =?us-ascii?q?A0FcAwAj3Pxjf6mgVdFaHQEBAQEJARIBBQUBgg+CLYFfL?=
+ =?us-ascii?q?gRRk06CJQOLVZMyPg8BAwELAQFCAgQBAQMEOIRGAoUwAh0HAQQ0EwECBAEBA?=
+ =?us-ascii?q?QEDAgMBAQEBAQEDAQEFAQEBAgEBAgQEAQECEAEBGQkZBw4OBSSFaA2CNykBd?=
+ =?us-ascii?q?U0DOAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEEAn45A?=
+ =?us-ascii?q?QEdAQEBAQIBEhUZARsdAQMBCwYFCw0JJQ8BExEBBQEcBhMihUoBAw4jA6Beg?=
+ =?us-ascii?q?QRCijiBeRYFAhaBAYIJBpwKChkoDWgDgVsCBwkBCIEuhFiHaINzeicbgg2BF?=
+ =?us-ascii?q?YMqPosDBJVMAQMCAgMCAgMGBAICAgUEAgECBAIOBA4DAQECAgEBAgQIAgIDA?=
+ =?us-ascii?q?wIIDxMDBwIBBgUBAwECBgQCBAELAgUCCgECBAECAgIBBQkBAwEDAQwCAgcCA?=
+ =?us-ascii?q?wUGBAIDCQUCAQEDAgICDQMCAwIEAQUFAQEQAgYECQEGAwsCBAEEAwECBQcDB?=
+ =?us-ascii?q?wMCAgICCAQSAgMCAgQFAgICAQIEBQIHBgIBAgICBAIBAwIEAgIEAgIEAxsCA?=
+ =?us-ascii?q?wUDDgICAgICAQkLAgMHBAIDAwEHAgICAQwBAxgDAgICAgICAgEDBwoECQQCB?=
+ =?us-ascii?q?QECAQQLAQUBDQQBAgICAgIDAgEBAwYIBgMKAgcEAgMDBgkPDwgFAwEEAwIDA?=
+ =?us-ascii?q?gEICwIDAgICBAgCAwECAgEGAgMBAgIBAgIBCwEBAgMFAgIRAQICAgICAQECA?=
+ =?us-ascii?q?wIDAQcBAgIYBgQFAwMFAgIBBAECAgQEBQsCBAMBAQECAgICAwILAwUDAQYDA?=
+ =?us-ascii?q?woHBAEIAgYDBAIFBAMEBAYCAgICAgEEAQYLAwIEBAMDBgMJAgIMAhQCEAQGA?=
+ =?us-ascii?q?QQLCwIEAgIBAgICDgMEBgIDAwICBQkCBAICAgICAwYCCQQCAgMCAQICBAECB?=
+ =?us-ascii?q?BQPAwMCIAMZKx0CCQMjDwMLCQgTFygGDAc0BDQBFBIHBwYmAQEFDgYCBgMEA?=
+ =?us-ascii?q?QoLBQQFCAECAQEGAgQCBwkMAgEGAQUCAgMCAQQBAgEGAwECAgICBQcFAwQFA?=
+ =?us-ascii?q?wkKAwEBBAMCAQIBAgMCAwcDAgQCAwECAwQGBgEJBAYFDQMEAgIBAgEBAwQEB?=
+ =?us-ascii?q?AICAQICAwEEAgIBAQMDAwICAgMEAgMDCwQKBwMDAgEFCwQCAwIBAQMBBgkEA?=
+ =?us-ascii?q?gIGAQIEAgICAgICAwEBAwkEAgEDAgIEAwYCAQIBCQUCAQkDAQIBAgEEAQMJA?=
+ =?us-ascii?q?QICBAkCAwcFCgICAgIIAgIOAwMCAQEEAgIEBQkBAgcCBQEBAwUHAgIBAgIBB?=
+ =?us-ascii?q?AMBCQQBAgMCAQEDEgMDAQQCBQMDDQkGAgIBAwIBDQMBAgECAwEFBRcDCAcUA?=
+ =?us-ascii?q?wUCAgQEAQcCAgMDAwIBAgkGAQMBBQIOAwICBAYBAgEBAgMPBQEBAQEXAQMEA?=
+ =?us-ascii?q?gMBBAMBAQIBAgMCDgQBBAUMAxwCBAEICAICAwMBAgMFAQIDBAIBCAoCAgICC?=
+ =?us-ascii?q?QIKAwIDAQMFAQMCCQMBBQECBwIGAQEBAgICBgIIAgMLAQMFBgIBAgIBBQIBA?=
+ =?us-ascii?q?gIFAwUCAgICBA0CBQICAgUBAgcEAgICAwECAgYFAQIHBwIFAgICAwMKBAQHB?=
+ =?us-ascii?q?AEBAQIBAQUBAgEDAwECBAECAQIFAwYCAgICAQICAQEBCAICAgICAgMEAgiZY?=
+ =?us-ascii?q?hVeLjkzcTiWSQGNY59QC2SDH4FVgnqcKDKXA5I1l1midg6EagIKBwYQIxKBR?=
+ =?us-ascii?q?COBXDMaCBsVbII2TwMZD44gg3KQBjQ0OwIHCwEBAwmFQyYThVIBAQ?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23:9+50/aK8mqHBcxsSFE+ROZElxSXFcZb7ZxGr2PjKsXjdYENS1GEGn
+ DEZDWzUMquCMGf0ftp+OYm/pBlTucDWy95qSVYd+CA2RRqmi+KVXIXDdh+Y0wC6d5CYEho/t
+ 63yTvGacajYm1eF/k/F3oDJ9CU6j+fRLlbFILasEjhrQgN5QzsWhxtmmuoo6qZlmtHR7zml4
+ LsemOWCfg71s9JIGjhMsfnb8kkw5K+aVA4w5zTSW9gb5DcyqFFOVPrzFYnpR1PkT49dGPKNR
+ uqr5NlVKUuEl/uFIorNfofTKiXmcJaKVeS9oiY+t5yZv/R3jndaPpDXmxYrQRw/Zz2hx7idw
+ TjW3HC6YV9B0qbkwIzxX/TEes3X0GIvFLLveBCCXcKvI0LufVi3yftUVWsPLKYz9LxuKjBNq
+ qAeAWVYBvyDr7reLLOTT+BtgoE6MJCuMtpB6zdvyjbWCftgSpfGK0nIzYUAjXFg24YXQ66YP
+ pRIAdZsREyojxlnIVwXE4o3tOitj3j7NTZfrTp5oIJmvzWMlVIojtABNvKWVYata8xRjn3fi
+ T/mxHb2LD0HP9qAnG/tHnWE37eTx0sXQrk6ELSn//puqE+Sw2YJAVsXU0G6qL+3kCaWUNVUI
+ E084TsrtaF09UqxT9C7UQfQnZKflhsVWt4VCvFjrQ/UlPuS7AGeCWwJCDVGbbTKqfPaWxQk9
+ QSDkemwLwV+m5abE2u2p7TL8TWbbH19wXA5WQcISg4M4t/GqY41jw7SQtsLLEJTpo2qcd0X6
+ 2DaxBXSl4n/nuZQiPrmpQGvbyaE48mWHlRst207S0r8tlshDLNJcbBE/rQy0BqtBIOQT13Ep
+ WRd3sbHsrFIApaKmyiABu4KGdlFBspp0hWN2TaD/LF7rVxBHkJPm6gOuFmSw283aK45lcfBO
+ hO7hO+ozMY70IGWRaF2eZmtLM8h0LLtE9/oPtiNMIURPsMvLlPfrHo2DaJ144wLuBhz+U3YE
+ cfLGftA8V5HYUia5GDnG79MjeFDKt4WmT+KG/gXMChLIZLHPCLPIVv0GFSJae894cu5TPb9o
+ r5i2z+x40wHCoXWO3GJmaZKdAxiBSVlWPje9pMPHsbdeFYOMD96UJf5n+hxE7GJaowPyY8kC
+ FnmChEGoLc+7FWbQTi3hodLNOq2AMYi8CtmbETB/z+AghAeXGpm149HH7NfQFXt3LULISdcH
+ qJZKfaTSO9CUCrG8Dk7ZJzw5t4qPheyiA7Ee2LvbDEjdtQyD0bE6/31TDvJrSMuNyuQsddhg
+ ruC0giAf4EPaT4/B+nradWu7WiLg14jpMxIUXH1f+ZjIHfXzNAyKgjarOMGHMUXGBCSmhqYz
+ 1m3BDkbl8nsoqg00t/Duo6cpaz0EeEkRkt+NEvY5IaQKiP10DeCw4hBceDQZhHbdjr+15uDb
+ NVv7cPXEaM4jncTlKFjAZNH8LkY2+L/g5N7kiF1A2TtbXmwL7Frf0m9wshEs5NSyo9juQeZX
+ lyF/v9YM+6rPPzJPUEwJg03SPaqztARxyfv6MoqLHXA5CNY+KSNVWNQNUKujA1fNL5ED5M38
+ 9w+ucI56x2NtTRyC4yo1htrzmWrKmAMd44FtZtAWY/itVcN+2F4OJfZDnf73YGLZ9ByKXIVG
+ z6zhpSTo5RHx0HHTWg/KmiV48pZmqY1mU5ryH0sGg23v+Tr194N4Q1p0DUoTw5q4A1N/MBtN
+ 0NKaUBkB6W80A15pcpEXmqTNRlLL0SJ9mDc12kLuTf+dBSuXDacKmcSBPu8phEF0mNDfwp0+
+ KOT53blXA3LIuDw/HoWcmx0p8PzSede8lX5p/mmOMCeDbwWUCHAgJLyVVEXqhDiP9w9tHfHq
+ cZu4ux0T6/xbgwUnIEWFKiY0u42ZC2fBWkfX8xkwrwFLVvcdB62xzKKDUK7IeFJBv7S9H6HG
+ 95cHd1OWzu+xRSxgGgiX4BUGIBNndkt+NYmUZHoLzRfs7Kg8xxYgKiJ/S363GIWU9FilPgmE
+ bzodhWALD20pWBVkGrzvsV7KjKGQd0bVjbdgsGx0ss0Tqwmjs89UHsc8LWOu1etDDBG5DOR5
+ QPKWL/XxbdtyKNqhIrdLZ9ADASVd/L2WPi5zwSol9Foc9n0ENzvsjkNoQLNJDVmPro2WvV2m
+ 4+SsdXx4lj3gbYuX03dmLiDD6Ns5/jueMZyLeTMMyB8sQaZfc3j8T8v2jqdEoNYtsFZ6u2MZ
+ RqKWOHpefE7A95ilWBoMQ5AGBMjOoHLR6bHpwbmit+TCxIYgDf1HPn++VDHNWhkJzI1YbvgA
+ QrJutGr1NBSjKJIIDQmX/hGIZtJEGXPaJscVe/alGenVzGzo1a4pLHduwIq6mjLBlm6Ac/K2
+ 8/5aSakRiuimpPj7Y9/g9V+sCRCWTw5yaM1c1kG8tF7tyGiASRUZa4BOJEBEddPnja0yJj8Y
+ yrXYXA/DTnmGw5Jagj4/M+pSzL36jbi4TslDmdBE4KohyaK6EeoBbJg8mJ5/y4zdGK9naeoL
+ tYR/nC2NR+0qn2sqSD/+dTj6dqLBNuDrp7Lxaw5u8P3ChcaR74N0RSN2SJTADffHZileFrjf
+ AAIqKMtfK1/YUH0GMdkPXVSHXn1ed8pIyoANU+y/ToUh2lXICCsBhEy1yEfH4DvtPg3GYM=
+IronPort-HdrOrdr: A9a23:R4LyC65fVkb5BsCIuwPXwBrXdLJyesId70hD6qm+c20zTiX4rb
+ HSoB1/73XJYVkqKQgdcLy7Scy9aFPasYV4+IwAeaqlNTOWwFdAT7sSl7cKoQeQYBEWn9Q1vc
+ wBT0E9MqySMbETt6fHCWKDYrAdKbe8gcSVrNvFw2woRQ9nbLwI1XYaNu9ZKCFLrct9aKbR2K
+ Dy2iOPnVSdRUg=
 X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-AV: E=Sophos;i="5.98,219,1673910000"; 
-   d="scan'208";a="48749499"
-X-MGA-submission: =?us-ascii?q?MDE/IFsJZ1ugOS2B46zr5cLExxabQuhOFbjlE+?=
- =?us-ascii?q?76I/3BRSMVwpmoFo9GNO2h+E7OrTCfvvNfWB48i3nzJUf8koOp+2Wdkj?=
- =?us-ascii?q?WLdhq5k6eOrnyuTlSq6BfZy6nuMA0vgx8g15Hi0fHpl4i5LpsRk+PNpu?=
- =?us-ascii?q?6ejcK2/zo3GTubefjj/saaHA=3D=3D?=
-Received: from mail-oa1-f51.google.com ([209.85.160.51])
-  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2023 17:32:05 +0100
-Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-172a623ad9aso7901269fac.13;
-        Mon, 27 Feb 2023 08:32:04 -0800 (PST)
+   d="scan'208";a="94571616"
+X-MGA-submission: =?us-ascii?q?MDESp6qTSRYCpv6sOZGRMW5GEZAzNkcsrMc6kh?=
+ =?us-ascii?q?tDBzUrcUPbdHmSqI38C1WQH1Ef/u6knzqBP4tJ6Sb6p63Z3CWLFAcOFV?=
+ =?us-ascii?q?NrVVUF+ogAUKrSrYlbUQ/KhVND8n3mQjqEtaqCLUPTeNMC+LaHut6ipO?=
+ =?us-ascii?q?fzzMHQNMib4dd4FV5zPnBYOQ=3D=3D?=
+Received: from mail-qt1-f169.google.com ([209.85.160.169])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2023 17:41:32 +0100
+Received: by mail-qt1-f169.google.com with SMTP id c19so7248433qtn.13;
+        Mon, 27 Feb 2023 08:41:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
          :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
-        bh=ykAX5woDC3mRymPiVbbo2VDyZOKxKj2NLBbdN7+oOMM=;
-        b=UOMDtGg/ynZ88DEpE4VpZTUV/FqnKD2fz36KU1mFrdJcOjwJ11QbKCwi8XskEylpD6
-         JL0Tmsi64RQPL6ycJ8QDaTA38JZ9v6TV7nYLxGyPrLIis+q0tF3xkrKDQpMfuvH9V/j5
-         VPLG/Zg0GPTzNUFKdyhRDHMygvqPqsQGeGG3pUX3wVF3jr40EqKekxaLFi/JWqxZPSvN
-         YeFEoYbW8YyCaGCh54Sq2IjApJCBHWa85rxtYPi6hlscN3sI/zsEov007TfsEG6/qcIP
-         yBm4j3qVKc2QzlB/GJwstBiBpZVq2eVxwL/8Zt3pBpRRnck4nuPSKTlLn1sZ0Z1tUZrg
-         2m7g==
+        bh=mZK6LeX7z5VZYct/x3qbpKzfYxbIlheF7rhtEPOT3/8=;
+        b=I5O5uZecNoO8yiPrQ8I40mdCE2jF9q9/jiCuSWkn4+4XpmLRp6+E/uHofwQaLm2tKK
+         BaVnbOA0Cc9zD8CF4+vfUiUHAywVdR86dilzPLPVrpFT34+JzzZ4Z9yDWHUlsDoXXJNd
+         9bW5z5455LPCpwyNQdPZ2JvvCTB4jMKcKizffH9BCrQQYp5XcRnxXZU9sfOUimoyOOta
+         JFI7yKFKEUKijQTaQRm0VJAL74GrJ7viAQ+dm+tNQsOD+886Yo+IqDruoTecf767/50i
+         vEr69rXB+xhsv00T1m9MRCWegS9EEYfzZM6x1YVnsD6qH9fV7pH/Uaz0jSTdnnMrQcpz
+         1MHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
          :user-agent:references:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ykAX5woDC3mRymPiVbbo2VDyZOKxKj2NLBbdN7+oOMM=;
-        b=GeX47ws4XTjQGDfoZXT7S6IdlkZ/TOon2ex3EaCQoDEg45YcJbfunVXyTJ4busKu7d
-         nIEUctyPBYwy52Ugx9OhfvhzhSAdtDIIK4en68sDWRy36CioO4NERUMxypV87csectHF
-         z/+BLF5ts6O0q1CnPmGprkCUKmXZnJUt2V46QvMiwVIfS6TTvNpHSXgS39P0ZfGVU56Z
-         oh/AFcQ2tWxn3KF9D/LDTF9IvlxHAyZuwHmUygu4HN8bza0QZfgCyO6fjxRZtNNR7Hl5
-         WvJowxvcNafmuqdaWJqanUkO6mwkwdVTYlY5Lo1Q4K4qmjdd6gOCIROIQZAlxsiNT6N6
-         dg7Q==
-X-Gm-Message-State: AO0yUKXlNcIiklPgewQKnezfxTTDX201aq2A0q6cE/XdHMjsUHoX0hB+
-	H5HHoUmzGYu+rS+2qsJdWFI=
-X-Google-Smtp-Source: AK7set8JrmQPXI/+U9esCHo92SVr2hSyJywv45zSD2QlNF5cOT/7jtM6w7j7MSiA3lYY8GEvpc/57Q==
-X-Received: by 2002:a05:6871:29c:b0:172:6cfc:6ff4 with SMTP id i28-20020a056871029c00b001726cfc6ff4mr11441076oae.41.1677515523473;
-        Mon, 27 Feb 2023 08:32:03 -0800 (PST)
+        bh=mZK6LeX7z5VZYct/x3qbpKzfYxbIlheF7rhtEPOT3/8=;
+        b=LcIOhckgGaIag1PSr2OrSm/D43wpkB9cnusMzUaGFMD1U24XIwrGLIFevTIBjYDanl
+         KQ3UtdNl8CLDPRpTBMGJNMvpbqsyRDgb34Fagn1PpfnExM/OgsjTockBbMFaQWD6rE2Q
+         QgWtgqUheSckYx5s/OITpFFIPDfMo+7YHnxtQHNR64ZUymrYWE2NErwZ9pt79X1m4K5u
+         XXnvYug5TN2bTBK8xWx8ONH4MVyUJLZTELwqHzATcAQhnSAhhWJO7gLrKeaBSb/8E91p
+         u0gB3TOQGcxZ/QkQSEzBSDGNwH9Ng+55t4amgTlwRpPOCtxBMbCsmExOFSwGIUngyhPX
+         GgAA==
+X-Gm-Message-State: AO0yUKVMY29wBdo6yTO+yzd8Y6WT5Z/dEVROsZacc2JuArXcH375OoVG
+	lM2bOYt3+8d+pBzuzFlt5cw=
+X-Google-Smtp-Source: AK7set8dfzlW7a/WkPN2lUpzoC8W7qX3y3mq+kVuU0A3p0XBKYanpamyYslp9JtVHLn56Xh34vZOSw==
+X-Received: by 2002:ac8:5803:0:b0:3b6:2c3b:8c00 with SMTP id g3-20020ac85803000000b003b62c3b8c00mr44096137qtg.66.1677516091850;
+        Mon, 27 Feb 2023 08:41:31 -0800 (PST)
 Received: from ArchLinux ([68.74.118.125])
-        by smtp.gmail.com with ESMTPSA id q190-20020a3743c7000000b00742a23cada8sm2895394qka.131.2023.02.27.08.31.56
+        by smtp.gmail.com with ESMTPSA id z8-20020ac87108000000b003bf9f9f1844sm4869361qto.71.2023.02.27.08.41.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Feb 2023 08:32:03 -0800 (PST)
+        Mon, 27 Feb 2023 08:41:31 -0800 (PST)
 References: <20230227075346.69658-1-schspa@gmail.com>
  <Y/yR/LypvJQXRhAr@hirez.programming.kicks-ass.net>
+ <20230227102808.2cea9705@gandalf.local.home>
+ <Y/zPv+L2iqOkD2Oa@hirez.programming.kicks-ass.net>
+ <20230227105310.08d9a46e@gandalf.local.home>
 User-agent: mu4e 1.7.5; emacs 28.2
 From: Schspa Shi <schspa@gmail.com>
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: linux-kernel@vger.kernel.org, cocci@inria.fr, mcgrof@kernel.org, Julia
- Lawall <Julia.Lawall@inria.fr>, Nicolas Palix <nicolas.palix@imag.fr>,
- Matthias Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+To: Steven Rostedt <rostedt@goodmis.org>
+Cc: Peter Zijlstra <peterz@infradead.org>, linux-kernel@vger.kernel.org,
+ cocci@inria.fr, mcgrof@kernel.org, Julia Lawall <Julia.Lawall@inria.fr>,
+ Nicolas Palix <nicolas.palix@imag.fr>, Matthias Brugger
+ <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
  <angelogioacchino.delregno@collabora.com>, Ingo Molnar <mingo@redhat.com>,
  Juri Lelli <juri.lelli@redhat.com>, Vincent Guittot
  <vincent.guittot@linaro.org>, Dietmar Eggemann <dietmar.eggemann@arm.com>,
- Steven Rostedt <rostedt@goodmis.org>, Ben Segall <bsegall@google.com>, Mel
- Gorman <mgorman@suse.de>, Daniel Bristot de Oliveira <bristot@redhat.com>,
- Valentin Schneider <vschneid@redhat.com>, buytenh@wantstofly.org,
- johannes.berg@intel.com, gregkh@linuxfoundation.org, tomba@kernel.org,
- airlied@gmail.com, daniel@ffwll.ch
-Date: Tue, 28 Feb 2023 00:10:35 +0800
-In-reply-to: <Y/yR/LypvJQXRhAr@hirez.programming.kicks-ass.net>
-Message-ID: <m2ttz75ati.fsf@gmail.com>
+ Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>, Daniel
+ Bristot de Oliveira <bristot@redhat.com>, Valentin Schneider
+ <vschneid@redhat.com>, buytenh@wantstofly.org, johannes.berg@intel.com,
+ gregkh@linuxfoundation.org, tomba@kernel.org, airlied@gmail.com,
+ daniel@ffwll.ch
+Date: Tue, 28 Feb 2023 00:36:26 +0800
+In-reply-to: <20230227105310.08d9a46e@gandalf.local.home>
+Message-ID: <m2mt4z5adr.fsf@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Validation-by: julia.lawall@inria.fr
 Subject: Re: [cocci] [RFC PATCH] cocci: cpi: add complete api check script
 Reply-To: Schspa Shi <schspa@gmail.com>
 X-Loop: cocci@inria.fr
-X-Sequence: 873
+X-Sequence: 874
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -246,391 +247,77 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2023-03/m2ttz75ati.fsf%40gmail.com>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2023-03/m2mt4z5adr.fsf%40gmail.com>
 
 
-Peter Zijlstra <peterz@infradead.org> writes:
+Steven Rostedt <rostedt@goodmis.org> writes:
 
-> On Mon, Feb 27, 2023 at 03:53:47PM +0800, Schspa Shi wrote:
->> When DECLARE_COMPLETION_ONSTACK was used, the user must to ensure the other
->> process won't reference the completion variable on stack. For a
->> killable/interruptiable version, we need extra code(add locks/use xchg) to
->> ensure this.
+> On Mon, 27 Feb 2023 16:43:59 +0100
+> Peter Zijlstra <peterz@infradead.org> wrote:
+>
+>> On Mon, Feb 27, 2023 at 10:28:08AM -0500, Steven Rostedt wrote:
 >> 
->> This patch provide a SmPL script to detect bad
->> DECLARE_COMPLETION_ONSTACK(_MAP) API usage, but far from perfect.
->
-> Documentation/process/submitting-patches.rst:instead of "[This patch] makes xyzzy do frotz" or "[I] changed xyzzy
->
-> But also, wth is SmPL, the actual thing included is a coccinelle script.
->
-Thanks for reminding.
-
->> This is a common problem, and a lot of drivers have simpler problem. The
->> fellowing is a list of problems find by this SmPL patch, due to the complex
->> use of wait_for_complete* API, there will still be some false negatives and
->> false positives. This RFC patch is mainly used to discuss improvement
-
-There are still many defects in this script that are commented here.
-
->> methods. If we introduce the wait_for_complete*_onstack API, it will be
->> easier to modify these problems, and the patch rules of SmPL will be very
->> easy. In the process of trying to write SmPL scripts, I strongly recommend
->> introducing two onstack APIs to complete this operation.
+>> > So what exact race are you trying to catch here?  
 >> 
->> file:/Users/schspa/work/src/linux/drivers/infiniband/ulp/srpt/ib_srpt.c::2962 was suspected to return a variable on stack
->
-> What's with this retarded file path? Are you running on Windows or
-> something daft like that?
->
-> Please, make them relative to srctree.
-
-It's the raw output from this coccinelle script running from macOS. So,
-I did not remove the prefix from the file path.
-
->
->> file:/Users/schspa/work/src/linux/drivers/misc/tifm_7xx1.c::268 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/firmware/arm_scmi/driver.c::1001 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/video/fbdev/omap2/omapfb/dss/dispc-compat.c::595 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/video/fbdev/omap2/omapfb/dss/dispc-compat.c::491 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/video/fbdev/omap2/omapfb/dss/dispc-compat.c::538 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/video/fbdev/omap2/omapfb/dss/dispc-compat.c::645 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/video/fbdev/omap2/omapfb/dss/dsi.c::3175 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/video/fbdev/omap2/omapfb/dss/dsi.c::2360 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/video/fbdev/omap2/omapfb/dss/dsi.c::2314 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/video/fbdev/omap2/omapfb/dss/dsi.c::2634 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/gpu/drm/omapdrm/dss/dsi.c::1804 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/gpu/drm/omapdrm/dss/dsi.c::1758 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/gpu/drm/omapdrm/dss/dsi.c::2034 was suspected to return a variable on stack
->
-> These don't seem buggy, they take the whole DSI out -- which lives on
-> stack too.
->
-
-This RFC patch is only used to illustrate the complexity of this
-detection. As rewritten in the comments, this coccinelle script is
-already somewhat complicated, but it still cannot avoid false positives
-and false negatives. For code writing like dsi, I think it is difficult
-to cover it with coccinelle script. So I want to introduce the onstack
-version of the API, so that the checking work will be much easier. It is
-also much easier to read the source code. When you see such APIs when
-reviewing the code, you can easily know that there are detailed
-exception mirroring considerations here, instead of carefully reviewing
-whether there are some implicit conditions to ensure that there are no
-problems.
-
->> file:/Users/schspa/work/src/linux/drivers/net/wireless/marvell/mwl8k.c::2259 was suspected to return a variable on stack
->
-> Heh, they seem to have the right idea but a buggy implementation.
->
->> file:/Users/schspa/work/src/linux/drivers/net/wireless/mediatek/mt7601u/mcu.c::317 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/net/wireless/ti/wlcore/main.c::6674 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/net/wwan/t7xx/t7xx_state_monitor.c::416 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/soc/apple/rtkit.c::647 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/soc/apple/rtkit.c::653 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/soc/qcom/rpmh.c::269 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/scsi/aic94xx/aic94xx_tmf.c::339 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/scsi/snic/snic_ctl.c::242 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/scsi/snic/snic_scsi.c::1811 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/scsi/snic/snic_scsi.c::2266 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/scsi/snic/snic_scsi.c::1603 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/scsi/snic/snic_scsi.c::2073 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/scsi/qla2xxx/qla_os.c::1807 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/scsi/qla2xxx/qla_os.c::1328 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/scsi/ibmvscsi/ibmvfc.c::2466 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/scsi/aic7xxx/aic79xx_osm.c::844 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/scsi/aic7xxx/aic79xx_osm.c::2334 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/scsi/aic7xxx/aic7xxx_osm.c::2297 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/scsi/lpfc/lpfc_nvmet.c::2119 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/scsi/ipr.c::5153 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/scsi/scsi_error.c::1157 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/scsi/hisi_sas/hisi_sas_main.c::1215 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/scsi/hisi_sas/hisi_sas_v2_hw.c::996 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c::867 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/scsi/isci/task.c::317 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/scsi/fnic/fnic_scsi.c::1844 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/scsi/fnic/fnic_scsi.c::2310 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/scsi/fnic/fnic_scsi.c::2086 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/scsi/fnic/fnic_scsi.c::2579 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/ufs/core/ufshcd.c::6752 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/ufs/core/ufshcd.c::4074 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/thunderbolt/ctl.c::604 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/i2c/busses/i2c-hisi.c::206 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/s390/cio/vfio_ccw_drv.c::71 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/slimbus/messaging.c::154 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/slimbus/qcom-ngd-ctrl.c::894 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/slimbus/qcom-ngd-ctrl.c::932 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/slimbus/qcom-ctrl.c::377 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/usb/core/devio.c::1142 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/usb/core/hcd.c::2229 was suspected to return a variable on stack
->
-> These do usb_kill_urb() in the fail case. IIUC this avoids the UaF
-> problem this script is trying to finger, no?
->
-
-This is a similar usage to DSI, with some implied conditions
-
->> file:/Users/schspa/work/src/linux/drivers/spi/spi-hisi-sfc-v3xx.c::337 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/bluetooth/hci_bcm4377.c::955 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/i3c/master/mipi-i3c-hci/cmd_v1.c::336 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/i3c/master/mipi-i3c-hci/cmd_v2.c::278 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/i3c/master/mipi-i3c-hci/core.c::360 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/i3c/master/mipi-i3c-hci/core.c::312 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/i3c/master/mipi-i3c-hci/core.c::238 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/ata/libata-core.c::1558 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/w1/masters/ds1wm.c::285 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/w1/masters/ds1wm.c::233 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/drivers/w1/masters/ds1wm.c::262 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/lib/kunit/try-catch.c::76 was suspected to return a variable on stack
->> file:/Users/schspa/work/src/linux/sound/aoa/soundbus/i2sbus/pcm.c::264 was suspected to return a variable on stack
+>> on-stack copmletion with a wait_for_completion that can return early
+>> (eg. killable, interruptible, or timeout) can go out of scope (eg, free
+>> the completion) with the other side calling complete() on some possibly
+>> re-used piece of stack.
 >> 
->> To fix this, we can add introducing two new API for this.
+>> IOW, Use-after-Free.
 >> 
->> +
->> +void complete_on_stack(struct completion **x)
->> +{
->> +       struct completion *comp = xchg(*x, NULL);
->> +
->> +       if (comp)
->> +               complete(comp);
->> +}
->> +EXPORT_SYMBOL(complete_on_stack);
->> +
->> +int __sched wait_for_completion_state_on_stack(struct completion **x,
->> +                                       unsigned int state)
->> +{
->> +       struct completion *comp = *x;
->> +       int retval;
->> +
->> +       retval = wait_for_completion_state(comp, state);
->> +       if (retval) {
->> +               if (xchg(*x, NULL))
->> +                       return retval;
->> +
->> +               /*
->> +                * complete_on_stack will call complete shortly.
->> +                */
->> +               wait_for_completion(comp);
->> +       }
->> +
->> +       return retval;
->> +}
->> +EXPORT_SYMBOL(wait_for_completion_state_on_stack);
+>> Care must be taken to ensure the other side (whatever does complete())
+>> is either terminated or otherwise stopped from calling complete() on an
+>> out-of-scope variable.
 >
-> So going by the 3 random samples above, only 1 would use this pattern.
+> I got that. But as you were stating as well, when care is taken, the script
+> appears to still report it. The example I gave has:
 >
-> Does that mean you 'forgot' to audit all these results before proposing
-> a fix?
+>         req = blk_mq_alloc_request(q, REQ_OP_DRV_OUT, 0);
+> [..]
+>         req->end_io_data = &wait;
+> [..]
+>         hba->tmf_rqs[req->tag] = req;
+> [..]
+>         err = wait_for_completion_io_timeout(&wait,
+> [..]
+>         spin_lock_irqsave(hba->host->host_lock, flags);
+>         hba->tmf_rqs[req->tag] = NULL;
+>         __clear_bit(task_tag, &hba->outstanding_tasks);
+>         spin_unlock_irqrestore(hba->host->host_lock, flags);
 >
+>
+> And where the complete is:
+>
+>         spin_lock_irqsave(hba->host->host_lock, flags);
+>         pending = ufshcd_readl(hba, REG_UTP_TASK_REQ_DOOR_BELL);
+>         issued = hba->outstanding_tasks & ~pending;
+>         for_each_set_bit(tag, &issued, hba->nutmrs) {
+>                 struct request *req = hba->tmf_rqs[tag];
+>                 struct completion *c = req->end_io_data;
+>  
+>                 complete(c);
+>                 ret = IRQ_HANDLED;
+>         }
+>         spin_unlock_irqrestore(hba->host->host_lock, flags);
+>
+> So the spinlock is making sure that the complete() only works on a
+> completion if it is still there.
+>
+There is nothing wrong with your code.
 
-I checked the output here, and there are instances of incorrect error
-alerts in this output already pointed out in the previous comments.
+This script will not check the hba->host->host_lock lock, and there is
+another hba->outstanding_tasks bit mask to ensure that there is no UAF
+here. But this script doesn't have a way to get these implicit
+conditions.
 
-> What does that mean for this script?
+> I guess I should have asked, how is this script differentiating between
+> where there's a problem and where there isn't.
 >
-
-This RFC PATCH is intended to be used to discuss whether to add a new
-API to simplify this detection and repair work.
-
->> Link: https://lore.kernel.org/all/20221115140233.21981-1-schspa@gmail.com/T/#mf6a41a7009bb47af1b15adf2b7b355e495f609c4
->> Link: https://lore.kernel.org/all/7d1021f1-c88e-5a03-3b92-087f9be37491@I-love.SAKURA.ne.jp/
->> 
->> CC: Julia Lawall <Julia.Lawall@inria.fr>
->> CC: Nicolas Palix <nicolas.palix@imag.fr>
->> CC: Matthias Brugger <matthias.bgg@gmail.com>
->> CC: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
->> CC: Ingo Molnar <mingo@redhat.com>
->> CC: Peter Zijlstra <peterz@infradead.org>
->> CC: Juri Lelli <juri.lelli@redhat.com>
->> CC: Vincent Guittot <vincent.guittot@linaro.org>
->> CC: Dietmar Eggemann <dietmar.eggemann@arm.com>
->> CC: Steven Rostedt <rostedt@goodmis.org>
->> CC: Ben Segall <bsegall@google.com>
->> CC: Mel Gorman <mgorman@suse.de>
->> CC: Daniel Bristot de Oliveira <bristot@redhat.com>
->> CC: Valentin Schneider <vschneid@redhat.com>
->> 
->> Signed-off-by: Schspa Shi <schspa@gmail.com>
->> ---
->>  scripts/coccinelle/api/complete.cocci | 160 ++++++++++++++++++++++++++
->>  1 file changed, 160 insertions(+)
->>  create mode 100644 scripts/coccinelle/api/complete.cocci
->> 
->> diff --git a/scripts/coccinelle/api/complete.cocci b/scripts/coccinelle/api/complete.cocci
->> new file mode 100644
->> index 000000000000..d4cf32187180
->> --- /dev/null
->> +++ b/scripts/coccinelle/api/complete.cocci
->> @@ -0,0 +1,160 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +///
->> +//  Copyright: (C) 2023 Schspa Shi.
->> +//  Confidence: High
+> If you remove the spinlocks, then there would most definitely be a race,
+> and I'm not even sure if the supplied patch would improve this much.
 >
-> I'm thinking that 'high' is somewhat premature, 2 out of 3 false
-> positive rate does not inspire confidence.
->
-OK, this definition is not appropriate.
-
->> +virtual report
->> +
->> +@r1 exists@
->> +declarer name DECLARE_COMPLETION_ONSTACK;
->> +declarer name DECLARE_COMPLETION_ONSTACK_MAP;
->> +position p;
->> +identifier done;
->> +identifier func;
->> +@@
->> +
->> +func(...) {
->> +...
->> +(
->> +DECLARE_COMPLETION_ONSTACK(done@p);
->> +|
->> +DECLARE_COMPLETION_ONSTACK_MAP(done@p, ...);
->> +)
->> +...
->> +}
->> +
->> +@locked exists@
->> +identifier func=r1.func;
->> +identifier done=r1.done;
->> +position p1,p;
->> +@@
->> +
->> +func(...) {
->> +...
->> +(
->> +mutex_lock@p1
->> +|
->> +mutex_trylock@p1
->> +)
->> + (...)
->> +...  when != mutex_unlock(...)
->> +done@p
->> +...
->> +}
->> +
->> +
->> +@elocked exists@
->> +identifier func=r1.func;
->> +identifier done=r1.done;
->> +position p1,p;
->> +expression e;
->> +@@
->> +
->> +func(...) {
->> +...
->> +e = &done;
->> +...
->> +(
->> +mutex_lock@p1
->> +|
->> +mutex_trylock@p1
->> +)
->> + (...)
->> +...  when != mutex_unlock(...)
->> +e@p
->> +...
->> +}
->> +
->> +
->> +@has_wait_for_completion exists@
->> +position p;
->> +identifier done;
->> +identifier func=r1.func;
->> +identifier fb = { wait_for_completion, wait_for_completion_io};
->> +expression e;
->> +@@
->> +
->> +func(...) {
->> +...
->> +(
->> +...
->> +fb(&done@p);
->> +...
->> +|
->> +e = &done;
->> +...
->> +fb(e@p);
->> +)
->> +...
->> +}
->> +
->> +@has_while_wait exists@
->> +position p;
->> +identifier done, ret;
->> +identifier func=r1.func;
->> +identifier fb =~ "wait_for_completion.*";
->> +expression e;
->> +@@
->> +
->> +func(...) {
->> +...
->> +while (...) {
->> +	...
->> +	ret = fb(&done@p, e);
->> +	...
->> +}
->> +...
->> +}
->> +
->> +@has_while_wait2 exists@
->> +position p;
->> +identifier done;
->> +identifier func=r1.func;
->> +expression fb =~ "wait_for_completion.*";
->> +@@
->> +
->> +func(...) {
->> +...
->> +while (fb(&done@p, ...) == 0) {
->> +	...
->> +}
->> +...
->> +}
->> +
->> +
->> +@r2 depends on (!has_wait_for_completion && !has_while_wait && !has_while_wait2) exists@
->> +declarer name DECLARE_COMPLETION_ONSTACK;
->> +position p!={locked.p, elocked.p};
->> +identifier done=r1.done;
->> +identifier func=r1.func;
->> +expression e;
->> +@@
->> +
->> +func(...) {
->> +...
->> +(
->> +wait_for_completion_interruptible(&done@p)
->> +|
->> +wait_for_completion_killable(&done@p)
->> +|
->> +wait_for_completion_timeout(&done@p, ...)
->> +|
->> +wait_for_completion_io_timeout(&done@p, ...)
->> +|
->> +wait_for_completion_interruptible_timeout(&done@p, ...)
->> +|
->> +wait_for_completion_killable_timeout(&done@p, ...)
->> +|
->> +try_wait_for_completion(&done@p)
->> +|
->> +wait_for_completion_timeout(e@p, ...)
->> +)
->> +...
->> +}
->> +
->> +
->> +@script:python depends on report@
->> +fp << r2.p;
->> +@@
->> +
->> +print('file:{:s}::{:s} was suspected to return a variable on stack'.format(fp[0].file, fp[0].line))
->> +
->> -- 
->> 2.37.3
->> 
+> -- Steve
 
 
 -- 
