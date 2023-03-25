@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D8DBFC6FD1C
-	for <cocci@archiver.kernel.org>; Sat, 25 Mar 2023 09:23:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 09F69C6FD20
+	for <cocci@archiver.kernel.org>; Sat, 25 Mar 2023 09:25:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=message-id:date:mime-version:from:to:cc:references:
    in-reply-to:content-transfer-encoding:subject:reply-to:
    sender:list-id:list-help:list-subscribe:list-unsubscribe:
    list-post:list-owner:list-archive;
-  bh=t4NuwjFUzFRBy3bl261irHDEh7nQl8b8WPPEFzUoFO8=;
-  b=awN8Q9duMVowHRw8B2IzbzCaL0FDABZlS793J8B+XwSAdXMHgRvUx7Zl
-   kpZXF6Gmo1+MA9yGehNI1Ve8Dc8xLDP2z8Kss0BBVyw3qj8ssu8SRvOwU
-   5o/ti4Pnt0aY0ingMSrnbhk6V8sCeXv94O6aS5JrYA/MK+cBpG7f08vw8
-   4=;
+  bh=u17pA45hkSNie92KiUNPOnAOIekxYz2O/Zzpj7sGxbY=;
+  b=KaYWC52AIw+UAkqAa8HyzCwAcTzXofy2rNJqjfyKAw60fP5tccx4Vu26
+   gjwCvmTElBulK886zIWJAzei18auCUwlDMq8BvgKPWNVneuyHqWQ0Qyjh
+   fc6+0n4SUzPthUmOavsUAcMkhkrjY3MgJpkzaStvzZlF/2wd8dCDbX/Gn
+   Q=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -35,139 +35,140 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
 Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=markus.elfring@web.de
 X-IronPort-AV: E=Sophos;i="5.98,290,1673910000"; 
-   d="scan'208";a="99046038"
+   d="scan'208";a="99046154"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 25 Mar 2023 10:23:18 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 25 Mar 2023 10:25:10 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 455E7E0D44; Sat, 25 Mar 2023 10:23:17 +0100 (CET)
-Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by sympa.inria.fr (Postfix) with ESMTPS id C2085E0D40
-	for <cocci@sympa.inria.fr>; Sat, 25 Mar 2023 10:23:09 +0100 (CET)
-IronPort-SDR: 641ebd7f_MWmBWmuRoj/olabFINGEnc8ZobO9Skny6FDYLjrn3JkCcYN
- ejbfdSiJykLXhl62u1ETLOKDCSoLowgu+n5UylA==
-X-IPAS-Result: =?us-ascii?q?A0FgAABPvB5khk7ASNlaHQEBAQEJARIBBQUBQIE9BgELA?=
- =?us-ascii?q?YItgUsvBAtGhFORAS4DhC+HLJAjgVaBQD4PAQMBDUEBAgQBAQMEOIFTgnMCh?=
- =?us-ascii?q?ToCHQcBBDIHDgECBAEBAQEDAgMBAQEBAQEDAQEFAQEBAgEBAgQEAQECEAEBA?=
- =?us-ascii?q?RgJGQcOEAUihWgNgjcpARFkgQgBAQEBAQEBAQEBAQEBAQEBAQEBAQEBARICR?=
- =?us-ascii?q?1M9AwMjBBkBAREmAQ8fBgImAgJXBgEMBgIBAYJ6gigBAzEHsSJ/M4EBgggBA?=
- =?us-ascii?q?QaCY5knHywiU4FeCYEULQGNBIM2eicPgVVEgRUnDIM1iByCZ4Ioh1aHJYgvC?=
- =?us-ascii?q?oE0dYEgDoE9gQQCCQIRa4ESCGuBfUACDWQLDm+BSgJkTCN7JQQOAxkrHUACA?=
- =?us-ascii?q?Qs7Oj81BgMLIAZYawIJIxETBQMLFSpHBAg5Bhw0EQIIDxIPLEQOQjc0EwZcA?=
- =?us-ascii?q?SkLDhEDUIFHBIEKgQEGASYkmnECAYJnAVI7TCZSZUANK5ItEZIvng40B4Iog?=
- =?us-ascii?q?VWBWQyfDAYTLpcIDgaSIy6XPCCneoFqAzCBXDMaJIM2TwMZD44gGYQMjwkBP?=
- =?us-ascii?q?UA0OwIHAQoBAQMJhUYBAYV7AQE?=
-IronPort-PHdr: A9a23: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
-IronPort-Data: A9a23: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
-IronPort-HdrOrdr: A9a23:1tmpSqnZhOqCeJQkPGhC6goGnsrpDfL43DAbv31ZSRFFG/FwWf
- re+MjzpiWE6wr5P0tQ4exoWZPwOE80kKQf3WB/B9iftWXdyQmVxcRZnO3fKl7bdREWlNQw6U
- 4IScEXZeEYT2IK6voSizPZLz9P+qjjzImVpaP502pnSx1sZppt9gFjF2+gYzBLrUV9ZKbQD/
- Cnl7F6TtebCA4qhk/XPBM4Y9Q=
+	id 5B08EE0D44; Sat, 25 Mar 2023 10:25:09 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id E32FFE0D40
+	for <cocci@sympa.inria.fr>; Sat, 25 Mar 2023 10:25:07 +0100 (CET)
+IronPort-SDR: 641ebdf3_zLnYIKKUOYSHFgjvlK1y1hcpFAJ7istW/Bxm18gwewUplSO
+ N6Tu82c4qxD5qaDZriNurtV/WXIOeFKNk0QV2XA==
+X-IPAS-Result: =?us-ascii?q?A0EuAAC6vB5khwMP49RaHAEBAQEBAQcBARIBAQQEAQFAg?=
+ =?us-ascii?q?TwGAQELAYItgUsvBAtGhFORAS4DhC+HLJAjgVaBQD4PAQMBDUEBAgQBAQMEO?=
+ =?us-ascii?q?IFTgnMChToCHQcBBDEIDgECBAEBAQEDAgMBAQEBAQEDAQEFAQEBAgEBAgQEA?=
+ =?us-ascii?q?QECEAEBARoJFwcOEAUihWgNgjcpARFkgQgBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBARICR1M9AwMjBBkBAREmAQ8fBgImAgJXBgEMBgIBAYJ6gigBAzEHsSR/M?=
+ =?us-ascii?q?4EBgggBAQaCY5knHywiU4FeCYEULQGNBIM2eicPgVVEgRUnDIM1hCaDdoJng?=
+ =?us-ascii?q?iiHVocliC8KgTR1gSAOgT2BBAIJAhFrgRIIa4F9QAINZAsOb4FKAmRMgR4lB?=
+ =?us-ascii?q?A4DGSsdQAIBCzs6PzUGAwsgBlhrAgkjERMFAwsVKkcECDkGHDQRAggPEg8sR?=
+ =?us-ascii?q?A5CNzQTBlwBKQsOEQNQgUcEgQqBAQYBJiSacQIBgmcBUjtMJoF3DZJYEZIvn?=
+ =?us-ascii?q?g40B4IogVWBWQyfDAYTLpcIDgaSIy6XPCCneoFlATeBXDMaJIM2TwMZD44gG?=
+ =?us-ascii?q?YQMjwkBPUA0OwIHAQoBAQMJhUYBAYV7AQE?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:Lu7qfKz+GzlV6aZCF6FdKrPw+L1zdoMgy1knxilNoNJuA6ilfr
+ OV7ZcmPHjP+U4ssRAb6Km90cy7Kk80mqQb3WB8B8bBYOCighrPEGgA1+XfKl/bdxEWn9Q1vc
+ pdmupFebrN5DNB7foSjjPIduoI/PnC1ry0juHDyHpXQRhtcLwI1XYFNu/WKCxLrBItP+tDKH
+ Nw3Ls8m9IqFE58UviG
 X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-AV: E=Sophos;i="5.98,290,1673910000"; 
-   d="scan'208";a="99046033"
-X-MGA-submission: =?us-ascii?q?MDEGaosVNeZ9jie3owYU2IkIM0FpbXNvhmObCZ?=
- =?us-ascii?q?BQ+Jr5lCpA3HLSXIBt/jmMfuQGdJ9olWUrecyMt9N87z4MZqdCjcdjf0?=
- =?us-ascii?q?phz1OqTzlszdPyg1cILhM97evdyZ/IiwQQ4RmyEMhEf8T3Y9THT8SFOQ?=
- =?us-ascii?q?WUeIELhWN9HgscXDMDHuk9QQ=3D=3D?=
-Received: from mout.web.de ([217.72.192.78])
-  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2023 10:23:10 +0100
+   d="scan'208";a="51220072"
+X-MGA-submission: =?us-ascii?q?MDGYZ8mgaGl4vqhc5Hl0eOs5T4YRt+rFsRbTVW?=
+ =?us-ascii?q?4rU7eVif/YbjjSGL0Y/wcFBBH3UvzmORq9dUZX9Q2BMrAfC7Pu3a0rW/?=
+ =?us-ascii?q?PKx2XUf0dEoXOoW2+Vj+vWfwQqy5FgRGgXaTpameMnVKAvUZLWGwOvfy?=
+ =?us-ascii?q?lgvc9nRO9BBcY+1km4CqGSTg=3D=3D?=
+Received: from mout.web.de ([212.227.15.3])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2023 10:25:07 +0100
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de; s=s29768273;
-	t=1679736179; i=markus.elfring@web.de;
-	bh=MRffXbn9b4Tb1jtRiHGMK/jenWnYco5r7G/ZxtKqmJ0=;
+	t=1679736299; i=markus.elfring@web.de;
+	bh=T8LPUtGu7m45KRdmDCmPNW1EQCSsVw1mLYq1oAiqX+E=;
 	h=X-UI-Sender-Class:Date:Subject:From:To:Cc:References:In-Reply-To;
-	b=YiHCZQUmt+/Br7UOeXET4GICZ0RtTKRmu4atmnbCSremQAXNOh+IWRKywN4dG6/lt
-	 WY9gGm06JoI1V4ZsIVNQ6x7nqNciJdtiJHeD/UR+AE0w3YHQ0VweLXyGW+c7PhhlZy
-	 BX4GFfcJ3F9swEd5zHl0WFiTQWJ9gZLplvAcL3Jy10YOW7SxrH9eZTwfeNg/00heCD
-	 0LjvrnbgGdvS6h9mw1rPjFbM5v4OUNOXmLLRnGvPrFdj7scUyxQotRvnVoeJJ+/im8
-	 QhESiGrBoUNePpHqN4YLkHUkNpMBJ7cmZJQAxRdGtZXHeLVXvu9Bc5zfuma36RNWti
-	 TZfMsHasx3Hbg==
+	b=YWUEpYsP9XshdyjfbFLzHUz4/R1EUKCzwaJEbvnWwyUuINq2kSJFQUsBKqk7b+OUW
+	 BZ9Uskni/a6mDUutRZLKnZ0MoO84wUXJXBAIbMqzyBYi9gYKvEQnywfV60uamrK1ez
+	 27Jpo85adG/WP0Hn1kLcpoGJZ/AF6tZ6nKEMGiwLc/A84Nr4RZ/Uwnzvo6zrMYR8xt
+	 BbBSEpJwhPhU2z7ZWVIaxc8ChN62TQmHb4G2Vi67cnqhTUH2HFX+nGfv2EP2hGCn4V
+	 EgALuQgN3v50WsA0VE6D8e7TUbiBiAUc+F3y1+DPaxCQF+9MTlsyPCfel4Oh4+9Bvv
+	 whlNyhrb9yUjw==
 X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
-Received: from [192.168.178.21] ([94.31.81.83]) by smtp.web.de (mrweb106
- [213.165.67.124]) with ESMTPSA (Nemesis) id 1Ma0Tu-1q0ubH2xRE-00WLSk; Sat, 25
- Mar 2023 10:22:59 +0100
-Message-ID: <5476e173-567a-2177-6bf5-59e85b09388b@web.de>
-Date: Sat, 25 Mar 2023 10:22:58 +0100
+Received: from [192.168.178.21] ([94.31.81.83]) by smtp.web.de (mrweb006
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 1Mf3ug-1q7t6v0keo-00gVFM; Sat, 25
+ Mar 2023 10:24:59 +0100
+Message-ID: <b8f68d5b-461e-9753-349e-3f4907ccf32f@web.de>
+Date: Sat, 25 Mar 2023 10:24:57 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.0
@@ -185,29 +186,29 @@ References: <f9303bdc-b1a7-be5e-56c6-dfa8232b8b55@web.de>
 In-Reply-To: <49adf0c8-825a-018f-6d95-ce613944fc9b@web.de>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:rBCTVwstJu/E7rwD7wKCuz6Y3xNcwF/aN+0GpSYe/S9DVLQfwWc
- 3Ke8NPfFhlMvYRUskk3QGLpcp1v3U3K21RPiiztboLRGtI8mbXnd8ELjNXtK3hWB9UP6lJb
- 83mb4iZWFyim3qgXcy1NTg7CBlyD4NoMUuTGIYFduLDxfyCS7FGi+kulfi35e0EHLx6Q9wx
- C/ZXsp8FDc2vIwkifH6CA==
-UI-OutboundReport: notjunk:1;M01:P0:sYqW1wb9aE0=;iEquouVomjl/F8y6AervA82YqfB
- cXcWkwJ0y7q43/mpQlALzWuqRXbQ/M/oAdzad19AFj9JPoGVwK66yuyQ2mc83FL0H21rQpkf/
- oIHDZb7a7OJF1Aephb/2D92vCwKiKCNVJ6xcxDLUSrXGDXIVdb5GpcRCMcrwPmhf42H+fXcmr
- suyT424WKxibeVF5ZsjHswoMxERY/E+3hpG/gKtKCVSlbehoNKFt/L/xMYiPNG2TAKCwiqDWW
- oSWF9j8B9SFzFs46MDWmO5qpGEdHSIc3iNRgC6yZeKaaYWgkkQCwVCX/PM+JgwZyXRaizg5JE
- +p2H/9oNTiBuI2w4rzvbgMwEFi/XnZv6avt1XZFk1cwJMlAAT/FKSE6QVuOJPp27SBfrLDzaa
- mdQyXBRCtr8V1DLmjSBL6dv7UzvHJ85gh78kWHO9lKP11jh4wqSKts9RKdnsuvv/1ZFtwG7Xg
- EeiC/J/F6pZQPri5n/pNuZo2XyNNPOBDZkTgxWHVPcN0h54X9S4EQdjHkLVazbouJCV/HHg+4
- H8gue/qwXzlYWnwcJ31vbrD7B88Am2h0IU5+iJfoL9JLpongWUEoukKY5JlVQBkQ1QmF7edkd
- v84inJX2I9iuhyUMygUawNmzLuHqlDHsabEdAS1Yii3gmr1/biDwg678EsM8nvuEm712Zk6+h
- 6o4izevNpNBvfPNOlhjEO5eax+f4Ogm/VQXl6VOKToMGorljQpottfSv9Gyt+nMTT1HZEs+RK
- wLiirWkY7BaeZ7qWxFtCw8lQrgHPOLyVxYYCBQ6YfFTD3bBbe8fBhOGpDOLsFXb7aqwq0ZMZ5
- u4urYogckifgrXn3NtTWQ7lELFtoQix4BkAeIsmjkEQLx0ScSyYjGOceMmLUGZjpejNoD+kn2
- Zq3wUTbuVYZe+pN9vb5gOhU7xMVHUD7s4V80Yht4aCreUaRtX7cSCJf76
-Subject: [cocci] [PATCH resent 1/2] md/raid1: Fix exception handling in
+X-Provags-ID: V03:K1:TmLr0aveQr6L3Bg5eS/KOe4pOrQcdxP9t+11nvhqPZsiZG569LH
+ o6Ot6RFaSXfsyQWIRmN/1OSxrYx/crIUyx4MpbU5p8c78WwTUdgMGUXHRlrKEkQEa4mfTaX
+ TRGfKHkBh/5PA0uQrLDg01Zc2jZUDfwnh/FbzLjmLEwGMqLdgxnaxMNNvGDJw6cWJO1L/0q
+ /q9oI3NBNyOIOB4oM4srw==
+UI-OutboundReport: notjunk:1;M01:P0:bY4uY+EnUl8=;sjIUjFVnkw+Um/42RVka3k2Lf4j
+ g93G3QES6v4A4LBLvn3jb4wSK0hHPVvqtB34pESErvK8pn37r+iYYB9ztnmgtWQmduYkUe8bx
+ 3O6t1q7wrD++D60BgBnOPUrxrZaybjBwgBYI1MAjJMjIhXBUPNpB+1I2EaBdcHYcuIwiHEDNR
+ DFv5Oje164zu6FUd0D5KG+Sw+sEPdTe7yVZ9WoqPvI34w7hHoNesboHh1c2a3vWsFg4nbeNtI
+ RoJklyJtGwDvJ/k4IO4OcofhWMomPMaIbk7OXCIzFPVQyKG5Qzw0ypF/dvK+gF4h5jXZCnVZe
+ y/l0PeXdbUpbmgFJC/lNizNHWMKvgabBxhdbAxKGpL2VusnrdD1u20W4ZbjKy1gAIm2aC1751
+ 7XsR+2/G2B3VdXeNn85fy7573yR6HMLGbg0Sv8RJdLBXuuqShRDTM/dV7KkJg08wc6QTCa6x0
+ IECkWELtyfYUn7X6UyflsxppEBR+NCn3Qgu8IPDhsQ624+w0ABbBDOYyyvoVSaTumHNTodkI0
+ lz/HMnZR11Dg2zKS957qz69sM0Te9A2PANJ2zQKze8kaEuC/sozKmoypqr1AEEF4C6KefYLIX
+ wKU+Cyvm2hLfhqzf2Dmum6fa60VYG2gHGbPmbslZV0wje8uTridrF2WE2xzyAbCrxDULXesAB
+ JiLGxyHNTl+nAEm3fPEMIO1C12yVUQIRJi/9d7U0DGiwziREOlRQ2WDxJqRCUTSlqH40EVR6P
+ OAK3JZolVlcISFH/TAFifye3tBsitcsFYhcq+JqgqJHQJikqpY0HyXKeFPTnmaqQqFFcn9GhR
+ T6bOHhlcXZ3buqEgZPiCdp8XRfQYbp+4T3r9vUs246ayfbRnKw4AtJRLwbaz+py+NPZwMd3cF
+ zcJy3kMhWmy3BHSev479txyZfF/UfUhWkNTsSIS4Da/ZfQQJhrKj49AK7
+Subject: [cocci] [PATCH resent 2/2] md/raid10: Fix exception handling in
  setup_conf()
 Reply-To: Markus Elfring <Markus.Elfring@web.de>
 X-Loop: cocci@inria.fr
-X-Sequence: 930
+X-Sequence: 931
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -220,12 +221,12 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2023-03/5476e173-567a-2177-6bf5-59e85b09388b%40web.de>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2023-03/b8f68d5b-461e-9753-349e-3f4907ccf32f%40web.de>
 
-Date: Mon, 20 Mar 2023 16:40:11 +0100
+Date: Mon, 20 Mar 2023 17:15:07 +0100
 
-The label =E2=80=9Cabort=E2=80=9D was used to jump to another pointer chec=
-k despite of
+The label =E2=80=9Cout=E2=80=9D was used to jump to another pointer check =
+despite of
 the detail in the implementation of the function =E2=80=9Csetup_conf=E2=80=
 =9D
 that it was determined already that a corresponding variable contained
@@ -237,155 +238,120 @@ still a null pointer because of a failed function call.
 
 3. Delete a redundant check.
 
-4. Move three assignments for the variable =E2=80=9Cerr=E2=80=9D.
+4. Move an assignment for the variable =E2=80=9Cerr=E2=80=9D.
+
+5. Omit an extra initialisation (for the variable =E2=80=9Cconf=E2=80=9D)
+   which became unnecessary with this refactoring.
 
 
 This issue was detected by using the Coccinelle software.
 
-Fixes: 709ae4879ae33628ded276ce7da8cd5acfec476b ("md/raid1: add takeover s=
-upport for raid5->raid1")
-Fixes: fd76863e37fef26fe05547fddfa6e3d05e1682e6 ("RAID1: a new I/O barrier=
- implementation to remove resync window")
+Fixes: dab8b29248b3f14f456651a2a6ee9b8fd16d1b3c ("md: Add support for Raid=
+0->Raid10 takeover")
 Fixes: afeee514ce7f4cab605beedd03be71ebaf0c5fc8 ("md: convert to bioset_in=
 it()/mempool_init()")
+Fixes: 1da177e4c3f41524e886b7f1b8a0c1fc7321cac2 ("Linux-2.6.12-rc2")
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 =2D--
- drivers/md/raid1.c | 75 +++++++++++++++++++++++++++-------------------
- 1 file changed, 44 insertions(+), 31 deletions(-)
+ drivers/md/raid10.c | 42 +++++++++++++++++++++++-------------------
+ 1 file changed, 23 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/md/raid1.c b/drivers/md/raid1.c
-index 68a9e2d9985b..b614f50505ec 100644
-=2D-- a/drivers/md/raid1.c
-+++ b/drivers/md/raid1.c
-@@ -2978,54 +2978,54 @@ static struct r1conf *setup_conf(struct mddev *mdd=
-ev)
+diff --git a/drivers/md/raid10.c b/drivers/md/raid10.c
+index 6c66357f92f5..12ce3e69e6f7 100644
+=2D-- a/drivers/md/raid10.c
++++ b/drivers/md/raid10.c
+@@ -4006,7 +4006,7 @@ static int setup_geo(struct geom *geo, struct mddev =
+*mddev, enum geo_type new)
 
- 	conf =3D kzalloc(sizeof(struct r1conf), GFP_KERNEL);
+ static struct r10conf *setup_conf(struct mddev *mddev)
+ {
+-	struct r10conf *conf =3D NULL;
++	struct r10conf *conf;
+ 	int err =3D -EINVAL;
+ 	struct geom geo;
+ 	int copies;
+@@ -4016,41 +4016,41 @@ static struct r10conf *setup_conf(struct mddev *md=
+dev)
+ 	if (copies =3D=3D -2) {
+ 		pr_warn("md/raid10:%s: chunk size must be at least PAGE_SIZE(%ld) and b=
+e a power of 2.\n",
+ 			mdname(mddev), PAGE_SIZE);
+-		goto out;
++		goto exit;
+ 	}
+
+ 	if (copies < 2 || copies > mddev->raid_disks) {
+ 		pr_warn("md/raid10:%s: unsupported raid10 layout: 0x%8x\n",
+ 			mdname(mddev), mddev->new_layout);
+-		goto out;
++		goto exit;
+ 	}
+
+ 	err =3D -ENOMEM;
+ 	conf =3D kzalloc(sizeof(struct r10conf), GFP_KERNEL);
  	if (!conf)
--		goto abort;
+-		goto out;
 +		goto exit;
 
- 	conf->nr_pending =3D kcalloc(BARRIER_BUCKETS_NR,
- 				   sizeof(atomic_t), GFP_KERNEL);
- 	if (!conf->nr_pending)
--		goto abort;
-+		goto free_conf;
-
- 	conf->nr_waiting =3D kcalloc(BARRIER_BUCKETS_NR,
- 				   sizeof(atomic_t), GFP_KERNEL);
- 	if (!conf->nr_waiting)
--		goto abort;
-+		goto free_pending;
-
- 	conf->nr_queued =3D kcalloc(BARRIER_BUCKETS_NR,
- 				  sizeof(atomic_t), GFP_KERNEL);
- 	if (!conf->nr_queued)
--		goto abort;
-+		goto free_waiting;
-
- 	conf->barrier =3D kcalloc(BARRIER_BUCKETS_NR,
- 				sizeof(atomic_t), GFP_KERNEL);
- 	if (!conf->barrier)
--		goto abort;
-+		goto free_queued;
-
- 	conf->mirrors =3D kzalloc(array3_size(sizeof(struct raid1_info),
- 					    mddev->raid_disks, 2),
+ 	/* FIXME calc properly */
+ 	conf->mirrors =3D kcalloc(mddev->raid_disks + max(0, -mddev->delta_disks=
+),
+ 				sizeof(struct raid10_info),
  				GFP_KERNEL);
  	if (!conf->mirrors)
--		goto abort;
-+		goto free_barrier;
+-		goto out;
++		goto free_conf;
 
  	conf->tmppage =3D alloc_page(GFP_KERNEL);
  	if (!conf->tmppage)
--		goto abort;
+-		goto out;
 +		goto free_mirrors;
 
- 	conf->poolinfo =3D kzalloc(sizeof(*conf->poolinfo), GFP_KERNEL);
- 	if (!conf->poolinfo)
--		goto abort;
-+		goto put_page;
-+
- 	conf->poolinfo->raid_disks =3D mddev->raid_disks * 2;
- 	err =3D mempool_init(&conf->r1bio_pool, NR_RAID_BIOS, r1bio_pool_alloc,
- 			   rbio_pool_free, conf->poolinfo);
+ 	conf->geo =3D geo;
+ 	conf->copies =3D copies;
+ 	err =3D mempool_init(&conf->r10bio_pool, NR_RAID_BIOS, r10bio_pool_alloc=
+,
+ 			   rbio_pool_free, conf);
  	if (err)
--		goto abort;
-+		goto free_poolinfo;
+-		goto out;
++		goto put_page;
 
  	err =3D bioset_init(&conf->bio_split, BIO_POOL_SIZE, 0, 0);
  	if (err)
--		goto abort;
+-		goto out;
 +		goto mempool_exit;
 
- 	conf->poolinfo->mddev =3D mddev;
-
--	err =3D -EINVAL;
- 	spin_lock_init(&conf->device_lock);
- 	rdev_for_each(rdev, mddev) {
- 		int disk_idx =3D rdev->raid_disk;
-@@ -3037,8 +3037,11 @@ static struct r1conf *setup_conf(struct mddev *mdde=
+ 	calc_sectors(conf, mddev->dev_sectors);
+ 	if (mddev->reshape_position =3D=3D MaxSector) {
+@@ -4059,7 +4059,7 @@ static struct r10conf *setup_conf(struct mddev *mdde=
 v)
- 		else
- 			disk =3D conf->mirrors + disk_idx;
-
--		if (disk->rdev)
--			goto abort;
-+		if (disk->rdev) {
-+			err =3D -EINVAL;
+ 	} else {
+ 		if (setup_geo(&conf->prev, mddev, geo_old) !=3D conf->copies) {
+ 			err =3D -EINVAL;
+-			goto out;
 +			goto bioset_exit;
-+		}
-+
- 		disk->rdev =3D rdev;
- 		disk->head_position =3D 0;
- 		disk->seq_start =3D MaxSector;
-@@ -3054,7 +3057,6 @@ static struct r1conf *setup_conf(struct mddev *mddev=
-)
- 	bio_list_init(&conf->pending_bio_list);
- 	conf->recovery_disabled =3D mddev->recovery_disabled - 1;
-
--	err =3D -EIO;
- 	for (i =3D 0; i < conf->raid_disks * 2; i++) {
-
- 		disk =3D conf->mirrors + i;
-@@ -3069,9 +3071,11 @@ static struct r1conf *setup_conf(struct mddev *mdde=
-v)
- 				disk->rdev =3D
- 					disk[conf->raid_disks].rdev;
- 				disk[conf->raid_disks].rdev =3D NULL;
--			} else if (!test_bit(In_sync, &disk->rdev->flags))
-+			} else if (!test_bit(In_sync, &disk->rdev->flags)) {
- 				/* Original is not in_sync - bad */
--				goto abort;
-+				err =3D -EIO;
-+				goto bioset_exit;
-+			}
  		}
-
- 		if (!disk->rdev ||
-@@ -3083,26 +3087,35 @@ static struct r1conf *setup_conf(struct mddev *mdd=
-ev)
- 		}
- 	}
+ 		conf->reshape_progress =3D mddev->reshape_position;
+ 		if (conf->prev.far_offset)
+@@ -4077,22 +4077,26 @@ static struct r10conf *setup_conf(struct mddev *md=
+dev)
+ 	init_waitqueue_head(&conf->wait_barrier);
+ 	atomic_set(&conf->nr_pending, 0);
 
 -	err =3D -ENOMEM;
- 	conf->thread =3D md_register_thread(raid1d, mddev, "raid1");
+ 	conf->thread =3D md_register_thread(raid10d, mddev, "raid10");
  	if (!conf->thread)
--		goto abort;
+-		goto out;
 +		goto e_nomem;
 
+ 	conf->mddev =3D mddev;
  	return conf;
 
-- abort:
+- out:
 -	if (conf) {
--		mempool_exit(&conf->r1bio_pool);
+-		mempool_exit(&conf->r10bio_pool);
 -		kfree(conf->mirrors);
 -		safe_put_page(conf->tmppage);
--		kfree(conf->poolinfo);
--		kfree(conf->nr_pending);
--		kfree(conf->nr_waiting);
--		kfree(conf->nr_queued);
--		kfree(conf->barrier);
 -		bioset_exit(&conf->bio_split);
 -		kfree(conf);
 -	}
@@ -394,21 +360,11 @@ ev)
 +bioset_exit:
 +	bioset_exit(&conf->bio_split);
 +mempool_exit:
-+	mempool_exit(&conf->r1bio_pool);
-+free_poolinfo:
-+	kfree(conf->poolinfo);
++	mempool_exit(&conf->r10bio_pool);
 +put_page:
 +	safe_put_page(conf->tmppage);
 +free_mirrors:
 +	kfree(conf->mirrors);
-+free_barrier:
-+	kfree(conf->barrier);
-+free_queued:
-+	kfree(conf->nr_queued);
-+free_waiting:
-+	kfree(conf->nr_waiting);
-+free_pending:
-+	kfree(conf->nr_pending);
 +free_conf:
 +	kfree(conf);
 +exit:
