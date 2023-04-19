@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DDE02C6FD18
-	for <cocci@archiver.kernel.org>; Wed, 19 Apr 2023 16:49:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 94AC5C6FD18
+	for <cocci@archiver.kernel.org>; Wed, 19 Apr 2023 17:30:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=message-id:date:mime-version:from:to:references:cc:
    in-reply-to:content-transfer-encoding:subject:reply-to:
    sender:list-id:list-help:list-subscribe:list-unsubscribe:
    list-post:list-owner:list-archive;
-  bh=MeAa+xZneH+el1EN57C+bJJmUzjMDXKdO4/tvpjiPes=;
-  b=nHDlpvSEG9EgFSgga+Y/bwd20cFi6rvcR8h2aP+3/R/Ifqe9Dddb9ncY
-   EicRE6ykHDGsi/X41doyc+ZxwpJj4YVLDflpPH7MsISfQ2VMVAczlG2NT
-   M9VWsiCAmXXvWrfm0TDrf+d2V+bB614qGmbISUUnsDhoExt67mkUP7RoK
-   o=;
+  bh=y4Ozb4B+s3nUps1lwgPehTGesKU//HYG9mWzUp2Ws1M=;
+  b=s86qXS7Lt4FtuWpnkeSUJHM0ZvqMaSKYjKdaSgKmPSoSK4svFVcIMqxM
+   L+6YCYuLDkak6rNWKx9oh7GIpmeShAVvJ8s6zh2OAYgTZMD7GKDOvUjDm
+   DX57IkwoS4a90dPEVAhKbSbaIWNI86v+fHZUilslaqGsaDQPz1+eLdMvB
+   A=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -35,189 +35,188 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
 Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=markus.elfring@web.de
 X-IronPort-AV: E=Sophos;i="5.99,208,1677538800"; 
-   d="scan'208";a="103856278"
+   d="scan'208";a="103860300"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 19 Apr 2023 18:49:35 +0200
+  by mail2-relais-roc.national.inria.fr with ESMTP; 19 Apr 2023 19:30:30 +0200
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id C6515E0141; Wed, 19 Apr 2023 18:49:35 +0200 (CEST)
-Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by sympa.inria.fr (Postfix) with ESMTPS id 2C541E004E
-	for <cocci@sympa.inria.fr>; Wed, 19 Apr 2023 18:49:34 +0200 (CEST)
-IronPort-SDR: 64401b9d_Bg0j/tZTrvlV1M2hzdMEDTvvXafbwENHvEHA7Yc8+F45HNn
- UHt0ZB4JTB7AB38PjIfDdUJp+Zr6eoPEszZhgKg==
-X-IPAS-Result: =?us-ascii?q?A0GKAABGGkBkhw4P49RaHAEBAQEBAQcBARIBAQQEAQFAg?=
+	id A431CE0141; Wed, 19 Apr 2023 19:30:29 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id 2D41DE0133
+	for <cocci@sympa.inria.fr>; Wed, 19 Apr 2023 19:30:27 +0200 (CEST)
+IronPort-SDR: 64402534_IhUl+Pn+dg1UdQuVLKQG1IsRGkm9z+0dfvzjkinApbG0PAX
+ 6ZXEbdD62XXjSx1KDUuBQoTOH/NWKNk8TeLNCgw==
+X-IPAS-Result: =?us-ascii?q?A0GKAADfI0BkhwQP49RaHAEBAQEBAQcBARIBAQQEAQFAg?=
  =?us-ascii?q?T4EAQELAYItgUsvBAtGhFORBS4DhDCHLowlhAODFj4PAQMBDUEBAgQBAQMEO?=
  =?us-ascii?q?IFTgnQChTwCHQcBBDMGDgECBAEBAQEDAgMBAQEBAQEDAQEFAQEBAgEBAgQFA?=
  =?us-ascii?q?QIQAQEBGgkXBw4QBSKFaA2CNykBEWSBCAEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
- =?us-ascii?q?QEBEgJHPgMDIwQZAQERJgEPHwYCJgICVwYBDAYCAQGCeoIoAQMxB6s6fzOBA?=
- =?us-ascii?q?YIIAQEGgmOZKB8sIlSBXgmBFC0BjROEMCcPgVVEgTyBFYE3doFbgkuDeYJnk?=
- =?us-ascii?q?X+Ib4E0doEgDoE8gQQCCQIRa4EQCGqBeUACDWQLDnGBSWNMgXsEAhREDhgGF?=
- =?us-ascii?q?yUEDgMZKx1AAgELOzo9NQYDCx8GVmsCCSMREwUDCxUqRwQIOAYbNBECCA8SD?=
- =?us-ascii?q?yxEDEI3MxMGXAEpCw4RA06BRwSBC3wKBgEmJJ5FcgFSO0yCHQ2SO7EDNAeCK?=
- =?us-ascii?q?4FWgVkMnw0GEy+XCQ4GkiQBLocykBcgp381gUQkgVwzGiSDNk8DGQ+OIAwNC?=
- =?us-ascii?q?YQDjwkBPj80PQIHAQoBAQMJhUYBAYMmLYIqAQE?=
-IronPort-PHdr: A9a23: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
- Mz0x5ql8x1uZpg5KP6ITEKm5kddjOSCs33xvt0=
-IronPort-Data: A9a23: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
- R3yN5E+0tVdAn2keArL2sGGvA==
-IronPort-HdrOrdr: A9a23:/66NyqPNKssJN8BcT8f155DYdb4zR+YMi2QD/1t6SBxLfsHdv9
- 3GpoVQ6faVsl0ssRYb6Le90ci7MBfhHPFOgbX5A43SLTUO1FHYVb2LA+PZsnbd8wOXzJ8o6U
- 5LSdkKNDVpZmIKxfoT2WGDYp8dKDPuytHeuQ6m9QYacegIUdAE0+4GMHf8LqQsfng3dOkE/f
- Onj6IsylbOFxUqh6KAdwU4toP41qD2ffzdEH077lIcmWuzZQ3D0s+ELzGomiwFSjtKzPML+3
- XElQuR3NTjj9iLjiTHzmfW4tBvhNf8xp9iCaW3+4coAwSpsRywbIBtH4ePpy84u4iUmRoXeN
- KnmWZfA+1Dr0nJdmW55SDgwRXkzV8VmjHf4G7dvXvE5fbBa3YAB8BMhZ1Uf3LimjJQ8e1U4e
- Z230TcjZBeChTNkU3GlqL1fiAvqkqT5UA6mepWj3tRV+IlGcRshL1a+0UQGIwLHSLk5OkcYZ
- tTMP0=
-X-Talos-CUID: 9a23:e411Fm4T45KEjLPNUtss10AtQ/8VbHPh5i38DhCfLTZIbLObVgrF
-X-Talos-MUID: 9a23:hsfHxwR4UIRRgsKwRXTruyNzZc1u6Z+lDX4LgLUAhMa+MHJZbmI=
+ =?us-ascii?q?QEBEgJHPgMDIwQZAQERJgEPHwYCJgICVwYBDAYCAQGCeoIoAQMxB6s/fzOBA?=
+ =?us-ascii?q?YIIAQEGgmOZKB8sIlSBXgmBFC0BjROEMCcPgVVEgTyBFYItiB+CZ5F/iG+BN?=
+ =?us-ascii?q?HaBIA6BPIEEAgkCEWuBEAhqgXlAAg1kCw5xgUljTIF7BAIURA4YBhclBA4DG?=
+ =?us-ascii?q?SsdQAIBCzs6PTUGAwsfBlZrAgkjERMFAwsVKkcECDgGGzQRAggPEg8sRAxCN?=
+ =?us-ascii?q?zMTBlwBKQsOEQNOgUcEgQt8CgYBJiSeRXIBUjtMgh0NkjuxAzQHgiuBVoFZD?=
+ =?us-ascii?q?J8NBhMvlwkOBpIkAS6HMpAXIKd/gXkkgVwzGiSDNk8DGQ+OIAwNCYQDjwkBP?=
+ =?us-ascii?q?j80PQIHAQoBAQMJhUYBAYMmLYIqAQE?=
+IronPort-PHdr: A9a23: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
+ gGI3TdOKjFkvx8Cvf9gsE8wabzo8g==
+IronPort-Data: A9a23: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
+ OzyMUEc8vR8Ll+FiArTCjGGbT9b+87n
+IronPort-HdrOrdr: A9a23:C+0PX65dJAbQ7BeOAwPXwP/XdLJyesId70hD6qkoc20wTiXqrb
+ HIoB17726OtN9/YhEdcLy7VZVoBEmskKKdgrNhR4tKPjOW21dARbsKheCJ/9SjIVydygc378
+ hdmt1FaeEYemIVsS+V2mWF+p0bsb+6GeiT9J7jJllWPHlXV50=
+X-Talos-CUID: =?us-ascii?q?9a23=3ANp/PBmqItiFqOFiouUM0sdPmUdwaeEz46y+OGnG?=
+ =?us-ascii?q?DAzxta4WzRFyiv6wxxg=3D=3D?=
+X-Talos-MUID: =?us-ascii?q?9a23=3Aif+gUg4rqS1vzZlY4XRxHfOzxox5/JaNLl4Vm6k?=
+ =?us-ascii?q?agMCIbAEsFCq8rG64F9o=3D?=
 X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-AV: E=Sophos;i="5.99,208,1677538800"; 
-   d="scan'208";a="53790995"
-X-MGA-submission: =?us-ascii?q?MDEKLeGmNLaXO2e4u4SXhBB/Ucfg6gLg/NZ0MQ?=
- =?us-ascii?q?Dp2KXPJV0SrKZc5e7pMX76RJkzfGioGUll07DxUTtUmx4OhKs2rvyP+g?=
- =?us-ascii?q?iw0qVXVnuXtGccVFsjJPFAiGHKnQjENU7aAhvhXG6Yude98V2xryTBBl?=
- =?us-ascii?q?6tAZs0ZmNkgWgxtbNcrBIA9Q=3D=3D?=
-Received: from mout.web.de ([212.227.15.14])
-  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2023 18:49:33 +0200
+   d="scan'208";a="103860299"
+X-MGA-submission: =?us-ascii?q?MDEg008J//giVU1mD/a5lvenXj6N3GvuJGSYAq?=
+ =?us-ascii?q?RmZdnUgUjpbRwYxwgN1ZHQe4dsKxRApNsGS/JVCMJOZBBEKMyu2kAOeA?=
+ =?us-ascii?q?HsaJ7vo2x7XiGinGmMyZ/gwihnCDFTNRFMIkZkYbzOG+jkv7F9a9pETS?=
+ =?us-ascii?q?QkFCT12So4S8JX1Zo2gBHzGg=3D=3D?=
+Received: from mout.web.de ([212.227.15.4])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2023 19:30:27 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de; s=s29768273;
-	t=1681922935; i=markus.elfring@web.de;
-	bh=qt1d57nrscWLduFuNdsXGbxqWKA0wZ9us/B1SDMjVG8=;
+	t=1681925413; i=markus.elfring@web.de;
+	bh=6p9hkOeEOUXs7/nkpZQ7tcm8+Q1zSjkvro7tbFX8CQc=;
 	h=X-UI-Sender-Class:Date:Subject:From:To:References:Cc:In-Reply-To;
-	b=s1G6hJnKxqX8SD7JQKXFZ682cxVawNxjpX4WMrIoJDFb2muijLgclEcfERzwThen2
-	 pY7/TvdAkhUbJ6vUiN/9KmSzG2vFBuQoi4DLYcLm8IGoORqUlrj791Nw+zX+QAGM+J
-	 Pwsb4xsKDZr3NnU0I+Vz0GnG7YGGSmSRugtR79+bMsIamHoz8AMWR0NguBmJ0w3tt3
-	 FFi0viJW78CFV6TKDmPbQJk4L981VTh2NVzGNJJkeiGEN8SlPDo2av4izzQYy31FOv
-	 NOifMhUxwH3K42mhxwVNu+UxkAwRqhsRbX3zhcAHMD7aSztl2Xa1u9vRk8XjP899x2
-	 Nyq3ZL0rtY0Wg==
+	b=NqSLjieUp7qRpxfVKba3Yb5GlTA7CPJkMsnwurgVLTOveTG+tNslBKn+HZeRzR/Gu
+	 mNMFdADVoJfZfa9CiqeMNsGx5bBcIQo1LtJ4u0gwMKxkBladEFUB/9qyz4o/lVfApa
+	 EOA+HDsz4MnPS9zO7lvpqYjR77f3fol1IKiL4ecU9vnhAeHleVuTYUPpPwff8I1XfP
+	 5N8j7Jgkh7f2dHfdVLpvsjaS3kwDrPwPUJ927eupmkIvF59d5XvbaI2sBmv6B3xkGu
+	 Q2KRnGyponMsC523owDYD63jBeZcAfib/DI0VGvCW2eR6yHZmgGLyjKBjUh9Th1r3r
+	 qnib9z7d8mr4Q==
 X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
-Received: from [192.168.178.21] ([94.31.85.83]) by smtp.web.de (mrweb005
- [213.165.67.108]) with ESMTPSA (Nemesis) id 1MjxeO-1qZXLz2JA0-00kT7t; Wed, 19
- Apr 2023 18:48:55 +0200
-Message-ID: <d90b8c11-7a40-eec4-007d-3640c0725a56@web.de>
-Date: Wed, 19 Apr 2023 18:48:53 +0200
+Received: from [192.168.178.21] ([94.31.85.83]) by smtp.web.de (mrweb006
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 1MGgNS-1q2v8p0y5C-00ECip; Wed, 19
+ Apr 2023 19:30:13 +0200
+Message-ID: <9cb634c8-d6e6-32bc-5fd6-79bf6b274f96@web.de>
+Date: Wed, 19 Apr 2023 19:30:11 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.0
 Content-Language: en-GB
 From: Markus Elfring <Markus.Elfring@web.de>
 To: kernel-janitors@vger.kernel.org, linux-wireless@vger.kernel.org,
- netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Johannes Berg <johannes.berg@intel.com>, Kalle Valo <kvalo@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Sriram R <quic_srirrama@quicinc.com>,
- Stanislaw Gruszka <stf_xl@wp.pl>
+ netdev@vger.kernel.org, Benjamin Berg <benjamin.berg@intel.com>,
+ Gregory Greenman <gregory.greenman@intel.com>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Johannes Berg <johannes.berg@intel.com>,
+ Kalle Valo <kvalo@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Sriram R <quic_srirrama@quicinc.com>
 References: <40c60719-4bfe-b1a4-ead7-724b84637f55@web.de>
  <1a11455f-ab57-dce0-1677-6beb8492a257@web.de>
 Cc: cocci@inria.fr, LKML <linux-kernel@vger.kernel.org>
 In-Reply-To: <1a11455f-ab57-dce0-1677-6beb8492a257@web.de>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:vbjNQVyFeDKMW/6TioOMN6oieqUyIskWklJhZtbrFInB827g5Ja
- HfU9OmcoV9Su8TiZ1+nzOD62GP0/fkTmzvJSxGgnVnu9KQ9COetAJsXaw8FLveHTe4A0w7N
- Dot603XDBUJ8zDnJN7wO8OqlWaq7Q6+oXtNoi98xCa4NIxrD3DR58NVdWzZLFyQpEyBB8xe
- 3v526u6rNv2glEO8unQXg==
-UI-OutboundReport: notjunk:1;M01:P0:KbtYwGxGfXg=;0hBxzZRj0BFf6QK4LPBYjAmr/mR
- VQUGJfFegNufUG7i5i1eoXuW4Y4nvEKx14YUWclBLAbxE9FczEq3fStg+TaalyZJcFRuI6gwu
- fjcAqQPrGyoih6iqc/PwOZHBF9l3sDNwhS0ZQUok/H0a9MXSKt6VAWe0BVN5r7RdBtNxujwyu
- R7xPnLYsS7+uFoExWveXwTCeMzpNrj8JvUWJ2OTiDnvby4VT7UcvIv4FUR3c0G3QApKfzP1xu
- TuV8kB1IE1Q2/Y/68JTGtK/E0TUAukE71FhU+M8Ny+pTjzPXAB19yqaW7Y3xJ6wmeAv3jAQSc
- wMZkp6DyJwTo6oC2rVX5pk3xuxmy2hJbWXrBJxdC9L4r8hdv81OESWMzPTEHOwlBnWuTUaHOd
- D0r03DWOH8n8fpeS++/8y/wbM2qxzxZLAc16Am3dt7908FdSwMbfonB8xv9P0Cp0URVKY/20e
- HC4r9tp5bX4nO2AVEKrf85TCrVj1gNSMLbl93DcEVvyilOSzx9hku39LCilzDEI310ZRkQzN2
- mV1YuTUxuxxaPZQEsK2csFENC4Dwb8ox0iLdqZIQLmEGekt+tMG0H5/xiJm/wLYAKRKMGBaR7
- lDCg0fx1vYuZpslTjTemncLJOjEfsWO1JxCHDaTHi6tQuGeUOuOynp8zeTmkk1k2LXnIJx8PL
- xRiGKPk3oe7ZJjgaD+p1ety9olQCGoLOkR6M78scsQMYD+HKgAnp/NJscxmhZxc5Ki5MOUjLN
- teZOLYkvIUWk9Wpj4WJdoTiGnNI7IZGpELJDBKVw43HE2xskgM03emR/847wBI8mIzrH/6I1J
- etc0YKW970uCCSkLh43VzIQExDWjGthoVJX90KbdS51IQc8rTxE2riCEOnBBuq3vH+nY1v6Zr
- v++gOlvrLQFp8SWygFUJXwP3/ju9HRauo1OVd2F+UJZTVE7EGB2yx5h0Z
-Subject: [cocci] [PATCH] iwlegacy: Adjust input parameter validation in
- il_set_ht_add_station()
+X-Provags-ID: V03:K1:wJ8DZj6J2JRen0q6cjSbR7SOcia21nm6TQ4qdYYRH7VmVGTEHDr
+ BJpj6aRMXb+VOqlztod8b6jpd1lhtmhYWf1tMLWCjf05Zma3qF69QIAcfhg7/yoqYBNa5eH
+ B7wpETQygZiXeU+c+4QE27Vx17XJq/uoMRWdlov54YzX836sQQGgMXkPTODc8iATohoCc+1
+ UG2KVJh17pyLGi0ARNgjA==
+UI-OutboundReport: notjunk:1;M01:P0:20J7rtOixMg=;3hpTKkam2JxvMPo0iPpp43Ikm7H
+ p9BSF6xdlA8lmS76GYojHuEu9hbPQVwTlc+i5SwbDuo+AClJvMVV9aGM3ipV17EBXoDQlGhbV
+ BgZO0M4Zp5FE1OIkcTMx6RvPgRTUnxkwja/ldnTWCeGKO+Zk8bGwpAtfBgObsphQGbHu7bENV
+ X/yln3KuIYdZF/Ypd928T9qoEKvPk9ej7tS6DVgd2sMburp2pIAZ+Q+xv9La63yGjvOcnvffH
+ DOIw4d1aQ3qNQbxuCJB516Hlw7t1gLBI6iN7ZEdgvvd2fBt3RRaiFpc8PgOE8T7/0WKiA+WZy
+ N5Jj6HeOFJjK6FYAvXF7ilS8+r+FOo8UKk37Ym92Jjw2ycnuQtMXlS9jbIgNt7Pbfz0YnCnmr
+ 3ds18KPmVE1bYTo8AAjRpG5k7JEA81bw2Ii0nlUEc1AKQVIXZTm6Uq/rEDHba2hwBcvy6bqVY
+ YUqaODelrw18biE8sXgM9h+twHkk9AqEJXJ/I6sBvDqtUJxG9WTR4ArwwIOWrpjwHl40AMrzL
+ KuZH0nxiFWKqmCwRW5FxeygliRmipCKL+lR/MIIpB5clOTKNRcq+fSOl8Rbwnlo2825H6+3bd
+ 08Rpx1e2expwpvDcPVTQcjxzmj97lk6WoxkZcT0ar9pdD9L2/WEUa6KjTRHCL4U7z5Wflh4Cs
+ QlAOLULSb+ZSe1424z71q0uqD7pKsV9hhyxmTT/Z9nqSpHJ0COVAE5L9xGS2qvJJ/JrvqY295
+ BVV+ZDK9GtNbM4ZlE9LU3lfm8l/luLzBKrV3Y8r2fw3s1313ZSHh8TCxi2Nb1ZBplUext7IV+
+ OuZv1KsHtoJNxjIKyOndbPRm0fSThcA9uG1jOVgDtKCn+oivomv7vctyZwXtwtaO7aUEgALc+
+ pJs1Yl1hMDqOtwnJ/xVQt9fylN2lPMT6qLvNQNWhdrs5qaSO/VflXyJSl
+Subject: [cocci] [PATCH] iwlwifi: Adjust input parameter validation in
+ iwl_sta_calc_ht_flags()
 Reply-To: Markus Elfring <Markus.Elfring@web.de>
 X-Loop: cocci@inria.fr
-X-Sequence: 1095
+X-Sequence: 1096
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -230,13 +229,13 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2023-04/d90b8c11-7a40-eec4-007d-3640c0725a56%40web.de>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2023-04/9cb634c8-d6e6-32bc-5fd6-79bf6b274f96%40web.de>
 
-Date: Wed, 19 Apr 2023 18:35:55 +0200
+Date: Wed, 19 Apr 2023 19:19:34 +0200
 
 The address of a data structure member was determined before
 a corresponding null pointer check in the implementation of
-the function =E2=80=9Cil_set_ht_add_station=E2=80=9D.
+the function =E2=80=9Ciwl_sta_calc_ht_flags=E2=80=9D.
 
 Thus avoid the risk for undefined behaviour by moving the assignment
 for the variable =E2=80=9Csta_ht_inf=E2=80=9D behind the null pointer chec=
@@ -244,55 +243,42 @@ k.
 
 This issue was detected by using the Coccinelle software.
 
-
-Delete also the jump target =E2=80=9Cdone=E2=80=9D by using return stateme=
-nts directly
-for two if branches.
-
 Fixes: 046d2e7c50e3087a32a85fd384c21f896dbccf83 ("mac80211: prepare sta ha=
 ndling for MLO support")
-Fixes: e7392364fcd1004a5e495f15cf21b1e0ef874215 ("iwlegacy: indentions and=
- whitespaces")
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 =2D--
- drivers/net/wireless/intel/iwlegacy/common.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/dvm/sta.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlegacy/common.c b/drivers/net/wi=
-reless/intel/iwlegacy/common.c
-index 96002121bb8b..8f6fd17b02a8 100644
-=2D-- a/drivers/net/wireless/intel/iwlegacy/common.c
-+++ b/drivers/net/wireless/intel/iwlegacy/common.c
-@@ -1863,11 +1863,15 @@ EXPORT_SYMBOL(il_send_add_sta);
- static void
- il_set_ht_add_station(struct il_priv *il, u8 idx, struct ieee80211_sta *s=
-ta)
+diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/sta.c b/drivers/net/wi=
+reless/intel/iwlwifi/dvm/sta.c
+index cef43cf80620..74814ce0155e 100644
+=2D-- a/drivers/net/wireless/intel/iwlwifi/dvm/sta.c
++++ b/drivers/net/wireless/intel/iwlwifi/dvm/sta.c
+@@ -147,7 +147,7 @@ static void iwl_sta_calc_ht_flags(struct iwl_priv *pri=
+v,
+ 				  struct iwl_rxon_context *ctx,
+ 				  __le32 *flags, __le32 *mask)
  {
 -	struct ieee80211_sta_ht_cap *sta_ht_inf =3D &sta->deflink.ht_cap;
 +	struct ieee80211_sta_ht_cap *sta_ht_inf;
- 	__le32 sta_flags;
+
+ 	*mask =3D STA_FLG_RTS_MIMO_PROT_MSK |
+ 		STA_FLG_MIMO_DIS_MSK |
+@@ -156,7 +156,11 @@ static void iwl_sta_calc_ht_flags(struct iwl_priv *pr=
+iv,
+ 		STA_FLG_AGG_MPDU_DENSITY_MSK;
+ 	*flags =3D 0;
 
 -	if (!sta || !sta_ht_inf->ht_supported)
--		goto done;
 +	if (!sta)
 +		return;
 +
 +	sta_ht_inf =3D &sta->deflink.ht_cap;
 +	if (!sta_ht_inf->ht_supported)
-+		return;
+ 		return;
 
- 	D_ASSOC("spatial multiplexing power save mode: %s\n",
- 		(sta->deflink.smps_mode =3D=3D IEEE80211_SMPS_STATIC) ? "static" :
-@@ -1906,8 +1910,6 @@ il_set_ht_add_station(struct il_priv *il, u8 idx, st=
-ruct ieee80211_sta *sta)
- 		sta_flags &=3D ~STA_FLG_HT40_EN_MSK;
-
- 	il->stations[idx].sta.station_flags =3D sta_flags;
--done:
--	return;
- }
-
- /*
+ 	IWL_DEBUG_INFO(priv, "STA %pM SM PS mode: %s\n",
 =2D-
 2.40.0
 
