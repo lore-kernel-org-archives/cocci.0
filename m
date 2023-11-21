@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 22287C61D85
-	for <cocci@archiver.kernel.org>; Tue, 21 Nov 2023 20:58:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 58A3AC61D85
+	for <cocci@archiver.kernel.org>; Tue, 21 Nov 2023 22:34:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:in-reply-to:message-id:references:
    mime-version:subject:reply-to:sender:list-id:list-help:
    list-subscribe:list-unsubscribe:list-post:list-owner:
    list-archive;
-  bh=HunlOfREBQrZ9PQ3K1nKJu6BzOiP+odw9p9/3RPgwVY=;
-  b=UxXsUyJbMNfvdY5kpUbGOAacaadb7vegImHxXyO1J3itMlQtA8s/WKZN
-   eSMmuZhYl5XOgoLxvb2jNwMxBi9svUf1of7C2B+l4PaMetb3GKoXyl/Cj
-   NxXcw04wfjBAdrz/+4cnoZN5mfnSfcAsnxi28Cc+piH2sONNNrJrfw+1i
-   0=;
+  bh=AV1wE9Df7SYxPW4JrN3djC1bSFReSy8F8virddD7hrw=;
+  b=TaDLkSygX9J1q2CmtbtWiqjKxfVM/ONFCB93NDYBaI6gB83kiCiSpwYM
+   eW8RLIc9YPqvkKa8l/dWaugzh56Cbj/kCZ7SxUrHOB02y2OiNaryvXGGn
+   Esx21xL9J7ZzM/gRkHBxWxhh/J0Br5eYlLhmQhIFYS+k6qYo6lAXvlESS
+   M=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -35,35 +35,35 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
 Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=pass (signature verified) header.i=@inria.fr
 X-IronPort-AV: E=Sophos;i="6.04,216,1695679200"; 
-   d="scan'208";a="137705194"
+   d="scan'208";a="137711970"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 21 Nov 2023 21:58:32 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 21 Nov 2023 23:34:48 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 539DFE0CCC; Tue, 21 Nov 2023 21:58:32 +0100 (CET)
+	id DC637E0CCE; Tue, 21 Nov 2023 23:34:47 +0100 (CET)
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by sympa.inria.fr (Postfix) with ESMTPS id 1DC58E004E
-	for <cocci@sympa.inria.fr>; Tue, 21 Nov 2023 21:58:29 +0100 (CET)
+	by sympa.inria.fr (Postfix) with ESMTPS id 11389E004E
+	for <cocci@sympa.inria.fr>; Tue, 21 Nov 2023 23:34:43 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=HunlOfREBQrZ9PQ3K1nKJu6BzOiP+odw9p9/3RPgwVY=;
-  b=TpXrlSGSIPjGuJtWBenneVzocNdcwVWWHS535Sh2wVs4M2kLyk7dadR8
-   9mUCiJusHHbthAFK/DvSQnj1FXdOjE+OmsdBi7VWeq18znP9FunpwI9XJ
-   3Y+rIcYa5BMHCinLmhvCJpsF/MQ0ivN0VViibsahoCLmm7BRnDPt8/0Oo
-   4=;
+  bh=AV1wE9Df7SYxPW4JrN3djC1bSFReSy8F8virddD7hrw=;
+  b=hDFjTwCahRn47JIOK+w7L1Nti72jtUu1jub+EEy5BjW43kIGYxGaGRUw
+   dJj86wI/xeCeKXPBPVl6N8/0wy9PVUngNMLJKQyt9ECWivf1saSnmTTDW
+   kVfA/XTdl6fEJK2hWDmKF/+IfEQuQUufP+I28Xz6u60F+ldc0IMo+AVNk
+   w=;
 X-IronPort-AV: E=Sophos;i="6.04,216,1695679200"; 
-   d="scan'208";a="137705193"
+   d="scan'208";a="137711963"
 Received: from 231.85.89.92.rev.sfr.net (HELO hadrien) ([92.89.85.231])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2023 21:58:29 +0100
-Date: Tue, 21 Nov 2023 21:58:28 +0100 (CET)
+  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2023 23:34:43 +0100
+Date: Tue, 21 Nov 2023 23:34:42 +0100 (CET)
 From: Julia Lawall <julia.lawall@inria.fr>
 X-X-Sender: jll@hadrien
 To: Jesse Brandeburg <jesse.brandeburg@intel.com>
 cc: Przemek Kitszel <przemyslaw.kitszel@intel.com>, cocci@inria.fr, 
     Jacob Keller <jacob.e.keller@intel.com>
 In-Reply-To: <e7263df7-be7d-47a4-b708-e04393f7887a@intel.com>
-Message-ID: <alpine.DEB.2.22.394.2311212156410.3253@hadrien>
+Message-ID: <alpine.DEB.2.22.394.2311212333280.3253@hadrien>
 References: <20231109161846.148524-1-przemyslaw.kitszel@intel.com> <e7263df7-be7d-47a4-b708-e04393f7887a@intel.com>
 User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
@@ -71,7 +71,7 @@ Content-Type: text/plain; charset=US-ASCII
 Subject: Re: [cocci] [BUG] exponentially slow spatch
 Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 1302
+X-Sequence: 1303
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -84,7 +84,7 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2023-11/alpine.DEB.2.22.394.2311212156410.3253%40hadrien>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2023-11/alpine.DEB.2.22.394.2311212333280.3253%40hadrien>
 
 
 
@@ -113,9 +113,13 @@ On Tue, 21 Nov 2023, Jesse Brandeburg wrote:
 > Adding the cocci list since it's been a couple of weeks, if you want me
 > to bounce the original mail with the patches to the list please let me know.
 
-Sorry, I think I missed the original email.
+Wow...  The characterization of exponential was completely accurate.  A
+function was redundantly called on its output in the final pretty
+printing.  The fix will be pushed to github shortly.
 
-I see nothing very alarming about this code
+Thanks very much for the report!
+
+julia
 
 >
 > > ---
@@ -139,14 +143,6 @@ I see nothing very alarming about this code
 > > +- ice_info(hw,E);
 > > ++ dev_info(ice_hw_to_dev(hw),E);
 > > +)
-
-The outer parentheses are not needed.  I don't think they should cause bad
-behavior, but still no need to have them.
-
-I'll see how this runs on my side.
-
-julia
-
 > > diff --git a/y.c b/y.c
 > > new file mode 100644
 > > index 000000000000..560ddc26430b
