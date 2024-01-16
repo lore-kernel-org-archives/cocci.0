@@ -2,19 +2,22 @@ Return-Path: <cocci-owner@inria.fr>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D2C1C47DDE
-	for <cocci@archiver.kernel.org>; Mon, 22 Jan 2024 07:50:55 +0000 (UTC)
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 216E1C47DAF
+	for <cocci@archiver.kernel.org>; Mon, 22 Jan 2024 07:50:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=from:to:cc:date:message-id:references:in-reply-to:
-   content-id:content-transfer-encoding:mime-version:subject:
-   reply-to:sender:list-id:list-help:list-subscribe:
-   list-unsubscribe:list-post:list-owner:list-archive;
-  bh=C7cHS53LtlPmvEiFprr8QgoOKoGhDK6UCJrQucGr8P8=;
-  b=mel9vaC6620l8kMJ4tZf8Kgn/QRzYDpc26ILK5g6KCv5OW77iV+UGlGn
-   74OCvxsHCxQ1cGlYHDuSrk6W+I/hPDpEtaL5m5ftGYBUHQvpGhKO9bI0L
-   2+686Y/KgdcFAR7PpydB02pBQ8PvdqnAAXZ0nQqjFU1cum7Cxy2dxA1y9
-   8=;
+  h=from:to:cc:date:message-id:mime-version:
+   content-transfer-encoding:subject:reply-to:sender:list-id:
+   list-help:list-subscribe:list-unsubscribe:list-post:
+   list-owner:list-archive;
+  bh=pcTZ2V50h8jtcvEpamQ7RGgVO7D4btCpqZFqOzMQCb4=;
+  b=P8rG/40sa+laPgFZ26A9mf6oYV+7vwXfEZ4+4iGA6yCJDWAdTO95SMcz
+   D9hKc6ztvM/8/frV0SgQ8YoxhHUKWtCQe6swSqOr8v5Mi6bwNydj0wxEM
+   8kph92pme/GxNN+D7qsTINAQSRaw2+118UNMjLRC3rdqaGYLe9+YQ6gxP
+   I=;
+Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -33,269 +36,261 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   receiver=mail2-relais-roc.national.inria.fr;
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
-Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@fujitsu.com
 X-IronPort-AV: E=Sophos;i="6.05,211,1701126000"; 
-   d="scan'208";a="147851132"
+   d="scan'208";a="147851032"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 22 Jan 2024 08:50:54 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 22 Jan 2024 08:50:51 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id C8538E0D11; Mon, 22 Jan 2024 08:50:52 +0100 (CET)
+	id 8B10DE0CD8; Mon, 22 Jan 2024 08:50:51 +0100 (CET)
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by sympa.inria.fr (Postfix) with ESMTPS id 76BFAE0035
-	for <cocci@sympa.inria.fr>; Mon, 22 Jan 2024 04:29:15 +0100 (CET)
-IronPort-SDR: 65ade109_boiMTuqf1BNEbPW+fZ12yjScUKXziDpLj0fh/3h3tYx6NGg
- fvrUQS0tcG9lObXGz1kx7dsaCeLtUZ1QI51AHNg==
-X-IPAS-Result: =?us-ascii?q?A0E6AwDQ361l/9SX6ERaHgEBCxIMQIFEC4FnUgdzWjAHC?=
- =?us-ascii?q?EiEU4NMA4UtiGqEO5NvhVqBQD4PAQMBCwJEBAEBAwSEfwIWhzACHwYBBDAJD?=
- =?us-ascii?q?gECBAEBAQEDAgMBAQEBAQEIAQEFAQEBAgEBAgQGAQKBBhOFbA2CXAGBHFhGA?=
- =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQEBFAIIYQEeAQEBAQIBEhERDAEBNwEPAgEIG?=
- =?us-ascii?q?AICGQYHAgICLxUQAgQOBwEBHoJegj0jAwGmNwGBFAEWPwIoAUABAQIJgQuJE?=
- =?us-ascii?q?nqBMoEBggoBAQYEBLJ1CYEaLogcAYFQh1h6Qj+BToEVJ4MDPoRag0SCRiKBG?=
- =?us-ascii?q?3+DGimKFYc9CUt/HQOBBQRcDxsQHjcREAUODQMIbh0CMTwDBQMEMgoSDAshB?=
- =?us-ascii?q?RNCA0MGSQsDAhoFAwMEgTAFDRoCEBoGDCYDAxJJAhAUAzgDAwYDCjEwVUEMU?=
- =?us-ascii?q?ANoHxYcCTwPDBoCGxsNJyMCLEADERICFgMkFgQ0EQkLJgMqBjcCEgwGBgldJ?=
- =?us-ascii?q?gcPCQQlAwgEAyspAyN0EQMECgMUBwsHeIIQgUIDGSsdQAIBC209NQkLGwY9A?=
- =?us-ascii?q?pkfBgGaaa5dCoQRoRwGEy+EAaYTLoUFglAWkDuCUaEMhGcCBAIEBQIOAQEGg?=
- =?us-ascii?q?WM9gVlwL4MITwMZD44gOINAj3lDMzsCBwsBAQMJiSKBRgEB?=
-IronPort-PHdr: A9a23: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
- O+/mw==
-IronPort-Data: A9a23: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
- +Msh8uT2w==
-IronPort-HdrOrdr: A9a23:YfyQqaHCY5JtLc++pLqF1ZLXdLJyesId70hD6qkvc31om52j+f
- xGws516fatskdsZJkh8erwXJVp2RvnhNFICPoqTMiftW7dySWVxeBZnMffKljbcBEWmdQtrZ
- uIH5IOauEYSGIK8PoSgzPIUurIouP3i5xA7N22pxsMPGJXguNbnn1E422gYypLrXx9dOME/e
- 2nl6x6TlSbCBEqh8KAbBQ4dtmGg+eOuIPtYBYACRJiwA6SjQmw4Lq/PwmE0gwYWzZvx65n1W
- TeiQT26oiqrvn+k3bnpizuxqUTvOGk5spIBcSKhMRQAjLwijywbIAkd6yesCszqOSP7k9vtN
- XXuR8vM+l69nuUVGCophnG3RXmzV8Vmj/f4G7dpUGmjd3yRTo8BcYEr5leaAHl500pu8w5+L
- 5X3kqC3qAnSC/orWDY3ZzlRhtqnk27rT4JiugIlUFSVoMYdft4sZEfxkVIC50NdRiKrLzPUd
- MeS/001swmKG9yXEqp5lWHB+bcBUjbKy32BHTqfPbliQS+0koJknfwj/Zv4EvovKhNOqWsod
- 60cJiA3Ys+PfP/J8hGdZc8aNryBWrXTR3WNmWOZVzhCaEcInrI74X6+bMv+YiRCdc1JbYJ6d
- 38uWljxCYPUlOrDdfL0IxA8xjLTmn4VTPxyttG75w8vrHnXrLkPSCKVVhryqKb0rgiK9yeX+
- z2NINdAvflI2erEYFV3xfmU50XLXUFSsUattsyRlrLqMPWLY/hsPDdbZ/oVfDQOCdhXnm6Dm
- oIXTD1KskF5ke3WmXgiByUQH/pclyXx+MHLEEbxZll9GEgDPw5juFOsyXK2iiiE0w2jpAL
-X-Talos-CUID: 9a23:QD48oGHBfhpX4Na6qmJI9mdJO/8Ve0bRlingKnL/MjwzWoS8HAo=
-X-Talos-MUID: 9a23:xyMxKwSbIEfMF3ubRXTixwFaCfwzyJ6qDWA2k7tXieaFLSxvbmI=
+	by sympa.inria.fr (Postfix) with ESMTPS id 6D1A7E004E
+	for <cocci@sympa.inria.fr>; Tue, 16 Jan 2024 05:12:04 +0100 (CET)
+IronPort-SDR: 65a60214_r6yo00OQQXLDoRfS/+Xa/mElnwDxx/wYEfxXIw3mnOJ+Xsw
+ I694ZdM+MWrDANvNLA1BAXfKNC2mQYnlHkNl2zw==
+X-IPAS-Result: =?us-ascii?q?A0GGBAAmAaZl/4uL6ERaHgEBCxIMQIFEC4I5B4FMMQcIS?=
+ =?us-ascii?q?IRTiHyIZ4tgkiWBJQNRBQ8BAwENLhYEAQGFBlEJhm0CHwYBBDAJDgECBAEBA?=
+ =?us-ascii?q?QEDAgMBAQEBAQEIAQEFAQEBAgEBAgQGAQKBBhOFeQgBDhCCNQGDOgQyAQQRC?=
+ =?us-ascii?q?AkPAUY1AiYCIgdIGweCXoIsAzECAaZ3AYErPwIoAUABDIELigyBMhoCZbI2D?=
+ =?us-ascii?q?WuBaoEaLod9HgGERYYfgUlEhAeDFYIOg3GCaASCFoNCihmGM0qBDB0DgQVvG?=
+ =?us-ascii?q?w8eNxEQEw0DCG4dAjE8AwUDBDIKEgwLIQUTQgNDBkkLAwIaBQMDBIEwBQ0aA?=
+ =?us-ascii?q?hAsJgMDEkkCEBQDOwMDBgMKMQMwVUEMUANlHxoYCTwPDBoCGx4NJyMCLEIDE?=
+ =?us-ascii?q?QUQAhYDJBYENBEJCyYDKgY3AhIMBgYJXSYWCQQlAwgEA1QDI3QRAwQKAxQHC?=
+ =?us-ascii?q?wd5gV0DCQMHBSwdQAMLGA1IESw1FBsGPQFvB5cQEEM2BhMcJYIhknsBBziCX?=
+ =?us-ascii?q?wGORJ8mSnCEG4FhiQOORIF7hXNNhAGTMh4Dkj6YUoJRjxiRcoUPgWM9OYEgT?=
+ =?us-ascii?q?SODN08DGQ+OLBaTXDU0AgE4AgcBCgEBAwmGS4IkM4FGAQE?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+ jLJhg==
+IronPort-HdrOrdr: A9a23:mtI1naMENcB5qsBcTsyjsMiBIKoaSvp037Dk7TETdfUnSL38qy
+ nOpp4mPHDP5Ar5NEtQ/exofZPwJk80lqQb3WByB9qftWDd0QPCEGgh1/qB/9SKIUzDH4BmtZ
+ uIP5IRNOHN
+X-Talos-CUID: =?us-ascii?q?9a23=3AchtlU2mm5klGdQm/zqKR/fOdgpzXOV7R4zCPCF6?=
+ =?us-ascii?q?hNTdSR+WnGQ+e4KBjmuM7zg=3D=3D?=
+X-Talos-MUID: 9a23:ENegPQXlniJaB7Lq/DyviyBAFJ9p2v+BN0Jdz9JBnJnUNBUlbg==
 X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-AV: E=Sophos;i="6.05,211,1701126000"; 
-   d="scan'208";a="147827507"
-X-MGA-submission: =?us-ascii?q?MDH2aVlRBPeZhhpYH3MAhLdyuypi/lH9u4z37M?=
- =?us-ascii?q?sfut+thAKjWO8IKA8aYEkCYgA2kKcgs7CN649uK69pQXbNCFVPz7X7hP?=
- =?us-ascii?q?86mC2vFMrsFt+qIxNZoCVumP0FU6Ff1Ya3cczOMzXspN4lHyyu905bpy?=
- =?us-ascii?q?+nf66afOQgoLygr2eIuuZoTQ=3D=3D?=
-Received: from esa3.fujitsucc.c3s2.iphmx.com ([68.232.151.212])
-  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2024 04:29:14 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=fujitsu.com; i=@fujitsu.com; q=dns/txt; s=fj1;
-  t=1705894154; x=1737430154;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=C7cHS53LtlPmvEiFprr8QgoOKoGhDK6UCJrQucGr8P8=;
-  b=k78Vb53Cuo60a3YDvxqYYV55Ia2i4d6FUWxPhZ/Q3dHRKIYdqmmzuCni
-   U3YhNVrPUKp/DocW+Q4oYzvpWLiO7kx5kIaP7XTlXIJBo1Mq+WH5Bk7xu
-   gYLPc6+4Z3BAtRbcK/IVaFstDqVu+Zm0BiCcYeKvUEVlz8zmt1ImgtCI1
-   QRULH6+SKvQ8kPY00b6PdZVk8muJ+bfO+IP0kg9/M9e+9cUVBMGWbYwL4
-   buMamZoqDLHfnzDp0knWF1TiVPLPP3tFPjWXQH8/6n+3RGBZNsX8bj1hi
-   WsBbnO8m6Yq1IdG4VTcIddcuzKtUEemecUz+IUyWlKoOc4h2KmW9lP5mZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10960"; a="19976537"
-X-IronPort-AV: E=Sophos;i="6.05,211,1701097200"; 
-   d="scan'208";a="19976537"
-Received: from mail-tycjpn01lp2169.outbound.protection.outlook.com (HELO JPN01-TYC-obe.outbound.protection.outlook.com) ([104.47.23.169])
-  by ob1.fujitsucc.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2024 12:29:04 +0900
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NqF2CyKmNxHGy/hRfVruiJLtfDlICP/rSG3g2kB1ZMrFZf+w9iM4w7MPfwHBCZ4pV/oF1FgN+psIsc8DXDP7BtUAGQ25ExC+NdGQoMWWLDVSVY1PEY+6SXPIdBjdzfleaYeouFSbhACgsMklPDpXY8UBZ4YUApY2hgxpXEUGwqupIk/z147NSCRl62aiUX4CyEFkuYejcNJgUqGGvIbz/F9d3ujt62l5cEG0Pn3PqZ8ATMLV1ep1EzpOLXpQlRpdmJnarafvRJbN7UYjAyE7j9ANRP7nrqZInNgqx/iqFXODOXbyEM+d/9KuW3hAbcauFY7zlrZmVzeteNn9y2XlLw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=C7cHS53LtlPmvEiFprr8QgoOKoGhDK6UCJrQucGr8P8=;
- b=cD0O81zxPxkYzD16pJHRq2Tm2trGAjG4SkDdZ6qazCzi8DrGkx8z8xRHmy5FN/VyHOrimyi0vX/7IqyaLJiLyEUl7i2BPW4FCsRS6gaVI4rSdC+o0UcJQELLKtRGvKj7PDo2ui/r8205eL7VvNVEee4YwnFZpNQf+gEr/lx0puKWfmbzw3x98Bu2816zhfXrL0lLNN/HNDxyg6f6aJcpq69ATbnOi9z9PWbxhgQEQ6DAEAwzvG+uX9gdQ5VkLiclzxuM/Fh5gxSvlYqeMjtT4IM+Rs91icjPI8heuOa56qfY6m9zzem95O5/YDsYDbM1XEFy3eQLg9P3bbZehSt3lw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fujitsu.com; dmarc=pass action=none header.from=fujitsu.com;
- dkim=pass header.d=fujitsu.com; arc=none
-Received: from OSYPR01MB5445.jpnprd01.prod.outlook.com (2603:1096:604:84::13)
- by TY3PR01MB11004.jpnprd01.prod.outlook.com (2603:1096:400:3b0::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7228.11; Mon, 22 Jan
- 2024 03:29:02 +0000
-Received: from OSYPR01MB5445.jpnprd01.prod.outlook.com
- ([fe80::c61:6ef5:22ee:565]) by OSYPR01MB5445.jpnprd01.prod.outlook.com
- ([fe80::c61:6ef5:22ee:565%4]) with mapi id 15.20.7228.011; Mon, 22 Jan 2024
- 03:29:02 +0000
-From: "Zhijian Li (Fujitsu)" <lizhijian@fujitsu.com>
-To: Julia Lawall <julia.lawall@inria.fr>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Nicolas
- Palix <nicolas.palix@imag.fr>, "cocci@inria.fr" <cocci@inria.fr>
-Thread-Topic: [PATCH v2] coccinelle: device_attr_show: Adapt to the latest
- Documentation/filesystems/sysfs.rst
-Thread-Index: AQHaSp+vRA5kPLZbkUqjfxDpv5AXBbDjN7kAgAH5TgA=
-Date: Mon, 22 Jan 2024 03:29:01 +0000
-Message-ID: <d14443fd-96ee-4d94-a149-d81990f64de6@fujitsu.com>
-References: <20240119062057.4026888-1-lizhijian@fujitsu.com>
- <alpine.DEB.2.22.394.2401202217550.3267@hadrien>
-In-Reply-To: <alpine.DEB.2.22.394.2401202217550.3267@hadrien>
-Accept-Language: en-US, zh-CN
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-user-agent: Mozilla Thunderbird
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: OSYPR01MB5445:EE_|TY3PR01MB11004:EE_
-x-ms-office365-filtering-correlation-id: 6aa8879f-1911-4f30-fa19-08dc1afa4744
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- 01fMV+JfQui0iCnjXJy5b/DRQYiNwVEbbTy9fCOqEHz5Zo/TwVsub5uZyEpG+eu1QINQ8AZsqPbOY2dMOkt2oTENf19pt7lw347B5Ce25Oh8dZcHsnYi0Wgq6afnpnc2I3NSXMrGVTlIGZ3ppgUqYGZVGfyeYYAERDHjrOJWT25YU4Oxq7u3mWbEfwx9jke1QeFpnWqtUrZ3s3xfblWxAgPVvftJLc9iPJYT6lrm6oS5M6PpmpOjyXcKWmZyDV9PvhjOSVmquhUB4NCtX4CKYYQfFCSJc8hIkJYqxFivpmQFWfwrXnwE59V+5wtuyHH06OJezqXrZ6wZbrTjH2fHRoYhgsVzv5j6dJsA6s5Xvgqjskhm9UqRYGiHcENJCLN9edptP8XKLHUDvuWMmKexto2UWelxwGrGwa/o7UtN2BUZHekfQ0m8KSqAQdF/Xt4hiHwkU67be8jDtWAhymedvL+SGM5s5g5PJVt8ukUgBQs49e4QfJq3Lr0dXogdNZxE4UG2aWKMq1dZs/eLXu926+UCuFqRie/ayLnVRsPLBFmoCjh/9nc/0EShxe2UbvIKswNQgK6glPfom46q5B1AVFOlH6043Cgm1Vk1Y2TGbE0M3ilEIBa2vPOYpPI33jT4zyOuBjQPMJc0OW1RhMJcs1p1LW1x4+9jqNltrLdcgT2hpdRuPdq7Oo+rrIF1b5O37xbNNaoIzulmveSygT7NmwMzi7pqu0u28uLkk1egvMqzv1AGkPLHvA5mFsb7lhga
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OSYPR01MB5445.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(39860400002)(346002)(136003)(366004)(376002)(230922051799003)(230173577357003)(230273577357003)(64100799003)(1800799012)(451199024)(1590799021)(186009)(26005)(6506007)(2616005)(6512007)(53546011)(71200400001)(5660300002)(122000001)(316002)(4326008)(8936002)(4744005)(2906002)(6486002)(76116006)(66556008)(6916009)(66946007)(478600001)(91956017)(64756008)(66446008)(54906003)(66476007)(41300700001)(8676002)(82960400001)(31696002)(86362001)(36756003)(85182001)(38070700009)(83380400001)(38100700002)(1580799018)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?TGxMa241NHh3NjJZVmh0eEh2ODNob2dJM09CRXZyTWlQTUMvNEpId21ReHFa?=
- =?utf-8?B?MlJqQ0tWZUF3QmUzOVBXQUdwVU5BdlNYY1d5UFVDSTRkenlLOWFpTTN3Nk11?=
- =?utf-8?B?QXB6ODI0RW9WR241Z1FpaVdRV05aRkpacVJmQXNjaEdSTCtWMTBNV1A5UXV0?=
- =?utf-8?B?RmZqTVRSbS8wdEMxSjlxa1Bjd3lnV1c3RVB4SWVYelF1elRYRExKelpnSHYx?=
- =?utf-8?B?dktSdFRhcXhUT2V2bUx0L1llbmNtek9kUkNCQmlqZlR0QXVTdm5SNmhXdSs0?=
- =?utf-8?B?ai9pTmcyYzRVcHpRRlJ6TUVUZkZtVWxGdURrWjYzNWNrejlIN2xnVmk0c3h5?=
- =?utf-8?B?WXN4bjVXNU9pSzlnUzdsSlZmeHlDR0lHdGtTUk9FSWVaSWZiVlhDNk4wVXh1?=
- =?utf-8?B?TmNPM2VqQzJvTE1mV09rN21GUUlmcURzbFZVeHBDR1VncjF0aXI1M21TWXlM?=
- =?utf-8?B?V2VXaUFiVGlsRVpXLzNpbVdFcHBZYjdLZnBXaXdienYwLzNoaTFHWGdpNWd0?=
- =?utf-8?B?QzYxTlRlRU5peDRlVWhpd2JhNHpGd1JqMUpmbmZHUWRXMFhjK0w3M3o1ZzlN?=
- =?utf-8?B?RG5YREhEZW1QMzJ3NGtva1hIRCswQ0tRdjdhWkNkMVM3M00wc3dzTzBBS3Mv?=
- =?utf-8?B?Q29BNjBKMngxdFVjVkJiS2JUTng2ZTNSRjBHUURHMmEwZ3luSTNoZVNsaHg0?=
- =?utf-8?B?a25GRC9wZkg1VUlzc2Z5QWZ1TXoxcFJya3Z2Mld1MDJkcVhyL21kaWMvMUw1?=
- =?utf-8?B?OHlnNUx2S09xZDUrVUtxY1N3aklDRVFWMGpoWXdKV3NRRy85QWI0L0xoakpH?=
- =?utf-8?B?aFkxU3ZtOHAzT1pHMmlQVHhCU1BQT2Nsc25MN0RCVHRlbUJRN3JqdTlHcU1z?=
- =?utf-8?B?ZUptcEVybHpzVDQ0VUhnVk5vcXVYLzZSTzVwSUhzUkgxUGpkU2pCaE43d1c0?=
- =?utf-8?B?a2duMVJqS1AxVmpoQTN2eGpvc1RHbG14eW5OSUxrOXA5WVRHTTBSdmtab2lL?=
- =?utf-8?B?SGlJVmF2cEZwT1hvQ3d6aG5pbkQzNmtvUVR1QzNGU1psNjZXbEVFWTdjQnly?=
- =?utf-8?B?L2FUWHB2L2pPTlk5OHA1S3Z3amd4TzdjMks0NHhLVVNqbzBtb2QxV1lPczZ6?=
- =?utf-8?B?L09KdlFIc2NkL2h4OURWRDA4dkRYZkNwdDZheEFZK1lzUWlYbjZTZDE1a3l4?=
- =?utf-8?B?dXRjUnN4V2JtRTRtK1ozYzdMSjFpc1JadVNrQWRTVkg5QTB0R28vT2UzNjZu?=
- =?utf-8?B?ZnM0WlpGOVoyMjk5d2F6SzRXckNOTXdtOHZvSHN1ZXd5Q1o3ZXBUWXRTN3Fz?=
- =?utf-8?B?V3ZCS0FBSmZVWUx1cGE4L1B3K3dwSlRxNU5EeUU2TXdCeXNtd29wMHVxOTBJ?=
- =?utf-8?B?TE0rbXo1aHl5THVEZmw3aXBiMEtGaGRjb3NnQ0JtNVE1UGpab3ZxUDZrT085?=
- =?utf-8?B?Zk1KWGhtRzZ3Y1dtYktEVDZlUC96VCtOYmgrb2hqRVdYcmY3OHM3cjhEeXQ4?=
- =?utf-8?B?OS92SnNGTUhoMllhd2VWZkQ5K1NwWnp3Q1NOdENYcGo2YTMzdy9iOWFJWGZC?=
- =?utf-8?B?RXpxeU0weFA4dnBnbFFRdmtnd0FDcGIzN2V2a3A1cnhQR3FLdk1GenVGSVdC?=
- =?utf-8?B?d1ozMitLV1ZhM3l2WjNBUldJNXdCK3ZoejA4MWgrakFHRERqSmRHN1BRVUFv?=
- =?utf-8?B?ODA5NHA3RXUzY3hlZzR5cWZMMGRTMWw2OEFwZ1F1NW81UUxHKzIvWjhqY2k2?=
- =?utf-8?B?Tis4akVBQkNpTnlLNFV5TFQ2NlRXMmhGcThyL3JlcEpjeTdNZUV0UmwwbUc4?=
- =?utf-8?B?dk5BcmF6UmI3T0FOL2VNZUUrNjBKcHRobHVJeGJ3L0xwREVLK01XV2lyZW1p?=
- =?utf-8?B?OUhkbnE1YU5TLzBPcTkrSkNCbDIyekJIMTF5Q1R5YnY4YXdQTG9MOE1WZ2tO?=
- =?utf-8?B?aTl1Y1J3aTA3Rmo5SGZ1d014MEI1M2VHSkpSeFVTeXVIcFpxT0ZwSzhVaHZZ?=
- =?utf-8?B?dHFxK3NqQUZXN2tTejRrWG13OU9SZXBhb0ZpLzZveCs3UWxKTDFpOHhHVmYw?=
- =?utf-8?B?clQ5UXFVVUZyVU5Cd0RXOTFTWVF2TEkyd1hQTVlqMzVpVUV1ci9KMEMrRllU?=
- =?utf-8?B?NW9HMmJzWnl2V1lBMGQ1MTl1NDE2Tmp5bE1CTFQ1NStSbklVOHE1ei9TZHdY?=
- =?utf-8?B?Q1E9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <5269B382AB50624787E8AA8C1DF5CFEE@jpnprd01.prod.outlook.com>
-Content-Transfer-Encoding: base64
+X-IronPort-AV: E=Sophos;i="6.04,198,1695679200"; 
+   d="scan'208";a="146803812"
+X-MGA-submission: =?us-ascii?q?MDED5tjmuZl7c7ExUIOQCw4CahMbbSB3NNMJ2A?=
+ =?us-ascii?q?fpAZqYaOxMvcCI5/lW5NtnaKaJcBelUI3kYlI2j+DoKwsY0cH8mSQ6rp?=
+ =?us-ascii?q?Tq2CWuJvGYg/8aTjDuL8rM1UViIW1K1bXqidzQrJcCDrYTifWygp3qKJ?=
+ =?us-ascii?q?H90MTv6Gn+wMqtynxHBCv9Kg=3D=3D?=
+Received: from esa6.hc1455-7.c3s2.iphmx.com ([68.232.139.139])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2024 05:12:03 +0100
+X-IronPort-AV: E=McAfee;i="6600,9927,10954"; a="147889993"
+X-IronPort-AV: E=Sophos;i="6.04,198,1695654000"; 
+   d="scan'208";a="147889993"
+Received: from unknown (HELO yto-r3.gw.nic.fujitsu.com) ([218.44.52.219])
+  by esa6.hc1455-7.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2024 13:11:54 +0900
+Received: from yto-m3.gw.nic.fujitsu.com (yto-nat-yto-m3.gw.nic.fujitsu.com [192.168.83.66])
+	by yto-r3.gw.nic.fujitsu.com (Postfix) with ESMTP id 7A8B1D5027;
+	Tue, 16 Jan 2024 13:11:51 +0900 (JST)
+Received: from kws-ab3.gw.nic.fujitsu.com (kws-ab3.gw.nic.fujitsu.com [192.51.206.21])
+	by yto-m3.gw.nic.fujitsu.com (Postfix) with ESMTP id 798E9140D2;
+	Tue, 16 Jan 2024 13:11:50 +0900 (JST)
+Received: from edo.cn.fujitsu.com (edo.cn.fujitsu.com [10.167.33.5])
+	by kws-ab3.gw.nic.fujitsu.com (Postfix) with ESMTP id BD639200982F2;
+	Tue, 16 Jan 2024 13:11:49 +0900 (JST)
+Received: from localhost.localdomain (unknown [10.167.226.45])
+	by edo.cn.fujitsu.com (Postfix) with ESMTP id D30711A0070;
+	Tue, 16 Jan 2024 12:11:43 +0800 (CST)
+From: Li Zhijian <lizhijian@fujitsu.com>
+To: linux-kernel@vger.kernel.org
+Cc: Li Zhijian <lizhijian@fujitsu.com>,
+	Adaptec OEM Raid Solutions <aacraid@microsemi.com>,
+	Adrian Hunter <adrian.hunter@intel.com>,
+	Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+	Alistar Popple <alistair@popple.id.au>,
+	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
+	Arnaldo Carvalho de Melo <acme@kernel.org>,
+	Artur Paszkiewicz <artur.paszkiewicz@intel.com>,
+	Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	=?UTF-8?q?Bruno=20Pr=C3=A9mont?= <bonbons@linux-vserver.org>,
+	Chandrakanth patil <chandrakanth.patil@broadcom.com>,
+	Christian Gromm <christian.gromm@microchip.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	cocci@inria.fr,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	Don Brace <don.brace@microchip.com>,
+	dri-devel@lists.freedesktop.org,
+	Eddie James <eajames@linux.ibm.com>,
+	GR-QLogic-Storage-Upstream@marvell.com,
+	Hannes Reinecke <hare@kernel.org>,
+	Hannes Reinecke <hare@suse.de>,
+	Hans de Goede <hdegoede@redhat.com>,
+	Helge Deller <deller@gmx.de>,
+	HighPoint Linux Team <linux@highpoint-tech.com>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	Ian Rogers <irogers@google.com>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Ingo Molnar <mingo@redhat.com>,
+	Jack Wang <jinpu.wang@cloud.ionos.com>,
+	"James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+	"James E.J. Bottomley" <jejb@linux.ibm.com>,
+	James Morse <james.morse@arm.com>,
+	Jeremy Kerr <jk@ozlabs.org>,
+	Jiri Kosina <jikos@kernel.org>,
+	Jiri Olsa <jolsa@kernel.org>,
+	Joel Stanley <joel@jms.id.au>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Julia Lawall <Julia.Lawall@inria.fr>,
+	Karan Tilak Kumar <kartilak@cisco.com>,
+	Kashyap Desai <kashyap.desai@broadcom.com>,
+	Ketan Mukadam <ketan.mukadam@broadcom.com>,
+	Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-edac@vger.kernel.org,
+	linux-fbdev@vger.kernel.org,
+	linux-fsi@lists.ozlabs.org,
+	linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	linux-perf-users@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org,
+	linux-scsi@vger.kernel.org,
+	Manish Rangankar <mrangankar@marvell.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	"Martin K. Petersen" <martin.petersen@oracle.com>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	megaraidlinux.pdl@broadcom.com,
+	Michael Cyr <mikecyr@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Michal Januszewski <spock@gentoo.org>,
+	MPT-FusionLinux.pdl@broadcom.com,
+	Namhyung Kim <namhyung@kernel.org>,
+	"Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+	netdev@vger.kernel.org,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Nicolas Palix <nicolas.palix@imag.fr>,
+	Nilesh Javali <njavali@marvell.com>,
+	Parthiban Veerasooran <parthiban.veerasooran@microchip.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	platform-driver-x86@vger.kernel.org,
+	Richard Cochran <richardcochran@gmail.com>,
+	Robert Richter <rric@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Sathya Prakash <sathya.prakash@broadcom.com>,
+	Satish Kharat <satishkh@cisco.com>,
+	Sesidhar Baddela <sebaddel@cisco.com>,
+	Shivasharan S <shivasharan.srikanteshwara@broadcom.com>,
+	Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Stefan Achatz <erazor_de@users.sourceforge.net>,
+	storagedev@microchip.com,
+	Stuart Yoder <stuyoder@gmail.com>,
+	Suganath Prabu Subramani <suganath-prabu.subramani@broadcom.com>,
+	Sumit Saxena <sumit.saxena@broadcom.com>,
+	target-devel@vger.kernel.org,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Tony Luck <tony.luck@intel.com>,
+	Tyrel Datwyler <tyreld@linux.ibm.com>,
+	Vadim Pasternak <vadimp@nvidia.com>,
+	x86@kernel.org
+Date: Tue, 16 Jan 2024 12:10:47 +0800
+Message-Id: <20240116041129.3937800-1-lizhijian@fujitsu.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
-	09UZIJj+IYBhhXhvVq3v6IZBH/TzqfmpjGQUfz93aM+4aWtAW9kXpjBzOM3NaJGMJ53ZOdDeUgCrtQrOJA1bKZAahIL2IrxUod2FTTVXuzVA8qYL2auFi0Ia1+HaOkF2gM0TbpoD/zIJGzJz8OBohaz8IPiGVqO8itToh/ZiVgXXQBK1oveih6L2mzFptAy3FaWbBYFuJ9SZ+DQXFo7q5B5P3EHnbL0jYMbyi5+EYAnTXt42s4q9S8q82miTkKI0KFAGs+VSd7fAxrX4PIBoq53m0fobeCuGNAZzLQ2nVm09kLO8vqt0l6IVX5e6CTPfB/fCvGcrFWDcHt2978+R9VMhinNAbS4+r/66FEnIJgLVza7FdGRn3uv04Br608sphE1FmmaqAYeHKTWuSonoiAQtNlUZFXVSOwkenZ0P1HfdeY+X8G0vv3fMjaRzAaNu9b31sf4va9OLVIWxraZSYUszLZI0PkM5cQh0m+Qsotd92FwxrUIKnOOnjkFw+lBf5w4VI0XM82dZg0u8LA5K6UBY5Q7A3RP1W6eM8P3oUTeZ1cEXQesONk6yrUmKZVesmMrJ0yIjjZ9OkAQDCObO5gUA8XtlGWJ/CtscCYlbv26CgD+0c9DjngX7qlF+PHy/
-X-OriginatorOrg: fujitsu.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OSYPR01MB5445.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6aa8879f-1911-4f30-fa19-08dc1afa4744
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Jan 2024 03:29:01.9028
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a19f121d-81e1-4858-a9d8-736e267fd4c7
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: /sVoWx2wJ7o1EmDUyEYZFNbvhb2SoNWpgPllk15yDBLID9+FSH1hZdy9SnDNzF9HSP/hziBZ1pCZdqm3k1YYbQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY3PR01MB11004
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-TM-AS-Product-Ver: IMSS-9.1.0.1417-9.0.0.1002-28122.004
+X-TM-AS-User-Approved-Sender: Yes
+X-TMASE-Version: IMSS-9.1.0.1417-9.0.1002-28122.004
+X-TMASE-Result: 10--5.338000-10.000000
+X-TMASE-MatchedRID: APZBv0eB5fJy4CNxYSkcLoL5ja7E+OhyuoYFb0nRiqO/XSsQNWtCeIAj
+	6kt+TewHC3vXNyJNBUS/2a/w1wS2snh1rPkUeh+7A9lly13c/gEMZvHcAgmELNM4cBkOddRug4T
+	d/DBNkVPBV4b4vif9P70QU2u8uQPlKz8U6m7mv8Csxn4GpC3Y2mDbldQedDmvdr2Udl3Og/5evz
+	2JvPJmxmu4/NMq7ELJiJZIlifpj2n9iEfE2OtmsHZwubmkurW/Urr7Qc5WhKixViPWo8HTYkdes
+	bjoBZ/kx3iFO+XIjdvtpuHnoJaRs49oUcx9VMLggxsfzkNRlfLdB/CxWTRRu25FeHtsUoHuFXh8
+	AHLXJNBIMK2NL4dx8OCrxKVMkOf0hhdqTS9iikoJK2MK45H+GA==
+X-TMASE-SNAP-Result: 1.821001.0001-0-1-22:0,33:0,34:0-0
 X-Validation-by: julia.lawall@inria.fr
-Subject: Re: [cocci] [PATCH v2] coccinelle: device_attr_show: Adapt to the
- latest Documentation/filesystems/sysfs.rst
-Reply-To: "Zhijian Li (Fujitsu)" <lizhijian@fujitsu.com>
+Subject: [cocci] [PATCH 00/42] Fix coccicheck warnings
+Reply-To: Li Zhijian <lizhijian@fujitsu.com>
 X-Loop: cocci@inria.fr
-X-Sequence: 1472
+X-Sequence: 1467
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -308,20 +303,451 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-01/d14443fd-96ee-4d94-a149-d81990f64de6%40fujitsu.com>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-01/20240116041129.3937800-1-lizhijian%40fujitsu.com>
 
-DQoNCk9uIDIxLzAxLzIwMjQgMDU6MjAsIEp1bGlhIExhd2FsbCB3cm90ZToNCj4+IFYyOg0KPj4g
-LSBjaGFuZ2VkIHRpdGxlIGZyb20gY29jY2luZWxsZTogZGV2aWNlX2F0dHJfc2hvdy5jb2NjaTog
-dXBkYXRlIGRlc2NyaXB0aW9uIGFuZCB3YXJuaW5nIG1lc3NhZ2UNCj4+IC0gRml4IE1PREU9cGF0
-Y2gNCj4+IC0gRXh0cmFjdCBwYXRjaCBmcm9tIHRoZSBwYXRjaCBzZXRbMV0gc28gdGhhdCBtYWlu
-dGFpbmVyIGNhbiBhY2NlcHQgaXQgc2VwYXJhdGVseS4NCj4gQXBwbGllZC4NCj4gDQo+IEkgc3Vi
-c2VxdWVudGx5IHNpbXBsaWZpZWQgdGhlIHBhdGNoIGNhc2UgdG8gY29udGFpbiB0aGUgZm9sbG93
-aW5nOg0KPiANCj4gLSAgICAgICAgICAgICAgc25wcmludGYoQlVGLCBTWiwgRk9STUFUDQo+ICsg
-ICAgICAgICAgICAgIHN5c2ZzX2VtaXQoQlVGLCBGT1JNQVQNCj4gICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAsLi4uKTsNCkdyZWF0LCB0aGF0IHdhcyB3aGF0IGkgd2FudC4gQnV0IGkg
-ZGlkbid0IGdldCB0aGUgY29ycmVjdCBzeW50YXguIEkgd3JvdGUgaXQgd3JvbmdseToNCi0gc25w
-cmludGYoQlVGLCBTWiwgRk9STUFULCAuLi4pOw0KKyBzeXNmc19lbWl0KEJVRiwgU1osIEZPUk1B
-VCwgLi4uKTsNCg0KDQoNCj4gDQo+IFRoaXMgYWxzbyB3b3JrcyBmb3IgdGhlIGNhc2Ugd2hlcmUg
-dGhlcmUgYXJlIG9ubHkgdGhyZWUgYXJndW1lbnRzLg0KPiBJdCBoYXMgdGhlIGJlbmVmaXQgdGhh
-dCB0aGUgY2hhbmdlIGlzIHJlY29nbml6ZWQgYXMgYSBsaW5lIHJlcGxhY2VtZW50LCBzbw0KPiBu
-byBleHRyYSB7fSBhcmUgYWRkZWQgd2hlbiB0aGUgY2FsbCBpcyBpbiBhbiBpZiBicmFuY2gu
+make coccicheck COCCI=$PWD/scripts/coccinelle/api/device_attr_show.cocci`
+complians some warnnings as following[1]:
+
+Not sure if someone had tried these fixes, feel free to ignore this
+patch set if we have come to a *NOT-FIX* conclusion before :)
+
+This patch set also fix a few snprintf() beside coccicheck reported.
+For example, some thing like
+xxx_show() {
+	rc = snprintf();
+...
+	return rc;
+}
+
+TODOs:
+1. Fix other abused cases that coccicheck has not detected. For
+example,  ./drivers/scsi/scsi_transport_fc.c has other places using
+snprint inside the macro.
+2. Improve device_attr_show.cocci to detect sprintf() and fix them
+
+[1]
+$ make coccicheck COCCI=$PWD/scripts/coccinelle/api/device_attr_show.cocci
+...
+./arch/arm/mm/cache-l2x0-pmu.c:346:8-16: WARNING: use scnprintf or sprintf
+./arch/x86/events/amd/core.c:1282:8-16: WARNING: use scnprintf or sprintf
+./arch/x86/events/core.c:1895:11-19: WARNING: use scnprintf or sprintf
+./arch/x86/events/core.c:2542:8-16: WARNING: use scnprintf or sprintf
+./arch/x86/events/core.c:2600:8-16: WARNING: use scnprintf or sprintf
+./arch/x86/events/intel/core.c:5496:8-16: WARNING: use scnprintf or sprintf
+./arch/x86/events/intel/core.c:5530:8-16: WARNING: use scnprintf or sprintf
+./arch/x86/events/intel/core.c:5546:8-16: WARNING: use scnprintf or sprintf
+./arch/x86/events/intel/pt.c:99:8-16: WARNING: use scnprintf or sprintf
+./drivers/bus/fsl-mc/fsl-mc-bus.c:205:8-16: WARNING: use scnprintf or sprintf
+./drivers/edac/edac_mc_sysfs.c:210:8-16: WARNING: use scnprintf or sprintf
+./drivers/edac/edac_mc_sysfs.c:518:8-16: WARNING: use scnprintf or sprintf
+./drivers/fsi/fsi-master-ast-cf.c:1086:8-16: WARNING: use scnprintf or sprintf
+./drivers/fsi/fsi-master-gpio.c:721:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-lenovo.c:558:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-lenovo.c:602:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-lenovo.c:792:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-lenovo.c:822:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-lenovo.c:852:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-lenovo.c:882:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-lenovo.c:912:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-lenovo.c:941:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-picolcd_core.c:259:9-17: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-picolcd_core.c:304:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-roccat-isku.c:64:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-roccat-kone.c:403:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-roccat-kone.c:412:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-roccat-kone.c:435:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-roccat-kone.c:444:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-roccat-kone.c:454:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-roccat-kone.c:556:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-roccat-koneplus.c:245:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-roccat-koneplus.c:312:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-roccat-kovaplus.c:275:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-roccat-kovaplus.c:328:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-roccat-kovaplus.c:337:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-roccat-kovaplus.c:347:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-roccat-kovaplus.c:368:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-roccat-pyra.c:286:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-roccat-pyra.c:303:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-roccat-pyra.c:324:8-16: WARNING: use scnprintf or sprintf
+./drivers/hid/hid-sensor-custom.c:375:10-18: WARNING: use scnprintf or sprintf
+./drivers/message/fusion/mptscsih.c:3100:8-16: WARNING: use scnprintf or sprintf
+./drivers/message/fusion/mptscsih.c:3116:8-16: WARNING: use scnprintf or sprintf
+./drivers/message/fusion/mptscsih.c:3132:8-16: WARNING: use scnprintf or sprintf
+./drivers/message/fusion/mptscsih.c:3145:8-16: WARNING: use scnprintf or sprintf
+./drivers/message/fusion/mptscsih.c:3159:8-16: WARNING: use scnprintf or sprintf
+./drivers/message/fusion/mptscsih.c:3173:8-16: WARNING: use scnprintf or sprintf
+./drivers/message/fusion/mptscsih.c:3186:8-16: WARNING: use scnprintf or sprintf
+./drivers/message/fusion/mptscsih.c:3198:8-16: WARNING: use scnprintf or sprintf
+./drivers/message/fusion/mptscsih.c:3211:8-16: WARNING: use scnprintf or sprintf
+./drivers/message/fusion/mptscsih.c:3224:8-16: WARNING: use scnprintf or sprintf
+./drivers/message/fusion/mptscsih.c:3237:8-16: WARNING: use scnprintf or sprintf
+./drivers/message/fusion/mptscsih.c:3250:8-16: WARNING: use scnprintf or sprintf
+./drivers/most/core.c:211:8-16: WARNING: use scnprintf or sprintf
+./drivers/most/core.c:222:8-16: WARNING: use scnprintf or sprintf
+./drivers/most/core.c:233:8-16: WARNING: use scnprintf or sprintf
+./drivers/most/core.c:244:8-16: WARNING: use scnprintf or sprintf
+./drivers/most/core.c:254:8-16: WARNING: use scnprintf or sprintf
+./drivers/most/core.c:263:8-16: WARNING: use scnprintf or sprintf
+./drivers/most/core.c:272:8-16: WARNING: use scnprintf or sprintf
+./drivers/most/core.c:282:9-17: WARNING: use scnprintf or sprintf
+./drivers/most/core.c:297:10-18: WARNING: use scnprintf or sprintf
+./drivers/most/core.c:309:8-16: WARNING: use scnprintf or sprintf
+./drivers/most/core.c:318:8-16: WARNING: use scnprintf or sprintf
+./drivers/most/core.c:326:8-16: WARNING: use scnprintf or sprintf
+./drivers/most/core.c:398:8-16: WARNING: use scnprintf or sprintf
+./drivers/most/core.c:409:9-17: WARNING: use scnprintf or sprintf
+./drivers/platform/mellanox/mlxbf-bootctl.c:466:8-16: WARNING: use scnprintf or sprintf
+./drivers/platform/mellanox/mlxbf-bootctl.c:584:8-16: WARNING: use scnprintf or sprintf
+./drivers/platform/mellanox/mlxbf-bootctl.c:635:8-16: WARNING: use scnprintf or sprintf
+./drivers/platform/mellanox/mlxbf-bootctl.c:686:8-16: WARNING: use scnprintf or sprintf
+./drivers/platform/mellanox/mlxbf-bootctl.c:737:8-16: WARNING: use scnprintf or sprintf
+./drivers/platform/mellanox/mlxbf-bootctl.c:788:8-16: WARNING: use scnprintf or sprintf
+./drivers/platform/mellanox/mlxbf-bootctl.c:839:8-16: WARNING: use scnprintf or sprintf
+./drivers/ptp/ptp_sysfs.c:27:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/53c700.c:2074:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/aacraid/linit.c:1299:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/aacraid/linit.c:1325:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/aacraid/linit.c:1332:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/aacraid/linit.c:561:9-17: WARNING: use scnprintf or sprintf
+./drivers/scsi/aacraid/linit.c:588:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/aic94xx/aic94xx_init.c:267:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/aic94xx/aic94xx_init.c:276:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/aic94xx/aic94xx_init.c:284:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/aic94xx/aic94xx_init.c:455:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/arcmsr/arcmsr_attr.c:261:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/arcmsr/arcmsr_attr.c:273:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/arcmsr/arcmsr_attr.c:285:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/arcmsr/arcmsr_attr.c:297:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/arcmsr/arcmsr_attr.c:309:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/arcmsr/arcmsr_attr.c:322:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/arcmsr/arcmsr_attr.c:335:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/arcmsr/arcmsr_attr.c:348:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/arcmsr/arcmsr_attr.c:361:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/arcmsr/arcmsr_attr.c:374:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/be2iscsi/be_mgmt.c:1145:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/be2iscsi/be_mgmt.c:1164:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/be2iscsi/be_mgmt.c:1251:9-17: WARNING: use scnprintf or sprintf
+./drivers/scsi/be2iscsi/be_mgmt.c:1280:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/fcoe/fcoe_sysfs.c:253:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/fcoe/fcoe_sysfs.c:268:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/fcoe/fcoe_sysfs.c:376:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/fnic/fnic_attrs.c:17:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/fnic/fnic_attrs.c:23:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/fnic/fnic_attrs.c:31:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/hpsa.c:528:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/hpsa.c:538:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/hpsa.c:549:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/hpsa.c:561:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/hpsa.c:645:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/hpsa.c:724:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/hpsa.c:746:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/hpsa.c:775:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/hpsa.c:799:9-17: WARNING: use scnprintf or sprintf
+./drivers/scsi/hpsa.c:898:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/hpsa.c:908:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/hptiop.c:1114:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/hptiop.c:1123:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/ibmvscsi/ibmvfc.c:3483:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/ibmvscsi/ibmvfc.c:3493:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/ibmvscsi/ibmvfc.c:3503:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/ibmvscsi/ibmvfc.c:3513:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/ibmvscsi/ibmvfc.c:3522:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/ibmvscsi/ibmvfc.c:3530:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:3619:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:3625:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:3633:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/isci/init.c:140:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/megaraid/megaraid_sas_base.c:3336:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/megaraid/megaraid_sas_base.c:3382:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/megaraid/megaraid_sas_base.c:3389:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/megaraid/megaraid_sas_base.c:3399:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/megaraid/megaraid_sas_base.c:3409:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/megaraid/megaraid_sas_base.c:3419:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/megaraid/megaraid_sas_base.c:3473:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:2825:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:2850:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:2873:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:2893:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:2912:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:2932:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:2952:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:2971:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:2990:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:3012:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:3034:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:3055:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:3077:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:3097:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:3133:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:3170:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:3198:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:3320:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:3407:9-17: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:3828:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:3848:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:3996:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:4018:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/mpt3sas/mpt3sas_ctl.c:4056:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/myrb.c:1770:9-17: WARNING: use scnprintf or sprintf
+./drivers/scsi/myrb.c:1889:10-18: WARNING: use scnprintf or sprintf
+./drivers/scsi/myrb.c:1906:9-17: WARNING: use scnprintf or sprintf
+./drivers/scsi/myrb.c:2143:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/myrb.c:2153:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/myrb.c:2163:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/myrs.c:1061:9-17: WARNING: use scnprintf or sprintf
+./drivers/scsi/myrs.c:1089:9-17: WARNING: use scnprintf or sprintf
+./drivers/scsi/myrs.c:1193:9-17: WARNING: use scnprintf or sprintf
+./drivers/scsi/myrs.c:1306:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/myrs.c:1316:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/myrs.c:1391:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/myrs.c:1401:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/myrs.c:1411:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/myrs.c:1421:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/myrs.c:1491:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/myrs.c:942:9-17: WARNING: use scnprintf or sprintf
+./drivers/scsi/ncr53c8xx.c:8034:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/pcmcia/sym53c500_cs.c:627:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/pm8001/pm8001_ctl.c:883:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/pmcraid.c:3541:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/pmcraid.c:3602:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/pmcraid.c:3635:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/qla4xxx/ql4_attr.c:159:9-17: WARNING: use scnprintf or sprintf
+./drivers/scsi/qla4xxx/ql4_attr.c:173:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/qla4xxx/ql4_attr.c:181:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/qla4xxx/ql4_attr.c:190:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/qla4xxx/ql4_attr.c:200:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/qla4xxx/ql4_attr.c:210:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/qla4xxx/ql4_attr.c:223:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/qla4xxx/ql4_attr.c:235:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/qla4xxx/ql4_attr.c:247:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/qla4xxx/ql4_attr.c:256:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/qla4xxx/ql4_attr.c:264:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/qla4xxx/ql4_attr.c:273:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/qla4xxx/ql4_attr.c:281:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/qla4xxx/ql4_attr.c:303:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/qla4xxx/ql4_attr.c:312:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_sysfs.c:1112:9-17: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_sysfs.c:1202:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_sysfs.c:231:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_sysfs.c:277:9-17: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_sysfs.c:327:9-17: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_sysfs.c:385:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_sysfs.c:402:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_sysfs.c:680:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_sysfs.c:689:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_sysfs.c:701:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_sysfs.c:722:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_sysfs.c:858:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_sysfs.c:873:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_sysfs.c:953:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_sysfs.c:979:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_transport_fc.c:1123:9-17: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_transport_fc.c:1218:10-18: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_transport_fc.c:1286:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_transport_fc.c:1304:9-17: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_transport_fc.c:1665:9-17: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_transport_fc.c:1891:9-17: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_transport_fc.c:1915:9-17: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_transport_fc.c:1967:9-17: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_transport_fc.c:2000:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_transport_sas.c:1180:9-17: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_transport_sas.c:525:9-17: WARNING: use scnprintf or sprintf
+./drivers/scsi/scsi_transport_sas.c:572:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/snic/snic_attrs.c:16:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/snic/snic_attrs.c:26:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/snic/snic_attrs.c:35:8-16: WARNING: use scnprintf or sprintf
+./drivers/scsi/snic/snic_attrs.c:48:8-16: WARNING: use scnprintf or sprintf
+./drivers/video/fbdev/uvesafb.c:1549:8-16: WARNING: use scnprintf or sprintf
+./kernel/cpu.c:3013:8-16: WARNING: use scnprintf or sprintf
+./kernel/cpu.c:3026:8-16: WARNING: use scnprintf or sprintf
+
+CC: Adaptec OEM Raid Solutions <aacraid@microsemi.com> 
+CC: Adrian Hunter <adrian.hunter@intel.com> 
+CC: Alexander Shishkin <alexander.shishkin@linux.intel.com> 
+CC: Alistar Popple <alistair@popple.id.au> 
+CC: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org> 
+CC: Arnaldo Carvalho de Melo <acme@kernel.org> 
+CC: Artur Paszkiewicz <artur.paszkiewicz@intel.com> 
+CC: Benjamin Tissoires <benjamin.tissoires@redhat.com> 
+CC: Borislav Petkov <bp@alien8.de> 
+CC: "Bruno Prémont" <bonbons@linux-vserver.org> 
+CC: Chandrakanth patil <chandrakanth.patil@broadcom.com> 
+CC: Christian Gromm <christian.gromm@microchip.com> 
+CC: Christophe Leroy <christophe.leroy@csgroup.eu> 
+CC: cocci@inria.fr 
+CC: Dave Hansen <dave.hansen@linux.intel.com> 
+CC: Don Brace <don.brace@microchip.com> 
+CC: dri-devel@lists.freedesktop.org 
+CC: Eddie James <eajames@linux.ibm.com> 
+CC: GR-QLogic-Storage-Upstream@marvell.com 
+CC: Hannes Reinecke <hare@kernel.org> 
+CC: Hannes Reinecke <hare@suse.de> 
+CC: Hans de Goede <hdegoede@redhat.com> 
+CC: Helge Deller <deller@gmx.de> 
+CC: HighPoint Linux Team <linux@highpoint-tech.com> 
+CC: "H. Peter Anvin" <hpa@zytor.com> 
+CC: Ian Rogers <irogers@google.com> 
+CC: "Ilpo Järvinen" <ilpo.jarvinen@linux.intel.com> 
+CC: Ingo Molnar <mingo@redhat.com> 
+CC: Jack Wang <jinpu.wang@cloud.ionos.com> 
+CC: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com> 
+CC: "James E.J. Bottomley" <jejb@linux.ibm.com> 
+CC: James Morse <james.morse@arm.com> 
+CC: Jeremy Kerr <jk@ozlabs.org> 
+CC: Jiri Kosina <jikos@kernel.org> 
+CC: Jiri Olsa <jolsa@kernel.org> 
+CC: Joel Stanley <joel@jms.id.au> 
+CC: Jonathan Cameron <jic23@kernel.org> 
+CC: Julia Lawall <Julia.Lawall@inria.fr> 
+CC: Karan Tilak Kumar <kartilak@cisco.com> 
+CC: Kashyap Desai <kashyap.desai@broadcom.com> 
+CC: Ketan Mukadam <ketan.mukadam@broadcom.com> 
+CC: Laurentiu Tudor <laurentiu.tudor@nxp.com> 
+CC: linux-arm-kernel@lists.infradead.org 
+CC: linux-edac@vger.kernel.org 
+CC: linux-fbdev@vger.kernel.org 
+CC: linux-fsi@lists.ozlabs.org 
+CC: linux-iio@vger.kernel.org 
+CC: linux-input@vger.kernel.org 
+CC: linux-kernel@vger.kernel.org 
+CC: linux-perf-users@vger.kernel.org 
+CC: linuxppc-dev@lists.ozlabs.org 
+CC: linux-scsi@vger.kernel.org 
+CC: Manish Rangankar <mrangankar@marvell.com> 
+CC: Mark Rutland <mark.rutland@arm.com> 
+CC: "Martin K. Petersen" <martin.petersen@oracle.com> 
+CC: Mauro Carvalho Chehab <mchehab@kernel.org> 
+CC: megaraidlinux.pdl@broadcom.com 
+CC: Michael Cyr <mikecyr@linux.ibm.com> 
+CC: Michael Ellerman <mpe@ellerman.id.au> 
+CC: Michal Januszewski <spock@gentoo.org> 
+CC: MPT-FusionLinux.pdl@broadcom.com 
+CC: Namhyung Kim <namhyung@kernel.org> 
+CC: "Naveen N. Rao" <naveen.n.rao@linux.ibm.com> 
+CC: netdev@vger.kernel.org 
+CC: Nicholas Piggin <npiggin@gmail.com> 
+CC: Nicolas Palix <nicolas.palix@imag.fr> 
+CC: Nilesh Javali <njavali@marvell.com> 
+CC: Parthiban Veerasooran <parthiban.veerasooran@microchip.com> 
+CC: Peter Zijlstra <peterz@infradead.org> 
+CC: platform-driver-x86@vger.kernel.org 
+CC: Richard Cochran <richardcochran@gmail.com> 
+CC: Robert Richter <rric@kernel.org> 
+CC: Russell King <linux@armlinux.org.uk> 
+CC: Sathya Prakash <sathya.prakash@broadcom.com> 
+CC: Satish Kharat <satishkh@cisco.com> 
+CC: Sesidhar Baddela <sebaddel@cisco.com> 
+CC: Shivasharan S <shivasharan.srikanteshwara@broadcom.com> 
+CC: Sreekanth Reddy <sreekanth.reddy@broadcom.com> 
+CC: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> 
+CC: Stefan Achatz <erazor_de@users.sourceforge.net> 
+CC: storagedev@microchip.com 
+CC: Stuart Yoder <stuyoder@gmail.com> 
+CC: Suganath Prabu Subramani <suganath-prabu.subramani@broadcom.com> 
+CC: Sumit Saxena <sumit.saxena@broadcom.com> 
+CC: target-devel@vger.kernel.org 
+CC: Thomas Gleixner <tglx@linutronix.de> 
+CC: Tony Luck <tony.luck@intel.com> 
+CC: Tyrel Datwyler <tyreld@linux.ibm.com> 
+CC: Vadim Pasternak <vadimp@nvidia.com> 
+CC: x86@kernel.org 
+
+Li Zhijian (42):
+  coccinelle: device_attr_show.cocci: update description and warning
+    message
+  arch/arm/mm: Convert snprintf to sysfs_emit
+  arch/x86/events/amd: Convert snprintf to sysfs_emit
+  arch/x86/events/core: Convert snprintf to sysfs_emit
+  arch/x86/events/intel: Convert snprintf to sysfs_emit
+  drivers/bus/fsl-mc: Convert snprintf to sysfs_emit
+  drivers/edac: Convert snprintf to sysfs_emit
+  drivers/fsi: Convert snprintf to sysfs_emit
+  drivers/hid/hid-lenovo: Convert snprintf to sysfs_emit
+  drivers/hid/hid-roccat-*: Convert snprintf to sysfs_emit
+  drivers/hid: Convert snprintf to sysfs_emit
+  drivers/message/fusion: Convert snprintf to sysfs_emit
+  drivers/most: Convert snprintf to sysfs_emit
+  drivers/platform/mellanox: Convert snprintf to sysfs_emit
+  drivers/ptp: Convert snprintf to sysfs_emit
+  drivers/scsi/53c700: Convert snprintf to sysfs_emit
+  drivers/scsi/aacraid: Convert snprintf to sysfs_emit
+  drivers/scsi/aic94xx: Convert snprintf to sysfs_emit
+  drivers/scsi/arcmsr: Convert snprintf to sysfs_emit
+  drivers/scsi/be2iscsi: Convert snprintf to sysfs_emit
+  drivers/scsi/fcoe: Convert snprintf to sysfs_emit
+  drivers/scsi/fnic: Convert snprintf to sysfs_emit
+  drivers/scsi/hpsa: Convert snprintf to sysfs_emit
+  drivers/scsi/hptiop: Convert snprintf to sysfs_emit
+  drivers/scsi/ibmvscsi: Convert snprintf to sysfs_emit
+  drivers/scsi/ibmvscsi_tgt: Convert snprintf to sysfs_emit
+  drivers/scsi/isci: Convert snprintf to sysfs_emit
+  drivers/scsi/megaraid: Convert snprintf to sysfs_emit
+  drivers/scsi/mpt3sas: Convert snprintf to sysfs_emit
+  drivers/scsi/myrb: Convert snprintf to sysfs_emit
+  drivers/scsi/myrs: Convert snprintf to sysfs_emit
+  drivers/scsi/ncr53c8xx: Convert snprintf to sysfs_emit
+  drivers/scsi/pcmcia/sym53c500_cs: Convert snprintf to sysfs_emit
+  drivers/scsi/pm8001: Convert snprintf to sysfs_emit
+  drivers/scsi/pmcraid: Convert snprintf to sysfs_emit
+  drivers/scsi/qla4xxx/ql4_attr: Convert snprintf to sysfs_emit
+  drivers/scsi/scsi_sysfs: Convert snprintf to sysfs_emit
+  drivers/scsi/scsi_transport_fc: Convert snprintf to sysfs_emit
+  drivers/scsi/scsi_transport_sas: Convert snprintf to sysfs_emit
+  drivers/scsi/snic/snic_attrs: Convert snprintf to sysfs_emit
+  drivers/video/fbdev/uvesafb: Convert snprintf to sysfs_emit
+  kernel/cpu: Convert snprintf to sysfs_emit
+
+ arch/arm/mm/cache-l2x0-pmu.c                  |  2 +-
+ arch/x86/events/amd/core.c                    |  2 +-
+ arch/x86/events/core.c                        |  6 +-
+ arch/x86/events/intel/core.c                  |  6 +-
+ arch/x86/events/intel/pt.c                    |  2 +-
+ drivers/bus/fsl-mc/fsl-mc-bus.c               |  2 +-
+ drivers/edac/edac_mc_sysfs.c                  |  5 +-
+ drivers/fsi/fsi-master-ast-cf.c               |  3 +-
+ drivers/fsi/fsi-master-gpio.c                 |  3 +-
+ drivers/hid/hid-lenovo.c                      | 19 +++---
+ drivers/hid/hid-picolcd_core.c                |  6 +-
+ drivers/hid/hid-roccat-isku.c                 |  2 +-
+ drivers/hid/hid-roccat-kone.c                 | 12 ++--
+ drivers/hid/hid-roccat-koneplus.c             |  4 +-
+ drivers/hid/hid-roccat-kovaplus.c             | 10 +--
+ drivers/hid/hid-roccat-pyra.c                 |  6 +-
+ drivers/hid/hid-sensor-custom.c               |  3 +-
+ drivers/message/fusion/mptscsih.c             | 25 ++++----
+ drivers/most/core.c                           | 61 +++++++++----------
+ drivers/platform/mellanox/mlxbf-bootctl.c     | 14 ++---
+ drivers/ptp/ptp_sysfs.c                       |  3 +-
+ drivers/scsi/53c700.c                         |  2 +-
+ drivers/scsi/aacraid/linit.c                  | 17 +++---
+ drivers/scsi/aic94xx/aic94xx_init.c           | 15 +++--
+ drivers/scsi/arcmsr/arcmsr_attr.c             | 40 +++---------
+ drivers/scsi/be2iscsi/be_mgmt.c               | 20 +++---
+ drivers/scsi/fcoe/fcoe_sysfs.c                |  8 +--
+ drivers/scsi/fnic/fnic_attrs.c                |  7 +--
+ drivers/scsi/hpsa.c                           | 36 +++++------
+ drivers/scsi/hptiop.c                         |  4 +-
+ drivers/scsi/ibmvscsi/ibmvfc.c                | 22 +++----
+ drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c      |  6 +-
+ drivers/scsi/isci/init.c                      |  2 +-
+ drivers/scsi/megaraid/megaraid_sas_base.c     | 15 +++--
+ drivers/scsi/mpt3sas/mpt3sas_ctl.c            | 60 +++++++++---------
+ drivers/scsi/myrb.c                           | 38 ++++++------
+ drivers/scsi/myrs.c                           | 56 ++++++++---------
+ drivers/scsi/ncr53c8xx.c                      |  2 +-
+ drivers/scsi/pcmcia/sym53c500_cs.c            |  2 +-
+ drivers/scsi/pm8001/pm8001_ctl.c              |  6 +-
+ drivers/scsi/pmcraid.c                        | 11 ++--
+ drivers/scsi/qla4xxx/ql4_attr.c               | 48 +++++++--------
+ drivers/scsi/scsi_sysfs.c                     | 34 +++++------
+ drivers/scsi/scsi_transport_fc.c              | 34 +++++------
+ drivers/scsi/scsi_transport_sas.c             | 22 +++----
+ drivers/scsi/snic/snic_attrs.c                | 10 +--
+ drivers/video/fbdev/uvesafb.c                 |  2 +-
+ kernel/cpu.c                                  |  4 +-
+ scripts/coccinelle/api/device_attr_show.cocci | 10 ++-
+ 49 files changed, 343 insertions(+), 386 deletions(-)
+
+-- 
+2.29.2
+
