@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4317BC4828D
-	for <cocci@archiver.kernel.org>; Mon,  5 Feb 2024 19:38:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9D242C48292
+	for <cocci@archiver.kernel.org>; Mon,  5 Feb 2024 19:39:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:in-reply-to:message-id:references:
    mime-version:subject:reply-to:sender:list-id:list-help:
    list-subscribe:list-unsubscribe:list-post:list-owner:
    list-archive;
-  bh=i2ptq8OLxmns3cScMhUaEaB9VAqPAB78hOrayIyFt+c=;
-  b=mN3uH2uZgre9atUdp34ojLM8dlMOnro9n2F+atPsrVUb1uoO7yB5iXUY
-   xUEKUx7jV8OKgnDDGGDOGhb3NYgFXqLRxeMzGlphT3kSF6VXigFFjtjQG
-   tNDHTZVJNhMvZfNDlosD0J9/UBZuftthtZwPT0+5X3ZN8nxlZ61wcl4p2
-   k=;
+  bh=vTfWxSY0kO7DWpNO47UIA24jvx7u4UT4ip18HvGzHKs=;
+  b=UUoS1zCfpsItrd2LahiA2bdY8UmP+3QDfhbvey5ut0AprUt5nYlzeIbg
+   jnsoRNzNDlFuwUCmGoJF1HGnIjw1txVx2JRLnPtgMN0JZuaJ3iSP/NE7N
+   TXEr4ogVyBHdJ09FU38P896Xb3d/Is22AnqO7OK4f2t4gjSF0mi6lYWDR
+   8=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -37,34 +37,34 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
 Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@inria.fr
 X-IronPort-AV: E=Sophos;i="6.05,245,1701126000"; 
-   d="scan'208";a="150390443"
+   d="scan'208";a="150390569"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 05 Feb 2024 20:38:33 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 05 Feb 2024 20:39:20 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 49F13E0CD7; Mon,  5 Feb 2024 20:38:33 +0100 (CET)
+	id 126F1E0CD6; Mon,  5 Feb 2024 20:39:20 +0100 (CET)
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by sympa.inria.fr (Postfix) with ESMTPS id CE744E008A
-	for <cocci@sympa.inria.fr>; Mon,  5 Feb 2024 20:38:29 +0100 (CET)
+	by sympa.inria.fr (Postfix) with ESMTPS id 86481E008A
+	for <cocci@sympa.inria.fr>; Mon,  5 Feb 2024 20:39:19 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=i2ptq8OLxmns3cScMhUaEaB9VAqPAB78hOrayIyFt+c=;
-  b=n6CR9WLSJFwxiBqnfVT5DfD5F1Ob5kFf31I1CbfeZDPDpOUsS9Wmuj09
-   Z2QYZk6ZmRul7oF8FZl+BXoIi03CbWP4yLJzVB5kJcV2IUqLuKJS1n2v/
-   lsG8Y+nUv3htSP9EbDJn+ScILUINnUJXmjUg2ot1bjnfJQbKnI7S8N42p
-   Q=;
+  bh=vTfWxSY0kO7DWpNO47UIA24jvx7u4UT4ip18HvGzHKs=;
+  b=tVDSvjpNlLvVmPkkIyOX3BXNFu6GxJt+ph2d9MS4pKeOHju5NvmWEh0R
+   +Uf/qjklj3EeNqVcHttf0cdZWSBzZVRSu0npHyz2ckuFZqJh/O9ya9cDx
+   Cetlq0HB0JSMa89pXVGZ8RuS1I2z3c95dLiCXQUsLUob5SNsFPmRHhtWA
+   A=;
 X-IronPort-AV: E=Sophos;i="6.05,245,1701126000"; 
-   d="scan'208";a="150390438"
+   d="scan'208";a="150390567"
 Received: from unknown (HELO hadrien) ([89.207.171.79])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2024 20:38:29 +0100
-Date: Mon, 5 Feb 2024 20:38:24 +0100 (CET)
+  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2024 20:39:18 +0100
+Date: Mon, 5 Feb 2024 20:39:16 +0100 (CET)
 From: Julia Lawall <julia.lawall@inria.fr>
 X-X-Sender: jll@hadrien
 To: Jakub Kicinski <kuba@kernel.org>
 cc: cocci@inria.fr
 In-Reply-To: <20240205095637.54f3f450@kernel.org>
-Message-ID: <alpine.DEB.2.22.394.2402052035410.25075@hadrien>
+Message-ID: <alpine.DEB.2.22.394.2402052038430.25075@hadrien>
 References: <20240205095637.54f3f450@kernel.org>
 User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
@@ -72,7 +72,7 @@ Content-Type: text/plain; charset=US-ASCII
 Subject: Re: [cocci] spatch --use-patch-diff broken?
 Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 1498
+X-Sequence: 1499
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -85,7 +85,7 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-02/alpine.DEB.2.22.394.2402052035410.25075%40hadrien>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-02/alpine.DEB.2.22.394.2402052038430.25075%40hadrien>
 
 
 
@@ -108,10 +108,8 @@ On Mon, 5 Feb 2024, Jakub Kicinski wrote:
 > https://github.com/linux-netdev/testing.git
 > (probably best to clone that thing with --depth $number)
 
-There has been no intent to change --use-patch-diff, and whe I tried it,
-everything was fine.  It seems to be crashing ungracefully for some other
-reason.  I don't have very reliable internet access at the moment.  I'll
-try pulling your tree and check your command line soon.
+It might help to drop the --very-quiet argument.  Then you might get more
+information about the source of the problem.
 
 julia
 
