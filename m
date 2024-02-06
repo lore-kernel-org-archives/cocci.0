@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1F8B2C48260
-	for <cocci@archiver.kernel.org>; Mon,  5 Feb 2024 22:37:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A86A5C4828D
+	for <cocci@archiver.kernel.org>; Tue,  6 Feb 2024 11:31:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:in-reply-to:message-id:references:
    mime-version:subject:reply-to:sender:list-id:list-help:
    list-subscribe:list-unsubscribe:list-post:list-owner:
    list-archive;
-  bh=4/tAR1tPhnjYDn+0u8joFH/EtGc3hTNVAE6RgOvnWEA=;
-  b=Xv/rgF4LM5kIGAZhLK9P1s1QCFDP2iRmJYLhGRKHTx8dEmlZkMMpzBz6
-   MIGnxgFtPvcVhGMRyDDwYVH9Sy78PwY5ozNwdGZKLi4pNItoNCgyAAyPH
-   dQdBi5u8wX741BdR7C6PRm78iwVwp/8unFvgjAU09GOzx0YrF7MjkJTGK
-   A=;
+  bh=U2lkcyl7WTffXLL1m5E7q8UJOoWEv/qqd/5Dd2FmytQ=;
+  b=FnG3rOe2bykHjFALNdxlsa9bCj5jbdEnnWLX7L+LwV05wHLoqKQfxxih
+   VmWizN5BS+vmoNAMaYZLpWVK596q7N7QbkCgQ2GZW96C06ACj/DKxyCFS
+   oz+CHbQZBxAWr0Yp8idAkGhIBC8vd5uPhyK+EYVWJGk3xx2h/l+ZDCuXp
+   M=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -36,43 +36,41 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
 Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@inria.fr
-X-IronPort-AV: E=Sophos;i="6.05,245,1701126000"; 
-   d="scan'208";a="150404220"
+X-IronPort-AV: E=Sophos;i="6.05,247,1701126000"; 
+   d="scan'208";a="150523412"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 05 Feb 2024 23:37:32 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 06 Feb 2024 12:31:22 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 4C593E00B7; Mon,  5 Feb 2024 23:37:32 +0100 (CET)
-Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by sympa.inria.fr (Postfix) with ESMTPS id BF145E008A
-	for <cocci@sympa.inria.fr>; Mon,  5 Feb 2024 23:37:30 +0100 (CET)
+	id B0E70E00B7; Tue,  6 Feb 2024 12:31:23 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 158E0E008A
+	for <cocci@sympa.inria.fr>; Tue,  6 Feb 2024 12:31:18 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=4/tAR1tPhnjYDn+0u8joFH/EtGc3hTNVAE6RgOvnWEA=;
-  b=E9lvTxLEY+02970JQTn8myTcuBxNROAZZfzikSX8nzrHMsUNFISJdXYF
-   1VZOqK8sH0rsSQVQlg8WbubTUueIFxF2vddE5mVNKC2GEjoW/OrXk8czO
-   EMrC7KiYr4k5FlPM7/ZBYoYmqYT09cMj9njiaT254qugs5CNGVKoxqzBL
-   Y=;
-X-IronPort-AV: E=Sophos;i="6.05,245,1701126000"; 
-   d="scan'208";a="150404219"
-Received: from 231.85.89.92.rev.sfr.net (HELO hadrien) ([92.89.85.231])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2024 23:37:30 +0100
-Date: Mon, 5 Feb 2024 23:37:30 +0100 (CET)
+  bh=U2lkcyl7WTffXLL1m5E7q8UJOoWEv/qqd/5Dd2FmytQ=;
+  b=saNQ6RJVDOo7zS8GiBKaQGF0t2/pMybi+psZJQz5FlRowtt7MOuC3uRN
+   GUOMy1Q1b0EngvwhVRZby4nSyqrNqpAddQSqL12/etICWwwVD/ADXpi8e
+   63tuTn/72UxyRNrdPB0PfaK2z9sUOp60F8dl+P3SZCvWv6nwn8o8rOpkH
+   s=;
+X-IronPort-AV: E=Sophos;i="6.05,247,1701126000"; 
+   d="scan'208";a="78866015"
+Received: from dt-lawall.paris.inria.fr ([128.93.67.65])
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2024 12:31:17 +0100
+Date: Tue, 6 Feb 2024 12:31:17 +0100 (CET)
 From: Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
 To: Jakub Kicinski <kuba@kernel.org>
 cc: cocci@inria.fr
 In-Reply-To: <20240205095637.54f3f450@kernel.org>
-Message-ID: <alpine.DEB.2.22.394.2402052336420.44759@hadrien>
+Message-ID: <366eb1b-c41b-89a8-5f9a-eaa280d562a@inria.fr>
 References: <20240205095637.54f3f450@kernel.org>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Subject: Re: [cocci] spatch --use-patch-diff broken?
 Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 1500
+X-Sequence: 1501
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -85,7 +83,7 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-02/alpine.DEB.2.22.394.2402052336420.44759%40hadrien>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-02/366eb1b-c41b-89a8-5f9a-eaa280d562a%40inria.fr>
 
 
 
@@ -98,6 +96,15 @@ On Mon, 5 Feb 2024, Jakub Kicinski wrote:
 > it worked when I set it up early last month but recently
 > I went back to check and make coccicheck stops after
 > the first spatch call, all it prints is "hd"
+
+There was a problem in parsing the added line range, in the case where
+there is just a single number (one line added).  The fix will be avaialble
+shortly.
+
+Thanks for the report.
+
+julia
+
 >
 > https://netdev-3.bots.linux.dev/cocci/results/452585/new
 >
@@ -107,13 +114,6 @@ On Mon, 5 Feb 2024, Jakub Kicinski wrote:
 > FWIW the git hashes are from this tree:
 > https://github.com/linux-netdev/testing.git
 > (probably best to clone that thing with --depth $number)
-
-What number do you suggest for the depth?  I tried 1000 but I
-don't have these hashes,
-
-thanks,
-julia
-
 >
 >
 > Example:
