@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8066FC25B75
-	for <cocci@archiver.kernel.org>; Mon,  3 Jun 2024 19:51:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D74EBC25B78
+	for <cocci@archiver.kernel.org>; Tue,  4 Jun 2024 20:16:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=date:from:to:cc:in-reply-to:message-id:references:
+  h=message-id:from:to:date:content-transfer-encoding:
    mime-version:subject:reply-to:sender:list-id:list-help:
    list-subscribe:list-unsubscribe:list-post:list-owner:
    list-archive;
-  bh=0g+uQ/StZQRqln1TVCQeuBW8+KAhrt/aBwNBmAnK1jc=;
-  b=RE7hCVwRArezHnn4x96aZZhsmq6a6xTXoGFV0U44V8dQPrDyokfzlgIf
-   5GLbEPGwzD8h+/KN4qUFtfESYlyN3UvaVbRrGDSoxOQY99bTKzSmsuA+z
-   wdfuV2a7akDvn+/0cwGWGAi1BkbQ1EgFxKhr7hUBPtqAF9whpDd7AA01S
-   Y=;
+  bh=VwtOeHpoHbJyJoUoileyPdSRLURhWXeyLKGOZCtf02Q=;
+  b=O2Mwu+H0SHBPAIYcfRKmbwsfFWcE4upw5TeiPaYw7p47n0UQq2a20EVa
+   oPEvVElVHKBD66HTl8EbTsPHU3rh6ycDlPhWjmY3n0pn0YRwrZ0qHXosb
+   mdJp/ftAI4HjaCQ58Yv2U0F9PiQowOt3ykbww0MPxTAvjpr3ZERBVu2/c
+   A=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -35,48 +35,152 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   receiver=mail2-relais-roc.national.inria.fr;
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
-Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=pass (signature verified) header.i=@inria.fr
-X-IronPort-AV: E=Sophos;i="6.08,212,1712613600"; 
-   d="scan'208";a="168829187"
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@sipsolutions.net
+X-IronPort-AV: E=Sophos;i="6.08,214,1712613600"; 
+   d="scan'208";a="169022903"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 03 Jun 2024 21:51:07 +0200
+  by mail2-relais-roc.national.inria.fr with ESMTP; 04 Jun 2024 22:16:10 +0200
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id CF2ABE0133; Mon,  3 Jun 2024 21:51:06 +0200 (CEST)
-Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by sympa.inria.fr (Postfix) with ESMTPS id 64490E0035
-	for <cocci@sympa.inria.fr>; Mon,  3 Jun 2024 21:51:04 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=inria.fr; s=dc;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=0g+uQ/StZQRqln1TVCQeuBW8+KAhrt/aBwNBmAnK1jc=;
-  b=ZSJycQ7zQc+HaAyEuIFIZK+C6QACBn4FeCRRMvMztgG8c3iWNNbaWt/J
-   Jynhzov+Qs2d6AGJmeI4y5ph7Wo3rhbseB10zp3nsV+EmHCLbBU8zt88q
-   FTWf5kpZqi8VrkXN1eUuhZUt/vjG6B20O9mxSw8Vqu0U7BHBo8TLKjXuS
-   o=;
-X-IronPort-AV: E=Sophos;i="6.08,212,1712613600"; 
-   d="scan'208";a="88736391"
-Received: from 231.85.89.92.rev.sfr.net (HELO hadrien) ([92.89.85.231])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2024 21:51:04 +0200
-Date: Mon, 3 Jun 2024 21:51:03 +0200 (CEST)
-From: Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
-To: Vlastimil Babka <vbabka@suse.cz>
-cc: "Paul E. McKenney" <paulmck@kernel.org>, 
-    Uladzislau Rezki <urezki@gmail.com>, 
-    "linux-mm@kvack.org" <linux-mm@kvack.org>, RCU <rcu@vger.kernel.org>, 
-    cocci@inria.fr
-In-Reply-To: <45d8e64e-aecc-4f5e-9c1c-6da0ddcd5d7c@suse.cz>
-Message-ID: <alpine.DEB.2.22.394.2406032150130.3458@hadrien>
-References: <68b85796-c674-4691-936a-2051849f4692@suse.cz> <6b7e3ed9-d974-cb3b-6839-a6b7cf5f5a36@inria.fr> <a1f15e67-25f5-4a0b-a9d0-ebbc0555fb12@paulmck-laptop> <alpine.DEB.2.22.394.2405272226510.3330@hadrien> <ZlXIDZLMNPc7E7XE@pc636>
- <2dd5bafb-ceb1-238d-2f51-83ebf135b73@inria.fr> <ZlXaPuA4lC2ANTdN@pc636> <2ec7eb0f-0950-4d65-b33a-64df7c5f89c9@paulmck-laptop> <77531e55-3418-d4be-f538-7ddc904ed88f@inria.fr> <45d8e64e-aecc-4f5e-9c1c-6da0ddcd5d7c@suse.cz>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+	id 3482EE013D; Tue,  4 Jun 2024 22:16:10 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id A2BECE0035
+	for <cocci@sympa.inria.fr>; Tue,  4 Jun 2024 22:08:36 +0200 (CEST)
+IronPort-SDR: 665f7444_osh83yFXe1lPCs9uumKan+sknEPZRbXMqKKXdA0uOXnwuKb
+ Y9PaoJY6wnyZ79JnkcCeMSO7Ey5QfVfN0USvdew==
+X-IPAS-Result: =?us-ascii?q?A0HmIwDCc19mfRAmd6haGwEBAQE8AQEBAwMBAQECAQEBB?=
+ =?us-ascii?q?QEBARWBTwKCQoFVNAcISIRWiHyoeg8BAwENFBMaAQIEAQEDBI1kIAYBBDMGD?=
+ =?us-ascii?q?gECBAEBAQEDAgMBAQEBAQEIAQEFAQEBAgEBAgQGAQIQAQEkPCeFdA2CYIEmg?=
+ =?us-ascii?q?SYBAQEBAQEBAQEBAQEdAghhSQQZAQE4NAImAlIMhXgDsT9/M4EBggwBAQaCZ?=
+ =?us-ascii?q?9k2gWMJgRouAYMKhSYBgVmEBYUggg2NG4JpmWCCHIkGfyYLQokkCYFIHANZI?=
+ =?us-ascii?q?QIRAVUTFws+HQIWAxsUBDAPCQsmKgY5AhIMBgYGWTQJBCMDCAQDQgMgcREDB?=
+ =?us-ascii?q?AYUBAsHdYMlBBNEAgGBN4lwgzuCHYQcS4RwgUUmDGGKBoFBgWaDXlkdQAMLb?=
+ =?us-ascii?q?T01FBusRUeBBoEuIZNxsiWEHYFioByBTahpmGSpCoF7JC6BLjMaCCYKgyJPA?=
+ =?us-ascii?q?xkPji0WiDHEDUQyOwIHCwEBAwmFRAGDXYFIAQE?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23:bHZGvaMcxg7wmgnvrR19k8FynXyQoLVcMsEvi/4bfWQNrUp3hDMBx
+ mAbXmrTMquCZGryfYsnPoW3pxlS7MOAn4JmHnM5pCpnJ55ogZqcVI7Bdi8cHAvLc5adFBo/h
+ yk6QoOdRCzhZiaE/n9BCpC48T8mk/vgqoPUUIbsIjp2SRJvVBAvgBdin/9RqoNziLBVOSvU0
+ T/Ji5OZYA/NNwJcaDpOt/rd8E835pwehRtB1rAATaAT1LPhvyJNZH4vDfnZB2f1RIBSAtm7S
+ 47rpF1u1j6xE78FU7tJo56jGqE4aua60Tum1hK6b5Ofbi1q/UTe5EqU2M00Mi+7gx3R9zx4J
+ U4kWZaYEW/FNYWU8AgRvoUx/4iT8sSq9ZeeSUVTv/B/wGXGfSX34/ViU3gPPKhf6sZtBD5K9
+ v0XfWVlghCr34pawZqgS/F3gcA+MMjsOphZvHx8pd3bJa94EdaaGvSMvo8ehWlYasNmRZ4yY
+ +IbbjpmahLNeDVUO08MD5YjgOavgGK5dTBEwL6QjfNpsjCJllctitABNvLrXOeTWd18nnyI+
+ GCb80HjCBRAPfiAnG/tHnWE37GRwX2TtJgpPLa//fVrqEaCw3QaThwQT1qy5/ej4nNSQPpEc
+ AoP+zI1qqwv6E2sSMK7WRCkyJKZgvICc9peTfYa6A3S85PVxkGJJnIBETpCadNz4afaWgcW/
+ lOOmtroAxlmv7uUVW+R+9+oQdWaaXF9wYgqNXdscOcV3+QPtr3fmTrjY75e/EOdlYazAjDo2
+ DeOsTQ/gLMIy8gGy81XHGwrYRrx+/AlrSZsuW07u15JCCsjPeZJgKTztDDmAQ5odtrxc7V4l
+ CFsdzKixO4PF4qRsyeGXf8AGrqkj97cb2SD3AQyTsh7rmn2k5JGQWy2yGEkTKuOGpZdEQIFn
+ GeK4lgBvve/wVPwPPUqM9jtYyjU5fm6TIy5PhwrUja+SsEvKlPZlM2fTU6dw3LrnVJklqc7O
+ JGWOc+jZUv2+ow3pAdas9w1j+Rxrghgnjy7eHwO5076uVZoTCLOFO1t3ZrnRrxR0Z5oVy2Mr
+ IoBbZfTl0sFOAA8CwGOmbMuwZkxBSBTLfjLRwZ/L4Zv+yI3RzFzOOyb2r47ZY1ukoJck+qCr
+ Dn3WVZVxBC7zTfLIBmDICIrIr7+f4dNnVRiNwwVPHGsxycCZ6Sr5/whbJcZR+Qs29Fi6v9Wd
+ MM7Xfu8LM5BcRn53ggMTILcqdVifSu7hAjVMCuCZiM+TqFaRAfI24HFeC33/wkoECCXi5M3n
+ Oy93RKGXKgzfgVGJ+TVYcKJ0FmekyU8muVzfk2QOfhVWhzm37ZLIhzLrM0cAp8zOzSZ4xXCz
+ CeQIxMThdeVkr8P6NOT2Jy19da4IdVxDm9xPjf974/vEQL442D644tLcNjQTADnTGmupZmTP
+ 7RE/crdbs8Csk1B6bdnMrBRyqk72dvjiplawilgH1TJd16bMaxhEFbXwfhwsrBx+ZEBtTuUQ
+ k6v/vxoCYeNMu7hE38TI1MBRcaH3vc2hDLTzKoUJGPX2SxJx4eEAH5iZ0S0tC9gLbVOINwEx
+ 8Uls5Uo8ACRsEchHeuHqSF2zF6yCEI8fZ8pjKxHP7+zuDEXkglDRbf+Fh7J5Iq+boQQE0syf
+ R6Rqqnwp5Vd4UvgYXMDP2rHh/oEibsKphpM6UIIImrRu9vah80Y2A9a3iQ3Qz90kDRG8bNXE
+ Up6O3JlIZ6h+29Tu/FCeGS3CidDLhG90W7g+WsjzWH2YRGhaT3QETcbJ+2IwnE8z0tdWTpqp
+ Jej12fvVGfRTvHbhycddxZslK3+cIZX6AbHpcGAGvaFFbkcZR7OoPenRUgMmivdLfIBvm/1j
+ sg0w78ocoz+DzAanIMjAYrD1bgwdgGNFFYffd5fppE2DUPuUxDs/wORKnKBWNJHfN3L1k6aN
+ /ZABOxyUzaG6SLfiQxDWIAtJedvke8L9egyXOrhBVQ7vou1qhtrt5Pt9RbCulI7fuU2kesAL
+ tL+SjHTNE2RmnpepEHVpuZmJGeTQIcJdS/87s+P4cQLEJMI6uVzehtjybeEhW2falZ12xfJu
+ A/oRrT3ytZ6wt9GhLrcEaRkBiS1J+jsVe+OzhuBjtRWYf7LMubMrwkwqGj4Dz9JPLAUZct7p
+ Y6NvPHzwknBmrQ8CELdpLWsCIhL4p+UcNdME8eqMkRfozSOaPXs7zQH5Wq8D55Dy/FZx8u/Q
+ jqHeNmCTsEUV/hd1U9qRXBnSThFMJvOb4DkuS+ZhNaPAEJE0QX4cfWWxUWwZmRfLiI1K5nyD
+ zHvgMmX5/dakZ9tASEVDPQ3Er56J17eAZEdTePTjgXBLGeUgQKlgIDAxCoQsWSBTjHOFcvh+
+ pvKSyTvbBn46umC0NhdtJc0pRENSmp0he4rZE8G5tpqkHaAAXUbKfgGe4AzYn2OfvceCLmjD
+ N0MUIcjNck5dS9FaQ775Mn/XwCZHaoIN8uRyvkB4RaPcynvbG+fKOIJy8uiyy4elvjfICWPM
+ tAG4Xr0IwSwxZdyA+Ae+pRXRM95k+jCyCtgFV/VyqTP7tV3PVnO/GdgBBFKUTHbEsbLjwPNK
+ HRdqaWohq2kYRaZLPuMsEK51P3UUP0DAtnogeqyLA7jhrim
+IronPort-HdrOrdr: A9a23:s6e0+6Gx4bl6TA0MpLqE78eALOsnbusQ8zAXPidKOH9om62j9/
+ xG+c5x6faaslcssR0b9uxoW5PwJE80l6QZ3WB5B97LNjUO01HFEGgN1+XfKnHbak/D398Y0a
+ 9kbaBkBJn6BUtzhd2S2njdL+od
+X-Talos-CUID: 9a23:0eEDMm5hwSGB2sMR3dss9EBKAeAlfiLk9Xb1ZF+YE2M2TL6URgrF
+X-Talos-MUID: 9a23:3y3O3ATzY3LdMlA4RXTSogp7KN9B456+VkJQnbAcsczePAhvbmI=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.08,214,1712613600"; 
+   d="scan'208";a="169022342"
+X-MGA-submission: =?us-ascii?q?MDGftFYFPvo0nac5b8dWwjB2TkY5yL1XCcOhA9?=
+ =?us-ascii?q?EdmRoGu1CrBLwWUMdtMZxOEu5Ga48/HgI0dlRBgRl91KIlftZWhjMl+2?=
+ =?us-ascii?q?7+rsB7hR89PuiaDtTUN9cW+NWcmm48KKI69eflMZF8Ge7ysj9Sl/1HMO?=
+ =?us-ascii?q?H4Eezf97JhER7lYpqcFHmOFg=3D=3D?=
+Received: from s3.sipsolutions.net (HELO sipsolutions.net) ([168.119.38.16])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2024 22:08:36 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+	Content-Type:Date:To:From:Subject:Message-ID:Sender:Reply-To:Cc:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-To:Resent-Cc:
+	Resent-Message-ID:In-Reply-To:References;
+	bh=VwtOeHpoHbJyJoUoileyPdSRLURhWXeyLKGOZCtf02Q=; t=1717531716; x=1718741316; 
+	b=Hf2x11qV0ZU+YbaS7gkv3ZtOcS+yGC+4luz4G62V6H2VCUnBKPAydjjIGfrewJJd6ATHB9y7AEs
+	uXS5GuT5ZKBcCdpVWR5SybmG7TfP3Dv8DowYbc91V1J0br9AGYo5m8GX6ebXW7xjPmyBLuT835XKe
+	EliL31Y8FpwSh0YIiF2qotZCYwARdKoKLdYe4WmN1+htC+Vwj1Fn/cf2HA1kKcf8IusuQo0mP/0LB
+	lUvzEjfahfov9OXTNZmrRWuFxj3iwa3WCux3oM5wQWDMkC5TvZUcybv4CJKjm87ZDTP0Dn+A0QzHK
+	WpR9fHSRU5razurg3qjBy3/+4qZ9+aHji40g==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	(Exim 4.97)
+	(envelope-from <johannes@sipsolutions.net>)
+	id 1sEaSQ-0000000CrM7-0zyX
+	for cocci@inria.fr;
+	Tue, 04 Jun 2024 22:08:34 +0200
+Message-ID: <9c981025522250c68c8cca83a2fa3e32097bae3b.camel@sipsolutions.net>
+From: Johannes Berg <johannes@sipsolutions.net>
+To: cocci <cocci@inria.fr>
+Date: Tue, 04 Jun 2024 22:08:33 +0200
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.50.4 (3.50.4-1.fc39) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Subject: Re: [cocci] patch idea: convert trivial call_rcu users to kfree_rcu
-Reply-To: Julia Lawall <julia.lawall@inria.fr>
+X-malware-bazaar: not-scanned
+X-Validation-by: julia.lawall@inria.fr
+Subject: [cocci] strange braces behaviour
+Reply-To: Johannes Berg <johannes@sipsolutions.net>
 X-Loop: cocci@inria.fr
-X-Sequence: 1775
+X-Sequence: 1776
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -89,534 +193,93 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-06/alpine.DEB.2.22.394.2406032150130.3458%40hadrien>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-06/9c981025522250c68c8cca83a2fa3e32097bae3b.camel%40sipsolutions.net>
+
+Hi,
+
+So I've been trying a few similar things, but today we came across this
+one:
+
+Given this function from the current Linux kernel:
+
+void ieee80211_color_change_finish(struct ieee80211_vif *vif, u8 link_id)
+{
+        struct ieee80211_sub_if_data *sdata =3D vif_to_sdata(vif);
+        struct ieee80211_link_data *link;
+
+        if (WARN_ON(link_id >=3D IEEE80211_MLD_MAX_NUM_LINKS))
+                return;
+
+        rcu_read_lock();
+
+        link =3D rcu_dereference(sdata->link[link_id]);
+        if (WARN_ON(!link)) {
+                rcu_read_unlock();
+                return;
+        }
+
+        wiphy_work_queue(sdata->local->hw.wiphy,
+                         &link->color_change_finalize_work);
+
+        rcu_read_unlock();
+}
 
 
+Applying the following spatch:
 
-On Mon, 3 Jun 2024, Vlastimil Babka wrote:
+@@
+identifier func =3D~ "ieee80211_color_change_finish";
+@@
+func(...)
+{
+-...
+}
 
-> On 5/31/24 6:02 PM, Julia Lawall wrote:
-> > Here are the changes proposed by Coccinelle.
-> >
-> > I didn't succeed to compile the powerpc code, but the rest has been
-> > compile tested.
-> >
-> > julia
-> >
-> > commit 1881f31fe3ad693d07ecff45985dd0e87534923f
-> > Author: Julia Lawall <Julia.Lawall@inria.fr>
-> > Date:   Wed May 29 18:54:41 2024 +0200
-> >
-> >     misc
->
-> Looks great, thanks!
->
-> Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
->
-> Now comes the hard part, how to submit this. One patch (to rcu or linux-mm?)
-> with many Cc's, or multiple per-subsystem patches. There's always someone
-> who wants the other way that was chosen...
 
-I was planning to break up the patch series.  I will keep the two
-reviewed-bys.  Thanks for the review.
+leads to
 
-julia
+void ieee80211_color_change_finish(struct ieee80211_vif *vif, u8 link_id)
+{
+}
+}
 
->
-> > diff --git a/arch/powerpc/kvm/book3s_mmu_hpte.c b/arch/powerpc/kvm/book3s_mmu_hpte.c
-> > index ce79ac33e8d3..d904e13e069b 100644
-> > --- a/arch/powerpc/kvm/book3s_mmu_hpte.c
-> > +++ b/arch/powerpc/kvm/book3s_mmu_hpte.c
-> > @@ -92,12 +92,6 @@ void kvmppc_mmu_hpte_cache_map(struct kvm_vcpu *vcpu, struct hpte_cache *pte)
-> >  	spin_unlock(&vcpu3s->mmu_lock);
-> >  }
-> >
-> > -static void free_pte_rcu(struct rcu_head *head)
-> > -{
-> > -	struct hpte_cache *pte = container_of(head, struct hpte_cache, rcu_head);
-> > -	kmem_cache_free(hpte_cache, pte);
-> > -}
-> > -
-> >  static void invalidate_pte(struct kvm_vcpu *vcpu, struct hpte_cache *pte)
-> >  {
-> >  	struct kvmppc_vcpu_book3s *vcpu3s = to_book3s(vcpu);
-> > @@ -126,7 +120,7 @@ static void invalidate_pte(struct kvm_vcpu *vcpu, struct hpte_cache *pte)
-> >
-> >  	spin_unlock(&vcpu3s->mmu_lock);
-> >
-> > -	call_rcu(&pte->rcu_head, free_pte_rcu);
-> > +	kfree_rcu(pte, rcu_head);
-> >  }
-> >
-> >  static void kvmppc_mmu_pte_flush_all(struct kvm_vcpu *vcpu)
-> > diff --git a/block/blk-ioc.c b/block/blk-ioc.c
-> > index 25dd4db11121..ce82770c72ab 100644
-> > --- a/block/blk-ioc.c
-> > +++ b/block/blk-ioc.c
-> > @@ -32,13 +32,6 @@ static void get_io_context(struct io_context *ioc)
-> >  	atomic_long_inc(&ioc->refcount);
-> >  }
-> >
-> > -static void icq_free_icq_rcu(struct rcu_head *head)
-> > -{
-> > -	struct io_cq *icq = container_of(head, struct io_cq, __rcu_head);
-> > -
-> > -	kmem_cache_free(icq->__rcu_icq_cache, icq);
-> > -}
-> > -
-> >  /*
-> >   * Exit an icq. Called with ioc locked for blk-mq, and with both ioc
-> >   * and queue locked for legacy.
-> > @@ -102,7 +95,7 @@ static void ioc_destroy_icq(struct io_cq *icq)
-> >  	 */
-> >  	icq->__rcu_icq_cache = et->icq_cache;
-> >  	icq->flags |= ICQ_DESTROYED;
-> > -	call_rcu(&icq->__rcu_head, icq_free_icq_rcu);
-> > +	kfree_rcu(icq, __rcu_head);
-> >  }
-> >
-> >  /*
-> > diff --git a/drivers/net/wireguard/allowedips.c b/drivers/net/wireguard/allowedips.c
-> > index 0ba714ca5185..e4e1638fce1b 100644
-> > --- a/drivers/net/wireguard/allowedips.c
-> > +++ b/drivers/net/wireguard/allowedips.c
-> > @@ -48,11 +48,6 @@ static void push_rcu(struct allowedips_node **stack,
-> >  	}
-> >  }
-> >
-> > -static void node_free_rcu(struct rcu_head *rcu)
-> > -{
-> > -	kmem_cache_free(node_cache, container_of(rcu, struct allowedips_node, rcu));
-> > -}
-> > -
-> >  static void root_free_rcu(struct rcu_head *rcu)
-> >  {
-> >  	struct allowedips_node *node, *stack[MAX_ALLOWEDIPS_DEPTH] = {
-> > @@ -330,13 +325,13 @@ void wg_allowedips_remove_by_peer(struct allowedips *table,
-> >  			child = rcu_dereference_protected(
-> >  					parent->bit[!(node->parent_bit_packed & 1)],
-> >  					lockdep_is_held(lock));
-> > -		call_rcu(&node->rcu, node_free_rcu);
-> > +		kfree_rcu(node, rcu);
-> >  		if (!free_parent)
-> >  			continue;
-> >  		if (child)
-> >  			child->parent_bit_packed = parent->parent_bit_packed;
-> >  		*(struct allowedips_node **)(parent->parent_bit_packed & ~3UL) = child;
-> > -		call_rcu(&parent->rcu, node_free_rcu);
-> > +		kfree_rcu(parent, rcu);
-> >  	}
-> >  }
-> >
-> > diff --git a/fs/ecryptfs/dentry.c b/fs/ecryptfs/dentry.c
-> > index acaa0825e9bb..49d626ff33a9 100644
-> > --- a/fs/ecryptfs/dentry.c
-> > +++ b/fs/ecryptfs/dentry.c
-> > @@ -51,12 +51,6 @@ static int ecryptfs_d_revalidate(struct dentry *dentry, unsigned int flags)
-> >
-> >  struct kmem_cache *ecryptfs_dentry_info_cache;
-> >
-> > -static void ecryptfs_dentry_free_rcu(struct rcu_head *head)
-> > -{
-> > -	kmem_cache_free(ecryptfs_dentry_info_cache,
-> > -		container_of(head, struct ecryptfs_dentry_info, rcu));
-> > -}
-> > -
-> >  /**
-> >   * ecryptfs_d_release
-> >   * @dentry: The ecryptfs dentry
-> > @@ -68,7 +62,7 @@ static void ecryptfs_d_release(struct dentry *dentry)
-> >  	struct ecryptfs_dentry_info *p = dentry->d_fsdata;
-> >  	if (p) {
-> >  		path_put(&p->lower_path);
-> > -		call_rcu(&p->rcu, ecryptfs_dentry_free_rcu);
-> > +		kfree_rcu(p, rcu);
-> >  	}
-> >  }
-> >
-> > diff --git a/fs/nfsd/nfs4state.c b/fs/nfsd/nfs4state.c
-> > index a20c2c9d7d45..eba5083504c7 100644
-> > --- a/fs/nfsd/nfs4state.c
-> > +++ b/fs/nfsd/nfs4state.c
-> > @@ -571,13 +571,6 @@ opaque_hashval(const void *ptr, int nbytes)
-> >  	return x;
-> >  }
-> >
-> > -static void nfsd4_free_file_rcu(struct rcu_head *rcu)
-> > -{
-> > -	struct nfs4_file *fp = container_of(rcu, struct nfs4_file, fi_rcu);
-> > -
-> > -	kmem_cache_free(file_slab, fp);
-> > -}
-> > -
-> >  void
-> >  put_nfs4_file(struct nfs4_file *fi)
-> >  {
-> > @@ -585,7 +578,7 @@ put_nfs4_file(struct nfs4_file *fi)
-> >  		nfsd4_file_hash_remove(fi);
-> >  		WARN_ON_ONCE(!list_empty(&fi->fi_clnt_odstate));
-> >  		WARN_ON_ONCE(!list_empty(&fi->fi_delegations));
-> > -		call_rcu(&fi->fi_rcu, nfsd4_free_file_rcu);
-> > +		kfree_rcu(fi, fi_rcu);
-> >  	}
-> >  }
-> >
-> > diff --git a/fs/tracefs/inode.c b/fs/tracefs/inode.c
-> > index 7c29f4afc23d..338c52168e61 100644
-> > --- a/fs/tracefs/inode.c
-> > +++ b/fs/tracefs/inode.c
-> > @@ -53,14 +53,6 @@ static struct inode *tracefs_alloc_inode(struct super_block *sb)
-> >  	return &ti->vfs_inode;
-> >  }
-> >
-> > -static void tracefs_free_inode_rcu(struct rcu_head *rcu)
-> > -{
-> > -	struct tracefs_inode *ti;
-> > -
-> > -	ti = container_of(rcu, struct tracefs_inode, rcu);
-> > -	kmem_cache_free(tracefs_inode_cachep, ti);
-> > -}
-> > -
-> >  static void tracefs_free_inode(struct inode *inode)
-> >  {
-> >  	struct tracefs_inode *ti = get_tracefs(inode);
-> > @@ -70,7 +62,7 @@ static void tracefs_free_inode(struct inode *inode)
-> >  	list_del_rcu(&ti->list);
-> >  	spin_unlock_irqrestore(&tracefs_inode_lock, flags);
-> >
-> > -	call_rcu(&ti->rcu, tracefs_free_inode_rcu);
-> > +	kfree_rcu(ti, rcu);
-> >  }
-> >
-> >  static ssize_t default_read_file(struct file *file, char __user *buf,
-> > diff --git a/kernel/time/posix-timers.c b/kernel/time/posix-timers.c
-> > index b924f0f096fa..bad5db979664 100644
-> > --- a/kernel/time/posix-timers.c
-> > +++ b/kernel/time/posix-timers.c
-> > @@ -412,18 +412,11 @@ static struct k_itimer * alloc_posix_timer(void)
-> >  	return tmr;
-> >  }
-> >
-> > -static void k_itimer_rcu_free(struct rcu_head *head)
-> > -{
-> > -	struct k_itimer *tmr = container_of(head, struct k_itimer, rcu);
-> > -
-> > -	kmem_cache_free(posix_timers_cache, tmr);
-> > -}
-> > -
-> >  static void posix_timer_free(struct k_itimer *tmr)
-> >  {
-> >  	put_pid(tmr->it_pid);
-> >  	sigqueue_free(tmr->sigq);
-> > -	call_rcu(&tmr->rcu, k_itimer_rcu_free);
-> > +	kfree_rcu(tmr, rcu);
-> >  }
-> >
-> >  static void posix_timer_unhash_and_free(struct k_itimer *tmr)
-> > diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-> > index 003474c9a77d..367fc459cbd2 100644
-> > --- a/kernel/workqueue.c
-> > +++ b/kernel/workqueue.c
-> > @@ -5022,12 +5022,6 @@ static struct worker_pool *get_unbound_pool(const struct workqueue_attrs *attrs)
-> >  	return NULL;
-> >  }
-> >
-> > -static void rcu_free_pwq(struct rcu_head *rcu)
-> > -{
-> > -	kmem_cache_free(pwq_cache,
-> > -			container_of(rcu, struct pool_workqueue, rcu));
-> > -}
-> > -
-> >  /*
-> >   * Scheduled on pwq_release_worker by put_pwq() when an unbound pwq hits zero
-> >   * refcnt and needs to be destroyed.
-> > @@ -5073,7 +5067,7 @@ static void pwq_release_workfn(struct kthread_work *work)
-> >  		raw_spin_unlock_irq(&nna->lock);
-> >  	}
-> >
-> > -	call_rcu(&pwq->rcu, rcu_free_pwq);
-> > +	kfree_rcu(pwq, rcu);
-> >
-> >  	/*
-> >  	 * If we're the last pwq going away, @wq is already dead and no one
-> > diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-> > index c77591e63841..6d04b48f7e2c 100644
-> > --- a/net/bridge/br_fdb.c
-> > +++ b/net/bridge/br_fdb.c
-> > @@ -73,13 +73,6 @@ static inline int has_expired(const struct net_bridge *br,
-> >  	       time_before_eq(fdb->updated + hold_time(br), jiffies);
-> >  }
-> >
-> > -static void fdb_rcu_free(struct rcu_head *head)
-> > -{
-> > -	struct net_bridge_fdb_entry *ent
-> > -		= container_of(head, struct net_bridge_fdb_entry, rcu);
-> > -	kmem_cache_free(br_fdb_cache, ent);
-> > -}
-> > -
-> >  static int fdb_to_nud(const struct net_bridge *br,
-> >  		      const struct net_bridge_fdb_entry *fdb)
-> >  {
-> > @@ -329,7 +322,7 @@ static void fdb_delete(struct net_bridge *br, struct net_bridge_fdb_entry *f,
-> >  	if (test_and_clear_bit(BR_FDB_DYNAMIC_LEARNED, &f->flags))
-> >  		atomic_dec(&br->fdb_n_learned);
-> >  	fdb_notify(br, f, RTM_DELNEIGH, swdev_notify);
-> > -	call_rcu(&f->rcu, fdb_rcu_free);
-> > +	kfree_rcu(f, rcu);
-> >  }
-> >
-> >  /* Delete a local entry if no other port had the same address.
-> > diff --git a/net/can/gw.c b/net/can/gw.c
-> > index 37528826935e..ffb9870e2d01 100644
-> > --- a/net/can/gw.c
-> > +++ b/net/can/gw.c
-> > @@ -577,13 +577,6 @@ static inline void cgw_unregister_filter(struct net *net, struct cgw_job *gwj)
-> >  			  gwj->ccgw.filter.can_mask, can_can_gw_rcv, gwj);
-> >  }
-> >
-> > -static void cgw_job_free_rcu(struct rcu_head *rcu_head)
-> > -{
-> > -	struct cgw_job *gwj = container_of(rcu_head, struct cgw_job, rcu);
-> > -
-> > -	kmem_cache_free(cgw_cache, gwj);
-> > -}
-> > -
-> >  static int cgw_notifier(struct notifier_block *nb,
-> >  			unsigned long msg, void *ptr)
-> >  {
-> > @@ -603,7 +596,7 @@ static int cgw_notifier(struct notifier_block *nb,
-> >  			if (gwj->src.dev == dev || gwj->dst.dev == dev) {
-> >  				hlist_del(&gwj->list);
-> >  				cgw_unregister_filter(net, gwj);
-> > -				call_rcu(&gwj->rcu, cgw_job_free_rcu);
-> > +				kfree_rcu(gwj, rcu);
-> >  			}
-> >  		}
-> >  	}
-> > @@ -1168,7 +1161,7 @@ static void cgw_remove_all_jobs(struct net *net)
-> >  	hlist_for_each_entry_safe(gwj, nx, &net->can.cgw_list, list) {
-> >  		hlist_del(&gwj->list);
-> >  		cgw_unregister_filter(net, gwj);
-> > -		call_rcu(&gwj->rcu, cgw_job_free_rcu);
-> > +		kfree_rcu(gwj, rcu);
-> >  	}
-> >  }
-> >
-> > @@ -1236,7 +1229,7 @@ static int cgw_remove_job(struct sk_buff *skb, struct nlmsghdr *nlh,
-> >
-> >  		hlist_del(&gwj->list);
-> >  		cgw_unregister_filter(net, gwj);
-> > -		call_rcu(&gwj->rcu, cgw_job_free_rcu);
-> > +		kfree_rcu(gwj, rcu);
-> >  		err = 0;
-> >  		break;
-> >  	}
-> > diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
-> > index f474106464d2..3ed92e583417 100644
-> > --- a/net/ipv4/fib_trie.c
-> > +++ b/net/ipv4/fib_trie.c
-> > @@ -292,15 +292,9 @@ static const int inflate_threshold = 50;
-> >  static const int halve_threshold_root = 15;
-> >  static const int inflate_threshold_root = 30;
-> >
-> > -static void __alias_free_mem(struct rcu_head *head)
-> > -{
-> > -	struct fib_alias *fa = container_of(head, struct fib_alias, rcu);
-> > -	kmem_cache_free(fn_alias_kmem, fa);
-> > -}
-> > -
-> >  static inline void alias_free_mem_rcu(struct fib_alias *fa)
-> >  {
-> > -	call_rcu(&fa->rcu, __alias_free_mem);
-> > +	kfree_rcu(fa, rcu);
-> >  }
-> >
-> >  #define TNODE_VMALLOC_MAX \
-> > diff --git a/net/ipv4/inetpeer.c b/net/ipv4/inetpeer.c
-> > index 5bd759963451..5ab56f4cb529 100644
-> > --- a/net/ipv4/inetpeer.c
-> > +++ b/net/ipv4/inetpeer.c
-> > @@ -128,11 +128,6 @@ static struct inet_peer *lookup(const struct inetpeer_addr *daddr,
-> >  	return NULL;
-> >  }
-> >
-> > -static void inetpeer_free_rcu(struct rcu_head *head)
-> > -{
-> > -	kmem_cache_free(peer_cachep, container_of(head, struct inet_peer, rcu));
-> > -}
-> > -
-> >  /* perform garbage collect on all items stacked during a lookup */
-> >  static void inet_peer_gc(struct inet_peer_base *base,
-> >  			 struct inet_peer *gc_stack[],
-> > @@ -168,7 +163,7 @@ static void inet_peer_gc(struct inet_peer_base *base,
-> >  		if (p) {
-> >  			rb_erase(&p->rb_node, &base->rb_root);
-> >  			base->total--;
-> > -			call_rcu(&p->rcu, inetpeer_free_rcu);
-> > +			kfree_rcu(p, rcu);
-> >  		}
-> >  	}
-> >  }
-> > @@ -242,7 +237,7 @@ void inet_putpeer(struct inet_peer *p)
-> >  	WRITE_ONCE(p->dtime, (__u32)jiffies);
-> >
-> >  	if (refcount_dec_and_test(&p->refcnt))
-> > -		call_rcu(&p->rcu, inetpeer_free_rcu);
-> > +		kfree_rcu(p, rcu);
-> >  }
-> >  EXPORT_SYMBOL_GPL(inet_putpeer);
-> >
-> > diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
-> > index 31d77885bcae..bafc49de270e 100644
-> > --- a/net/ipv6/ip6_fib.c
-> > +++ b/net/ipv6/ip6_fib.c
-> > @@ -198,16 +198,9 @@ static void node_free_immediate(struct net *net, struct fib6_node *fn)
-> >  	net->ipv6.rt6_stats->fib_nodes--;
-> >  }
-> >
-> > -static void node_free_rcu(struct rcu_head *head)
-> > -{
-> > -	struct fib6_node *fn = container_of(head, struct fib6_node, rcu);
-> > -
-> > -	kmem_cache_free(fib6_node_kmem, fn);
-> > -}
-> > -
-> >  static void node_free(struct net *net, struct fib6_node *fn)
-> >  {
-> > -	call_rcu(&fn->rcu, node_free_rcu);
-> > +	kfree_rcu(fn, rcu);
-> >  	net->ipv6.rt6_stats->fib_nodes--;
-> >  }
-> >
-> > diff --git a/net/ipv6/xfrm6_tunnel.c b/net/ipv6/xfrm6_tunnel.c
-> > index bf140ef781c1..c3c893ddb6ee 100644
-> > --- a/net/ipv6/xfrm6_tunnel.c
-> > +++ b/net/ipv6/xfrm6_tunnel.c
-> > @@ -178,12 +178,6 @@ __be32 xfrm6_tunnel_alloc_spi(struct net *net, xfrm_address_t *saddr)
-> >  }
-> >  EXPORT_SYMBOL(xfrm6_tunnel_alloc_spi);
-> >
-> > -static void x6spi_destroy_rcu(struct rcu_head *head)
-> > -{
-> > -	kmem_cache_free(xfrm6_tunnel_spi_kmem,
-> > -			container_of(head, struct xfrm6_tunnel_spi, rcu_head));
-> > -}
-> > -
-> >  static void xfrm6_tunnel_free_spi(struct net *net, xfrm_address_t *saddr)
-> >  {
-> >  	struct xfrm6_tunnel_net *xfrm6_tn = xfrm6_tunnel_pernet(net);
-> > @@ -200,7 +194,7 @@ static void xfrm6_tunnel_free_spi(struct net *net, xfrm_address_t *saddr)
-> >  			if (refcount_dec_and_test(&x6spi->refcnt)) {
-> >  				hlist_del_rcu(&x6spi->list_byaddr);
-> >  				hlist_del_rcu(&x6spi->list_byspi);
-> > -				call_rcu(&x6spi->rcu_head, x6spi_destroy_rcu);
-> > +				kfree_rcu(x6spi, rcu_head);
-> >  				break;
-> >  			}
-> >  		}
-> > diff --git a/net/kcm/kcmsock.c b/net/kcm/kcmsock.c
-> > index 2f191e50d4fc..fbb730cd2d38 100644
-> > --- a/net/kcm/kcmsock.c
-> > +++ b/net/kcm/kcmsock.c
-> > @@ -1580,14 +1580,6 @@ static int kcm_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
-> >  	return err;
-> >  }
-> >
-> > -static void free_mux(struct rcu_head *rcu)
-> > -{
-> > -	struct kcm_mux *mux = container_of(rcu,
-> > -	    struct kcm_mux, rcu);
-> > -
-> > -	kmem_cache_free(kcm_muxp, mux);
-> > -}
-> > -
-> >  static void release_mux(struct kcm_mux *mux)
-> >  {
-> >  	struct kcm_net *knet = mux->knet;
-> > @@ -1615,7 +1607,7 @@ static void release_mux(struct kcm_mux *mux)
-> >  	knet->count--;
-> >  	mutex_unlock(&knet->mutex);
-> >
-> > -	call_rcu(&mux->rcu, free_mux);
-> > +	kfree_rcu(mux, rcu);
-> >  }
-> >
-> >  static void kcm_done(struct kcm_sock *kcm)
-> > diff --git a/net/netfilter/nf_conncount.c b/net/netfilter/nf_conncount.c
-> > index 8715617b02fe..587bfcb79723 100644
-> > --- a/net/netfilter/nf_conncount.c
-> > +++ b/net/netfilter/nf_conncount.c
-> > @@ -275,14 +275,6 @@ bool nf_conncount_gc_list(struct net *net,
-> >  }
-> >  EXPORT_SYMBOL_GPL(nf_conncount_gc_list);
-> >
-> > -static void __tree_nodes_free(struct rcu_head *h)
-> > -{
-> > -	struct nf_conncount_rb *rbconn;
-> > -
-> > -	rbconn = container_of(h, struct nf_conncount_rb, rcu_head);
-> > -	kmem_cache_free(conncount_rb_cachep, rbconn);
-> > -}
-> > -
-> >  /* caller must hold tree nf_conncount_locks[] lock */
-> >  static void tree_nodes_free(struct rb_root *root,
-> >  			    struct nf_conncount_rb *gc_nodes[],
-> > @@ -295,7 +287,7 @@ static void tree_nodes_free(struct rb_root *root,
-> >  		spin_lock(&rbconn->list.list_lock);
-> >  		if (!rbconn->list.count) {
-> >  			rb_erase(&rbconn->node, root);
-> > -			call_rcu(&rbconn->rcu_head, __tree_nodes_free);
-> > +			kfree_rcu(rbconn, rcu_head);
-> >  		}
-> >  		spin_unlock(&rbconn->list.list_lock);
-> >  	}
-> > diff --git a/net/netfilter/nf_conntrack_expect.c b/net/netfilter/nf_conntrack_expect.c
-> > index 21fa550966f0..9dcaef6f3663 100644
-> > --- a/net/netfilter/nf_conntrack_expect.c
-> > +++ b/net/netfilter/nf_conntrack_expect.c
-> > @@ -367,18 +367,10 @@ void nf_ct_expect_init(struct nf_conntrack_expect *exp, unsigned int class,
-> >  }
-> >  EXPORT_SYMBOL_GPL(nf_ct_expect_init);
-> >
-> > -static void nf_ct_expect_free_rcu(struct rcu_head *head)
-> > -{
-> > -	struct nf_conntrack_expect *exp;
-> > -
-> > -	exp = container_of(head, struct nf_conntrack_expect, rcu);
-> > -	kmem_cache_free(nf_ct_expect_cachep, exp);
-> > -}
-> > -
-> >  void nf_ct_expect_put(struct nf_conntrack_expect *exp)
-> >  {
-> >  	if (refcount_dec_and_test(&exp->use))
-> > -		call_rcu(&exp->rcu, nf_ct_expect_free_rcu);
-> > +		kfree_rcu(exp, rcu);
-> >  }
-> >  EXPORT_SYMBOL_GPL(nf_ct_expect_put);
-> >
-> > diff --git a/net/netfilter/xt_hashlimit.c b/net/netfilter/xt_hashlimit.c
-> > index 0859b8f76764..c2b9b954eb53 100644
-> > --- a/net/netfilter/xt_hashlimit.c
-> > +++ b/net/netfilter/xt_hashlimit.c
-> > @@ -256,18 +256,11 @@ dsthash_alloc_init(struct xt_hashlimit_htable *ht,
-> >  	return ent;
-> >  }
-> >
-> > -static void dsthash_free_rcu(struct rcu_head *head)
-> > -{
-> > -	struct dsthash_ent *ent = container_of(head, struct dsthash_ent, rcu);
-> > -
-> > -	kmem_cache_free(hashlimit_cachep, ent);
-> > -}
-> > -
-> >  static inline void
-> >  dsthash_free(struct xt_hashlimit_htable *ht, struct dsthash_ent *ent)
-> >  {
-> >  	hlist_del_rcu(&ent->node);
-> > -	call_rcu(&ent->rcu, dsthash_free_rcu);
-> > +	kfree_rcu(ent, rcu);
-> >  	ht->count--;
-> >  }
-> >  static void htable_gc(struct work_struct *work);
->
->
+
+with
+spatch version 1.1.1 compiled with OCaml version 5.0.1+dev0-2022-12-15
+and also with
+spatch version 1.1.1 compiled with OCaml version 4.14.1
+
+
+Trying this spatch:
+
+@@
+identifier func =3D~ "ieee80211_color_change_finish";
+@@
+func(...)
+-{...}
++{}
+
+
+works fine with
+spatch version 1.1.1 compiled with OCaml version 5.0.1+dev0-2022-12-15
+
+but *fails* with
+spatch version 1.1.1 compiled with OCaml version 4.14.1
+
+saying
+
+EXN: Failure("rule starting on line 1: already tagged token:\nC code
+context\nFile \"./test.c\", line 3, column 0, charpos =3D 76\n  around =3D
+'}',\n  whole content =3D }") in ./test.c
+
+which is almost stranger than the left-over closing brace, especially
+the difference between those two spatch versions I have?
+
+
+Any thoughts?
+
+(I have a similar situation with removing a whole switch() statement
+from the code, but I'll leave that for later)
+
+Thanks,
+johannes
