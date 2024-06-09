@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AC3DCC27C53
-	for <cocci@archiver.kernel.org>; Sun,  9 Jun 2024 08:32:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 38980C27C53
+	for <cocci@archiver.kernel.org>; Sun,  9 Jun 2024 10:01:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:in-reply-to:message-id:references:
    mime-version:subject:reply-to:sender:list-id:list-help:
    list-subscribe:list-unsubscribe:list-post:list-owner:
    list-archive;
-  bh=3OnS7bTMzg9MrVeT6de/BPlcGur14FkZ3nS9wq9ryDk=;
-  b=sNuHQkN4fvEiqPAmYGELYnFnIC+vItTrmttXSYAuix3w2GWooIjK20/f
-   VZ7nDlTJizRYNaJ+MvIKhZ2LKXk6aqKaghpXGSWiLT3Ya26HpgZYkTC2G
-   ofwTy+0Yy4X7kcr1xsKYTWlTxRn66sjeTyD5wx2nLxrv4diBjzhJ2nmdA
-   w=;
+  bh=ox+EVNmCnoc2enI2j6GZHXoQFfQNYcmYlWqiZuc/AGI=;
+  b=kGUY+XCvAMRd4r3FU1S0/NwKolFQEgzskyc6D5qihEpZjUfjRFreocSK
+   hchc0IPzBUF737+9Z/V7DQjv0efW42kJgpefOY/Y6NxazlgQI9uOdGiqq
+   qfILnAaRuGN/PGUPTtHe52yjOCzzomgMN3+KXOK5H/ZEvgLY/ZdGx3tSp
+   s=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -37,28 +37,28 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
 Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=pass (signature verified) header.i=@inria.fr
 X-IronPort-AV: E=Sophos;i="6.08,225,1712613600"; 
-   d="scan'208";a="169697150"
+   d="scan'208";a="169702413"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 09 Jun 2024 10:32:06 +0200
+  by mail2-relais-roc.national.inria.fr with ESMTP; 09 Jun 2024 12:01:01 +0200
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 0B333E0138; Sun,  9 Jun 2024 10:32:06 +0200 (CEST)
-Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by sympa.inria.fr (Postfix) with ESMTPS id 9FF20E0035
-	for <cocci@sympa.inria.fr>; Sun,  9 Jun 2024 10:32:02 +0200 (CEST)
+	id 36564E0133; Sun,  9 Jun 2024 12:01:01 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id D68FFE0035
+	for <cocci@sympa.inria.fr>; Sun,  9 Jun 2024 12:00:58 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=3OnS7bTMzg9MrVeT6de/BPlcGur14FkZ3nS9wq9ryDk=;
-  b=PKirY1mHVBbj1jOFUj3eZoX/Ad3rdeNCGqvKKSmvrVI+4T2+r/37Qi8J
-   jzTjPIIkK4b2RbHRuaLPkY9qIqsXXZZ4eNXVPPJ4x+ffv1xzn9xbt/qP/
-   yukjY+B9VBXUu886EIrfLqK20Z/m2EXgQS7bpbMwzG2ql6IK8HHRcG3Oh
-   o=;
+  bh=ox+EVNmCnoc2enI2j6GZHXoQFfQNYcmYlWqiZuc/AGI=;
+  b=tRwwMqtl3x/29q7HxcLiVDN8C9P3vD9Jtgo1sDrb/FZq/YFSXpWt40r7
+   6V8HmJIz5pBOIQuba6OcbB9b3VxsmfZbORnG1ciyIv4mghy5StfQ2dmYK
+   W0zcbbjhY+1/vAtTJF8PMo0+M/B9cll2LZZWPuuvCufz7qzaOmkX/uTYS
+   8=;
 X-IronPort-AV: E=Sophos;i="6.08,225,1712613600"; 
-   d="scan'208";a="89188818"
+   d="scan'208";a="169702404"
 Received: from 231.85.89.92.rev.sfr.net (HELO hadrien) ([92.89.85.231])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2024 10:32:03 +0200
-Date: Sun, 9 Jun 2024 10:32:01 +0200 (CEST)
+  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2024 12:00:59 +0200
+Date: Sun, 9 Jun 2024 12:00:58 +0200 (CEST)
 From: Julia Lawall <julia.lawall@inria.fr>
 X-X-Sender: jll@hadrien
 To: Uladzislau Rezki <urezki@gmail.com>
@@ -66,7 +66,7 @@ cc: "Paul E. McKenney" <paulmck@kernel.org>, Vlastimil Babka <vbabka@suse.cz>,
     "linux-mm@kvack.org" <linux-mm@kvack.org>, RCU <rcu@vger.kernel.org>, 
     cocci@inria.fr
 In-Reply-To: <Zl76AZ_0H5xb1cFl@pc638.lan>
-Message-ID: <alpine.DEB.2.22.394.2406091029250.3474@hadrien>
+Message-ID: <alpine.DEB.2.22.394.2406091158420.3474@hadrien>
 References: <68b85796-c674-4691-936a-2051849f4692@suse.cz> <6b7e3ed9-d974-cb3b-6839-a6b7cf5f5a36@inria.fr> <a1f15e67-25f5-4a0b-a9d0-ebbc0555fb12@paulmck-laptop> <alpine.DEB.2.22.394.2405272226510.3330@hadrien> <ZlXIDZLMNPc7E7XE@pc636>
  <2dd5bafb-ceb1-238d-2f51-83ebf135b73@inria.fr> <ZlXaPuA4lC2ANTdN@pc636> <2ec7eb0f-0950-4d65-b33a-64df7c5f89c9@paulmck-laptop> <77531e55-3418-d4be-f538-7ddc904ed88f@inria.fr> <Zl76AZ_0H5xb1cFl@pc638.lan>
 User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
@@ -75,7 +75,7 @@ Content-Type: text/plain; charset=US-ASCII
 Subject: Re: [cocci] patch idea: convert trivial call_rcu users to kfree_rcu
 Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 1783
+X-Sequence: 1784
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -88,7 +88,7 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-06/alpine.DEB.2.22.394.2406091029250.3474%40hadrien>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-06/alpine.DEB.2.22.394.2406091158420.3474%40hadrien>
 
 
 
@@ -603,15 +603,6 @@ On Tue, 4 Jun 2024, Uladzislau Rezki wrote:
 > >  	ht->count--;
 > >  }
 > >  static void htable_gc(struct work_struct *work);
-
-I have sent out patches for the above changes.  There remain the ones
-cited below, ones where the release function is used in other ways, and
-ones where the first argument to call_rcu does not have the form &e->f.  I
-will check on these remaining cases.
-
-julia
-
-
 > Looks good. What is about extra below useres:
 >
 > lima_sched.c
@@ -673,7 +664,22 @@ julia
 > <snip>
 >
 > ?
->
-> --
-> Uladzislau Rezki
->
+
+These look ok to me.  In the last two cases, the callback function is also
+stored in a data structure, eg:
+
+static struct mfc6_cache *ip6mr_cache_alloc(void)
+{
+	struct mfc6_cache *c = kmem_cache_zalloc(mrt_cachep, GFP_KERNEL);
+	if (!c)
+		return NULL;
+	c->_c.mfc_un.res.last_assert = jiffies - MFC_ASSERT_THRESH - 1;
+	c->_c.mfc_un.res.minvif = MAXMIFS;
+	c->_c.free = ip6mr_cache_free_rcu;
+	refcount_set(&c->_c.mfc_un.res.refcount, 1);
+	return c;
+}
+
+Should that be left as it is?
+
+julia
