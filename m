@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DCF14C27C55
-	for <cocci@archiver.kernel.org>; Mon, 10 Jun 2024 09:36:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D81CFC27C65
+	for <cocci@archiver.kernel.org>; Mon, 10 Jun 2024 09:42:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=date:from:to:cc:in-reply-to:message-id:references:
-   mime-version:subject:reply-to:sender:list-id:list-help:
-   list-subscribe:list-unsubscribe:list-post:list-owner:
-   list-archive;
-  bh=c7XiLPp0eQr/Dx1veU9zu5bKLbPuvbnJlMQkjzGwG7k=;
-  b=hm7eB1t4Be5OjYIwP5NNMaoMZF80rndAgC2V5XLmPe1hR1aUACflM11m
-   nboyE5xJkzbTqxEAmNE+H0DLgWTD+TID0WJoxBZ9/nM1hYm1Ej4+niLsW
-   +JmzSzV8sWzLY7wXKHz/yo8+7zDF6RADZS3/GJq3YBILvhH3e2IzB57yY
-   E=;
+  h=message-id:from:to:cc:date:in-reply-to:references:
+   content-transfer-encoding:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=M74Sdy6D5IMUcptqdAeWWX8GwBKPFU/FA7tr2eAg5QY=;
+  b=mQ2eyje/cyeAw31AYv8J/uBIcAHAMwARqpRIeBCIEQYqmqnFgO3M+Fb/
+   A/VLTE+cc6FQ61AVjXmAXZej/4R61CqW7V2go55Ua83H2IUcF3uq1VIQW
+   17Ycqj8+RakRgdDxji7nFh3aiftxwKNibo4MtBvgv9vJIkAjz4pQU3Lqy
+   o=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -35,43 +35,160 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   receiver=mail2-relais-roc.national.inria.fr;
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
-Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=pass (signature verified) header.i=@inria.fr
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@sipsolutions.net
 X-IronPort-AV: E=Sophos;i="6.08,227,1712613600"; 
-   d="scan'208";a="169824378"
+   d="scan'208";a="169825976"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 10 Jun 2024 11:36:49 +0200
+  by mail2-relais-roc.national.inria.fr with ESMTP; 10 Jun 2024 11:42:32 +0200
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 097C7E013D; Mon, 10 Jun 2024 11:36:49 +0200 (CEST)
-Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by sympa.inria.fr (Postfix) with ESMTPS id 3D174E0035
-	for <cocci@sympa.inria.fr>; Mon, 10 Jun 2024 11:36:43 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=inria.fr; s=dc;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=c7XiLPp0eQr/Dx1veU9zu5bKLbPuvbnJlMQkjzGwG7k=;
-  b=RKgIlq5Qvfii9c33U6emGOM+1AnmMuLpLUVMqPobUERvnS1M9h0Ps9EA
-   3TtC5dGdkle9BPrNytK4Rwmx6dGs/hbI8+zaGuNWw1igC8/krMlLvyVt9
-   Kl9qU5D4pk0Ua+fnLAf9S1RPs0o7FBXKmE71T7FpRlA+ISPIu04mV+rQ7
-   8=;
+	id 15B39E0145; Mon, 10 Jun 2024 11:42:32 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id DBD7BE0035
+	for <cocci@sympa.inria.fr>; Mon, 10 Jun 2024 08:57:34 +0200 (CEST)
+IronPort-SDR: 6666a3de_XoPp45cHCxN7AK97DFf0Ics5OaBdl03xYEdmNs96p0e39Q3
+ bkLfcNTk3m5y46Aw5C9Ilov/sOfmXvOBId2moVQ==
+X-IPAS-Result: =?us-ascii?q?A0HPAwBiomZmfRAmd6hagQmBT4JEgVU0BwhIhFaIfIhxo?=
+ =?us-ascii?q?AoPAQMBDUEBAgQBAQMEhH8CiGcgBgEEMwYOAQIEAQEBAQMCAwEBAQEBAQgBA?=
+ =?us-ascii?q?QUBAQECAQECBAYBAhABASQ8J4V0DYJngR+BJgEBAQEBAQEBAQEBAR0CCGEBH?=
+ =?us-ascii?q?gEBAQECASMdAQE3AQQLCxgCAiYCAlYGhVUjA60ReoEygQGCDAEBBoJn2TaBY?=
+ =?us-ascii?q?wmBGi6IMQGBWYQFhF5Cgg2EPz6EQ4NbgmmZWYV2coUyJgtDiiAJS30cA1khA?=
+ =?us-ascii?q?hEBVRMXCz4JFgIWAxsUBDAPCQsmKgY5AhIMBgYGWTQJBCMDCAQDQgMgcREDB?=
+ =?us-ascii?q?BoECwd2gXGBNAQTRAIBgTeJcQyDLymBSSeEGktshAKBawxhg0mFKYEQgT6BZ?=
+ =?us-ascii?q?gGDVFGBSh1AAwttPTUUG6xeCIFZW0o5xjqEHYFioByBTahsmGWpCoF7JIFcM?=
+ =?us-ascii?q?xoIJgqDIk8DGQ+OLRaIMcc2RDI7AgcLAQEDCYVEAYNdgUgBAQ?=
+IronPort-PHdr: A9a23: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
+ YIVTbtGSF0yEOhcDEl5ToVqHQ==
+IronPort-Data: A9a23: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
+ U7Keg==
+IronPort-HdrOrdr: A9a23:T8AR36HJohUjCbjIpLqEwceALOsnbusQ8zAXPo5KKCC9Ffbo8/
+ xG/c5rsCMc7Qx7ZJhOo7C90cW7Lk80sKQFgrX5Xo3SOjUO2lHEEGgK1+KLqQEIWReOlNK1vp
+ 0NT0ERMrPN5BRB/KHHyTj9F94k3tGd/OSijfTXx2wFd3ASV51d
+X-Talos-CUID: 9a23:j12FhmNgkBkXy+5DdgVtr2kJBuMZSif3zmvsD0q6Dlk2R+jA
+X-Talos-MUID: 9a23:lgS/mwgkakBeAyqdohoXOMMpb/hz7KWeJGA2n7osmsWdDG9AFWnCpWHi
+X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-AV: E=Sophos;i="6.08,227,1712613600"; 
-   d="scan'208";a="169824355"
-Received: from dt-lawall.paris.inria.fr ([128.93.67.65])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2024 11:36:43 +0200
-Date: Mon, 10 Jun 2024 11:36:43 +0200 (CEST)
-From: Julia Lawall <julia.lawall@inria.fr>
-To: Johannes Berg <johannes@sipsolutions.net>
-cc: cocci <cocci@inria.fr>
-In-Reply-To: <51e451891bff494df7040c5e5724c68f325411d3.camel@sipsolutions.net>
-Message-ID: <c4f5f925-32fa-add2-5551-542e751043aa@inria.fr>
-References: <9c981025522250c68c8cca83a2fa3e32097bae3b.camel@sipsolutions.net>   <f0ad5ab5-d3ea-ac6-3c6e-dd1be07f4e41@inria.fr>  <a01e8d2f2f5d90373fa094a8514ea2f5736db8dd.camel@sipsolutions.net>  <aebf2712-a3cb-1b53-c173-1a6fcc821f51@inria.fr>
- <51e451891bff494df7040c5e5724c68f325411d3.camel@sipsolutions.net>
+   d="scan'208";a="89234697"
+X-MGA-submission: =?us-ascii?q?MDF84VWJXyLS3Uko5ZFkC2LYzs4wKUuTTGNRx6?=
+ =?us-ascii?q?fI+F9TgRI2Ww38ND8NkVTrXKuCyA62wvUIMi2MFjVi144nmosV5GlR7v?=
+ =?us-ascii?q?zWoafCy6nlIy9BOnRKaiRCfCMirN1BUc39n53qQG8henFJidm8ivAHtA?=
+ =?us-ascii?q?7F0FE5PjIicA9EWebWEiVSDA=3D=3D?=
+Received: from s3.sipsolutions.net (HELO sipsolutions.net) ([168.119.38.16])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2024 08:57:34 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+	Resent-Cc:Resent-Message-ID; bh=M74Sdy6D5IMUcptqdAeWWX8GwBKPFU/FA7tr2eAg5QY=;
+	t=1718002654; x=1719212254; b=Snocj9cCmcuFseNlyPRd0fIFywulqJq+OsQP2NEnTXaDuqO
+	urlSILwr1eCbvxT6yuxHM76dOQwexlS3UORBHjHAA14Z39ch35e88rsjAxj0znZRJk63ZUl5qBtuV
+	xVkMM9NumXC5zLbPUOYWxyzLGywAWPirBaJuykbVg7Ocb9F1hxenfYxVqGiaxTZjBBp374tkxZc9P
+	AYVwlrpd5ygNQSmebIdGL6cV3KWaltoHsrTikrFlVVDj9FkjwGjzqJmLqokQladxJE/Q1N+Gtg7ny
+	yDV314l++POlhfCAa0Lz1WtVQ5I68NJ9s8jSMU+VoDtNbrFkUB66sRLGCMnRoHiw==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	(Exim 4.97)
+	(envelope-from <johannes@sipsolutions.net>)
+	id 1sGYyC-00000006KUP-3rBI;
+	Mon, 10 Jun 2024 08:57:33 +0200
+Message-ID: <a01e8d2f2f5d90373fa094a8514ea2f5736db8dd.camel@sipsolutions.net>
+From: Johannes Berg <johannes@sipsolutions.net>
+To: Julia Lawall <julia.lawall@inria.fr>
+Cc: cocci <cocci@inria.fr>
+Date: Mon, 10 Jun 2024 08:57:32 +0200
+In-Reply-To: <f0ad5ab5-d3ea-ac6-3c6e-dd1be07f4e41@inria.fr>
+References: 
+	<9c981025522250c68c8cca83a2fa3e32097bae3b.camel@sipsolutions.net>
+	 <f0ad5ab5-d3ea-ac6-3c6e-dd1be07f4e41@inria.fr>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.52.2 (3.52.2-1.fc40) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+X-malware-bazaar: not-scanned
+X-Validation-by: julia.lawall@inria.fr
 Subject: Re: [cocci] strange braces behaviour
-Reply-To: Julia Lawall <julia.lawall@inria.fr>
+Reply-To: Johannes Berg <johannes@sipsolutions.net>
 X-Loop: cocci@inria.fr
-X-Sequence: 1788
+X-Sequence: 1789
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -84,197 +201,34 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-06/c4f5f925-32fa-add2-5551-542e751043aa%40inria.fr>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-06/a01e8d2f2f5d90373fa094a8514ea2f5736db8dd.camel%40sipsolutions.net>
 
+On Mon, 2024-06-10 at 08:49 +0200, Julia Lawall wrote:
+> >=20
+> > void ieee80211_color_change_finish(struct ieee80211_vif *vif, u8 link_i=
+d)
+> > {
+> > }
+> > }
+>=20
+> This problem is fixed.
 
+Cool, thanks a lot! :-)
 
-On Mon, 10 Jun 2024, Johannes Berg wrote:
+Do you have a pointer to the code or something by any chance? We might
+be building spatch anyway (need to check, but at least have an easy
+option to with nix packages), so I might be tempted to pick that fix up
+before release for our internal automations.
 
-> On Mon, 2024-06-10 at 09:04 +0200, Julia Lawall wrote:
-> > commit 7eded3b97dadb1f0f4ed29d6c56856647c04b656
-> > Author: Julia Lawall <Julia.Lawall@inria.fr>
-> > Date:   Sun Jun 9 16:07:57 2024 +0200
-> >
-> >     should use the non fake end node when after is attached to it; that is
-> > part of the code
->
-> Thanks.
->
-> I built master (commit ac9af0e8b7c76341de1999389ce285b72ebaf81b) now.
->
-> > > Also, I'd like to check against the similar issue I had with removing a
-> > > whole switch statement ("-switch(...) {...}")
-> >
-> > Maybe it will indeed fix this as well.
->
-> So first of all, it doesn't even parse what I wanted:
->
-> @@
-> @@
->  sta_link_apply_parameters(...,
-> -                          struct link_station_parameters *params)
-> +                          struct station_parameters *params)
-> {
-> ...
-> -u32 link_id = params->link_id < 0 ? 0 : params->link_id;
-> +u32 link_id = 0;
-> ...
-> -bool changes = ...;
-> ...
-> -switch (mode) { ... }
-> ...
-> }
->
-> but this isn't supported:
->
-> minus: parse error:
->   File "...", line 13, column 17, charpos = 295
->   around = '...',
->   whole content = -switch (mode) { ... }
->
-> but I guess that's fair.
+Also, I'd like to check against the similar issue I had with removing a
+whole switch statement ("-switch(...) {...}")
 
-Thanks for the report.
+> Even though it's just one extra brace, it was a
+> serious problem.
 
-It might work to write
+This was also the more simple test case - in other functions I could
+actually make it leave more closing braces, I think if you had multiple
+inside the function.
 
-{
-switch ... // all the detail you put below
-&
-- S
-)
-
-where S ia a statement metavariable.
-
-I haven't tried it though.
-
-julia
-
->
-> But trying to do this:
->
-> @@
-> @@
->  sta_link_apply_parameters(...,
-> -                          struct link_station_parameters *params)
-> +                          struct station_parameters *params)
-> {
-> ...
-> -u32 link_id = params->link_id < 0 ? 0 : params->link_id;
-> +u32 link_id = 0;
-> ...
-> -bool changes = ...;
-> ...
-> -switch (mode) {
-> -case STA_LINK_MODE_NEW:
-> -...
-> -break;
-> -case STA_LINK_MODE_LINK_MODIFY:
-> -...
-> -break;
-> -case STA_LINK_MODE_STA_MODIFY:
-> -...
-> -break;
-> -}
-> ...
-> }
->
->
-> There's a "return -EINVAL" inside the _NEW case in the original code:
->
-> static int sta_link_apply_parameters(struct ieee80211_local *local,
->                                      struct sta_info *sta,
->                                      enum sta_link_apply_mode mode,
->                                      struct link_station_parameters *params)
-> {
->         struct ieee80211_supported_band *sband;
->         struct ieee80211_sub_if_data *sdata = sta->sdata;
->         u32 link_id = params->link_id < 0 ? 0 : params->link_id;
->         struct ieee80211_link_data *link =
->                 sdata_dereference(sdata->link[link_id], sdata);
->         struct link_sta_info *link_sta =
->                 rcu_dereference_protected(sta->link[link_id],
->                                           lockdep_is_held(&local->hw.wiphy->mtx));
->         bool changes = params->link_mac ||
->                        params->txpwr_set ||
->                        params->supported_rates_len ||
->                        params->ht_capa ||
->                        params->vht_capa ||
->                        params->he_capa ||
->                        params->eht_capa ||
->                        params->opmode_notif_used;
->
->         switch (mode) {
->         case STA_LINK_MODE_NEW:
->                 if (!params->link_mac)
->                         return -EINVAL;
->                 break;
->         case STA_LINK_MODE_LINK_MODIFY:
->                 break;
->         case STA_LINK_MODE_STA_MODIFY:
->                 if (params->link_id >= 0)
->                         break;
->                 if (!changes)
->                         return 0;
->                 break;
->         }
-> ...
->
->
-> which spatch leaves around:
->
-> @@ -1814,113 +1814,93 @@ enum sta_link_apply_mode {
->  static int sta_link_apply_parameters(struct ieee80211_local *local,
->  				     struct sta_info *sta,
->  				     enum sta_link_apply_mode mode,
-> -				     struct link_station_parameters *params)
-> +				     struct station_parameters *params)
->  {
->  	struct ieee80211_supported_band *sband;
->  	struct ieee80211_sub_if_data *sdata = sta->sdata;
-> -	u32 link_id = params->link_id < 0 ? 0 : params->link_id;
-> +	u32 link_id = 0;
->  	struct ieee80211_link_data *link =
->  		sdata_dereference(sdata->link[link_id], sdata);
->  	struct link_sta_info *link_sta =
->  		rcu_dereference_protected(sta->link[link_id],
->  					  lockdep_is_held(&local->hw.wiphy->mtx));
-> -	bool changes = params->link_mac ||
-> -		       params->txpwr_set ||
-> -		       params->supported_rates_len ||
-> -		       params->ht_capa ||
-> -		       params->vht_capa ||
-> -		       params->he_capa ||
-> -		       params->eht_capa ||
-> -		       params->opmode_notif_used;
-> -
-> -	switch (mode) {
-> -	case STA_LINK_MODE_NEW:
-> -		if (!params->link_mac)
-> -			return -EINVAL;
-> -		break;
-> -	case STA_LINK_MODE_LINK_MODIFY:
-> -		break;
-> -	case STA_LINK_MODE_STA_MODIFY:
-> -		if (params->link_id >= 0)
-> -			break;
-> -		if (!changes)
-> -			return 0;
-> -		break;
-> -	}
-> +	return -EINVAL;
-> +	return 0;
-> +}
->
-> and it also has the closing brace here, so it somehow leaves a closing
-> brace too much also in this case, even with the fix.
->
-> So perhaps not the same issue?
->
-> (I worked around it for now by leave the switch/case/break instead of
-> removing, so it's kind of just a dead switch after the change, doesn't
-> do anything but structurally still exists)
->
-> Thanks,
-> johannes
->
+Thanks,
+Johannes
