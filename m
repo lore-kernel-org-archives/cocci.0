@@ -4,19 +4,18 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 13EEFC27C55
-	for <cocci@archiver.kernel.org>; Mon, 10 Jun 2024 09:42:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BD268C27C79
+	for <cocci@archiver.kernel.org>; Mon, 17 Jun 2024 13:14:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=message-id:from:to:cc:date:in-reply-to:references:
-   content-transfer-encoding:mime-version:subject:reply-to:
+  h=mime-version:from:date:message-id:to:subject:reply-to:
    sender:list-id:list-help:list-subscribe:list-unsubscribe:
    list-post:list-owner:list-archive;
-  bh=CHO11UP0YLqto9FHDymrggcQveGKcZfy5CyAXW9famo=;
-  b=NtUgvzEe9a4COHJHKteOZr89ec82LQBSkZz0dJQBYT7RGKv1GF/YMhji
-   49U6Sm4owlj++aZ201/r/nhLWcdy53p5GU72YqQQwWgqIul/0j/r2IQXo
-   XSuxUhT/ksuCFkz0YWVU5lb/mS0vbbpsB0oZZYneXVN8s9LLJ5I+VI9Ov
-   8=;
+  bh=GmsXeRVIZyGlEhYsUwXJ8dzSe6LIMAxeMWRo6OQ8z8A=;
+  b=Q98aJ4obxmCd2tuhXEPOmR+w5J3o+NYvEAMaBaoOozGHenG/XlGXqId2
+   vGc+2/FgGCLXMb5ggSAS/ivi4CBg/InbvPN1XtWrgublxWlQNMlE4+VBA
+   uPLUphpf7UQgOTZPAZWeMH7QyYk7MZDFWX1cWYtuSGEKbnY98taGvR0gQ
+   E=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -35,163 +34,159 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   receiver=mail2-relais-roc.national.inria.fr;
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
-Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@sipsolutions.net
-X-IronPort-AV: E=Sophos;i="6.08,227,1712613600"; 
-   d="scan'208";a="169825990"
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@xteddy-org.20230601.gappssmtp.com
+X-IronPort-AV: E=Sophos;i="6.08,244,1712613600"; 
+   d="scan'208,217";a="171057241"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 10 Jun 2024 11:42:32 +0200
+  by mail2-relais-roc.national.inria.fr with ESMTP; 17 Jun 2024 15:14:05 +0200
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 3DB98E0CD4; Mon, 10 Jun 2024 11:42:32 +0200 (CEST)
-Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by sympa.inria.fr (Postfix) with ESMTPS id 3C11CE0035
-	for <cocci@sympa.inria.fr>; Mon, 10 Jun 2024 11:25:56 +0200 (CEST)
-IronPort-SDR: 6666c6a3_zAtV1T5xUihQSUNGw3OoGSMpNNDLWH9GGEDaiO8EkdImfWA
- czRr+OSwO0Xxk04bkTHCpmBwkVrqBm/JMfECdQg==
-X-IPAS-Result: =?us-ascii?q?A0GMAwClxWZmfRAmd6hagQmBT4JEgVU0BwhIhFaIfIhuA?=
- =?us-ascii?q?54MgX4PAQMBDUEBAgQBAQMEhH8CiGcgBgEEMgcOAQIEAQEBAQMCAwEBAQEBA?=
- =?us-ascii?q?QgBAQUBAQECAQECBAYBAhABASQ8J4V0DYJngR+BJgEBAQEBAQEBAQEBAR0CC?=
- =?us-ascii?q?GEBHgEBAQECASMEGQEBNwEPCxQEAgImAgJWBhOFQiMDrSJ6fzOBAYIMAQEGg?=
- =?us-ascii?q?mfZNoFjCYEaLogxAYFZhAWEXkKCDYJQgW8+hEODW4JpjyyJTGGCG4kAfyYLQ?=
- =?us-ascii?q?1uJRQlLfRwDWSECEQFVExcLPgkWAhYDGxQEMA8JCyYqBjkCEgwGBgZZNAkEI?=
- =?us-ascii?q?wMIBANCAyBxEQMEGgQLB3aBcYE0BBNEAgGBN4lxDIMvKYFJJ4QaS2yEAoFrD?=
- =?us-ascii?q?GGDSYUpgRCBPoFmAYNUUYFKHUADC209NRQbrCA+BgJ6CglMDyFIZrE1kkSCQ?=
- =?us-ascii?q?YQdgWKgHIFNqGyYZakKgWwKKYFcMxoIJgqDIk8DGQ+WdMdLRDI7AgcLAQEDC?=
- =?us-ascii?q?YVEAYNdgUgBAQ?=
-IronPort-PHdr: A9a23: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
- IcSS7hdTxozG+9IUixY
-IronPort-Data: A9a23:1AKly6vCKfghVMGwTP5znQtFd+fnVL1aMUV32f8akzHdYApBsoF/q
- tZmKWjTaP6OYWKjLtB/aoi+9kkOvJXdmIBrTgA//iljHihHgMeUXt7xwmXYb3rDdJWbJK5Ex
- 5xDMYeYdJhcolv0/ErF3m3J9CEkvU2wbuOgTrSCYEidfCc8IA85kxVvhuUltYBhhNm9Emult
- Mj7yyHlEAbNNwVcbCRMu8pvlDs15K6u4G1B5gRnDRx2lAa2e0c9XMp3yZ6ZdCOQrrl8RoaSW
- +vFxbelyWLVlz9F5gSNz94X2mVTKlLjFVDmZkh+A8BOsTAezsAG6ZvXAdJHAathZ5plqPgqo
- DlFncTYpQ7EpcQgksxFO/VTO3kW0aGrZNYriJVw2CCe5xSuTpfi/xlhJGAVYo4n68lPOkAN0
- +0gCi5XXE6qjv3jldpXSsE07igiBNLqJJgYvmx8zDbfFrAgTIyrr6fivIEImm5p14YVTbCHO
- aL1ahI3BPjESx9IOl4RDp8ltPypnmL4dyBEqVWTvuwx7nS7IAlZgOm3boKPJoPiqcN9sXui9
- kX58WnDWBAQbtHFyGaV7Vyxmbqa9c/8cNtMSuHmnhJwu3WXz3MaDBk+R1q+q+OwzE+4QdNWb
- UIOkgIlqqM59WSwX9zlVlu5pmSFt1gSQbJt//YS81rL0avM+AGdG3QFSThaLtorqKfaWADGy
- HeovIzqOi1AiIa0ClSMzpWK9wHsECEKeDpqiTA/cSMJ5NzqoYcWhx3JT8p+HKPdsjETMW6gq
- 9xthHhm74j/nfI2O7OHEUfvrx/Em3QkZhVuoB7WRnmi6h5lZYmjfMqu5ESzARd8wGSxEwnpU
- Jsswpb2AAUy4Xalz3HlfQn1NOv1j8tpyRWF6bKVI7Ev9i6251modp1K7Td1KS9Ba5ldJm60P
- x+N41wIvve/2UdGi4coMupd7Ox6lMDd+SjND6uPNIUmjmVZLl7doXE0OSZ8IUi8yhBwzcnTx
- qt3ge71UyhGV8yLPRK2SvsP17Ixjic4wWLVSNjywHyaPUm2NBaopUM+GAXVNIgRsvjbyDg5B
- v4FaqNmPT0DC7CkCsQWmKZPRW03wY8TWcqv8ZMJKL/YfGKL2ggJUpfs/F/oQKQ994w9qwsC1
- ivVtpZwmQWv107UYx6HcG5iY77JVJNy5yBzdy81MFrinzBpbY+z5e1NP9E6bJs2xtxFlPRUd
+	id E2AAEE01A8; Mon, 17 Jun 2024 15:14:04 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id D6FD4E0131
+	for <cocci@sympa.inria.fr>; Mon, 17 Jun 2024 15:14:01 +0200 (CEST)
+IronPort-SDR: 66703698_pinwl9GIVQLS9TKK4FlVhEjywW+Mqsdo/N1zgOtgul0j8Er
+ Sa56xyj9gJUxQi1Nri3o84Tu12082CfnMSRC7RQ==
+X-IPAS-Result: =?us-ascii?q?A0EdBAASNXBmfzGAVdFagliBQYEDgVU0BAtIhFaBI6gEh?=
+ =?us-ascii?q?lKBJQNWDwEDAQ1EBAEBAwSNdQIeBgYyBw4BAgQBAQEBAwIDAQEBAQEBCAEBB?=
+ =?us-ascii?q?QEBAQIBAQIEBgECEAEBIhkHDg4phXQNgmCBJoEmAQEBAQEBAQEBAQEBHQIme?=
+ =?us-ascii?q?xEdAQE4JTcCIxIBBQFXhUMDoWeBBUKLO4EygQGCDAEBBtwdgWMJFIE0iDEBg?=
+ =?us-ascii?q?VUCAodpgSEbgg2BSoJFAYV9gw6CaZlcjBImC4wkJiYDBwcQK0kQASEDJjMhA?=
+ =?us-ascii?q?hEBVRMXCz4JFgIWAxsUBDAPCQsmKgY5AhIMBgYGWTQJBCMDCAQDQgMgcREDB?=
+ =?us-ascii?q?BoECwd3gTyBaQQTRAOBN4FSiB2DO4IbhBpLhG+BawELAWCJfIE+gWaDUU2ED?=
+ =?us-ascii?q?h1AAwtiCz01FBtMrUQfAYE+ghvGGoQdBYFdn2kzgU2obJhlqHkRI4FJBC+BX?=
+ =?us-ascii?q?DMaCCgIbAaCME8DGQ+SG8lIRTICOQIHAQoBAQMJiSKBSAEB?=
+IronPort-PHdr: A9a23:6DQxdBLu6J+Aj7FixNmcuBVtWUAX0o4c3iYr45Yqw4hDbr6kt8y7e
+ hCFtLM21gKCA92TwskHotSVmpijY1BI2YyGvnEGfc4EfD4+ouJSoTYdBtWYA1bwNv/gYn9yN
+ s1DUFh44yPzahANS47xaFLIv3K98yMZFAnhOgppPOT1HZPZg9iq2+yo9JDffQFFiCCzbL9sL
+ Bi6ogTcutULioZ+N6g9zQfErXRPd+lK321kIk6dkQjh7cmq5p5j9CpQu/Ml98FeVKjxYro1Q
+ 79FAjk4Km45/MLkuwXNQguJ/XscT34ZkgFUDAjf7RH1RYn+vy3nvedgwiaaPMn2TbcpWTS+6
+ qpgVRHlhDsbOzM/7WrajNF7gqBGrxK7vxFwzI7abo+WOvRjYK3SYcgXSnBdUstLTSFNHp+wY
+ okJAuEcPehYtY79p14WoBWgBQmsA+bvxSVThnTrwaA1zv4uEQTb1wEnA9IOsHPUrNDvO6cJS
+ u20w7XIwiveYPxL2Tbx8o/IcgouofyVW797bMXex1U1GQzfklWQtZLqPymT1ukVrWWX8uttW
+ f+rhmM5qwx8ozihy8gjhIXVmo8bxVLJ+CFnzIsoO9G2R1B3bN2kHZVQtCyWK5d7T8AtTW12p
+ io317sLsoO4cigS0Jkr2QLTZvidf4WL4h/vTvudLSl7iX5/d7+ygxC/+lW+x+34S8m0y0pKo
+ TRfktfRt3AM1gLc59CbRvZ740yvwyyA1xrJ5eFBOU00lbTUK5omwrMok5ocq0XDHivvlET4i
+ a+aa1wo+uan5unjeLnmqZicN4h7igH6LKsigNCwAeM9MgQWXmib//qz1KH78EHnXLlHiuc6n
+ 6rZvZzAOMgXuK20DxVa34sn8xq/Ci2p0NUcnXkJNlJFfxeHgpD1O1HOJ/D4CO2wg0+3nTZk2
+ /DJIKDuDYjNL3TZl7fhZ7l951ZayAUo1d9f/Y5bCqkdIPLvXU/8rMHUAgcjMwOo2+bnFMl91
+ oQGVG2TBa+WLL/dsV6T6+I0I+iMYZcVtyznJ/gk4f7ul345lkUHcamnx5tEIEy/S/9hKE6YS
+ XvqmNYIV2kQ7SQkS+m/tF2FVDdIL1++Vqd0si07D4evFq/TWo2hjK3H2z20SM4FLltaA0yBR
+ C+7P76PXO0BPXr6yq5JlzUFUeLkUIo9zVS0swS8zbN7L+3S8yletJT51dEz6feA3Qoq+2lSC
+ MKQm3qIU3kyhnkBEiM226V2umRt1lqP3bk+hOZXRpRI//0cdAA8ONbHyvBiTdX7WwbPZNCMH
+ UqmRdCvGhkhUt89z85IZFxySJ25lh6W+S2sDvcOkqCTQpw59qWJx3/qO8N00GrLzoEkhlgiB
+ 9RKbCio2v85+A/UCIrE1U6eks5GbIw62yjAvCeGxGuK5gRDVRJoFL/CVjYZb1fXqtLw4gXDS
+ aWvAPIpKFkJz8nKMaZMZtDz6DcODP7+JNTTZX6wkGasFF6JwL2Ldo/jZ2Qa2m3UFkEFlwkZ+
+ XvOOxI5A2+tpGfXDTomElyKAQuk7el5rXqgZl8owg2GfgtmzbX0sh8ZiPqASu8Ci6oesXRpo
+ DF1EVChmtPOXoDY9kwxIeMFO4N7vAYUsACR/xZwNZGhMa1401sXcgAt+ljryw0yEIJL184js
+ HItygN2b6OeylJIMT2CjvWScvXaLHf/+Be3ZuvYwFbbhZyK+qAK4e8Qu0nusA24UE04/D80t
+ rsdm2vZ/ZjMAAcIBNjtUkEy/gNSt63XbiUsoYTO2jc/ebnxuTjE1dUzAeIjwRv1ZNZTPpSPE
+ wrqGtEbDcyjQAAzs36uaB9MfOVb9apuetija+PDwqmgeuBpgDOhi21DpoF7yEOFsSRmGKbO2
+ N4ezveU0xHiNX+0hUq9ss3xhYFPZC0DVmu5xy/+AYdNZ6p0NY8VAGaqKsezy51wnZnoE3Jf8
+ VeiARsB1qrLMVKOb1v41BZ4xVgarXC23yyiwH08kj0kqLaewD2bxu3jcBQdPWsYIQsqxVzoI
+ IWyk5UbRB3yN1lvxEbjvByqgfQK98EdZyHJTExFfjb7NTRnW6q07P+ZZtJXrYkvumNRWfi9Z
+ laTTvj8pQEb2mXtBTg7pnhzeje0t5H+hxE/hniaKSM5sHrefMhr7QfD6dDQVLhWxDVMF0waw
+ XHHQ0OxOdWk54Dei5fEt+mlf3K9W5FfYG/s14zK52OroGZtBxO4hfW6nNbqRBM73SHM3N5vT
+ SzUrRz4b+EHzoycNuRqNgltDV74sY9hH51m15E3j9cW0GQbgZOc+TwGl33yOJNVw/C2an1FX
+ jMNz9PPhWqtkER+MnKEwZ74XXSB04NgYde9eGYfxiM66YhDFq6V6LVOmSY9rEC/qErdZv10n
+ zFVzvVLijZSm+YSpA8k1TmQGJgXFEhceDPpzlGGs4H4o6JQa2KiN7O30Qs2nNysCq2DvhAJW
+ Hv9fcRHf2c45cF+PVTQlXzrv9u8KZ+AMJRK7E3Sz0aT6oodYIg8nfcLmyd9bGf0vHl/jvU+k
+ QQrx5ax+o6ON2Rq+qu9RB9eLDz8Ic0JqVSPxe5TmNib24e3E9BvADIOCdH0TfWtGSk6pejqO
+ wqfVjompT3IfNiXVR/a80pgo3/VRtqzMGqLIXAC0dh4bByUJUganwVNGTtmz9g2EQelwMGne
+ 0B8rGN0hBawul5HzeRmMAP6W2HUqVKzazs6f5OYKQJf8gBI40q92Sm2/v5+Ey1JuJq7o17VQ
+ oR0TxRUAG0FSwqDHV+xZtFGBPHF+umcQ/W7dr7APeTIputZWPOFg5mo19k+lws=
+IronPort-Data: A9a23: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
- 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
- J8ve1aw3g==
-IronPort-HdrOrdr: A9a23:CV8Ha6D1DYG0WIHlHemF55DYdb4zR+YMi2TDGXoRdfUzSL39qy
- nOpoV/6faQsl0ssR4b+exoVJPufZqYz+8X3WBzB8bFYOCFggaVxehZhOOJ/9SjIVydygc378
- tdmsZFZuEYQWIK6vrS0U29G9M/yMKKtKuhlu/X1B5WPHhXV50=
-X-Talos-CUID: 9a23:X+k0TGNR47O/xO5DeQo493EFNfgeUz773U/yPRWKV09gV+jA
-X-Talos-MUID: 9a23:/ZLYPQtvZE3Scpz9yM2nqwxYZOBX7amUUkEHy5hcupWUKgJtJGLI
+ Lu71zLke5kIRiU8LcOPaPuQ0E+95yANvN1DB2zzf99ZIhTq+qdXNh2r3+MWIt4NGzrH1DC1x
+ wabOjZGhOjv8qse0sjFurCAlKitS9BBJ0t9G3LJyJqHLg/Y9XqH7a4Zd8jQZhHbdmf/2Jv6V
+ NVv1/umbcE2xgdbgbRzA5NA7PwY5eK2g5R40w49PnHAT2rzO4NaOnPcgPV+7Pxc9IR45zmzd
+ FmEoORBGLOzP8jgLl4dCSwlYsmH1tAWgjPi1us0Emqr+B5I+Ke7bmsKMymukCB9KJ5HALEhy
+ 8olu+8U7FWboTguOdCkkCtV1jqtKlotbqYZjawZUbTb0lcT9lJ/YJLnGnDX5rOLYI5yKUUEG
+ GKfq5fDoLV+/XD8VUQPO0LD5sdnvqRWiit2lAcDA3+rhuv6guQG2UwN0DYvESVQ4BZ188NyH
+ WlJa0FaG6a83zR1jpNhWUGtBABzKxmL8WPhy1YytTP4Tmv5ckfvPWECKeK200RByF1lfx9f5
+ 6C+ykzpdR3IbfPB9HI+dmA9osOyUOEr0BPJnf6WOvisHr44UGLDubCvb29ZkCnXK5o9q2Ofr
+ NY74dsqT7PwMBMRhKgJC4O687A0YzLcLUxgRcBRxo84LVv+ShqThwfXc1uQf/lTLcPk6UW7U
+ sxiBvxeXiSEiRqhkGopOr4uEZRVwtgS+9swSpH6LzUnspyejAZTnrD+yyzcvFIvEvJSyZsTC
+ 4WJbD+TMH2itV0NkU/3kcR0EG6ZY94FWQ7C4N6I4Ng5T6wkjuU9Xnwxg52VvmqUOjRJ5xi7n
+ h3OTI6Iwv1AybZDpZrNEKJCCiWOLeHcbrms9VGigcVvdvLKC9/F7CkOm2nkPiNXHLofYMt2n
+ rKzq+zK3FvJkbI1cmLBkbyDJrZ53tqzV+9pLc7HFnlWsi+cUsvK4RFY2WSHBbFWsdFavO+Le
+ hCZbZauSNsrRNtt/n1ZRCxAGRI7Ca6sTKPBpzu4nsucGComzg3LA9O2x0DHNVgBWHczBKT/L
+ Qvot9KFxNNS9t1MDSBZIcBWOcZzJVu7VJY2c9H0iyKjMVCppVG/oZrnqwsr7GDaK3uDEfui2
+ 6n/eDrFSE2Qtp3LnfZjiK4jji1PWTw5yaM1c1kG8tF7tyGiASRUZa4BOJEBEddPnja0yJj8Y
+ yrXYXA/DTnmGw5Jagj4/M+pSzL36jbi4TslDmdBE4KohyaK6EeoBbJg8mJ/5i4zdGeyiu6gL
+ t4a9zv7OR3ZLlSFgwoMzqTTvAul7qqyKrE0FYTVg9D/DxoPR7IQ2xSN2eaLuTPvS6nweYaiG
+ YTxbXBYTU23WAj2C8kIl7u53v0GlGuH8gjEphtjDDoSV0t3AQGAJDDC1znP74A+
+IronPort-HdrOrdr: A9a23:GH2DyaPcwLkgW8BcTsyjsMiBIKoaSvp037BL7TEXdfUxSKalfq
+ +V7ZcmPHPP6Ar5O0tApTnjAtjjfZq0z/ccirX5Vo3SOTUO1lHYSL2KLrGP/9QjIUDDHyJmup
+ uIupIRNOHN
+X-Talos-CUID: =?us-ascii?q?9a23=3AC28q0WjCxV5ppeUcTnFYOjWg3DJuamXak0jMc1W?=
+ =?us-ascii?q?CFmNZFo2TbgCI/rk8nJ87?=
+X-Talos-MUID: 9a23:CTUFAghUor8taqkdzgQkUMMpZOUwvrqKEwc0ioQh4MyPJyJcKxGRtWHi
 X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-AV: E=Sophos;i="6.08,227,1712613600"; 
-   d="scan'208";a="89260247"
-X-MGA-submission: =?us-ascii?q?MDF8g2FWU35QNFBqZBA8uklna27QDn4+svS50j?=
- =?us-ascii?q?A0+ApoGeiF6/XLkFR/1FtSgtYz8vKzNjMlETbUvRzdYBUo9n+0xa5K2j?=
- =?us-ascii?q?1FC9lXOzxpSCMhStOEYtdM8CK5g+WvTq03gQEVVclJ/6766fTHsMG1c3?=
- =?us-ascii?q?ekU5oiNurQ8GTfvWG9iQZt2w=3D=3D?=
-Received: from s3.sipsolutions.net (HELO sipsolutions.net) ([168.119.38.16])
-  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2024 11:25:56 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-	Resent-Cc:Resent-Message-ID; bh=CHO11UP0YLqto9FHDymrggcQveGKcZfy5CyAXW9famo=;
-	t=1718011555; x=1719221155; b=Ony1AbSMC/MPCWpNhYDVhui43MY4Zv3dtMEAesiY+GL0RFH
-	0x0aB04uOhqzdamMGvi2rIVD6CIJYP4VGdBw+n07aii6PlpxnNyuVWlXNexu509FK6pVOU3I7LBEz
-	glWemhQ1iKWWN54QiojP6Tlo269nQg6xBzX+Rote+zZtQUHMHpLV0ReyLUafbRrMCYFNQD58tsx+6
-	rYjg7WSineDCqq8kXrhPvj2IgWUIPS+kGiAJSwyk2VrLPOQsplTqFG7RVTbLiI/qppfoNKvCiSV78
-	+IeRjir0oE4qksxp6zxnBenXWRJwDhNazuCdBjNbJ/SU5s3wHYe88enjSsQpzeow==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-	(Exim 4.97)
-	(envelope-from <johannes@sipsolutions.net>)
-	id 1sGbHm-00000006V3h-0w72;
-	Mon, 10 Jun 2024 11:25:54 +0200
-Message-ID: <51e451891bff494df7040c5e5724c68f325411d3.camel@sipsolutions.net>
-From: Johannes Berg <johannes@sipsolutions.net>
-To: Julia Lawall <julia.lawall@inria.fr>
-Cc: cocci <cocci@inria.fr>
-Date: Mon, 10 Jun 2024 11:25:53 +0200
-In-Reply-To: <aebf2712-a3cb-1b53-c173-1a6fcc821f51@inria.fr>
-References: 
-	<9c981025522250c68c8cca83a2fa3e32097bae3b.camel@sipsolutions.net>
-	  <f0ad5ab5-d3ea-ac6-3c6e-dd1be07f4e41@inria.fr>
-	 <a01e8d2f2f5d90373fa094a8514ea2f5736db8dd.camel@sipsolutions.net>
-	 <aebf2712-a3cb-1b53-c173-1a6fcc821f51@inria.fr>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.52.2 (3.52.2-1.fc40) 
+X-IronPort-AV: E=Sophos;i="6.08,244,1712613600"; 
+   d="scan'208,217";a="171057207"
+X-MGA-submission: =?us-ascii?q?MDGDBxL7HeeQnHGmbGdSO2Xt4WQ0F64PnLFkQ9?=
+ =?us-ascii?q?XOHW3ifqI6gq85W+y5ynAVpRH9Yky6mBnW2OTmNjY4xbhQnPu3z6FIUS?=
+ =?us-ascii?q?vMXrvuZWgwq1xgTF5LACdAb1zcwGrWr/pk2P5shppA+lr/U5RTuWnxdA?=
+ =?us-ascii?q?KWV7f84C47AkEerCWyHqmZTQ=3D=3D?=
+Received: from mail-wm1-f49.google.com ([209.85.128.49])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2024 15:14:00 +0200
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-42172ab4b60so38161485e9.0
+        for <cocci@inria.fr>; Mon, 17 Jun 2024 06:14:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=xteddy-org.20230601.gappssmtp.com; s=20230601; t=1718630039; x=1719234839; darn=inria.fr;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=GmsXeRVIZyGlEhYsUwXJ8dzSe6LIMAxeMWRo6OQ8z8A=;
+        b=Cf59EXqrdELr+MrOWV16cOcEEQqQrhJxZ1b1/8CEMLw3M1Y1i7B9HNQ/1FQoDJwJDj
+         C+T4CzUaPruFliJSBIzGPXpGOIJicVYoPUmMPGradmUWWJp4qP03rwvVzw1r4v9xWQvN
+         CBTmFQdC9CQvewmyiln58Aqi3RrtwvlOq+Do2Cov6SMwipPfPPSOkTg5yn8Baq16ijUa
+         +O++zyHGnfQ/W1HXdPRIDrMEKSsiWgw+Jdh8NpY/MYKPjV6ieYx1CC5OinOHkcSDTy3T
+         GdK5iTa5hB0hV3H+ngIvpD7MlQgG8FLZtVPcIi4+lT9JYcflWm4jYXD95r6FTQX1ZEkW
+         mWuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1718630039; x=1719234839;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=GmsXeRVIZyGlEhYsUwXJ8dzSe6LIMAxeMWRo6OQ8z8A=;
+        b=OcMpiEYIj2cMFQijqIs+G70kP4ItsI9Ku8Qeg3ylzCae9KCwAB8+k9FwTHr+kTExlG
+         Y7CFvs2ZC5au179mjfwWtZLjbWJUBf1nv+EKl7qzLYMfAckXcB1diFZpFC3auBU4Ej9p
+         Y2kGhazTtHfNBNZ/TGG4hM4+aCgaqi+T7goQVztJNXm+QXVFhvOuX7gx59p+HU22KtID
+         6R855bAQRRCQmbqUQwgLC7oz1Okxb61YHcxfSzwVmJPYxXRs4nYlK3/wVLju5jRZbD4S
+         Fe9zMOvc5V1t3UhwnekE63ySbUHfWlwZoZb2a0a7Kmb3WNpScFbTVlQwG+HECy/uTg8z
+         jBrQ==
+X-Gm-Message-State: AOJu0YyOU27yaXuv8e56rSX9UGt1bTkY9DOGiPEk0YkpMnmeG8jPmzis
+	QrMn1JPQcLqma6qiRQVBxBnltkdcRcWoGcvuXjji5JOtZn/73DBcl4pYMkmHhnzX6zp8O7B7xUO
+	VW5uEFAO0d60s0hCnOXVgt0SZEhRI1DfnMxZSRGbBiHlbJH8G
+X-Google-Smtp-Source: AGHT+IHWSV0ybgSmYznarPq1VD/9gxFqcbZOqpThQWOxCJK43oEWyO7GjwLTuDFTJL8+4ezsEtgr/fphuMo4iBjHIXU=
+X-Received: by 2002:adf:f308:0:b0:35f:fb4:fc7d with SMTP id
+ ffacd0b85a97d-3607a7c11f2mr6917788f8f.31.1718630039494; Mon, 17 Jun 2024
+ 06:13:59 -0700 (PDT)
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
-X-Validation-by: julia.lawall@inria.fr
-Subject: Re: [cocci] strange braces behaviour
-Reply-To: Johannes Berg <johannes@sipsolutions.net>
+From: Thomas Adam <thomas@xteddy.org>
+Date: Mon, 17 Jun 2024 14:13:48 +0100
+Message-ID: <CAOhcEPY3QqNFMzfGT4Zy8We5Y0+SLaG=A+5YZ5+O0MZAkGEKhQ@mail.gmail.com>
+To: cocci@inria.fr
+Content-Type: multipart/alternative; boundary="00000000000001403a061b15bd09"
+Subject: [cocci] Disabling code blocks from cocci
+Reply-To: Thomas Adam <thomas@xteddy.org>
 X-Loop: cocci@inria.fr
-X-Sequence: 1790
+X-Sequence: 1791
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -204,178 +199,112 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-06/51e451891bff494df7040c5e5724c68f325411d3.camel%40sipsolutions.net>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-06/CAOhcEPY3QqNFMzfGT4Zy8We5Y0%2BSLaG%3DA%2B5YZ5%2BO0MZAkGEKhQ%40mail.gmail.com>
 
-On Mon, 2024-06-10 at 09:04 +0200, Julia Lawall wrote:
-> commit 7eded3b97dadb1f0f4ed29d6c56856647c04b656
-> Author: Julia Lawall <Julia.Lawall@inria.fr>
-> Date:   Sun Jun 9 16:07:57 2024 +0200
->=20
->     should use the non fake end node when after is attached to it; that i=
-s
-> part of the code
+--00000000000001403a061b15bd09
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Thanks.
+Hey all,
 
-I built master (commit ac9af0e8b7c76341de1999389ce285b72ebaf81b) now.
+Is it possible to make a rule to make spatch ignore code sections from
+being changed?
 
-> > Also, I'd like to check against the similar issue I had with removing a
-> > whole switch statement ("-switch(...) {...}")
->=20
-> Maybe it will indeed fix this as well.
+For instance, say I have a rule to change calls to strdup() to xstrdup().
+What I=E2=80=99d like to do is something like:
 
-So first of all, it doesn't even parse what I wanted:
+/* start of ignore block */
+a =3D strdup(=E2=80=9Cfoo=E2=80=9D);
+/* end of ignore block */
 
-@@
-@@
- sta_link_apply_parameters(...,
--                          struct link_station_parameters *params)
-+                          struct station_parameters *params)
-{
-...
--u32 link_id =3D params->link_id < 0 ? 0 : params->link_id;
-+u32 link_id =3D 0;
-...
--bool changes =3D ...;
-...
--switch (mode) { ... }
-...
-}
+Such that, for code defined between those two comments, spatch would ignore
+it.
 
-but this isn't supported:
+Is something like this possible?
 
-minus: parse error:=20
-  File "...", line 13, column 17, charpos =3D 295
-  around =3D '...',
-  whole content =3D -switch (mode) { ... }
+TIA,
+Thomas
 
-but I guess that's fair.
+--00000000000001403a061b15bd09
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-But trying to do this:
+<div><span style=3D"font-family:-apple-system,&quot;helvetica neue&quot;;fo=
+nt-size:16px;font-style:normal;font-weight:400;letter-spacing:normal;text-i=
+ndent:0px;text-transform:none;white-space:normal;word-spacing:1px;text-deco=
+ration:none;float:none;display:inline!important;background-color:rgba(0,0,0=
+,0);border-color:rgb(49,49,49);color:rgb(49,49,49)">Hey all,</span><div dir=
+=3D"auto" style=3D"font-family:-apple-system,&quot;helvetica neue&quot;;fon=
+t-size:16px;font-style:normal;font-weight:400;letter-spacing:normal;text-in=
+dent:0px;text-transform:none;white-space:normal;word-spacing:1px;text-decor=
+ation:none;background-color:rgba(0,0,0,0);border-color:rgb(49,49,49);color:=
+rgb(49,49,49)"><br></div><div dir=3D"auto" style=3D"font-family:-apple-syst=
+em,&quot;helvetica neue&quot;;font-size:1rem;font-style:normal;font-weight:=
+400;letter-spacing:normal;text-indent:0px;text-transform:none;white-space:n=
+ormal;word-spacing:1px;text-decoration:none;background-color:rgba(0,0,0,0);=
+border-color:rgb(49,49,49);color:rgb(49,49,49)">Is it possible to make a ru=
+le to make spatch ignore code sections from being changed?</div><div dir=3D=
+"auto" style=3D"font-family:-apple-system,&quot;helvetica neue&quot;;font-s=
+ize:16px;font-style:normal;font-weight:400;letter-spacing:normal;text-inden=
+t:0px;text-transform:none;white-space:normal;word-spacing:1px;text-decorati=
+on:none;background-color:rgba(0,0,0,0);border-color:rgb(49,49,49);color:rgb=
+(49,49,49)"><br></div><div dir=3D"auto" style=3D"font-family:-apple-system,=
+&quot;helvetica neue&quot;;font-size:1rem;font-style:normal;font-weight:400=
+;letter-spacing:normal;text-indent:0px;text-transform:none;white-space:norm=
+al;word-spacing:1px;text-decoration:none;background-color:rgba(0,0,0,0);bor=
+der-color:rgb(49,49,49);color:rgb(49,49,49)">For instance, say I have a rul=
+e to change calls to strdup() to xstrdup(). What I=E2=80=99d like to do is =
+something like:</div><div dir=3D"auto" style=3D"font-family:-apple-system,&=
+quot;helvetica neue&quot;;font-size:16px;font-style:normal;font-weight:400;=
+letter-spacing:normal;text-indent:0px;text-transform:none;white-space:norma=
+l;word-spacing:1px;text-decoration:none;background-color:rgba(0,0,0,0);bord=
+er-color:rgb(49,49,49);color:rgb(49,49,49)"><br></div><div dir=3D"auto" sty=
+le=3D"font-family:-apple-system,&quot;helvetica neue&quot;;font-size:1rem;f=
+ont-style:normal;font-weight:400;letter-spacing:normal;text-indent:0px;text=
+-transform:none;white-space:normal;word-spacing:1px;text-decoration:none;ba=
+ckground-color:rgba(0,0,0,0);border-color:rgb(49,49,49);color:rgb(49,49,49)=
+">/* start of ignore block */</div><div dir=3D"auto" style=3D"font-family:-=
+apple-system,&quot;helvetica neue&quot;;font-size:1rem;font-style:normal;fo=
+nt-weight:400;letter-spacing:normal;text-indent:0px;text-transform:none;whi=
+te-space:normal;word-spacing:1px;text-decoration:none;background-color:rgba=
+(0,0,0,0);border-color:rgb(49,49,49);color:rgb(49,49,49)">a =3D strdup(=E2=
+=80=9Cfoo=E2=80=9D);</div><div dir=3D"auto" style=3D"font-family:-apple-sys=
+tem,&quot;helvetica neue&quot;;font-size:1rem;font-style:normal;font-weight=
+:400;letter-spacing:normal;text-indent:0px;text-transform:none;white-space:=
+normal;word-spacing:1px;text-decoration:none;background-color:rgba(0,0,0,0)=
+;border-color:rgb(49,49,49);color:rgb(49,49,49)">/* end of ignore block */<=
+/div><div dir=3D"auto" style=3D"font-family:-apple-system,&quot;helvetica n=
+eue&quot;;font-size:16px;font-style:normal;font-weight:400;letter-spacing:n=
+ormal;text-indent:0px;text-transform:none;white-space:normal;word-spacing:1=
+px;text-decoration:none;background-color:rgba(0,0,0,0);border-color:rgb(49,=
+49,49);color:rgb(49,49,49)"><br></div><div dir=3D"auto" style=3D"font-famil=
+y:-apple-system,&quot;helvetica neue&quot;;font-size:1rem;font-style:normal=
+;font-weight:400;letter-spacing:normal;text-indent:0px;text-transform:none;=
+white-space:normal;word-spacing:1px;text-decoration:none;background-color:r=
+gba(0,0,0,0);border-color:rgb(49,49,49);color:rgb(49,49,49)">Such that, for=
+ code defined between those two comments, spatch would ignore it.</div><div=
+ dir=3D"auto" style=3D"font-family:-apple-system,&quot;helvetica neue&quot;=
+;font-size:16px;font-style:normal;font-weight:400;letter-spacing:normal;tex=
+t-indent:0px;text-transform:none;white-space:normal;word-spacing:1px;text-d=
+ecoration:none;background-color:rgba(0,0,0,0);border-color:rgb(49,49,49);co=
+lor:rgb(49,49,49)"><br></div><div dir=3D"auto" style=3D"font-family:-apple-=
+system,&quot;helvetica neue&quot;;font-size:1rem;font-style:normal;font-wei=
+ght:400;letter-spacing:normal;text-indent:0px;text-transform:none;white-spa=
+ce:normal;word-spacing:1px;text-decoration:none;background-color:rgba(0,0,0=
+,0);border-color:rgb(49,49,49);color:rgb(49,49,49)">Is something like this =
+possible?</div><div dir=3D"auto" style=3D"font-family:-apple-system,&quot;h=
+elvetica neue&quot;;font-size:16px;font-style:normal;font-weight:400;letter=
+-spacing:normal;text-indent:0px;text-transform:none;white-space:normal;word=
+-spacing:1px;text-decoration:none;background-color:rgba(0,0,0,0);border-col=
+or:rgb(49,49,49);color:rgb(49,49,49)"><br></div><div dir=3D"auto" style=3D"=
+font-family:-apple-system,&quot;helvetica neue&quot;;font-size:1rem;font-st=
+yle:normal;font-weight:400;letter-spacing:normal;text-indent:0px;text-trans=
+form:none;white-space:normal;word-spacing:1px;text-decoration:none;backgrou=
+nd-color:rgba(0,0,0,0);border-color:rgb(49,49,49);color:rgb(49,49,49)">TIA,=
+</div><div dir=3D"auto" style=3D"font-family:-apple-system,&quot;helvetica =
+neue&quot;;font-size:1rem;font-style:normal;font-weight:400;letter-spacing:=
+normal;text-indent:0px;text-transform:none;white-space:normal;word-spacing:=
+1px;text-decoration:none;background-color:rgba(0,0,0,0);border-color:rgb(49=
+,49,49);color:rgb(49,49,49)">Thomas</div></div>
 
-@@
-@@
- sta_link_apply_parameters(...,
--                          struct link_station_parameters *params)
-+                          struct station_parameters *params)
-{
-...
--u32 link_id =3D params->link_id < 0 ? 0 : params->link_id;
-+u32 link_id =3D 0;
-...
--bool changes =3D ...;
-...
--switch (mode) {
--case STA_LINK_MODE_NEW:
--...
--break;
--case STA_LINK_MODE_LINK_MODIFY:
--...
--break;
--case STA_LINK_MODE_STA_MODIFY:
--...
--break;
--}
-...
-}
-
-
-There's a "return -EINVAL" inside the _NEW case in the original code:
-
-static int sta_link_apply_parameters(struct ieee80211_local *local,
-                                     struct sta_info *sta,
-                                     enum sta_link_apply_mode mode,
-                                     struct link_station_parameters *params=
-)
-{
-        struct ieee80211_supported_band *sband;
-        struct ieee80211_sub_if_data *sdata =3D sta->sdata;
-        u32 link_id =3D params->link_id < 0 ? 0 : params->link_id;
-        struct ieee80211_link_data *link =3D
-                sdata_dereference(sdata->link[link_id], sdata);
-        struct link_sta_info *link_sta =3D
-                rcu_dereference_protected(sta->link[link_id],
-                                          lockdep_is_held(&local->hw.wiphy-=
->mtx));
-        bool changes =3D params->link_mac ||
-                       params->txpwr_set ||
-                       params->supported_rates_len ||
-                       params->ht_capa ||
-                       params->vht_capa ||
-                       params->he_capa ||
-                       params->eht_capa ||
-                       params->opmode_notif_used;
-
-        switch (mode) {
-        case STA_LINK_MODE_NEW:
-                if (!params->link_mac)
-                        return -EINVAL;
-                break;
-        case STA_LINK_MODE_LINK_MODIFY:
-                break;
-        case STA_LINK_MODE_STA_MODIFY:
-                if (params->link_id >=3D 0)
-                        break;
-                if (!changes)
-                        return 0;
-                break;
-        }
-...
-
-
-which spatch leaves around:
-
-@@ -1814,113 +1814,93 @@ enum sta_link_apply_mode {
- static int sta_link_apply_parameters(struct ieee80211_local *local,
- 				     struct sta_info *sta,
- 				     enum sta_link_apply_mode mode,
--				     struct link_station_parameters *params)
-+				     struct station_parameters *params)
- {
- 	struct ieee80211_supported_band *sband;
- 	struct ieee80211_sub_if_data *sdata =3D sta->sdata;
--	u32 link_id =3D params->link_id < 0 ? 0 : params->link_id;
-+	u32 link_id =3D 0;
- 	struct ieee80211_link_data *link =3D
- 		sdata_dereference(sdata->link[link_id], sdata);
- 	struct link_sta_info *link_sta =3D
- 		rcu_dereference_protected(sta->link[link_id],
- 					  lockdep_is_held(&local->hw.wiphy->mtx));
--	bool changes =3D params->link_mac ||
--		       params->txpwr_set ||
--		       params->supported_rates_len ||
--		       params->ht_capa ||
--		       params->vht_capa ||
--		       params->he_capa ||
--		       params->eht_capa ||
--		       params->opmode_notif_used;
--
--	switch (mode) {
--	case STA_LINK_MODE_NEW:
--		if (!params->link_mac)
--			return -EINVAL;
--		break;
--	case STA_LINK_MODE_LINK_MODIFY:
--		break;
--	case STA_LINK_MODE_STA_MODIFY:
--		if (params->link_id >=3D 0)
--			break;
--		if (!changes)
--			return 0;
--		break;
--	}
-+	return -EINVAL;
-+	return 0;
-+}
-
-and it also has the closing brace here, so it somehow leaves a closing
-brace too much also in this case, even with the fix.
-
-So perhaps not the same issue?
-
-(I worked around it for now by leave the switch/case/break instead of
-removing, so it's kind of just a dead switch after the change, doesn't
-do anything but structurally still exists)
-
-Thanks,
-johannes
+--00000000000001403a061b15bd09--
