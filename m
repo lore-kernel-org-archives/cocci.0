@@ -4,18 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BD268C27C79
-	for <cocci@archiver.kernel.org>; Mon, 17 Jun 2024 13:14:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 14BD7C27C79
+	for <cocci@archiver.kernel.org>; Mon, 17 Jun 2024 13:48:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=mime-version:from:date:message-id:to:subject:reply-to:
+  h=message-id:date:mime-version:to:references:from:
+   in-reply-to:content-transfer-encoding:subject:reply-to:
    sender:list-id:list-help:list-subscribe:list-unsubscribe:
    list-post:list-owner:list-archive;
-  bh=GmsXeRVIZyGlEhYsUwXJ8dzSe6LIMAxeMWRo6OQ8z8A=;
-  b=Q98aJ4obxmCd2tuhXEPOmR+w5J3o+NYvEAMaBaoOozGHenG/XlGXqId2
-   vGc+2/FgGCLXMb5ggSAS/ivi4CBg/InbvPN1XtWrgublxWlQNMlE4+VBA
-   uPLUphpf7UQgOTZPAZWeMH7QyYk7MZDFWX1cWYtuSGEKbnY98taGvR0gQ
-   E=;
+  bh=GJodRYjw0NUrXOfHFiCYBISEjvYt+NlpCcpFTpE/cvE=;
+  b=rbCewGPj1H6zwjx55AeXTjsWP6aWTALt40zn793lYhD4mBdk6645wK2q
+   a6CP4cXpluYD3c57CqEVif1ahr2QUQckSQCI5d35bpF7avjGc9bRDakxv
+   iBIcNXXnggOITZdR6DUJROxaiIa8mqMfNMk+uKwImkhEd2SAbLUMp4dVE
+   k=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -34,159 +35,175 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   receiver=mail2-relais-roc.national.inria.fr;
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
-Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@xteddy-org.20230601.gappssmtp.com
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=markus.elfring@web.de
 X-IronPort-AV: E=Sophos;i="6.08,244,1712613600"; 
-   d="scan'208,217";a="171057241"
+   d="scan'208";a="171066188"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 17 Jun 2024 15:14:05 +0200
+  by mail2-relais-roc.national.inria.fr with ESMTP; 17 Jun 2024 15:48:23 +0200
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id E2AAEE01A8; Mon, 17 Jun 2024 15:14:04 +0200 (CEST)
-Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by sympa.inria.fr (Postfix) with ESMTPS id D6FD4E0131
-	for <cocci@sympa.inria.fr>; Mon, 17 Jun 2024 15:14:01 +0200 (CEST)
-IronPort-SDR: 66703698_pinwl9GIVQLS9TKK4FlVhEjywW+Mqsdo/N1zgOtgul0j8Er
- Sa56xyj9gJUxQi1Nri3o84Tu12082CfnMSRC7RQ==
-X-IPAS-Result: =?us-ascii?q?A0EdBAASNXBmfzGAVdFagliBQYEDgVU0BAtIhFaBI6gEh?=
- =?us-ascii?q?lKBJQNWDwEDAQ1EBAEBAwSNdQIeBgYyBw4BAgQBAQEBAwIDAQEBAQEBCAEBB?=
- =?us-ascii?q?QEBAQIBAQIEBgECEAEBIhkHDg4phXQNgmCBJoEmAQEBAQEBAQEBAQEBHQIme?=
- =?us-ascii?q?xEdAQE4JTcCIxIBBQFXhUMDoWeBBUKLO4EygQGCDAEBBtwdgWMJFIE0iDEBg?=
- =?us-ascii?q?VUCAodpgSEbgg2BSoJFAYV9gw6CaZlcjBImC4wkJiYDBwcQK0kQASEDJjMhA?=
- =?us-ascii?q?hEBVRMXCz4JFgIWAxsUBDAPCQsmKgY5AhIMBgYGWTQJBCMDCAQDQgMgcREDB?=
- =?us-ascii?q?BoECwd3gTyBaQQTRAOBN4FSiB2DO4IbhBpLhG+BawELAWCJfIE+gWaDUU2ED?=
- =?us-ascii?q?h1AAwtiCz01FBtMrUQfAYE+ghvGGoQdBYFdn2kzgU2obJhlqHkRI4FJBC+BX?=
- =?us-ascii?q?DMaCCgIbAaCME8DGQ+SG8lIRTICOQIHAQoBAQMJiSKBSAEB?=
-IronPort-PHdr: A9a23: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
-IronPort-Data: A9a23:56z5865CAuGh5nppgeQL6wxRtNnDchMFZxGqfqrLsTDasY5as4F+v
- mBMXTiAP/2LM2qkKtglOYizoRgFuMDQyYJnG1Y/qC4zZn8b8sCt6faxfh6hZXvKRiHgZBs6t
+	id 86663E0AF6; Mon, 17 Jun 2024 15:48:23 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 301EFE0157
+	for <cocci@sympa.inria.fr>; Mon, 17 Jun 2024 15:48:21 +0200 (CEST)
+IronPort-SDR: 66703ea4_vxtq3SpQ8+3UIYl2HuhG21w2ksyOjqtWEvsABMy1hSQeXrD
+ 5ICj79T6immuRGRUiLNx3sNJNnfp//0rHwsqMhg==
+X-IPAS-Result: =?us-ascii?q?A0FGAABaPXBmhwwR49RaHQEBAQEJARIBBQUBQIE8BwELA?=
+ =?us-ascii?q?YJDfAZUMwQLSIRWkT0whDuPCohxgVaBQD4PAQMBDTkIAQIEAQEDBIQ5RgKId?=
+ =?us-ascii?q?AIeBwEEMQgOAQIEAQEBAQMCAwEBAQEBAQgBAQUBAQECAQECBAYBAhABAQEjF?=
+ =?us-ascii?q?wcOECeFdA2CZwEQgQ6BJgEBAQEBAQEBAQEBAQEBAQEBARcCDTpCAQEBAgEjH?=
+ =?us-ascii?q?QEBEScECwsaAiYCAlYGARQBAYJ8AYIvAQMOIwcNrmKBMoEBggwBAQbaWR8sI?=
+ =?us-ascii?q?leBYwMGgRouAYgwAYV8hEAnD4FVRIE8glIxPoJhAoFgg1uCaZlcmQ1UfRwDW?=
+ =?us-ascii?q?SETAVUTFws+CRYCFgMbFAQwDwkLJioGOQISDAYGBlk0CQQjAwgEA0IDIHERA?=
+ =?us-ascii?q?wQaBAsHd4FxgTQEE0QDgTeBUogdDIMvgXQnhBoIQ2wVg26BawxhiApigRCBP?=
+ =?us-ascii?q?oFmAUuDBU2EDh1AAgELbT01CQsbBj2peoUtBB7HYzQHgjaBYIFiDIohlScGE?=
+ =?us-ascii?q?y+DcgGTRw4GkmsemEcgjVabFIFmATiBXDMaJIM2TwMZD44hGYNhM8kKQTU7A?=
+ =?us-ascii?q?gcLAQEDCYVGAQGDWoFIAQE?=
+IronPort-PHdr: A9a23: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
+ nO6RjtGvFys1OWCmGIPbQ==
+IronPort-Data: A9a23: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
- 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
-IronPort-HdrOrdr: A9a23:GH2DyaPcwLkgW8BcTsyjsMiBIKoaSvp037BL7TEXdfUxSKalfq
- +V7ZcmPHPP6Ar5O0tApTnjAtjjfZq0z/ccirX5Vo3SOTUO1lHYSL2KLrGP/9QjIUDDHyJmup
- uIupIRNOHN
-X-Talos-CUID: =?us-ascii?q?9a23=3AC28q0WjCxV5ppeUcTnFYOjWg3DJuamXak0jMc1W?=
- =?us-ascii?q?CFmNZFo2TbgCI/rk8nJ87?=
-X-Talos-MUID: 9a23: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
+ I0lWZVd0m7FNIWU8AgWe0Ew/y2TocSqUVIISJSymZX78qHIT5fj6/N1Hnw7baMDwMpQGz5x0
+ r8ZcDxKbSnW0opawJrjIgVtrsEkMdWtI44V/H1tpd3bJax/G9aZGfqMvIAehW1YasNmRZ4yY
+ +I8YCBscQ+GThlBIFYRB7ohke3uinSXnzhw+APF9PRnvTK7IApZwKLyF8XwauGwXsRpsl6Bi
+ j6eojraK0RPXDCY4WHZoir31rCncTnAcIkVH7a53uV7hUWagG0VEhwfE1WhycRVkWa7XM9Db
+ VMZ8GwioMDe6XBHUPH7RA+FrS6qpSQwfMAPLMp56VmBjanttlPx6nc/chZNb9kvtckTTDMs1
+ 0OUk96BOdCJmOLMIZ563ujNxQ5eKRQowXk+iTgsYSZt3jUOiIQ0kw6JUdtpVqK45jEUJd0S6
+ 2DVxMTdr+xN5SLu60ld1Q6e695LjsaQJjPZHi2NAgqYAvpRPeZJnbCA51nB9upnJ42EVFSHt
+ 3Vss5HBtbBTU8vTynbQHr1l8FSVCxCtb2K0bblHQMZJythR0yX6I9o4DMxWfxw3aZZYEdMXS
+ BaL4VILjHOsAJdaRfQrM9rqW5tCIVnIFNPjUeucddcmX3SCXF/vwc2aXmbJhzqFuBF0z8kXY
+ M7HGe7yVypyIfo8llKeGbxCuYLHMwhlmAs/s7igk0/4uVdfDVbJIYo43KymMb1nt/3V/VSPm
+ zudXuPToyhivCTFSnG/2eYuwZoidxDX3Lin+5YFRf3JOQd8BmAqBtnYxL5rKcQvnL1Ymq2Mt
+ juxU1NRggi3z3DWCxS4WlY6YpPWXLF7sS0aOw4oNg2WwHQNW9ukw5oeUJoVRoMZ0tJf48R6d
+ NQ7XvmRI+9uT23H8gsNbJOmo41Fcg+qtD20PCGkQWYeesd+Szzw59O+QArL8RMKLyuotPkRp
+ 6+r+RPbTKEiGSVjLpfyQ9C+w2yhuUMynLpJYHLJBd1IamDAwZNMKSfhqtMSPOc3NgTl+juW8
+ y20ECUoj7DBjKFt+eaYmJ3eiZmiFtVPO3ZzHk7Z3O6QDjbb9G/y+r1wer+EUh6FXVyl5Zj4Q
+ /teysz9F/g1nFxqlY5YOJQzxIIc4+rfnZNr/j5GLl7qMWvyUqhBJ0OY1/ZhrqdOn79VmTWnU
+ 3K1p+V1B++7B9PHInUweiweceWx5dMFkGLz7NM0AnnAyg1Zwb6laXhWbj6w0HFzDb0tK4404
+ /YTiOhP4SyFtxcaGNKnjCdVymeyEkI9Q5gX7pE3PYu6pTcom3djYIPdABDY+JugSctBGWh0L
+ y62hJjtvaV9xE3DfyANFFzI5+58hIsPij9O3lQtN1SEofubp/4VjTl60yU7cRRR9TpDi9lMA
+ 2lMM1YvA7ej5BJ6rZFnc0H1PC8ZHzyf2Ej662VRpV3jV0PyC1D8djwsC9iC7GUy0jx6fAEC2
+ Jq61Wy8czLhXP+p7xsIQUQ/9sDSF41gxDbjxvKiMd+ORaQhQDzfhaSrW2oEhj3nDe41h2zFv
+ eNax/lxW4KqKR8vp7AHNKfC2YQyUBykIElwccNl9o4NHkDef2iW8hqKIEaTZMhMBqLr9WmVN
+ s9QHf9MBi+OjHu2kjMmBKA3M+BVmtwt74E8Yb/FHzMNnIaeiTtLi6ju0BbCqlUleegzrvZlG
+ LjtL2qDNkeymUprn3T8qZgYG2igPvgBSg7O/MG01+QrTKA8kfxeXnwz9pCWvHylFhRt0DzJn
+ QHEZo7Ql/dDz6Y1laTSM6xzPSeGAvKta/a5qyWIrMZrQe7UFMXz6zMutVjsOjpJMYsrW9hYk
+ aqHtPj11hjnuIkafn/4mZ7bMYV0/uS3AfRqN/zoIElgnSetXNHm5z0B8TuaLb1LiNZs2dm1d
+ TCnacefdc8nZPkF/Sd7MxNhKhc6D7j7SozCpinn9vSFNUU74Dz9ddii8SfkUHFfeio2IKbBM
+ w7Tucu1x9VmvY9JVQ4lBfZnPsdCG2Xde5AaLv//iTrJKVOToAKyiuO3315oozTGEWKNH8vG8
+ IrIDEq2Pgi7vKbTispVqcputxkQF2xwmvQ0YllbwdNtljSmFyQTGIzx63nd5k18yUQeFa0UZ
+ Q0hqEMnDjjhGytJe1Pw7bwPm+tZ6vMmYr/Eyv4Bpit4qBtawKufDbEn+ioID7JeZG741O/+Q
+ T0B0iSYA/Vyq62Fgc4M6/b9jeoPKjY2AJ4X0RiVrvEeyCryzVnHOLKN0eaNueH6/xnxqXj2
+IronPort-HdrOrdr: A9a23:2GGBgqrhq2MiRWkcUyPMyvAaV5r1eYIsimQD101hICG9Afbo8v
+ xG+85rrCMc6QxhPk3I/OrqBEDuexzhHPJOkO0s1PKZLW7bUQiTQr2Kj7GP/9SIIUSXm9K1l5
+ 0QEZSWY+eRMbEVt7eY3CCFM5IH3MSN9ryuiNzT1nF3UGhRGttdBktCazpyCSdNNXF77HcCZe
+ GhDkErnVCdRUg=
+X-Talos-CUID: 9a23:3ebNSWwxsYfVcRZz7qgJBgUSAdIYfy3z1038BFXnNkEqSeWZDlyprfY=
+X-Talos-MUID: 9a23:zI2dZwv/HNstAU8pjM2nlCt9E9hN85mUE0ExvY0fl5XcaHJTEmLI
 X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-AV: E=Sophos;i="6.08,244,1712613600"; 
-   d="scan'208,217";a="171057207"
-X-MGA-submission: =?us-ascii?q?MDGDBxL7HeeQnHGmbGdSO2Xt4WQ0F64PnLFkQ9?=
- =?us-ascii?q?XOHW3ifqI6gq85W+y5ynAVpRH9Yky6mBnW2OTmNjY4xbhQnPu3z6FIUS?=
- =?us-ascii?q?vMXrvuZWgwq1xgTF5LACdAb1zcwGrWr/pk2P5shppA+lr/U5RTuWnxdA?=
- =?us-ascii?q?KWV7f84C47AkEerCWyHqmZTQ=3D=3D?=
-Received: from mail-wm1-f49.google.com ([209.85.128.49])
-  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2024 15:14:00 +0200
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-42172ab4b60so38161485e9.0
-        for <cocci@inria.fr>; Mon, 17 Jun 2024 06:14:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=xteddy-org.20230601.gappssmtp.com; s=20230601; t=1718630039; x=1719234839; darn=inria.fr;
-        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=GmsXeRVIZyGlEhYsUwXJ8dzSe6LIMAxeMWRo6OQ8z8A=;
-        b=Cf59EXqrdELr+MrOWV16cOcEEQqQrhJxZ1b1/8CEMLw3M1Y1i7B9HNQ/1FQoDJwJDj
-         C+T4CzUaPruFliJSBIzGPXpGOIJicVYoPUmMPGradmUWWJp4qP03rwvVzw1r4v9xWQvN
-         CBTmFQdC9CQvewmyiln58Aqi3RrtwvlOq+Do2Cov6SMwipPfPPSOkTg5yn8Baq16ijUa
-         +O++zyHGnfQ/W1HXdPRIDrMEKSsiWgw+Jdh8NpY/MYKPjV6ieYx1CC5OinOHkcSDTy3T
-         GdK5iTa5hB0hV3H+ngIvpD7MlQgG8FLZtVPcIi4+lT9JYcflWm4jYXD95r6FTQX1ZEkW
-         mWuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718630039; x=1719234839;
-        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=GmsXeRVIZyGlEhYsUwXJ8dzSe6LIMAxeMWRo6OQ8z8A=;
-        b=OcMpiEYIj2cMFQijqIs+G70kP4ItsI9Ku8Qeg3ylzCae9KCwAB8+k9FwTHr+kTExlG
-         Y7CFvs2ZC5au179mjfwWtZLjbWJUBf1nv+EKl7qzLYMfAckXcB1diFZpFC3auBU4Ej9p
-         Y2kGhazTtHfNBNZ/TGG4hM4+aCgaqi+T7goQVztJNXm+QXVFhvOuX7gx59p+HU22KtID
-         6R855bAQRRCQmbqUQwgLC7oz1Okxb61YHcxfSzwVmJPYxXRs4nYlK3/wVLju5jRZbD4S
-         Fe9zMOvc5V1t3UhwnekE63ySbUHfWlwZoZb2a0a7Kmb3WNpScFbTVlQwG+HECy/uTg8z
-         jBrQ==
-X-Gm-Message-State: AOJu0YyOU27yaXuv8e56rSX9UGt1bTkY9DOGiPEk0YkpMnmeG8jPmzis
-	QrMn1JPQcLqma6qiRQVBxBnltkdcRcWoGcvuXjji5JOtZn/73DBcl4pYMkmHhnzX6zp8O7B7xUO
-	VW5uEFAO0d60s0hCnOXVgt0SZEhRI1DfnMxZSRGbBiHlbJH8G
-X-Google-Smtp-Source: AGHT+IHWSV0ybgSmYznarPq1VD/9gxFqcbZOqpThQWOxCJK43oEWyO7GjwLTuDFTJL8+4ezsEtgr/fphuMo4iBjHIXU=
-X-Received: by 2002:adf:f308:0:b0:35f:fb4:fc7d with SMTP id
- ffacd0b85a97d-3607a7c11f2mr6917788f8f.31.1718630039494; Mon, 17 Jun 2024
- 06:13:59 -0700 (PDT)
+   d="scan'208";a="89896862"
+X-MGA-submission: =?us-ascii?q?MDH9mmLzPU5gfw34cu40rQmT7sj48l11OTmPP9?=
+ =?us-ascii?q?evK0fj9SOcYOI1xQSZ0Xzu6nhq30+UvU37XS0EQlBAVC/XfL5Z42r+Nq?=
+ =?us-ascii?q?QaboPfFeSvBcDvwWkxNooQpGkW9NrHUlZ8fhoiMg3nTMEmDEpyL1H+rp?=
+ =?us-ascii?q?FR7jic4UAhG/Z8xUiEI+enig=3D=3D?=
+Received: from mout.web.de ([212.227.17.12])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2024 15:48:20 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
+	s=s29768273; t=1718632098; x=1719236898; i=markus.elfring@web.de;
+	bh=GJodRYjw0NUrXOfHFiCYBISEjvYt+NlpCcpFTpE/cvE=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:
+	 References:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:cc:content-transfer-encoding:
+	 content-type:date:from:message-id:mime-version:reply-to:subject:
+	 to;
+	b=VtqX/GJgbrQBJPWfQ2ERdFQj6Evzi+HlXPwZnGsDkH36Ag3rH2WwY2NWyMan2/LK
+	 hN4TO+dFLPkno2+2CDF7xT+DJllgj4G0dh31Z4oE9jW9DDCWUQn4gJU1N2C2nQcPh
+	 E6OzkgoZWwXTc9jcJSAP3QVbs3yXDzvSKNF//bErer+n6oYD28ghofc3Nib5iAHtt
+	 1fMIyL5eMiaWYTo6LbXX+joWZgq9ydcPyb9Um/HpAeUpY00IQNmam9li8Nh/PTa0Q
+	 5jK7Yr5MYozBeaRqdeQxr8OXKgiE2IdTLBAcBynhXN6KHpJ+vrTAUaOaOpGWaQP9b
+	 JCwfHpWprnlvFIicYw==
+X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
+Received: from [192.168.178.21] ([94.31.83.95]) by smtp.web.de (mrweb105
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 1MovjQ-1sj7fw2rnS-00atIk; Mon, 17
+ Jun 2024 15:48:18 +0200
+Message-ID: <c545b692-de55-4a5c-b6f4-c6f2c7a9b8d3@web.de>
+Date: Mon, 17 Jun 2024 15:48:16 +0200
 MIME-Version: 1.0
-From: Thomas Adam <thomas@xteddy.org>
-Date: Mon, 17 Jun 2024 14:13:48 +0100
-Message-ID: <CAOhcEPY3QqNFMzfGT4Zy8We5Y0+SLaG=A+5YZ5+O0MZAkGEKhQ@mail.gmail.com>
-To: cocci@inria.fr
-Content-Type: multipart/alternative; boundary="00000000000001403a061b15bd09"
-Subject: [cocci] Disabling code blocks from cocci
-Reply-To: Thomas Adam <thomas@xteddy.org>
+User-Agent: Mozilla Thunderbird
+To: Thomas Adam <thomas@xteddy.org>, cocci@inria.fr
+References: <CAOhcEPY3QqNFMzfGT4Zy8We5Y0+SLaG=A+5YZ5+O0MZAkGEKhQ@mail.gmail.com>
+Content-Language: en-GB
+From: Markus Elfring <Markus.Elfring@web.de>
+In-Reply-To: <CAOhcEPY3QqNFMzfGT4Zy8We5Y0+SLaG=A+5YZ5+O0MZAkGEKhQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:/3GudakYIiUlYlizEEtfYw2kcZ6cVHx2uqauYdAxCwZVxaA8Qec
+ 34IYbWuyUWhdkjYSfnQDG6d45omFeX8o7hxmZxyW/DMZkr2tAvlEK9XXueM+Fty3G8/8Jj4
+ SqydgP0teV4z/6Izyan7uxQP/OH9EX1ssdkYwDtpohaJMlfJStW25q1K8Gw0mgqgf7WkcZY
+ CBoxXAXKajVVjNb1evcJQ==
+UI-OutboundReport: notjunk:1;M01:P0:BiTeRfm/xII=;Ufs0jim0BFl1ZuaE2EmHpxOTjQ1
+ wn/u8jh7ifg9vLfiQaobIWnzRRz3Tdlsw+7JtbIaPHyrW37F53gZnm06+Npc6uxqzy9cUNzyZ
+ Sf7aCUW/b6EkHF+6hcR3JGjZvRxkswwjJ4jTCkVOlizThUCal0UPv7C3FbLGNGWdWGuKmiWQG
+ 8rAEx6r3Z++KS7kvgzoqccvSTA1k+nhCvwv4I54sJ6BcoYhqx8iLVEesPI2EWYEqcVjCF6fkx
+ Z9X/0RO5RbVRK/lKFXnCd4kC6jkujzjCCLf0X6mEk/PIJGrxMbfT63dEmdjM13JinE+DEJ8h1
+ F6yzZ50Mk94RXSv7l6cQJJooLBGWYS9YUJcsHybI5/2TL9uFKUARgRu93fFUng82hropLj9Ou
+ LjGOJgl9QJTYF8RWiyoOh5PnC9V/hcIqNde2Vfh2S1NHNl50+DuNQdDlzAdMUNRvkaVEaykJ0
+ xQpgwQOKyruacgnZEuoUTPWljjasMKHyujN5Y8yt8s9ej3g0bO8JJekl4skF6iUI0+kbzOwQi
+ 8Iley32N4n1pK4ZMZWLINc9HPHxpi1cA/3oXSIXWSwYoWkzscHQkXW97wd0NQQHHxCLsN6veI
+ 4l5vDvzb+uOQS1KvqK6vzZMWql111IWn+RCDM/7dCOm+5v3rZ4pen6/CGF/VRG6mOBBgZFkjF
+ gDms4gnVLL6wmuCF5YE4PF5DF+CRJSFaDGtjmbUf/f6/C8ECzNKu2dYBRwGJ4Iyt1vB/eGV15
+ /szScms88sMLB2Tq/tCz4ipUjAeMD3NswdUbcDqGY8nITPPPVWhybxFzoVFEIol5CzJ8r1vrp
+ hZzHuF2pc/Af+702IjBfnftJrC3XHSk3Ls3T+xPBrbL1Y=
+Subject: Re: [cocci] Disabling code blocks from SmPL data processing
+Reply-To: Markus Elfring <Markus.Elfring@web.de>
 X-Loop: cocci@inria.fr
-X-Sequence: 1791
+X-Sequence: 1792
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -199,112 +216,18 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-06/CAOhcEPY3QqNFMzfGT4Zy8We5Y0%2BSLaG%3DA%2B5YZ5%2BO0MZAkGEKhQ%40mail.gmail.com>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-06/c545b692-de55-4a5c-b6f4-c6f2c7a9b8d3%40web.de>
 
---00000000000001403a061b15bd09
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+> Such that, for code defined between those two comments, spatch would ign=
+ore it.
+>
+> Is something like this possible?
 
-Hey all,
+A similar clarification approach is waiting for related progress.
 
-Is it possible to make a rule to make spatch ignore code sections from
-being changed?
+Exclusion of unsupported source code parts
+2014-03-28
+https://github.com/coccinelle/coccinelle/issues/20
 
-For instance, say I have a rule to change calls to strdup() to xstrdup().
-What I=E2=80=99d like to do is something like:
-
-/* start of ignore block */
-a =3D strdup(=E2=80=9Cfoo=E2=80=9D);
-/* end of ignore block */
-
-Such that, for code defined between those two comments, spatch would ignore
-it.
-
-Is something like this possible?
-
-TIA,
-Thomas
-
---00000000000001403a061b15bd09
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div><span style=3D"font-family:-apple-system,&quot;helvetica neue&quot;;fo=
-nt-size:16px;font-style:normal;font-weight:400;letter-spacing:normal;text-i=
-ndent:0px;text-transform:none;white-space:normal;word-spacing:1px;text-deco=
-ration:none;float:none;display:inline!important;background-color:rgba(0,0,0=
-,0);border-color:rgb(49,49,49);color:rgb(49,49,49)">Hey all,</span><div dir=
-=3D"auto" style=3D"font-family:-apple-system,&quot;helvetica neue&quot;;fon=
-t-size:16px;font-style:normal;font-weight:400;letter-spacing:normal;text-in=
-dent:0px;text-transform:none;white-space:normal;word-spacing:1px;text-decor=
-ation:none;background-color:rgba(0,0,0,0);border-color:rgb(49,49,49);color:=
-rgb(49,49,49)"><br></div><div dir=3D"auto" style=3D"font-family:-apple-syst=
-em,&quot;helvetica neue&quot;;font-size:1rem;font-style:normal;font-weight:=
-400;letter-spacing:normal;text-indent:0px;text-transform:none;white-space:n=
-ormal;word-spacing:1px;text-decoration:none;background-color:rgba(0,0,0,0);=
-border-color:rgb(49,49,49);color:rgb(49,49,49)">Is it possible to make a ru=
-le to make spatch ignore code sections from being changed?</div><div dir=3D=
-"auto" style=3D"font-family:-apple-system,&quot;helvetica neue&quot;;font-s=
-ize:16px;font-style:normal;font-weight:400;letter-spacing:normal;text-inden=
-t:0px;text-transform:none;white-space:normal;word-spacing:1px;text-decorati=
-on:none;background-color:rgba(0,0,0,0);border-color:rgb(49,49,49);color:rgb=
-(49,49,49)"><br></div><div dir=3D"auto" style=3D"font-family:-apple-system,=
-&quot;helvetica neue&quot;;font-size:1rem;font-style:normal;font-weight:400=
-;letter-spacing:normal;text-indent:0px;text-transform:none;white-space:norm=
-al;word-spacing:1px;text-decoration:none;background-color:rgba(0,0,0,0);bor=
-der-color:rgb(49,49,49);color:rgb(49,49,49)">For instance, say I have a rul=
-e to change calls to strdup() to xstrdup(). What I=E2=80=99d like to do is =
-something like:</div><div dir=3D"auto" style=3D"font-family:-apple-system,&=
-quot;helvetica neue&quot;;font-size:16px;font-style:normal;font-weight:400;=
-letter-spacing:normal;text-indent:0px;text-transform:none;white-space:norma=
-l;word-spacing:1px;text-decoration:none;background-color:rgba(0,0,0,0);bord=
-er-color:rgb(49,49,49);color:rgb(49,49,49)"><br></div><div dir=3D"auto" sty=
-le=3D"font-family:-apple-system,&quot;helvetica neue&quot;;font-size:1rem;f=
-ont-style:normal;font-weight:400;letter-spacing:normal;text-indent:0px;text=
--transform:none;white-space:normal;word-spacing:1px;text-decoration:none;ba=
-ckground-color:rgba(0,0,0,0);border-color:rgb(49,49,49);color:rgb(49,49,49)=
-">/* start of ignore block */</div><div dir=3D"auto" style=3D"font-family:-=
-apple-system,&quot;helvetica neue&quot;;font-size:1rem;font-style:normal;fo=
-nt-weight:400;letter-spacing:normal;text-indent:0px;text-transform:none;whi=
-te-space:normal;word-spacing:1px;text-decoration:none;background-color:rgba=
-(0,0,0,0);border-color:rgb(49,49,49);color:rgb(49,49,49)">a =3D strdup(=E2=
-=80=9Cfoo=E2=80=9D);</div><div dir=3D"auto" style=3D"font-family:-apple-sys=
-tem,&quot;helvetica neue&quot;;font-size:1rem;font-style:normal;font-weight=
-:400;letter-spacing:normal;text-indent:0px;text-transform:none;white-space:=
-normal;word-spacing:1px;text-decoration:none;background-color:rgba(0,0,0,0)=
-;border-color:rgb(49,49,49);color:rgb(49,49,49)">/* end of ignore block */<=
-/div><div dir=3D"auto" style=3D"font-family:-apple-system,&quot;helvetica n=
-eue&quot;;font-size:16px;font-style:normal;font-weight:400;letter-spacing:n=
-ormal;text-indent:0px;text-transform:none;white-space:normal;word-spacing:1=
-px;text-decoration:none;background-color:rgba(0,0,0,0);border-color:rgb(49,=
-49,49);color:rgb(49,49,49)"><br></div><div dir=3D"auto" style=3D"font-famil=
-y:-apple-system,&quot;helvetica neue&quot;;font-size:1rem;font-style:normal=
-;font-weight:400;letter-spacing:normal;text-indent:0px;text-transform:none;=
-white-space:normal;word-spacing:1px;text-decoration:none;background-color:r=
-gba(0,0,0,0);border-color:rgb(49,49,49);color:rgb(49,49,49)">Such that, for=
- code defined between those two comments, spatch would ignore it.</div><div=
- dir=3D"auto" style=3D"font-family:-apple-system,&quot;helvetica neue&quot;=
-;font-size:16px;font-style:normal;font-weight:400;letter-spacing:normal;tex=
-t-indent:0px;text-transform:none;white-space:normal;word-spacing:1px;text-d=
-ecoration:none;background-color:rgba(0,0,0,0);border-color:rgb(49,49,49);co=
-lor:rgb(49,49,49)"><br></div><div dir=3D"auto" style=3D"font-family:-apple-=
-system,&quot;helvetica neue&quot;;font-size:1rem;font-style:normal;font-wei=
-ght:400;letter-spacing:normal;text-indent:0px;text-transform:none;white-spa=
-ce:normal;word-spacing:1px;text-decoration:none;background-color:rgba(0,0,0=
-,0);border-color:rgb(49,49,49);color:rgb(49,49,49)">Is something like this =
-possible?</div><div dir=3D"auto" style=3D"font-family:-apple-system,&quot;h=
-elvetica neue&quot;;font-size:16px;font-style:normal;font-weight:400;letter=
--spacing:normal;text-indent:0px;text-transform:none;white-space:normal;word=
--spacing:1px;text-decoration:none;background-color:rgba(0,0,0,0);border-col=
-or:rgb(49,49,49);color:rgb(49,49,49)"><br></div><div dir=3D"auto" style=3D"=
-font-family:-apple-system,&quot;helvetica neue&quot;;font-size:1rem;font-st=
-yle:normal;font-weight:400;letter-spacing:normal;text-indent:0px;text-trans=
-form:none;white-space:normal;word-spacing:1px;text-decoration:none;backgrou=
-nd-color:rgba(0,0,0,0);border-color:rgb(49,49,49);color:rgb(49,49,49)">TIA,=
-</div><div dir=3D"auto" style=3D"font-family:-apple-system,&quot;helvetica =
-neue&quot;;font-size:1rem;font-style:normal;font-weight:400;letter-spacing:=
-normal;text-indent:0px;text-transform:none;white-space:normal;word-spacing:=
-1px;text-decoration:none;background-color:rgba(0,0,0,0);border-color:rgb(49=
-,49,49);color:rgb(49,49,49)">Thomas</div></div>
-
---00000000000001403a061b15bd09--
+Regards,
+Markus
