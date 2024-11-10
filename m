@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 033DCD5E38E
-	for <cocci@archiver.kernel.org>; Sun, 10 Nov 2024 01:37:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C71C6D5E36A
+	for <cocci@archiver.kernel.org>; Sun, 10 Nov 2024 01:37:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:date:message-id:in-reply-to:references:
    mime-version:content-transfer-encoding:subject:reply-to:
    sender:list-id:list-help:list-subscribe:list-unsubscribe:
    list-post:list-owner:list-archive;
-  bh=xuDjCFyPbc079hPyssYw9YRgOxPACfiYQtMroWhNFEw=;
-  b=PVPsDHlgB05Vfggsk9Q0pB9cFGOawo+79sVmZi60aUX9etZxucBHL3+x
-   zge7E3jOurex8xMHVvsOAZe2nusSZgDJ5ViqsSoS1u4+AMk/DvmJl8QHL
-   APRW2yXJ7l9qVNTLPdz9VKU+sx/47AkavpyqiUr9st1ZcI4eVva2Yj8ki
-   c=;
+  bh=EwXDCzrK8F84PS3eww8O2CHlWgO5J8X0dG0sjLkqit8=;
+  b=uOdoaq7IqnWN6GHmJbNZNsYq+lgi0YkesQSsWLLf6HrdvJQfAHk5ybty
+   q9sb5utMsHHq5WypiCEgjtqCEJOwClnRgBqza1va+19HYV3FJhDtINeI3
+   yLXlq/WhgvvOTHTbwKJRH+dCZ5fZJEyWig+2qLe2fl8+zLETaVU4YDW9R
+   w=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -37,141 +37,139 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
 Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@kernel.org
 X-IronPort-AV: E=Sophos;i="6.12,142,1728943200"; 
-   d="scan'208";a="193076977"
+   d="scan'208";a="193076952"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 10 Nov 2024 02:37:12 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 10 Nov 2024 02:37:11 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id A0630E00B7; Sun, 10 Nov 2024 02:37:12 +0100 (CET)
+	id 1E143E0133; Sun, 10 Nov 2024 02:37:11 +0100 (CET)
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by sympa.inria.fr (Postfix) with ESMTPS id 0A175E00B7
-	for <cocci@sympa.inria.fr>; Sun, 10 Nov 2024 02:37:05 +0100 (CET)
-IronPort-SDR: 67300e40_k0aqpEHEHNIBA960mNvTSlZMMjmkfjc/BR4vPiYHM6nZ569
- ozl0Pi/1UVNsJOnB6yut0IZ+O2KJuUNEeGyKEDQ==
-X-IPAS-Result: =?us-ascii?q?A0EWAACQDTBnhdlUsotaHQEBAQEJARIBBQUBgX8IAQsBg?=
- =?us-ascii?q?kOBVzMEC0iMc1+nCoF+DwEDAQ1EBAEBAwSFAAKKOwIeBwEEMAkOAQIEAQEBA?=
- =?us-ascii?q?QMCAwEBAQEBARABAQUBAQECAQECBAYBAhABAQEBQEmFew2CYgGBJIEmAQEBA?=
- =?us-ascii?q?QEBAQEBAQEBHQINfgIBAzIBDQEBNwEPUVYZgwGCZQOyGIEBggwBAQbcH4FkC?=
- =?us-ascii?q?YFIAYVph1xwg316JxuBSUSBFYE7gi2EWDiFd4ZtdiWJFZhZSIEhA1khEQFVE?=
- =?us-ascii?q?w0KCwcFYIEXA4JWeiuBDoEXOoF+gSJKhRpGP4JKaU03Ag0CNoIkfYJPhR2Eb?=
- =?us-ascii?q?2cvAwMDA4NFgkBAAwsYDUgRLDUUGwY+bgeeOEaDLnsTgkBjklqQBIIdgTefT?=
- =?us-ascii?q?IQkgWOfXBozlz+TDi6YSaQ9hGaBZzqBXDMaMIMqTwMZD44hGYh1wRA0NTsCB?=
- =?us-ascii?q?wsBAQMJjneBSwEB?=
-IronPort-PHdr: A9a23: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
- RRamNvF
-IronPort-Data: A9a23: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
-IronPort-HdrOrdr: A9a23:xzqncKPZHtt1h8BcTs6jsMiBIKoaSvp037Dk7S5MoHtuA6qlfq
+	by sympa.inria.fr (Postfix) with ESMTPS id BE90DE00B7
+	for <cocci@sympa.inria.fr>; Sun, 10 Nov 2024 02:37:03 +0100 (CET)
+IronPort-SDR: 67300e3e_CgNcmZgwJo5Y/VjUn9oNs085UCvvDWc2KgzmZv4wFpf7TDT
+ Gz0Uby6MoSAWSV+T1CbZGU4VEaOviMfFlEpBo6w==
+X-IPAS-Result: =?us-ascii?q?A0FcAQCQDTBnhdlUsotaHgEBCxIMgggLghwofVozBAtIi?=
+ =?us-ascii?q?CWFLYhynhiBfg8BAwENMRMEAQEDAQOFAAKKOwIeBwEEMAkOAQIEAQEBAQMCA?=
+ =?us-ascii?q?wEBAQEBARABAQUBAQECAQECBAYBAhABAQEBQEmFew2CYgEzcYElAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAR0CDX4CAQMyAQ0BATcBD1FWGYMBAYJkA7IYgQGCDAEBBoEI2xeBZ?=
+ =?us-ascii?q?AmBSIVqh1xwRIM5eicbgUlEglCBN3aEWIYvgkdqSoNoJYcqgWuBb4waHTOKA?=
+ =?us-ascii?q?EiBIQNZIREBVRMNCgsHBWCBFwOCVnorgQ6BFzqBfoEiSoUaRj+CSmlNNwINA?=
+ =?us-ascii?q?jaCJH2CT4UdhG9nLwMDAwODRYJAQAMLGA1IESw1FBsGPm4HnjcBRoMtAQF6E?=
+ =?us-ascii?q?wEvE4F9k2KRfKEDhCSBY4ozlSkaM4QEgVaRZUaSSJh3o2EmNoRmgWc6gVwzG?=
+ =?us-ascii?q?jCDKglGAxkPjiEZH3YBAYFshByBVoE9v1M0NTsCBwsBAQMJjneBSwEB?=
+IronPort-PHdr: A9a23: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
+ RwSzuGgRbk=
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:iZXlnKP40J+w88BcTs6jsMiBIKoaSvp037Dk7S5MoHtuA6qlfq
  WV8cjzuiWVtN98Yh0dcJW7Scy9qBDnhPlICOsqTNSftWDd0QPCRr2Kr7GSpwEIcBeeygcy78
  hdmtBFeb/NMWQ=
-X-Talos-CUID: =?us-ascii?q?9a23=3Avkyi6WuUSATeGVEtRkJLGMLl6IsLNUTa3SjAO3O?=
- =?us-ascii?q?+AEJZSeDOV0Se8qB7xp8=3D?=
-X-Talos-MUID: =?us-ascii?q?9a23=3AmpvVDg0AQAD0DpeGTPkIk/c5xzUjvpmxKm4pn58?=
- =?us-ascii?q?95YqHOwV+Pg3atzmaa9py?=
+X-Talos-CUID: 9a23:1sqiKm5mzVtE3MaOeNss6hc+HcR6XUbmx27iMnXnAn9CTrCnVgrF
+X-Talos-MUID: 9a23:ib9fXgQOV6bdgBEpRXSr2gpFN8dH256IJ2kEtr4gtParK29/bmI=
 X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-AV: E=Sophos;i="6.12,142,1728943200"; 
-   d="scan'208";a="101200585"
-X-MGA-submission: =?us-ascii?q?MDHOXssycsJUbrhwINcOMCqtwZQEFiKgeQLOI+?=
- =?us-ascii?q?AnVKEkPps7z419J09fni7/MA1P5P0RqiDJoWAvHLBVgVV2Sc6xnqdCLK?=
- =?us-ascii?q?iafDC6VtTG8kuSszO2rwo57xVtRXP6cRcR7MK9hfNxLhKWJ1NMWv12BG?=
- =?us-ascii?q?yw2bKHzwzzdFB9WWQHyQp6Hg=3D=3D?=
+   d="scan'208";a="101200583"
+X-MGA-submission: =?us-ascii?q?MDE4MvA0XBh5a18/vvDS8Y3RcG3uobUUj8jMBo?=
+ =?us-ascii?q?2rhsTXn3jfAIEsqaJn96YfjFmeo9ObBE2jdKwVaUzEPqlh/PHteFx/hX?=
+ =?us-ascii?q?+/0wlh/O9+sKLoKycgLhYzPMnCjykLdTWhszl/TFSUPsUu+fRPcK3HML?=
+ =?us-ascii?q?9KMwTtiun9PjGvd9SkEdKJwg=3D=3D?=
 Received: from dfw.source.kernel.org ([139.178.84.217])
-  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2024 02:37:04 +0100
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2024 02:37:02 +0100
 Received: from smtp.kernel.org (transwarp.subspace.kernel.org [100.75.92.58])
-	by dfw.source.kernel.org (Postfix) with ESMTP id 7DBD65C137C;
-	Sun, 10 Nov 2024 01:36:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98BAEC4CED2;
-	Sun, 10 Nov 2024 01:37:01 +0000 (UTC)
+	by dfw.source.kernel.org (Postfix) with ESMTP id CAD9C5C576A;
+	Sun, 10 Nov 2024 01:36:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1433C4CED4;
+	Sun, 10 Nov 2024 01:36:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1731202622;
-	bh=iCeqjzcVDDdoLZ9nZgMa6Iw5IDXnP0Lvgh2TSIu2WD8=;
+	s=k20201202; t=1731202621;
+	bh=6i1YYERXoeK4NchDSXf7fBlYYK9mmrlTiZyLP0h7vss=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=eIrvovJJ4eitOtZYlTjmKrd3/mINe+aHZaNaC9amwYwqn34fP4V9WsiBWhQytQCvd
-	 TejFnusbblJS3ES9FDUk53jndG/8Ucdsh7GMP845PWwdG5THIUCEtUq58mlm62rn6q
-	 Jksnm9XLgD0YyumgHtsq6+GHVUewVZVdulDOYNdBu7KfDevReKG7phUrBV04GG6WVh
-	 qgntF0qk3pIQWr3E42vbYW4zXINh5jPdm9ltGHlcOdERvPEgfl9ELlayNmKZIC+YqE
-	 csxr8hP420L+ElVWAKB0LlszcJ1Bhqfp1NmLwVfkawD8BHYO0cWPnSKNI/htgYVp4O
-	 U4E1hut/47g1Q==
+	b=iEh8VqkPzPuEgZNPH3JpYX1chq5w5yux7r0655wlb4LVkns8l8XFiXqVR5weZZ1v0
+	 eMPSlFtK3Aq4//BKzP0+CHMzMoQUZLP2N5t2rry5sU237lkRIbIc+WsDDofMaGIYV0
+	 haVd1X1MrizC+md/6FGJTuuwsbD9tx7d0f7pHwnnLbgE1CBQZkARbuvOpwWzg7K9jz
+	 QEo1zLsNmSJvg0NsqbMhXOXAy/YThw6WwQ58t/CqE8Y9BhZQri+alX87/9SQxBvsDs
+	 eLO0+qEMooWkS3o1ygYLpB0DJ2oJJRs792MCzfby3F/Bj1dFGdo9ahnZlwbBspUkru
+	 fGUjf/+t+/bFw==
 From: Masahiro Yamada <masahiroy@kernel.org>
 To: linux-kbuild@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -179,17 +177,18 @@ Cc: linux-kernel@vger.kernel.org,
 	cocci@inria.fr,
 	Masahiro Yamada <masahiroy@kernel.org>,
 	Nicolas Schier <nicolas@fjasle.eu>
-Date: Sun, 10 Nov 2024 10:34:31 +0900
-Message-ID: <20241110013649.34903-4-masahiroy@kernel.org>
+Date: Sun, 10 Nov 2024 10:34:30 +0900
+Message-ID: <20241110013649.34903-3-masahiroy@kernel.org>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20241110013649.34903-1-masahiroy@kernel.org>
 References: <20241110013649.34903-1-masahiroy@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: [cocci] [PATCH v2 03/11] kbuild: rename abs_objtree to abs_output
+Subject: [cocci] [PATCH v2 02/11] kbuild: add $(objtree)/ prefix to some
+ in-kernel build artifacts
 Reply-To: Masahiro Yamada <masahiroy@kernel.org>
 X-Loop: cocci@inria.fr
-X-Sequence: 1978
+X-Sequence: 1977
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -202,64 +201,289 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-11/20241110013649.34903-4-masahiroy%40kernel.org>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-11/20241110013649.34903-3-masahiroy%40kernel.org>
 
-'objtree' refers to the top of the output directory of kernel builds.
+$(objtree) refers to the top of the output directory of kernel builds.
 
-Rename abs_objtree to a more generic name, to better reflect its use in
-the context of external module builds.
+This commit adds the explicit $(objtree)/ prefix to build artifacts
+needed for building external modules.
+
+This change has no immediate impact, as the top-level Makefile
+currently defines:
+
+  objtree         := .
+
+This commit prepares for supporting the building of external modules
+in a different directory.
 
 Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 Reviewed-by: Nicolas Schier <nicolas@fjasle.eu>
 ---
 
-(no changes since v1)
+Changes in v2:
+  - Add more $(objtree)/ to arch/*/Makefile
 
- Makefile | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ Makefile                  | 10 +++++-----
+ arch/arm/Makefile         |  4 ++--
+ arch/arm64/Makefile       |  2 +-
+ arch/powerpc/Makefile     |  4 ++--
+ arch/riscv/Makefile       |  2 +-
+ scripts/Kbuild.include    |  2 +-
+ scripts/Makefile.build    |  4 ++--
+ scripts/Makefile.modfinal | 14 +++++++-------
+ scripts/Makefile.modinst  |  2 +-
+ scripts/Makefile.modpost  | 12 ++++++------
+ scripts/depmod.sh         |  4 ++--
+ 11 files changed, 30 insertions(+), 30 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 9b8f4f4cb01b..deb3f01863f8 100644
+index 891d28e54791..9b8f4f4cb01b 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -40,7 +40,7 @@ __all:
+@@ -354,7 +354,7 @@ else # !mixed-build
+ include $(srctree)/scripts/Kbuild.include
  
- this-makefile := $(lastword $(MAKEFILE_LIST))
- abs_srctree := $(realpath $(dir $(this-makefile)))
--abs_objtree := $(CURDIR)
-+abs_output := $(CURDIR)
+ # Read KERNELRELEASE from include/config/kernel.release (if it exists)
+-KERNELRELEASE = $(call read-file, include/config/kernel.release)
++KERNELRELEASE = $(call read-file, $(objtree)/include/config/kernel.release)
+ KERNELVERSION = $(VERSION)$(if $(PATCHLEVEL),.$(PATCHLEVEL)$(if $(SUBLEVEL),.$(SUBLEVEL)))$(EXTRAVERSION)
+ export VERSION PATCHLEVEL SUBLEVEL KERNELRELEASE KERNELVERSION
  
- ifneq ($(sub_make_done),1)
+@@ -720,7 +720,7 @@ endif
+ export KBUILD_MODULES KBUILD_BUILTIN
  
-@@ -185,8 +185,8 @@ ifneq ($(KBUILD_OUTPUT),)
- # $(realpath ...) gets empty if the path does not exist. Run 'mkdir -p' first.
- $(shell mkdir -p "$(KBUILD_OUTPUT)")
- # $(realpath ...) resolves symlinks
--abs_objtree := $(realpath $(KBUILD_OUTPUT))
--$(if $(abs_objtree),,$(error failed to create output directory "$(KBUILD_OUTPUT)"))
-+abs_output := $(realpath $(KBUILD_OUTPUT))
-+$(if $(abs_output),,$(error failed to create output directory "$(KBUILD_OUTPUT)"))
- endif # ifneq ($(KBUILD_OUTPUT),)
+ ifdef need-config
+-include include/config/auto.conf
++include $(objtree)/include/config/auto.conf
+ endif
  
- ifneq ($(words $(subst :, ,$(abs_srctree))), 1)
-@@ -197,7 +197,7 @@ export sub_make_done := 1
+ ifeq ($(KBUILD_EXTMOD),)
+@@ -783,13 +783,13 @@ else # !may-sync-config
+ # and include/config/auto.conf but do not care if they are up-to-date.
+ # Use auto.conf to show the error message
  
- endif # sub_make_done
+-checked-configs := include/generated/autoconf.h include/generated/rustc_cfg include/config/auto.conf
++checked-configs := $(addprefix $(objtree)/, include/generated/autoconf.h include/generated/rustc_cfg include/config/auto.conf)
+ missing-configs := $(filter-out $(wildcard $(checked-configs)), $(checked-configs))
  
--ifeq ($(abs_objtree),$(CURDIR))
-+ifeq ($(abs_output),$(CURDIR))
- # Suppress "Entering directory ..." if we are at the final work directory.
- no-print-directory := --no-print-directory
+ ifdef missing-configs
+-PHONY += include/config/auto.conf
++PHONY += $(objtree)/include/config/auto.conf
+ 
+-include/config/auto.conf:
++$(objtree)/include/config/auto.conf:
+ 	@echo   >&2 '***'
+ 	@echo   >&2 '***  ERROR: Kernel configuration is invalid. The following files are missing:'
+ 	@printf >&2 '***    - %s\n' $(missing-configs)
+diff --git a/arch/arm/Makefile b/arch/arm/Makefile
+index aafebf145738..00ca7886b18e 100644
+--- a/arch/arm/Makefile
++++ b/arch/arm/Makefile
+@@ -264,13 +264,13 @@ stack_protector_prepare: prepare0
+ 		-mstack-protector-guard=tls \
+ 		-mstack-protector-guard-offset=$(shell	\
+ 			awk '{if ($$2 == "TSK_STACK_CANARY") print $$3;}'\
+-				include/generated/asm-offsets.h))
++				$(objtree)/include/generated/asm-offsets.h))
  else
-@@ -221,7 +221,7 @@ $(filter-out $(this-makefile), $(MAKECMDGOALS)) __all: __sub-make
+ stack_protector_prepare: prepare0
+ 	$(eval SSP_PLUGIN_CFLAGS := \
+ 		-fplugin-arg-arm_ssp_per_task_plugin-offset=$(shell	\
+ 			awk '{if ($$2 == "TSK_STACK_CANARY") print $$3;}'\
+-				include/generated/asm-offsets.h))
++				$(objtree)/include/generated/asm-offsets.h))
+ 	$(eval KBUILD_CFLAGS += $(SSP_PLUGIN_CFLAGS))
+ 	$(eval GCC_PLUGINS_CFLAGS += $(SSP_PLUGIN_CFLAGS))
+ endif
+diff --git a/arch/arm64/Makefile b/arch/arm64/Makefile
+index 9efd3f37c2fd..358c68565bfd 100644
+--- a/arch/arm64/Makefile
++++ b/arch/arm64/Makefile
+@@ -71,7 +71,7 @@ stack_protector_prepare: prepare0
+ 				-mstack-protector-guard-reg=sp_el0	  \
+ 				-mstack-protector-guard-offset=$(shell	  \
+ 			awk '{if ($$2 == "TSK_STACK_CANARY") print $$3;}' \
+-					include/generated/asm-offsets.h))
++				$(objtree)/include/generated/asm-offsets.h))
+ endif
  
- # Invoke a second make in the output directory, passing relevant variables
- __sub-make:
--	$(Q)$(MAKE) $(no-print-directory) -C $(abs_objtree) \
-+	$(Q)$(MAKE) $(no-print-directory) -C $(abs_output) \
- 	-f $(abs_srctree)/Makefile $(MAKECMDGOALS)
+ ifeq ($(CONFIG_ARM64_BTI_KERNEL),y)
+diff --git a/arch/powerpc/Makefile b/arch/powerpc/Makefile
+index bbfe4a1f06ef..321b596d2550 100644
+--- a/arch/powerpc/Makefile
++++ b/arch/powerpc/Makefile
+@@ -402,9 +402,9 @@ prepare: stack_protector_prepare
+ PHONY += stack_protector_prepare
+ stack_protector_prepare: prepare0
+ ifdef CONFIG_PPC64
+-	$(eval KBUILD_CFLAGS += -mstack-protector-guard-offset=$(shell awk '{if ($$2 == "PACA_CANARY") print $$3;}' include/generated/asm-offsets.h))
++	$(eval KBUILD_CFLAGS += -mstack-protector-guard-offset=$(shell awk '{if ($$2 == "PACA_CANARY") print $$3;}' $(objtree)/include/generated/asm-offsets.h))
+ else
+-	$(eval KBUILD_CFLAGS += -mstack-protector-guard-offset=$(shell awk '{if ($$2 == "TASK_CANARY") print $$3;}' include/generated/asm-offsets.h))
++	$(eval KBUILD_CFLAGS += -mstack-protector-guard-offset=$(shell awk '{if ($$2 == "TASK_CANARY") print $$3;}' $(objtree)/include/generated/asm-offsets.h))
+ endif
+ endif
  
- else # need-sub-make
+diff --git a/arch/riscv/Makefile b/arch/riscv/Makefile
+index d469db9f46f4..a08cfeb6cbf9 100644
+--- a/arch/riscv/Makefile
++++ b/arch/riscv/Makefile
+@@ -129,7 +129,7 @@ stack_protector_prepare: prepare0
+ 				-mstack-protector-guard-reg=tp		  \
+ 				-mstack-protector-guard-offset=$(shell	  \
+ 			awk '{if ($$2 == "TSK_STACK_CANARY") print $$3;}' \
+-					include/generated/asm-offsets.h))
++				$(objtree)/include/generated/asm-offsets.h))
+ endif
+ 
+ # arch specific predefines for sparse
+diff --git a/scripts/Kbuild.include b/scripts/Kbuild.include
+index ed8a7493524b..8c311b997e24 100644
+--- a/scripts/Kbuild.include
++++ b/scripts/Kbuild.include
+@@ -205,7 +205,7 @@ if_changed_dep = $(if $(if-changed-cond),$(cmd_and_fixdep),@:)
+ 
+ cmd_and_fixdep =                                                             \
+ 	$(cmd);                                                              \
+-	scripts/basic/fixdep $(depfile) $@ '$(make-cmd)' > $(dot-target).cmd;\
++	$(objtree)/scripts/basic/fixdep $(depfile) $@ '$(make-cmd)' > $(dot-target).cmd;\
+ 	rm -f $(depfile)
+ 
+ # Usage: $(call if_changed_rule,foo)
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index 8f423a1faf50..64cd046f8fd8 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -34,7 +34,7 @@ subdir-asflags-y :=
+ subdir-ccflags-y :=
+ 
+ # Read auto.conf if it exists, otherwise ignore
+--include include/config/auto.conf
++-include $(objtree)/include/config/auto.conf
+ 
+ include $(srctree)/scripts/Kbuild.include
+ include $(srctree)/scripts/Makefile.compiler
+@@ -107,7 +107,7 @@ cmd_cpp_i_c       = $(CPP) $(c_flags) -o $@ $<
+ $(obj)/%.i: $(obj)/%.c FORCE
+ 	$(call if_changed_dep,cpp_i_c)
+ 
+-genksyms = scripts/genksyms/genksyms		\
++genksyms = $(objtree)/scripts/genksyms/genksyms	\
+ 	$(if $(1), -T $(2))			\
+ 	$(if $(KBUILD_PRESERVE), -p)		\
+ 	-r $(or $(wildcard $(2:.symtypes=.symref)), /dev/null)
+diff --git a/scripts/Makefile.modfinal b/scripts/Makefile.modfinal
+index 1482884ec3ca..6d8aa3059ee2 100644
+--- a/scripts/Makefile.modfinal
++++ b/scripts/Makefile.modfinal
+@@ -6,7 +6,7 @@
+ PHONY := __modfinal
+ __modfinal:
+ 
+-include include/config/auto.conf
++include $(objtree)/include/config/auto.conf
+ include $(srctree)/scripts/Kbuild.include
+ 
+ # for c_flags
+@@ -37,15 +37,15 @@ quiet_cmd_ld_ko_o = LD [M]  $@
+       cmd_ld_ko_o =							\
+ 	$(LD) -r $(KBUILD_LDFLAGS)					\
+ 		$(KBUILD_LDFLAGS_MODULE) $(LDFLAGS_MODULE)		\
+-		-T scripts/module.lds -o $@ $(filter %.o, $^)
++		-T $(objtree)/scripts/module.lds -o $@ $(filter %.o, $^)
+ 
+ quiet_cmd_btf_ko = BTF [M] $@
+       cmd_btf_ko = 							\
+-	if [ ! -f vmlinux ]; then					\
++	if [ ! -f $(objtree)/vmlinux ]; then				\
+ 		printf "Skipping BTF generation for %s due to unavailability of vmlinux\n" $@ 1>&2; \
+ 	else								\
+-		LLVM_OBJCOPY="$(OBJCOPY)" $(PAHOLE) -J $(PAHOLE_FLAGS) $(MODULE_PAHOLE_FLAGS) --btf_base vmlinux $@; \
+-		$(RESOLVE_BTFIDS) -b vmlinux $@; 			\
++		LLVM_OBJCOPY="$(OBJCOPY)" $(PAHOLE) -J $(PAHOLE_FLAGS) $(MODULE_PAHOLE_FLAGS) --btf_base $(objtree)/vmlinux $@; \
++		$(RESOLVE_BTFIDS) -b $(objtree)/vmlinux $@;		\
+ 	fi;
+ 
+ # Same as newer-prereqs, but allows to exclude specified extra dependencies
+@@ -57,8 +57,8 @@ if_changed_except = $(if $(call newer_prereqs_except,$(2))$(cmd-check),      \
+ 	printf '%s\n' 'savedcmd_$@ := $(make-cmd)' > $(dot-target).cmd, @:)
+ 
+ # Re-generate module BTFs if either module's .ko or vmlinux changed
+-%.ko: %.o %.mod.o $(extmod_prefix).module-common.o scripts/module.lds $(and $(CONFIG_DEBUG_INFO_BTF_MODULES),$(KBUILD_BUILTIN),vmlinux) FORCE
+-	+$(call if_changed_except,ld_ko_o,vmlinux)
++%.ko: %.o %.mod.o $(extmod_prefix).module-common.o $(objtree)/scripts/module.lds $(and $(CONFIG_DEBUG_INFO_BTF_MODULES),$(KBUILD_BUILTIN),$(objtree)/vmlinux) FORCE
++	+$(call if_changed_except,ld_ko_o,$(objtree)/vmlinux)
+ ifdef CONFIG_DEBUG_INFO_BTF_MODULES
+ 	+$(if $(newer-prereqs),$(call cmd,btf_ko))
+ endif
+diff --git a/scripts/Makefile.modinst b/scripts/Makefile.modinst
+index d97720943189..6fa9af4a25b4 100644
+--- a/scripts/Makefile.modinst
++++ b/scripts/Makefile.modinst
+@@ -6,7 +6,7 @@
+ PHONY := __modinst
+ __modinst:
+ 
+-include include/config/auto.conf
++include $(objtree)/include/config/auto.conf
+ include $(srctree)/scripts/Kbuild.include
+ 
+ install-y :=
+diff --git a/scripts/Makefile.modpost b/scripts/Makefile.modpost
+index 44936ebad161..12e7c15d099c 100644
+--- a/scripts/Makefile.modpost
++++ b/scripts/Makefile.modpost
+@@ -35,10 +35,10 @@
+ PHONY := __modpost
+ __modpost:
+ 
+-include include/config/auto.conf
++include $(objtree)/include/config/auto.conf
+ include $(srctree)/scripts/Kbuild.include
+ 
+-MODPOST = scripts/mod/modpost
++MODPOST = $(objtree)/scripts/mod/modpost
+ 
+ modpost-args =										\
+ 	$(if $(CONFIG_MODULES),-M)							\
+@@ -119,11 +119,11 @@ include $(kbuild-file)
+ 
+ output-symdump := $(KBUILD_EXTMOD)/Module.symvers
+ 
+-ifeq ($(wildcard Module.symvers),)
+-missing-input := Module.symvers
++ifeq ($(wildcard $(objtree)/Module.symvers),)
++missing-input := $(objtree)/Module.symvers
+ else
+-modpost-args += -i Module.symvers
+-modpost-deps += Module.symvers
++modpost-args += -i $(objtree)/Module.symvers
++modpost-deps += $(objtree)/Module.symvers
+ endif
+ 
+ modpost-args += -e $(addprefix -i , $(KBUILD_EXTRA_SYMBOLS))
+diff --git a/scripts/depmod.sh b/scripts/depmod.sh
+index e22da27fe13e..3c34fecacbc8 100755
+--- a/scripts/depmod.sh
++++ b/scripts/depmod.sh
+@@ -12,7 +12,7 @@ KERNELRELEASE=$1
+ 
+ : ${DEPMOD:=depmod}
+ 
+-if ! test -r System.map ; then
++if ! test -r "${objtree}/System.map" ; then
+ 	echo "Warning: modules_install: missing 'System.map' file. Skipping depmod." >&2
+ 	exit 0
+ fi
+@@ -25,7 +25,7 @@ if [ -z $(command -v $DEPMOD) ]; then
+ 	exit 0
+ fi
+ 
+-set -- -ae -F System.map
++set -- -ae -F "${objtree}/System.map"
+ if test -n "$INSTALL_MOD_PATH"; then
+ 	set -- "$@" -b "$INSTALL_MOD_PATH"
+ fi
 -- 
 2.43.0
 
