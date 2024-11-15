@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D2BA0D68BEF
-	for <cocci@archiver.kernel.org>; Sat, 16 Nov 2024 11:26:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A0CBAD68BEC
+	for <cocci@archiver.kernel.org>; Sat, 16 Nov 2024 11:26:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=message-id:date:mime-version:cc:to:references:from:
-   in-reply-to:content-transfer-encoding:subject:reply-to:
-   sender:list-id:list-help:list-subscribe:list-unsubscribe:
-   list-post:list-owner:list-archive;
-  bh=8aWsE6KsHqgZAR/UTPX2BOaIFAyMPoSLG9xpC4Hm8PA=;
-  b=vcb3niIAZEcl8A+QbDvOJfOROY95ajTDguksTpjYG84UaXJ7QQ5tSmIo
-   nbVXBNN+b6bLWHFcyClSVbeofjvR2iAGtF66r5IewgZgZJCYMkCwkt2cX
-   ZUrzbiJpn6bXDCLCr+vLd1sqnpQZ7Dh0mhZG5tMm0pnix4cHb23Vjvi2d
-   o=;
+  h=date:from:to:cc:message-id:in-reply-to:references:
+   mime-version:subject:reply-to:sender:list-id:list-help:
+   list-subscribe:list-unsubscribe:list-post:list-owner:
+   list-archive;
+  bh=8q2Y3qiG3ZOOjZQQW66Agp5RO04F9uaeWnu9irwI8zs=;
+  b=T97HkEWoyfk+TCNk7H618pjMvdxxNCyFMksC9MS7CzTUsrS2DDLJ8qnf
+   k5VPMc92KCfhun/SKcR7pz3csTQxYTxQwF1U9z+C0qy5Qwo3jXUfUh2mu
+   DkXZtlgu4ROxaOt6ko1Tj88UIQs9eqpFx51i6V9UqjdVjYp7j1sCbu8gM
+   A=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -35,193 +35,190 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   receiver=mail2-relais-roc.national.inria.fr;
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
-Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@linux.microsoft.com
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@canb.auug.org.au
 X-IronPort-AV: E=Sophos;i="6.12,159,1728943200"; 
-   d="scan'208";a="194204578"
+   d="scan'208";a="194204453"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 16 Nov 2024 12:26:26 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 16 Nov 2024 12:26:23 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 07FF1E0D1D; Sat, 16 Nov 2024 12:26:25 +0100 (CET)
-Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by sympa.inria.fr (Postfix) with ESMTPS id 8C894E00B7
-	for <cocci@sympa.inria.fr>; Sat, 16 Nov 2024 01:13:20 +0100 (CET)
-IronPort-SDR: 6737e3a0_Rf7h3/VDBsX60rwdikQrJLU+VOk2a/VNAwAcXufCTnXhuhD
- nkXvflJ2Ct8gTxluAGf5qflRLcBgrWEcpDrHYHw==
-X-IPAS-Result: =?us-ascii?q?A0G+AwBA4jdncraaTQ1agQmBU4JEgQNUMwcISIRWkXGLc?=
- =?us-ascii?q?5IjgUA+DwEDAU4BAgQBAQMEhQACiksCHwYBBDEIDgECBAEBAQEDAgMBAQEBA?=
- =?us-ascii?q?QEQAQEFAQEBAgEBAgQGAQIQAYEMhXsNgmIBgSRRDUgBAQEBAQEBAQEBAQEBA?=
- =?us-ascii?q?QEBAQEBAQEBAQERAg1eAR8BAQEDERIdAQE3AQ8LDgoCAiYCAlYGEwIBAYJ9g?=
- =?us-ascii?q?mUDAwKfRAGHYAEBAosjgTKBAYIMAQEG3B+BZAmBGi6ITAGFaYR3JxuBSUSBF?=
- =?us-ascii?q?ScLA4J1PoRYg0aCaYJyhGYliH+aE1J7HANZIREBVRMXCwcFgSkhLAOCSX+BN?=
- =?us-ascii?q?oFRAYMPSoMugV4FNwo/gkppSzcCDQI2giR9gR2BMoElBAWDbIELg2FnLwMDA?=
- =?us-ascii?q?wODPIQDHUACAQttPTUJCxtDoAtGgzUxSplEAY4La6EAhCShSAYPBC+XVJJ6m?=
- =?us-ascii?q?HeodoIaATeBXEYHIxWDIk8DGQ+SG8Y4IjU7AgcLAQEDCYVGAQGKD4FLAQE?=
-IronPort-PHdr: A9a23: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
- AJwgQx7M71FyQ==
-IronPort-Data: A9a23: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
-IronPort-HdrOrdr: A9a23:R+PFUaCPS7F0ES3lHemc55DYdb4zR+YMi2TDGXoQdfUnSL39qy
- nIpoVi6faUskdpZJlD8errBEDkex7hHPFOjrX5UY3SOzUO/VHYSr2KjrGN/9SDIUHDH4dmvM
- 8KT0E9MqyUMbEQt7eY3ODXKadD/DDKysGVuds=
-X-Talos-CUID: 9a23:bF78ymDpCPM+oi36Ey5E+3YzJOd8SEKHy2jzG2SiL2ZsVYTAHA==
-X-Talos-MUID: =?us-ascii?q?9a23=3Ae1o6Zg3n/NkcKqR5vARMTIFqoTUjzvWqIwMVmLg?=
- =?us-ascii?q?6vuaYDxF9HTK3hyiwe9py?=
+	id 0023FE0D1D; Sat, 16 Nov 2024 12:26:22 +0100 (CET)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id 2D203E0133
+	for <cocci@sympa.inria.fr>; Fri, 15 Nov 2024 23:35:31 +0100 (CET)
+IronPort-SDR: 6737cca7_HJH1iS99Hxs/L9o9O6daPX75F117j9FheEW6mIWShXUJSSa
+ B4ch8epFDhraapyc8ezaFvJZFW7UQcdlM8wMfLA==
+X-IPAS-Result: =?us-ascii?q?A0G0BQBzzDdnckxKa5ZagQmEF4ErKzQHCEiNUocqAQEBA?=
+ =?us-ascii?q?QaBQYtzlCEPAQMBCAVEBAEBAwEDhQACikwgBgEENBMBAgQBAQEBAwIDAQEBA?=
+ =?us-ascii?q?QEBEAEBBQEBAQIBAQIEBgECEAGBDIV7DYJiATOCFiwIYwEfAQEBA0ABATcBD?=
+ =?us-ascii?q?wsOCi5WBhOFVRECslOBNIEBggwBAQbcH4FdBwmBSIFYhnQBhWmDfXpCfYEQg?=
+ =?us-ascii?q?RWDKj6LB4JFLYRmJYh/mg1SgRcDWTIBVRMXCwcFgSkhLAOCSX+BNoFRAYMPS?=
+ =?us-ascii?q?oMugV4FNwo/gkppSzcCDQI2giR9gk+FGoELg2FnLwMDAwODPIN6HUADC209N?=
+ =?us-ascii?q?RQboElGgzUxSplEAa92hCShQxozqk6Yd6kngX4jgVxNHxmDIk8DGQ+QVcdXM?=
+ =?us-ascii?q?jI7AgcLAQEDCY9XgUsBAQ?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:YaPNRqpXQ4tgO56DwT2UHCsaV5o8eYIsimQD101hICG9vPb3qy
+ nOpoV+6faQsl0ssR4b9OxoVJPtfZqYz+8X3WBzB8bGYOCFgguVxehZhOOJ/9SjIVydygc378
+ ZdmsZFZ+HNMQ==
+X-Talos-CUID: =?us-ascii?q?9a23=3AwJlPu2pjc5mWt+xBS8d95SvmUds/fizFy3b9Gl2?=
+ =?us-ascii?q?bMXRYTealVlzLwKwxxg=3D=3D?=
+X-Talos-MUID: =?us-ascii?q?9a23=3AUI3FnQ6q3DUR5im84VT+ofRtxox0wbXyGB5dia4?=
+ =?us-ascii?q?JtuCNPAgoIRaMohCoF9o=3D?=
 X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-AV: E=Sophos;i="6.12,158,1728943200"; 
-   d="scan'208";a="101775271"
-X-MGA-submission: =?us-ascii?q?MDFt8cy2sXR+vCi6us5mHzmKvuzNvU4M3mmXSg?=
- =?us-ascii?q?BuJuwy6ugNR7f+Tnq/3HBF8/5UKe6zUqxT8mzbPUTyGV3oyMi729wGLk?=
- =?us-ascii?q?hBsls2/juccjFs4H7rWsVjtxrdYQtDXeYtWZjqiW3vG9awXPSkFJIojt?=
- =?us-ascii?q?nmrsViaH3Pu0faKO+ijrAQ3A=3D=3D?=
-Received: from linux.microsoft.com ([13.77.154.182])
-  by mail3-smtp-sop.national.inria.fr with ESMTP; 16 Nov 2024 01:13:20 +0100
-Received: from [192.168.35.166] (c-73-118-245-227.hsd1.wa.comcast.net [73.118.245.227])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 95E342064AF0;
-	Fri, 15 Nov 2024 16:13:13 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 95E342064AF0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1731715997;
-	bh=8aWsE6KsHqgZAR/UTPX2BOaIFAyMPoSLG9xpC4Hm8PA=;
-	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-	b=juHtZTV0RDh+wTFwjvF/I5Cbue56gEXjd0kD3znUPuWXx2wtRwF3SiJZ6HWwI5inJ
-	 TBVBD9vnbAv41iOqcNYfHcjXy0Jo4vpPQnYC829Cp+vZARPfhAL4M9phLDROf5akb8
-	 KGqyHrYITaajwfOdtt56+uCdzgps3Ezs57MjrN0w=
-Message-ID: <0b4bbd38-f6aa-4091-b7db-8b87572ad83a@linux.microsoft.com>
-Date: Fri, 15 Nov 2024 16:13:13 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: eahariha@linux.microsoft.com, Pablo Neira Ayuso <pablo@netfilter.org>,
- Jozsef Kadlecsik <kadlec@netfilter.org>,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Simon Horman <horms@kernel.org>, Julia Lawall <Julia.Lawall@inria.fr>,
- Nicolas Palix <nicolas.palix@imag.fr>, Daniel Mack <daniel@zonque.org>,
- Haojian Zhuang <haojian.zhuang@gmail.com>,
- Robert Jarzmik <robert.jarzmik@free.fr>, Russell King
- <linux@armlinux.org.uk>, Heiko Carstens <hca@linux.ibm.com>,
- Vasily Gorbik <gor@linux.ibm.com>, Alexander Gordeev
- <agordeev@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>,
- Sven Schnelle <svens@linux.ibm.com>, Ofir Bitton <obitton@habana.ai>,
- Oded Gabbay <ogabbay@kernel.org>, Lucas De Marchi
- <lucas.demarchi@intel.com>,
- =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
- Rodrigo Vivi <rodrigo.vivi@intel.com>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
- Jeroen de Borst <jeroendb@google.com>,
- Praveen Kaligineedi <pkaligineedi@google.com>,
+   d="scan'208";a="194169049"
+X-MGA-submission: =?us-ascii?q?MDEz507DaD3pRn0fxiJl18xu5U9QqADvnKooN3?=
+ =?us-ascii?q?jecvSAHAcDUYixcwCLcd+UbcUHd6lBKo2twVKFDCm6v5jyGLDLf2yE36?=
+ =?us-ascii?q?Blo+GE0Pr4gPZyVklbQTaJD5iy2ChQkorAz/JQL3h3uhb5s8UMu9phGk?=
+ =?us-ascii?q?Gwav9R09qVNkS9OXr8jIlxOw=3D=3D?=
+Received: from gandalf.ozlabs.org (HELO mail.ozlabs.org) ([150.107.74.76])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2024 23:35:17 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+	s=201702; t=1731710109;
+	bh=8q2Y3qiG3ZOOjZQQW66Agp5RO04F9uaeWnu9irwI8zs=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=TBKjQ+jwynGqippSpjmesy2LJHz5G28IT7vT4TaT88JCuw46fBO3BDRAIPv6hRM7/
+	 XbOWv6yTpIGUBOHVpD+GgH5bOcDzYCKCOUCxtFJITpudgYieUI+GdoU8psZqrHYs9B
+	 plWGzIOASib2U9DXo1e9xJXfQHkgKNH8Cirh/o/LRzKV85o+Cp3r3eBc9AZ3AQZa0F
+	 DYP1RPyQiMfC70ZKaMZkgpPnHyLFqXq1SQIh8oIfiAurmRjt4FWX01yMlsvyocz2uk
+	 oad7uD2rsh8nj5e0aZSH5jUluHbC7REOnBIrLNo1QEsXfDYgF3levquGraIQNcBhLm
+	 5y9gdjsr1Cmwg==
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	by mail.ozlabs.org (Postfix) with ESMTPSA id 4XqsKD5FnLz4x3p;
+	Sat, 16 Nov 2024 09:34:56 +1100 (AEDT)
+Date: Sat, 16 Nov 2024 09:34:58 +1100
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+To: Easwar Hariharan <eahariha@linux.microsoft.com>
+Cc: Pablo Neira Ayuso <pablo@netfilter.org>, Jozsef Kadlecsik
+ <kadlec@netfilter.org>, "David S. Miller" <davem@davemloft.net>, Eric
+ Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo
+ Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>, Julia Lawall
+ <Julia.Lawall@inria.fr>, Nicolas Palix <nicolas.palix@imag.fr>, Daniel Mack
+ <daniel@zonque.org>, Haojian Zhuang <haojian.zhuang@gmail.com>, Robert
+ Jarzmik <robert.jarzmik@free.fr>, Russell King <linux@armlinux.org.uk>,
+ Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+ Alexander Gordeev <agordeev@linux.ibm.com>, Christian Borntraeger
+ <borntraeger@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>, Ofir
+ Bitton <obitton@habana.ai>, Oded Gabbay <ogabbay@kernel.org>, Lucas De
+ Marchi <lucas.demarchi@intel.com>, Thomas =?UTF-8?B?SGVsbHN0csO2bQ==?=
+ <thomas.hellstrom@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard
+ <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, David Airlie
+ <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, Jeroen de Borst
+ <jeroendb@google.com>, Praveen Kaligineedi <pkaligineedi@google.com>,
  Shailend Chand <shailend@google.com>, Andrew Lunn <andrew+netdev@lunn.ch>,
- James Smart <james.smart@broadcom.com>,
- Dick Kennedy <dick.kennedy@broadcom.com>,
- "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
- "Martin K. Petersen" <martin.petersen@oracle.com>,
- =?UTF-8?Q?Roger_Pau_Monn=C3=A9?= <roger.pau@citrix.com>,
- Jens Axboe <axboe@kernel.dk>, Kalle Valo <kvalo@kernel.org>,
- Jeff Johnson <jjohnson@kernel.org>, Catalin Marinas
- <catalin.marinas@arm.com>, Andrew Morton <akpm@linux-foundation.org>,
- Jack Wang <jinpu.wang@cloud.ionos.com>, Marcel Holtmann
- <marcel@holtmann.org>, Johan Hedberg <johan.hedberg@gmail.com>,
- Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ James Smart <james.smart@broadcom.com>, Dick Kennedy
+ <dick.kennedy@broadcom.com>, "James E.J. Bottomley"
+ <James.Bottomley@HansenPartnership.com>, "Martin K. Petersen"
+ <martin.petersen@oracle.com>, Roger Pau =?UTF-8?B?TW9ubsOp?=
+ <roger.pau@citrix.com>, Jens Axboe <axboe@kernel.dk>, Kalle Valo
+ <kvalo@kernel.org>, Jeff Johnson <jjohnson@kernel.org>, Catalin Marinas
+ <catalin.marinas@arm.com>, Andrew Morton <akpm@linux-foundation.org>, Jack
+ Wang <jinpu.wang@cloud.ionos.com>, Marcel Holtmann <marcel@holtmann.org>,
+ Johan Hedberg <johan.hedberg@gmail.com>, Luiz Augusto von Dentz
+ <luiz.dentz@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Florian Fainelli <florian.fainelli@broadcom.com>, Ray Jui
- <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
- Broadcom internal kernel review list
- <bcm-kernel-feedback-list@broadcom.com>, Xiubo Li <xiubli@redhat.com>,
- Ilya Dryomov <idryomov@gmail.com>, Josh Poimboeuf <jpoimboe@kernel.org>,
- Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
- Petr Mladek <pmladek@suse.com>, Joe Lawrence <joe.lawrence@redhat.com>,
- Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
- Lucas Stach <l.stach@pengutronix.de>,
- Russell King <linux+etnaviv@armlinux.org.uk>,
- Christian Gmeiner <christian.gmeiner@gmail.com>,
- Louis Peens <louis.peens@corigine.com>, Michael Ellerman
- <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- Christophe Leroy <christophe.leroy@csgroup.eu>,
- Naveen N Rao <naveen@kernel.org>, Madhavan Srinivasan <maddy@linux.ibm.com>,
+ <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Broadcom
+ internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, Xiubo
+ Li <xiubli@redhat.com>, Ilya Dryomov <idryomov@gmail.com>, Josh Poimboeuf
+ <jpoimboe@kernel.org>, Jiri Kosina <jikos@kernel.org>, Miroslav Benes
+ <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>, Joe Lawrence
+ <joe.lawrence@redhat.com>, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai
+ <tiwai@suse.com>, Lucas Stach <l.stach@pengutronix.de>, Russell King
+ <linux+etnaviv@armlinux.org.uk>, Christian Gmeiner
+ <christian.gmeiner@gmail.com>, Louis Peens <louis.peens@corigine.com>,
+ Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
+ Christophe Leroy <christophe.leroy@csgroup.eu>, Naveen N Rao
+ <naveen@kernel.org>, Madhavan Srinivasan <maddy@linux.ibm.com>,
  netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
  netdev@vger.kernel.org, linux-kernel@vger.kernel.org, cocci@inria.fr,
  linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org,
@@ -233,22 +230,21 @@ Cc: eahariha@linux.microsoft.com, Pablo Neira Ayuso <pablo@netfilter.org>,
  linux-rpi-kernel@lists.infradead.org, ceph-devel@vger.kernel.org,
  live-patching@vger.kernel.org, linux-sound@vger.kernel.org,
  etnaviv@lists.freedesktop.org, oss-drivers@corigine.com,
- linuxppc-dev@lists.ozlabs.org, Anna-Maria Behnsen <anna-maria@linutronix.de>
-To: Stephen Rothwell <sfr@canb.auug.org.au>
+ linuxppc-dev@lists.ozlabs.org, Anna-Maria Behnsen
+ <anna-maria@linutronix.de>
+Message-ID: <20241116093458.4aa19a0e@canb.auug.org.au>
+In-Reply-To: <20241115-converge-secs-to-jiffies-v2-1-911fb7595e79@linux.microsoft.com>
 References: <20241115-converge-secs-to-jiffies-v2-0-911fb7595e79@linux.microsoft.com>
- <20241115-converge-secs-to-jiffies-v2-1-911fb7595e79@linux.microsoft.com>
- <20241116093458.4aa19a0e@canb.auug.org.au>
-Content-Language: en-US
-From: Easwar Hariharan <eahariha@linux.microsoft.com>
-In-Reply-To: <20241116093458.4aa19a0e@canb.auug.org.au>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<20241115-converge-secs-to-jiffies-v2-1-911fb7595e79@linux.microsoft.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="Sig_/gpyLfQXA_rG=N5QDCu3kL6w";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 X-Validation-by: julia.lawall@inria.fr
 Subject: Re: [cocci] [PATCH v2 01/21] netfilter: conntrack: Cleanup timeout
  definitions
-Reply-To: Easwar Hariharan <eahariha@linux.microsoft.com>
+Reply-To: Stephen Rothwell <sfr@canb.auug.org.au>
 X-Loop: cocci@inria.fr
-X-Sequence: 2061
+X-Sequence: 2056
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -261,33 +257,56 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-11/0b4bbd38-f6aa-4091-b7db-8b87572ad83a%40linux.microsoft.com>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-11/20241116093458.4aa19a0e%40canb.auug.org.au>
 
-On 11/15/2024 2:34 PM, Stephen Rothwell wrote:
-> Hi Easwar,
-> 
-> On Fri, 15 Nov 2024 21:26:18 +0000 Easwar Hariharan <eahariha@linux.microsoft.com> wrote:
->>
->>  static const unsigned int sctp_timeouts[SCTP_CONNTRACK_MAX] = {
->> -	[SCTP_CONNTRACK_CLOSED]			= 10 SECS,
->> -	[SCTP_CONNTRACK_COOKIE_WAIT]		= 3 SECS,
->> -	[SCTP_CONNTRACK_COOKIE_ECHOED]		= 3 SECS,
->> -	[SCTP_CONNTRACK_ESTABLISHED]		= 210 SECS,
->> -	[SCTP_CONNTRACK_SHUTDOWN_SENT]		= 3 SECS,
->> -	[SCTP_CONNTRACK_SHUTDOWN_RECD]		= 3 SECS,
->> -	[SCTP_CONNTRACK_SHUTDOWN_ACK_SENT]	= 3 SECS,
->> -	[SCTP_CONNTRACK_HEARTBEAT_SENT]		= 30 SECS,
->> +	[SCTP_CONNTRACK_CLOSED]			= secs_to_jiffies(10),
->> +	[SCTP_CONNTRACK_COOKIE_WAIT]		= secs_to_jiffies(3),
->> +	[SCTP_CONNTRACK_COOKIE_ECHOED]		= secs_to_jiffies(3),
->> +	[SCTP_CONNTRACK_ESTABLISHED]		= secs_to_jiffies(210),
->> +	[SCTP_CONNTRACK_SHUTDOWN_SENT]		= secs_to_jiffies(3),
->> +	[SCTP_CONNTRACK_SHUTDOWN_RECD]		= secs_to_jiffies(3),
->> +	[SCTP_CONNTRACK_SHUTDOWN_ACK_SENT]	= secs_to_jiffies(3),
->> +	[SCTP_CONNTRACK_HEARTBEAT_SENT]		= secs_to_jiffies(3),
-> 
-> You have changed this last timeout from 30 seconds to 3 (presumably
-> just a copy and paste error).
-> 
+--Sig_/gpyLfQXA_rG=N5QDCu3kL6w
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Will fix in v3.
+Hi Easwar,
+
+On Fri, 15 Nov 2024 21:26:18 +0000 Easwar Hariharan <eahariha@linux.microso=
+ft.com> wrote:
+>
+>  static const unsigned int sctp_timeouts[SCTP_CONNTRACK_MAX] =3D {
+> -	[SCTP_CONNTRACK_CLOSED]			=3D 10 SECS,
+> -	[SCTP_CONNTRACK_COOKIE_WAIT]		=3D 3 SECS,
+> -	[SCTP_CONNTRACK_COOKIE_ECHOED]		=3D 3 SECS,
+> -	[SCTP_CONNTRACK_ESTABLISHED]		=3D 210 SECS,
+> -	[SCTP_CONNTRACK_SHUTDOWN_SENT]		=3D 3 SECS,
+> -	[SCTP_CONNTRACK_SHUTDOWN_RECD]		=3D 3 SECS,
+> -	[SCTP_CONNTRACK_SHUTDOWN_ACK_SENT]	=3D 3 SECS,
+> -	[SCTP_CONNTRACK_HEARTBEAT_SENT]		=3D 30 SECS,
+> +	[SCTP_CONNTRACK_CLOSED]			=3D secs_to_jiffies(10),
+> +	[SCTP_CONNTRACK_COOKIE_WAIT]		=3D secs_to_jiffies(3),
+> +	[SCTP_CONNTRACK_COOKIE_ECHOED]		=3D secs_to_jiffies(3),
+> +	[SCTP_CONNTRACK_ESTABLISHED]		=3D secs_to_jiffies(210),
+> +	[SCTP_CONNTRACK_SHUTDOWN_SENT]		=3D secs_to_jiffies(3),
+> +	[SCTP_CONNTRACK_SHUTDOWN_RECD]		=3D secs_to_jiffies(3),
+> +	[SCTP_CONNTRACK_SHUTDOWN_ACK_SENT]	=3D secs_to_jiffies(3),
+> +	[SCTP_CONNTRACK_HEARTBEAT_SENT]		=3D secs_to_jiffies(3),
+
+You have changed this last timeout from 30 seconds to 3 (presumably
+just a copy and paste error).
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/gpyLfQXA_rG=N5QDCu3kL6w
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmc3zJIACgkQAVBC80lX
+0Gw+jggAlx/FpdCsBUGWHj/3D1FyMKcJOE8x+VIKqw9c10Hqa/DPZEAcUaXlmvJJ
+1NS+WrDFLS34ZiI4SbtosexC7tobHh/TkpamqrN+fG8STjNbtTVLYQ8QiWT/NCDx
+IeMkpH/EiSg0ow+0U1XenGHORnkKPdtLr7lxlRq1R7ylUYNZK0eDlX4r2dwmOLYg
+r0lFld/TwA434BDqTqj8KzVt9p1k2QiHm+LUntdk7Xu/Rlami4y/+Bahn9gmN3ji
+wRFxXLzm6upqhGxP5RYNyz3FB0oQgUvILDpklyPzzLTZW+L+bPkhgY5RZTFXpk9k
+KeR+GZcOjbCNU/RaWT8zDXVC32LJaw==
+=DzpI
+-----END PGP SIGNATURE-----
+
+--Sig_/gpyLfQXA_rG=N5QDCu3kL6w--
