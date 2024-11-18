@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2AB60D591AD
-	for <cocci@archiver.kernel.org>; Mon, 18 Nov 2024 18:54:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 17B9BD591B1
+	for <cocci@archiver.kernel.org>; Mon, 18 Nov 2024 18:54:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=date:from:to:cc:message-id:references:mime-version:
-   in-reply-to:subject:reply-to:sender:list-id:list-help:
-   list-subscribe:list-unsubscribe:list-post:list-owner:
-   list-archive;
-  bh=tWcOwQCde8EH0FqIwSxzfWmKJIvnhmdodvrAU6+9Gkc=;
-  b=pEvRKcSw2FBq2EC8VWqBsIdjOux2lmOlS4/yBFMnd+BpJza+eMJkqLaz
-   /ntmjXDYwQ21tjys19eAQI27SOUrSo5D+DtC0I36MRRYPSq0nipXP/mSU
-   0DY6ugAprGla2nbdNlSnwQV7Qosz1pFEQXVpuR5DS+S+tPK2NnMgGZF9P
-   M=;
+  h=message-id:date:mime-version:cc:to:references:from:
+   in-reply-to:content-transfer-encoding:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=4rGKqWlJzIh5S6WJog1UbY+9wr2RIzuf6CA98XkvD9A=;
+  b=c+nUbFQqhoz+xcQPHnHIHNM9pSCZhnA3lo5M1suLLLE/49rX+eb221qY
+   vIlt2L+R7NZ/w/1VvlyQ/FwSgvfF85accWn9v4xbmT3VKJ+qI9vKVecLL
+   iMebvBNaKDuAXjVZAVZBd658Mbsl+C2CzXrs+/InAiWnnSyxF2SBZ9kUG
+   A=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -35,169 +35,222 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   receiver=mail2-relais-roc.national.inria.fr;
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
-Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@avm.de
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@linux.microsoft.com
 X-IronPort-AV: E=Sophos;i="6.12,164,1728943200"; 
-   d="scan'208";a="194516814"
+   d="scan'208";a="194516925"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 18 Nov 2024 19:54:29 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 18 Nov 2024 19:54:32 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 241B6E0D47; Mon, 18 Nov 2024 19:54:28 +0100 (CET)
+	id 99E7FE0D8F; Mon, 18 Nov 2024 19:54:29 +0100 (CET)
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by sympa.inria.fr (Postfix) with ESMTPS id 3E5C7E00B7
-	for <cocci@sympa.inria.fr>; Mon, 18 Nov 2024 15:47:46 +0100 (CET)
-IronPort-SDR: 673b5391_PpBOnvkHh12CPqDiH0jml7IayS8g6h9myw7Q6d0ncUSaupw
- AaAt9/lnRMtOh9wgKaIP/SBdtNv2ZjPQLMna2xA==
-X-IPAS-Result: =?us-ascii?q?A0EPAAA3Ujtnj3j0KtRaHQEBAQEJARIBBQUBQIE/CAELA?=
- =?us-ascii?q?YFxUn1aMwQLSIRWg0+ETl+IcgOSTxwzinmBfg8BAwENMRMEAQEDAQOFAAKKS?=
- =?us-ascii?q?wIeBwEEMAkOAQIEAQEBAQMCAwEBAQEBARABAQUBAQECAQECBAYBAhABAQEBA?=
- =?us-ascii?q?QE5BUmFQQY0DYJiAYEkgSUBAQEBAQEBAQEBAQEBHQIIYwEBHgEBAQMjHQEBN?=
- =?us-ascii?q?wEPCxgCAiYCAisrBhODAQGCZAQDsSyBMoEBggwBAQaBCNsXgWQJgRouAYhLA?=
- =?us-ascii?q?YVpG4NieieBZESCUIE3OD6IHoJpgkVnU4JfdiVKA4clgQ2Df4hAeB6MNlJ7H?=
- =?us-ascii?q?ANZMgFLCjUMOHEhLAOCR4I1gVKCRoEUgy4cgUIFNwqDCYE0NwINAoJFcx+HZ?=
- =?us-ascii?q?oELg2FnLwMDAwOCI4EZgW2CFx1AA3g9NRQbBqBEAUaDMwF7DgUBGz9sMisbD?=
- =?us-ascii?q?CkGLJJqsxgHgjiBZYwWiF6MakWFSJFzkwCWGIJfo1kmhSiBZzqBXDMaJIM2C?=
- =?us-ascii?q?UYDGQ+MDoITGR+CZIERxXNCNTsCBwsBAQMJkTiBSwEB?=
-IronPort-PHdr: A9a23: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
- a1MMT7FQ/RYkb4meW050Gc0VrNGB/saQaAWOXct
-IronPort-Data: A9a23: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
-IronPort-HdrOrdr: A9a23:X52oOKhiXNWcOaC+3KzIpQLoYXBQXjQji2hC6mlwRA09TyVXra
- CTddAgpHnJYVcqKRYdcLW7U5VoLkmyyXcY2+cs1PKZLXDbUQiTXeVfBOnZsl/d8kTFn4Y2uM
- tdmupFebjN5DNB/KXHCWeDcuoI8Z2f7LunjfrTpk0dMXAUV4hQqx5kEQiSD0EzbAQuP+tFKL
- OsotNavDSpZHhSTunTPAh8Y8Hz48TWj5zvfBJDHR415GC1/EmVwY+/CgSC0B8CX3dT0a4vmF
- K16DDE2g==
-X-Talos-CUID: 9a23:yhNVrGDOgHkQ/6v6EwBOyXcWGcQJSH2H/kvLD0OxNmU1ZLLAHA==
-X-Talos-MUID: 9a23:9KV3aArsBke4nEUsMGAezw94BehR5f2cMh4izsU/6s/dJyFCEQ7I2Q==
+	by sympa.inria.fr (Postfix) with ESMTPS id 3C564E00B7
+	for <cocci@sympa.inria.fr>; Mon, 18 Nov 2024 19:13:30 +0100 (CET)
+IronPort-SDR: 673b83c9_krAAKTzKC1TPsgKX+LYkjmDtYg3EwSHq+VFJ5mC3c+VP9U9
+ W/ADvSrUp3sLqsCnnhvXvmMOVEFHDSgVOA7cb1g==
+X-IPAS-Result: =?us-ascii?q?A0EYAABdgjtnhbaaTQ1aHQEBAQEJARIBBQUBQIE/CAELA?=
+ =?us-ascii?q?YJDfQZUMwcISIRWiB2JUQMTi2CSJIFAPg8BAwFGCAECBAEBAwSFAAKKUAIfB?=
+ =?us-ascii?q?gEEMAkOAQIEAQEBAQMCAwEBAQEBARABAQUBAQECAQECBAYBAhABAQEBQEmFQ?=
+ =?us-ascii?q?QEFAjINgmIBgSRRDQMHPgEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQUCDV4BAR4BAQEDERIPAQ0BATcBDwkCGAICJgICVgYTAgEBgn0Bg?=
+ =?us-ascii?q?mQDAwIMBJUAiT0Bh2ABAQKLI4EygQGCDAEBBtwfgWQDBoEaLgGISwGFaRuEX?=
+ =?us-ascii?q?CcbgUlEgRUnDoJ1PoRYg0aCaYJFgTGDXiVNiDKaElJ7HANZIREBVRMXCwcFg?=
+ =?us-ascii?q?SkhLAOCR3+BNoFRAYMQSoMugV4FNwo/gkppSzcCDQI2giR9gR2BMoElBAWDa?=
+ =?us-ascii?q?YELg2FnLwMDAwODPIQPHUACAQttPTUJCxtDoAgBRoM0AYEOKARxgQyTZ4MhA?=
+ =?us-ascii?q?Y52aaAXhCSMFpUyBg8EL5dUknqYd4UaiGWVVoUhghg6gVxGByMVgyJPAxkPW?=
+ =?us-ascii?q?IJohAWGXBmDYYQ+wggiNTsCBwEKAQEDCYVGAQGLcIFLAQE?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+ w==
+IronPort-HdrOrdr: A9a23:PkxmEKC3BArm77blHemc55DYdb4zR+YMi2TDGXoQdfUnSL3+qy
+ nIpoVi6faUskdpZJlD8errBEDkex7hHPFOjrX5UY3SODUO/VHYSr2KjrGN/9SDIUHDH4dmvM
+ 8KT0E9MqyUMbEQt7eY3ODXKadD/DDKysGVuds=
+X-Talos-CUID: 9a23:TT8f6GGefx2mOUzjqmJW62ROOsMjT0Te53LBA2K+LlhCD6+8HAo=
+X-Talos-MUID: 9a23:8c5xrQV16XtTHaTq/DL+vgFMDJt52Z3tIxEzvJBY5Mm6EBUlbg==
 X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-AV: E=Sophos;i="6.12,164,1728943200"; 
-   d="scan'208";a="101940298"
-X-MGA-submission: =?us-ascii?q?MDEQzsV6KoWNgl8ObbjiUJlLBu4dQ2+njTBMv5?=
- =?us-ascii?q?IU8TEA9cBd00iVGLyIFrt19/4aF0d4vcVYoATrO1/XQFypvyVc0sAa28?=
- =?us-ascii?q?HoMEHraXCnryyIhQgDh75u3/tfWMbXLpIDVh7u8y0iz9SdCJeHeoDLKf?=
- =?us-ascii?q?4tufqONbWy2d0YnI0EntGJzA=3D=3D?=
-Received: from mail.avm.de ([212.42.244.120])
-  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2024 15:47:45 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=avm.de; s=mail;
-	t=1731941263; bh=O1VcKtHxNtdxKa3gZCjgb7ogeAv4PN4jwrhly4wJ1VU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=AoLdfwvDPdlTSCjS5oNEKbT/id9cOOyqz7d1+Psq1s+kfoDomUe+f9SeUBXBQqMjC
-	 ap+GpDIznwJr1tj8UHlgXB22n+sUJ4HS4NW5UU7GJG4e4ymk/nNOnbl6Jrcj3lBEmJ
-	 uE94HZ9HosCH6FTClcggAtG75RDec+tv9MlAgFOM=
-Received: from mail-auth.avm.de (dovecot-mx-01.avm.de [IPv6:2001:bf0:244:244::71])
-	by mail.avm.de (Postfix) with ESMTPS;
-	Mon, 18 Nov 2024 15:47:43 +0100 (CET)
-Received: from buildd.core.avm.de (buildd-sv-01.avm.de [172.16.0.225])
-	by mail-auth.avm.de (Postfix) with ESMTPA id D3F5D80905;
-	Mon, 18 Nov 2024 15:47:43 +0100 (CET)
-Received: by buildd.core.avm.de (Postfix, from userid 1000)
-	id C790718CA1A; Mon, 18 Nov 2024 15:47:43 +0100 (CET)
-Date: Mon, 18 Nov 2024 15:47:43 +0100
-From: Nicolas Schier <n.schier@avm.de>
-To: Masahiro Yamada <masahiroy@kernel.org>
-Cc: linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-	rust-for-linux@vger.kernel.org, cocci@inria.fr,
-	Nicolas Schier <nicolas@fjasle.eu>
-Message-ID: <20241118-dazzling-gifted-bettong-133eb7@buildd>
-References: <20241110013649.34903-1-masahiroy@kernel.org>
- <20241110013649.34903-6-masahiroy@kernel.org>
+   d="scan'208";a="101964068"
+X-MGA-submission: =?us-ascii?q?MDHGGvztln1mZZnizpYQr5QJAzW4aFgCNxrs7K?=
+ =?us-ascii?q?/FlD6yLluGtArnyoOTtYs934CmuoEMtUZAI79AEtoI16fjChAal5RC8+?=
+ =?us-ascii?q?C96QO0jFlO7YezM/8eB6A93Tiu54ejvzC1Zr3rGRObUMZSbkvwQsqBfA?=
+ =?us-ascii?q?XJ5nOB45IJuPuLuhXGETTXUw=3D=3D?=
+Received: from linux.microsoft.com ([13.77.154.182])
+  by mail3-smtp-sop.national.inria.fr with ESMTP; 18 Nov 2024 19:13:29 +0100
+Received: from [192.168.35.166] (c-73-118-245-227.hsd1.wa.comcast.net [73.118.245.227])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 079B420B7D5F;
+	Mon, 18 Nov 2024 10:13:24 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 079B420B7D5F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1731953606;
+	bh=4rGKqWlJzIh5S6WJog1UbY+9wr2RIzuf6CA98XkvD9A=;
+	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+	b=WgQq6VDmQPqDVd9HrdDJWYVeePI1o6O7aH2e5YK2i2MPTb79KOYC8kOEtCVdZyQyl
+	 eQBQq4Gru6AuE3dhO0MWMctvjnMle6WwOzCHVKzijDojX1XF1tLPvCR2mFqRKiKQA2
+	 T8BTz//c1DSiW16jlJvFvYtwS5WkMEtzzK+2O4cI=
+Message-ID: <c2a5d9d2-ac73-46b0-9d2e-6960e2a13c1e@linux.microsoft.com>
+Date: Mon, 18 Nov 2024 10:13:23 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20241110013649.34903-6-masahiroy@kernel.org>
-X-purgate-ID: 149429::1731941263-6E2E1E9C-5DA14DCE/0/0
-X-purgate-type: clean
-X-purgate-size: 9472
-X-purgate-Ad: Categorized by eleven eXpurgate (R) https://www.eleven.de
-X-purgate: This mail is considered clean (visit https://www.eleven.de for further information)
-X-purgate: clean
+User-Agent: Mozilla Thunderbird
+Cc: Pablo Neira Ayuso <pablo@netfilter.org>,
+ Jozsef Kadlecsik <kadlec@netfilter.org>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Simon Horman <horms@kernel.org>, Julia Lawall <Julia.Lawall@inria.fr>,
+ Nicolas Palix <nicolas.palix@imag.fr>, Daniel Mack <daniel@zonque.org>,
+ Haojian Zhuang <haojian.zhuang@gmail.com>,
+ Robert Jarzmik <robert.jarzmik@free.fr>, Russell King
+ <linux@armlinux.org.uk>, Heiko Carstens <hca@linux.ibm.com>,
+ Vasily Gorbik <gor@linux.ibm.com>, Alexander Gordeev
+ <agordeev@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>,
+ Sven Schnelle <svens@linux.ibm.com>, Ofir Bitton <obitton@habana.ai>,
+ Oded Gabbay <ogabbay@kernel.org>, Lucas De Marchi
+ <lucas.demarchi@intel.com>,
+ =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+ Rodrigo Vivi <rodrigo.vivi@intel.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Jeroen de Borst <jeroendb@google.com>,
+ Praveen Kaligineedi <pkaligineedi@google.com>,
+ Shailend Chand <shailend@google.com>, Andrew Lunn <andrew+netdev@lunn.ch>,
+ James Smart <james.smart@broadcom.com>,
+ Dick Kennedy <dick.kennedy@broadcom.com>,
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+ "Martin K. Petersen" <martin.petersen@oracle.com>,
+ =?UTF-8?Q?Roger_Pau_Monn=C3=A9?= <roger.pau@citrix.com>,
+ Jens Axboe <axboe@kernel.dk>, Kalle Valo <kvalo@kernel.org>,
+ Jeff Johnson <jjohnson@kernel.org>, Catalin Marinas
+ <catalin.marinas@arm.com>, Andrew Morton <akpm@linux-foundation.org>,
+ Jack Wang <jinpu.wang@cloud.ionos.com>, Marcel Holtmann
+ <marcel@holtmann.org>, Johan Hedberg <johan.hedberg@gmail.com>,
+ Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Florian Fainelli <florian.fainelli@broadcom.com>, Ray Jui
+ <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+ Broadcom internal kernel review list
+ <bcm-kernel-feedback-list@broadcom.com>, Xiubo Li <xiubli@redhat.com>,
+ Ilya Dryomov <idryomov@gmail.com>, Josh Poimboeuf <jpoimboe@kernel.org>,
+ Jiri Kosina <jikos@kernel.org>, Miroslav Benes <mbenes@suse.cz>,
+ Petr Mladek <pmladek@suse.com>, Joe Lawrence <joe.lawrence@redhat.com>,
+ Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+ Lucas Stach <l.stach@pengutronix.de>,
+ Russell King <linux+etnaviv@armlinux.org.uk>,
+ Christian Gmeiner <christian.gmeiner@gmail.com>,
+ Louis Peens <louis.peens@corigine.com>, Michael Ellerman
+ <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
+ Naveen N Rao <naveen@kernel.org>, Madhavan Srinivasan <maddy@linux.ibm.com>,
+ eahariha@linux.microsoft.com, netfilter-devel@vger.kernel.org,
+ coreteam@netfilter.org, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, cocci@inria.fr,
+ linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, intel-xe@lists.freedesktop.org,
+ linux-scsi@vger.kernel.org, xen-devel@lists.xenproject.org,
+ linux-block@vger.kernel.org, linux-wireless@vger.kernel.org,
+ ath11k@lists.infradead.org, linux-mm@kvack.org,
+ linux-bluetooth@vger.kernel.org, linux-staging@lists.linux.dev,
+ linux-rpi-kernel@lists.infradead.org, ceph-devel@vger.kernel.org,
+ live-patching@vger.kernel.org, linux-sound@vger.kernel.org,
+ etnaviv@lists.freedesktop.org, oss-drivers@corigine.com,
+ linuxppc-dev@lists.ozlabs.org, Anna-Maria Behnsen <anna-maria@linutronix.de>
+To: Christophe Leroy <christophe.leroy@csgroup.eu>
+References: <20241115-converge-secs-to-jiffies-v2-0-911fb7595e79@linux.microsoft.com>
+ <20241115-converge-secs-to-jiffies-v2-1-911fb7595e79@linux.microsoft.com>
+ <b370e8d0-2f87-4819-8f30-1181946295d9@csgroup.eu>
+From: Easwar Hariharan <eahariha@linux.microsoft.com>
+Content-Language: en-US
+In-Reply-To: <b370e8d0-2f87-4819-8f30-1181946295d9@csgroup.eu>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 X-Validation-by: julia.lawall@inria.fr
-Subject: Re: [cocci] [PATCH v2 05/11] kbuild: change working directory to
- external module directory with M=
-Reply-To: Nicolas Schier <n.schier@avm.de>
+Subject: Re: [cocci] [PATCH v2 01/21] netfilter: conntrack: Cleanup timeout
+ definitions
+Reply-To: Easwar Hariharan <eahariha@linux.microsoft.com>
 X-Loop: cocci@inria.fr
-X-Sequence: 2082
+X-Sequence: 2085
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -210,235 +263,72 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-11/20241118-dazzling-gifted-bettong-133eb7%40buildd>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-11/c2a5d9d2-ac73-46b0-9d2e-6960e2a13c1e%40linux.microsoft.com>
 
-On Sun, Nov 10, 2024 at 10:34:33AM +0900, Masahiro Yamada wrote:
-> Currently, Kbuild always operates in the output directory of the kernel,
-> even when building external modules. This increases the risk of external
-> module Makefiles attempting to write to the kernel directory.
+On 11/16/2024 1:40 AM, Christophe Leroy wrote:
 > 
-> This commit switches the working directory to the external module
-> directory, allowing the removal of the $(KBUILD_EXTMOD)/ prefix from
-> some build artifacts.
 > 
-> The command for building external modules maintains backward
-> compatibility, but Makefiles that rely on working in the kernel
-> directory may break. In such cases, $(objtree) and $(srctree) should
-> be used to refer to the output and source directories of the kernel.
+> Le 15/11/2024 à 22:26, Easwar Hariharan a écrit :
+>> [Vous ne recevez pas souvent de courriers de
+>> eahariha@linux.microsoft.com. Découvrez pourquoi ceci est important à
+>> https://aka.ms/LearnAboutSenderIdentification ]
+>>
+>> None of the higher order definitions are used anymore, so remove
+>> definitions for minutes, hours, and days timeouts. Convert the seconds
+>> denominated timeouts to secs_to_jiffies()
 > 
-> The appearance of the build log will change as follows:
-> 
-> [Before]
-> 
->   $ make -C /path/to/my/linux M=/path/to/my/externel/module
->   make: Entering directory '/path/to/my/linux'
->     CC [M]  /path/to/my/externel/module/helloworld.o
->     MODPOST /path/to/my/externel/module/Module.symvers
->     CC [M]  /path/to/my/externel/module/helloworld.mod.o
->     CC [M]  /path/to/my/externel/module/.module-common.o
->     LD [M]  /path/to/my/externel/module/helloworld.ko
->   make: Leaving directory '/path/to/my/linux'
-> 
-> [After]
-> 
->   $ make -C /path/to/my/linux M=/path/to/my/externel/module
->   make: Entering directory '/path/to/my/linux'
->   make[1]: Entering directory '/path/to/my/externel/module'
->     CC [M]  helloworld.o
->     MODPOST Module.symvers
->     CC [M]  helloworld.mod.o
->     CC [M]  .module-common.o
->     LD [M]  helloworld.ko
->   make[1]: Leaving directory '/path/to/my/externel/module'
->   make: Leaving directory '/path/to/my/linux'
-> 
-> Printing "Entering directory" twice is cumbersome. This will be
-> addressed later.
-> 
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
-> 
-> Changes in v2:
->  - Introduce a new 'srcroot' variable and clean-up code
->  - Reword Documentation/dev-tools/coccinelle.rst
-> 
->  Documentation/dev-tools/coccinelle.rst | 20 ++-----
->  Documentation/kbuild/makefiles.rst     | 14 +++++
->  Makefile                               | 80 +++++++++++++++-----------
->  rust/Makefile                          |  4 +-
->  scripts/Makefile.build                 |  2 +-
->  scripts/Makefile.clean                 |  2 +-
->  scripts/Makefile.compiler              |  2 +-
->  scripts/Makefile.modpost               |  6 +-
->  scripts/coccicheck                     |  6 +-
->  scripts/nsdeps                         |  8 +--
->  scripts/package/install-extmod-build   |  7 +++
->  11 files changed, 85 insertions(+), 66 deletions(-)
-> 
-> diff --git a/Documentation/dev-tools/coccinelle.rst b/Documentation/dev-tools/coccinelle.rst
-> index 535ce126fb4f..6e70a1e9a3c0 100644
-> --- a/Documentation/dev-tools/coccinelle.rst
-> +++ b/Documentation/dev-tools/coccinelle.rst
-> @@ -250,25 +250,17 @@ variables for .cocciconfig is as follows:
->  - Your directory from which spatch is called is processed next
->  - The directory provided with the ``--dir`` option is processed last, if used
->  
-> -Since coccicheck runs through make, it naturally runs from the kernel
-> -proper dir; as such the second rule above would be implied for picking up a
-> -.cocciconfig when using ``make coccicheck``.
-> -
->  ``make coccicheck`` also supports using M= targets. If you do not supply
->  any M= target, it is assumed you want to target the entire kernel.
->  The kernel coccicheck script has::
->  
-> -    if [ "$KBUILD_EXTMOD" = "" ] ; then
-> -        OPTIONS="--dir $srctree $COCCIINCLUDE"
-> -    else
-> -        OPTIONS="--dir $KBUILD_EXTMOD $COCCIINCLUDE"
-> -    fi
-> +    OPTIONS="--dir $srcroot $COCCIINCLUDE"
->  
-> -KBUILD_EXTMOD is set when an explicit target with M= is used. For both cases
-> -the spatch ``--dir`` argument is used, as such third rule applies when whether
-> -M= is used or not, and when M= is used the target directory can have its own
-> -.cocciconfig file. When M= is not passed as an argument to coccicheck the
-> -target directory is the same as the directory from where spatch was called.
-> +Here, $srcroot refers to the source directory of the target: it points to the
-> +external module's source directory when M= used, and otherwise, to the kernel
-> +source directory. The third rule ensures the spatch reads the .cocciconfig from
-> +the target directory, allowing external modules to have their own .cocciconfig
-> +file.
->  
->  If not using the kernel's coccicheck target, keep the above precedence
->  order logic of .cocciconfig reading. If using the kernel's coccicheck target,
-> diff --git a/Documentation/kbuild/makefiles.rst b/Documentation/kbuild/makefiles.rst
-> index 7964e0c245ae..d36519f194dc 100644
-> --- a/Documentation/kbuild/makefiles.rst
-> +++ b/Documentation/kbuild/makefiles.rst
-> @@ -449,6 +449,20 @@ $(obj)
->    to prerequisites are referenced with $(src) (because they are not
->    generated files).
->  
-> +$(srcroot)
-> +  $(srcroot) refers to the root of the source you are building, which can be
-> +  either the kernel source or the external modules source, depending on whether
-> +  KBUILD_EXTMOD is set. This can be either a relative or an absolute path, but
-> +  if KBUILD_ABS_SRCTREE=1 is set, it is always an absolute path.
-> +
-> +$(srctree)
-> +  $(srctree) refers to the root of the kernel source tree. When building the
-> +  kernel, this is the same as $(srcroot).
-> +
-> +$(objtree)
-> +  $(objtree) refers to the root of the kernel object tree. It is ``.`` when
-> +  building the kernel, but it is different when building external modules.
-> +
+> There is very similar things with tcp_timeouts[] in
+> nf_conntrack_proto_tcp.c, why not convert it as well ?
 
-Thanks, I think it's nice that there is now such a clear definition.
-$(srcroot) sounds fine to me.
+This patch happens to have been hand-modified and not by Coccinelle.
+I'll consider tcp_timeouts[] for v3, but that actually seems to have
+minute, hour, and days denominated timeouts, and replacing the 4 SECS
+timeouts may actually hinder readability in that file.
 
->  $(kecho)
->    echoing information to user in a rule is often a good practice
->    but when execution ``make -s`` one does not expect to see any output
-> diff --git a/Makefile b/Makefile
-> index cf1d55560ae2..e5f7ac7647a7 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -180,7 +180,24 @@ ifeq ("$(origin O)", "command line")
->    KBUILD_OUTPUT := $(O)
->  endif
->  
-> -output := $(KBUILD_OUTPUT)
-> +ifdef KBUILD_EXTMOD
-> +    ifdef KBUILD_OUTPUT
-> +        objtree := $(realpath $(KBUILD_OUTPUT))
-> +        $(if $(objtree),,$(error specified kernel directory "$(KBUILD_OUTPUT)" does not exist))
-> +    else
-> +        objtree := $(CURDIR)
-> +    endif
-> +    output := $(KBUILD_EXTMOD)
-> +    # KBUILD_EXTMOD might be a relative path. Remember its absolute path before
-> +    # Make changes the working directory.
-> +    srcroot := $(realpath $(KBUILD_EXTMOD))
-> +    $(if $(srcroot),,$(error specified external module directory "$(KBUILD_EXTMOD)" does not exist))
-> +else
-> +    objtree := .
-> +    output := $(KBUILD_OUTPUT)
-> +endif
-> +
-> +export objtree srcroot
->  
->  # Do we want to change the working directory?
->  ifneq ($(output),)
-> @@ -230,35 +247,33 @@ else # need-sub-make
->  
->  # We process the rest of the Makefile if this is the final invocation of make
->  
-> -ifeq ($(abs_srctree),$(CURDIR))
-> -        # building in the source tree
-> -        srctree := .
-> -	building_out_of_srctree :=
-> +ifndef KBUILD_EXTMOD
-> +srcroot := $(abs_srctree)
-> +endif
-> +
-> +ifeq ($(srcroot),$(CURDIR))
-> +building_out_of_srctree :=
->  else
-> -        ifeq ($(abs_srctree)/,$(dir $(CURDIR)))
-> -                # building in a subdirectory of the source tree
-> -                srctree := ..
-> -        else
-> -                srctree := $(abs_srctree)
-> -        endif
-> -	building_out_of_srctree := 1
-> +export building_out_of_srctree :=1
->  endif
->  
-> -ifneq ($(KBUILD_ABS_SRCTREE),)
-> -srctree := $(abs_srctree)
-> +ifdef KBUILD_ABS_SRCTREE
-> +    # Do not nothing. Use the absolute path.
-> +else ifeq ($(srcroot),$(CURDIR))
-> +    # Building in the source.
-> +    srcroot := .
-> +else ifeq ($(srcroot)/,$(dir $(CURDIR)))
-> +    # Building in a subdirectory of the source.
-> +    srcroot := ..
->  endif
->  
-> -objtree		:= .
-> +export srctree := $(if $(KBUILD_EXTMOD),$(abs_srctree),$(srcroot))
+> 
+>>
+>> Signed-off-by: Easwar Hariharan <eahariha@linux.microsoft.com>
+>> ---
+>>   net/netfilter/nf_conntrack_proto_sctp.c | 21 ++++++++-------------
+>>   1 file changed, 8 insertions(+), 13 deletions(-)
+>>
+>> diff --git a/net/netfilter/nf_conntrack_proto_sctp.c b/net/netfilter/
+>> nf_conntrack_proto_sctp.c
+>> index
+>> 4cc97f971264ed779434ab4597dd0162586b3736..6c95ac96fa42a39acafb5b88a7cf8898010e911c 100644
+>> --- a/net/netfilter/nf_conntrack_proto_sctp.c
+>> +++ b/net/netfilter/nf_conntrack_proto_sctp.c
+>> @@ -39,20 +39,15 @@ static const char *const sctp_conntrack_names[] = {
+>>          [SCTP_CONNTRACK_HEARTBEAT_SENT]         = "HEARTBEAT_SENT",
+>>   };
+>>
+>> -#define SECS  * HZ
+>> -#define MINS  * 60 SECS
+>> -#define HOURS * 60 MINS
+>> -#define DAYS  * 24 HOURS
+>> -
+>>   static const unsigned int sctp_timeouts[SCTP_CONNTRACK_MAX] = {
+>> -       [SCTP_CONNTRACK_CLOSED]                 = 10 SECS,
+>> -       [SCTP_CONNTRACK_COOKIE_WAIT]            = 3 SECS,
+>> -       [SCTP_CONNTRACK_COOKIE_ECHOED]          = 3 SECS,
+>> -       [SCTP_CONNTRACK_ESTABLISHED]            = 210 SECS,
+>> -       [SCTP_CONNTRACK_SHUTDOWN_SENT]          = 3 SECS,
+>> -       [SCTP_CONNTRACK_SHUTDOWN_RECD]          = 3 SECS,
+>> -       [SCTP_CONNTRACK_SHUTDOWN_ACK_SENT]      = 3 SECS,
+>> -       [SCTP_CONNTRACK_HEARTBEAT_SENT]         = 30 SECS,
+>> +       [SCTP_CONNTRACK_CLOSED]                 = secs_to_jiffies(10),
+>> +       [SCTP_CONNTRACK_COOKIE_WAIT]            = secs_to_jiffies(3),
+>> +       [SCTP_CONNTRACK_COOKIE_ECHOED]          = secs_to_jiffies(3),
+>> +       [SCTP_CONNTRACK_ESTABLISHED]            = secs_to_jiffies(210),
+>> +       [SCTP_CONNTRACK_SHUTDOWN_SENT]          = secs_to_jiffies(3),
+>> +       [SCTP_CONNTRACK_SHUTDOWN_RECD]          = secs_to_jiffies(3),
+>> +       [SCTP_CONNTRACK_SHUTDOWN_ACK_SENT]      = secs_to_jiffies(3),
+>> +       [SCTP_CONNTRACK_HEARTBEAT_SENT]         = secs_to_jiffies(3),
+> 
+> Was 30 before, if you think it must be changed to 3 you must explain it
+> in the commit message, or maybe do another patch for that change.
 
-With this patch applied, the following breaks for me:
+This one's a typo, I'll fix it in v3.
 
-    $ make O=build M=fs/btrfs CONFIG_BTRFS_FS=m
-    make[1]: Entering directory '/data/linux/kbuild-review/fs/btrfs'
-      CC [M]  super.o
-    In file included from <command-line>:
-    /data/linux/kbuild-review/include/linux/compiler_types.h:89:10: fatal error: linux/compiler_attributes.h: No such file or directory
-       89 | #include <linux/compiler_attributes.h>
-          |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    compilation terminated.
-
-Adding 'ccflags-y += -I$(srctree)/include' to fs/btrfs/Makefile breaks
-the build loudly.  I could make it build again with
-
-diff --git a/Makefile b/Makefile
-index e5f7ac7647a7b..3d95911f1a68f 100644
---- a/Makefile
-+++ b/Makefile
-@@ -555,7 +555,7 @@ USERINCLUDE    := \
- LINUXINCLUDE    := \
-                -I$(srctree)/arch/$(SRCARCH)/include \
-                -I$(objtree)/arch/$(SRCARCH)/include/generated \
--               $(if $(building_out_of_srctree),-I$(srctree)/include) \
-+               $(if $(or $(building_out_of_srctree),$(filter $(srctree)/%, $(CURDIR))),-I$(srctree)/include) \
-                -I$(objtree)/include \
-                $(USERINCLUDE)
-
-but this does not feel good.  It building in-tree modules in this way a
-valid thing to do?
-
-Kind regards,
-Nicolas
+Thanks,
+Easwar
