@@ -4,19 +4,18 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 25B2EE7717F
-	for <cocci@archiver.kernel.org>; Tue, 17 Dec 2024 19:18:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C471CE7718A
+	for <cocci@archiver.kernel.org>; Thu, 19 Dec 2024 07:25:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=date:from:to:message-id:mime-version:subject:reply-to:
+  h=message-id:date:mime-version:to:from:subject:reply-to:
    sender:list-id:list-help:list-subscribe:list-unsubscribe:
    list-post:list-owner:list-archive;
-  bh=b09uUSkTv4jImDNxdCAKoImGqzrouuyT+O5jNX5yyWc=;
-  b=YjAFEnEF2To7GVNbw7BXkx+m6BWtWrkwflRaL9zHBFHteB5SdLL66Enr
-   nnASbk9Pq3CsZwHeX81eDQqrHYrj/BycmtedMnmjExK0d7H74b9kFLaH4
-   FlWREV1YANplcZJN/yALy/vZdF7qcymk3D2Yqygx1UTCGKyseb+uyjKBB
-   A=;
-Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr
+  bh=q4Jp8eQZrZXaCuCyEFJ/vBgr8pXCcB24ofZPZX2U55A=;
+  b=clBA1wm2639vpSVNRRSkV6hzxQyzsP3YTaL1BH9p/X3Da6NAHIfPRqEw
+   HKvHC7Upq97kezr6XYz7ise2bcVPShwuefiH/YwEO7zM5OA7Xc3PqTZlt
+   Pzfvw/EQ19d8DGRWdUCKxldzNg5lBAudi6f3kQxhrV3w0VxkxbxdbvRXa
+   4=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -35,151 +34,204 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   receiver=mail2-relais-roc.national.inria.fr;
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
-X-IronPort-AV: E=Sophos;i="6.12,242,1728943200"; 
-   d="asc'?scan'208";a="199721753"
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@gmail.com
+X-IronPort-AV: E=Sophos;i="6.12,247,1728943200"; 
+   d="scan'208,217";a="199956669"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 17 Dec 2024 20:18:51 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 19 Dec 2024 08:25:57 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 75CABE007A; Tue, 17 Dec 2024 20:18:51 +0100 (CET)
-Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by sympa.inria.fr (Postfix) with ESMTPS id 24D18E0077
-	for <cocci@sympa.inria.fr>; Tue, 17 Dec 2024 20:18:50 +0100 (CET)
-IronPort-SDR: 6761ce99_fNXJiXyGzlFN19HPBUJ4J4Id/IA6qWE+6/ug/jL8p1jCvxb
- 395DwiHO50d7ya81QEFbO4sVj2/wRatF4ju1ljA==
-X-IPAS-Result: =?us-ascii?q?A0E2HwAEzmFnhY4kQ7laHQEBPAEFBQECAQkBFYFTAoJCf?=
- =?us-ascii?q?VozBAtIiCWFLYZRgV8lHRSDFIJVjHGLLRSBaggHAQMBCAUUAgECDg4NAgQBA?=
- =?us-ascii?q?QMBA4IMjWMCHgwFLQcOAQIEAQEBAQMCAwEBAQEBARABAQUBAQECAQECBAYBA?=
- =?us-ascii?q?hABAQEBQEmFQQgyDYJbO3GBJQEBAQEBAQEBAQEBAQEBAQEBAQEXAg00d0d8e?=
- =?us-ascii?q?4JlAYJkBwGyYYEBM4EBgxzbF4FdCgaBSAGBV4QTglgLAYFaiS8bgUlEhH2BB?=
- =?us-ascii?q?QGBWwKBJoEHhXcEgjqGYIdEgi15hBCFGolrgWkDWTIBSwo1DDmBOgOEdYNNg?=
- =?us-ascii?q?TIQAwMDAwMDGAINAoJDch+GJoE/hGGDQYEWgWuEL4IXghaBCB1AA3g9NxQbB?=
- =?us-ascii?q?pkxCByBDYJzR4RqJg4CVAMBR0YGGDo9kyiyYoQkgWMMgwCHKZYOg3GTTZMAk?=
- =?us-ascii?q?maGFYJXiEqBd2qbKIFuBS6BXDMaLkWCZ08DGQ+LGIMgAoNhM4RhuSBDNTwCB?=
- =?us-ascii?q?wsBAQMJhWkTiWaBSwEB?=
-IronPort-PHdr: A9a23:TpicZBa2IVGMHcO4nKc4Ean/LTFW2YqcDmcuAnoPtbtCf+yZ8oj4O
- wSHvLMx1waPDNiQsqgfw6qO6ua8AjRGuc7A+Fk5M7VyFDY9yv8q1zQ6B8CEDUCpZNXLVAcdW
+	id A504BE007A; Thu, 19 Dec 2024 08:25:57 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 40C14E0077
+	for <cocci@sympa.inria.fr>; Thu, 19 Dec 2024 08:25:52 +0100 (CET)
+IronPort-SDR: 6763ca7f_TypG21t4bvD2xtbYN4gfiRZwJ4s6Q2AmYrtYOcm77mGbxOD
+ fAj6Vy6u3NIg1oUoi1Tq5NoCfM0U8Pj1oXS3sBw==
+X-IPAS-Result: =?us-ascii?q?A0E8DwB8yWNnfLPQVdFaHAEBATwBAQQEAQECAQEHAQGBa?=
+ =?us-ascii?q?AKBcFKBVzMEU4RWj02BdC2BFoMokweGVoFAPg8BAwEMARQBLQIEAQEDBI9vA?=
+ =?us-ascii?q?h4HAQQxCA4BAgQBAQEBAwIDAQEBAQEBEAEBBQEBAQIBAQIEBgECEAEBIhkHD?=
+ =?us-ascii?q?hIphXsNgluBLGECBQM7AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBBQIsdxEEGQEbHgMSAw03AiQRAQUBNwEBHoJfgjABAzEDAZcnj0CBB?=
+ =?us-ascii?q?UKLPn8WBQIWgQGCDQaCaddzChkoDWwDgWECBwkBCoE0AYRzKU4OgjgdASqBM?=
+ =?us-ascii?q?gKEUYM5gSEPgVVEgRUnggFKCAGJC4JpBII6gmeDeYcygziJKooVCAcfEgkcB?=
+ =?us-ascii?q?goCSwUQEgMEAwQEAQILCQoJAwMCDgIIAwIIBh8BPxIEEwoNCwcFHwgDBwwRC?=
+ =?us-ascii?q?igDIhItDwNcBTQBCwMHAggCAgYDAgIEFAYDBQgDAgUFDQICCgIEAxUEBA8BA?=
+ =?us-ascii?q?QIeAgYBAhABBwQBFAIKAwIFBgcCHAICAwMEBAMBBQMSAwsBBQYFAQEEDgECA?=
+ =?us-ascii?q?QIBAQIDAw4CAgYCAgEJAgIBAQINCAEEAwgCBQMFAwoBAQECAQQJBA0GAwUDA?=
+ =?us-ascii?q?wcDBAIDAgYCBAQFAgIDAwIDAQMDAgECAwkCAQ8PCQ8CAgMEAgYCAgEEJgIBF?=
+ =?us-ascii?q?QUCAwQCAgcCAgMBAgECAgIEAgQCAgYDCQgBAgIHAQICAgMVAgUBBAkDAwUSD?=
+ =?us-ascii?q?CADAgICAgMHCgMFAgEBAgQDAwMDCQ0HAgMBAgEDBQMBAgECCQMGAgIDAwUSG?=
+ =?us-ascii?q?QUDAg8DAgEFBAIIEgsHAQEPFAUECQUVAwYCAwMWCwQFAwMDAQwFDA4CAgsDF?=
+ =?us-ascii?q?wUBAQcBAw0IAwQEAgMDCQIBEAEDBAIJAgQBAgoCAgICAgQBAQUEAgQDAgUCA?=
+ =?us-ascii?q?gEIBAMDAw0EAwgIAwUDDBICAgIJAgMBAgMDAwQNCBYNAwINGAoVEwcHAwMEC?=
+ =?us-ascii?q?wIJAwQNAgQCAgEGAwYKBgcEBQYBAhgCAgYMBAMDCAMCAwICAQICAgERAgIJC?=
+ =?us-ascii?q?A0FCQUGAhcDAgMIAQkDDwMCFAEGAggDBwEBBAICChEKAQECAgEGKAMBAQIUE?=
+ =?us-ascii?q?wcDCAICAgIGFgwBBQcDBw8FBQQCAhYDAxIEBBACAgMDAgEBFAYVAQUCAwYLA?=
+ =?us-ascii?q?QYBAgUEAgMEAhICEgMEAwoCDwMGAwQGAwECDBACBAIJCgEFBAMHBQIfAwMCA?=
+ =?us-ascii?q?gULAggCAgUCBQcDCQsGAQIFAwQJAhQCEAICAgIIFwICAgUeAyYCBAMDAwMLA?=
+ =?us-ascii?q?QICDgkDBD0GEwQCAwMCDgECAgsBAgIEAgMBBAcJAwMJCgcBCg0HAgIKCAkQA?=
+ =?us-ascii?q?QICDwcDAgICAgYHDgMCEw8FBgYCCgcNCgMCAQICEwIDCQYDBQ0DBwQKDwIVA?=
+ =?us-ascii?q?hYFAyACCAkLAgcOBQIFEgMOBQMCAhIEAgMGBQMBBwEXAwcIAgIMAgICAgUCB?=
+ =?us-ascii?q?QIFGBEBDQQDAwMCCAEEFQYDCQgqCAQDCwYdAgIDAgQFAQETAQEBBQEJAgMCA?=
+ =?us-ascii?q?wQIAwMDAwIDBAwLAgEHCAMDBgsICQYDAgcIGQMFBAMHBQshAgYDAgQFBAEFA?=
+ =?us-ascii?q?hUNAgMZAgYDBhQLDAIGDggJAwcBAQECAgIIAQUFEgIDBAIFBAQBARIGAgEDA?=
+ =?us-ascii?q?gIDBAIKAQICCgIICgEJFAQDCAMDAwMDBQEBAgIKBBMFBQIBBRMdAgkDIw8CA?=
+ =?us-ascii?q?QsJCBM9DAcyBDYBCQsUBwYlgQCbRQEKEIEwg1YLCFIoExQcd0panl2nVDQHh?=
+ =?us-ascii?q?B0FgVgGDJ9cBg8EL5dDkw6IKZBSo1wLhRkCCgcGESMSgTMBOIFcMxojgQGCN?=
+ =?us-ascii?q?k8DGQ+OLRaDWL9RQjU8AgcBCgEBAwmFaYoDgUsBAQ?=
+IronPort-PHdr: A9a23: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
- Rm6twrcu8cLjYd4Lqs8yhTFrmZWd+lY2GhkIU6fkwvm6sq/8pNv7z5ct+49+8JFTK73Y7k2Q
+ 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
- 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
- Bg7llklCQzM3DLr/ktvfBzSozAsnU53ldi32Vis
-IronPort-Data: A9a23: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
-IronPort-HdrOrdr: A9a23:wcA5yK3QOZ5BxkM4nKHt7gqjBL8kLtp133Aq2lEZdPVwSL38qy
- nOpoV46faaslsssR0b9exoW5PwIk/00ZZ05M0/O7KmWhf7oS+UKuhZjbcKoQeAJ8SWzIc0vs
- 1dmsNFZuEYY2IUsfrH
-X-Talos-CUID: 9a23:434zNm6PTQVs26odntss7UUOHcsBdmPhzG6NHmnmJU92d56LcArF
-X-Talos-MUID: =?us-ascii?q?9a23=3AA6K2oQ8INROqiXfynBzjYPqQf9xF7YCjMkUjqJk?=
- =?us-ascii?q?b5vevdgpTNXTGsSviFw=3D=3D?=
+ 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
+IronPort-Data: A9a23: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
+ vSRD6ACOXm4
+IronPort-HdrOrdr: A9a23:Rtec1qtAJD7iaTmBWfppt3uU7skDWNV00zEX/kB9WHVpm7+j5r
+ iTdZUgpH3JYVMqMk3I9urwXJVoLUmsjqKdgrNhWotKPjOW3VdARbsKheCSoAEIcxefygc379
+ YbT0ERMqyIMbE3t7ed3CCIV/glhPeImZrGuQ4c9RtQpMNRBp2IIz0WNu9TKCxLeDU=
+X-Talos-CUID: 9a23:+tYaMG79t/fQL0ku69ss0EcwOOs7b3zm5n6IZG/oNXtQEJSfcArF
+X-Talos-MUID: 9a23:moMKZgZL0wJ2N+BTqD3BgyxGaPxS06X/JnxTtpEkt8rUOnkl
 X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-AV: E=Sophos;i="6.12,242,1728943200"; 
-   d="asc'?scan'208";a="199721748"
-X-MGA-submission: =?us-ascii?q?MDGyaYkd1MNvsFFcF5C65jczK0QkOTtM+UQ4xa?=
- =?us-ascii?q?TRwIfFDptVR255a/G91N/8lY7R/8PeqRuN2fQBjZ7Tqy4sKC4qf6lJIV?=
- =?us-ascii?q?QvxO1AjUmYe4YsruK0CAbawFvWd5w5orQQ5KZff4iDwQLvbk3tvsK6E9?=
- =?us-ascii?q?Q58wiLCDiRuQz95tpBcZf/OQ=3D=3D?=
-Received: from mout02.posteo.de ([185.67.36.142])
-  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Dec 2024 20:18:48 +0100
-Received: from submission (posteo.de [185.67.36.169]) 
-	by mout02.posteo.de (Postfix) with ESMTPS id 75C60240106
-	for <cocci@inria.fr>; Tue, 17 Dec 2024 20:18:47 +0100 (CET)
-Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4YCRS2689jz6twf;
-	Tue, 17 Dec 2024 20:18:42 +0100 (CET)
-Date: Tue, 17 Dec 2024 19:18:42 +0000
-From: Michele Martone <michelemartone@users.sourceforge.net>
-To: cocci@inria.fr
-Message-ID: <Z2HOksmLuhWXEsZt@localhost>
-Mail-Followup-To: cocci@inria.fr
+X-IronPort-AV: E=Sophos;i="6.12,247,1728943200"; 
+   d="scan'208,217";a="104718534"
+X-MGA-submission: =?us-ascii?q?MDH+PxGGC+d7/tW6/J4s0ZhaPhXY30oHHpfY87?=
+ =?us-ascii?q?+HylZ6HQjp+z1GWxMtL9beqQz0OdguhWlmMtfMYKuPnLfWpCZXCtQDEG?=
+ =?us-ascii?q?M71o6qq+7V+765R3d1dHsIrZjL2lkf2WEeygd/KQyAnXXAlY0Z1silU+?=
+ =?us-ascii?q?BCalrRmX9Bn30LnOK7lDHm+w=3D=3D?=
+Received: from mail-lj1-f179.google.com ([209.85.208.179])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Dec 2024 08:25:52 +0100
+Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-30229d5b22fso5606291fa.2
+        for <cocci@inria.fr>; Wed, 18 Dec 2024 23:25:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1734593150; x=1735197950; darn=inria.fr;
+        h=subject:from:content-language:to:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=q4Jp8eQZrZXaCuCyEFJ/vBgr8pXCcB24ofZPZX2U55A=;
+        b=NzLMwHbc+TlgCesV5Oua4zwvV3wteHvHQ/P71nQ7AH5g9n7hNeCgk7zAzmqWwS6A57
+         jRonE8GzAMQXKpd2mNgYqTXnKno1ML39KzavPgsNXE0b7ZrG5zJaFD0Yzh1g+A70dqR4
+         r0iC+Dz6Dr8TjWFNEyQ2R05VX8hv42wR6w3SW77ZkdMQPUboPG6QpN2ZeWN7KbGL5j0V
+         zbv7jkdybCu9Td+pSAXCccXIFjqUtaDrVNN4viTbE74pZWUt8oD0pkIkwHZ9l0XeyZCM
+         sM+qvy/EkCyVL/l34i+KC252mP72y9GBWBQmeopSiJvkaoVImobwvSY89RYRvfDusAjY
+         qcJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1734593150; x=1735197950;
+        h=subject:from:content-language:to:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=q4Jp8eQZrZXaCuCyEFJ/vBgr8pXCcB24ofZPZX2U55A=;
+        b=igeL/fLpAFCQ+y18z+87s+z1C598wpsXNacO5L9PD3+7s9hU1twWxSlaZb/92VN8hk
+         CG/N/25UAim8L2eJaka+PlPH7JE6fBibPPXzwrAmV+0jX+NZtqXL5IqdzOyO2GyfHlXg
+         80eBOaIMgQj/FkafF6O6IELuS9GdgnAHkpRyRuYhzXw1rEZnuO7q3Zn+1xTpADPfnRrP
+         FBu0jLqq4TLtIjw0cLVbYMNebK2631oompZetVV9PvDlVqPBPN8YKOTUxmNQNMC2Y+wt
+         J737J+4SkUFEEiPsQ8EbtM6quA069KSoBS+D8ibEhHBWKOkHFm/GiB6jEt4DrMZ52rwD
+         Ob5w==
+X-Gm-Message-State: AOJu0YwXkgDYoU3GcmId9f05cjMvhRXuaKghhejDdq7EljbWXysmZrYA
+	9JooUticlC5rVXhu6xu346+L7wtH/1CW+SSc+Ruyro0Ojke8OTyYF8Wb5Q==
+X-Gm-Gg: ASbGnctwfsaL3T0QZcPWylDjn3xSZxhJi4KRhV3ptR2TOe+auRzHep4Q5JCkTuCaMw6
+	SDadtdOtnbNxQrpoxaxPih+e9zT0i+hOXpy+4FvLSSd6/AFUvu1CL2xzxAzNRw95JWKd1jHTeCH
+	LxD1sDxZjGgf2ipkC+hH1oy8H2uJDqPbY3/2QF09/AlNGDhdpkeAT5FfO9Gbg5gC6iB1gkPKcgE
+	2Avr8/VDkfrx77TtdbN3xYRg90tjh0T6j5yMT4C8ddsXBuabEoiop4oxjQyw6e/3UYcYKp9QbBM
+	6I71/ZZqv2WDLQQ8iSsrG4k2HbRlsA==
+X-Google-Smtp-Source: AGHT+IE8jryktPy7tZC6q5aiRrtIhHXb2sQr2e6WMLrNPA4KGWIowjd/JpfhImRXxj2D/a11MqvgkA==
+X-Received: by 2002:a2e:a592:0:b0:302:40ec:9f92 with SMTP id 38308e7fff4ca-30457a42e4emr8572701fa.32.1734593149530;
+        Wed, 18 Dec 2024 23:25:49 -0800 (PST)
+Received: from ?IPV6:2a02:aa1:114d:98dc:cb3:8390:555f:e497? ([2a02:aa1:114d:98dc:cb3:8390:555f:e497])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3045ad9bb7asm1221931fa.46.2024.12.18.23.25.47
+        for <cocci@inria.fr>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 Dec 2024 23:25:48 -0800 (PST)
+Content-Type: multipart/alternative;
+ boundary="------------JF7twP9aXPiYIGzGHeSgfZcG"
+Message-ID: <f0764391-b0d3-48fa-8a54-6edddf8d2c8d@gmail.com>
+Date: Thu, 19 Dec 2024 08:25:46 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="hPBt9v5SRKAa1coz"
-Content-Disposition: inline
-Subject: [cocci] Training: Semantic Patching of C and C++ Code with
- Coccinelle
-Reply-To: Michele Martone <michelemartone@users.sourceforge.net>
+User-Agent: Mozilla Thunderbird
+To: cocci@inria.fr
+Content-Language: en-US
+From: Mats Kindahl <mats.kindahl@gmail.com>
+Subject: [cocci] Depends on with negative matches
+Reply-To: Mats Kindahl <mats.kindahl@gmail.com>
 X-Loop: cocci@inria.fr
-X-Sequence: 2183
+X-Sequence: 2184
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -192,93 +244,459 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-12/Z2HOksmLuhWXEsZt%40localhost>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2024-12/f0764391-b0d3-48fa-8a54-6edddf8d2c8d%40gmail.com>
+
+This is a multi-part message in MIME format.
+--------------JF7twP9aXPiYIGzGHeSgfZcG
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+
+Hi all,
+
+I want have a case where I want to find missing resource releases. The 
+real case is a different one, so I am creating a similar case using 
+malloc() and want to find any malloc() that is either not freeing the 
+memory or returning it to the caller. Here are a few cases:
+
+    #include <stdio.h>
+    #include <stdlib.h>
+
+    struct something {
+       const char *here;
+       int ok;
+    };
+
+    /* This should match */
+    void func_1() {
+       struct something *foo;
+       foo = malloc(sizeof(struct something));
+       if (!foo) {
+         printf("Error %s", foo->here);
+         return;
+       }
+       foo->ok = 1;
+    }
+
+    /* This should NOT match */
+    struct something *func_2() {
+       struct something *foo;
+       foo = malloc(sizeof(struct something));
+       if (foo) {
+         foo->ok = 1;
+         return foo;
+       }
+       printf("Error %s", foo->here);
+       return NULL;
+    }
+
+    /* This should NOT match */
+    struct something *func_3() {
+       struct something *foo;
+       foo = malloc(sizeof(struct something));
+       if (!foo) {
+         printf("Error %s", foo->here);
+         return NULL;
+       }
+       foo->ok = 1;
+       return foo;
+    }
+
+    /* This should match */
+    void func_4(struct something *foo) {
+       if (!foo)
+         foo = malloc(sizeof(struct something));
+       foo->ok = 1;
+       printf("Error %s", foo->here);
+    }
+
+    /* This should NOT match */
+    void func_5(struct something *foo) {
+       if (!foo)
+         foo = malloc(sizeof(struct something));
+       foo->ok = 1;
+       printf("Error %s", foo->here);
+       free(foo);
+    }
+
+    /* This should NOT match */
+    struct something *func_6(struct something *foo) {
+       if (!foo)
+         foo = malloc(sizeof(struct something));
+       foo->ok = 1;
+       printf("Error %s", foo->here);
+       return foo;
+    }
+
+I tried this semantic patch, but unfortunately it does not seem to 
+capture the dependencies correctly.
+
+    // Capture any malloc() to a local variable
+    @r@
+    local idexpression var;
+    position p;
+    @@
+       var@p = malloc(...);
+
+    // Detect cases that either free the variable or return it. Expect an
+    // intermediate NULL check with error handling code that can do
+    // anything it likes.
+    @r1@
+    local idexpression r.var;
+    position r.p;
+    statement S;
+    @@
+       var@p = malloc(...);
+       ...
+       if (var == NULL) S
+       ...
+    (
+       free(var);
+    |
+       return var;
+    )
+
+    // Detect cases that either free the variable or return it. Expect an
+    // non-NULL check that then either returns or free the variable. We
+    // ignore any code that follows this if statement and assume that is
+    // error handling code.
+    @r2@
+    local idexpression r.var;
+    position r.p;
+    @@
+       var@p = malloc(...);
+       ...
+       if (var != NULL) {
+         ...
+    (
+         free(var);
+         ...
+    |
+         return var;
+    )
+       }
+
+    // If neither of the above cases match, then we have a bad malloc, so
+    // mark it.
+    @depends on !r1 && !r2@
+    local idexpression r.var;
+    position r.p;
+    @@
+    * var@p = malloc(...);
+
+Unfortunately, it matches correctly in most cases, but some of the cases 
+are not detected correctly.
+
+    mats@abzu:~/lang/cocci/tests$ spatch --sp-file missing_free.cocci
+    code/malloc-example.c
+    init_defs_builtins: /usr/lib/coccinelle/standard.h
+    HANDLING: code/malloc-example.c
+    diff =
+    --- code/malloc-example.c
+    +++ /tmp/cocci-output-172050-d31474-malloc-example.c
+    @@ -9,7 +9,6 @@ struct something {
+    /* This should match */
+    void func_1() {
+       struct something *foo;
+    -  foo = malloc(sizeof(struct something));
+       if (!foo) {
+         printf("Error %s", foo->here);
+         return;
+    @@ -44,7 +43,6 @@ struct something *func_3() {
+    /* This should match */
+    void func_4(struct something *foo) {
+       if (!foo)
+    -    foo = malloc(sizeof(struct something));
+       foo->ok = 1;
+       printf("Error %s", foo->here);
+    }
+    @@ -52,7 +50,6 @@ void func_4(struct something *foo) {
+    /* This should NOT match */
+    void func_5(struct something *foo) {
+       if (!foo)
+    -    foo = malloc(sizeof(struct something));
+       foo->ok = 1;
+       printf("Error %s", foo->here);
+       free(foo);
+    @@ -61,7 +58,6 @@ void func_5(struct something *foo) {
+    /* This should NOT match */
+    struct something *func_6(struct something *foo) {
+       if (!foo)
+    -    foo = malloc(sizeof(struct something));
+       foo->ok = 1;
+       printf("Error %s", foo->here);
+       return foo;
+
+I tried to look at the kmalloc() examples in the coccinellery and also 
+some other examples in the source code that seems to do similar things, 
+but none have this case with "either free or return" and multiple cases 
+with negative dependencies. It seems like you can get it mostly correct 
+if you just keep the first rule only (with the NULL check), but I want 
+to capture the "positive branch" case as well, where you check for 
+non-NULL and then execute some code that should end with either a free 
+or a return.
+
+Anybody have some insight into what I've done wrong or if there is a 
+better way to solve this problem?
+
+Best wishes,
+Mats Kindahl
 
 
---hPBt9v5SRKAa1coz
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+--------------JF7twP9aXPiYIGzGHeSgfZcG
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Dear Coccinelle Mailing List,
+<!DOCTYPE html>
+<html>
+  <head>
 
-I am offering this Coccinelle introduction in person in Munich next month.
-Perhaps of your interest.=20
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p>Hi all,</p>
+    <p>I want have a case where I want to find missing resource
+      releases. The real case is a different one, so I am creating a
+      similar case using malloc() and want to find any malloc() that is
+      either not freeing the memory or returning it to the caller. Here
+      are a few cases:</p>
+    <blockquote>
+      <p><font face="monospace">#include &lt;stdio.h&gt;<br>
+          #include &lt;stdlib.h&gt;<br>
+          <br>
+          struct something {<br>
+            const char *here;<br>
+            int ok;<br>
+          };<br>
+          <br>
+          /* This should match */<br>
+          void func_1() {<br>
+            struct something *foo;<br>
+            foo = malloc(sizeof(struct something));<br>
+            if (!foo) {<br>
+              printf("Error %s", foo-&gt;here);<br>
+              return;<br>
+            }<br>
+            foo-&gt;ok = 1;<br>
+          }<br>
+          <br>
+          /* This should NOT match */<br>
+          struct something *func_2() {<br>
+            struct something *foo;<br>
+            foo = malloc(sizeof(struct something));<br>
+            if (foo) {<br>
+              foo-&gt;ok = 1;<br>
+              return foo;<br>
+            }<br>
+            printf("Error %s", foo-&gt;here);<br>
+            return NULL;<br>
+          }<br>
+          <br>
+          /* This should NOT match */<br>
+          struct something *func_3() {<br>
+            struct something *foo;<br>
+            foo = malloc(sizeof(struct something));<br>
+            if (!foo) {<br>
+              printf("Error %s", foo-&gt;here);<br>
+              return NULL;<br>
+            }<br>
+            foo-&gt;ok = 1;<br>
+            return foo;<br>
+          }<br>
+          <br>
+          /* This should match */<br>
+          void func_4(struct something *foo) {<br>
+            if (!foo)<br>
+              foo = malloc(sizeof(struct something));<br>
+            foo-&gt;ok = 1;<br>
+            printf("Error %s", foo-&gt;here);<br>
+          }<br>
+          <br>
+          /* This should NOT match */<br>
+          void func_5(struct something *foo) {<br>
+            if (!foo)<br>
+              foo = malloc(sizeof(struct something));<br>
+            foo-&gt;ok = 1;<br>
+            printf("Error %s", foo-&gt;here);<br>
+            free(foo);<br>
+          }<br>
+          <br>
+          /* This should NOT match */<br>
+          struct something *func_6(struct something *foo) {<br>
+            if (!foo)<br>
+              foo = malloc(sizeof(struct something));<br>
+            foo-&gt;ok = 1;<br>
+            printf("Error %s", foo-&gt;here);<br>
+            return foo;<br>
+          }<br>
+        </font></p>
+    </blockquote>
+    <p><font face="monospace"></font>I tried this semantic patch, but
+      unfortunately it does not seem to capture the dependencies
+      correctly.</p>
+    <blockquote>
+      <p><font face="monospace">// Capture any malloc() to a local
+          variable<br>
+          @r@<br>
+          local idexpression var;<br>
+          position p;<br>
+          @@<br>
+            var@p = malloc(...);<br>
+          <br>
+          // Detect cases that either free the variable or return it.
+          Expect an<br>
+          // intermediate NULL check with error handling code that can
+          do<br>
+          // anything it likes.<br>
+          @r1@<br>
+          local idexpression r.var;<br>
+          position r.p;<br>
+          statement S;<br>
+          @@<br>
+            var@p = malloc(...);<br>
+            ...<br>
+            if (var == NULL) S<br>
+            ...<br>
+          (<br>
+            free(var);<br>
+          |<br>
+            return var;<br>
+          )<br>
+          <br>
+          // Detect cases that either free the variable or return it.
+          Expect an<br>
+          // non-NULL check that then either returns or free the
+          variable. We<br>
+          // ignore any code that follows this if statement and assume
+          that is<br>
+          // error handling code.<br>
+          @r2@<br>
+          local idexpression r.var;<br>
+          position r.p;<br>
+          @@<br>
+            var@p = malloc(...);<br>
+            ...<br>
+            if (var != NULL) {<br>
+              ...<br>
+          (<br>
+              free(var);<br>
+              ...<br>
+          |<br>
+              return var;<br>
+          )<br>
+            }<br>
+          <br>
+          // If neither of the above cases match, then we have a bad
+          malloc, so<br>
+          // mark it.<br>
+          @depends on !r1 &amp;&amp; !r2@<br>
+          local idexpression r.var;<br>
+          position r.p;<br>
+          @@<br>
+          * var@p = malloc(...);<br>
+        </font></p>
+    </blockquote>
+    <p>Unfortunately, it matches correctly in most cases, but some of
+      the cases are not detected correctly.</p>
+    <blockquote>
+      <p><span style="font-family:monospace"><span
+style="font-weight:bold;color:#54ff54;background-color:#ffffff;">mats@abzu</span><span
+            style="color:#000000;background-color:#ffffff;">:</span><span
+style="font-weight:bold;color:#5454ff;background-color:#ffffff;">~/lang/cocci/tests</span><span
+            style="color:#000000;background-color:#ffffff;">$ spatch
+            --sp-file missing_free.cocci code/malloc-example.c
+          </span><br>
+          init_defs_builtins: /usr/lib/coccinelle/standard.h
+          <br>
+          HANDLING: code/malloc-example.c
+          <br>
+          diff =  <br>
+          --- code/malloc-example.c
+          <br>
+          +++ /tmp/cocci-output-172050-d31474-malloc-example.c
+          <br>
+          @@ -9,7 +9,6 @@ struct something {
+          <br>
+          /* This should match */
+          <br>
+          void func_1() {
+          <br>
+            struct something *foo;
+          <br>
+          -  foo = malloc(sizeof(struct something));
+          <br>
+            if (!foo) {
+          <br>
+              printf("Error %s", foo-&gt;here);
+          <br>
+              return;
+          <br>
+          @@ -44,7 +43,6 @@ struct something *func_3() {
+          <br>
+          /* This should match */
+          <br>
+          void func_4(struct something *foo) {
+          <br>
+            if (!foo)
+          <br>
+          -    foo = malloc(sizeof(struct something));
+          <br>
+            foo-&gt;ok = 1;
+          <br>
+            printf("Error %s", foo-&gt;here);
+          <br>
+          }
+          <br>
+          @@ -52,7 +50,6 @@ void func_4(struct something *foo) {
+          <br>
+          /* This should NOT match */
+          <br>
+          void func_5(struct something *foo) {
+          <br>
+            if (!foo)
+          <br>
+          -    foo = malloc(sizeof(struct something));
+          <br>
+            foo-&gt;ok = 1;
+          <br>
+            printf("Error %s", foo-&gt;here);
+          <br>
+            free(foo);
+          <br>
+          @@ -61,7 +58,6 @@ void func_5(struct something *foo) {
+          <br>
+          /* This should NOT match */
+          <br>
+          struct something *func_6(struct something *foo) {
+          <br>
+            if (!foo)
+          <br>
+          -    foo = malloc(sizeof(struct something));
+          <br>
+            foo-&gt;ok = 1;
+          <br>
+            printf("Error %s", foo-&gt;here);
+          <br>
+            return foo;<br>
+        </span></p>
+    </blockquote>
+    <p>I tried to look at the kmalloc() examples in the coccinellery and
+      also some other examples in the source code that seems to do
+      similar things, but none have this case with "either free or
+      return" and multiple cases with negative dependencies. It seems
+      like you can get it mostly correct if you just keep the first rule
+      only (with the NULL check), but I want to capture the "positive
+      branch" case as well, where you check for non-NULL and then
+      execute some code that should end with either a free or a return.<br>
+    </p>
+    <p>Anybody have some insight into what I've done wrong or if there
+      is a better way to solve this problem?<br>
+    </p>
+    <p>Best wishes,<br>
+      Mats Kindahl<br>
+    </p>
+    <p><br>
+    </p>
+  </body>
+</html>
 
-___________________________________________________________________________=
-_______
- What: Introduction to Semantic Patching of C and C++ Programs with Coccine=
-lle,
-   or
-      A language to update large swathes of C/C++ code with non-trivial cha=
-nges
-          (with emphasis on HPC-specific restructurings).
- Why: Code maintenance and porting to new CPUs/GPUs is difficult. This can =
-help.
- When:               Wednesday, January 22, 2025,   09:30 - 17:30
- Where:  Leibniz Supercomputing Centre, Garching near Munich, Germany  (ON-=
-SITE)
- Who: Dr. Michele Martone    https://github.com/michelemartone
- Prerequisites: Good C/C++ knowledge; HPC experience recommended.
-___________________________________________________________________________=
-_______
-
- Registration URL:  =3D=3D=3D>  --->  https://tiny.badw.de/gsRkBW  <---  <=
-=3D=3D=3D
-___________________________________________________________________________=
-_______
-
- The maintenance of a large software project can be very demanding. External
- factors like evolving third-party software library APIs, or constantly cha=
-nging
- hardware platforms might require significant code adaptions for the code t=
-o run
- efficiently, or to run at all. Failure in coping with this can lead to
- obsolescence, loss of performance, incompatibility, vendor lock-in, bugs.
-=20
- Have you ever wondered how to detect and manipulate specified C/C++ code
- constructs, be it for code analysis, or better, to restructure an arbitrar=
-ily
- large codebase according to a specified, non-trivial `pattern', without wr=
-iting
- a source-to-source translator yourself, but using an existing programmable=
- one?
-=20
- In this training we introduce you to a tool to do exactly this: match and
- restructure code in a programmatic, formal way.
-=20
- After this training, you shall be able to write your own code transformati=
-ons,
- be it for a refactoring, performance improvement, paving the way to an
- experimental fork, or for debug/analysis reasons.
-=20
- The training will also show how to analyse code looking for interesting
- patterns (e.g. bugs), integrate your Python scripts to achieve the custom
- transformations you need, and leverage Coccinelle's increasing C++ support.
- =20
- Special mention will go to performance-oriented transformations, of intere=
-st of
- HPC practitioners.
-___________________________________________________________________________=
-_______
---=20
-Dr. Michele Martone                                   https://michelemarton=
-e.org
-Leibniz Supercomputing Centre (LRZ)            High Performance Systems Div=
-ision
-Boltzmannstrasse 1           D-85748 Garching bei Muenchen               Ge=
-rmany
-      ()     ASCII ribbon campaign   - against HTML e-mail
-      /\                             - against proprietary attachments
-
---hPBt9v5SRKAa1coz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQQdu1Va6jWbiq8Ma4jg5mnI7xJYuAUCZ2HOkgAKCRDg5mnI7xJY
-uJzUAJ4/k3Tk5i7iJfuzqVs5SasMIvHXkACeMgp4wOgMY8ftNAQWSFYL18TA0xc=
-=av7G
------END PGP SIGNATURE-----
-
---hPBt9v5SRKAa1coz--
+--------------JF7twP9aXPiYIGzGHeSgfZcG--
