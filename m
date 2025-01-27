@@ -4,20 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6F01BC0218A
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C0740C0218D
 	for <cocci@archiver.kernel.org>; Tue, 28 Jan 2025 09:13:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=date:from:to:cc:message-id:references:mime-version:
-   content-transfer-encoding:in-reply-to:subject:reply-to:
+  h=date:from:to:cc:message-id:in-reply-to:references:
+   mime-version:content-transfer-encoding:subject:reply-to:
    sender:list-id:list-help:list-subscribe:list-unsubscribe:
    list-post:list-owner:list-archive;
-  bh=jz5/hmxmF6z1lymaIefjN3fmjmXtR5QscHB+vV975r8=;
-  b=IntUuUFv13/ET2ayCQQi/UO5n5kcUlmxpd4QCntpOOa9Jum1xopHlKpi
-   rIvleUTXkUbgILCz9jgiyuo9ipNrLMY+pOHD5DfWGsATIqD4F9TNzGQ3t
-   IzqWaA+/mTBJY8w2+xR9lIVbOVbIPDhfRDV2EytSIiPIIFEKeKEgSkxLk
-   c=;
-Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr
+  bh=XqoYrz1As8fQclDj4knZBeMDedtFY4BX82AcbJjtwi0=;
+  b=sckPRozxZkw3qF/VdPkgIATx6K3TMkpXDpf7TW1cA6IvvnbbrZHM6gQV
+   fDSEJILYy3YiinUYBadv/fpGUOIfHlIH6cJRnbPfHdoXWqG/XNvM1iUt6
+   YuDMkp9+pIbpcuNG/z44nxSneVEAFUCyO7ICtshgrEtutQM2xk9GnWAdv
+   Q=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -36,180 +35,198 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   receiver=mail2-relais-roc.national.inria.fr;
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@kernel.org
 X-IronPort-AV: E=Sophos;i="6.13,240,1732575600"; 
-   d="scan'208";a="205325402"
+   d="scan'208";a="205325438"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 28 Jan 2025 10:13:21 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 28 Jan 2025 10:13:22 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 03BAEE0E7C; Tue, 28 Jan 2025 10:13:09 +0100 (CET)
+	id 5DDAFE0E89; Tue, 28 Jan 2025 10:13:10 +0100 (CET)
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by sympa.inria.fr (Postfix) with ESMTPS id 51B1DE0035
-	for <cocci@sympa.inria.fr>; Mon, 27 Jan 2025 07:07:50 +0100 (CET)
-IronPort-SDR: 679722b5_rj/fjXACLWm2o7tSXeMp08iSIFrGlYXbGJ3OX43qUNSbf1Q
- C6dDteDfqEFq8ocWNIpEbejTHc03z177CvNBHqQ==
-X-IPAS-Result: =?us-ascii?q?A0HNAwBvIZdnhUDyp9VaHQEBAQEJARIBBQUBQIFTgkR9W?=
- =?us-ascii?q?icMBwhIBIRSg0+FLYgNZwOBP5sDgWqBag8BAwENOQsEAQEDAQOCDIJ0Aop1A?=
- =?us-ascii?q?h8GAQQ0EwECBAEBAQEDAgMBAQEBAQEQAQEFAQEBAgEBAgQGAQIQAQEBAUBJh?=
- =?us-ascii?q?XsNgmIBM3GBJQEBAQEBAQEBAQEBAQEBAQEBAQEXAg19AQEBAQIBIw8BDQEBL?=
- =?us-ascii?q?gkBDwsYAgIRBw4CAlYGExSCbgGCQSMHAQy1TnqBMoEBggwBAQaBCNsXgWQJg?=
- =?us-ascii?q?RouhWuCSRoBcoR5g316Jw+BVUSBSoFzTzM+g3yBBoMcOoIvgjOBEGSBKoEKJ?=
- =?us-ascii?q?WeHNYNdgTtfgV8WISV7LIRnQgQRXC8+iEFSexwDWSwBVRMXCwcFgSlIA4ESI?=
- =?us-ascii?q?4EmBTUKNzqCDWlJNwINAjWCHnyCK4IhgjuERYRRhV6CFIFlAwMWEgGCNXJ5H?=
- =?us-ascii?q?oFNHUADC209NxQbnXI9g3+BIwgQIFEgB2Y1BECSQAiDR69NNAeEHoFdBgyKK?=
- =?us-ascii?q?ZIkgwoESYQEgVeLL5lJmHyLMlmBeZVThSUxgX4jgVxNI4M3CQo8AxkPjiEZH?=
- =?us-ascii?q?4NChRMuwhRBNQIBOQIHAQoBAQMJkBiBSwEB?=
-IronPort-PHdr: A9a23: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
-IronPort-Data: A9a23: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
-IronPort-HdrOrdr: A9a23:4fyp8KoDM88oGqb1yPxavNQaV5ooeYIsimQD101hICG9vPb3qy
- mLpoV+6faSskd3ZJhAo6HkBEDkexnhHPFOjLX5UY3PYOCighrPEGgA1/qB/9SDIU3DH4dmvM
- 8KT0E9MqySMbEQt6fHCWeDfOod/A==
-X-Talos-CUID: 9a23:yRCgAWOqiOMCue5DZSp6/U0PMPEcKiONxVr9HRSeJUI1R+jA
-X-Talos-MUID: 9a23:BCAyfQRh1Ycln61xRXSzoSB+H8xn4Z/pS2cokdIass7eOxVZbmI=
+	by sympa.inria.fr (Postfix) with ESMTPS id A5B88E0035
+	for <cocci@sympa.inria.fr>; Mon, 27 Jan 2025 07:39:44 +0100 (CET)
+IronPort-SDR: 67972a30_u5U7iiATBqS0MHj8Uy2+pIU+1mfCGBEnUlrhCZVDENUdLie
+ 4O34mqClJ6h4EIfXlOrfverVYcwe0UkZekUMe/Q==
+X-IPAS-Result: =?us-ascii?q?A0ENAACRKZdnj9lUsotaHAEBAQEBAQcBARIBAQQEAQFAg?=
+ =?us-ascii?q?T8HAQELAYIbKH1aMwQLSIRWiB1fhlOCIQORSoxOgX4PAQMBDTETBAEBAwSCD?=
+ =?us-ascii?q?IJ0Aop1Ah4HAQQwCQ4BAgQBAQEBAwIDAQEBAQEBEAEBBQEBAQIBAQIEBgECE?=
+ =?us-ascii?q?AEBAQEBATkFSYV7DYJiAYEkgSYBAQEBAQEBAQEBAQEdAg19AQEBAQIBIx0BA?=
+ =?us-ascii?q?TcBBAsLGAICJgICVgYTFAeCZwGCQSMDtV56gTKBAYIMAQEG3B+BZAMGgRouA?=
+ =?us-ascii?q?YhNAYVrG4NieieCKIEVgyo+hEODW4JpghwXS4EpgjSBDIsSgTuEQYRnPoojS?=
+ =?us-ascii?q?Ap7HANZLAFVEw0KCwcFYUhIAzYMCzAVI4EmBTUKNzqCDWlJNwINAjWCHnyCK?=
+ =?us-ascii?q?4IhgjuERYRRhV6CFIFlAwMWE4I1cnkegU0dQAMLGA1IESw3FBsGPQFuB5w5A?=
+ =?us-ascii?q?TyDfwIsYit7CgwPIwIVRRgEAjqSQINPAYxdoyOEJYwYlS5NhASNBoY6j0GDT?=
+ =?us-ascii?q?pgYZI4ElVAHBAuFQ4FnOoFcTTBDgmdPAxkPjiEMDQkWdgEJh1XCQkI1PAIHA?=
+ =?us-ascii?q?QoBAQMJkBiBSwEB?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:PJ3gY6+OFnn/ZGLP1Hxuk+DdI+orL9Y04lQ7vn2ZhyY1TiX+rb
+ HWoB17726TtN91YhwdcL+7VJVoLUmyyXcx2/hyAV7AZniAhILLFvAA0WKK+VSJcEfDH6xmpM
+ JdmsNFaOEYY2IVsS+D2njdL+od
+X-Talos-CUID: 9a23:dV6/H27dxdxxwsSGXtss7BYmIJ84Ik/myXKOZFeyLm9SUpK3RgrF
+X-Talos-MUID: 9a23:TxR6ewrfFz5swmRE17Iez2twaYRO6qquMwMuiplW/OSZEg5AOA7I2Q==
 X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-AV: E=Sophos;i="6.13,237,1732575600"; 
-   d="scan'208";a="205081174"
-X-MGA-submission: =?us-ascii?q?MDFIeznUWzCeMxC0ws45qR2wcUygXdXpmjBZG2?=
- =?us-ascii?q?u4wcquf+zUmZLCo+Vms7Pw9qwCg9vuox2+JaqdCLPcTOgbGg3BfeL2I6?=
- =?us-ascii?q?DkV8riQSENgSTeuCW/E8coU+ygRe0RT0WuToNACDonGRFQRokdn1wXCE?=
- =?us-ascii?q?n9cJF3JI4TmqkJnlq9c681DA=3D=3D?=
-Received: from perceval.ideasonboard.com ([213.167.242.64])
-  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2025 07:07:50 +0100
-Received: from pendragon.ideasonboard.com (81-175-209-231.bb.dnainternet.fi [81.175.209.231])
-	by perceval.ideasonboard.com (Postfix) with ESMTPSA id 981F9496;
-	Mon, 27 Jan 2025 07:06:42 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-	s=mail; t=1737958002;
-	bh=1PaZnQBrTgFdzNwyFGepkFiUf9DmyMOVozBizg170xA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=wg76r+aLaFMHJluyTdjsdq+Inq2rF8WaS13E1+T6WTus5cN3mHgPYCKYKmAyFUcwf
-	 LruXKaGbye7fMI4VJDL5/tACuukhXEf+qbB5dXx15WCUsSOEcVouiEpLea6BTeSBy5
-	 5MfnZLdJTtA8GQI3XY0xYDfbw6L0BkK9FtHnXlU8=
-Date: Mon, 27 Jan 2025 08:07:38 +0200
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To: Leonardo =?utf-8?B?QnLDoXM=?= <leobras.c@gmail.com>
-Cc: Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-	Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-	Vignesh Raman <vignesh.raman@collabora.com>,
-	kernelci@lists.linux.dev, linuxtv-ci@linuxtv.org,
-	dave.pigott@collabora.com, mripard@kernel.org,
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-kselftest@vger.kernel.org, pawiecz@collabora.com,
-	tales.aparecida@gmail.com, workflows@vger.kernel.org,
-	kunit-dev@googlegroups.com, nfraprado@collabora.com,
-	davidgow@google.com, cocci@inria.fr, Julia.Lawall@inria.fr,
-	kernel@collabora.com, torvalds@linuxfoundation.org,
-	gregkh@linuxfoundation.org, daniels@collabora.com,
-	shreeya.patel@collabora.com, denys.f@collabora.com,
-	louis.chauvet@bootlin.com, hamohammed.sa@gmail.com,
-	melissa.srw@gmail.com, simona@ffwll.ch, airlied@gmail.com,
-	Tim.Bird@sony.com, broonie@kernel.org, groeck@google.com,
-	rdunlap@infradead.org, geert@linux-m68k.org,
-	michel.daenzer@mailbox.org, sakari.ailus@iki.fi, jarkko@kernel.org
-Message-ID: <20250127060738.GA16795@pendragon.ideasonboard.com>
+   d="scan'208";a="205083358"
+X-MGA-submission: =?us-ascii?q?MDHNxmXl/h3oZtL3NJEwlIXxDxg4l7xHmA2PcW?=
+ =?us-ascii?q?4Z09bkITlz9MfwjrNwxHTFeiLKVlqvykD4mv0x/RVLE6lvpBhK33CGWb?=
+ =?us-ascii?q?C6OWeJiSdWI1MSVRuhg6GjwHEDzyHbxcjzd2wsLRWP2q342WN6z4rzee?=
+ =?us-ascii?q?VtgbvBRR5cMHjZUeizsGGyxg=3D=3D?=
+Received: from dfw.source.kernel.org ([139.178.84.217])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2025 07:39:43 +0100
+Received: from smtp.kernel.org (transwarp.subspace.kernel.org [100.75.92.58])
+	by dfw.source.kernel.org (Postfix) with ESMTP id B3CB75C459F;
+	Mon, 27 Jan 2025 06:39:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31D25C4CED2;
+	Mon, 27 Jan 2025 06:39:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1737959980;
+	bh=o0L9ITlbXOuGoG5NvSGkBzqfS1QOGvu9eKNxY3F9rHc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=fxNfvZiRWJwa/UVTqhlDj9DaNKCCoh7fy2jNfvL+/1YFt0KI6yr3MRvyWSCv9fOT/
+	 hWOPCpYqBZkH7Tm/DG1eRJFvL7wLwTJmabXYY4tNdo8XaNe2rMVK2QHsKZxB05Abm6
+	 JGO7LPaTa+WZiPZe656OG3/9h+NlimjjUH5D90qJ35EYQiESb6M936sYoWbiUtliXW
+	 ZsWMEu6YoCos20hKD2g18+sWnRC9tNppWG0uY3vb01wYpxSdpGyPrgE4ktyCx6rNTB
+	 TCW20ZbrmBmV+XHlSnwt7wC2xmA6oryeNUQDl30mpZAZppbzLmHv+5QPmGGGfVwWCh
+	 kDBsvl5T4nSzg==
+Date: Mon, 27 Jan 2025 07:39:29 +0100
+From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To: Helen Mae Koike Fornazier <helen.koike@collabora.com>
+Cc: "Nicolas Dufresne" <nicolas.dufresne@collabora.com>, "Nikolai
+ Kondrashov" <Nikolai.Kondrashov@redhat.com>, "Jarkko Sakkinen"
+ <jarkko@kernel.org>, "Laurent Pinchart"
+ <laurent.pinchart@ideasonboard.com>, "Leonardo =?UTF-8?B?QnLDoXM=?="
+ <leobras.c@gmail.com>, "Vignesh Raman" <vignesh.raman@collabora.com>,
+ "kernelci" <kernelci@lists.linux.dev>, "linuxtv-ci"
+ <linuxtv-ci@linuxtv.org>, "dave.pigott" <dave.pigott@collabora.com>,
+ "mripard" <mripard@kernel.org>, "linux-kernel"
+ <linux-kernel@vger.kernel.org>, "dri-devel"
+ <dri-devel@lists.freedesktop.org>, "linux-kselftest"
+ <linux-kselftest@vger.kernel.org>, "gustavo.padovan"
+ <gustavo.padovan@collabora.com>, "pawiecz" <pawiecz@collabora.com>,
+ "spbnick" <spbnick@gmail.com>, "tales.aparecida"
+ <tales.aparecida@gmail.com>, "workflows" <workflows@vger.kernel.org>,
+ "skhan" <skhan@linuxfoundation.org>, "kunit-dev"
+ <kunit-dev@googlegroups.com>, "nfraprado" <nfraprado@collabora.com>,
+ "davidgow" <davidgow@google.com>, "cocci" <cocci@inria.fr>, "Julia.Lawall"
+ <Julia.Lawall@inria.fr>, "laura.nao" <laura.nao@collabora.com>, "kernel"
+ <kernel@collabora.com>, "torvalds" <torvalds@linuxfoundation.org>, "gregkh"
+ <gregkh@linuxfoundation.org>, "daniels" <daniels@collabora.com>,
+ "shreeya.patel" <shreeya.patel@collabora.com>, "denys.f"
+ <denys.f@collabora.com>, "louis.chauvet" <louis.chauvet@bootlin.com>,
+ "hamohammed.sa" <hamohammed.sa@gmail.com>, "melissa.srw"
+ <melissa.srw@gmail.com>, "simona" <simona@ffwll.ch>, "airlied"
+ <airlied@gmail.com>, "Tim.Bird" <Tim.Bird@sony.com>, "broonie"
+ <broonie@kernel.org>, "groeck" <groeck@google.com>, "rdunlap"
+ <rdunlap@infradead.org>, "geert" <geert@linux-m68k.org>, "michel.daenzer"
+ <michel.daenzer@mailbox.org>, "sakari.ailus" <sakari.ailus@iki.fi>
+Message-ID: <20250127073400.6307d033@foz.lan>
+In-Reply-To: <19499dcc55d.d07a9615183956.5491109771298297030@collabora.com>
 References: <20250123135342.1468787-1-vignesh.raman@collabora.com>
- <f779c9af4133629f724e366241fab7421d13d227.camel@gmail.com>
- <20250124081250.GA24731@pendragon.ideasonboard.com>
- <20250124135203.040d0852@foz.lan>
- <20250124130021.GA6853@pendragon.ideasonboard.com>
- <f1c73327073c98ade56dfeabf629e2f9cd7d1663.camel@collabora.com>
- <bd37528d1c704951cb86a751a5c81e4c76962f51.camel@gmail.com>
+	<f779c9af4133629f724e366241fab7421d13d227.camel@gmail.com>
+	<20250124081250.GA24731@pendragon.ideasonboard.com>
+	<D7AAOSNDJV11.AXVF80Z934BK@kernel.org>
+	<298675d0-ba19-4c87-b00d-57a5e31b05b6@redhat.com>
+	<b3af62d3565d2d60218520d2ebace6f1a0368c17.camel@collabora.com>
+	<20250124162916.38e5c6a0@foz.lan>
+	<19499dcc55d.d07a9615183956.5491109771298297030@collabora.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <bd37528d1c704951cb86a751a5c81e4c76962f51.camel@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 X-Validation-by: victor.gambier@inria.fr
 Subject: Re: [cocci] [PATCH v2 0/5] kci-gitlab: Introducing GitLab-CI
  Pipeline for Kernel Testing
-Reply-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Reply-To: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 X-Loop: cocci@inria.fr
-X-Sequence: 2265
+X-Sequence: 2266
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -222,104 +239,178 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2025-01/20250127060738.GA16795%40pendragon.ideasonboard.com>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2025-01/20250127073400.6307d033%40foz.lan>
 
-On Fri, Jan 24, 2025 at 06:12:24PM -0300, Leonardo Brás wrote:
-> On Fri, 2025-01-24 at 10:45 -0500, Nicolas Dufresne wrote:
-> > Le vendredi 24 janvier 2025 à 15:00 +0200, Laurent Pinchart a écrit :
-> > > On Fri, Jan 24, 2025 at 01:52:03PM +0100, Mauro Carvalho Chehab wrote:
-> > > > Em Fri, 24 Jan 2025 10:12:50 +0200 Laurent Pinchart escreveu:
-> > > > 
-> > > > > > It's been a few years since I first thought on finding a good way of helping
-> > > > > > kernel developers testing their patches, while making use of the free runner
-> > > > > > minutes Gitlab offers. It can greatly simplify the testing for people who are
-> > > > > > new to kernel development, or students trying to understand it better.
-> > > > > > 
-> > > > > > And this patchset allows that to happen :)
-> > > > > > 
-> > > > > > Actually, I spoke to Helen last year, and to enable it to run on the free
-> > > > > > Gitlab-CI runners, there is a small extra patch which is needed:
-> > > > > > 
-> > > > > > https://lore.kernel.org/all/20240327013055.139494-2-leobras@redhat.com/  
-> > > > 
-> > > > Sounds interesting!
-> > > > 
-> > > > > Gitlab as an open-source software project (the community edition) is one
-> > > > > thing, but can we please avoid advertising specific proprietary services
-> > > > > in the kernel documentation ?
-> > > > 
-> > > > Every time Gitlab is mentioned, the brand of the company that
-> > > > developed it and has been providing proprietary services is also
-> > > > advertised. If you're not happy with that, you should move to use
-> > > > a git forge developed by some open source community.
-> > > 
-> > > I'm fine mentioning the gitlab community edition, I'm not fine
-> > > advertising gitlab.com SaaS in the kernel source tree.
-> 
-> Hello Laurent,
-> 
-> I see your point, and I see no issue on removing the two last lines of CI_TAGS
-> documentation.
-> 
-> I just added this information on documentation because the default runner used
-> for the Free Tier of Gitlab does not work for this CI, as it needs more
-> resources to run. This information can be added on some other place, but at the
-> time I thought it would be ok to let it be there. 
-> This other runner I mentioned in the patch is also available on the Free Tier
-> (free as in beer).
-> 
-> I would like to make it clear that I have no connection/affiliation to Gitlab,
-> other than a free account in their system, which I use for some CI. I have no
-> interest on advertising anything from them.
-> 
-> My only objective is to make it easier to hobbyists/beginners to use those
-> available free minutes to test some change before sending the patch, if they
-> think that's valuable.
+Em Fri, 24 Jan 2025 16:49:30 -0300
+Helen Mae Koike Fornazier <helen.koike@collabora.com> escreveu:
 
-Given the 400 free computes minute per month, and the fact that the
-saas-linux-medium-amd64 runner consumers two minutes per minute, how
-many of the proposed CI runs would be available per month ?
+> Hi Mauro,
+>=20
+>=20
+>=20
+> ---- On Fri, 24 Jan 2025 12:29:16 -0300 Mauro Carvalho Chehab  wrote ---
+>=20
+>  > Em Fri, 24 Jan 2025 09:26:33 -0500=20
+>  > Nicolas Dufresne nicolas.dufresne@collabora.com> escreveu:=20
+>  >   =20
+>  > > Hi,=20
+>  > >=20
+>  > > Le vendredi 24 janvier 2025 =C3=A0 15:00 +0200, Nikolai Kondrashov a=
+ =C3=A9crit=C2=A0:  =20
+>  > > > On 1/24/25 2:16 PM, Jarkko Sakkinen wrote:  =20
+>  > > > > On Fri Jan 24, 2025 at 10:12 AM EET, Laurent Pinchart wrote:  =20
+>  > > > > > Gitlab as an open-source software project (the community editi=
+on) is one=20
+>  > > > > > thing, but can we please avoid advertising specific proprietar=
+y services=20
+>  > > > > > in the kernel documentation ?  =20
+>  > > > >=20
+>  > > > > I don't think we should have any of this in the mainline kernel.=
+=20
+>  > > > >=20
+>  > > > > One angle is that "no regressions rule" applies also to the shen=
+anigans.=20
+>  > > > >=20
+>  > > > > Do we really spend energy on this proprietary crap to the eterni=
+ty?  =20
+>  > > >=20
+>  > > > This is not getting included into the kernel itself, the contribut=
+ed code is,=20
+>  > > > of course, open-source. And yes it would execute just fine on the =
+fully=20
+>  > > > open-source community-edition GitLab.  =20
+>  >   =20
+>  > > > I don't think "no regressions rule" should apply here.  =20
+>  > =20
+>  > It doesn't, as this is not a Kernel userspace API. It is just some=20
+>  > facility to integrate Kernel builds using a CI infrastructure. This ca=
+n=20
+>  > change with time as needed.=20
+>  > =20
+>  > Still, once people start using it, developers need to take some care t=
+o=20
+>  > avoid regressions that would cause CI builds to fail for the ones usin=
+g=20
+>  > such facilities.=20
+>  > =20
+>  > Also, ideally, this should be completely independent of the Kernel ver=
+sion,=20
+>  > e.g. if one sets up an infra using the version that was there when, le=
+t's=20
+>  > say, Kernel 6.14 is released, the same CI scripts should work just fin=
+e=20
+>  > with stable Kernels and even future Kernels.  =20
+>=20
+> Or you can just configure your GitLab CI to work and an older version of
+> the script by just pointing the right yaml URL at that versions in the co=
+nfigs,
+> or am I missing something?
 
-CI pipeline runs always compile the kernel from scratch as far as  can
-see. This may not be an issue for final testing before submission of a
-patch series, but it just won't work for incremental testing of changes.
-Think of how inefficient it would be to run a full pipeline just to get
-the checkpatch.pl output for instance. This is why I believe tests
-should focus first and foremost on ease of use in developers' local
-environments. A standardized, from-scratch, comprehensive test run as a
-gate keeper for integration has value as well, but that won't help
-beginners much.
+The problem of placing them altogether is that it would be hard to track
+incompatible changes, as there's not separate versioning for the yaml
+files.
 
-> > I've just looked attentively, the intention is just to explain you may need to
-> > set gitlab variable in your project fork in order to select correctly sized
-> > sized runners in your own instance.
-> 
-> That's correct
-> 
-> >  Its is not strictly about commercial gitlab.com instance. 
-> 
-> Exactly, the change is about being able to choose the runner you want.
-> 
-> > The default only works with the original project used
-> > instance (which is not gitlab.com as far as I know), but the comment refer to
-> > companies that will choose gitlab.com internally to reduce their IT cost.
-> 
-> Correct.
-> Companies can benefit on that, but my focus was on hobbyist (or begginers) who
-> may want to test their patches on free CI before sending them to the ML.
-> 
-> > Its quite a stretch to call this "advertisement", that makes it looks very
-> > dramatic. I personally believe its quite ahead of most other gitlab CI to take
-> > into consideration running these pipelines on foreign (to the project)
-> > instances.
-> >
-> > > > The way I see, the best would be if the CI integration could work
-> > > > with more than one type of forge and being able to use any
-> > > > free Git??b-CI runners that would be available for developers to
-> > > > use, as this would allow testing more subsystems with CI, thus
-> > > > increasing code quality.
+>  > =20
+>  > Due to that, I'm not convinced that such kernel CI files should be=20
+>  > hosted at the Kernel tree.=20
+>  > =20
+>  > IMO, this should be stored on a separate repository hosted at=20
+>  > kernel.org, using Semantic Versoning (https://semver.org/) - e. g.=20
+>  > when there are incompatible changes, major version number will be=20
+>  > increased.  =20
+>=20
+> A key benefit of having it in-tree is the test expectation list, as seen =
+with
+> DRM-CI. This allows developers to track the state of drivers and progress=
+ over
+> time by showing which tests are expected to pass or fail at a given point=
+ in
+> history. (From what I see in DRM-CI, this adds a considerable amount of v=
+alue.)
+> Please check the VKMS patch in this patchset.
 
--- 
-Regards,
+I'm not saying that everything should be on a separate tree. Things like
+expected tests and test results are dependent at Kernel versions.
 
-Laurent Pinchart
+What I'm saying is that hosting CI-specific files a separate repository is
+better, as you can keep there what is generic.
+
+> Also, if we keep this tool out of tree, I=E2=80=99m concerned that subsys=
+tems like DRM
+> and Media will continue not collaborating=E2=80=94each currently has its =
+own solution
+> when the base could be shared and reused. All static checks, build proces=
+ses,
+> and boot mechanisms are fundamentally the same, with only minor differenc=
+es
+> that are customizable. Other subsystems could use just the base or build =
+their
+> specific configurations/tests on top of it.
+
+I'm in favor of having a common set of CI tooling for all subsystems intere=
+sted
+on setting up CI. Yet moving part of it to be on a separate repository won't
+prevent collaboration. Also, either in or out of tree won't avoid different
+subsystems to use different solutions.
+
+What would make people use it is the capability of quickly setting it up
+on a new repository. For this to happen, documentation is really important.
+Equally important is to have support for multiple git forges and other CI e=
+ngines.
+
+For instance, besides media and DRM, I'm also personally interested on havi=
+ng
+it setup for other subsystems that I also collaborate.
+
+> Having it in-tree sends a message: "You can create your own GitLab CI pip=
+eline,
+> but why not use this existing one, contribute to it, and collaborate for
+> everyone's benefit?".
+>
+> Since it's under the tools/ folder, it=E2=80=99s a helper tool.
+
+It makes sense to have it documented at the Kernel Documentation folder
+and to have something at tools/ that would setup the git forge repositories=
+=20
+used for CI to do Kernel builds.
+
+> Make sense?
+>=20
+> Thanks,
+> Helen
+>=20
+>  >   =20
+>  > > > This is for developers only, and is a template for making=20
+>  > > > your own pipeline mostly, with pieces which can be reused.  =20
+>  > >=20
+>  > > Perhpas worth clarifying that Media and DRM subsystem have opted for=
+ the=20
+>  > > Freedesktop instance. This instance is running the Open Source versi=
+on of=20
+>  > > Gitlab, with hundreds of CI runners contributed and shared among man=
+y projects=20
+>  > > (which includes Mesa, GStreamer, Wayland, Pipewire, libcamera, just =
+to name=20
+>  > > few).  =20
+>  > =20
+>  > It doesn't matter much what git forge some projects are currently usin=
+g, as=20
+>  > things like that could change with time.=20
+>  > =20
+>  > Starting with supporting just one type of git forge sounds OK to me,=20
+>  > but long term goal should be to make it generic enough to be used with=
+ as=20
+>  > much CI engines as possible - not only forges developed by companies t=
+hat=20
+>  > provide paid services like Gitlab/Github, but also completely open=20
+>  > source forges and even Jenkins.=20
+>  > =20
+>  > Thanks,=20
+>  > Mauro=20
+>  >  =20
+>=20
+
+
+
+Thanks,
+Mauro
