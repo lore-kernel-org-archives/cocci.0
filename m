@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BEBC1C02193
-	for <cocci@archiver.kernel.org>; Mon,  3 Feb 2025 23:50:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id AC603C02199
+	for <cocci@archiver.kernel.org>; Mon,  3 Feb 2025 23:50:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:date:mime-version:content-transfer-encoding:
    message-id:references:in-reply-to:to:cc:subject:reply-to:
    sender:list-id:list-help:list-subscribe:list-unsubscribe:
    list-post:list-owner:list-archive;
-  bh=inEJFlb8r1npYTsCShTPXzeDexvNBQKU3TCcAYSm03w=;
-  b=gQdIRMs8JXFmuR56vXqRiM80aU0bnNKl1ippMW3srW2Ab1PJE0nwPEaa
-   4w/1Hx0amVSGj9u4UbhBw2Wn3XLEDM34eOAb4N9dr/EOA+Mb83kySST/y
-   nHj4YGgSleOZ9egHOUrYT9wHQ9IJEnhk631EjzrvzlvTC488CKyX7yxMl
-   A=;
+  bh=jl/YrVgNHMJyuougsZ83XWkAHGEtBSCoppF53ehyxrQ=;
+  b=LJc+Z8YKwxW8wM7TE2OMDmtjrwkdPBaYRzxWGE6pNIxbkJqLOXiprvt1
+   MDvSeP7z/FMp8+DciA8sf7iv3X8jIUFpSAoB45+SOic0U2s2zloNkguBh
+   ERe+jpSMfBU6m1X8A0DFc9csu48C6KWQjpfy/bn5sF1IhbwhEvpr4EGJf
+   o=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -37,28 +37,28 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
 Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@linux.microsoft.com
 X-IronPort-AV: E=Sophos;i="6.13,257,1732575600"; 
-   d="scan'208";a="206392338"
+   d="scan'208";a="206392383"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 04 Feb 2025 00:50:30 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 04 Feb 2025 00:50:32 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id C7923E0D22; Tue,  4 Feb 2025 00:50:29 +0100 (CET)
+	id 12571E0260; Tue,  4 Feb 2025 00:50:32 +0100 (CET)
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by sympa.inria.fr (Postfix) with ESMTPS id 564A8E0261
+	by sympa.inria.fr (Postfix) with ESMTPS id 99D3BE0D1D
 	for <cocci@sympa.inria.fr>; Tue,  4 Feb 2025 00:50:26 +0100 (CET)
-IronPort-SDR: 67a15642_941k59rHq2u5bmtti2X7ya9Pp69fFgGM7V3ytBTn+7ICzAu
- 87+Nm4o2oGFIo7hDJJ2eiuHWFf1OVJKaaXOipbA==
-X-IPAS-Result: =?us-ascii?q?A0ELAACeVaFncraaTQ1aGwEBAQEBAQEBBQEBARIBAQEDA?=
- =?us-ascii?q?wEBAUCBPwYBAQELAYJDgVczBwhIhFaIHYlTFotgkE2BVoFAPg8BAwFOAQIEA?=
- =?us-ascii?q?QEDBIFMgzQCin0CHwYBBDAJDgECBAEBAQEDAgMBAQEBAQEQAQEFAQEBAgEBA?=
- =?us-ascii?q?gQGAQIQAYEMhXsNgmIBgSRRDUgBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQERA?=
- =?us-ascii?q?g1eAQEeAgEDERIEGQEBNwEPGQwCJgICRhAGARKDAoJlBgKfZQGHYAEBAosjf?=
- =?us-ascii?q?zOBAYIMAQEGgmfZOIFlCYEaLgGITQGBbIN/OwmDOXonG4FJRIFKgQaCLYRYg?=
- =?us-ascii?q?0aCaYIzgUKDb6JgCT+BBRwDWSwBVRMNCgsHBWRVOAMgCgsMCxQcFQIUHQ8GE?=
- =?us-ascii?q?ARtRDeCR2lJOgINAjWCHiRYgR2BDoRchEOEToJGVIJEghJ0gReIAx1AAwsYD?=
- =?us-ascii?q?UgRLDcGDhtDAW4HnT88g28ZBwGBDYEngQJ6kkGEGo1KoW+EJaFgATKqUy6HZ?=
- =?us-ascii?q?JBqIqQmhDWCGDqBXEYHIxWDIk8DGQ+IAIYhDBaDWI89AbkYQzU8AgcLAQEDC?=
- =?us-ascii?q?YVGAQGKbYFLAQE?=
-IronPort-PHdr: A9a23:RAV96BK4GztMziwjQtmcuOBvWUAX0o4c3iYr45Yqw4hDbr6kt8y7e
+IronPort-SDR: 67a15642_ccJ2rD5z5vWgPjpdmoLw0sY4wHugMP/Oim7stOvOaDKm4zp
+ zupzXKXqspHOpubFBoSkRUmeALBogHBakzm2c4Q==
+X-IPAS-Result: =?us-ascii?q?A0EDAACeVaFncraaTQ1aGgEBAQEBAQEBAQEDAQEBARIBA?=
+ =?us-ascii?q?QEBAgIBAQEBQIE/BQEBAQELAYJDgVczBwhIhFaIHYlTFotgkE2BVoFAPg8BA?=
+ =?us-ascii?q?wFOAQIEAQEDBIFMgzQCin0CHwYBBDAJDgECBAEBAQEDAgMBAQEBAQEQAQEFA?=
+ =?us-ascii?q?QEBAgEBAgQGAQIQAYEMhXsNgmIBgSRRDUgBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQERAg1eAQEeAgEDERIEGQEBNwEPGQwCJgICRhAGARKDAoJlBgKfZQGHY?=
+ =?us-ascii?q?AEBAosjfzOBAYIMAQEGgmfZOIFlCYEaLgGITQGBbIN/OwmDOXonG4FJRIFKg?=
+ =?us-ascii?q?zOEWINGgmmCM4FCg2+iYAk/gQUcA1ksAVUTDQoLBwVkVTgDIAoLDAsUHBUCF?=
+ =?us-ascii?q?B0PBhAEbUQ3gkdpSToCDQI1gh4kWIEdgQ6EXIRDhE6CRlSCRIISdIEXiAMdQ?=
+ =?us-ascii?q?AMLGA1IESw3Bg4bQwFuB50/PIQIB4EPgSYIepM7HRGDbI1KgiCfT4QloWABM?=
+ =?us-ascii?q?oQElAaSSS6HZJBqIqQmhDWCGDqBXEYHIxWDIk8DGQ+IAIYhg3qPPQG5GEM1P?=
+ =?us-ascii?q?AIHCwEBAwmFRgEBim2BSwEB?=
+IronPort-PHdr: A9a23:+/15aBJ1gRfEf7YDmdmcuOBvWUAX0o4c3iYr45Yqw4hDbr6kt8y7e
  hCEv7M11BSQDdSEo7Ic0qyK6PmmATRBqb+681k8M7V0FCU5wf0MmAIhBMPXQWbaF9XNKxIAI
  cJZSVV+9Gu6O0UGUOz3ZlnVv2HgpWVKQka3OgV6PPn6FZDPhMqrye+y54fTYwJVjzahfL9+N
  hq7oAvPusUMnYduNqk9xgbKr3ZMeeld2GdkKU6Okxrm6cq98oNv/z5Mt/498sJLTLn3cbk/Q
@@ -109,78 +109,78 @@ IronPort-PHdr: A9a23:RAV96BK4GztMziwjQtmcuOBvWUAX0o4c3iYr45Yqw4hDbr6kt8y7e
  E1T6EM2caE2+THg7k1ibELNvzc1mVItlM/NhTGXbS63Kaa7R4ZNDCTo8UM2N9moJmQ9JR33l
  ktiOjDeQrtXhLY1bmFnhjjXvp5XEOJdR6lJM1cAgOuabPIy3RFAuz2qkAVZsPDdB8Iox25IO
  da86mhN0AV5YJspKLzMceBXm0NIiPvGvzf0hLlqhlBBYR9QrCXLKHRA/UUMMvNOz8WA+u1q9
- BzEnjpIYm8XUPQ25Plt8xFkUwxl5ybh1aNTbEWwPPaYNKSXpy7LksvaGjvYN2sMlk9Y7f5z0
- Mw5dFGTWVxpx7yURU1hCA==
-IronPort-Data: A9a23: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
-IronPort-HdrOrdr: A9a23:NndN461JXI9e8tqr+gerDAqjBIgkLtp133Aq2lEZdPWaSL3/qy
- nIpoV56faUslYssBNJo7q90cy7LE80mqQb3WB8B9uftUzdyQ+VxeJZjLcKvQeQeREWn9Q1vc
- xdmupFebjN5DNB4/oSjjPIdOrIuOP3iZyVuQ==
-X-Talos-CUID: 9a23:O60o9m18STSM2foanAwsmLxfO+MbV1Oazn3pAlafD14udYSPS2SJ0fYx
-X-Talos-MUID: =?us-ascii?q?9a23=3AG/4U/w9brluaulk062w6XNaQf5ds/LWOCh4CqK4?=
- =?us-ascii?q?lmJDfPB0gMCWgnDviFw=3D=3D?=
+ BzEnjpIYm8XUPQ25Plt8xFkUwxh5ybh1aNTbEWwPPaYNKSXpy7LksvaGzvYM2sMlk9Y7f5z0
+ Mw5dFGTWVxpx7yURUxhCA==
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:+o2xsKwZNXrS8oBod5OsKrPwFr1zdoMgy1knxilNoNJuA6qlfq
+ eV7ZcmPH7P6Ar4Ohkb8+xoXZPsfZqyz/FICOUqUYtKGTOW3FdAT7sC0WKd+UyDJ8SWzIc0vp
+ uIMZIObeEYZmIVsS+V2njeLz9Z+qj/zJyV
+X-Talos-CUID: =?us-ascii?q?9a23=3AnrPkJGiIFaebyxDB6SEN4iYmTjJufXT47yuTJxe?=
+ =?us-ascii?q?BBWNbY+CtZmfI0aBGnJ87?=
+X-Talos-MUID: 9a23:ruCCcwlszp0M4hnRMNh6dnpdLdpLwY/wS3kplJsWlcelOjxVKimk2WE=
 X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-AV: E=Sophos;i="6.13,257,1732575600"; 
-   d="scan'208";a="206392314"
-X-MGA-submission: =?us-ascii?q?MDH+LZwFqkQv+jciRDuYE3vVtSJNtWj1+2LenD?=
- =?us-ascii?q?Riq+PZewNsiRW0/zVcLK/RphGgut2HZxsfpaYcKCd/1isroaKuB4i2Z0?=
- =?us-ascii?q?Ifp2bZSDt3y9DIEj3oBkYSYBFXoSWCjtdUwGWXY7C8YlgjZ53z64mn20?=
- =?us-ascii?q?J1NtvzU5b1jrZNOrxD3cXb1Q=3D=3D?=
+   d="scan'208";a="206392316"
+X-MGA-submission: =?us-ascii?q?MDEbQVUTiz34qlqOalp3Y5LF8nhzRq/Feo+x2F?=
+ =?us-ascii?q?GmZjj/DowhPyW7Lo9TPkSWMGBLXZjRWcD+CYmHjMvQH9ZTo2jfuI4oAF?=
+ =?us-ascii?q?+GTnWypksxEZzQo4VxKGYwXDPIMadRftU8ofaJet85huogsPqMAbFNvX?=
+ =?us-ascii?q?XT5VKwWqDdo6i49ZIZq2/7Jg=3D=3D?=
 Received: from linux.microsoft.com ([13.77.154.182])
   by mail2-smtp-roc.national.inria.fr with ESMTP; 04 Feb 2025 00:50:25 +0100
 Received: from eahariha-devbox.internal.cloudapp.net (unknown [40.91.112.99])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 6B0C9205493D;
+	by linux.microsoft.com (Postfix) with ESMTPSA id 84A00205493E;
 	Mon,  3 Feb 2025 15:50:23 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6B0C9205493D
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 84A00205493E
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
 	s=default; t=1738626623;
-	bh=inEJFlb8r1npYTsCShTPXzeDexvNBQKU3TCcAYSm03w=;
+	bh=jl/YrVgNHMJyuougsZ83XWkAHGEtBSCoppF53ehyxrQ=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=ReXLE283sX5Tuc0xrvz7bAVvEIGcJWw0rsBAmKKW/ZsT5S61O5VtjQ66Z15h9nzhF
-	 36WfZ+35qfNmyQRvN0ihBKzifDLm1J6exfsCS9sn+0/ui+NUyQWAcEYxIkhW55TQ/5
-	 imD44gbuz+LkK2jsREe0wluFIj6KbR/2Q+blP1Ck=
+	b=StqwqgSNG2KkJyJsRG/IWgyvZ5UocaH2m/+dfcXUagDXBgaYXw89QgEKxugfrep4v
+	 dLKXw3DPl9XGMIJreixUiyn7yAWneAEebfFyONYlzSWFZngQlphknQdYWu13Rs37yX
+	 3WP+/AGKzQjgplcS2c3XKuSfIiY+hG9bzK/eU1/c=
 From: Easwar Hariharan <eahariha@linux.microsoft.com>
-Date: Mon, 03 Feb 2025 23:50:23 +0000
+Date: Mon, 03 Feb 2025 23:50:24 +0000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250203-converge-secs-to-jiffies-part-two-v2-2-d7058a01fd0e@linux.microsoft.com>
+Message-Id: <20250203-converge-secs-to-jiffies-part-two-v2-3-d7058a01fd0e@linux.microsoft.com>
 References: <20250203-converge-secs-to-jiffies-part-two-v2-0-d7058a01fd0e@linux.microsoft.com>
 In-Reply-To: <20250203-converge-secs-to-jiffies-part-two-v2-0-d7058a01fd0e@linux.microsoft.com>
 To: Andrew Morton <akpm@linux-foundation.org>, 
@@ -192,10 +192,11 @@ Cc: cocci@inria.fr, linux-kernel@vger.kernel.org,
  ceph-devel@vger.kernel.org, linux-block@vger.kernel.org, 
  Easwar Hariharan <eahariha@linux.microsoft.com>
 X-Mailer: b4 0.14.2
-Subject: [cocci] [PATCH v2 2/3] rbd: convert timeouts to secs_to_jiffies()
+Subject: [cocci] [PATCH v2 3/3] libceph: convert timeouts to
+ secs_to_jiffies()
 Reply-To: Easwar Hariharan <eahariha@linux.microsoft.com>
 X-Loop: cocci@inria.fr
-X-Sequence: 2332
+X-Sequence: 2334
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -208,7 +209,7 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2025-02/20250203-converge-secs-to-jiffies-part-two-v2-2-d7058a01fd0e%40linux.microsoft.com>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2025-02/20250203-converge-secs-to-jiffies-part-two-v2-3-d7058a01fd0e%40linux.microsoft.com>
 
 Commit b35108a51cf7 ("jiffies: Define secs_to_jiffies()") introduced
 secs_to_jiffies().  As the value here is a multiple of 1000, use
@@ -227,47 +228,96 @@ the following Coccinelle rules:
 -msecs_to_jiffies(E * MSEC_PER_SEC)
 +secs_to_jiffies(E)
 
-While here, remove the no-longer necessary check for range since there's
+While here, remove the no-longer necessary checks for range since there's
 no multiplication involved.
 
 Signed-off-by: Easwar Hariharan <eahariha@linux.microsoft.com>
 ---
- drivers/block/rbd.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ include/linux/ceph/libceph.h | 12 ++++++------
+ net/ceph/ceph_common.c       | 18 ++++++------------
+ net/ceph/osd_client.c        |  3 +--
+ 3 files changed, 13 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/block/rbd.c b/drivers/block/rbd.c
-index faafd7ff43d6ef53110ab3663cc7ac322214cc8c..41207133e21e9203192adf3b92390818e8fa5a58 100644
---- a/drivers/block/rbd.c
-+++ b/drivers/block/rbd.c
-@@ -108,7 +108,7 @@ static int atomic_dec_return_safe(atomic_t *v)
- #define RBD_OBJ_PREFIX_LEN_MAX	64
+diff --git a/include/linux/ceph/libceph.h b/include/linux/ceph/libceph.h
+index 733e7f93db66a7a29a4a8eba97e9ebf2c49da1f9..5f57128ef0c7d018341c15cc59288aa47edec646 100644
+--- a/include/linux/ceph/libceph.h
++++ b/include/linux/ceph/libceph.h
+@@ -72,15 +72,15 @@ struct ceph_options {
+ /*
+  * defaults
+  */
+-#define CEPH_MOUNT_TIMEOUT_DEFAULT	msecs_to_jiffies(60 * 1000)
+-#define CEPH_OSD_KEEPALIVE_DEFAULT	msecs_to_jiffies(5 * 1000)
+-#define CEPH_OSD_IDLE_TTL_DEFAULT	msecs_to_jiffies(60 * 1000)
++#define CEPH_MOUNT_TIMEOUT_DEFAULT	secs_to_jiffies(60)
++#define CEPH_OSD_KEEPALIVE_DEFAULT	secs_to_jiffies(5)
++#define CEPH_OSD_IDLE_TTL_DEFAULT	secs_to_jiffies(60)
+ #define CEPH_OSD_REQUEST_TIMEOUT_DEFAULT 0  /* no timeout */
+ #define CEPH_READ_FROM_REPLICA_DEFAULT	0  /* read from primary */
  
- #define RBD_NOTIFY_TIMEOUT	5	/* seconds */
--#define RBD_RETRY_DELAY		msecs_to_jiffies(1000)
-+#define RBD_RETRY_DELAY		secs_to_jiffies(1)
+-#define CEPH_MONC_HUNT_INTERVAL		msecs_to_jiffies(3 * 1000)
+-#define CEPH_MONC_PING_INTERVAL		msecs_to_jiffies(10 * 1000)
+-#define CEPH_MONC_PING_TIMEOUT		msecs_to_jiffies(30 * 1000)
++#define CEPH_MONC_HUNT_INTERVAL		secs_to_jiffies(3)
++#define CEPH_MONC_PING_INTERVAL		secs_to_jiffies(10)
++#define CEPH_MONC_PING_TIMEOUT		secs_to_jiffies(30)
+ #define CEPH_MONC_HUNT_BACKOFF		2
+ #define CEPH_MONC_HUNT_MAX_MULT		10
  
- /* Feature bits */
+diff --git a/net/ceph/ceph_common.c b/net/ceph/ceph_common.c
+index 4c6441536d55b6323f4b9d93b5d4837cd4ec880c..c2a2c3bcc4e91a628c99bd1cef1211d54389efa2 100644
+--- a/net/ceph/ceph_common.c
++++ b/net/ceph/ceph_common.c
+@@ -527,29 +527,23 @@ int ceph_parse_param(struct fs_parameter *param, struct ceph_options *opt,
  
-@@ -4162,7 +4162,7 @@ static void rbd_acquire_lock(struct work_struct *work)
- 		dout("%s rbd_dev %p requeuing lock_dwork\n", __func__,
- 		     rbd_dev);
- 		mod_delayed_work(rbd_dev->task_wq, &rbd_dev->lock_dwork,
--		    msecs_to_jiffies(2 * RBD_NOTIFY_TIMEOUT * MSEC_PER_SEC));
-+		    secs_to_jiffies(2 * RBD_NOTIFY_TIMEOUT));
- 	}
- }
- 
-@@ -6283,9 +6283,7 @@ static int rbd_parse_param(struct fs_parameter *param,
+ 	case Opt_osdkeepalivetimeout:
+ 		/* 0 isn't well defined right now, reject it */
+-		if (result.uint_32 < 1 || result.uint_32 > INT_MAX / 1000)
++		if (result.uint_32 < 1)
+ 			goto out_of_range;
+-		opt->osd_keepalive_timeout =
+-		    msecs_to_jiffies(result.uint_32 * 1000);
++		opt->osd_keepalive_timeout = secs_to_jiffies(result.uint_32);
  		break;
- 	case Opt_lock_timeout:
+ 	case Opt_osd_idle_ttl:
+ 		/* 0 isn't well defined right now, reject it */
+-		if (result.uint_32 < 1 || result.uint_32 > INT_MAX / 1000)
++		if (result.uint_32 < 1)
+ 			goto out_of_range;
+-		opt->osd_idle_ttl = msecs_to_jiffies(result.uint_32 * 1000);
++		opt->osd_idle_ttl = secs_to_jiffies(result.uint_32);
+ 		break;
+ 	case Opt_mount_timeout:
  		/* 0 is "wait forever" (i.e. infinite timeout) */
 -		if (result.uint_32 > INT_MAX / 1000)
 -			goto out_of_range;
--		opt->lock_timeout = msecs_to_jiffies(result.uint_32 * 1000);
-+		opt->lock_timeout = secs_to_jiffies(result.uint_32);
+-		opt->mount_timeout = msecs_to_jiffies(result.uint_32 * 1000);
++		opt->mount_timeout = secs_to_jiffies(result.uint_32);
  		break;
- 	case Opt_pool_ns:
- 		kfree(pctx->spec->pool_ns);
+ 	case Opt_osd_request_timeout:
+ 		/* 0 is "wait forever" (i.e. infinite timeout) */
+-		if (result.uint_32 > INT_MAX / 1000)
+-			goto out_of_range;
+-		opt->osd_request_timeout =
+-		    msecs_to_jiffies(result.uint_32 * 1000);
++		opt->osd_request_timeout = secs_to_jiffies(result.uint_32);
+ 		break;
+ 
+ 	case Opt_share:
+diff --git a/net/ceph/osd_client.c b/net/ceph/osd_client.c
+index b24afec241382b60d775dd12a6561fa23a7eca45..ba61a48b4388c2eceb5b7a299906e7f90191dd5d 100644
+--- a/net/ceph/osd_client.c
++++ b/net/ceph/osd_client.c
+@@ -4989,8 +4989,7 @@ int ceph_osdc_notify(struct ceph_osd_client *osdc,
+ 	linger_submit(lreq);
+ 	ret = linger_reg_commit_wait(lreq);
+ 	if (!ret)
+-		ret = linger_notify_finish_wait(lreq,
+-				 msecs_to_jiffies(2 * timeout * MSEC_PER_SEC));
++		ret = linger_notify_finish_wait(lreq, secs_to_jiffies(2 * timeout));
+ 	else
+ 		dout("lreq %p failed to initiate notify %d\n", lreq, ret);
+ 
 
 -- 
 2.43.0
