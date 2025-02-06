@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BCE9BC02194
-	for <cocci@archiver.kernel.org>; Thu,  6 Feb 2025 09:53:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2C0F2C0219B
+	for <cocci@archiver.kernel.org>; Thu,  6 Feb 2025 09:59:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=message-id:date:mime-version:to:references:from:
-   in-reply-to:content-transfer-encoding:subject:reply-to:
-   sender:list-id:list-help:list-subscribe:list-unsubscribe:
-   list-post:list-owner:list-archive;
-  bh=/uPRjNk+k2lYqvrDO7rvrzk1jr06ey7tDeYblPWMzHw=;
-  b=LeybcrdK8JO8P0SdpNaQN702dEc4/HE3hquMC6vd+vTPeNAJqpgfRryA
-   ulyp313vgcaZYKs3x5VA8zdf68BiUOfkpLTf7IE8L/DyEp7klGw6Gm1lW
-   Lbz8vbFaEJFzVmWlwUELMOm7AzDjDcIleb5U866JlUnCV7c+8G5mDDgeO
-   k=;
+  h=date:from:to:cc:in-reply-to:message-id:references:
+   mime-version:subject:reply-to:sender:list-id:list-help:
+   list-subscribe:list-unsubscribe:list-post:list-owner:
+   list-archive;
+  bh=oGR1BErvo56a5sW0P2J7iiFfdTwP9YHw0KpExF6xOBY=;
+  b=tYX2XiY6bUzIGys15qrHZD4N94zTQp28mcAmmRaLjQEDw2B/b1gawEDq
+   N97ASbPNl8EslgEbotBz23G5j649SmklM3eDGtjPiuOmnhCJsHicjIW5i
+   3+JEE7VrPHkMozhIN9K7DV7AqoclLSyXYNsUm/TUPF75zA2j5bUB+N54J
+   E=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -37,43 +37,40 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
 Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=pass (signature verified) header.i=@inria.fr
 X-IronPort-AV: E=Sophos;i="6.13,264,1732575600"; 
-   d="scan'208";a="206883186"
+   d="scan'208";a="206884603"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 06 Feb 2025 10:53:21 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 06 Feb 2025 10:59:25 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id C3D94E0D1D; Thu,  6 Feb 2025 10:53:20 +0100 (CET)
+	id 8385AE0D1D; Thu,  6 Feb 2025 10:59:25 +0100 (CET)
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by sympa.inria.fr (Postfix) with ESMTPS id 64251E0260
-	for <cocci@sympa.inria.fr>; Thu,  6 Feb 2025 10:53:16 +0100 (CET)
+	by sympa.inria.fr (Postfix) with ESMTPS id 94D03E0260
+	for <cocci@sympa.inria.fr>; Thu,  6 Feb 2025 10:59:20 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=/uPRjNk+k2lYqvrDO7rvrzk1jr06ey7tDeYblPWMzHw=;
-  b=O0cRbajmhtICKB7vqLAJBwVk51jvTWce8wANtKqcf4TTaa1IOITcnai0
-   EUHNdMXd+iFETRGnekpuFPEEW1/NKn/eMQBcpmF86ueid6IIUA00z9YlD
-   M9pKBTpiEztYJREi6kWrQRjq7zgoAis1hONMpC6qYK3vHi4FywM/yZWKj
-   Y=;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=oGR1BErvo56a5sW0P2J7iiFfdTwP9YHw0KpExF6xOBY=;
+  b=DQXapnkHokBa056s6m/8D/EXYLbpM9BFyo/d20G/ZaLRl7OZZTn1ihQx
+   pLiDcQ+GaiM1/pRA/ajBcLcX0IMiAR1WVTSSNqNWQVmmWUaub79Q/3hFH
+   XU7irpsOT4jRoGQZevUUAxCpr3ZQlThCO/jmR2zikLSinwhT614/SR7d8
+   I=;
 X-IronPort-AV: E=Sophos;i="6.13,264,1732575600"; 
-   d="scan'208";a="108362534"
-Received: from ptb-02008469.paris.inria.fr (HELO [128.93.66.153]) ([128.93.66.153])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2025 10:53:16 +0100
-Message-ID: <4ed80c12-f83f-4d4f-aac9-166218943535@inria.fr>
-Date: Thu, 6 Feb 2025 10:53:15 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-To: Johannes Berg <johannes@sipsolutions.net>, cocci <cocci@inria.fr>
-References: <381b5a9cb89cc068ca13546f69636291874010b3.camel@sipsolutions.net>
- <061f1b6b50d305671c02742382a3df0ff95f9c6b.camel@sipsolutions.net>
-Content-Language: en-US
-From: Victor Gambier <victor.gambier@inria.fr>
+   d="scan'208";a="108363219"
+Received: from dt-lawall.paris.inria.fr ([128.93.67.65])
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2025 10:59:20 +0100
+Date: Thu, 6 Feb 2025 10:59:20 +0100 (CET)
+From: Julia Lawall <julia.lawall@inria.fr>
+To: Johannes Berg <johannes@sipsolutions.net>
+cc: cocci <cocci@inria.fr>
 In-Reply-To: <061f1b6b50d305671c02742382a3df0ff95f9c6b.camel@sipsolutions.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Message-ID: <ca7c1a14-522a-9c2c-4f85-2fda289b83e8@inria.fr>
+References: <381b5a9cb89cc068ca13546f69636291874010b3.camel@sipsolutions.net> <061f1b6b50d305671c02742382a3df0ff95f9c6b.camel@sipsolutions.net>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="8323329-1399391631-1738835960=:4500"
 Subject: Re: [cocci] possible regressions in 1.1.1 -> 1.2
-Reply-To: Victor Gambier <victor.gambier@inria.fr>
+Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 2353
+X-Sequence: 2354
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -86,31 +83,43 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2025-02/4ed80c12-f83f-4d4f-aac9-166218943535%40inria.fr>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2025-02/ca7c1a14-522a-9c2c-4f85-2fda289b83e8%40inria.fr>
 
-Hi,
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Thanks for the report!
+--8323329-1399391631-1738835960=:4500
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-> With "spatch version 1.1.1 compiled with OCaml version 4.14.2" this
-> works just fine; however, we're trying to upgrade our dependencies and
-> now with "spatch version 1.2 compiled with OCaml version 5.2.0" it
-> doesn't match anything any more? I can't seem to figure out why, I
-> thought maybe the types didn't match - not sure why we had added type u8
-> to that, but pretty sure it was needed - but adding more types didn't
-> really help either.
-We don't officially support OCaml 5.2.0. Could you let me know how you 
-installed/built Coccinelle?
 
+
+On Thu, 6 Feb 2025, Johannes Berg wrote:
+
+> On Thu, 2025-02-06 at 10:31 +0100, Johannes Berg wrote:
+> >
+> > There's a second issue: we have this
+> > spatch: https://p.sipsolutions.net/765e55f2b951326c.txt
+> > It's not pretty, but it's intended to (again for backport reasons)
+> > manipulate some code in net/mac80211/cfg.c (see also [1]). We run all
+> > our spatches with --include-headers, and this one when running on
+> > net/mac80211/ieee80211_i.h, goes into some kind of infinite loop? I.e.
+> > just
+> >
+> > spatch --include-headers --in-place --sp-file /tmp/765e55f2b951326c.txt net/mac80211/ieee80211_i.h
+> >
+> > never finishes?
+>
 > I stand corrected, I wasn't patient enough. On a machine _much_ faster
 > than my laptop (server CPU), it finished (with warnings about
 > inconsistent modifications) after a bit more than 10 minutes.
 
-Glad to hear! We know there's been a performance regression in 1.2 and 
-we are looking into it. It's a little faster in 1.3.0, but still slower 
-than 1.1.1. It's unclear at the moment to what extent the performance 
-has been degraded because of necessary fixes that perform unavoidable 
-additional work.
+You can try --profile to find out what it is spending the most time on.
 
-Victor
+--show-trying shows if there is some function in the source code that is
+particularly problematic.
 
+These options might require also using --debug; I don't remember.
+
+julia
+--8323329-1399391631-1738835960=:4500--
