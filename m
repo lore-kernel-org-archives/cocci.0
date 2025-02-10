@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6E691C02198
-	for <cocci@archiver.kernel.org>; Mon, 10 Feb 2025 05:22:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 68BC9C021A1
+	for <cocci@archiver.kernel.org>; Mon, 10 Feb 2025 05:22:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:date:message-id:in-reply-to:references:
    mime-version:content-transfer-encoding:subject:reply-to:
    sender:list-id:list-help:list-subscribe:list-unsubscribe:
    list-post:list-owner:list-archive;
-  bh=/M2Nru2NZro488gTVTzJhmdDjcvACD8WWOsTwksoVh4=;
-  b=Iip6kkrzYGrs1aDh4hl9Pv289SUQmd+iIZkkcP26TVSgXzsAoHFx9Jku
-   V0XNedASWyyMiMUfFdS3RHGcGsz3vbjUD6vQLFo0swy7expLjF6X7Xfym
-   UBswL0uy3orZKZ2CEVtRj4vMMZYs3uPx5TGw3J4pieG62JsShg/+jUfOe
-   k=;
+  bh=M9jDqz6z9/FQtQkaPFqPQJedPGgr6ZZ+JkD5gQgDg9k=;
+  b=AaTYigZuXMRRYM8302ULe6ELT/VqdR02WbH1A1NNQ/k6tLCxkqykCheC
+   Owlb7I9IUh+h1q6LnatJAE6N/5LYKjx8N/jRFe4YjK/Y35iohvNwsrwTe
+   9+z5qXUoh8zP18b+1Ub7EqlyNAoIhAxlXvI3kn+KgaLCzUC+w+wARChw5
+   0=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -37,161 +37,162 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
 Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@messagingengine.com
 X-IronPort-AV: E=Sophos;i="6.13,273,1732575600"; 
-   d="scan'208";a="207382496"
+   d="scan'208";a="207382516"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 10 Feb 2025 06:22:00 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 10 Feb 2025 06:22:01 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 50D63E0D1E; Mon, 10 Feb 2025 06:22:00 +0100 (CET)
+	id 099FEE0D27; Mon, 10 Feb 2025 06:22:01 +0100 (CET)
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by sympa.inria.fr (Postfix) with ESMTPS id 32765E0260
+	by sympa.inria.fr (Postfix) with ESMTPS id B5712E0261
 	for <cocci@sympa.inria.fr>; Mon, 10 Feb 2025 06:21:55 +0100 (CET)
-IronPort-SDR: 67a98cd4_iJbT71rFoEad9FS/Dn9zOwR7Y5j1ufL4E94vpHgGj//HRS7
- lIO7Dh830F+L4bPs4oF2sn9yvHLmenjpCjwiWHg==
-X-IPAS-Result: =?us-ascii?q?A0FEAABVjKlnj5esqGdaHAEBAQEBAQcBARIBAQQEAQGCA?=
- =?us-ascii?q?gQBAQsBAYJCgVY0BwhIjVKpCQ8BAwENRAQBAQMBA4UAAosEAh8GAQQzBg4BA?=
- =?us-ascii?q?gQBAQEBAwIDAQEBAQEBEAEBBQEBAQIBAQIEBgECEAEBAQEBATkFSYV7DUkBD?=
- =?us-ascii?q?AGCCwEzcYElAQEBAQEBAQEBAQEBAR0CCGMBAR4CAQMnCwENAQE3AQ9RVgYBE?=
- =?us-ascii?q?oMCgmUCsRAzgQGCDAEBBt4FCYFIAY1KcIR3Jxs/AYFNgRWDaIg3glCFd4Fqp?=
- =?us-ascii?q?ANIgSEDWSwBVRMNCgsHBYFxAyoLDAsUHBUygRRDN4JHaUk6Ag0CNYIeJFiCK?=
- =?us-ascii?q?4RbhEOES4VYghJ0gRqJIEADCxgNSBEsNxQbRG4HngU8g2c1WDeCdaMdgiChB?=
- =?us-ascii?q?IQloUZNl0GTES6YTiKjCoEchGaBfSSBXDMaCBsVgyJPAxkPjiEMDQmDWMVEJ?=
- =?us-ascii?q?TI8AgcLAQEDCY1Agw+BSwEB?=
-IronPort-PHdr: A9a23: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
-IronPort-Data: A9a23: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
- vRALZTz6IRp5X29AIGr9Dg=
-IronPort-HdrOrdr: A9a23:slUtuq/9wciw0Jrh8sZuk+ArI+orL9Y04lQ7vn2ZhyYlFfBw8P
- re48jzsCWY5Ar5N0tQ4OxoR5PwIk80maQFhLX5eI3SJjUO21HYUL2Kj7GSuwEIcheWnoU2pM
- VdmupFeaDN5DNB/KDHCWeDYrId6ejC1IztvPzZ3mcFd2FXQpAlyys8Mx2cA10zbgFbH5ZRLv
- uhz/sCgxblQngcYsSlCnRtZYb+juyOsL6jWxIAChI9gTPgsdrR0s+ALySl
-X-Talos-CUID: 9a23:Z/8H921F/SLqTV8lDbrFDLxfHcU3f3aHlk7qPFahDmJvQrOvQ1+y9/Yx
-X-Talos-MUID: =?us-ascii?q?9a23=3A31oouw73bLx7UHzbEqGB+pmOxoxts6S1T2U0nq4?=
- =?us-ascii?q?4lPKlMR5uBymm3Qq4F9o=3D?=
+IronPort-SDR: 67a98cd5_Q6boxeD6vYMvw6PrDXDMr2dQzy/Y6oMVX/VfY91Fm899UMV
+ wTO+sez77ov4ZpnJ5Qa2d4zGXYmluG/XBgHnYBA==
+X-IPAS-Result: =?us-ascii?q?A0EhAABVjKlnj5qsqGdaHAEBAQEBAQcBARIBAQQEAQGCA?=
+ =?us-ascii?q?QUBAQsBAYJCgVY0BwhIjVKIdIEWnQGBfg8BAwENRAQBAQMBA4UAAosEAh8GA?=
+ =?us-ascii?q?QQyBw4BAgQBAQEBAwIDAQEBAQEBEAEBBQEBAQIBAQIEBgECEAEBAQEBATkFS?=
+ =?us-ascii?q?YV7DUkBDAGCCwEzcYElAQEBAQEBAQEBAQEBAR0CCGMBAR4CAQMnCwENAQE3A?=
+ =?us-ascii?q?Q9RVgYBEoMCgmUCsRAzgQGCDAEBBt4FCYFIAY1KcESEMycbPwGBTYEVgTuBN?=
+ =?us-ascii?q?3aIN4JQgjODRF6BDIZdhCeBNoEvgQ+CAIRagV2EDohGSIEhA1ksAVUTDQoLB?=
+ =?us-ascii?q?wWBcQMqCwwLFBwVgUZDN4JHaUk6Ag0CNYIeJFiCK4RbhEOES4VYghJ0gRqJI?=
+ =?us-ascii?q?EADCxgNSBEsNxQbRG4HngU8g2g0Di8NRAGBJgoLAQ86IxIuCwIwkmyQAYIgn?=
+ =?us-ascii?q?0aBPoQloUZNhAOTPkiSSS6YTiKjOG6EZoFuDiWBXDMaCBsVO4JnTwMZD4RQi?=
+ =?us-ascii?q?VEMDQmDWMVEJTI8AgcLAQEDCY1Agw+BSwEB?=
+IronPort-PHdr: A9a23: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
+ BUxj1knCdk=
+IronPort-Data: A9a23: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
+ wRAKETSyKhIxI69FVFWJcg0F0pNb08x
+IronPort-HdrOrdr: A9a23:BKhRfa43sO3e5HQk+wPXwDvXdLJyesId70hD6qm+c20zTiX+rb
+ HQoB1/73KZtN9/YgBYpTn+AtjifZqxz+8R3WBVB8bZYOCEghrVEGgB1/qb/9SIIUSXnYQtt5
+ uIMZIOdeEYZmIK6/oSjjPId+oI8Z2i3OSQnuHO3x5WLT1CWuVFw0NBEQCLAgldTBVdCfMCda
+ a0145ii36adX4abtu2CxA+MdTrlpnuuNbdbRkKCwVP0mazZEuTmcXHLyQ=
+X-Talos-CUID: 9a23:PIrLs2Hyffhvvs/EqmJ+t0RNPs40Ukb3zVnhCHScWENwU5CKHAo=
+X-Talos-MUID: 9a23:QGKZ9QkVB6iCE1tz+SF/dnpQHclI04DyB3koiIhXmfTaFAlxYT202WE=
 X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-AV: E=Sophos;i="6.13,273,1732575600"; 
-   d="scan'208";a="108617999"
-X-MGA-submission: =?us-ascii?q?MDGtVHHwgro9lAGazCSIwea4WXPDKCtNukUUZF?=
- =?us-ascii?q?DLXv3Y5MJkie4/HYdk1/Po1NAbve5WyL1VEK92XKJhidyLMS34AfZH1W?=
- =?us-ascii?q?Qx2aHdQQdB1RoFqv0ViM3WzlYFUCPun2zj0MRXvb0nAZC9uIaYsJ5JPN?=
- =?us-ascii?q?RGKlFktguusq2FKlIz1KNESg=3D=3D?=
-Received: from fout-a8-smtp.messagingengine.com ([103.168.172.151])
-  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2025 06:21:24 +0100
-Received: from phl-compute-09.internal (phl-compute-09.phl.internal [10.202.2.49])
-	by mailfout.phl.internal (Postfix) with ESMTP id 00D6F138010C;
-	Mon, 10 Feb 2025 00:21:21 -0500 (EST)
+   d="scan'208";a="108618000"
+X-MGA-submission: =?us-ascii?q?MDG9oiMugeVEI7qyOO9hCzJ9LnMN+9XNbB7UxJ?=
+ =?us-ascii?q?Wb6t7CHSacc2HNYLsl1zSUd4M0oLEWo99PTiqBJ7pStjmL/Rlzr6QgAa?=
+ =?us-ascii?q?b/JkuLbtkKg2OkcEZKtcLFBMnbpjo0O2qV2MaNZBYuOOQavRoez905vo?=
+ =?us-ascii?q?pj/7KW7qKUmoh0zoKMvp0QXg=3D=3D?=
+Received: from fhigh-a3-smtp.messagingengine.com ([103.168.172.154])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2025 06:21:25 +0100
+Received: from phl-compute-01.internal (phl-compute-01.phl.internal [10.202.2.41])
+	by mailfhigh.phl.internal (Postfix) with ESMTP id 38B791140198;
+	Mon, 10 Feb 2025 00:21:23 -0500 (EST)
 Received: from phl-mailfrontend-01 ([10.202.2.162])
-  by phl-compute-09.internal (MEProxy); Mon, 10 Feb 2025 00:21:21 -0500
+  by phl-compute-01.internal (MEProxy); Mon, 10 Feb 2025 00:21:23 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=davidreaver.com;
 	 h=cc:cc:content-transfer-encoding:content-type:date:date:from
 	:from:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to; s=fm1; t=1739164880; x=
-	1739251280; bh=/M2Nru2NZro488gTVTzJhmdDjcvACD8WWOsTwksoVh4=; b=e
-	N+YVGFHiY3Y/gF/cpS0Mh+bC4gVAgX8HwHHQonFV/uxvYtGd+2aVSrSfK8w7raCb
-	ZdQlJknLRyndLWN7N8zabhZ/I6i1grQEWBe1UsJ0+oAmbA5XUgmzgAH1+4Oti9me
-	QK6eIYpYqyKoJvX99CsIMXWAUkISM3G9mguW6+1GN5WiI03SnUIy/jTuGozvkYjB
-	kHkGh2RtOHoEzwgyd/jgf3WS9qq3VMr4NSLzMMAaszNyna1tIjGmT1rvlGK0WV2L
-	ZTn9/Xn7sRTgHePIRciGNUXwzcnVcIXy10mx9UomSHernqT4BTSmp+7nsKbdCP+W
-	ce/7g+PUgAw6YXZ7FCGXg==
+	:reply-to:subject:subject:to:to; s=fm1; t=1739164883; x=
+	1739251283; bh=M9jDqz6z9/FQtQkaPFqPQJedPGgr6ZZ+JkD5gQgDg9k=; b=U
+	+CGlf3DrQiXlVkwcs8VvzPdgXg2TCA3uIvCdKBduT+bVwvsQvyxeHdOG7kxIRVYz
+	QpHc0ayhXkleUTt6mlUVnyxCn8IqmI9+SYtWirwJgIteYcVXbD28/HptTudcIKat
+	7BHOiutjVOz6mNFgjtARlzq4zkE3mUO2/cpoFld5g1bsNZzOSnIjtLnXOCeO4gNy
+	uiSnBFcV92dVWUzVTR3DHrCJlwnkf06hif+9n+EPTvNRlX14ZxoKMDW9jvLVlPv0
+	IoN74x0waI6pd6H5f2dyB61yKEGFyo7eV4fM3ZAe1nA1VN3nQybWa7bkrwVBGRAu
+	zHAAvcuBX4vivNC9gv8Mw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-transfer-encoding
 	:content-type:date:date:feedback-id:feedback-id:from:from
 	:in-reply-to:in-reply-to:message-id:mime-version:references
 	:reply-to:subject:subject:to:to:x-me-proxy:x-me-sender
-	:x-me-sender:x-sasl-enc; s=fm3; t=1739164880; x=1739251280; bh=/
-	M2Nru2NZro488gTVTzJhmdDjcvACD8WWOsTwksoVh4=; b=y7XXu+U2Z0pF9JM2I
-	YGsbX662Nw6O8Ef2ZPF3G3KfC/cBGymONrxgZrIR/mL01L4d45tNbBFnRJrRVYYL
-	66/LBbbqejibI3VPjo8lBLjXTA9WQFOuI858pznRMhJQ53B/uXj6Vw/JIMr7/bOc
-	N9zYv6xv98dlynRlMMha95G5YZTtSOOY9b/BqYi3YiftnIWKgNy6VShbpqHaVtBx
-	DKf+MkFtV8G71Zsj8wGj8mlzzflN6MLjzXGfzw4h24JiK3gy2UJHYNjUMVKw4euE
-	ebc2liN9UEPHfcFOXV8/h0nsXe6mqTZFXPr1vq7KDXtxGAf918Hi7YMU4LiAOlAQ
-	D4a0Q==
-X-ME-Sender: <xms:0IypZ5EQINYkMcUZJK17vmn5CrBuS0L1k1KcE2Zt4klW7F9NQoKRUw>
-    <xme:0IypZ-VvK0YZAeYRmkQZoL3a_bJZ9n4Z-c5lNkuOqzJIK-mxt16bFq0na3mHyyI7b
-    cCIdHwpXC8iiWGzhEA>
-X-ME-Received: <xmr:0IypZ7K6gpvON7wYtxXDBvfS9AXWwXkS4fI1SJD68z_8I4LUumuULEKTzSw44V2nGI83TZmB74r5N8zs7CcE8fY_og68c6XO9gD4TchoIO03dqs>
+	:x-me-sender:x-sasl-enc; s=fm3; t=1739164883; x=1739251283; bh=M
+	9jDqz6z9/FQtQkaPFqPQJedPGgr6ZZ+JkD5gQgDg9k=; b=jrA1PSGC37JLIT4hA
+	Us5SZjIqtVtb13EYHqZLta5bDkcXzo4pMhYYG4Mu0XXCWey7hp782XS5qNJ44FgQ
+	Xd5nnuNeASIu5jWybDhiuICCs2qTpBlZHR8G00d7xA/KaY9cVcxf9WqDA2bjWIg3
+	Iayoi/l/0pry96vqUlxpSaR3VK8j9RejV19tVcVm7Ug+embAxvgNRHcUXOvep0As
+	AOKIR8zyqY/OPmXn3RPzDc9VL2+m9Y667xvRSoCJOn/5HoAV5yVOVJ5nPPW25h3p
+	ZIhbpMW15lN5TIwVIQSRWb54owGW/IrAMKAUmSynFNUKJ0XTGfVo4RuirYrDPaKy
+	sCCCA==
+X-ME-Sender: <xms:0oypZ5IECP_uTViwdOM_lTQF_3iijBP7khAL4AOK9qAiKeTMz2QW-w>
+    <xme:0oypZ1I6E-XYxDGyG1ynxahurxU5e19MDvbPWxxza1xeDEQW0ftr2x7Bw0AFFV4Mv
+    s1Dxu1eJAgEM17sOg0>
+X-ME-Received: <xmr:0oypZxvZjab_t69tvOeswYcnKdlCJWrQlMEIsugt-F-NdoJm82fqg3g8jwmulG4YvXcCx_Ykp1jcPgYmUNy0TgBhgp4X46zWszAFplWhE90-FMA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgdefjedvtdcutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpggftfghnshhusghstghrihgsvgdp
     uffrtefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivg
@@ -208,14 +209,14 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgdefjedvtdcutefuodetgg
     gvlhdrohhrghdprhgtphhtthhopehvihhrohesiigvnhhivhdrlhhinhhugidrohhrghdr
     uhhkpdhrtghpthhtoheplhhinhhugidqfhhsuggvvhgvlhesvhhgvghrrdhkvghrnhgvlh
     drohhrghdprhgtphhtthhopegtohgttghisehinhhrihgrrdhfrh
-X-ME-Proxy: <xmx:0IypZ_HVYGe_UJ_lfrg7oQ81Mvcx1xnWVu2M_G1DB4VvuudneeastA>
-    <xmx:0IypZ_Vh4XhuoTFEune1QNdJJwF9EPE7udYUnJPqvnwf7ECuu6z_YA>
-    <xmx:0IypZ6Nvuzrn71dUm7n6oN4yv9Mbc_tlKYnTF-ZhgHGc8bz7E7i8yg>
-    <xmx:0IypZ-2L_B4aftB5ye4axSbl9dcGiGFm_C2EmljOaNN9UXZqreceVQ>
-    <xmx:0IypZ4NbaEcdiw1vFe-px8kM2gDBIC3qNFsp3mNoWb07uggKuqnFiW5_>
+X-ME-Proxy: <xmx:0oypZ6YeOy_VdbQho6Vkt94n6c6OFozdWY_3bY7VmLk1b-bAKa6CdA>
+    <xmx:0oypZwb1AKt2hVWxpnSy0AVpCyNS5UCPgMANnaWtLsZZl2yZb_45hQ>
+    <xmx:0oypZ-BT-kFqq_g3qoO4T6_8WXlQTFzigGB1Fu82du38KzarPVXGcQ>
+    <xmx:0oypZ-aHDgSE2XaHFGByzhQVsVk-h0ndld-hxnN7lpzw86V4ENvtWg>
+    <xmx:04ypZ9TURkREWgJIurjCWgcfGNWUTGaKtrgiP-Pd-c0Eb9nXgcLQ7RGN>
 Feedback-ID: i67e946c9:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 10 Feb 2025 00:21:19 -0500 (EST)
+ 10 Feb 2025 00:21:21 -0500 (EST)
 From: David Reaver <me@davidreaver.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	"Rafael J . Wysocki" <rafael@kernel.org>,
@@ -227,18 +228,17 @@ Cc: David Reaver <me@davidreaver.com>,
 	linux-fsdevel@vger.kernel.org,
 	cocci@inria.fr,
 	linux-kernel@vger.kernel.org
-Date: Sun,  9 Feb 2025 21:20:22 -0800
-Message-ID: <20250210052039.144513-3-me@davidreaver.com>
+Date: Sun,  9 Feb 2025 21:20:23 -0800
+Message-ID: <20250210052039.144513-4-me@davidreaver.com>
 X-Mailer: git-send-email 2.47.0
 In-Reply-To: <20250210052039.144513-1-me@davidreaver.com>
 References: <20250210052039.144513-1-me@davidreaver.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: [cocci] [RFC PATCH 2/6] debugfs: Add helper functions for
- debugfs_node encapsulation
+Subject: [cocci] [RFC PATCH 3/6] relay: Replace dentry with debugfs_node
 Reply-To: David Reaver <me@davidreaver.com>
 X-Loop: cocci@inria.fr
-X-Sequence: 2379
+X-Sequence: 2380
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -251,124 +251,401 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2025-02/20250210052039.144513-3-me%40davidreaver.com>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2025-02/20250210052039.144513-4-me%40davidreaver.com>
 
-Once debugfs_node becomes a struct, users will need helper functions since
-direct access to the underlying dentry will no longer be possible. This
-commit introduces these helpers, which will be used in the automated
-Coccinelle conversion.
+Although the relay documentation suggests support for multiple filesystems,
+in practice all existing users rely on debugfs. This commit updates the
+relay API and documentation to use debugfs_node instead of dentry, making
+the subsequent migration of relay users to debugfs_node smoother.
 
 Signed-off-by: David Reaver <me@davidreaver.com>
 ---
- fs/debugfs/inode.c      | 38 ++++++++++++++++++++++++++++++++++++++
- include/linux/debugfs.h | 41 +++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 79 insertions(+)
+ Documentation/filesystems/relay.rst | 32 +++++------
+ include/linux/relay.h               | 19 ++++---
+ kernel/relay.c                      | 88 ++++++++++++++---------------
+ 3 files changed, 69 insertions(+), 70 deletions(-)
 
-diff --git a/fs/debugfs/inode.c b/fs/debugfs/inode.c
-index 75715d8877ee..6892538d9d49 100644
---- a/fs/debugfs/inode.c
-+++ b/fs/debugfs/inode.c
-@@ -353,6 +353,44 @@ struct dentry *debugfs_lookup(const char *name, struct dentry *parent)
- }
- EXPORT_SYMBOL_GPL(debugfs_lookup);
+diff --git a/Documentation/filesystems/relay.rst b/Documentation/filesystems/relay.rst
+index 04ad083cfe62..b0ee7dcab8e7 100644
+--- a/Documentation/filesystems/relay.rst
++++ b/Documentation/filesystems/relay.rst
+@@ -15,8 +15,8 @@ clients write into the channel buffers using efficient write
+ functions; these automatically log into the current cpu's channel
+ buffer.  User space applications mmap() or read() from the relay files
+ and retrieve the data as it becomes available.  The relay files
+-themselves are files created in a host filesystem, e.g. debugfs, and
+-are associated with the channel buffers using the API described below.
++themselves are files created in debugfs and are associated with the
++channel buffers using the API described below.
  
-+char *debugfs_node_path_raw(struct debugfs_node *node, char *buf, size_t buflen)
-+{
-+	return dentry_path_raw(node, buf, buflen);
-+}
-+EXPORT_SYMBOL_GPL(debugfs_node_path_raw);
-+
-+struct debugfs_node *debugfs_node_get(struct debugfs_node *node)
-+{
-+	return dget(node);
-+}
-+EXPORT_SYMBOL_GPL(debugfs_node_get);
-+
-+void debugfs_node_put(struct debugfs_node *node)
-+{
-+	dput(node);
-+}
-+EXPORT_SYMBOL_GPL(debugfs_node_put);
-+
-+struct inode *debugfs_node_inode(struct debugfs_node *node)
-+{
-+	return d_inode(node);
-+}
-+EXPORT_SYMBOL_GPL(debugfs_node_inode);
-+
-+struct debugfs_node *debugfs_node_from_dentry(struct dentry *dentry)
-+{
-+	if (dentry->d_sb->s_op == &debugfs_super_operations)
-+		return dentry;
-+	return NULL;
-+}
-+EXPORT_SYMBOL_GPL(debugfs_node_from_dentry);
-+
-+struct dentry *debugfs_node_dentry(struct debugfs_node *node)
-+{
-+	return node;
-+}
-+EXPORT_SYMBOL_GPL(debugfs_node_dentry);
-+
- static struct dentry *start_creating(const char *name, struct dentry *parent)
+ The format of the data logged into the channel buffers is completely
+ up to the kernel client; the relay interface does however provide
+@@ -185,7 +185,7 @@ TBD(curr. line MT:/API/)
+     buf_mapped(buf, filp)
+     buf_unmapped(buf, filp)
+     create_buf_file(filename, parent, mode, buf, is_global)
+-    remove_buf_file(dentry)
++    remove_buf_file(node)
+ 
+   helper functions::
+ 
+@@ -203,12 +203,10 @@ read from in user space.  The files are named basename0...basenameN-1
+ where N is the number of online cpus, and by default will be created
+ in the root of the filesystem (if the parent param is NULL).  If you
+ want a directory structure to contain your relay files, you should
+-create it using the host filesystem's directory creation function,
+-e.g. debugfs_create_dir(), and pass the parent directory to
++create it using debugfs_create_dir(), and pass the parent directory to
+ relay_open().  Users are responsible for cleaning up any directory
+-structure they create, when the channel is closed - again the host
+-filesystem's directory removal functions should be used for that,
+-e.g. debugfs_remove().
++structure they create, when the channel is closed with
++debugfs_remove().
+ 
+ In order for a channel to be created and the host filesystem's files
+ associated with its channel buffers, the user must provide definitions
+@@ -216,7 +214,7 @@ for two callback functions, create_buf_file() and remove_buf_file().
+ create_buf_file() is called once for each per-cpu buffer from
+ relay_open() and allows the user to create the file which will be used
+ to represent the corresponding channel buffer.  The callback should
+-return the dentry of the file created to represent the channel buffer.
++return the node of the file created to represent the channel buffer.
+ remove_buf_file() must also be defined; it's responsible for deleting
+ the file(s) created in create_buf_file() and is called during
+ relay_close().
+@@ -227,22 +225,22 @@ using debugfs::
+     /*
+     * create_buf_file() callback.  Creates relay file in debugfs.
+     */
+-    static struct dentry *create_buf_file_handler(const char *filename,
+-						struct dentry *parent,
+-						umode_t mode,
+-						struct rchan_buf *buf,
+-						int *is_global)
++    static struct debugfs_node *create_buf_file_handler(const char *filename,
++							struct debugfs_node *parent,
++							umode_t mode,
++							struct rchan_buf *buf,
++							int *is_global)
+     {
+ 	    return debugfs_create_file(filename, mode, parent, buf,
+-				    &relay_file_operations);
++				       &relay_file_operations);
+     }
+ 
+     /*
+     * remove_buf_file() callback.  Removes relay file from debugfs.
+     */
+-    static int remove_buf_file_handler(struct dentry *dentry)
++    static int remove_buf_file_handler(struct debugfs_node *node)
+     {
+-	    debugfs_remove(dentry);
++	    debugfs_remove(node);
+ 
+ 	    return 0;
+     }
+diff --git a/include/linux/relay.h b/include/linux/relay.h
+index 72b876dd5cb8..75d5a147ea9e 100644
+--- a/include/linux/relay.h
++++ b/include/linux/relay.h
+@@ -22,6 +22,7 @@
+ #include <linux/poll.h>
+ #include <linux/kref.h>
+ #include <linux/percpu.h>
++#include <linux/debugfs.h>
+ 
+ /*
+  * Tracks changes to rchan/rchan_buf structs
+@@ -41,7 +42,7 @@ struct rchan_buf
+ 	struct rchan *chan;		/* associated channel */
+ 	wait_queue_head_t read_wait;	/* reader wait queue */
+ 	struct irq_work wakeup_work;	/* reader wakeup */
+-	struct dentry *dentry;		/* channel file dentry */
++	struct debugfs_node *node;	/* channel file node */
+ 	struct kref kref;		/* channel buffer refcount */
+ 	struct page **page_array;	/* array of current buffer pages */
+ 	unsigned int page_count;	/* number of current buffer pages */
+@@ -69,7 +70,7 @@ struct rchan
+ 	struct rchan_buf * __percpu *buf; /* per-cpu channel buffers */
+ 	int is_global;			/* One global buffer ? */
+ 	struct list_head list;		/* for channel list */
+-	struct dentry *parent;		/* parent dentry passed to open */
++	struct debugfs_node *parent;	/* parent node passed to open */
+ 	int has_base_filename;		/* has a filename associated? */
+ 	char base_filename[NAME_MAX];	/* saved base filename */
+ };
+@@ -117,7 +118,7 @@ struct rchan_callbacks
+ 	 * created outside of relay, the parent must also exist in
+ 	 * that filesystem.
+ 	 *
+-	 * The callback should return the dentry of the file created
++	 * The callback should return the debugfs_node of the file created
+ 	 * to represent the relay buffer.
+ 	 *
+ 	 * Setting the is_global outparam to a non-zero value will
+@@ -128,15 +129,15 @@ struct rchan_callbacks
+ 	 *
+ 	 * See Documentation/filesystems/relay.rst for more info.
+ 	 */
+-	struct dentry *(*create_buf_file)(const char *filename,
+-					  struct dentry *parent,
++	struct debugfs_node *(*create_buf_file)(const char *filename,
++					  struct debugfs_node *parent,
+ 					  umode_t mode,
+ 					  struct rchan_buf *buf,
+ 					  int *is_global);
+ 
+ 	/*
+ 	 * remove_buf_file - remove file representing a relay channel buffer
+-	 * @dentry: the dentry of the file to remove
++	 * @node: the debugfs_node of the file to remove
+ 	 *
+ 	 * Called during relay_close(), once for each per-cpu buffer,
+ 	 * to allow the client to remove a file used to represent a
+@@ -146,7 +147,7 @@ struct rchan_callbacks
+ 	 *
+ 	 * This callback is mandatory.
+ 	 */
+-	int (*remove_buf_file)(struct dentry *dentry);
++	int (*remove_buf_file)(struct debugfs_node *node);
+ };
+ 
+ /*
+@@ -154,14 +155,14 @@ struct rchan_callbacks
+  */
+ 
+ struct rchan *relay_open(const char *base_filename,
+-			 struct dentry *parent,
++			 struct debugfs_node *parent,
+ 			 size_t subbuf_size,
+ 			 size_t n_subbufs,
+ 			 const struct rchan_callbacks *cb,
+ 			 void *private_data);
+ extern int relay_late_setup_files(struct rchan *chan,
+ 				  const char *base_filename,
+-				  struct dentry *parent);
++				  struct debugfs_node *parent);
+ extern void relay_close(struct rchan *chan);
+ extern void relay_flush(struct rchan *chan);
+ extern void relay_subbufs_consumed(struct rchan *chan,
+diff --git a/kernel/relay.c b/kernel/relay.c
+index a8ae436dc77e..16cf9098d697 100644
+--- a/kernel/relay.c
++++ b/kernel/relay.c
+@@ -337,18 +337,18 @@ void relay_reset(struct rchan *chan)
+ }
+ EXPORT_SYMBOL_GPL(relay_reset);
+ 
+-static inline void relay_set_buf_dentry(struct rchan_buf *buf,
+-					struct dentry *dentry)
++static inline void relay_set_buf_node(struct rchan_buf *buf,
++				      struct debugfs_node *node)
  {
- 	struct dentry *dentry;
-diff --git a/include/linux/debugfs.h b/include/linux/debugfs.h
-index e6ee571e8c36..738a990f99cd 100644
---- a/include/linux/debugfs.h
-+++ b/include/linux/debugfs.h
-@@ -79,6 +79,18 @@ struct debugfs_short_fops {
- 
- struct dentry *debugfs_lookup(const char *name, struct dentry *parent);
- 
-+char *debugfs_node_path_raw(struct debugfs_node *node, char *buf, size_t buflen);
-+
-+struct debugfs_node *debugfs_node_get(struct debugfs_node *node);
-+
-+void debugfs_node_put(struct debugfs_node *node);
-+
-+struct inode *debugfs_node_inode(struct debugfs_node *node);
-+
-+struct debugfs_node *debugfs_node_from_dentry(struct dentry *dentry);
-+
-+struct dentry *debugfs_node_dentry(struct debugfs_node *node);
-+
- struct dentry *debugfs_create_file_full(const char *name, umode_t mode,
- 					struct dentry *parent, void *data,
- 					const void *aux,
-@@ -271,6 +283,35 @@ static inline struct dentry *debugfs_lookup(const char *name,
- 	return ERR_PTR(-ENODEV);
+-	buf->dentry = dentry;
+-	d_inode(buf->dentry)->i_size = buf->early_bytes;
++	buf->node = node;
++	debugfs_node_inode(buf->node)->i_size = buf->early_bytes;
  }
  
-+static inline char *debugfs_node_path_raw(struct debugfs_node *node, char *buf,
-+					  size_t buflen)
-+{
-+	return ERR_PTR(-ENODEV);
-+}
-+
-+static inline struct debugfs_node *debugfs_node_get(struct debugfs_node *node)
-+{
-+	return ERR_PTR(-ENODEV);
-+}
-+
-+void debugfs_node_put(struct debugfs_node *node)
-+{ }
-+
-+struct inode *debugfs_node_inode(struct debugfs_node *node)
-+{
-+	return ERR_PTR(-ENODEV);
-+}
-+
-+struct debugfs_node *debugfs_node_from_dentry(struct dentry *dentry)
-+{
-+	return ERR_PTR(-ENODEV);
-+}
-+
-+struct dentry *debugfs_node_dentry(struct debugfs_node *node)
-+{
-+	return ERR_PTR(-ENODEV);
-+}
-+
- static inline struct dentry *debugfs_create_file_aux(const char *name,
- 					umode_t mode, struct dentry *parent,
- 					void *data, void *aux,
+-static struct dentry *relay_create_buf_file(struct rchan *chan,
+-					    struct rchan_buf *buf,
+-					    unsigned int cpu)
++static struct debugfs_node *relay_create_buf_file(struct rchan *chan,
++						  struct rchan_buf *buf,
++						  unsigned int cpu)
+ {
+-	struct dentry *dentry;
++	struct debugfs_node *node;
+ 	char *tmpname;
+ 
+ 	tmpname = kzalloc(NAME_MAX + 1, GFP_KERNEL);
+@@ -357,15 +357,15 @@ static struct dentry *relay_create_buf_file(struct rchan *chan,
+ 	snprintf(tmpname, NAME_MAX, "%s%d", chan->base_filename, cpu);
+ 
+ 	/* Create file in fs */
+-	dentry = chan->cb->create_buf_file(tmpname, chan->parent,
+-					   S_IRUSR, buf,
+-					   &chan->is_global);
+-	if (IS_ERR(dentry))
+-		dentry = NULL;
++	node = chan->cb->create_buf_file(tmpname, chan->parent,
++					 S_IRUSR, buf,
++					 &chan->is_global);
++	if (IS_ERR(node))
++		node = NULL;
+ 
+ 	kfree(tmpname);
+ 
+-	return dentry;
++	return node;
+ }
+ 
+ /*
+@@ -376,7 +376,7 @@ static struct dentry *relay_create_buf_file(struct rchan *chan,
+ static struct rchan_buf *relay_open_buf(struct rchan *chan, unsigned int cpu)
+ {
+ 	struct rchan_buf *buf;
+-	struct dentry *dentry;
++	struct debugfs_node *node;
+ 
+  	if (chan->is_global)
+ 		return *per_cpu_ptr(chan->buf, 0);
+@@ -386,16 +386,16 @@ static struct rchan_buf *relay_open_buf(struct rchan *chan, unsigned int cpu)
+ 		return NULL;
+ 
+ 	if (chan->has_base_filename) {
+-		dentry = relay_create_buf_file(chan, buf, cpu);
+-		if (!dentry)
++		node = relay_create_buf_file(chan, buf, cpu);
++		if (!node)
+ 			goto free_buf;
+-		relay_set_buf_dentry(buf, dentry);
++		relay_set_buf_node(buf, node);
+ 	} else {
+ 		/* Only retrieve global info, nothing more, nothing less */
+-		dentry = chan->cb->create_buf_file(NULL, NULL,
+-						   S_IRUSR, buf,
+-						   &chan->is_global);
+-		if (IS_ERR_OR_NULL(dentry))
++		node = chan->cb->create_buf_file(NULL, NULL,
++						 S_IRUSR, buf,
++						 &chan->is_global);
++		if (IS_ERR_OR_NULL(node))
+ 			goto free_buf;
+ 	}
+ 
+@@ -426,7 +426,7 @@ static void relay_close_buf(struct rchan_buf *buf)
+ {
+ 	buf->finalized = 1;
+ 	irq_work_sync(&buf->wakeup_work);
+-	buf->chan->cb->remove_buf_file(buf->dentry);
++	buf->chan->cb->remove_buf_file(buf->node);
+ 	kref_put(&buf->kref, relay_remove_buf);
+ }
+ 
+@@ -454,7 +454,7 @@ int relay_prepare_cpu(unsigned int cpu)
+ /**
+  *	relay_open - create a new relay channel
+  *	@base_filename: base name of files to create, %NULL for buffering only
+- *	@parent: dentry of parent directory, %NULL for root directory or buffer
++ *	@parent: node of parent directory, %NULL for root directory or buffer
+  *	@subbuf_size: size of sub-buffers
+  *	@n_subbufs: number of sub-buffers
+  *	@cb: client callback functions
+@@ -468,11 +468,11 @@ int relay_prepare_cpu(unsigned int cpu)
+  *	permissions will be %S_IRUSR.
+  *
+  *	If opening a buffer (@parent = NULL) that you later wish to register
+- *	in a filesystem, call relay_late_setup_files() once the @parent dentry
++ *	in a filesystem, call relay_late_setup_files() once the @parent node
+  *	is available.
+  */
+ struct rchan *relay_open(const char *base_filename,
+-			 struct dentry *parent,
++			 struct debugfs_node *parent,
+ 			 size_t subbuf_size,
+ 			 size_t n_subbufs,
+ 			 const struct rchan_callbacks *cb,
+@@ -538,40 +538,40 @@ EXPORT_SYMBOL_GPL(relay_open);
+ 
+ struct rchan_percpu_buf_dispatcher {
+ 	struct rchan_buf *buf;
+-	struct dentry *dentry;
++	struct debugfs_node *node;
+ };
+ 
+ /* Called in atomic context. */
+-static void __relay_set_buf_dentry(void *info)
++static void __relay_set_buf_node(void *info)
+ {
+ 	struct rchan_percpu_buf_dispatcher *p = info;
+ 
+-	relay_set_buf_dentry(p->buf, p->dentry);
++	relay_set_buf_node(p->buf, p->node);
+ }
+ 
+ /**
+  *	relay_late_setup_files - triggers file creation
+  *	@chan: channel to operate on
+  *	@base_filename: base name of files to create
+- *	@parent: dentry of parent directory, %NULL for root directory
++ *	@parent: node of parent directory, %NULL for root directory
+  *
+  *	Returns 0 if successful, non-zero otherwise.
+  *
+  *	Use to setup files for a previously buffer-only channel created
+- *	by relay_open() with a NULL parent dentry.
++ *	by relay_open() with a NULL parent node.
+  *
+  *	For example, this is useful for perfomring early tracing in kernel,
+- *	before VFS is up and then exposing the early results once the dentry
++ *	before VFS is up and then exposing the early results once the node
+  *	is available.
+  */
+ int relay_late_setup_files(struct rchan *chan,
+ 			   const char *base_filename,
+-			   struct dentry *parent)
++			   struct debugfs_node *parent)
+ {
+ 	int err = 0;
+ 	unsigned int i, curr_cpu;
+ 	unsigned long flags;
+-	struct dentry *dentry;
++	struct debugfs_node *node;
+ 	struct rchan_buf *buf;
+ 	struct rchan_percpu_buf_dispatcher disp;
+ 
+@@ -593,9 +593,9 @@ int relay_late_setup_files(struct rchan *chan,
+ 		err = -EINVAL;
+ 		buf = *per_cpu_ptr(chan->buf, 0);
+ 		if (!WARN_ON_ONCE(!buf)) {
+-			dentry = relay_create_buf_file(chan, buf, 0);
+-			if (dentry && !WARN_ON_ONCE(!chan->is_global)) {
+-				relay_set_buf_dentry(buf, dentry);
++			node = relay_create_buf_file(chan, buf, 0);
++			if (node && !WARN_ON_ONCE(!chan->is_global)) {
++				relay_set_buf_node(buf, node);
+ 				err = 0;
+ 			}
+ 		}
+@@ -617,23 +617,23 @@ int relay_late_setup_files(struct rchan *chan,
+ 			break;
+ 		}
+ 
+-		dentry = relay_create_buf_file(chan, buf, i);
+-		if (unlikely(!dentry)) {
++		node = relay_create_buf_file(chan, buf, i);
++		if (unlikely(!node)) {
+ 			err = -EINVAL;
+ 			break;
+ 		}
+ 
+ 		if (curr_cpu == i) {
+ 			local_irq_save(flags);
+-			relay_set_buf_dentry(buf, dentry);
++			relay_set_buf_node(buf, node);
+ 			local_irq_restore(flags);
+ 		} else {
+ 			disp.buf = buf;
+-			disp.dentry = dentry;
++			disp.node = node;
+ 			smp_mb();
+ 			/* relay_channels_mutex must be held, so wait. */
+ 			err = smp_call_function_single(i,
+-						       __relay_set_buf_dentry,
++						       __relay_set_buf_node,
+ 						       &disp, 1);
+ 		}
+ 		if (unlikely(err))
+@@ -669,8 +669,8 @@ size_t relay_switch_subbuf(struct rchan_buf *buf, size_t length)
+ 		old_subbuf = buf->subbufs_produced % buf->chan->n_subbufs;
+ 		buf->padding[old_subbuf] = buf->prev_padding;
+ 		buf->subbufs_produced++;
+-		if (buf->dentry)
+-			d_inode(buf->dentry)->i_size +=
++		if (buf->node)
++			debugfs_node_inode(buf->node)->i_size +=
+ 				buf->chan->subbuf_size -
+ 				buf->padding[old_subbuf];
+ 		else
