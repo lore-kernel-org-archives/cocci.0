@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CAB4CC021A0
-	for <cocci@archiver.kernel.org>; Sat, 15 Feb 2025 21:27:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6E1C1C02198
+	for <cocci@archiver.kernel.org>; Sun, 16 Feb 2025 08:48:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=message-id:date:mime-version:to:cc:references:from:
-   in-reply-to:subject:reply-to:sender:list-id:list-help:
-   list-subscribe:list-unsubscribe:list-post:list-owner:
-   list-archive;
-  bh=MqG7khrejxxQxeNB5GKb6lPIUnaDtS4plkvdpCqhGtQ=;
-  b=GAImyydaJoKRtqyPUP/RfP/Ahd6Y2Cuo35wjUVS+JG0GJ6xHZ2zoayny
-   EDZ6i5Y+64F7m35V26GuhIxqezkPJFzQ4BgUs83uUEX2g5Msj5gIMMv9a
-   686C7yUzuKUiMfbtVvwlY2QFZbLmTb5gz/ZUpcpHbBBuNRZNQTpozyCpO
-   g=;
+   in-reply-to:content-transfer-encoding:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=9zRce5KDupQlAyQvjcHzz5EymYWKIHafArKmI09bdGo=;
+  b=O4ok8Xc7ZpFIEbPP3+UK4wJ5HJbIEBg730OHsHl9Hc9s5u8doxxHizj5
+   lyUpqR7MwOZfU2PpTiwzDJ1wHCn0EcR6XjkYA65cp9lnvjTIjxyxMuAwY
+   aqRmVq5gbfkj0htjiRz1vVOJHkXlLOviypWFhBCWWfFiFRP9aBlC1qjug
+   0=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -36,215 +36,216 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
 Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@gmail.com
-X-IronPort-AV: E=Sophos;i="6.13,289,1732575600"; 
-   d="scan'208,217";a="208453531"
+X-IronPort-AV: E=Sophos;i="6.13,290,1732575600"; 
+   d="scan'208";a="208482202"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 15 Feb 2025 22:27:02 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 16 Feb 2025 09:48:56 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id E2367E0264; Sat, 15 Feb 2025 22:27:01 +0100 (CET)
+	id 5D643E0D1D; Sun, 16 Feb 2025 09:48:56 +0100 (CET)
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by sympa.inria.fr (Postfix) with ESMTPS id 7C800E0260
-	for <cocci@sympa.inria.fr>; Sat, 15 Feb 2025 22:26:57 +0100 (CET)
-IronPort-SDR: 67b106a0_C1AhNmTldlRTdgbPhvUjW/Gr5cMlBiUbsvcuNTRUy4Iavi/
- hun+sl6e38igjRD0aHRMXbJ2vkfrh7S/EIQ4nuQ==
-X-IPAS-Result: =?us-ascii?q?A0FDBADNBbFnfK3QVdFaHQEBAQEJARIBBQUBghOBclKBV?=
- =?us-ascii?q?zMEU4RWj0+BdC0DhDuHO4tJiBU+DwEDAQsBAUICBAEBAwQ4hEgCiwsCHgcBB?=
- =?us-ascii?q?DQTAQIEAQEBAQMCAwEBAQEBARABAQUBAQECAQECBAYBAhABASIZBw4SKYV7D?=
- =?us-ascii?q?YJiAYEkYQIFAzsBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
- =?us-ascii?q?QEFAixfAQEBAxIRBBkBGx0BAwwGAwILDSoCAiIRAQUBHAYVAQEegmCCMAEDM?=
- =?us-ascii?q?QMBknOPQIEFQos+fxYFAhaBAYINBtpdChkoDWwDgWICBwkBCoE0hHUpTg6CO?=
- =?us-ascii?q?B0BKoEyAoRRgzl6Jw+BVUSBPIJSMT6IHoJpBIIvSnYug0CGSBKDDYN/hGuTB?=
- =?us-ascii?q?QgHHxIJCRMGCgJLBRASAwQDBAQBAgsJCgkDAwIOAggDAggGGQE/EgQTCg0LB?=
- =?us-ascii?q?wUfCggMEQooAyIEDisPA1gFNAEIBgICBAQCBAIKAgkCAggHAhQDAgQEAgEFE?=
- =?us-ascii?q?gMLAQUGBQEBBAkOAgIDAwICAQgCAgEBAhMBBAMBBwIFAwUDCgEBAQIBBBQGA?=
- =?us-ascii?q?wUDAwcDBAIDAgYCBAQBBQICAwMCAwEDAwIBAgMJEA8WAgIDBAIGAgIBBCYCA?=
- =?us-ascii?q?RUFAgMEAgIHAgIDAQIBAgICBAIEAgIGAwkIAQICBwECAgIDFQIFAQQJAwMFE?=
- =?us-ascii?q?gwgAwICAgIDBwoDBQIBAQIEAwMDAwwNBwIDAQIBAwUDAQIBAgkDBgICAwMEE?=
- =?us-ascii?q?hkFAwIPAwIBBQQCCBALBwEBDxQFBAkFFQMGAgMDFgsEBQMDAwEMDw4CAgsDF?=
- =?us-ascii?q?wUBAQcBAw0IAwQEAgMDCQIBEAEDBAIJAgQBAgoCAgICAgQBAQUEAgQDAgUCA?=
- =?us-ascii?q?gEIBAMDAw0EAwgIAwUDDBICAgIJAgMBAgMDAwQNCB0FCRELAgkDBA0CBAICA?=
- =?us-ascii?q?QYDBgoGBQQFBgECGAICBgwEAwMIAwIDAgIBAgICARECAgkIDQUJBQYCAhUDA?=
- =?us-ascii?q?gMIAQkDDwMCFAEGAggDBwEBBAICChEKAQECAgEGJQIBAQITEwcDCAICAgIGF?=
- =?us-ascii?q?gwBBQcDBw8FBQQCAhYDAxIEBBACAgMDAgEBFAYVAQUCAwYLAQYBAgUEAgMEA?=
- =?us-ascii?q?hICERMDAwQGAwECChACBAIJCgEFBAMHBQIfAwMCAgULAggCAgUCBQcDCQ4BA?=
- =?us-ascii?q?gUDBAkCFAIQAgICAggWAgICBRwDJgIEAwMDAwsBAgIOCQMENgYRBAIDAwIOA?=
- =?us-ascii?q?QICCwECAgQCAwEEBwkDAwkKBwEKDQcCAgoICRABAgIPBwMCAgICBgcOAwITD?=
- =?us-ascii?q?wUGBgIKBw0LAgECAhMCAwkGAwUNAwcECg0CFQIWBQMgAggJCwIHEQIFEgMOB?=
- =?us-ascii?q?QMCAhEEAgMDBQMBBwEXAwcIAgIMAgICAgUCBQIFFxEBDQQDAwMCCAEEFQYDC?=
- =?us-ascii?q?QgqGxIBAQEFAQkCAwIDBAgDAwMCAwQMCwIBBwgDAwYLCAkGAwIHCBkDBQQDB?=
- =?us-ascii?q?wULIQIGAwIEBQQBBQITDQIDGQIGAwYRCQwCBggHCQMHAQEBAgICCAEGBRICA?=
- =?us-ascii?q?wQCBQQEAQEIAwMEBgIBAwICAgEECQEBAQIKAggKAQkTBAMIAwMDAwMFAQICC?=
- =?us-ascii?q?AQRBQUCAQUKEwwBCgYDBgMEAgICCwcCAwMDAgcBCxoJAgEDAgIFAgIBBQMCA?=
- =?us-ascii?q?gYEAwIBAQkCAwIIAQICAQECAgIEAQcBBAcGAQECBAICNgIBAwkCBQEBAQ4CA?=
- =?us-ascii?q?gQCAgECAgIEAgQBAgYLBAUNAQECAQICAQEBBAEIAwEBAQICAwMFAwUDCA8NA?=
- =?us-ascii?q?QEXCx0FBAUCAgEBAQEBAhMCAgELAQIBAQMaAgEDAwQBCwIBAQQfBBYCAgICA?=
- =?us-ascii?q?gIEAwICAwICAgQHEyUBAwEDAgEGAxMCAgICAgQCAQICBQUFAQMEERMJAQMCB?=
- =?us-ascii?q?QQCAgYCBAYKAgcEAhoEAgICAQMEBgMBAggCAgoEAgMCAgoCAgMBAgIHGR0CC?=
- =?us-ascii?q?QMjDwIBCwkIEz0MBzIENgEJCxQHBiWBAJ4bChCBGIQkBoEjHIFBPgIaW7EBk?=
- =?us-ascii?q?1OBCjQHhB6BXQYMn10GDwQvl0OTD4hDkDqpBAIKBwYRIxKBSSOBXDMaI4EBg?=
- =?us-ascii?q?jZPAxkPjiEMFoNYxkxCNTwCBwEKAQEDCYVpijiBSwEB?=
-IronPort-PHdr: A9a23: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
-IronPort-Data: A9a23:K4QKP6990VUuISrBvUTeDrUDx3WTJUtcMsCJ2f8bNWPcYEJGY0x3z
- WYcXmHSOf2ONGTzLYp3PYS+pBtVuZ+End81GQpuqy1EQiMRo6IpJ/zJdxaqZ3v6wu7rFR88s
- Z1GMrEsCOhuExcwcz/0auCJQUFUjP3OHPymYAL9EngZbRd+Tys8gg5Ulec8g4p56fC0GArlV
- ena+qUzA3f7nWcvWo4ow/jb8k435q2v4GlwUmEWPJingneOzxH5M7pEfcldH1OgKqFIE+izQ
- fr0zb3R1gs1KD9wYj8Nuu+TnnwiGtY+DyDW4pZlc/TKbix5m8AH+v1T2Mzwxqtgo27hc9hZk
- L2hvHErIOsjFvWkdO81C3G0H8ziVEHvFXCuzXWX6KSuI0P6n3TE3qhDLBlsErYiuetdCmZV0
- qc7Ey8qV0XW7w626OrTpuhEg80iKIzvPtpatCg/lnfWCvEpRZ2FSKLPjTNa9G1o14YeQLCEP
- 5pfMGU0BPjDS0Un1lM/DZsih6Grh3/zej1cgF2QrKszpWPUyWSd1ZC0aIuPIoLRFZs9ckCwm
- knk5D3/CUkjKtnY9wW62HCBn8PqtHauMG4VPOblr6Y10QP7KnYoIBkfSlK/pdGri0u0QdsZK
- koO+yNoo7Ja3EesRdL8dwappWaN+B8aQdtZVeMggDxh0YLR6gedQ2wGF3tPMYN98sAxQjMu2
- xmCmNaB6SFTXKO9VC+w1u/OggiIeiU/JmgZQnQndhQi2oy2yG0stS7nQtFmGa+zq9T6HzDs3
- jyHxBTSYZ1D3abnMI3rrTj6byKQm3TfcuIiCuzqso+N6wp4YMuhZdXt5wGEtrBPK4GWSlTHt
- 38B8yR/0AzsJcDX/MBuaLxSdF1M2xpjGGOF6bKIN8d7nwlBA1b5IehtDMhWfS+FyPosdz7ze
- 1P0sghM/pJVN3bCRfYoONPsVpt7lfewTomNuhXogjxmMsgZmOivrHEGWKJs9zq1+KTRufhva
- cjDLpbwZZrkIfo/kmDuHI/xLoPHNghlmDqLGsGlp/hW+bWZY3GRRP8ENlDIBt3VH4vVyDg5B
- +13bpPQoz0GCLOWSnCOreY7cwpWRVBlXsueg5IMJoa+zv9OQj1J5wn5m+55I9QNcmU8vrugw
- 0xRrWcCkwCn3yyfclrWAp2hAZu2NatCQbsAFXREFT6VN7ILOO5DNY9GL8BrL4o0vvdu1+B1R
- PQjcsCNSKYHADfe9jhXKdG3oIV+fV75zUiDLgi0UggZJpRAfg3u/sO7Xw3N8CJVMDG7m/Fjq
- JKd1yTaY6E5eSJcMOjsZsmC8XaNrFkGuecrX0L3MthZI0rt145xKh3OtPw8IuBSCBCaxjKly
- BqcLhAIgdb8s6kn1cT73/Gand25F897OFRQJEjAzLOMLSKB1HGS8YxBd+epfD7mS2L//pu5V
- 9hV1/3RNP4mnk5AlphVSZJH/Pkb3MT+gYNawiBPPmT5X37yBpxOenC5jNRy7ItTzbpniC6Kc
- 0Oo+OgCH46WOcngQWUjFCB8YsutjfgryyTvt9IrK0DH5QhyzrqNcWNWGzKu0CV9Dr9EALkJ8
- Ncbmvw9ylKA00IxE9O8kCpr2XyGLSUAX4UZp5gqOtLXpTRx+G5SQ673K3HQ246OWeVuI0NxA
- z6zhYj+vZp+6HfGUUIOESnq4bIAq7UI4AtH3X0TFWSvw9DlvMI67DdV0DYwTzlW8Cl57vJOC
- jBrGnBxdIqz/GZOpclcXmqTNRlLKz+H92fQlVYYtm3rYHO5d27KLV9nYOaEw18EwjgNYhla4
- 7Cq52L3Whn6fMzK/3UTWGw0j9fBXNBO5gn5t8T/JPu8Hr4+eivDvqC1QHgh8j/LPJsUv1LWg
- sVP58NyWL3fGQ9LhJNjEKic97AbaC7cFVx4Wfs7oZ84RzDNSg+9yR2lCh6UaMhSA9fo7EXhK
- chlBvwXZiSEzCzU8wwqX/8dEYRVwswsysEJII7wBGg8tLCakDplnbTQ+gX6h04pW99eqtk8G
- KyAawO9FnGsulUMl1/vtMVkPk+KUesAbiD438G397wtPLAHu+dOb0oz8+WVu1O4DQhZxC+X7
- TjzP/Lu8+9fyIpXj9TNFIdHDF6KMt/dbrmD3z2ylNVsVunxF/nymTkbkGS6ADQOD4AtA4x2s
- Z+vrO/I2Fj0uedqcmLBxLiEOap7xeSze+t1NMjIAmFQtnaAUpW04j8o2WOxGbpWmvxzu+ilQ
- AqZbpOrVNg3At1y+lxcWxJ8IT08VZvlT/7HjjyvitixET4h6BzjAPL70G72fEdZWzQtOZajO
- jTruv2r2M9UnL5MCDAAGftiJZ1ye33nZocLaPzzsiu+HECzo1bfpIbnqwUs2QvLBlaADsz+x
- 5DPHTr6VRaqvZD33MNriJNzsjIXHURCr7EJJGxFwOFPihe+EGIiBsYeO89fCphrzwrD5Kuhb
- zTJNGYfGSHxWApfSirF4fPhYxy+A9IfMdKoNx0r+EKpMx2NPr2iO4c41Clc4CZRQADBndGXc
- YRUvjW6OxWq2ZhmSNoC/vHx068t2vrewWlO4kzn1dD7BxEFG7gRyXh9B0x3WDfaF93W3lD+T
- YTvqbuonGngIaIwLSphR5KRMBQQvTeqyzdxKCnWn42ZtIKcw+lNjvb4PokfF1HFgNsifNYzq
- bHfHgNhIFx6HlQcvKIov5Qihqoc5TejAJ2hNKG6LeENt/jY14nkVv/uWQIAScgj/EhUFFa1e
- vxAJZQhLBztFX29E4F6BenEF1ydn57M4/z0YNbDmAL7
-IronPort-HdrOrdr: A9a23:lSRyWq8VJroyC8vExoBuk+AII+orL9Y04lQ7vn2ZhyYlCfBw5P
- re4cjztCWE6gr5PUtLpTnuAtjlfZqxz+8I3WBVB8bcYOCEghrOEGgB1/qG/9SIIUSXnZ8/6U
- 4jSdkFNDSZNzhHZK3BkXCF+rgbsaG6GeyT9IHj5kYoYwUvRa8I1WhE48WgfnGehjMqOXP0Lv
- ShDwN8xgadRQ==
-X-Talos-CUID: 9a23:ZGOrLWMRyP5+H+5DRXRK1BZONfsfMXD3x3DLBBSbMnlOcejA
-X-Talos-MUID: 9a23:SXeZJgSSkt5Kku1gRXTQrxN5bcFju52wDQczrqosueSdGQlZbmI=
+	by sympa.inria.fr (Postfix) with ESMTPS id 582D4E0260
+	for <cocci@sympa.inria.fr>; Sun, 16 Feb 2025 09:48:53 +0100 (CET)
+IronPort-SDR: 67b1a674_XgCvKyF2hMcGkATNE5LLINPCtjiPjNLOr7z+nf31668yUzI
+ Q2pFwrHPZyB2DDOlXIcj6Yeou/AW4YW5jM/GYZQ==
+X-IPAS-Result: =?us-ascii?q?A0GUAgCtpbFnfKzQVdFaHAEBAQEBAQcBARIBAQQEAQFAg?=
+ =?us-ascii?q?VOBclKBVzMEU4RWj0+BdDCEO4c7k14+DwEDAQsBAUICBAEBAwQ4hEgCiwsCH?=
+ =?us-ascii?q?gcBBDQTAQIEAQEBAQMCAwEBAQEBARABAQUBAQECAQECBAYBAhABASIZBw4SK?=
+ =?us-ascii?q?YV7DYJiAYEkYQIFAzsBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEFAixfAQEBAxIRBBEIARsdAQMMBgULDQICJgICIhEBBQEcBhUBAR6CY?=
+ =?us-ascii?q?IIwAQMxAwGhfYEFQos+fxYFAhaBAYINBtpdChkoDWwDgWICBwkBCoEGLoR1K?=
+ =?us-ascii?q?U4OgjgdAYYvgzl6Jw+BVUSBPIJSMT6EWINGgmkEgi9KgSSDQIlniGqSfwgHH?=
+ =?us-ascii?q?xIJCRMGCgJLCwoSAwQDBAQBAgsTCQMDAg4CCAMCCAYZAT8SBBMKDQsHBR8KC?=
+ =?us-ascii?q?AwRCigDIgQOKw8DWzQBCAYCAgQEAgQCCgIJAgIIBwIUAwIEBAIBBRIDCwEFB?=
+ =?us-ascii?q?gUBAQQJDgICAwMCAgEIAgIBAQITAQQDAQcCBQMFAwoBAQECAQQUBgMFAwMHA?=
+ =?us-ascii?q?wQCAwIGAgQFBQICAwMCAwEDAwIBAgMJEA8WAgIDBAIGAgIBBCYCARUFAgMEA?=
+ =?us-ascii?q?gIHAgIDAQIBAgICBAIEAgIGAwkIAQICBwECAgIDFQIFAQQJAwMFEgwgAwICA?=
+ =?us-ascii?q?gIDBwoDBQIBAQIEAwMDAwwNBwIDAQIBAwUDAQIBAgkDBgICAwMEEhkFAwIPA?=
+ =?us-ascii?q?wIBBQQCCBALBwEBDxQFBAkFFQMGAgMDFgsEBQMDAwEMDw4CAgsDFwUBAQcBA?=
+ =?us-ascii?q?w0IAwQEAgMDCQIBEAEDBAIJAgQBAgoCAgICAgQBAQUEAgQDAgUCAgEIBAMDA?=
+ =?us-ascii?q?w0EAwgIAwUDDBICAgIJAgMBAgMDAwQNCB0FCRELAgkDBA0CBAICAQYDBgoGB?=
+ =?us-ascii?q?QQFBgECGAICBgwEAwMIAwIDAgIBAgICARECAgkIDQUJBQYCAhUDAgMIAQkDD?=
+ =?us-ascii?q?wMCFAEGAggDBwEBBAICChMKAQECAgEGJQIBAQITEwcDCAICAgIGFgwBBQcDB?=
+ =?us-ascii?q?w8FBQQCAhYDAxIEBBACAgMDAgEBFAYVAQUCAwYLAQYBAgUEAgMEAhICERMDA?=
+ =?us-ascii?q?wQGAwECChACBAIJCgEFBAMHBQIfAwMCAgULAggCAgUCBQcDCQ4BAgUDBAkCF?=
+ =?us-ascii?q?AIQAgICAggWAgICBRwDJgIEAwMDAwsBAgIOCQMENgYRBAIDAwIOAQICCwECA?=
+ =?us-ascii?q?gQCAwEEBwkDAwkKBwEKDQcCAgoICRABAgIPBwMCAgICBgcOAwITDwUGBgIKB?=
+ =?us-ascii?q?w0LAgECAhUCAwkGAwUNAwcECg0CFQIWBQMgAggJCwIHEQIFEgMOBQMCAhEEA?=
+ =?us-ascii?q?gMDBQMBBwEXAwcIAgIMAgICAgUCBQIFFxEBDQQDAwMCCAEEFQYDCQgqGxIBA?=
+ =?us-ascii?q?QEFAQkCAwIDBAgDAwMCAwQMCwIBBwgDAwYLCAkGAwIHCBkDBQQDBwULIQIGA?=
+ =?us-ascii?q?wIEBQQBBQITDQIDGQIGAwYRCQwCBggHCQMHAQEBAgICCAEGBRICAwQCBQQEA?=
+ =?us-ascii?q?QEIAwMEBgIBAwICBAkBAQECCgIICgEJEwQDCAMDAwMDBQECAggEEQUFAgEFC?=
+ =?us-ascii?q?hMMAQoGAwYDBAICAgsHAgMDAwIHAQsaCQIBAwICBQICAQUDAgIGBAMCAQEJA?=
+ =?us-ascii?q?gMCCAECAgEBAgICBAEHAQQHBgEBAgQCAjQCAQMJAgUBAQEOAgIEAgIBAgICB?=
+ =?us-ascii?q?AIEAQIGCwQFDQEBAgECAgEBAQQBCAMBAQECAgMDBQMFCA8NAQEXCx0FBAUCA?=
+ =?us-ascii?q?gEBAQEBAhMCAgELAQIBAQMaAgEDAwQBCwIBAQQfBBYCAgICAgIEAwICAwICA?=
+ =?us-ascii?q?gQHEyUBAwEDAgEGAxMCAgICAgQCAQICBQUFAQMEERMJAQMCBQQCAgYCBAYKA?=
+ =?us-ascii?q?gcEAhoEAgICAQMEBgMBAggCAgcEAgMKAgIDAQICBxkdAgkDIw8CAQsJCBM9D?=
+ =?us-ascii?q?AcyBDYBCQsUBwYlGGifRoQlCIEhgQkKgSSTR5E3oTs0B4QegV0GDJ9dBg8EL?=
+ =?us-ascii?q?5dDkw+IQ5A6qQQCCgcGESMSgUkjgVwzGiOBAYI2TwMZD44hg3rGTEI1PAIHC?=
+ =?us-ascii?q?wEBAwmFaYpXgUsBAQ?=
+IronPort-PHdr: A9a23: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
+ EVlMHLAResUgeI/LyZkjwjTvZYJEvlZH/UsXQ==
+IronPort-Data: A9a23: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
+ iaEuxADOahOFKydNHB6B+nEF1Kdn0/g1w30sTM=
+IronPort-HdrOrdr: A9a23:TMa6nqDm/2aPY6vlHel655DYdb4zR+YMi2TDGXoBMSC9Afbo7f
+ xG+85rqyMc6QxhJ03I/OrrBEDuewK4yXcY2/htAV7mZnibhILKFvAH0WKB+UyDJ8SWzIc0vt
+ YCT0E9MqyKMbETt6bHCWKDYrAdKbe8gdmVbKvlvhBQZDAvRaUlwQkRMGmm+45NKDWux6BVKH
+ NR3KR6TvObGEgqUg==
+X-Talos-CUID: 9a23:M3iDH20R9FdFH4odzCkQJbxfNNtiaXvQxm7sAVajIltJRbilZkef9/Yx
+X-Talos-MUID: =?us-ascii?q?9a23=3ANEaU8w8SBfLHMoATKpXWqJqQf8l0/f/pFx8wrZA?=
+ =?us-ascii?q?DofeLFyJNJinDnDviFw=3D=3D?=
 X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-AV: E=Sophos;i="6.13,289,1732575600"; 
-   d="scan'208,217";a="109206386"
-X-MGA-submission: =?us-ascii?q?MDGDBNJKUEOPvC6gCC0MsZo+X1Kmu8D/4lIdmn?=
- =?us-ascii?q?jsDyRBOjuwsIFswIjK1An5uS9lroSq1dk5eUhCJ5qW3fYXmGwO5R70Ge?=
- =?us-ascii?q?2Z7Nj8/7TdKRPbE2YUtlzrRx6PZ0zNgCw2h9vEAy/9cTeoqq6MOX3EUZ?=
- =?us-ascii?q?2m+c42ISzEcjS33D4qCDTnrQ=3D=3D?=
-Received: from mail-lj1-f173.google.com ([209.85.208.173])
-  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2025 22:26:57 +0100
-Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-307bc125e2eso31433851fa.3;
-        Sat, 15 Feb 2025 13:26:56 -0800 (PST)
+X-IronPort-AV: E=Sophos;i="6.13,290,1732575600"; 
+   d="scan'208";a="109231246"
+X-MGA-submission: =?us-ascii?q?MDFR7eJILr63Zf+lkA7VVcStWmT7cZIXhzx3BM?=
+ =?us-ascii?q?n7pgBfh55czBVA0/wS7pLiJAxUTskKWNN7lfz0ib6Oas7mwMR+1OqN/P?=
+ =?us-ascii?q?gGC1DVRTUNu8PlYdkOl4PM1yS+TAQ6V2JnBPJ5QcQbaOi9gxNolck7A1?=
+ =?us-ascii?q?L7hc8jIv8GxHJPUD4UyzV4ww=3D=3D?=
+Received: from mail-lj1-f172.google.com ([209.85.208.172])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2025 09:48:52 +0100
+Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-30918c29da2so25220661fa.0;
+        Sun, 16 Feb 2025 00:48:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1739654815; x=1740259615; darn=inria.fr;
-        h=in-reply-to:from:content-language:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MqG7khrejxxQxeNB5GKb6lPIUnaDtS4plkvdpCqhGtQ=;
-        b=ag2hWWdUOebXdnXo6mDhBvJz6wHmb3Ri7BaOH7zRL6mtpsovh4r2RYdfZm0YGgl0Pb
-         4lBzKEH21xFioszUyZQGHEYwwRf/MQS+/i/mkLzpioLNBjB9P/aiMvnw4agrFeK0fwBY
-         rW1QCjlCcwddR2ZQ6E+W2gm/aOv3S+mNa3dSOf04TmzOT45Rqgr1TxB+4bKxZUVjm0Ul
-         M/h49WmyE+Je7LQjAuDMIeLmYMUdLTYRLmQb0ax5Lt6K4Um+3TKojQ0TnQT/9+InQgR1
-         tg3hUdhLum9sRwY+aNkxVtqBmO5XA3BK8DtEzd1DXEDOpjhiTOZG1YW2rk2xc4gpitJi
-         4XTQ==
+        d=gmail.com; s=20230601; t=1739695731; x=1740300531; darn=inria.fr;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=9zRce5KDupQlAyQvjcHzz5EymYWKIHafArKmI09bdGo=;
+        b=f4BVJzZj9s6aaz+YhmkzQ9n92Kk7MVWy07EuvBjKjIHmxPuMpFblj53TFFoWPVdXr2
+         GgxNCaRn/xmIz7RcA7ANfIHpEuQ+hMvoTFUnyiupgiZzGdd7SZReab3jxN+jSk/OAIki
+         JZRon3P3Ouxsz5hjcf2Har875iIkxWG4A1DpwHNKf8v+Y4G/McS/QY9JRNvRSFkczRK6
+         /f7b86C0kBr5QjO+Fnfvrp8ZbU644F1miH/ZGTYb3Fw5d+UOVedUR3onV/AFuhO83hCc
+         4QXaKkEAb6Xo8N+A8g+Yg8ahNXBMVxIKh8LsC0YPCnGd4TyNc89/PxQKriWNRQYO/iZ5
+         iygQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739654815; x=1740259615;
-        h=in-reply-to:from:content-language:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=MqG7khrejxxQxeNB5GKb6lPIUnaDtS4plkvdpCqhGtQ=;
-        b=ZGrl6vu9Xg5sZvmREQHQtTcFK83jH6R+KlEFKSGtNnJY0ezL49szVo6bmoRowpcxSB
-         JV6zhUNa6PvyinsSvIfoc52c3inKhRArXpFNThyoGkDoj19gIlnM8Z2mFHAlO+7477YE
-         lYmP/Tn+lq/8VRHbz8Q/E985XDuvlTk1fI0NvlKpRsjo+phY73OSafQ88RQh7zSg2red
-         Vur26WMVGUiiGGuENXeRcBJ78qojSJnhcihJoowPL47BLji+H7wtfFTbM7AHry2muRJa
-         QlU2jdmp+gAtChT7VUtWwmePbPcPZUu2SP6jiOGPbZP03cwqupx9l7L9c8XQOqDm+A+q
-         464A==
-X-Gm-Message-State: AOJu0YzD6ttBovgkVGVRKQrLS/XVKwhCDV1zmMnXSBrSj/IiAYIofJcd
-	u5pv3cHGGXSPD7LopkjZqHuHFv6PHuN0RAMQQY36o1jBJIl5Dt/yFr7keg==
-X-Gm-Gg: ASbGncuKn9bVxD3yNqgf8llp0hlhbYXOOLEtnOyUYjYAWMtQC9TVPHKfibqew8SkfoU
-	/BSza4cAz37irw0fd9wt+pnMOUANibrmjitEYzJxbBxbzLy9xYF2h9fVuHAKpk+HuloQwvCcR4K
-	BFjOD/eXYKmkSC4ao0fcoaN4zJbLAUFkHpLl4Qrn+/q7vdl3DdT1nbl9HnfDf2O/RycV1WSPMRo
-	uzyxehitDcHiUL+j015naBkeE2dRWRcKXH0Md/JL4bFHzsCMFIbT0Q/xXY0cllAPT5jSMToxq4V
-	AqVWXCMtS8u4H9o3uJFJ4c0Z1ZwXY9NoBlnWKULC8pGZ7TImGeAvvRQP/i494knf6zs=
-X-Google-Smtp-Source: AGHT+IHxC66qd6CeYk41EBDicAHYb6vpNh0m6nKy7GBw6JUTXwTwuTqYwVdCdxfr5YHL52cTapscEA==
-X-Received: by 2002:a2e:8954:0:b0:300:38ff:f8de with SMTP id 38308e7fff4ca-30927a72243mr11100501fa.16.1739654814408;
-        Sat, 15 Feb 2025 13:26:54 -0800 (PST)
-Received: from ?IPV6:2a02:aa1:104a:f928:e313:31b7:4f7e:6f2a? ([2a02:aa1:104a:f928:e313:31b7:4f7e:6f2a])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3091011d347sm9974891fa.45.2025.02.15.13.26.53
+        d=1e100.net; s=20230601; t=1739695731; x=1740300531;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=9zRce5KDupQlAyQvjcHzz5EymYWKIHafArKmI09bdGo=;
+        b=sgqFOvTzEc5X3433rqgPLy/f+GOCVXRwxQBDYeomC8ijjajKrUghXUILec/cj+g1Rz
+         DAv0mAOekFS5G+1vY+CXIbM4Q0TUPJmoOJ5FV3XKjqWZubcbDa8AZIBs+nz0b0k7Xqpz
+         dX5MlMWF2iYfWHWgbiSP/dqakLqa7C1sfdPX0kaFQnpk61VS4gsMlh6+0brs0fJOYWIm
+         aKtFCpguzdSnKCh+d5eJXv/SbnCZG+vFpVF+qoe7mXmpfxR2jWvlgDwqbYbLLU1BW/f2
+         HF/v5t1oSLJfRu1XMKPgWiEy0cxPWuiuUD9voRQDpUKpzS4wINXa0m4ydCpXY/bUfCTS
+         UKcw==
+X-Gm-Message-State: AOJu0Yz0F8t378AG2c8qWSlN2IXq8prabJfIetnEy9KHrzyxL3otzWCs
+	lpip46ghgNp3Vag8LNvejZP2+QIvwAfqL14Obp+GWZxAQAedSVKbBcw+6w==
+X-Gm-Gg: ASbGnctBSmwv0G1F6O3AU9fp+aPfl3/KbxOUQBQcgf7HevPmpOmoJaCjGS0CnUuy0Yi
+	jykTzekjgCB957bXeysdJp3hbOn5oNV9Bhft7hSwGgu32fAWx8fjc6jK6Ai+q4Q8nW9mfByi/MN
+	nukzBFCsIb0wJzB+Vwrsava88byjD4iA0+T6RYncaUfeOR3xcHAX/kp+zoj2fKsW/Sp58dDEYEj
+	7McEZusrZL8F+queI523czYwexbshd5fFFbMUwX55BvNFX2yOS1oWJRMlZmreRq/l19n+OG1P3F
+	GrD7Pu0k2Za8Y5YZXFlp1pXw73lTYIwj0VQzEJhFmkb8NUd9tR6L8PVLYoQ=
+X-Google-Smtp-Source: AGHT+IHSZv/YmMv3TROin7HeTPDU/LlbVttxax/L8sqGSVTWIcSP54YFODBjrNZF/HHXS6jLJ5oEsQ==
+X-Received: by 2002:a2e:7010:0:b0:309:25ce:8b8b with SMTP id 38308e7fff4ca-30927a42c1cmr17055051fa.4.1739695730990;
+        Sun, 16 Feb 2025 00:48:50 -0800 (PST)
+Received: from ?IPV6:2a02:aa1:104a:f928:1f22:9cb:642:bb6? ([2a02:aa1:104a:f928:1f22:9cb:642:bb6])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-30931b895e5sm3779361fa.113.2025.02.16.00.48.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 15 Feb 2025 13:26:53 -0800 (PST)
-Content-Type: multipart/alternative;
- boundary="------------yP3VPAp3LIzN1D7tMlBaKLAq"
-Message-ID: <4c36f3b9-734b-4db9-9f12-0f433e452038@gmail.com>
-Date: Sat, 15 Feb 2025 22:26:54 +0100
+        Sun, 16 Feb 2025 00:48:50 -0800 (PST)
+Message-ID: <289696b5-d47e-4acd-90ba-89665ea8708a@gmail.com>
+Date: Sun, 16 Feb 2025 09:48:50 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 To: Julia Lawall <julia.lawall@inria.fr>
 Cc: cocci@inria.fr
 References: <592e3d24-4d42-43c7-9874-8c8eb1e12deb@gmail.com>
- <alpine.DEB.2.22.394.2502152014120.17391@hadrien>
+ <alpine.DEB.2.22.394.2502152149070.17391@hadrien>
 Content-Language: en-US
 From: Mats Kindahl <mats.kindahl@gmail.com>
-In-Reply-To: <alpine.DEB.2.22.394.2502152014120.17391@hadrien>
+In-Reply-To: <alpine.DEB.2.22.394.2502152149070.17391@hadrien>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Subject: Re: [cocci] Adding statement after declarations with zero-length
  match after
 Reply-To: Mats Kindahl <mats.kindahl@gmail.com>
 X-Loop: cocci@inria.fr
-X-Sequence: 2419
+X-Sequence: 2420
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -257,396 +258,101 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2025-02/4c36f3b9-734b-4db9-9f12-0f433e452038%40gmail.com>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2025-02/289696b5-d47e-4acd-90ba-89665ea8708a%40gmail.com>
 
-This is a multi-part message in MIME format.
---------------yP3VPAp3LIzN1D7tMlBaKLAq
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-
-On 2025-02-15 20:17, Julia Lawall wrote:
+On 2025-02-15 22:00, Julia Lawall wrote:
+> I tried the following, in line with what I previously suggested:
 >
-> On Sat, 15 Feb 2025, Mats Kindahl wrote:
+> virtual patch
 >
->> Hi again,
->>
->> Here is one case again that is stumping me. Suppose that we want to write an SmPL to replace dynamic allocations inside a function where the allocated object is not visible outside the function. For example, consider this example:
->>
->>        #include <stdio.h>
->>        #include <stdlib.h>
->>
->>        struct magic {
->>          int i_val;
->>          float f_val;
->>        };
->>
->>        extern void magic_init(struct magic *);
->>
->>        void foo_2(void) {
->>          struct magic more = malloc(sizeof(struct magic));
->>          more->i_val = 1;
->>          printf("%d", more->i_val);
->>          free(more);
->>        }
->>
->> Here we want this to be rewritten to
->>
->>        void foo_2(void) {
->>          struct magic more;
->>          magic_init(&more);
->>          more.i_val = 1;
->>          printf("%d", more.i_val);
->>        }
->>
->> However, if we for some reason return the pointer, we do not want it to be rewritten.
->>
->>        struct magic *foo_3(void) {
->>          struct magic *ptr = malloc(sizeof(struct magic));
->>          ptr->i_val = 1;
->>          printf("%d", ptr->i_val);
->>          return ptr;
->>        }
->>
->> There are a few more cases, but this is the basics. In particular I ignore assigning to and from the variable as well as calling other functions, because this is not part of the problem right now. Note that I want the call to "magic_init()" to be
->> after all the declarations.
->>
->> Using the following semantic script, we want to capture these cases and replace it with a stack allocation. This requires rewriting internal references as well, so we have a piece at the end that updates the references. Here I use the pattern of
->> catching the case with a base rule, and then using that in a dependent rule. This allows be to capture the malloc call to a local idexpression but find the identifier when it is being declared so that I can replace it.
->>
->>        @base exists@
->>        type T;
->>        local idexpression T *var;
->>        position p1;
->>        @@
->>          var@p1 = malloc(sizeof(T))
->>          ... when forall
->>              when != return var;
->>
->>        @depends on patch exists@
->>        type base.T;
->>        position base.p1, p2;
->>        identifier var, fld;
->>        statement S,S1;
->>        @@
->>        (
->>        - T@p2 *var;
->>        + T var;
->>          ...
->>        - var@p1 = malloc(sizeof(T));
->>        + magic_init(&var);
->>        |
->>        - T@p2 *var@p1 = malloc(sizeof(T));
->>        + T var;
->>          ... when != S
->>        + magic_init(&var);
->>          S1
->>        )
->>          ... when any
->>        (
->>        - free(var);
->>        |
->>        - *var
->>        + var
->>        |
->>        - var->fld
->>        + var.fld
->>        |
->>        - var
->>        + &var
->>        )
-> You can try
+> @bad1@
+> type T;
+> local idexpression T *var;
+> position p1;
+> @@
+>    var@p1 = malloc(sizeof(T))
+>    ...
+>    return var;
 >
-> (
+> @depends on patch@
+> type T;
+> position p1 != bad1.p1;
+> identifier var, fld;
+> @@
+> - T *var;
+> + T var;
+>    ...
+> - var@p1 = malloc(sizeof(T));
 > + magic_init(&var);
->    S1 & <... ( - free(var); | and so on ) ...> )
-> &
 > <...
 > (
 > - free(var);
 > |
->    // other cases
+> - *var
+> + var
+> |
+> - var->fld
+> + var.fld
+> |
+> - var
+> + &var
 > )
 > ...>
+>
+> @bad2@
+> type T;
+> local idexpression T *var;
+> position p1;
+> @@
+>    var@p1 = malloc(sizeof(T))
+>    ...
+>    return var;
+>
+> @depends on patch@
+> type T;
+> position p1 != bad2.p1;
+> identifier var, fld;
+> statement S,S1;
+> @@
+>
+> - T *var@p1 = malloc(sizeof(T));
+> + T var;
+>    ... when != S
+> (
+> <...
+> (
+> - free(var);
+> |
+> - *var
+> + var
+> |
+> var
+> - ->fld
+> + .fld
+> |
+> - var
+> + &var
+> )
+> ...>
+> &
+> + magic_init(&var);
+>    S1
 > )
 >
-> I would suggest to separate the second rule into two, which will require
-> duplicating the first rule, because you can't inherit a position over a
-> change.  I will play around with it shortly and get back to you.
+> -----------------------------
+>
+> You matched the case that you want in the first rule with a forall.  I
+> instead matched the case that is not wanted, and then check that the
+> position later is different from that one.
+>
+> I'm not sure which is better.  My approach may turn out to be expensive if
+> some functions include multiple mallocs.
 
-Thanks Julia!
+I tried this approach on a large code base, and it seems to be 
+significantly faster. This approach took about 2 seconds, the one I 
+attempted took more than 2 minutes. Going to check that it matches the 
+same things, but otherwise this seems a lot better.
 
-Splitting the rules worked and does what I expect:
-
-    @base2 exists@
-    type T;
-    local idexpression T *var;
-    position p1;
-    expression E;
-    @@
-       var@p1 = malloc(sizeof(T))
-       ... when forall
-           when != return var;
-           when != E = var
-           when != var = E
-
-    @depends on patch exists@
-    type base2.T;
-    position base2.p1;
-    identifier var;
-    identifier fld;
-    @@
-       var@p1 = malloc(sizeof(T))
-       ... when any
-    (
-    - free(var);
-    |
-    - *var
-    + var
-    |
-    - var->fld
-    + var.fld
-    |
-    - var
-    + &var
-    )
-
-    @base3 exists@
-    type T;
-    local idexpression T *var;
-    position p1;
-    expression E;
-    @@
-       var@p1 = malloc(sizeof(T))
-       ... when forall
-           when != return var;
-           when != E = var
-           when != var = E
-
-    @depends on patch exists@
-    type base3.T;
-    position base3.p1, p2;
-    identifier var;
-    statement S,S1;
-    @@
-    (
-    - T@p2 *var;
-    + T var;
-       ...
-    - var@p1 = malloc(sizeof(T));
-    + magic_init(&var);
-    |
-    - T@p2 *var@p1 = malloc(sizeof(T));
-    + T var;
-       ... when != S
-    + magic_init(&var);
-       S1
-    )
-
-Best wishes,
+Thanks for the help Julia,
 Mats Kindahl
 
---------------yP3VPAp3LIzN1D7tMlBaKLAq
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <div class="moz-cite-prefix">On 2025-02-15 20:17, Julia Lawall
-      wrote:<br>
-    </div>
-    <blockquote type="cite"
-      cite="mid:alpine.DEB.2.22.394.2502152014120.17391@hadrien">
-      <pre wrap="" class="moz-quote-pre">
-
-On Sat, 15 Feb 2025, Mats Kindahl wrote:
-
-</pre>
-      <blockquote type="cite">
-        <pre wrap="" class="moz-quote-pre">
-Hi again,
-
-Here is one case again that is stumping me. Suppose that we want to write an SmPL to replace dynamic allocations inside a function where the allocated object is not visible outside the function. For example, consider this example:
-
-      #include &lt;stdio.h&gt;
-      #include &lt;stdlib.h&gt;
-
-      struct magic {
-        int i_val;
-        float f_val;
-      };
-
-      extern void magic_init(struct magic *);
-
-      void foo_2(void) {
-        struct magic more = malloc(sizeof(struct magic));
-        more-&gt;i_val = 1;
-        printf("%d", more-&gt;i_val);
-        free(more);
-      }
-
-Here we want this to be rewritten to
-
-      void foo_2(void) {
-        struct magic more;
-        magic_init(&amp;more);
-        more.i_val = 1;
-        printf("%d", more.i_val);
-      }
-
-However, if we for some reason return the pointer, we do not want it to be rewritten.
-
-      struct magic *foo_3(void) {
-        struct magic *ptr = malloc(sizeof(struct magic));
-        ptr-&gt;i_val = 1;
-        printf("%d", ptr-&gt;i_val);
-        return ptr;
-      }
-
-There are a few more cases, but this is the basics. In particular I ignore assigning to and from the variable as well as calling other functions, because this is not part of the problem right now. Note that I want the call to "magic_init()" to be
-after all the declarations.
-
-Using the following semantic script, we want to capture these cases and replace it with a stack allocation. This requires rewriting internal references as well, so we have a piece at the end that updates the references. Here I use the pattern of
-catching the case with a base rule, and then using that in a dependent rule. This allows be to capture the malloc call to a local idexpression but find the identifier when it is being declared so that I can replace it.
-
-      @base exists@
-      type T;
-      local idexpression T *var;
-      position p1;
-      @@
-        var@p1 = malloc(sizeof(T))
-        ... when forall
-            when != return var;
-
-      @depends on patch exists@
-      type base.T;
-      position base.p1, p2;
-      identifier var, fld;
-      statement S,S1;
-      @@
-      (
-      - T@p2 *var;
-      + T var;
-        ...
-      - var@p1 = malloc(sizeof(T));
-      + magic_init(&amp;var);
-      |
-      - T@p2 *var@p1 = malloc(sizeof(T));
-      + T var;
-        ... when != S
-      + magic_init(&amp;var);
-        S1
-      )
-        ... when any
-      (
-      - free(var);
-      |
-      - *var
-      + var
-      |
-      - var-&gt;fld
-      + var.fld
-      |
-      - var
-      + &amp;var
-      )
-</pre>
-      </blockquote>
-      <pre wrap="" class="moz-quote-pre">
-You can try
-
-(
-+ magic_init(&amp;var);
-  S1 &amp; &lt;... ( - free(var); | and so on ) ...&gt; )
-&amp;
-&lt;...
-(
-- free(var);
-|
-  // other cases
-)
-...&gt;
-)
-
-I would suggest to separate the second rule into two, which will require
-duplicating the first rule, because you can't inherit a position over a
-change.  I will play around with it shortly and get back to you.</pre>
-    </blockquote>
-    <p>Thanks Julia!</p>
-    <p>Splitting the rules worked and does what I expect:</p>
-    <blockquote>
-      <p>@base2 exists@<br>
-        type T;<br>
-        local idexpression T *var;<br>
-        position p1;<br>
-        expression E;<br>
-        @@<br>
-          var@p1 = malloc(sizeof(T))<br>
-          ... when forall<br>
-              when != return var;<br>
-              when != E = var<br>
-              when != var = E<br>
-        <br>
-        @depends on patch exists@<br>
-        type base2.T;<br>
-        position base2.p1;<br>
-        identifier var;<br>
-        identifier fld;<br>
-        @@<br>
-          var@p1 = malloc(sizeof(T))<br>
-          ... when any<br>
-        (<br>
-        - free(var);<br>
-        |<br>
-        - *var<br>
-        + var<br>
-        |<br>
-        - var-&gt;fld<br>
-        + var.fld<br>
-        |<br>
-        - var<br>
-        + &amp;var<br>
-        )<br>
-        <br>
-        @base3 exists@<br>
-        type T;<br>
-        local idexpression T *var;<br>
-        position p1;<br>
-        expression E;<br>
-        @@<br>
-          var@p1 = malloc(sizeof(T))<br>
-          ... when forall<br>
-              when != return var;<br>
-              when != E = var<br>
-              when != var = E<br>
-        <br>
-        @depends on patch exists@<br>
-        type base3.T;<br>
-        position base3.p1, p2;<br>
-        identifier var;<br>
-        statement S,S1;<br>
-        @@<br>
-        (<br>
-        - T@p2 *var;<br>
-        + T var;<br>
-          ...<br>
-        - var@p1 = malloc(sizeof(T));<br>
-        + magic_init(&amp;var);<br>
-        |<br>
-        - T@p2 *var@p1 = malloc(sizeof(T));<br>
-        + T var;<br>
-          ... when != S<br>
-        + magic_init(&amp;var);<br>
-          S1<br>
-        )</p>
-    </blockquote>
-    <p>Best wishes,<br>
-      Mats Kindahl<br>
-    </p>
-  </body>
-</html>
-
---------------yP3VPAp3LIzN1D7tMlBaKLAq--
