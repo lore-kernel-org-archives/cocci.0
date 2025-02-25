@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 850B1C021B2
-	for <cocci@archiver.kernel.org>; Tue, 25 Feb 2025 20:28:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 534D3C021B8
+	for <cocci@archiver.kernel.org>; Tue, 25 Feb 2025 20:28:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:date:mime-version:content-transfer-encoding:
    message-id:references:in-reply-to:to:cc:subject:reply-to:
    sender:list-id:list-help:list-subscribe:list-unsubscribe:
    list-post:list-owner:list-archive;
-  bh=KYPN268bDbdUIUQETKGlB40kZ2e2KCK68/xpxhMiE60=;
-  b=C6wdWEEGmBQECrOhLzfIyBVO/uM52EkKjLhqPqPEgCfA0pftYhw5TEpp
-   g1u5Uk+ZkTkMq4f2oyk7bK5LoxLpl/otzlG01aIkeIipd3bTv3rlJBxdE
-   GQkSjwSLelbVstljCzBpPTJwg4oT2+gCefvCYT7yUiC1BJiaJZZeqWu82
-   s=;
+  bh=82bbL98koRjJtuIS1TH+R5Xiyl6+1C/th2kMl65xMM8=;
+  b=qjfRILit9VLQADTkML8u1pC6B+EY5uHT6aLb76zkqPXa8wJwwTJz5nEg
+   EztOU5CS2NUHgrFQpVnmhoPNNnyoSX0g5XySpBdGWINENW24O4C9XsOKr
+   a+KldtjLpBVJ3fAa3VWANybAepC2PTndeUKsFaAZ31tjzoo1nkZmWp0Iu
+   M=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -37,173 +37,175 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
 Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@linux.microsoft.com
 X-IronPort-AV: E=Sophos;i="6.13,314,1732575600"; 
-   d="scan'208";a="210043733"
+   d="scan'208";a="210043884"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 25 Feb 2025 21:28:02 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 25 Feb 2025 21:28:05 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 39720E0D25; Tue, 25 Feb 2025 21:28:02 +0100 (CET)
+	id 1F153E0D87; Tue, 25 Feb 2025 21:28:03 +0100 (CET)
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by sympa.inria.fr (Postfix) with ESMTPS id 72C8EE0264
+	by sympa.inria.fr (Postfix) with ESMTPS id A160FE0D1F
 	for <cocci@sympa.inria.fr>; Tue, 25 Feb 2025 21:17:24 +0100 (CET)
-IronPort-SDR: 67be2553_BsPHfj+/BK8jrJVABiA8xfqBBkFwOOnobjc3O5ujeWLUZHs
- Tccq0nKW1NBQQu9TUsWEZgI8zb6PHSC8T6G7WdA==
+IronPort-SDR: 67be2553_jKBUkeS2c7GsDcjt1CrJ2GNkAzu4lEEDUL+QrxXmdAM45lC
+ Dgyd1NCus4+k2tMFTjJN58J280+W05lY5hpinJQ==
 X-IPAS-Result: =?us-ascii?q?A0EDAACfJL5ncraaTQ1aGgEBAQEBAQEBAQEDAQEBARIBA?=
- =?us-ascii?q?QEBAgIBAQEBQIE/BQEBAQELAYJDgVczBwhIhFaIHYlTFotgkEuBVhSBLD4PA?=
- =?us-ascii?q?QMBTgECBAEBAwSFAAKLEgIfBgEEMAkOAQIEAQEBAQMCAwEBAQEBARABAQUBA?=
- =?us-ascii?q?QECAQECBAYBAhABgQyFew2CYgGBJFENSAEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
- =?us-ascii?q?QEBARECDV4BAR4CAQMREgQZAQE3AQ8ZDAImAgJGEAYBEoMCgmUGAp0tAYdgA?=
- =?us-ascii?q?QECiyN/M4EBggwBAQaCaNk4gWUJgRouAYhOAYFsg387CYM5eicbgUlEgUqBB?=
- =?us-ascii?q?oIthCoug0aCaYIzgUCDbKdhCT+BBRwDWSwBVRMNCgsHBWRVOAMgCgsMCxIcF?=
- =?us-ascii?q?QIUHQ8GEARqQzeCRWlJOgINAjWCHiRYgR2BDoRUhENcLwMDAwODKoI/UYJCg?=
- =?us-ascii?q?hFxgRqJMoNjHUADCxgNSBEsNwYOG0MBbgegJTyEO4EOAX8nlD2EGo1LoW+EJ?=
- =?us-ascii?q?aFiATKqVS6HZZBqIqhdghg6gVxGByMVgyJPAxkPiACGIQwWg1iPPQG8NUM1P?=
- =?us-ascii?q?AIHCwEBAwmFRgEBilSBSwEB?=
-IronPort-PHdr: A9a23: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
- f0=
-IronPort-Data: A9a23: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
-IronPort-HdrOrdr: A9a23:02+szqzYDr7DzMD8V4unKrPwFr1zdoMgy1knxilNoNJuA6qlfq
- eV7ZcmPH7P6Ar4Ohkb8+xoXZPsfZqyz/FICOUqUYtKGTOW3FdAT7sC0WKd+UyDJ8SWzIc0vp
- uIMZIObeEYZmIVsS+V2njeLz9Z+qj/zJyV
-X-Talos-CUID: =?us-ascii?q?9a23=3A3u5YH2vBtSEXubUHG+Myc0FV6IsOQHKCyXbwCXa?=
- =?us-ascii?q?pECEwTbiVdgCp951Nxp8=3D?=
-X-Talos-MUID: 9a23:xtS4cgZz5APBNOBTjDLwpS5HCZ5T4q30Gms1g6ktmpCWDHkl
+ =?us-ascii?q?QEBAgIBAQEBQIE/BQEBAQELAYJDgVczBwhIhFaIHYlTFoEAimCQS4FWgUA+D?=
+ =?us-ascii?q?wEDAU4BAgQBAQMEhQACixICHwYBBDAJDgECBAEBAQEDAgMBAQEBAQEQAQEFA?=
+ =?us-ascii?q?QEBAgEBAgQGAQIQAYEMhXsNgmIBgSRRDUgBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQERAg1eAQEeAgEDERIEGQEBNwEPGQwCJgICRhAGARKDAoJlBgKdLQGHY?=
+ =?us-ascii?q?AEBAosjfzOBAYIMAQEGgmjZOIFlCYEaLgGITgGBbIN/OwmDOXonG4FJRIEVN?=
+ =?us-ascii?q?YEGgTd2hB85g0aCaYIzgUCDbIFsilwcLYIlji+JfAk/gQUcA1ksAVUTDQoLB?=
+ =?us-ascii?q?wVkVTgDIAoLDAsSHBUCFB0PBhAEakM3gkVpSToCDQI1gh4kWIEdgQ6EVIRDX?=
+ =?us-ascii?q?C8DAwMDgyqCP1GCQoIRcYEaiTKDYx1AAwsYDUgRLDcGDhtDAW4HoCU8hDsWZ?=
+ =?us-ascii?q?QYOSzArCi8wNY1qhTUdEYNsjUuCIJ9PhCWaRoccATKqVS6HZZBqIqhdghg6g?=
+ =?us-ascii?q?VxGByMVO4JnTwMZD4gAhiEMFoNYjz0BvDVDNTwCBwsBAQMJhUYBAYoxI2phA?=
+ =?us-ascii?q?QE?=
+IronPort-PHdr: A9a23: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
+ 5mGlg==
+IronPort-Data: A9a23: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
+ wQ=
+IronPort-HdrOrdr: A9a23:OWJesqpVqbV1vTXz7+XyzOQaV5oReYIsimQD101hICG9vPbo8f
+ xG+85rtiMc6QxwZJlD8errBEDkex7hHPFOjrX5UY3PYOCighrNEGgA1+rfKkPbak/DH4dmvM
+ 8KT0E9MqyUMbEQt6jHCWeDYrEdKaG8gdmVuds=
+X-Talos-CUID: =?us-ascii?q?9a23=3Ay5AvfWr4Ts/2sW0e8zZWr27mUccHQE2CknOTGmn?=
+ =?us-ascii?q?iWCVDE5euCg+fpKwxxg=3D=3D?=
+X-Talos-MUID: 9a23:Jcl4iQlwUV/GkBwhQFWQdnpcJeB1vJv3AXoKuroUuM3HbTcpMmuS2WE=
 X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-AV: E=Sophos;i="6.13,314,1732575600"; 
-   d="scan'208";a="110053378"
-X-MGA-submission: =?us-ascii?q?MDH8bQGpgyiYckW5kg/uMhCvSctWPrfqzhTjpI?=
- =?us-ascii?q?UugkDbZjucjMi4MHBYQxrK3nVbNesHU2qwLQG3+SovKSBCCz6hY9QweZ?=
- =?us-ascii?q?E30ZiIqEPBjst6+qE50dv3/PN8AA62yTmsg3SftEChRqEV45t/nsBPfx?=
- =?us-ascii?q?JWPEiXADmExPdOLhwTj705XA=3D=3D?=
+   d="scan'208";a="110053380"
+X-MGA-submission: =?us-ascii?q?MDEUpPgk253ah7JcbYWKXLC1ObFdVJ6Xfv+52f?=
+ =?us-ascii?q?nRuSPtS+LodaK/Oc52gW5Czb2swUVNdPTU7th6w9tVNKaz1o6uVOWhXF?=
+ =?us-ascii?q?V6glVVUBuN4cdcfc3Kr6Uvp94mQJEqO8gK9mFCZLux7VyB3rXn71jll9?=
+ =?us-ascii?q?1a4TPqv5fWzsmULDxkrLZ7vw=3D=3D?=
 Received: from linux.microsoft.com ([13.77.154.182])
-  by mail3-smtp-sop.national.inria.fr with ESMTP; 25 Feb 2025 21:17:23 +0100
+  by mail3-smtp-sop.national.inria.fr with ESMTP; 25 Feb 2025 21:17:22 +0100
 Received: from eahariha-devbox.internal.cloudapp.net (unknown [40.91.112.99])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 1F342203CDFF;
-	Tue, 25 Feb 2025 12:17:20 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 1F342203CDFF
+	by linux.microsoft.com (Postfix) with ESMTPSA id E9C07203CDFE;
+	Tue, 25 Feb 2025 12:17:19 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E9C07203CDFE
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
 	s=default; t=1740514640;
-	bh=KYPN268bDbdUIUQETKGlB40kZ2e2KCK68/xpxhMiE60=;
+	bh=82bbL98koRjJtuIS1TH+R5Xiyl6+1C/th2kMl65xMM8=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=e42hykosxujhPhv78giqAldREjaCd3tOogFdPdzoqAYHeLsN/ZNksfZFwl/WtAZQB
-	 XiF+xYeoTrVtF5AAhyZwWPDpveaqk+oc2J+05Jy4aLPcUnA1GUi/8dla7xvl3N8/O7
-	 MmnJD7+9WUmiZmh++Xb1njp/a3RFDwYsLoo+1ke4=
+	b=r05ca4cLifQi9AJpcKwbPKAtGAH4LLN3RKKC/UO02jSsEcA3F49YHSL1tcdeVrcpX
+	 Xl/GrhrLQaulqN5p+IjcMId3V8cAq29YFvNcsnN3fNWQtUOcBvGau6S0eXWPFSzCIL
+	 2DWyU92SubkawHOG3U4SXmQg4lK5beWWFTwnPE80=
 From: Easwar Hariharan <eahariha@linux.microsoft.com>
-Date: Tue, 25 Feb 2025 20:17:17 +0000
+Date: Tue, 25 Feb 2025 20:17:16 +0000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250225-converge-secs-to-jiffies-part-two-v3-3-a43967e36c88@linux.microsoft.com>
+Message-Id: <20250225-converge-secs-to-jiffies-part-two-v3-2-a43967e36c88@linux.microsoft.com>
 References: <20250225-converge-secs-to-jiffies-part-two-v3-0-a43967e36c88@linux.microsoft.com>
 In-Reply-To: <20250225-converge-secs-to-jiffies-part-two-v3-0-a43967e36c88@linux.microsoft.com>
 To: Andrew Morton <akpm@linux-foundation.org>, 
@@ -245,11 +247,11 @@ Cc: cocci@inria.fr, linux-kernel@vger.kernel.org,
  Easwar Hariharan <eahariha@linux.microsoft.com>
 X-Mailer: b4 0.14.2
 X-Validation-by: julia.lawall@inria.fr
-Subject: [cocci] [PATCH v3 03/16] accel/habanalabs: convert timeouts to
+Subject: [cocci] [PATCH v3 02/16] scsi: lpfc: convert timeouts to
  secs_to_jiffies()
 Reply-To: Easwar Hariharan <eahariha@linux.microsoft.com>
 X-Loop: cocci@inria.fr
-X-Sequence: 2434
+X-Sequence: 2436
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -262,7 +264,7 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2025-02/20250225-converge-secs-to-jiffies-part-two-v3-3-a43967e36c88%40linux.microsoft.com>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2025-02/20250225-converge-secs-to-jiffies-part-two-v3-2-a43967e36c88%40linux.microsoft.com>
 
 Commit b35108a51cf7 ("jiffies: Define secs_to_jiffies()") introduced
 secs_to_jiffies().  As the value here is a multiple of 1000, use
@@ -275,72 +277,345 @@ the following Coccinelle rules:
 expression E;
 @@
 
--msecs_to_jiffies
-+secs_to_jiffies
- (E
-- * \( 1000 \| MSEC_PER_SEC \)
- )
+-msecs_to_jiffies(E * 1000)
++secs_to_jiffies(E)
+
+-msecs_to_jiffies(E * MSEC_PER_SEC)
++secs_to_jiffies(E)
+
+While here, convert some timeouts that are denominated in seconds
+manually.
 
 Signed-off-by: Easwar Hariharan <eahariha@linux.microsoft.com>
 ---
- drivers/accel/habanalabs/common/command_submission.c | 2 +-
- drivers/accel/habanalabs/common/debugfs.c            | 2 +-
- drivers/accel/habanalabs/common/device.c             | 2 +-
- drivers/accel/habanalabs/common/habanalabs_drv.c     | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/scsi/lpfc/lpfc.h         |  3 +--
+ drivers/scsi/lpfc/lpfc_els.c     | 11 +++++------
+ drivers/scsi/lpfc/lpfc_hbadisc.c |  2 +-
+ drivers/scsi/lpfc/lpfc_init.c    | 10 +++++-----
+ drivers/scsi/lpfc/lpfc_scsi.c    | 12 +++++-------
+ drivers/scsi/lpfc/lpfc_sli.c     | 41 ++++++++++++++++------------------------
+ drivers/scsi/lpfc/lpfc_vport.c   |  2 +-
+ 7 files changed, 34 insertions(+), 47 deletions(-)
 
-diff --git a/drivers/accel/habanalabs/common/command_submission.c b/drivers/accel/habanalabs/common/command_submission.c
-index 59823e3c3bf7a4fafc0b112fd7b4b2209149973c..dee487724918554c24c3e78df4e8715dd1c73acd 100644
---- a/drivers/accel/habanalabs/common/command_submission.c
-+++ b/drivers/accel/habanalabs/common/command_submission.c
-@@ -2586,7 +2586,7 @@ int hl_cs_ioctl(struct drm_device *ddev, void *data, struct drm_file *file_priv)
- 		cs_seq = args->in.seq;
+diff --git a/drivers/scsi/lpfc/lpfc.h b/drivers/scsi/lpfc/lpfc.h
+index 62438e84e52a3bf93aff6adf6c6fbbb61e3f1e3f..fe4fb67eb50c9b773d0fc0066b705024513faea4 100644
+--- a/drivers/scsi/lpfc/lpfc.h
++++ b/drivers/scsi/lpfc/lpfc.h
+@@ -74,8 +74,7 @@ struct lpfc_sli2_slim;
+  * queue depths when there are driver resource error or Firmware
+  * resource error.
+  */
+-/* 1 Second */
+-#define QUEUE_RAMP_DOWN_INTERVAL	(msecs_to_jiffies(1000 * 1))
++#define QUEUE_RAMP_DOWN_INTERVAL	(secs_to_jiffies(1))
  
- 	timeout = flags & HL_CS_FLAGS_CUSTOM_TIMEOUT
--			? msecs_to_jiffies(args->in.timeout * 1000)
-+			? secs_to_jiffies(args->in.timeout)
- 			: hpriv->hdev->timeout_jiffies;
+ /* Number of exchanges reserved for discovery to complete */
+ #define LPFC_DISC_IOCB_BUFF_COUNT 20
+diff --git a/drivers/scsi/lpfc/lpfc_els.c b/drivers/scsi/lpfc/lpfc_els.c
+index 9ab2e98cf69336c8f6a0ceca3870cbecb6c77ef2..e08b48b1b655c2e145b30261bbdcb9a57d40e19e 100644
+--- a/drivers/scsi/lpfc/lpfc_els.c
++++ b/drivers/scsi/lpfc/lpfc_els.c
+@@ -8045,8 +8045,7 @@ lpfc_els_rcv_rscn(struct lpfc_vport *vport, struct lpfc_iocbq *cmdiocb,
+ 			if (test_bit(FC_DISC_TMO, &vport->fc_flag)) {
+ 				tmo = ((phba->fc_ratov * 3) + 3);
+ 				mod_timer(&vport->fc_disctmo,
+-					  jiffies +
+-					  msecs_to_jiffies(1000 * tmo));
++					  jiffies + secs_to_jiffies(tmo));
+ 			}
+ 			return 0;
+ 		}
+@@ -8081,7 +8080,7 @@ lpfc_els_rcv_rscn(struct lpfc_vport *vport, struct lpfc_iocbq *cmdiocb,
+ 		if (test_bit(FC_DISC_TMO, &vport->fc_flag)) {
+ 			tmo = ((phba->fc_ratov * 3) + 3);
+ 			mod_timer(&vport->fc_disctmo,
+-				  jiffies + msecs_to_jiffies(1000 * tmo));
++				  jiffies + secs_to_jiffies(tmo));
+ 		}
+ 		if ((rscn_cnt < FC_MAX_HOLD_RSCN) &&
+ 		    !test_bit(FC_RSCN_DISCOVERY, &vport->fc_flag)) {
+@@ -9511,7 +9510,7 @@ lpfc_els_timeout_handler(struct lpfc_vport *vport)
+ 	if (!list_empty(&pring->txcmplq))
+ 		if (!test_bit(FC_UNLOADING, &phba->pport->load_flag))
+ 			mod_timer(&vport->els_tmofunc,
+-				  jiffies + msecs_to_jiffies(1000 * timeout));
++				  jiffies + secs_to_jiffies(timeout));
+ }
  
- 	switch (cs_type) {
-diff --git a/drivers/accel/habanalabs/common/debugfs.c b/drivers/accel/habanalabs/common/debugfs.c
-index ca7677293a55822f703a3a1cbf947c4c44fdc569..4b391807e5f2e2a2570a38b9dfdf6be4299dbfb6 100644
---- a/drivers/accel/habanalabs/common/debugfs.c
-+++ b/drivers/accel/habanalabs/common/debugfs.c
-@@ -1403,7 +1403,7 @@ static ssize_t hl_timeout_locked_write(struct file *f, const char __user *buf,
- 		return rc;
+ /**
+@@ -10897,7 +10896,7 @@ lpfc_do_scr_ns_plogi(struct lpfc_hba *phba, struct lpfc_vport *vport)
+ 				 "3334 Delay fc port discovery for %d secs\n",
+ 				 phba->fc_ratov);
+ 		mod_timer(&vport->delayed_disc_tmo,
+-			jiffies + msecs_to_jiffies(1000 * phba->fc_ratov));
++			jiffies + secs_to_jiffies(phba->fc_ratov));
+ 		return;
+ 	}
  
- 	if (value)
--		hdev->timeout_jiffies = msecs_to_jiffies(value * 1000);
-+		hdev->timeout_jiffies = secs_to_jiffies(value);
+@@ -11154,7 +11153,7 @@ lpfc_retry_pport_discovery(struct lpfc_hba *phba)
+ 	if (!ndlp)
+ 		return;
+ 
+-	mod_timer(&ndlp->nlp_delayfunc, jiffies + msecs_to_jiffies(1000));
++	mod_timer(&ndlp->nlp_delayfunc, jiffies + secs_to_jiffies(1));
+ 	set_bit(NLP_DELAY_TMO, &ndlp->nlp_flag);
+ 	ndlp->nlp_last_elscmd = ELS_CMD_FLOGI;
+ 	phba->pport->port_state = LPFC_FLOGI;
+diff --git a/drivers/scsi/lpfc/lpfc_hbadisc.c b/drivers/scsi/lpfc/lpfc_hbadisc.c
+index a2fd74cf86036ef134ec6959c90aada8a0218294..18c0365ca30563530189ca5eda7b9c8901398c82 100644
+--- a/drivers/scsi/lpfc/lpfc_hbadisc.c
++++ b/drivers/scsi/lpfc/lpfc_hbadisc.c
+@@ -4979,7 +4979,7 @@ lpfc_set_disctmo(struct lpfc_vport *vport)
+ 			tmo, vport->port_state, vport->fc_flag);
+ 	}
+ 
+-	mod_timer(&vport->fc_disctmo, jiffies + msecs_to_jiffies(1000 * tmo));
++	mod_timer(&vport->fc_disctmo, jiffies + secs_to_jiffies(tmo));
+ 	set_bit(FC_DISC_TMO, &vport->fc_flag);
+ 
+ 	/* Start Discovery Timer state <hba_state> */
+diff --git a/drivers/scsi/lpfc/lpfc_init.c b/drivers/scsi/lpfc/lpfc_init.c
+index e1add109017b95fc87d024beb477ee424ea39df4..7238608ca49f9bcfc4d43acd6f400b12f2865589 100644
+--- a/drivers/scsi/lpfc/lpfc_init.c
++++ b/drivers/scsi/lpfc/lpfc_init.c
+@@ -595,7 +595,7 @@ lpfc_config_port_post(struct lpfc_hba *phba)
+ 	/* Set up ring-0 (ELS) timer */
+ 	timeout = phba->fc_ratov * 2;
+ 	mod_timer(&vport->els_tmofunc,
+-		  jiffies + msecs_to_jiffies(1000 * timeout));
++		  jiffies + secs_to_jiffies(timeout));
+ 	/* Set up heart beat (HB) timer */
+ 	mod_timer(&phba->hb_tmofunc,
+ 		  jiffies + secs_to_jiffies(LPFC_HB_MBOX_INTERVAL));
+@@ -604,7 +604,7 @@ lpfc_config_port_post(struct lpfc_hba *phba)
+ 	phba->last_completion_time = jiffies;
+ 	/* Set up error attention (ERATT) polling timer */
+ 	mod_timer(&phba->eratt_poll,
+-		  jiffies + msecs_to_jiffies(1000 * phba->eratt_poll_interval));
++		  jiffies + secs_to_jiffies(phba->eratt_poll_interval));
+ 
+ 	if (test_bit(LINK_DISABLED, &phba->hba_flag)) {
+ 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+@@ -3361,8 +3361,8 @@ lpfc_block_mgmt_io(struct lpfc_hba *phba, int mbx_action)
+ 		/* Determine how long we might wait for the active mailbox
+ 		 * command to be gracefully completed by firmware.
+ 		 */
+-		timeout = msecs_to_jiffies(lpfc_mbox_tmo_val(phba,
+-				phba->sli.mbox_active) * 1000) + jiffies;
++		timeout = secs_to_jiffies(lpfc_mbox_tmo_val(phba,
++				phba->sli.mbox_active)) + jiffies;
+ 	}
+ 	spin_unlock_irqrestore(&phba->hbalock, iflag);
+ 
+@@ -6909,7 +6909,7 @@ lpfc_sli4_async_fip_evt(struct lpfc_hba *phba,
+ 			 * re-instantiate the Vlink using FDISC.
+ 			 */
+ 			mod_timer(&ndlp->nlp_delayfunc,
+-				  jiffies + msecs_to_jiffies(1000));
++				  jiffies + secs_to_jiffies(1));
+ 			set_bit(NLP_DELAY_TMO, &ndlp->nlp_flag);
+ 			ndlp->nlp_last_elscmd = ELS_CMD_FDISC;
+ 			vport->port_state = LPFC_FDISC;
+diff --git a/drivers/scsi/lpfc/lpfc_scsi.c b/drivers/scsi/lpfc/lpfc_scsi.c
+index 055ed632c14df51376126a285df728269ca1da6c..f0158fc00f783239db615b0978b6785de064535f 100644
+--- a/drivers/scsi/lpfc/lpfc_scsi.c
++++ b/drivers/scsi/lpfc/lpfc_scsi.c
+@@ -5645,9 +5645,8 @@ lpfc_abort_handler(struct scsi_cmnd *cmnd)
+ 	 * cmd_flag is set to LPFC_DRIVER_ABORTED before we wait
+ 	 * for abort to complete.
+ 	 */
+-	wait_event_timeout(waitq,
+-			  (lpfc_cmd->pCmd != cmnd),
+-			   msecs_to_jiffies(2*vport->cfg_devloss_tmo*1000));
++	wait_event_timeout(waitq, (lpfc_cmd->pCmd != cmnd),
++			   secs_to_jiffies(2*vport->cfg_devloss_tmo));
+ 
+ 	spin_lock(&lpfc_cmd->buf_lock);
+ 
+@@ -5911,7 +5910,7 @@ lpfc_chk_tgt_mapped(struct lpfc_vport *vport, struct fc_rport *rport)
+ 	 * If target is not in a MAPPED state, delay until
+ 	 * target is rediscovered or devloss timeout expires.
+ 	 */
+-	later = msecs_to_jiffies(2 * vport->cfg_devloss_tmo * 1000) + jiffies;
++	later = secs_to_jiffies(2 * vport->cfg_devloss_tmo) + jiffies;
+ 	while (time_after(later, jiffies)) {
+ 		if (!pnode)
+ 			return FAILED;
+@@ -5957,7 +5956,7 @@ lpfc_reset_flush_io_context(struct lpfc_vport *vport, uint16_t tgt_id,
+ 		lpfc_sli_abort_taskmgmt(vport,
+ 					&phba->sli.sli3_ring[LPFC_FCP_RING],
+ 					tgt_id, lun_id, context);
+-	later = msecs_to_jiffies(2 * vport->cfg_devloss_tmo * 1000) + jiffies;
++	later = secs_to_jiffies(2 * vport->cfg_devloss_tmo) + jiffies;
+ 	while (time_after(later, jiffies) && cnt) {
+ 		schedule_timeout_uninterruptible(msecs_to_jiffies(20));
+ 		cnt = lpfc_sli_sum_iocb(vport, tgt_id, lun_id, context);
+@@ -6137,8 +6136,7 @@ lpfc_target_reset_handler(struct scsi_cmnd *cmnd)
+ 			wait_event_timeout(waitq,
+ 					   !test_bit(NLP_WAIT_FOR_LOGO,
+ 						     &pnode->save_flags),
+-					   msecs_to_jiffies(dev_loss_tmo *
+-							    1000));
++					   secs_to_jiffies(dev_loss_tmo));
+ 
+ 			if (test_and_clear_bit(NLP_WAIT_FOR_LOGO,
+ 					       &pnode->save_flags))
+diff --git a/drivers/scsi/lpfc/lpfc_sli.c b/drivers/scsi/lpfc/lpfc_sli.c
+index 3fd9723cd271c8a024b6f34e583668e973404e6f..531fd47cda5ca6985bfb510c44888ed6d7121853 100644
+--- a/drivers/scsi/lpfc/lpfc_sli.c
++++ b/drivers/scsi/lpfc/lpfc_sli.c
+@@ -1025,7 +1025,7 @@ lpfc_handle_rrq_active(struct lpfc_hba *phba)
+ 	LIST_HEAD(send_rrq);
+ 
+ 	clear_bit(HBA_RRQ_ACTIVE, &phba->hba_flag);
+-	next_time = jiffies + msecs_to_jiffies(1000 * (phba->fc_ratov + 1));
++	next_time = jiffies + secs_to_jiffies(phba->fc_ratov + 1);
+ 	spin_lock_irqsave(&phba->rrq_list_lock, iflags);
+ 	list_for_each_entry_safe(rrq, nextrrq,
+ 				 &phba->active_rrq_list, list) {
+@@ -1208,8 +1208,7 @@ lpfc_set_rrq_active(struct lpfc_hba *phba, struct lpfc_nodelist *ndlp,
  	else
- 		hdev->timeout_jiffies = MAX_SCHEDULE_TIMEOUT;
+ 		rrq->send_rrq = 0;
+ 	rrq->xritag = xritag;
+-	rrq->rrq_stop_time = jiffies +
+-				msecs_to_jiffies(1000 * (phba->fc_ratov + 1));
++	rrq->rrq_stop_time = jiffies + secs_to_jiffies(phba->fc_ratov + 1);
+ 	rrq->nlp_DID = ndlp->nlp_DID;
+ 	rrq->vport = ndlp->vport;
+ 	rrq->rxid = rxid;
+@@ -1736,8 +1735,7 @@ lpfc_sli_ringtxcmpl_put(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
+ 		BUG_ON(!piocb->vport);
+ 		if (!test_bit(FC_UNLOADING, &piocb->vport->load_flag))
+ 			mod_timer(&piocb->vport->els_tmofunc,
+-				  jiffies +
+-				  msecs_to_jiffies(1000 * (phba->fc_ratov << 1)));
++				  jiffies + secs_to_jiffies(phba->fc_ratov << 1));
+ 	}
  
-diff --git a/drivers/accel/habanalabs/common/device.c b/drivers/accel/habanalabs/common/device.c
-index 30277ae410d4b742ffb7bddc35498564ff96fe62..68eebed3b050f72f81e55b86da869b56b4cdeadf 100644
---- a/drivers/accel/habanalabs/common/device.c
-+++ b/drivers/accel/habanalabs/common/device.c
-@@ -2091,7 +2091,7 @@ int hl_device_cond_reset(struct hl_device *hdev, u32 flags, u64 event_mask)
- 	dev_dbg(hdev->dev, "Device is going to be hard-reset in %u sec unless being released\n",
- 		hdev->device_release_watchdog_timeout_sec);
- 	schedule_delayed_work(&hdev->device_release_watchdog_work.reset_work,
--				msecs_to_jiffies(hdev->device_release_watchdog_timeout_sec * 1000));
-+				secs_to_jiffies(hdev->device_release_watchdog_timeout_sec));
- 	hdev->reset_info.watchdog_active = 1;
- out:
- 	spin_unlock(&hdev->reset_info.lock);
-diff --git a/drivers/accel/habanalabs/common/habanalabs_drv.c b/drivers/accel/habanalabs/common/habanalabs_drv.c
-index 596c52e8aa266bf48e2be45e719adb202604577b..0035748f3228246da235f227b2cf3939d64af350 100644
---- a/drivers/accel/habanalabs/common/habanalabs_drv.c
-+++ b/drivers/accel/habanalabs/common/habanalabs_drv.c
-@@ -386,7 +386,7 @@ static int fixup_device_params(struct hl_device *hdev)
- 	hdev->fw_comms_poll_interval_usec = HL_FW_STATUS_POLL_INTERVAL_USEC;
- 
- 	if (tmp_timeout)
--		hdev->timeout_jiffies = msecs_to_jiffies(tmp_timeout * MSEC_PER_SEC);
-+		hdev->timeout_jiffies = secs_to_jiffies(tmp_timeout);
+ 	return 0;
+@@ -3956,8 +3954,7 @@ void lpfc_poll_eratt(struct timer_list *t)
  	else
- 		hdev->timeout_jiffies = MAX_SCHEDULE_TIMEOUT;
+ 		/* Restart the timer for next eratt poll */
+ 		mod_timer(&phba->eratt_poll,
+-			  jiffies +
+-			  msecs_to_jiffies(1000 * phba->eratt_poll_interval));
++			  jiffies + secs_to_jiffies(phba->eratt_poll_interval);
+ 	return;
+ }
  
+@@ -9008,7 +9005,7 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
+ 
+ 	/* Start the ELS watchdog timer */
+ 	mod_timer(&vport->els_tmofunc,
+-		  jiffies + msecs_to_jiffies(1000 * (phba->fc_ratov * 2)));
++			jiffies + secs_to_jiffies(phba->fc_ratov * 2));
+ 
+ 	/* Start heart beat timer */
+ 	mod_timer(&phba->hb_tmofunc,
+@@ -9027,7 +9024,7 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phba)
+ 
+ 	/* Start error attention (ERATT) polling timer */
+ 	mod_timer(&phba->eratt_poll,
+-		  jiffies + msecs_to_jiffies(1000 * phba->eratt_poll_interval));
++		  jiffies + secs_to_jiffies(phba->eratt_poll_interval));
+ 
+ 	/*
+ 	 * The port is ready, set the host's link state to LINK_DOWN
+@@ -9504,8 +9501,7 @@ lpfc_sli_issue_mbox_s3(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmbox,
+ 			goto out_not_finished;
+ 		}
+ 		/* timeout active mbox command */
+-		timeout = msecs_to_jiffies(lpfc_mbox_tmo_val(phba, pmbox) *
+-					   1000);
++		timeout = secs_to_jiffies(lpfc_mbox_tmo_val(phba, pmbox));
+ 		mod_timer(&psli->mbox_tmo, jiffies + timeout);
+ 	}
+ 
+@@ -9629,8 +9625,7 @@ lpfc_sli_issue_mbox_s3(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmbox,
+ 						       drvr_flag);
+ 			goto out_not_finished;
+ 		}
+-		timeout = msecs_to_jiffies(lpfc_mbox_tmo_val(phba, pmbox) *
+-							1000) + jiffies;
++		timeout = secs_to_jiffies(lpfc_mbox_tmo_val(phba, pmbox)) + jiffies;
+ 		i = 0;
+ 		/* Wait for command to complete */
+ 		while (((word0 & OWN_CHIP) == OWN_CHIP) ||
+@@ -9756,9 +9751,8 @@ lpfc_sli4_async_mbox_block(struct lpfc_hba *phba)
+ 	 * command to be gracefully completed by firmware.
+ 	 */
+ 	if (phba->sli.mbox_active)
+-		timeout = msecs_to_jiffies(lpfc_mbox_tmo_val(phba,
+-						phba->sli.mbox_active) *
+-						1000) + jiffies;
++		timeout = secs_to_jiffies(lpfc_mbox_tmo_val(phba,
++						phba->sli.mbox_active)) + jiffies;
+ 	spin_unlock_irq(&phba->hbalock);
+ 
+ 	/* Make sure the mailbox is really active */
+@@ -9881,8 +9875,7 @@ lpfc_sli4_wait_bmbx_ready(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
+ 		}
+ 	}
+ 
+-	timeout = msecs_to_jiffies(lpfc_mbox_tmo_val(phba, mboxq)
+-				   * 1000) + jiffies;
++	timeout = secs_to_jiffies(lpfc_mbox_tmo_val(phba, mboxq)) + jiffies;
+ 
+ 	do {
+ 		bmbx_reg.word0 = readl(phba->sli4_hba.BMBXregaddr);
+@@ -10230,7 +10223,7 @@ lpfc_sli4_post_async_mbox(struct lpfc_hba *phba)
+ 
+ 	/* Start timer for the mbox_tmo and log some mailbox post messages */
+ 	mod_timer(&psli->mbox_tmo, (jiffies +
+-		  msecs_to_jiffies(1000 * lpfc_mbox_tmo_val(phba, mboxq))));
++		  secs_to_jiffies(lpfc_mbox_tmo_val(phba, mboxq))));
+ 
+ 	lpfc_printf_log(phba, KERN_INFO, LOG_MBOX | LOG_SLI,
+ 			"(%d):0355 Mailbox cmd x%x (x%x/x%x) issue Data: "
+@@ -13159,7 +13152,7 @@ lpfc_sli_issue_iocb_wait(struct lpfc_hba *phba,
+ 	retval = lpfc_sli_issue_iocb(phba, ring_number, piocb,
+ 				     SLI_IOCB_RET_IOCB);
+ 	if (retval == IOCB_SUCCESS) {
+-		timeout_req = msecs_to_jiffies(timeout * 1000);
++		timeout_req = secs_to_jiffies(timeout);
+ 		timeleft = wait_event_timeout(done_q,
+ 				lpfc_chk_iocb_flg(phba, piocb, LPFC_IO_WAKE),
+ 				timeout_req);
+@@ -13275,8 +13268,7 @@ lpfc_sli_issue_mbox_wait(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmboxq,
+ 	/* now issue the command */
+ 	retval = lpfc_sli_issue_mbox(phba, pmboxq, MBX_NOWAIT);
+ 	if (retval == MBX_BUSY || retval == MBX_SUCCESS) {
+-		wait_for_completion_timeout(&mbox_done,
+-					    msecs_to_jiffies(timeout * 1000));
++		wait_for_completion_timeout(&mbox_done, secs_to_jiffies(timeout));
+ 
+ 		spin_lock_irqsave(&phba->hbalock, flag);
+ 		pmboxq->ctx_u.mbox_wait = NULL;
+@@ -13336,9 +13328,8 @@ lpfc_sli_mbox_sys_shutdown(struct lpfc_hba *phba, int mbx_action)
+ 		 * command to be gracefully completed by firmware.
+ 		 */
+ 		if (phba->sli.mbox_active)
+-			timeout = msecs_to_jiffies(lpfc_mbox_tmo_val(phba,
+-						phba->sli.mbox_active) *
+-						1000) + jiffies;
++			timeout = secs_to_jiffies(lpfc_mbox_tmo_val(phba,
++						phba->sli.mbox_active)) + jiffies;
+ 		spin_unlock_irq(&phba->hbalock);
+ 
+ 		/* Enable softirqs again, done with phba->hbalock */
+diff --git a/drivers/scsi/lpfc/lpfc_vport.c b/drivers/scsi/lpfc/lpfc_vport.c
+index 3d70cc5175730b31eeaf46c89d65c0dc09367d44..cc56a73343195a263c307fab6870a0012899060a 100644
+--- a/drivers/scsi/lpfc/lpfc_vport.c
++++ b/drivers/scsi/lpfc/lpfc_vport.c
+@@ -246,7 +246,7 @@ static void lpfc_discovery_wait(struct lpfc_vport *vport)
+ 	 * fabric RA_TOV value and dev_loss tmo.  The driver's
+ 	 * devloss_tmo is 10 giving this loop a 3x multiplier minimally.
+ 	 */
+-	wait_time_max = msecs_to_jiffies(((phba->fc_ratov * 3) + 3) * 1000);
++	wait_time_max = secs_to_jiffies((phba->fc_ratov * 3) + 3);
+ 	wait_time_max += jiffies;
+ 	start_time = jiffies;
+ 	while (time_before(jiffies, wait_time_max)) {
 
 -- 
 2.43.0
