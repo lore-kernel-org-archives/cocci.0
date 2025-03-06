@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 985E7C282D1
-	for <cocci@archiver.kernel.org>; Thu,  6 Mar 2025 12:19:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 28908C282D1
+	for <cocci@archiver.kernel.org>; Thu,  6 Mar 2025 12:19:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=message-id:date:mime-version:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:subject:reply-to:
-   sender:list-id:list-help:list-subscribe:list-unsubscribe:
-   list-post:list-owner:list-archive;
-  bh=FXyrFeh8iw8nkg9quS25u1pEn/e0t0eT9s6YNTK4C5g=;
-  b=lH7LL5hG6Aoh0+uE498iTa/FhTcHZvX2mGjbYECE3S/7xjyaBApuQ8+r
-   FlBD/yysZ42yYTmqE86z6oq5Ze+AXlGntqRa0CtFcwTNyApSrze6S6KFj
-   qESL+U6whlZH669MbPQIrd/KSfOqgSEXuTzaIgvxkhdUIN1nqcLeMQqWb
-   4=;
+  h=date:from:to:cc:in-reply-to:message-id:references:
+   mime-version:subject:reply-to:sender:list-id:list-help:
+   list-subscribe:list-unsubscribe:list-post:list-owner:
+   list-archive;
+  bh=zm0uCJ5PWbDZ59chkURVe3ql0EMkTYlaB80NiKqlpDY=;
+  b=JAyJpQtIbQdaCSogLC6BWJCPxoYA9p6traQRo6Sl6nnBm7J6/U4/nhLb
+   MVnOi6NKHuBRpOPucm8oMIsVBLj0SiYL48LRv42qSCUi6990hP2/MPmav
+   wPRih9z1S7DUBiWgH3zZhV+RazPsDG2/4v3CGr7+vi4PLAd1UMJE2j0+Y
+   U=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -37,45 +37,40 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
 Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=pass (signature verified) header.i=@inria.fr
 X-IronPort-AV: E=Sophos;i="6.14,226,1736809200"; 
-   d="scan'208";a="211543743"
+   d="scan'208";a="211543782"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 06 Mar 2025 13:19:35 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 06 Mar 2025 13:19:40 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id EECBDE0264; Thu,  6 Mar 2025 13:19:34 +0100 (CET)
-Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by sympa.inria.fr (Postfix) with ESMTPS id 2CD8AE0260
-	for <cocci@sympa.inria.fr>; Thu,  6 Mar 2025 13:19:32 +0100 (CET)
+	id B63F9E0D1F; Thu,  6 Mar 2025 13:19:40 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id E0A1DE0260
+	for <cocci@sympa.inria.fr>; Thu,  6 Mar 2025 13:19:37 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=FXyrFeh8iw8nkg9quS25u1pEn/e0t0eT9s6YNTK4C5g=;
-  b=k8efExAUJEbPaRRdgWjtGcmNdSws+HiPIkT7xUFMb1xkkiLQ9ZHv5n8H
-   3TY3PAr/UKIK2q+SAx4I1SLON5MJ/Tk6Bc+zyl6bI/SJlZRVtOyjyqguP
-   Bm3+bSQ0LnfOll4945VGFrkCHB0mGBF/AaRUzmRWV3aF/1Ccbr7hLOfJg
-   0=;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=zm0uCJ5PWbDZ59chkURVe3ql0EMkTYlaB80NiKqlpDY=;
+  b=P4egWT3tcwI/cQIOdGwgWQxdUKPmHbZWFej2XKRVqpX5qO9GotAJjIuM
+   jC3gfgJHt14nhRVK9KEzKv51DRU96JZ6m4y7n/Q00CSRtIq1LVo3Jf3qh
+   ZPi8BTK7951uuonXyyYoHJl3YqEaye1S1xXyPjH8Vzq4k9ycbP6Rx+zAH
+   4=;
 X-IronPort-AV: E=Sophos;i="6.14,226,1736809200"; 
-   d="scan'208";a="211543742"
-Received: from ptb-02008469.paris.inria.fr (HELO [128.93.66.153]) ([128.93.66.153])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2025 13:19:32 +0100
-Message-ID: <045a20a2-5c87-4853-aa33-5579df4423fe@inria.fr>
-Date: Thu, 6 Mar 2025 13:19:31 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-To: Markus Elfring <Markus.Elfring@web.de>,
- Danikka Jelski <cmj136@scarletmail.rutgers.edu>
-Cc: cocci@inria.fr
+   d="scan'208";a="110843396"
+Received: from unknown (HELO hadrien.lan) ([172.59.112.6])
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2025 13:19:37 +0100
+Date: Thu, 6 Mar 2025 07:19:34 -0500 (EST)
+From: Julia Lawall <julia.lawall@inria.fr>
+To: Danikka Jelski <cmj136@scarletmail.rutgers.edu>
+cc: cocci@inria.fr
+In-Reply-To: <CABDMBwh_LRL+Dxz94caz+ybJT5MLP9usBs12fLeDHaTSnOES3A@mail.gmail.com>
+Message-ID: <f3c7b17c-dbdc-44a3-43d9-bca26a95bf3a@inria.fr>
 References: <CABDMBwh_LRL+Dxz94caz+ybJT5MLP9usBs12fLeDHaTSnOES3A@mail.gmail.com>
- <14e44e1b-e35d-4cc9-ac76-2e4c05c15849@web.de>
-Content-Language: en-US
-From: Victor Gambier <victor.gambier@inria.fr>
-In-Reply-To: <14e44e1b-e35d-4cc9-ac76-2e4c05c15849@web.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Subject: Re: [cocci] Modifying BPF map definitions?
-Reply-To: Victor Gambier <victor.gambier@inria.fr>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="8323329-383197752-1741263577=:3340"
+Subject: Re: [cocci] Question about Coccinelle (with __uint macro)
+Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 2566
+X-Sequence: 2567
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -88,44 +83,169 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2025-03/045a20a2-5c87-4853-aa33-5579df4423fe%40inria.fr>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2025-03/f3c7b17c-dbdc-44a3-43d9-bca26a95bf3a%40inria.fr>
 
-Hi Danikka,
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Thanks for your interest!
+--8323329-383197752-1741263577=:3340
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-I don't have an answer for you right now, but I just wanted you to know: 
-Markus is known to send unhelpful emails to newcomers, so feel free to 
-ignore him if his emails don't make a lot of sense. He is not a 
-maintainer. I do agree that text is usually preferred over pictures, but 
-don't sweat it too much.
 
-Victor
 
-On 06/03/2025 13:13, Markus Elfring wrote:
-> …
->> Specifically, I was trying to modify BPF map definitions, and I encountered an issue when applying a patch:
-> …
->> The error I get is:
-> How do you think about to share any additional information as text
-> instead of linked pictures?
+On Wed, 5 Mar 2025, Danikka Jelski wrote:
+
+>
+> I hope this email finds you well. I’m reaching out to seek guidance about
+> how Coccinelle parses complex macros. In my current research project, I am
+> working with Coccinelle on Ubuntu 22.04 (kernel version 6.0 generic), and
+> I’m experiencing issues regarding parsing complex macros. Specifically, I
+> was trying to modify BPF map definitions, and I encountered an issue when
+> applying a patch:
 >
 >
->>      Can you provide any guidance on how to properly match and modify this struct in Coccinelle?
-> I observed that another transformation approach gets accepted
-> (also together with the software version “1.3-00043-gcca22217d”).
->
->
-> @replacement@
 > @@
->   __uint(type,
-> -       BPF_MAP_TYPE_ARRAY
-> +       BPF_MAP_TYPE_PERCPU_ARRAY
->         );
+>
+> @@
+>
+>  struct {
+>
+> -  __uint(type, BPF_MAP_TYPE_ARRAY);
+>
+> + __uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
+>
+>   __type(key, u32);
+>
+>   __type(value, struct array_elem);
+>
+>   __uint(max_entries, 1);
+>
+> } port_state SEC(".maps");
+
+Please try adding a metavariable:
+
+declarer name __uint;
+
+On the other hand, I don't know how the SEC thing will work.  Is that
+something that you care about whether it is there or not?  Do you care
+about the declaration of port_state?  If you actually just want to change
+the type declaration wheerer it occurs, you can get rid of "port_state
+SEC(".maps");".  Then it will just work on the type.
+
+As Markus mentioned, please make messages that contain only text.
+
+thanks,
+julia
+
 >
 >
-> I am unsure under which circumstances a subsequent software version will become able
-> to generate patches accordingly.
+> In this patch, I wanted to change the BPF map from BPF_MAP_TYPE_ARRAY to
+> BPF_MAP_TYPE_PERCPU_ARRAY from the __uint. I have a similar problem where it
+> cannot parse the __type macro either when I had tested for that macro
+> independently. 
 >
-> Regards,
-> Markus
+>
+> The error I get is:
+>
+> [AD_4nXdSOIb1mx6UOgK95vL1l3BTTwStJgl3BWKcm0S7gx13MpOcwIBj5hyWIY9R6lFCBn_7al
+> jh2uohN2suEGtxDPjP5Q9Qh0S6wDo496iVST5EbGj7v7uU17ul68j8K09zMG436N5NrQ?key=H
+> Dx3ebciDTqk2MuXMXjB9X1r]
+>
+> Some troubleshooting I have done included:
+>
+>  1.
+>
+>     I made simplified .c files with simplified headers to check if the issue
+>     was due to missing kernel dependencies and to isolate the issue. It
+>     seems that it wouldn’t parse it this way, either.
+>
+> One of the simpler examples I did was:
+>
+>
+> [AD_4nXcze023-F5OV4Rax-hTjRdtcBoJVlO03zGi1HwEJW6YULoqcVl41_liGdiiQU40tigM4q
+> bzBGkLpzifzmy-NCew7kr7BNi3nfc_pdNZAp7QcWj4mkab6thRYrgNamaAzz0zY6II-w?key=H
+> Dx3ebciDTqk2MuXMXjB9X1r]
+>
+> [AD_4nXe44xFLkphNYL16klw0BOw1N-sgjYydSe4K8ebUEf0P7LzHzXHh64dyXSkBSl7fQrVVhc
+> NF7SJWZDB-gELO0_FJIgdPL2ZwzuA0wVQbTPwx7-4vn5dg16FE2HCsAn2UUgMJI29GHA?key=H
+> Dx3ebciDTqk2MuXMXjB9X1r]
+>
+> I received the same error message as before. 
+>
+>
+>  2.
+>
+>     Checking out the preprocessed code to see if the macro is expanding
+>     correctly. I understand that Coccinelle has the option to preprocess the
+>     code before applying a spatch, but I had also preprocessed with the C
+>     preprocessor (gcc -E) of the file. I understand that applying a patch on
+>     preprocessed code, where the macros are expanded, requires that the
+>     spatch match those expansions.
+>
+> With simplified examples, such as the one above, I tried to apply the patch
+> on preprocessed code, where it expands to:
+>
+> [AD_4nXfZSAGZD1liPgdEWRbWd2soFXXvuN7Ln66V6LBlHF3xnBEHrcEdWIyfMM2N10_dtXzWiw
+> s2SDvPnU1MWlS5O5ANOMJZ_XOMEHKVUkPXHJ2V0kPXmrNvQUPIQ6Xy0Ih4MraUS8Zk?key=HDx
+> 3ebciDTqk2MuXMXjB9X1r]
+>
+> With adjusted .cocci:
+>
+>  [AD_4nXcLELlpbC3w5XjioTqe60X0rcj1hqVyzFOm-DhDteLCJLtxuGYn1x41j0r-p8-yvEw7X
+> _L5gcyK65E6SNSDpIXrW4fW0SnzYHju7Y1kgJw9StoBsRiTidIn9ELWZvy0WKWY08Cq?key=HD
+> x3ebciDTqk2MuXMXjB9X1r]
+>
+> Using the spatch on such preprocessed code leads to other errors, like: 
+>
+> [AD_4nXfGz64oFjBTtPyjoJsSMTRXrW-ELoXUc0wug9NyW1Gy83piBuORsvO4UjBfByAC73dE5h
+> 56s2TzcQ4mZEi4RfsFtluLJwGTzyNpe_5ZJnlIBeNIL-r0UsBwjxI5lyVKHUjOp6iKhw?key=H
+> Dx3ebciDTqk2MuXMXjB9X1r]
+>
+>
+> Another more simplified case with testing the expansion alone without the
+> struct:
+>
+> [AD_4nXcV_sFkshVZkb7elsFL97QAbZYWETLMdaILEyiP00TUIssUQGpUBk2QJT-cpLZHdKqtLJ
+> 8OncW7EU96sMad_umZBgpBDrNKvjNBvfrw2kQPTxVLa11baGtLr4xGF45zNrSulTwAZQ?key=H
+> Dx3ebciDTqk2MuXMXjB9X1r]
+>
+> [AD_4nXfj46ZjPdGs_w31DavWeAge8ODdFevKPZIL-jStK8u081pXcLdqCjwpQI0cDUCwvMcZyz
+> TngQ_S8qGSRB1Vcimrm6Z1_0vJtmdLrgX2leAkK2MQMrKqB6RNhSqqtWBVHB6d2Vdv?key=HDx
+> 3ebciDTqk2MuXMXjB9X1r]
+>
+> [AD_4nXfO8A2d5ngtG01ULaQvxMU1tWI9PybYeJ0QokLN_XkG_u1B3hcAB0N6hyLYtont7w84IZ
+> hpqTbxq_k_Ae-0HKcSmwpIzP2lKRKo8q9h9NQ_qxN9G80wERvaAUJxNF93UyGy56ltKw?key=H
+> Dx3ebciDTqk2MuXMXjB9X1r]
+>
+> The transformation unfortunately was unable to be applied in these cases. 
+>
+>
+> Some specific questions I have:
+>
+>  1.
+>
+>     Can Coccinelle recognize the __uint macro inside the struct and apply a
+>     patch that uses such a macro?
+>
+>  2.
+>
+>     Can you provide any guidance on how to properly match and modify this
+>     struct in Coccinelle? 
+>
+>
+> I would greatly appreciate any insights you can offer. Please let me know if
+> you need more information.
+>
+>
+> Thank you so much for your time and consideration.
+>
+>
+> Best, 
+>
+> Danikka Jelski | cmj136@scarletmail.rutgers.edu
+>
+>
+>
+>
+--8323329-383197752-1741263577=:3340--
