@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A187AC282EC
-	for <cocci@archiver.kernel.org>; Mon, 17 Mar 2025 15:09:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A39BAC282EC
+	for <cocci@archiver.kernel.org>; Mon, 17 Mar 2025 16:18:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=from:to:date:message-id:mime-version:
-   content-transfer-encoding:subject:reply-to:sender:list-id:
-   list-help:list-subscribe:list-unsubscribe:list-post:
-   list-owner:list-archive;
-  bh=jDjtgr5M03sklWjZqj4B9gL5fLlGsFuxnhRAsO5UK3c=;
-  b=LummchYoRf2s6LoSG9h8BV+tP2FhuII9SS8OizXBdaqhncfuEaUx3A5p
-   1X1Po7+9tX2m4RjV65jnneIzSFWi7dToAMaS1jxP10yssb+Bj+psz1pF+
-   nEFmsQYkcLnf/fowBl0i28BOtP3ep+BPTJHhXEafp5jnC5Gl7bZpAmGEh
-   o=;
+  h=message-id:date:mime-version:to:references:from:
+   in-reply-to:content-transfer-encoding:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=iW5b83paZREK6dh/CqOmNo+3hj5sQKcKK6HESVWAfH4=;
+  b=XU1KhIPCpmT7NZo2dvpXdKOKL+FtkATMpwWK2WI9EVmkpryJjA7PKvX6
+   CM3JTLxuoFMNcNvNe3YVivwkuhjfk0k6OljXSrBrRLCRoRJYgRjoI/O2d
+   Fc6tJe2cBIlfp95OD8WKC0uHOoDNflDB6EhCOw3PlvIbZ9vRfHCtF1J2Y
+   k=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -35,187 +35,184 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   receiver=mail2-relais-roc.national.inria.fr;
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
-Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@aepfle.de
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=markus.elfring@web.de
 X-IronPort-AV: E=Sophos;i="6.14,254,1736809200"; 
-   d="scan'208";a="213301065"
+   d="scan'208";a="213319940"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 17 Mar 2025 16:09:51 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 17 Mar 2025 17:18:01 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 82FA8E0D1E; Mon, 17 Mar 2025 16:09:51 +0100 (CET)
-Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by sympa.inria.fr (Postfix) with ESMTPS id 98A81E0260
-	for <cocci@sympa.inria.fr>; Mon, 17 Mar 2025 16:09:49 +0100 (CET)
-IronPort-SDR: 67d83b3d_IYO2BpCr5nS1P+Hj+KKdrz7Juk+ztOHbZTfLVi3XB3Nnyg/
- 8+5Qik22mkkxDFTs/Lc8QRhTt+w7pJ5WQd2Cxwg==
-X-IPAS-Result: =?us-ascii?q?A0F3AgC2OthnjduSqVFagQmBUwKCQn1ZNAcISIgljiKeF?=
- =?us-ascii?q?4F+DwEDAQ01DwQBAQMBA4UAiyACHwYBBDAJDgECBAEBAQEDAgMBAQEBAQEQA?=
- =?us-ascii?q?QEFAQEBAgEBAgQGAQIQAQEBAQEBOQUXMoVMLw1JARABggA7ghYsDTd0CwEHB?=
- =?us-ascii?q?gEBOFB/gwIBgmQHrTSBATOBAYIMAQEGgQiBYNk4gWUJgUiFbYJjAYR8bwGEd?=
- =?us-ascii?q?ycbgg2BFAGBO4cFhi+CM4M9gWqBbIdigmgcLYIlgn6XSkiBBRwDWSwBVRMNC?=
- =?us-ascii?q?gsHBYFsAzUMCy4VgUVDN4JDaUk6Ag0CNYIbfIIohE2EPIQ/hVCCEYIFiSyEY?=
- =?us-ascii?q?S1QgRUdQAMLGA1IESw3FBsGPm4HoXUBOoRCAYEOAS8rbDESHzQMxlaCP4Fmg?=
- =?us-ascii?q?WOKNZUwGjOBS4I4gVeLMoY6DpMDmH6kS4RogWc6gVwzGggcFIMiCUYDGQ+Ne?=
- =?us-ascii?q?AExEAmBSYJCgiO+VEUyPAIHCwEBAwmJAIccgUsBAQ?=
-IronPort-PHdr: A9a23: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
-IronPort-Data: A9a23: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
- b0biodND62rNqQvhJYU
-IronPort-HdrOrdr: A9a23:VEimXKiLGhuU0dFJGzjNl4+ID3BQXgMji2hC6mlwRA09TyXGra
- 2TdaUgvyMc1gx7ZJhGo6H5BEDgewKmyXcR2+Z+AV7MZniDhILFFvAA0WKA+UyYJ8SdzJ876U
- 4IScEXaOEYZmIK6PoSjjPIcerIuOP3lpyAtKPk/FkoZT1WSshbjjtRO0KhIWMzbixvP6B8NL
- f03KZ6mwY=
-X-Talos-CUID: 9a23:VrYvFmxSKmtiEhrJZamaBgU4Q5gXdn3R9k73KmPlF0Y1QbaJYFm5rfY=
-X-Talos-MUID: =?us-ascii?q?9a23=3A0YS6IA2+CVbNLYSSpTXwq6MzbDUj6vSREx0ut5U?=
- =?us-ascii?q?/oPKOGwlNJiWthTu2a9py?=
+	id DAD4EE0D1E; Mon, 17 Mar 2025 17:18:00 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 28E58E0260
+	for <cocci@sympa.inria.fr>; Mon, 17 Mar 2025 17:17:59 +0100 (CET)
+IronPort-SDR: 67d84b36_iAQgGn4bHVO+06AdntYcFDgFMjY6lTWOiBCFt6mJnPbtdFN
+ +phV71SNQHF1zOCcHm6pW1LKkoFJJxk0OBIgA3w==
+X-IPAS-Result: =?us-ascii?q?A0HAAgDGSthngAMP49RaHQEBAQEJARIBBQUBQIFCBQELA?=
+ =?us-ascii?q?YJDYnUzBAtIhFaPUIF0hGuHO4dTiHWDVA8BAwENQQECBAEBAwSCDIJ0AoseA?=
+ =?us-ascii?q?h4HAQQzBg4BAgQBAQEBAwIDAQEBAQEBEAEBBQEBAQIBAQIEBgECEAEBOwcOC?=
+ =?us-ascii?q?jGFew2CYgGBJIEmAQEBAQEBAQEBAQEBHQJHRAIBAyMdAQERJw8LGgImAgJWB?=
+ =?us-ascii?q?gEUAQGCfoIwAQMxB607gTKBAYIMAQEG2lwfLCJXgWUJgRouAYVsgmMBhWsBO?=
+ =?us-ascii?q?4Q8Jw+BVUSBPIMDPoRDg1uCaYIzhEBnmXaPfFJ7HANZLAFVExcLBwWBKUMDK?=
+ =?us-ascii?q?jQxI4EiBTQKNziCC2lJOgINAjWCGyRYgihqBAWBJII2hDyEP4VQghGBXQMDI?=
+ =?us-ascii?q?gGDH3Ucg0h2PYRhLVCBIx1AAgELbT03CQsbBj2jLIRCgxUEX8YiNAeCOIFmg?=
+ =?us-ascii?q?WMMn14GEy+DcAGTVQ4Gkn2YfiKpEYF9JIFcMxokgzZPAxkPjiGELb5VQjU8A?=
+ =?us-ascii?q?gcBCgEBAwmFRgEBilSBSwEB?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+ FU=
+IronPort-HdrOrdr: A9a23:l0cKgKzND9Nq5uWRi7PQKrPw8r1zdoMgy1knxilNoG9uA6mlfq
+ eV7Y0mPH7P+VAssRQb8uxoV5PufZqxz+8Q3WBVB8bEYOCEggWVxeNZgbcKqgeIc0DDH6xmpM
+ VdmsNFaOEYY2IK7vrS3Cn9Nco8y9+a962Sif7Z1GoFd3ARV0gt1WZE4h3wKDwPeOCqP+tDKH
+ IWi/Asmwad
+X-Talos-CUID: =?us-ascii?q?9a23=3Atv4xZ2hNks7Woyinu58zf0zY3TJuSCf31EvZAn6?=
+ =?us-ascii?q?BIHdUGLCYQw+JwLtqqp87?=
+X-Talos-MUID: 9a23:4TTPLAY2CUJKGeBThibstT48NetT0qWrIUQWv8pBm+2cHHkl
 X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-AV: E=Sophos;i="6.14,254,1736809200"; 
-   d="scan'208";a="213301039"
-X-MGA-submission: =?us-ascii?q?MDFBgfBxhjmNAKVPg7s0J/GxvLcVPVfhigSK6A?=
- =?us-ascii?q?offWgZzXGVHRyAR/Jcd6b+qomncniXp2zuzaX8Cuj9V9km2c+kVAbyHH?=
- =?us-ascii?q?kAfL5uLrFkHGUpcrB38rHmozdKQ/uW2o2GVzdXGY3alwvekji8+SJwWb?=
- =?us-ascii?q?VR/iJdMeyzmzpopSD/aHB+oQ=3D=3D?=
-Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.219])
-  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2025 16:09:49 +0100
-ARC-Seal: i=1; a=rsa-sha256; t=1742224188; cv=none;
-    d=strato.com; s=strato-dkim-0002;
-    b=G+jml9JkXhFzDggs9f3bwM2avwZ4EcdUfxo6H/YHzPkv5Koto7WvD3r/nj/Wz/lL5j
-    cIykt9E3KA8pA9yzfvL70y1PwA4yCK7bRevhItzIoAync91ck1ldyTjNrjTfEobwqX/4
-    IuJTcxJwRGzpWgJ48j8b5MJWpH7OIPc1Ou2jiQB0G6z//hxFgS4BD8unh3/pmrl8xALr
-    SCsSGpFrY/U5AJIAE2UH/1GZIsGxhfbABfWLyPyTymRvRnMFYYI0/tTuKAQo/eqJqpyV
-    eKigq3GFw7LOHJOq+gzfs4C0t1dhKpRUkyD61fnETv2OV6UJiYfyN7pxGOw2VagjzsOk
-    yzqw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1742224188;
-    s=strato-dkim-0002; d=strato.com;
-    h=Message-ID:Date:Subject:To:From:Cc:Date:From:Subject:Sender;
-    bh=jDjtgr5M03sklWjZqj4B9gL5fLlGsFuxnhRAsO5UK3c=;
-    b=B2hBGfuXMYQ+R2QV3J5U3tEhgo7XXt6444EGX7OIE+65fcV2cPvIRGoFL2QWm/Y4wJ
-    MI+L4TDm3mgsCGvn8+e7276jUVFXIIJsP55fQnMCnOMYMwhXEMpIO4e4okHVlf0kbcMS
-    u8LxeKVhqGBmrz3r9RblhPJjJu96iXBl0u4YI/MTiSYMNpkldQaCU1a980cV31G4tp7E
-    FOaWcLw+1EVwBHiL1sSyF60DXMhDKzTn6ioP9SnNT7oVaxR2UboKRtiyFhUWpLgbhp+O
-    OXMmPKzWpQ5ehCXyml3wCuk7N6oXGfu6VxGUAAoVoGMzBRvDt5DIX/B+YemYtB8uJc75
-    wdTw==
-ARC-Authentication-Results: i=1; strato.com;
-    arc=none;
-    dkim=none
-X-RZG-CLASS-ID: mo00
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1742224188;
-    s=strato-dkim-0002; d=aepfle.de;
-    h=Message-ID:Date:Subject:To:From:Cc:Date:From:Subject:Sender;
-    bh=jDjtgr5M03sklWjZqj4B9gL5fLlGsFuxnhRAsO5UK3c=;
-    b=dgQ2W41ePVJPQV1EoC0oetEBktIxeeDYGdPMr62qykOuTLV8C2CmHD6Vuux7GmKFYr
-    hphuoMepg9okYK6brK7SO5DkCr2AaNqFeJ75/z5DJULH8JXmKPMfvFRlANPxuoYkWqXl
-    tlI5pkagT8xaolGlaHAqiwhwbh3FVqYepjJfExJkxGpHcT61Mybj3KoRvVgiWXc6+0hk
-    Z5ZRQgWth7UwtjbWHue2xUy1ZhS1gKlbJcqPf77P7/RJtpvECLwg93npVgkH5/WAhOTo
-    xCG+7/by5wHnGJ9edDtocy67XPb5Bf+8Qgpb1aj57ZERzrFwUe/iAXUqB2zNdIXDEYPo
-    QBMQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1742224188;
-    s=strato-dkim-0003; d=aepfle.de;
-    h=Message-ID:Date:Subject:To:From:Cc:Date:From:Subject:Sender;
-    bh=jDjtgr5M03sklWjZqj4B9gL5fLlGsFuxnhRAsO5UK3c=;
-    b=b1RSqq9gaphAXwdAiDo75apU0YsY9Xlii+yC3yVCXX6G8JY+jTCke0NYj3nzwgUcR5
-    UCGG4aQ2URMvL8q1DfDg==
-X-RZG-AUTH: ":P2EQZWCpfu+qG7CngxMFH1J+3q8wa/QXkBR9MXjAuzpIG0uv8ZofWaSVYjagMyZmkab3cQQk8ITYm/c/zHbXf6Nw2MS9"
-Received: from sender
-    by smtp.strato.de (RZmta 51.3.0 AUTH)
-    with ESMTPSA id D1c4dd12HF9mx2p
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-	(Client did not present a certificate)
-    for <cocci@inria.fr>;
-    Mon, 17 Mar 2025 16:09:48 +0100 (CET)
-From: Olaf Hering <olaf@aepfle.de>
-To: cocci@inria.fr
-Date: Mon, 17 Mar 2025 16:08:17 +0100
-Message-ID: <20250317150941.32415-1-olaf@aepfle.de>
-X-Mailer: git-send-email 2.43.0
+   d="scan'208";a="111808452"
+X-MGA-submission: =?us-ascii?q?MDHnDLWk3jCjzu+Iq1ZdDMopQiX85Cx0Fa36vO?=
+ =?us-ascii?q?O/yPptfQngUVxMLuK3K+DXOehAGXTAnePds5R6gMZKfGqpiQbIWQ6+eR?=
+ =?us-ascii?q?ykYUkG7uvn4TSZBpV8xdhZbnshjKTBOekcYPX2Lw8Zb4ZDvsonBq2trz?=
+ =?us-ascii?q?5exMLeJJdELDA41NcWo3FWOg=3D=3D?=
+Received: from mout.web.de ([212.227.15.3])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2025 17:17:59 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
+	s=s29768273; t=1742228277; x=1742833077; i=markus.elfring@web.de;
+	bh=iW5b83paZREK6dh/CqOmNo+3hj5sQKcKK6HESVWAfH4=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:
+	 References:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:cc:content-transfer-encoding:
+	 content-type:date:from:message-id:mime-version:reply-to:subject:
+	 to;
+	b=p4B20AraX4hOcTlhA4TDz/pb5isaRdDBHEA33DP2/pASISp7gutYCyqXbHMBpvZT
+	 n5a7p9knWKQo9oc6k5bnvARy6IQ4KEEFf0YnFc+LZ1HyYIdV+85mhXj/q822kYMpY
+	 5/0RQP8yaUpVVj3bwVqJR3Qo5MY/sslreTNTW02rg9Ig2jOf3vSa1Z0vkImyGPXb4
+	 FayzwIjHTunyxQVodi+NFwJbSXd4zr+4v7OWC44rX9Px9h4m8wDXzrhMmLNtk5P0M
+	 PuxqEwXsWdq+tpQSb/xd42/ce7pB0gOobNQyhvxjh9FjBkcxvu1XyxkwOMuPDBewV
+	 ioxcvoIicGd/Coxpcw==
+X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
+Received: from [192.168.178.29] ([94.31.70.74]) by smtp.web.de (mrweb005
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 1N4eGJ-1tEFBC2CiV-012fbT; Mon, 17
+ Mar 2025 17:17:57 +0100
+Message-ID: <57d5ead5-eabe-447a-b00e-1d9781e776af@web.de>
+Date: Mon, 17 Mar 2025 17:17:46 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="us-ascii"
-Subject: [cocci] [PATCH v1] replace pcre with pcre2
-Reply-To: Olaf Hering <olaf@aepfle.de>
+User-Agent: Mozilla Thunderbird
+To: Olaf Hering <olaf@aepfle.de>, cocci@inria.fr
+References: <20250317150941.32415-1-olaf@aepfle.de>
+Content-Language: en-GB
+From: Markus Elfring <Markus.Elfring@web.de>
+In-Reply-To: <20250317150941.32415-1-olaf@aepfle.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:iIwGIoXb0yr8PvDBQDJ5S5Ybyo6oMIcys+0RIkLuorHZG2w5BUt
+ NyYnS6WkKXZiseouy5yTRdOeYp999C7ljiWA0aoOfadr2vN8jDv5nYKfD5G9pVnXQ/EOrls
+ 4/lFgcVpzPZq6EtujAknkbxguAxwGneKCnddTCiAvhin9/3ZQ49lqF8F1XrI+RiiQFLHBU5
+ 3ZO/9gP9sNAbCV1XXI01g==
+UI-OutboundReport: notjunk:1;M01:P0:R4HUnqYpxdg=;pa7rx8D+LD//Da2CUFVQbhWR8BS
+ ePiIY22mdH1X47/UYFG86y0amydywR/HVH7sm/ZqzyDGObGVqtPJwVoVXU63ZK76zANemTJ7R
+ zu9AzVyeS74BVRm/jPFhieelSENu5DYLmzfykLL6fegYxxe68LhhZIAc6lBisF02LQrbYWcT0
+ j5Wh5K8ctGjC0+dnfrjl8PNk6Nn9x6A5YnJX8Dhp7Ovtk1E0GHbj1/Jbw0ETFFrMjKRWWJod6
+ ct6hFYfrDSj4MO1kMrTpaQMg0vRkTjPWRDpz+PCDNTWjCmxVUUOTBKqGCgCh+zzQDJFDYeNHY
+ szakHY/Yx3aaOWBmbqEO7E3n6am4NcmAcx7Usz+THfUQLx36QNuwjhe0kboYJ/SXpMmAKHgA3
+ HqOIeH0/+I8s/QcpQ5hMut3MMg8PuN61LXW3ekYPoENui34jrhROFakIP2gtsTYaklIhZr0LR
+ LTjFX8csAMc3HoK5cP2ceVHai0gb0PuHQdlA2m5SuXoDNyr/Za+6hoSJrSVPtKrQRrOII5dMM
+ YTJG5yhiQpAN6r8QOyDdScEdnea6FDPG2yVtC4fL+lsZyV4GAhK9W7Pp3b86eeOeH6HLiv+2/
+ 6158YkAjB44dwjiskdqwByBfJaExlvqWyRh234f4RQFXkjsJwqMmbxWPRrHBQapqLTC7BaR57
+ 40cm2QkXggBoJqka0Ma3Q3hIzuX2ixltjVC2Z4NLj5OvokUT+RI4w5NQNUblDCFhKTKmiW6aE
+ aJNpls616ZxDhFHDhxyaKKT9SjBs6j720ixFAJzbhT5htAzlMa4OQCO1Vq3A70F/6ZoZ15U9J
+ YqzisxqVnkRGHPM+Zq2SFKPcIlOW8pbi1u+e/luCY8ivZddjVFrWw9kCLd3pOXsak0K/VRhL0
+ v45Hg7OZ8ZoQBopM/mX3P6UA5hzV31IDv/JlkJN2uQ3nq/Ww7psMZyVJxlxsZJLYAjon1ahub
+ jPoS5qVmxZN+DeMxQrE9hKnuFtY2/Rj7bin+akPxgjB5f/+PiuJsJM4E6XTLnnBv1MJcBrdU3
+ xr7X3k/XSvkTKQcnEHAIbACfzcZX9BbsuJqYqWgtBZoNMpkTjy8UFFrXInu5d47Ut/NAM99ua
+ wrublY+4iaiOe8CRnPVjy8m1pHrqHSsl4NLSOUd91+k8RSwsMBkiSgMdGh7bUqVm+siehnkqN
+ jjXjrwE2t4j3VfXkzxB5Zd4a//pI8Z6pnaqlxPMXyIFVaOMIspRE7tAZzmtD2vj+cbd26K7Io
+ gxW4+NKkNw8lS2lc9Iw4y2Cwx3GoD2f/9VAJ+25rcF+sfsqaJKlq8yVDGTRLoAzOaGGIr/HG2
+ CJgWt1rRfiVoBmTQ+XKcYzLpCmcq6JO8porMpJSwEuki2gJr+o2WJhajfDYkClGqsuXQk3ZCm
+ VK5bcpryP/331T4AQ65lTZKoRo5fqgli4VAxESpTcX4rhcWIY9gQ3mPeWdgEveMo3ACMbSyK+
+ L3SOw9OtseY9ZQdcI6W0ZOr9OV+eBVtXYAx4s3F39nvBXOWCl
+Subject: Re: [cocci] [PATCH] replace pcre with pcre2
+Reply-To: Markus Elfring <Markus.Elfring@web.de>
 X-Loop: cocci@inria.fr
-X-Sequence: 2587
+X-Sequence: 2588
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -228,238 +225,17 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2025-03/20250317150941.32415-1-olaf%40aepfle.de>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2025-03/57d5ead5-eabe-447a-b00e-1d9781e776af%40web.de>
 
-Since pcre is unmaintained, I was asked to remove usage of ocaml-pcre.
+>                                           =E2=80=A6 Would there be some =
+benefit to
+> support all five in a single binary, for correctness and/or performance
+> comparison?
 
-This is the minimal change to use ocaml-pcre2. The question is what kind
-of change the maintainers want to see here. There are 5 possible
-variantes to support regular expressions: Str.regex, Pcre, Pcre2, Re and
-Re2.
+I guess that this question can be reconsidered any more for a better chang=
+e description.
+We usually hope that maintained software versions provide more desirable
+functionality (and corresponding run time characteristics).
 
-This patch just exchanges one with another. Would there be some benefit to
-support all five in a single binary, for correctness and/or performance
-comparison?
-
-Please let me know how to proceed.
-
-Signed-off-by: Olaf Hering <olaf@aepfle.de>
----
- Makefile               |  6 +++---
- Makefile.config.in     | 18 +++++++++---------
- Makefile.libs          | 18 +++++++++---------
- configure.ac           | 14 +++++++-------
- globals/regexp_pcre.ml | 10 +++++-----
- 5 files changed, 33 insertions(+), 33 deletions(-)
-
-diff --git a/Makefile b/Makefile
-index 55dbe849a..0c45127bd 100644
---- a/Makefile
-+++ b/Makefile
-@@ -101,7 +101,7 @@ PREFIX_spgen := tools/spgen/source/
- CORE_LIBS := unix str ocamlcommon \
- 	$(STDCOMPATDIR)/stdcompat \
- 	$(patsubst %,bytes,$(BYTESDIR)) \
--	$(patsubst %,pcre,$(filter %/pcre.cma,$(LNKLIBS)))
-+	$(patsubst %,pcre2,$(filter %/pcre2.cma,$(LNKLIBS)))
- 
- ifeq ($(OCAMLATLEAST50),no)
- CORE_LIBS += bigarray
-@@ -121,7 +121,7 @@ LIBRARIES_spatch := $(LIBRARIES)
- 
- LIBRARIES_spgen := $(CORE_LIBRARIES)
- 
--CORE_BUNDLES=stdcompat menhirLib pcre
-+CORE_BUNDLES=stdcompat menhirLib pcre2
- 
- ALL_BUNDLES=$(CORE_BUNDLES) parmap pyml
- 
-@@ -214,7 +214,7 @@ MENHIR_LIB := \
- 	$(addsuffix /menhirLib$(LIBSUFFIX),$(filter %/menhirLib,$(MAKELIBS)))
- PARMAP_LIB := $(addsuffix /parmap$(LIBSUFFIX),$(filter %/parmap,$(MAKELIBS)))
- PYML_LIB := $(addsuffix /pyml$(LIBSUFFIX),$(filter %/pyml,$(MAKELIBS)))
--PCRE_LIB := $(addsuffix /pcre$(LIBSUFFIX),$(filter %/pcre,$(MAKELIBS)))
-+PCRE_LIB := $(addsuffix /pcre2$(LIBSUFFIX),$(filter %/pcre2,$(MAKELIBS)))
- STDCOMPAT_LIB := $(STDCOMPATDIR)/stdcompat$(LIBSUFFIX)
- 
- STDCOMPAT_USERS := parsing_c/type_annoter_c cocci parsing_cocci/check_meta \
-diff --git a/Makefile.config.in b/Makefile.config.in
-index dbafa35a5..6bad1a7a6 100644
---- a/Makefile.config.in
-+++ b/Makefile.config.in
-@@ -5,18 +5,18 @@
- VERSION=@PACKAGE_VERSION@
- 
- # * for each library $1, add another entry in the same manner
--MAKELIBS=@MAKE_dynlink@ @MAKE_menhirLib@ @MAKE_pyml@ @MAKE_pcre@ \
-+MAKELIBS=@MAKE_dynlink@ @MAKE_menhirLib@ @MAKE_pyml@ @MAKE_pcre2@ \
-   @MAKE_parmap@
--LNKLIBS=@MODULES_dynlink@ @MODULES_menhirLib@ @MODULES_pcre@ @MODULES_pyml@ \
-+LNKLIBS=@MODULES_dynlink@ @MODULES_menhirLib@ @MODULES_pcre2@ @MODULES_pyml@ \
-   @MODULES_parmap@
- OPTLNKLIBS=@MODULESOPT_dynlink@ @MODULESOPT_menhirLib@ @MODULESOPT_pyml@ \
--  @MODULESOPT_pcre@ @MODULESOPT_parmap@
--INCLIBS=@PATH_dynlink@ @PATH_menhirLib@ @PATH_pyml@ @PATH_pcre@ \
-+  @MODULESOPT_pcre2@ @MODULESOPT_parmap@
-+INCLIBS=@PATH_dynlink@ @PATH_menhirLib@ @PATH_pyml@ @PATH_pcre2@ \
-   @PATH_parmap@
--FLAGSLIBS=@FLAGS_dynlink@ @FLAGS_menhirLib@ @FLAGS_pyml@ @FLAGS_pcre@ \
-+FLAGSLIBS=@FLAGS_dynlink@ @FLAGS_menhirLib@ @FLAGS_pyml@ @FLAGS_pcre2@ \
-   @FLAGS_parmap@
- OPTFLAGSLIBS=@OPTFLAGS_dynlink@ @OPTFLAGS_menhirLib@ @OPTFLAGS_pyml@ \
--  @OPTFLAGS_pcre@ @OPTFLAGS_parmap@
-+  @OPTFLAGS_pcre2@ @OPTFLAGS_parmap@
- # * end of library variables
- 
- # system packages inc libs
-@@ -106,7 +106,7 @@ METAINFO_DIR=@METAINFO_DIR@
- 
- # selected libraries
- FEATURE_menhirLib=@FEATURE_menhirLib@
--FEATURE_pcre=@FEATURE_pcre@
-+FEATURE_pcre=@FEATURE_pcre2@
- 
- # Features
- FEATURE_PYTHON=@FEATURE_PYTHON@
-@@ -114,7 +114,7 @@ FEATURE_OCAML=@FEATURE_OCAML@
- NO_OCAMLFIND=@SUBSTITUTED_OCAMLFIND@
- 
- # Include paths
--PCREDIR=@PATH_pcre@
-+PCREDIR=@PATH_pcre2@
- PARMAPDIR=@PATH_parmap@
- PYMLDIR=@PATH_pyml@
- MENHIRDIR=@PATH_menhirLib@
-@@ -129,4 +129,4 @@ REGEXP_FILE=@REGEXP_FILE@
- 
- MENHIR_FLAGS=@DEFAULT_MENHIR_FLAGS@
- 
--OCAMLATLEAST50=@OCAMLATLEAST50@
-\ No newline at end of file
-+OCAMLATLEAST50=@OCAMLATLEAST50@
-diff --git a/Makefile.libs b/Makefile.libs
-index 96e05d26f..ed6ce302f 100644
---- a/Makefile.libs
-+++ b/Makefile.libs
-@@ -36,15 +36,15 @@ OPTFLAGS_pyml  = $(CFLAGS_pyml:%=-ccopt %) -cclib -lpyml_stubs
- 
- # pcre library
- # Note: see the comment of the pycaml library about the double appearance of the stubs library.
--LOCAL_pcre     = $(BYTESDIR:=/bytes.cma) $(PCREDIR)/pcre.cma
--LOCALOPT_pcre  = $(BYTESDIR:=/bytes.cmxa) $(PCREDIR)/pcre.cmxa
--GLOBAL_pcre    = $(BYTESDIR:=/bytes.cma) $(PCREDIR)/pcre.cma
--GLOBALOPT_pcre = $(BYTESDIR:=/bytes.cmxa) $(PCREDIR)/pcre.cmxa
--FLAGS_pcre     = \
--	$(PCRE_LIBS:%=-ccopt %) -cclib -L$(PCREDIR) -dllib -lpcre_stubs \
--	-cclib -lpcre_stubs
--OPTFLAGS_pcre  = \
--	$(PCRE_LIBS:%=-ccopt %) -cclib -L$(PCREDIR) -cclib -lpcre_stubs
-+LOCAL_pcre2     = $(BYTESDIR:=/bytes.cma) $(PCREDIR)/pcre2.cma
-+LOCALOPT_pcre2  = $(BYTESDIR:=/bytes.cmxa) $(PCREDIR)/pcre2.cmxa
-+GLOBAL_pcre2    = $(BYTESDIR:=/bytes.cma) $(PCREDIR)/pcre2.cma
-+GLOBALOPT_pcre2 = $(BYTESDIR:=/bytes.cmxa) $(PCREDIR)/pcre2.cmxa
-+FLAGS_pcre2     = \
-+	$(PCRE_LIBS:%=-ccopt %) -cclib -L$(PCREDIR) -dllib -lpcre2_stubs \
-+	-cclib -lpcre2_stubs
-+OPTFLAGS_pcre2  = \
-+	$(PCRE_LIBS:%=-ccopt %) -cclib -L$(PCREDIR) -cclib -lpcre2_stubs
- 
- # dynlink library
- LOCAL_dynlink     =
-diff --git a/configure.ac b/configure.ac
-index f0c585329..234d46fb4 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -145,7 +145,7 @@ dnl  add a line for each package that is
- dnl  configured via AC_CHECK_COCCI_EXTPKG
- dnl  or AC_REQ_COCCI_EXTPKG
- AC_COCCI_INIT_PKG_EMPTY([dynlink])
--AC_COCCI_INIT_PKG_EMPTY([pcre])
-+AC_COCCI_INIT_PKG_EMPTY([pcre2])
- AC_COCCI_INIT_PKG_EMPTY([bytes]) dnl for recent versions of pcre on old OCaml
- AC_COCCI_INIT_PKG_EMPTY([pyml])
- AC_COCCI_INIT_PKG_EMPTY([stdcompat])
-@@ -369,18 +369,18 @@ dnl    OCAML_PKG_pcre: if "local" use str package
- AC_ARG_ENABLE([pcre-syntax], AS_HELP_STRING([--enable-pcre-syntax], [enable pcre regular expression syntax (default: auto)]))
- AS_IF([test "x$enable_pcre_syntax" != "xno"],
- [dnl
--  PKG_CHECK_MODULES([PCRE], [libpcre],[AC_SUBST([HAVE_PCRE],[yes])],[AC_SUBST([HAVE_PCRE],[no])])
-+  PKG_CHECK_MODULES([PCRE], [libpcre2-8],[AC_SUBST([HAVE_PCRE],[yes])],[AC_SUBST([HAVE_PCRE],[no])])
-   AS_IF([test -z "$enable_pcre_syntax" -a "x$HAVE_PCRE" != xyes],
-   [dnl
-     AC_SUBST([enable_pcre_syntax], [no])
-   ],
-   [dnl
-     AS_IF([test "x$enable_pcre" = "xno"], [AC_SUBST([enable_pcre], [local])])
--    AC_CHECK_COCCI_EXTPKG([pcre])  dnl  will set $enable_pcre to 'yes', 'no', or 'local'
-+    AC_CHECK_COCCI_EXTPKG([pcre2])  dnl  will set $enable_pcre to 'yes', 'no', or 'local'
-     AS_IF([test "x$enable_pcre" = "xyes"],
-     [dnl
-       AC_MSG_CHECKING([if pcre depends on bytes])
--      AS_IF([test "x`$OCAMLFIND query -r -format '%p' pcre 2>/dev/null | grep bytes`" = "xbytes"],
-+      AS_IF([test "x`$OCAMLFIND query -r -format '%p' pcre2 2>/dev/null | grep bytes`" = "xbytes"],
-       [dnl
-         AC_MSG_RESULT([yes])
-         AC_MSG_CHECKING([if bytes is an actual module])
-@@ -407,14 +407,14 @@ AS_IF([test "x$enable_pcre_syntax" != xno],
-     AC_MSG_NOTICE([support for pcre syntax is enabled])
-   ],
-   [dnl
--    AC_MSG_ERROR([the pcre feature is enabled but the pkg-config libpcre library is not found])
-+    AC_MSG_ERROR([the pcre feature is enabled but the pkg-config libpcre2-8 library is not found])
-   ])
- 
-   AC_SUBST([REGEXP_MODULE], [Regexp_pcre])
-   AC_SUBST([REGEXP_FILE], [regexp_pcre.ml])
- ],
- [dnl
--  AC_COCCI_INIT_PKG_EMPTY([pcre])
-+  AC_COCCI_INIT_PKG_EMPTY([pcre2])
-   AC_SUBST([REGEXP_MODULE], [Regexp_str])
-   AC_SUBST([REGEXP_FILE], [regexp_str.ml])
- ])
-@@ -571,7 +571,7 @@ AS_IF([test "$MAKE_stdcompat"],
- AS_IF([test "$MAKE_parmap"],
-   AC_CONFIG_SUBDIRS(bundles/parmap))
- 
--AS_IF([test "$MAKE_pcre"],
-+AS_IF([test "$MAKE_pcre2"],
-   [AS_IF([test "x$OCAMLATLEAST4030" = xno  ],
-     [AC_SUBST([CAMLnoreturn_start], [])
-      AC_SUBST([CAMLnoreturn_end], [])],
-diff --git a/globals/regexp_pcre.ml b/globals/regexp_pcre.ml
-index d09f8528f..4fa1b61b5 100644
---- a/globals/regexp_pcre.ml
-+++ b/globals/regexp_pcre.ml
-@@ -5,7 +5,7 @@
-  *)
- 
- type regexp =
--    Pcre of int (* Pcre.regexp *)
-+    Pcre2 of int (* Pcre2.regexp *)
-   | Str of Str.regexp
- 
- (* A table is used because PCRE regular expressions are not comparable.
-@@ -26,16 +26,16 @@ let regexp string =
-     begin
-       let c = !pcre_ctr in
-       pcre_ctr := !pcre_ctr + 1;
--      Hashtbl.add pcre_table c (Pcre.regexp string);
--      Pcre c
-+      Hashtbl.add pcre_table c (Pcre2.regexp string);
-+      Pcre2 c
-     end
-   else Str (Str.regexp string)
- 
- let string_match regexp string =
-   match regexp with
--      Pcre regexp ->
-+      Pcre2 regexp ->
- 	let regexp = Hashtbl.find pcre_table regexp in
--	Pcre.pmatch ~rex:regexp string
-+	Pcre2.pmatch ~rex:regexp string
-     | Str regexp ->
-       try
- 	ignore(Str.search_forward regexp string 0);
-
-base-commit: cca22217d1b4316224e80a18d0b08dd351234497
+Regards,
+Markus
