@@ -4,19 +4,19 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3136DC35FFA
-	for <cocci@archiver.kernel.org>; Wed, 19 Mar 2025 13:18:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A8DA7C35FFA
+	for <cocci@archiver.kernel.org>; Wed, 19 Mar 2025 13:20:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:in-reply-to:message-id:references:
    mime-version:subject:reply-to:sender:list-id:list-help:
    list-subscribe:list-unsubscribe:list-post:list-owner:
    list-archive;
-  bh=RCFjjh14SP8HP/Xf3gb5cvIDbvohDPCxgeAm/bKYiE4=;
-  b=RtCgkm/kIIB4loj20Jm51GP9X1ZeR0lSNM+Lg/yqLr28KhEzSrRxAkTo
-   Mh6R69/vKCDGE+si+WLI0R2YOJhZcn/9vd8wkKJUA/Wm3He6Aizaw5C6p
-   tGfsjkcX8LcXBcE9gQCCQxP3kNjKTvYz5NNIefeCNrdXyBu1+urWwGzqs
-   4=;
+  bh=m9wSTOhsPsIPsGVu1ecBL/Y5QxHKzlkCEhqMt8a3Li4=;
+  b=Ew2JkbWFAltib8YX/0LmJY8SoRWgufcJ+KpHHLnz3BIxsEXu2BKsORVn
+   bLUKcQwd4aENkEoKO6RbmKJj4TEHewjNPHqik2lFKszCxqFjjH+Hap/1L
+   cxo578QGjHxWsHQVxPGHe6ygVo0MWEzcYQ/UvMdiPtVJLkRTL7F+FJpiR
+   Y=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -37,41 +37,41 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
 Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=pass (signature verified) header.i=@inria.fr
 X-IronPort-AV: E=Sophos;i="6.14,259,1736809200"; 
-   d="scan'208";a="213708678"
+   d="scan'208";a="213709186"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 19 Mar 2025 14:18:23 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 19 Mar 2025 14:20:19 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id C1A2CE0D1E; Wed, 19 Mar 2025 14:18:22 +0100 (CET)
-Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by sympa.inria.fr (Postfix) with ESMTPS id 537E3E007A
-	for <cocci@sympa.inria.fr>; Wed, 19 Mar 2025 14:18:21 +0100 (CET)
+	id A304DE0D20; Wed, 19 Mar 2025 14:20:18 +0100 (CET)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id 48E3DE007A
+	for <cocci@sympa.inria.fr>; Wed, 19 Mar 2025 14:20:17 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=RCFjjh14SP8HP/Xf3gb5cvIDbvohDPCxgeAm/bKYiE4=;
-  b=lLGqvwMzKoCfT50016k1Y4hgpDJOFcRO/mC3oxi2AThpAi78OaztR4Mo
-   yvCOmx+8QcC5//kigjE+2pAjN+ohsUScofUeOfJ9Y5pfvIV0emWpDBwoe
-   u+UltRMVc9Rn9m8Q0WQT283b76cfaFsJz56NwYDOw2jhfY2JaukbR3bQl
-   A=;
+  bh=m9wSTOhsPsIPsGVu1ecBL/Y5QxHKzlkCEhqMt8a3Li4=;
+  b=MxiuQDJtm1gUi3FTaA0ofSrJdR3zd7c1Lk0s890OGRyIUKGuFCh//3rQ
+   ciDfbk4xgwWHeaIb/sufDuXWgOI6Teg+SV4ODsGjEkpfIIdLE3WrWJdCD
+   bog7EAR+W8SIKSckKzrsyqiljy4mF1wu++HrWCQtkVuxPUVQ2VoNq2aak
+   U=;
 X-IronPort-AV: E=Sophos;i="6.14,259,1736809200"; 
-   d="scan'208";a="112030689"
+   d="scan'208";a="213709164"
 Received: from pd9ef1166.dip0.t-ipconnect.de (HELO hadrien) ([217.239.17.102])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2025 14:18:21 +0100
-Date: Wed, 19 Mar 2025 14:18:19 +0100 (CET)
+  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2025 14:20:16 +0100
+Date: Wed, 19 Mar 2025 14:20:14 +0100 (CET)
 From: Julia Lawall <julia.lawall@inria.fr>
-To: Victor Gambier <victor.gambier@inria.fr>
-cc: Olaf Hering <olaf@aepfle.de>, Jacob Keller <jacob.e.keller@intel.com>, 
-    Julia Lawall <julia.lawall@inria.fr>, cocci@inria.fr
-In-Reply-To: <7508d3f9-1b01-4e4c-84cc-14b075d62d1a@inria.fr>
-Message-ID: <2d932032-5325-ffe8-f5c-28fc35c342@inria.fr>
-References: <20250318111305.281abcca.olaf@aepfle.de> <2b3232fa-ad32-c17f-8e97-8144c648c19c@inria.fr> <27f57368-6a2d-4ea4-8a81-b8bee42e2d5d@intel.com> <20250319134816.3b7d026c.olaf@aepfle.de> <7508d3f9-1b01-4e4c-84cc-14b075d62d1a@inria.fr>
+To: Markus Elfring <Markus.Elfring@web.de>
+cc: Olaf Hering <olaf@aepfle.de>, cocci@inria.fr, 
+    Jacob Keller <jacob.e.keller@intel.com>
+In-Reply-To: <b105e7e8-2576-41f2-9ba8-0185c0a1bd7b@web.de>
+Message-ID: <2b221a7-7da8-261e-f75c-edb8fff59350@inria.fr>
+References: <20250318111305.281abcca.olaf@aepfle.de> <2b3232fa-ad32-c17f-8e97-8144c648c19c@inria.fr> <27f57368-6a2d-4ea4-8a81-b8bee42e2d5d@intel.com> <20250319134816.3b7d026c.olaf@aepfle.de> <b105e7e8-2576-41f2-9ba8-0185c0a1bd7b@web.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Subject: Re: [cocci] the future of bundles in coccinelle.git
 Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 2650
+X-Sequence: 2651
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -84,24 +84,22 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2025-03/2d932032-5325-ffe8-f5c-28fc35c342%40inria.fr>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2025-03/2b221a7-7da8-261e-f75c-edb8fff59350%40inria.fr>
 
 
 
-On Wed, 19 Mar 2025, Victor Gambier wrote:
+On Wed, 19 Mar 2025, Markus Elfring wrote:
 
-> For what it's worth, I am also of the opinion that we should get rid of the
-> bundles.
-> They create issues, both on the developer side and the user side, and I don't
-> think the problem they're supposed to solve is a real problem.
-> I don't like them very much. I also believe that building the Flatpak locally,
-> which is now possible, is a better way of building Coccinelle without worrying
-> about dependencies.
+> > In case one has to actually work on coccinelle.git for whatever reason,
+> > there can not be any convenience, except 'opam install coccinelle'
+> > which will install all required development packages.
+>
+> Please reconsider such a view once more.
+>
+> I can occasionally prefer other software development requirements.
 
-As much as I don't want to figure out how which version of pip is required
-to install python packages, I absolutely do not want to learn flatpak.  I
-don't want to learn anything.  I just want to download the tool, compile
-it, and run it.  Avoiding cultural barriers to entry is really important
-to getting people to use a tool.
+Opam is ocaml culture, just like pip is python culture, cargo is rust
+culture, etc.  Fine if you want to be part of that culture.  Annoying if
+you just want to use a tool.
 
 julia
