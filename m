@@ -4,18 +4,18 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A3444C35FFA
-	for <cocci@archiver.kernel.org>; Wed, 19 Mar 2025 13:33:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 99972C35FFC
+	for <cocci@archiver.kernel.org>; Wed, 19 Mar 2025 13:47:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=date:from:to:cc:in-reply-to:message-id:references:
-   mime-version:subject:reply-to:sender:list-id:list-help:
-   list-subscribe:list-unsubscribe:list-post:list-owner:
-   list-archive;
-  bh=dAv5TkeDp9sP3PN8evOWEQs7VUbD8cgvJ0FoJ6mjcvM=;
-  b=H1T0S8IMmZw05jqfa05+C2kQoj8iI6acWyJKR/gzuvaNR+k6/1VyUu3Z
-   LCozGsAOOHdp11141Cj5NRJjHlVVFthidrKbFbhRU1CJJjYKjcHlqQEEp
-   wZBiPAWV4dpQGU9TGlHD7+Cmw2iP+ixRMQFYIiOiiAmFMz/lnIbir7zYZ
+  h=message-id:date:mime-version:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=SqeiTbeeIJTHWM1qmTOHa9yQCac8zqBKDLNH5P+LKv4=;
+  b=qS1IumDizeQsOMrVcUWdLo3yjLUrtDukpREccboDrElObp/g1EyqEmDu
+   qv5Gt7Vgybd6fosU7UlEDJ2rwi0HQFKZlZIQ0/taVv1XTZnOxGdIj5INP
+   USMuIoZ0SlL5R1nDEs1lAwMyjTE5m4DYMDRTVDFg3vtpxMNTV9owkBYIo
    0=;
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
@@ -37,42 +37,51 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
 Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=pass (signature verified) header.i=@inria.fr
 X-IronPort-AV: E=Sophos;i="6.14,259,1736809200"; 
-   d="scan'208";a="213712160"
+   d="scan'208";a="213715853"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 19 Mar 2025 14:33:13 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 19 Mar 2025 14:47:24 +0100
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id 0C52FE0D1E; Wed, 19 Mar 2025 14:33:12 +0100 (CET)
-Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by sympa.inria.fr (Postfix) with ESMTPS id 003E1E007A
-	for <cocci@sympa.inria.fr>; Wed, 19 Mar 2025 14:33:10 +0100 (CET)
+	id DE51DE0D1E; Wed, 19 Mar 2025 14:47:24 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 72E4CE007A
+	for <cocci@sympa.inria.fr>; Wed, 19 Mar 2025 14:47:19 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=dAv5TkeDp9sP3PN8evOWEQs7VUbD8cgvJ0FoJ6mjcvM=;
-  b=YnkH25QuxnfBn486KyG1D0HsGSvp9kPpDliYt0CIIrIt++7Z4S/p6a0U
-   Oax8OU/4wFq+Hy+rcEVs9Go+LUCKGc9zMEg/FIhxrxYUyCwUcWVuXkD43
-   ag79W5JHA3rz0HmTHU4r2LkbXUdLS2hhqfALdwuzwWnE6CH/13xpjRhRb
-   A=;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=SqeiTbeeIJTHWM1qmTOHa9yQCac8zqBKDLNH5P+LKv4=;
+  b=rBxg51gtsNgKwQTP3R+M3bLeFVvSdB0hoP/b6KZNOXn7jvmvWNDRiQZJ
+   NMchu08rxjY/vXCpeuy1nuquurDlX9wIB45Uz/1znNrcorj39glNvm6kg
+   U/BKgAU4Eon/TCC2DPEazb+LKCzrpsgUdkIGG0hmYHvNRmUlTVRihcZbL
+   0=;
 X-IronPort-AV: E=Sophos;i="6.14,259,1736809200"; 
-   d="scan'208";a="213712159"
-Received: from pd9ef1166.dip0.t-ipconnect.de (HELO hadrien) ([217.239.17.102])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2025 14:33:11 +0100
-Date: Wed, 19 Mar 2025 14:33:09 +0100 (CET)
-From: Julia Lawall <julia.lawall@inria.fr>
-To: Victor Gambier <victor.gambier@inria.fr>
-cc: Olaf Hering <olaf@aepfle.de>, Jacob Keller <jacob.e.keller@intel.com>, 
-    cocci@inria.fr
-In-Reply-To: <2798795d-41c3-4e18-981e-43ea961a32fb@inria.fr>
-Message-ID: <d1bf70ea-ce34-2ec2-45ba-90fe7bf26068@inria.fr>
-References: <20250318111305.281abcca.olaf@aepfle.de> <2b3232fa-ad32-c17f-8e97-8144c648c19c@inria.fr> <27f57368-6a2d-4ea4-8a81-b8bee42e2d5d@intel.com> <20250319134816.3b7d026c.olaf@aepfle.de> <7508d3f9-1b01-4e4c-84cc-14b075d62d1a@inria.fr>
- <2d932032-5325-ffe8-f5c-28fc35c342@inria.fr> <2798795d-41c3-4e18-981e-43ea961a32fb@inria.fr>
+   d="scan'208";a="112034175"
+Received: from ptb-02008469.paris.inria.fr (HELO [128.93.66.153]) ([128.93.66.153])
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2025 14:47:19 +0100
+Message-ID: <f38a49dd-05e6-46c0-b333-fc20d0fa3164@inria.fr>
+Date: Wed, 19 Mar 2025 14:47:18 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+To: Julia Lawall <julia.lawall@inria.fr>
+Cc: Olaf Hering <olaf@aepfle.de>, Jacob Keller <jacob.e.keller@intel.com>,
+ cocci@inria.fr
+References: <20250318111305.281abcca.olaf@aepfle.de>
+ <2b3232fa-ad32-c17f-8e97-8144c648c19c@inria.fr>
+ <27f57368-6a2d-4ea4-8a81-b8bee42e2d5d@intel.com>
+ <20250319134816.3b7d026c.olaf@aepfle.de>
+ <7508d3f9-1b01-4e4c-84cc-14b075d62d1a@inria.fr>
+ <2d932032-5325-ffe8-f5c-28fc35c342@inria.fr>
+ <2798795d-41c3-4e18-981e-43ea961a32fb@inria.fr>
+ <d1bf70ea-ce34-2ec2-45ba-90fe7bf26068@inria.fr>
+Content-Language: en-US
+From: Victor Gambier <victor.gambier@inria.fr>
+In-Reply-To: <d1bf70ea-ce34-2ec2-45ba-90fe7bf26068@inria.fr>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Subject: Re: [cocci] the future of bundles in coccinelle.git
-Reply-To: Julia Lawall <julia.lawall@inria.fr>
+Reply-To: Victor Gambier <victor.gambier@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 2654
+X-Sequence: 2655
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -85,31 +94,20 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2025-03/d1bf70ea-ce34-2ec2-45ba-90fe7bf26068%40inria.fr>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2025-03/f38a49dd-05e6-46c0-b333-fc20d0fa3164%40inria.fr>
 
 
-
-On Wed, 19 Mar 2025, Victor Gambier wrote:
-
+On 19/03/2025 14:33, Julia Lawall wrote:
+> If installing a package is essential that should be documented,
 >
-> On 19/03/2025 14:18, Julia Lawall wrote:
-> > As much as I don't want to figure out how which version of pip is required
-> > to install python packages, I absolutely do not want to learn flatpak.  I
-> > don't want to learn anything.  I just want to download the tool, compile
-> > it, and run it.  Avoiding cultural barriers to entry is really important
-> > to getting people to use a tool.
->
-> Understandable. I'll just point out that the bundles aren't a magic fix for
-> dependencies - as I discovered (and since documented) in the past, on Debian,
-> the pcre bundle only works if you have the libpcre3-dev package installed -
-> this was not documented anywhere. So even with the bundles failsafe, you still
-> need to install some (undocumented) packages in at least some instances, which
-> may or may not defeat the purpose. Fully documenting which packages need to be
-> installed and how to easily install them might be a more robust alternative in
-> most cases :)
+> But the goal is that the minimum number of packages should be required.
 
-If installing a package is essential that should be documented,
+I understand your point of view. If we don't want to rely on opam, and 
+since we can't assume every distribution / package manager will package 
+relatively obscure software such as stdcompat, our only options do 
+indeed seem to be bundles or instructions on how to manually install the 
+software first. So I do get it, even if the many distributions that 
+package Coccinelle seem to manage it ok.
 
-But the goal is that the minimum number of packages should be required.
+Victor
 
-julia
