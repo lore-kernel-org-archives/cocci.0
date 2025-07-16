@@ -4,21 +4,21 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DFF6CC83F1A
-	for <cocci@archiver.kernel.org>; Mon, 14 Jul 2025 11:34:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id DC7C6C83F27
+	for <cocci@archiver.kernel.org>; Wed, 16 Jul 2025 12:02:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=message-id:date:mime-version:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:subject:reply-to:
-   sender:list-id:list-help:list-subscribe:list-unsubscribe:
-   list-post:list-owner:list-archive;
-  bh=1ncF97qd46nlXeane094h9dNGW0lav9It6Siz0LRQtM=;
-  b=XhIwC8cW4wM4zbljWt76asVcjithYoaqa+snKmHKfvn5hfnCEZdptTGJ
-   Zg9t2bvh8ipc0gw2cfDQ/cd9ZgEjFvtGI5UKaiZLcPEH36sGFskccXBWD
-   dpmlFZLuu9mOKAqn9wk4yqy7IdtN1NgtLjsETi1JQZY3/zLhXhlNWFqHb
-   M=;
-X-CSE-ConnectionGUID: Jtge3SdxTmO5GDHvBGDlxA==
-X-CSE-MsgGUID: 75SOJuRST92O35GFsLvQrw==
+   in-reply-to:subject:reply-to:sender:list-id:list-help:
+   list-subscribe:list-unsubscribe:list-post:list-owner:
+   list-archive;
+  bh=sAE5oQhBpYwleAqdmAEE9m/VY3pIAZZS4tXS3v1h6VQ=;
+  b=tZdw5g//HwOcE2xeV/cdUQ8GmtlHuV9hiQd3HnHn5K8IgXUzVGofkY5K
+   dX1F3nuwHfQ5kUiyGDsrfxT/HVZVnM9VuafVjBem54n77tfx1xvdP/rs+
+   7a1/Q5YWn5dfC8LWWooZGWA/Z50xyGpXIPUejOh8x7yQjSU2MvIx0Hseh
+   4=;
+X-CSE-ConnectionGUID: ddpe9XEkRlCbIgRmWsO0XA==
+X-CSE-MsgGUID: 3D9EViGLSEKNGEWZ02TOWA==
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.160 as permitted
   sender) identity=mailfrom; client-ip=128.93.162.160;
@@ -37,225 +37,57 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   receiver=mail2-relais-roc.national.inria.fr;
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
-Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=markus.elfring@web.de
-X-IronPort-AV: E=Sophos;i="6.16,310,1744063200"; 
-   d="scan'208";a="231562151"
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=pass (signature verified) header.i=@inria.fr
+X-IronPort-AV: E=Sophos;i="6.16,316,1744063200"; 
+   d="scan'208,217";a="231886735"
 Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 14 Jul 2025 13:34:10 +0200
+  by mail2-relais-roc.national.inria.fr with ESMTP; 16 Jul 2025 14:02:51 +0200
 Received: by sympa.inria.fr (Postfix, from userid 20132)
-	id D321EE0CCF; Mon, 14 Jul 2025 13:34:09 +0200 (CEST)
-Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by sympa.inria.fr (Postfix) with ESMTPS id 63873E007A
-	for <cocci@sympa.inria.fr>; Mon, 14 Jul 2025 13:34:05 +0200 (CEST)
-X-CSE-ConnectionGUID: RAeHv+TGSwe67C/AfGx2Pg==
-X-CSE-MsgGUID: 7V+zHwhmSxGkJdWbcOsj7A==
-IronPort-SDR: 6874eb2d_52yH4du3Dvf6x+wCRv8b4MftLMsbpZwLy3Rgp9pGGp0aYaf
- eGD4ZfwwiG+kcsAnRfzDs8cfxdHCy/u+FbV4+mA==
-X-ThreatScanner-Verdict: Negative
-X-IPAS-Result: =?us-ascii?q?A0FpAAAM6nRogAMP49RaHAEBAQEBAQcBARIBAQQEAQFAg?=
- =?us-ascii?q?UEFAQELAYJDgQZUMwQLSYRVj1CCJIQ7hzyHU4h4gVWBfQIPAQMBDU4BAgQBA?=
- =?us-ascii?q?QMEggyCdAKMAwIeBwEEMgcOAQIEAQEBAQMCAwEBAQEBAQEBAQ0BAQUBAQECA?=
- =?us-ascii?q?QECBAYBAhABATsHDgoxhXsNgmIBgSSBJgEBAQEBAQEBAQEBAR0CR0QBAQECA?=
- =?us-ascii?q?SMdAQERJgEECwsaAiYCAlYGARQBAYJ+giIBBhABAw4kB64AgTKBAYIMAQEG2?=
- =?us-ascii?q?l4fLCJZgWUJgRsuAYVsgmQBhieDQnonD4FVRIE8C4J4PogegmmCJoEWg2SUM?=
- =?us-ascii?q?VJ4HANZLAFVExcLBwWBIEMDKjQxI0sFLR2BJ36DCoEOhCgrT4IidYF5QRk/g?=
- =?us-ascii?q?1MeBm0PBoEYG0oCAgIFAkNMQAIBC209NwkLGwY9kimDb4JOpVKhQzQHgjiBZ?=
- =?us-ascii?q?4FkDJ9rBhMvg3EBk10OBpMCmQYiqRuBbwYtgVwzGiSDNk8DGQ+OIYQzvA9BN?=
- =?us-ascii?q?TwCBwsBAQMJhUYBAYgggUsBAQ?=
-IronPort-PHdr: A9a23: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
- gdO3r7ya4geZNWT5g==
-IronPort-Data: A9a23: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
-IronPort-HdrOrdr: A9a23:HqAVqa6EfXbJDUS2zgPXwBzXdLJyesId70hD6qm+c202TiXqrb
- HLoB19726NtN9xYgBYpTnkAsK9qBznmqKdjbNhWotKGTOW3ldAT7sN0WKB+VHd8kTFn4Yx6U
- 4jSdkaNDSaNzhHZKjBkWqFOuoBhP+a7auvmeDS9Ht1Sxp2ApsQkjuRRjz7LqVsLjM2fqbR+a
- DsnPauLFebE0gqUg==
-X-Talos-CUID: 9a23:i+IICWOU0sNsQO5DYgBq1FBXJu8ebXCDk1yXCkGXGTxRR+jA
-X-Talos-MUID: =?us-ascii?q?9a23=3AlFbQNQ8f9qgpzOnudasPEYiQf5hWoLaOF0AIqoU?=
- =?us-ascii?q?puOuICiZ7HCyf0x3iFw=3D=3D?=
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-AV: E=Sophos;i="6.16,310,1744063200"; 
-   d="scan'208";a="231562149"
-X-MGA-submission: =?us-ascii?q?MDG021a5R8iCLtxjjz6rGEtSXdkgE4b/6s2+Dw?=
- =?us-ascii?q?G0Ktcy10eiyvJAXb92wBQMmGksJS8CdbUmlpUXtFRDJNkbumr7XmaBuX?=
- =?us-ascii?q?jsjmhdcV1cvC5QPY5Jfp2p94iqXu/kGrMEzNz28/dlecmuEHXlZNsEBb?=
- =?us-ascii?q?qR5re9Haskxg721pSd2IonMA=3D=3D?=
-Received: from mout.web.de ([212.227.15.3])
-  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2025 13:34:04 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
-	s=s29768273; t=1752492843; x=1753097643; i=markus.elfring@web.de;
-	bh=1ncF97qd46nlXeane094h9dNGW0lav9It6Siz0LRQtM=;
-	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
-	 References:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding:cc:content-transfer-encoding:
-	 content-type:date:from:message-id:mime-version:reply-to:subject:
-	 to;
-	b=kcATz50tpjySwtP/1d2AOkx+J2tcItRUKxMbS9+ZU0IlVARf3pi1nI/+LGu6GW1D
-	 laWL8TZZMn63rNoLef3N6a6kQ2Qa8ZVFBpt+KTdS1uqw67VtYSwecJoDw+nV4bOmX
-	 67dKVxBO5NESSUZLprhGSjpirNQKKnFK+2H994Dwb41UOh5vmQ7wWkIyO/Ow1ntq2
-	 vnmUu+X/pZgkfuDP1p12pbCqOVHGcE9loEsAVOEeHZQ2TI1WAjuifFmoo40NvI/UB
-	 +oitlo+Jtj/ZsThaKhLMardpMONG2j1JQQHwi1+rMxdrWgk9oZwUGVvvLOlYsXk7O
-	 b2G33H0C67sLVqBBEg==
-X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
-Received: from [192.168.178.29] ([94.31.69.184]) by smtp.web.de (mrweb006
- [213.165.67.108]) with ESMTPSA (Nemesis) id 1M7ell-1uYGdp31DB-00CrWW; Mon, 14
- Jul 2025 13:34:00 +0200
-Message-ID: <c3d8cb0f-e46c-4453-b025-154e5ddcd4ba@web.de>
-Date: Mon, 14 Jul 2025 13:33:59 +0200
+	id D7F4DE0B0D; Wed, 16 Jul 2025 14:02:50 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id C87FEE0171
+	for <cocci@sympa.inria.fr>; Wed, 16 Jul 2025 14:02:44 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to;
+  bh=sAE5oQhBpYwleAqdmAEE9m/VY3pIAZZS4tXS3v1h6VQ=;
+  b=YHc/AxyNoEAe63+nfttNBg69OK3iccmUxfecxZ/XsdE2Wa0LRZFtYet6
+   f8zFk3y3LDggydn1+xBC1PiphjZWUPznDPwO3lAcDzA4tJF+ybEm4NzIF
+   hOUmHHVMgzA4VUdEY5XwX37xyf+/9TyRIHQbBdysKxzJ4U8I6H7FDaq+J
+   o=;
+X-CSE-ConnectionGUID: RSdAftYyRbKLhxZvKfDUFg==
+X-CSE-MsgGUID: nHEX0TqfTaiTyPiG2dDiTQ==
+X-IronPort-AV: E=Sophos;i="6.16,316,1744063200"; 
+   d="scan'208,217";a="121510155"
+Received: from 176-129-241-48.abo.bbox.fr (HELO [192.168.1.137]) ([176.129.241.48])
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2025 14:02:44 +0200
+Content-Type: multipart/alternative;
+ boundary="------------9cV0RbKYUzDqQttOydDE7br9"
+Message-ID: <e9bc7027-5eba-461d-a659-4037849e3760@inria.fr>
+Date: Wed, 16 Jul 2025 14:02:44 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-To: Julia Lawall <julia.lawall@inria.fr>, cocci@inria.fr
-Cc: Yue Haibing <yuehaibing@huawei.com>, Kuniyuki Iwashima <kuniyu@google.com>
-References: <8b094c79-c6e5-4398-a2a9-37e9d46a46e8@web.de>
- <BBB485D5-F5B1-493D-BDD1-FF8A1FD38BF7@inria.fr>
- <9305a7cb-f54f-4655-8802-be7475b6b3ee@web.de>
- <9aaaaa9f-51d-7476-3032-3f76f9e7cc9@inria.fr>
-Content-Language: en-GB, de-DE
-From: Markus Elfring <Markus.Elfring@web.de>
-In-Reply-To: <9aaaaa9f-51d-7476-3032-3f76f9e7cc9@inria.fr>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:Xga2BHGl9GPHk2oouz5YHSmbfzAa9S+MVUp5FVmL4NYHRWX4wZ4
- puDru9X5506wSjLl9NpAXejiWCBTjCaDjeEQ/Zo27cGLIBYcWvRJZPTPb5I59qoyL8ZslOL
- M8lnX4bd8Cwa8WTWqQ+TZPPI5GzvuHUTUScYZf2lbqkUefQxWiwBa6QlRAw4zrXlXcrn7tF
- 05r+ezvUHlZS36BC31eKA==
-UI-OutboundReport: notjunk:1;M01:P0:JMClE3MCD/o=;CgU2slAhAHekhYd6rasd81jX27i
- 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
- HNFqSSCOAo/7Gk=
-Subject: Re: [cocci] Deleting duplicate condition checks (with SmPL)?
-Reply-To: Markus Elfring <Markus.Elfring@web.de>
+To: devnoname120 <devnoname120@gmail.com>,
+ Julia Lawall <julia.lawall@inria.fr>
+Cc: cocci@inria.fr
+References: <7c65be39-dfc3-4b9c-9acd-dd94d1225db8@Spark>
+ <alpine.DEB.2.22.394.2506291925100.95572@hadrien>
+ <55f3b1f1-2537-4bc3-88d3-d7da1136060a@Spark>
+ <alpine.DEB.2.22.394.2506292109470.95572@hadrien>
+ <1a234d32-e87d-414b-8566-490618417f6c@Spark>
+ <c08d6fa1-e53c-d21-7892-1132133087fb@inria.fr>
+ <68edca4d-74e7-4b83-9813-03d8fd7eae4e@Spark>
+ <6ed53f2e-40a4-9e47-a343-fd5f6054a6fe@inria.fr>
+ <033af1c6-e410-4ccb-8bed-41a308d66f1e@Spark>
+Content-Language: en-US
+From: Victor Gambier <victor.gambier@inria.fr>
+In-Reply-To: <033af1c6-e410-4ccb-8bed-41a308d66f1e@Spark>
+Subject: Re: [cocci] [HELP] Using macro `randomized_struct_fields_end` as
+ context?
+Reply-To: Victor Gambier <victor.gambier@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 2871
+X-Sequence: 2874
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -268,11 +100,367 @@ List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20cocci>
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2025-07/c3d8cb0f-e46c-4453-b025-154e5ddcd4ba%40web.de>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/cocci/2025-07/e9bc7027-5eba-461d-a659-4037849e3760%40inria.fr>
 
-> I still have no idea what the question is.
+This is a multi-part message in MIME format.
+--------------9cV0RbKYUzDqQttOydDE7br9
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Can you reproduce my observations in your software test environment?
+Thanks for all the information. You need two things:
 
-Regards,
-Markus
+1. A version of Coccinelle that has Julia's recent patch (b00c5adb1a48). 
+It is available on GitLab, but not on Github, and you'd need to compile 
+it yourself or wait until a new version is released. Let me know if you 
+need help with that, it shouldn't be too time-consuming.
+
+2. Remove the "depends" line. This script can work:
+
+```
+@@
+field f : script:python () { f == "randomized_struct_fields_end" };
+@@
+
+struct task_struct {
+...
++#ifdef CONFIG_KSU_SUSFS
++    u64 susfs_task_state;
++    u64 susfs_last_fake_mnt_id;
++#endif
+f
+...
+};
+```
+
+(Maybe this was only necessary on my end, but I suggest you try that if 
+it does not work.)
+
+I can confirm that script with that version of Coccinelle works.
+
+As for the original issue with the MacOS brew version, I unfortunately 
+don't have reliable access to a MacOS machine to figure out the issue. 
+Let me know if you'd like to spend some time troubleshooting that.
+
+Victor
+
+On 14/07/2025 20:00, devnoname120 wrote:
+> Here is the information that you requested:
+>
+> ❯ paul@ubuntu:/Users/paul$ spatch --version
+> spatch version 1.3 compiled with OCaml version 5.3.0
+> Flags passed to the configure script: --prefix=/usr --sysconfdir=/etc 
+> --libdir=/usr/lib --enable-ocaml --enable-python --with-python=python3 
+> --enable-opt
+> OCaml scripting support: yes
+> Python scripting support: yes
+> Syntax of regular expressions: Str
+>
+> ❯ paul@ubuntu:/Users/paul$ apt info coccinelle
+> Package: coccinelle
+> Version: 1.3.0.deb-1build2
+> Priority: optional
+> Section: universe/devel
+> Origin: Ubuntu
+> Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+> Original-Maintainer: Debian OCaml Maintainers 
+> <debian-ocaml-maint@lists.debian.org>
+> Bugs: https://bugs.launchpad.net/ubuntu/+filebug
+> Installed-Size: 59.0 MB
+> Depends: libparmap-ocaml, ocaml-findlib, libstdcompat-ocaml-iy6x7, 
+> libstdlib-ocaml-fxjy5, python3:any, libc6 (>= 2.38), libzstd1 (>= 1.5.5)
+> Suggests: coccinelle-doc, vim-addon-manager
+> Homepage: http://coccinelle.lip6.fr
+> Download-Size: 13.8 MB
+> APT-Manual-Installed: yes
+> APT-Sources: http://ports.ubuntu.com/ubuntu-ports plucky/universe 
+> arm64 Packages
+> Description: semantic patching tool for C
+> Coccinelle is a program matching and transformation tool for C.
+> The programmer describes the code to match and the transformation to
+> perform as a semantic patch, which looks like a standard patch, but can
+> transform multiple files at any number of code sites.
+> Thank you,
+> Paul
+> On 13 Jul 2025 at 22:58 +0200, Julia Lawall <julia.lawall@inria.fr>, 
+> wrote:
+>
+>
+>     On Sun, 13 Jul 2025, devnoname120 wrote:
+>
+>         I just attempted to run this command on Ubuntu and although it
+>         didn't return
+>         any error, no change was done:
+>
+>         ❯ spatch --sp-file include/linux/sched.h.cocci --in-place
+>         --linux-spacing
+>         include/linux/sched.h
+>         init_defs_builtins: /usr/lib/coccinelle/standard.h
+>         SPECIAL NAMES: adding u64 as a type
+>         HANDLING: include/linux/sched.h
+>
+>         Here is the content of `include/linux/sched.h.cocci`:
+>
+>         ```
+>         @depends on file in "include/linux/sched.h" exists@
+>         field f : script:python () { f ==
+>         "randomized_struct_fields_end" };
+>         @@
+>
+>         struct task_struct {
+>         ...
+>         +#ifdef CONFIG_KSU_SUSFS
+>         +    u64 susfs_task_state;
+>         +    u64 susfs_last_fake_mnt_id;
+>         +#endif
+>         f
+>         ...
+>         };
+>         ```
+>
+>         The `include/linux/sched.h` file remains the same as before.
+>
+>
+>     It all works fine for me. What version of Coccinelle do you have?
+>
+>     julia
+>
+>
+>
+>         Thank you,
+>         Paul
+>         On Jun 30, 2025 at 10:52 +0200, Julia Lawall
+>         <julia.lawall@inria.fr>, wrote:
+>         randomized_struct_fields_end will soon be supported in the C
+>         parser. It
+>         is not currently supported in the semantic patch parser, but you
+>         can get
+>         the same effect as illustrated by the example below.
+>
+>         I will let you know when this is all available on github.
+>
+>         julia
+>
+>
+>         @@
+>         field f : script:python () { f == "randomized_struct_fields_end"
+>         };
+>         @@
+>
+>         struct task_struct {
+>         ...
+>         + int something;
+>         f
+>         ...
+>         };
+>
+>
+--------------9cV0RbKYUzDqQttOydDE7br9
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p>Thanks for all the information. You need two things:<br>
+      <br>
+      1. A version of Coccinelle that has Julia's recent patch
+      (b00c5adb1a48). It is available on GitLab, but not on Github, and
+      you'd need to compile it yourself or wait until a new version is
+      released. Let me know if you need help with that, it shouldn't be
+      too time-consuming.<br>
+      <br>
+      2. Remove the "depends" line. This script can work:<br>
+      <br>
+      ```<br>
+      @@<br>
+      field f : script:python () { f == "randomized_struct_fields_end"
+      };<br>
+      @@<br>
+       <br>
+      struct task_struct {<br>
+      ...<br>
+      +#ifdef CONFIG_KSU_SUSFS<br>
+      +    u64 susfs_task_state;<br>
+      +    u64 susfs_last_fake_mnt_id;<br>
+      +#endif<br>
+      f<br>
+      ...<br>
+      };<br>
+      ```<br>
+      <br>
+      (Maybe this was only necessary on my end, but I suggest you try
+      that if it does not work.)<br>
+      <br>
+      I can confirm that script with that version of Coccinelle works.<br>
+      <br>
+      As for the original issue with the MacOS brew version, I
+      unfortunately don't have reliable access to a MacOS machine to
+      figure out the issue. Let me know if you'd like to spend some time
+      troubleshooting that.</p>
+    <p>Victor<br>
+    </p>
+    <div class="moz-cite-prefix">On 14/07/2025 20:00, devnoname120
+      wrote:<br>
+    </div>
+    <blockquote type="cite"
+      cite="mid:033af1c6-e410-4ccb-8bed-41a308d66f1e@Spark">
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+      <title></title>
+      <div name="messageBodySection">
+        <div>Here is the information that you requested:</div>
+      </div>
+      <div name="messageSignatureSection"><br>
+        <div>❯ paul@ubuntu:/Users/paul$ spatch --version<br>
+          spatch version 1.3 compiled with OCaml version 5.3.0<br>
+          Flags passed to the configure script: --prefix=/usr
+          --sysconfdir=/etc --libdir=/usr/lib --enable-ocaml
+          --enable-python --with-python=python3 --enable-opt<br>
+          OCaml scripting support: yes<br>
+          Python scripting support: yes<br>
+          Syntax of regular expressions: Str</div>
+        <div><br>
+          ❯ paul@ubuntu:/Users/paul$ apt info coccinelle<br>
+          Package: coccinelle<br>
+          Version: 1.3.0.deb-1build2<br>
+          Priority: optional<br>
+          Section: universe/devel<br>
+          Origin: Ubuntu<br>
+          Maintainer: Ubuntu Developers &lt;<a
+            href="mailto:ubuntu-devel-discuss@lists.ubuntu.com"
+            moz-do-not-send="true" class="moz-txt-link-freetext">ubuntu-devel-discuss@lists.ubuntu.com</a>&gt;<br>
+          Original-Maintainer: Debian OCaml Maintainers &lt;<a
+            href="mailto:debian-ocaml-maint@lists.debian.org"
+            moz-do-not-send="true" class="moz-txt-link-freetext">debian-ocaml-maint@lists.debian.org</a>&gt;<br>
+          Bugs: <a href="https://bugs.launchpad.net/ubuntu/+filebug"
+            moz-do-not-send="true" class="moz-txt-link-freetext">https://bugs.launchpad.net/ubuntu/+filebug</a><br>
+          Installed-Size: 59.0 MB<br>
+          Depends: libparmap-ocaml, ocaml-findlib,
+          libstdcompat-ocaml-iy6x7, libstdlib-ocaml-fxjy5, python3:any,
+          libc6 (&gt;= 2.38), libzstd1 (&gt;= 1.5.5)<br>
+          Suggests: coccinelle-doc, vim-addon-manager<br>
+          Homepage: <a href="http://coccinelle.lip6.fr"
+            moz-do-not-send="true" class="moz-txt-link-freetext">http://coccinelle.lip6.fr</a><br>
+          Download-Size: 13.8 MB<br>
+          APT-Manual-Installed: yes<br>
+          APT-Sources: <a href="http://ports.ubuntu.com/ubuntu-ports"
+            moz-do-not-send="true" class="moz-txt-link-freetext">http://ports.ubuntu.com/ubuntu-ports</a>
+          plucky/universe arm64 Packages<br>
+          Description: semantic patching tool for C<br>
+          Coccinelle is a program matching and transformation tool for
+          C.<br>
+          The programmer describes the code to match and the
+          transformation to<br>
+          perform as a semantic patch, which looks like a standard
+          patch, but can<br>
+          transform multiple files at any number of code sites.</div>
+        <div> </div>
+        <div>Thank you,</div>
+        <div>Paul</div>
+        <div> </div>
+      </div>
+      <div name="messageReplySection">
+        <div>On 13 Jul 2025 at 22:58 +0200, Julia Lawall &lt;<a
+            href="mailto:julia.lawall@inria.fr" moz-do-not-send="true"
+            class="moz-txt-link-freetext">julia.lawall@inria.fr</a>&gt;,
+          wrote:<br>
+           </div>
+        <br>
+        <br>
+        <blockquote
+style="margin: 5px 5px; padding-left: 10px; border-left-width: thin; border-left-style: solid; border-left-color: #1abc9c;">
+          <div>On Sun, 13 Jul 2025, devnoname120 wrote:<br>
+            <br>
+             </div>
+          <blockquote
+style="border-left-width: thin; border-left-style: solid; border-left: thin solid #e67e22; margin: 5px; padding-left: 10px;">
+            <div>I just attempted to run this command on Ubuntu and
+              although it didn't return<br>
+              any error, no change was done:<br>
+               <br>
+              ❯ spatch --sp-file include/linux/sched.h.cocci --in-place
+              --linux-spacing<br>
+              include/linux/sched.h<br>
+              init_defs_builtins: /usr/lib/coccinelle/standard.h<br>
+              SPECIAL NAMES: adding u64 as a type<br>
+              HANDLING: include/linux/sched.h<br>
+               <br>
+              Here is the content of `include/linux/sched.h.cocci`:<br>
+               <br>
+              ```<br>
+              @depends on file in "include/linux/sched.h" exists@<br>
+              field f : script:python () { f ==
+              "randomized_struct_fields_end" };<br>
+              @@<br>
+               <br>
+              struct task_struct {<br>
+              ...<br>
+              +#ifdef CONFIG_KSU_SUSFS<br>
+              +    u64 susfs_task_state;<br>
+              +    u64 susfs_last_fake_mnt_id;<br>
+              +#endif<br>
+              f<br>
+              ...<br>
+              };<br>
+              ```<br>
+               <br>
+              The `include/linux/sched.h` file remains the same as
+              before.<br>
+               </div>
+          </blockquote>
+          <div><br>
+            It all works fine for me. What version of Coccinelle do you
+            have?<br>
+            <br>
+            julia<br>
+            <br>
+             </div>
+        </blockquote>
+        <br>
+        <br>
+        <blockquote
+style="margin: 5px 5px; padding-left: 10px; border-left-width: thin; border-left-style: solid; border-left-color: #1abc9c;">
+          <blockquote
+style="border-left-width: thin; border-left-style: solid; border-left: thin solid #e67e22; margin: 5px; padding-left: 10px;">
+            <div>Thank you,<br>
+              Paul<br>
+              On Jun 30, 2025 at 10:52 +0200, Julia Lawall
+              <a class="moz-txt-link-rfc2396E" href="mailto:julia.lawall@inria.fr">&lt;julia.lawall@inria.fr&gt;</a>, wrote:<br>
+              randomized_struct_fields_end will soon be supported in the
+              C<br>
+              parser. It<br>
+              is not currently supported in the semantic patch parser,
+              but you<br>
+              can get<br>
+              the same effect as illustrated by the example below.<br>
+              <br>
+              I will let you know when this is all available on github.<br>
+              <br>
+              julia<br>
+              <br>
+              <br>
+              @@<br>
+              field f : script:python () { f ==
+              "randomized_struct_fields_end"<br>
+              };<br>
+              @@<br>
+              <br>
+              struct task_struct {<br>
+              ...<br>
+              + int something;<br>
+              f<br>
+              ...<br>
+              };<br>
+              <br>
+              <br>
+               </div>
+          </blockquote>
+        </blockquote>
+      </div>
+    </blockquote>
+  </body>
+</html>
+
+--------------9cV0RbKYUzDqQttOydDE7br9--
