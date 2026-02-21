@@ -4,21 +4,21 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id F38A9EE369B
-	for <cocci@archiver.kernel.org>; Thu, 12 Feb 2026 15:45:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1B078C61DE5
+	for <cocci@archiver.kernel.org>; Sat, 21 Feb 2026 16:40:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=message-id:date:mime-version:to:references:from:
-   in-reply-to:content-transfer-encoding:subject:reply-to:
-   sender:list-id:list-help:list-subscribe:list-unsubscribe:
-   list-post:list-owner:list-archive;
-  bh=UxuQXWjt+XPZA1mw+PjvGM+eBbC9st0ibBqhiOgXypY=;
-  b=haIdrNMzHkhHzQFeds47dpiEE/yYR4h8MljEnqYTRkGDhnQcZF0zoxMT
-   +kSX07jzedphG7eXW8cHDNvBiXOKWirrpwzCKJ4x+szapwLuTqFD2xeY8
-   FsEP3WzhuBsI07c+IF8JyLnsOd0x8DyE7JR2bH6yuTjWfSH0wTEyQLZZe
-   4=;
-X-CSE-ConnectionGUID: N62bvngPRcOrise1ZbJ2vA==
-X-CSE-MsgGUID: NHOCXb6iSnObna42L8i9ug==
+  h=date:from:to:cc:in-reply-to:message-id:references:
+   mime-version:subject:reply-to:sender:list-id:list-help:
+   list-subscribe:list-unsubscribe:list-post:list-owner:
+   list-archive;
+  bh=0E0cRYqijrCwJh0X9loWN0ExmdDOCjZ4/52FX0z2YyY=;
+  b=Nb0P22FNp0A4jg4YuPBTMPVBriV8vMR4pwKUmN6uGUiAAs3zZ3XDLSTA
+   s4KVikwXnid3qDMppSnhNnUg/IC0pXLayKnjoWFBtf3EuTqIS0kgrlPDD
+   5b7NumvOmtcVc31r8Siq233mXk2YJYOSd/j0nmzHPz4X47DR6WM+JWGWd
+   s=;
+X-CSE-ConnectionGUID: YjFqo0iBQ0OU4cMoZ2rMsQ==
+X-CSE-MsgGUID: FSir41dETZW1dtf2yX82Tw==
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@prod-sympa-app.inria.fr
 Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
   domain of cocci-owner@inria.fr is inclined to not designate
@@ -40,36 +40,38 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@prod-sympa-app.inria.fr";
   x-conformance=spf_only
-X-IronPort-AV: E=Sophos;i="6.21,286,1763420400"; 
-   d="scan'208";a="263216292"
+X-IronPort-AV: E=Sophos;i="6.21,304,1763420400"; 
+   d="scan'208";a="264543514"
 Received: from prod-sympa-app.inria.fr ([128.93.162.27])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 12 Feb 2026 16:45:08 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 21 Feb 2026 17:40:39 +0100
 Received: by prod-sympa-app.inria.fr (Postfix, from userid 990)
-	id 48F0E82715; Thu, 12 Feb 2026 16:45:08 +0100 (CET)
+	id 73A2F817AC; Sat, 21 Feb 2026 17:40:39 +0100 (CET)
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by prod-sympa-app.inria.fr (Postfix) with ESMTP id 24D1482717
-	for <cocci@sympa.inria.fr>; Thu, 12 Feb 2026 16:45:03 +0100 (CET)
-X-CSE-ConnectionGUID: jnccIH/dSwyRF8Lh/xrGRQ==
-X-CSE-MsgGUID: qvtTaLp3T82W+EeZ4E6S/g==
-X-IronPort-AV: E=Sophos;i="6.21,286,1763420400"; 
-   d="scan'208";a="138669831"
-Received: from ptb-02008469.paris.inria.fr (HELO [128.93.66.153]) ([128.93.66.153])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2026 16:45:03 +0100
-Message-ID: <188a3101-bc35-4f07-9425-72463a44a59b@inria.fr>
-Date: Thu, 12 Feb 2026 16:45:02 +0100
+	by prod-sympa-app.inria.fr (Postfix) with ESMTP id 0A2F48029C
+	for <cocci@sympa.inria.fr>; Sat, 21 Feb 2026 17:40:34 +0100 (CET)
+X-CSE-ConnectionGUID: XshNDX13RiGDrwkmXEs6Uw==
+X-CSE-MsgGUID: H9TCGdPvS/WbwM0UP93BxQ==
+X-IronPort-AV: E=Sophos;i="6.21,304,1763420400"; 
+   d="scan'208";a="139448696"
+Received: from 231.85.89.92.rev.sfr.net (HELO hadrien) ([92.89.85.231])
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2026 17:40:34 +0100
+Date: Sat, 21 Feb 2026 17:40:33 +0100 (CET)
+From: Julia Lawall <julia.lawall@inria.fr>
+To: Benjamin Philip <benjamin.philip495@gmail.com>
+cc: Julia Lawall <Julia.Lawall@inria.fr>, 
+    Nicolas Palix <nicolas.palix@imag.fr>, Jonathan Corbet <corbet@lwn.net>, 
+    cocci@inria.fr, workflows@vger.kernel.org, linux-doc@vger.kernel.org, 
+    linux-kernel@vger.kernel.org
+In-Reply-To: <20260106190836.36630-1-benjamin.philip495@gmail.com>
+Message-ID: <905ec76f-027-c71-5154-76d8c4e7dbc8@inria.fr>
+References: <20260106190836.36630-1-benjamin.philip495@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-To: Olaf Hering <olaf@aepfle.de>, cocci@inria.fr
-References: <20260212134249.3790-1-olaf@aepfle.de>
-Content-Language: en-US
-From: Victor Gambier <victor.gambier@inria.fr>
-In-Reply-To: <20260212134249.3790-1-olaf@aepfle.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [cocci] [PATCH v1] Substitute LIBDIR for file paths
-Reply-To: Victor Gambier <victor.gambier@inria.fr>
+Content-Type: text/plain; charset=US-ASCII
+Subject: Re: [cocci] [PATCH RESEND 0/3] scripts: coccicheck: document debug
+ log handling
+Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 3305
+X-Sequence: 3306
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -82,36 +84,35 @@ List-Unsubscribe: <https://sympa.inria.fr/sympa/signoff/cocci>, <mailto:sympa_in
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-02/NQYHo5P4AvGhgxoGjOav4A>
+Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-02/HdJtC0FjWHxmLmGAmTweGg>
 
-Looks good. I just merged it, thanks for the patch!
 
-On 2/12/26 14:42, Olaf Hering wrote:
-> LIBDIR is already used earlier in this file, but such usage was
-> apparently overlooked in commit 99d699e8eaf5ba49faf5ac55584e24357580df50.
+
+On Wed, 7 Jan 2026, Benjamin Philip wrote:
+
+> Currently coccicheck prints debug logs to stdout unless a debug file has been
+> set. This makes it hard to read coccinelle's suggested changes, especially for
+> someone new to coccicheck.
 >
-> Signed-off-by: Olaf Hering <olaf@aepfle.de>
-> ---
->   docs/spatch.1.in | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
+> This patchset documents this behaviour in both the coccicheck script as well as
+> in the dev-tools documentation. Additionally, it simplifies some of the logic
+> for handling debug files.
+
+All applied, thanks.
+
+julia
+
 >
-> diff --git a/docs/spatch.1.in b/docs/spatch.1.in
-> index e54150402..37975f330 100644
-> --- a/docs/spatch.1.in
-> +++ b/docs/spatch.1.in
-> @@ -166,13 +166,13 @@ set number of diff context lines
->   report partial matches of the SP on the C file
->   .TP
->   \fB\-\-iso\-file\fR
-> -<file> (default=/usr/local/lib/coccinelle/standard.iso)
-> +<file> (default=@LIBDIR@/standard.iso)
->   .TP
->   \fB\-\-macro\-file\fR
->   <file>
->   .TP
->   \fB\-\-macro\-file\-builtins\fR
-> -<file> (default=/usr/local/lib/coccinelle/standard.h)
-> +<file> (default=@LIBDIR@/standard.h)
->   .TP
->   \fB\-\-recursive\-includes\fR
->   causes all available include files, both those included in the C file(s) and those included in header files, to be used
+> Benjamin Philip (3):
+>   scripts: coccicheck: simplify debug file handling
+>   scripts: coccicheck: warn on unset debug file
+>   Documentation: Coccinelle: document debug log handling
+>
+>  Documentation/dev-tools/coccinelle.rst | 21 ++++++++++++++++-----
+>  scripts/coccicheck                     | 21 +++++++++++++--------
+>  2 files changed, 29 insertions(+), 13 deletions(-)
+>
+> --
+> 2.52.0
+>
+>
