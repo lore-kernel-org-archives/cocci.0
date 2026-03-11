@@ -4,21 +4,21 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7A46E1049521
-	for <cocci@archiver.kernel.org>; Wed, 11 Mar 2026 09:46:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EA1CD1049516
+	for <cocci@archiver.kernel.org>; Wed, 11 Mar 2026 09:46:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:message-id:references:mime-version:
    in-reply-to:sender:subject:reply-to:list-id:list-help:
    list-subscribe:list-unsubscribe:list-post:list-owner:
    list-archive;
-  bh=7hV5LSkoaULvfWpcA92IONFe2jiU8FtnTFTGMKYHxiU=;
-  b=cQC/zyvWOxrrnFJqIIPvvmQnSU2eUCF2iT+38DunWEj8TwDd9hdI0SJu
-   4QSJwjBN/voIi8VPBpi59EhwieCwP1GssDlqPR6ozg13LqMdeRfEnHOKJ
-   hhZEnxXui6x6mIHn4Qeeyw0Op98n4QNZHg/8UVnzxUdLy2BjX3CoRWGEY
-   U=;
-X-CSE-ConnectionGUID: adO+ekixSQWfJnwylhkaQA==
-X-CSE-MsgGUID: 8Teh85UASp623KQ0OytsSQ==
+  bh=G+5qjaihAOE3Wva2YLY8jATPGvyCa7CiJLk7V/SbO+c=;
+  b=a19Wn+n0eZ3SqjV+MGfJKA/yEk8XSE1Vqlz+c9TTDyFEhAGshlL+EWA7
+   /TPr/OXTnwL/f92b0IoyGjxoh8BTk5mlDXi4twB+hCmV/NhiLlSFW+zpA
+   8ZoKKgaMrIq+rBJJd2L3WrYkkiT+US9tNyMFu50VTR9C4GGmcGakB90mh
+   s=;
+X-CSE-ConnectionGUID: uU2rf+UgShK+9DptN1vi7A==
+X-CSE-MsgGUID: M/VjP3iXQEey3KWJQarYOQ==
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@prod-sympa-app.inria.fr
 Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
   domain of cocci-owner@inria.fr is inclined to not designate
@@ -41,139 +41,138 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@prod-sympa-app.inria.fr";
   x-conformance=spf_only
 X-IronPort-AV: E=Sophos;i="6.23,113,1770591600"; 
-   d="scan'208";a="267245577"
+   d="scan'208";a="267245695"
 Received: from prod-sympa-app.inria.fr ([128.93.162.27])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 11 Mar 2026 10:46:05 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 11 Mar 2026 10:46:08 +0100
 Received: by prod-sympa-app.inria.fr (Postfix, from userid 990)
-	id BC3FE818D0; Wed, 11 Mar 2026 10:46:05 +0100 (CET)
-Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by prod-sympa-app.inria.fr (Postfix) with ESMTP id 4938280F45
-	for <cocci@sympa.inria.fr>; Wed, 11 Mar 2026 01:11:20 +0100 (CET)
-X-CSE-ConnectionGUID: DqGnE1cZSoKZubKpbmDVbA==
-X-CSE-MsgGUID: vy6jIR2qTtyy9pVV1EzAow==
-IronPort-SDR: 69b0b324_XdUyttOoE0hE0EsjUQmHpXkb99q74jIMD/BmZ+o+SlxIOZK
- NnOZuSHmkUda+yZMrv/4HDKNZzPmStfBaupwBdw==
+	id 892AC818F5; Wed, 11 Mar 2026 10:46:07 +0100 (CET)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by prod-sympa-app.inria.fr (Postfix) with ESMTP id 4FBC780F45
+	for <cocci@sympa.inria.fr>; Wed, 11 Mar 2026 01:16:19 +0100 (CET)
+X-CSE-ConnectionGUID: S58KnuRQSymKExgzAEkxvQ==
+X-CSE-MsgGUID: gKp9N8lASaCtR1WbNTl+Gg==
+IronPort-SDR: 69b0b453_GZ4tmmhY4hgEJIT6CDfOXQfSkv/injWINPyIb789Qa/xFFR
+ wE7LYNarbTalwAT7YHTr8E7tUWzPCgz9w5TxSJA==
 X-ThreatScanner-Verdict: Negative
-X-IPAS-Result: =?us-ascii?q?A0GGAwAEsrBpctoeIE5aHQEBAQEJARIBBQUBQIFQgW5Tg?=
- =?us-ascii?q?QdeNAQLSZQrWQEBAQEGgUGBE58EEQEDAQ09EQECBAEBAwSSJQIeBgY0EwECB?=
- =?us-ascii?q?AEBAQEDAgMBAQEBAQEBAQENAQEFAQEBAgEBAgQGAQIQAYEMhk8NgmIBgSSBJ?=
- =?us-ascii?q?gEBAQEBAQEBAQEBAR0CDX4BBToGAQE3AQ8BCg4KLhBGBoMWgilKBAMNrgmBN?=
- =?us-ascii?q?IEBggwBAQbeEQMGFYE4iFQBhVoahHonG32BEIEVgnI4PosHgzSJCooZUngcA?=
- =?us-ascii?q?1ksAVUTFwsHBYEjQwOBBiNLBS0dgSMhHRcUH1gbBwUSISqBSXiCAQ+GankDL?=
- =?us-ascii?q?l4aDiICOlxKPgtaBYJIAwttPTcUG48tPoI1gTmZDgGuYYE+CoQcoXIzqmsuh?=
- =?us-ascii?q?1UQkHOpQYF/I4FcUTAEgyJPHA+ISoVXPos7wQlGMjwCBwsBAQMJhUYBAYxWg?=
- =?us-ascii?q?UsBAQ?=
-IronPort-PHdr: A9a23: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
- AMmzAxkbqIw92W0i2o=
-IronPort-Data: A9a23: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
-IronPort-HdrOrdr: A9a23:Y4H2aKCTkzRDDXjlHemp55DYdb4zR+YMi2TDGXoRdfVwSL3+qy
- nOpoV+6faQsl0ssR4b9exoVJPufZqYz+8S3WBzB8bGYOCFghrKEGgK1+KLqVDd8m/Fh4xgPI
- hbAtFD4bbLbWSS4/yV3DWF
-X-Talos-CUID: =?us-ascii?q?9a23=3AdICK2mnomC1YkuQDcGKa5rUSA77XOVHE43H9ekS?=
- =?us-ascii?q?KMmFKeqCfakea/Y9ameM7zg=3D=3D?=
-X-Talos-MUID: 9a23:nVGlAwqDu5GuvyRwDQwezy9zasVJ2f63NFwcgMQehffdGD5ZPCjI2Q==
+X-IPAS-Result: =?us-ascii?q?A0HQAwDvs7BpctoeIE5aHgEBCxIMQIFFC4FuU4EHXjQEC?=
+ =?us-ascii?q?0mUK1kBAQEBBoFBgROfBBEBAwENPREBAgQBAQMEkiUCHgYGMwYOAQIEAQEBA?=
+ =?us-ascii?q?QMCAwEBAQEBAQEBAQ0BAQUBAQECAQECBAYBAhABgQyGTw2CYgGBJIEmAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBHQINfgEFOgYBATcBDwEKDgouEEYGgxaCKUoEAw2uB4E0gQGCD?=
+ =?us-ascii?q?AEBBt4RAwYUAYE4iFQBhVoahHonG32BEIEVgnI4PosHgzSJCooZUngcA1ksA?=
+ =?us-ascii?q?VUTFwsHBYEjQwOBBiNLBS0dgSMhHRcUH1gbBwUSISqBSXiCAQ+GankDLl4aD?=
+ =?us-ascii?q?iICOlxKPgtaBYJIAwttPTcUG48tPoI1ej+CAkyWQAGwHwqEHKFyM6prLodlk?=
+ =?us-ascii?q?HOjcIVRgX4kgVxRMASDIk8cD44hi3nBCEYyPAIHCwEBAwmFRgEBjFaBSwEB?=
+IronPort-PHdr: A9a23:33RT9R9CqKQ5o/9uWUW1ngc9DxPPW53KNwIYoqAql6hJOvz6uci5Y
+ AqHvb433AWVBs3y0LFttan/i+jYQ2sO4JKM4jgpUadncFsor/tTtCEbRPC/NEvgMfTxZDY7F
+ skRHHVs/nW8LFQHUJ2mPw6arXK99yMdFQviPgRpOOv1BpTSj8Oq3Oyu5pHfeQpFiTSybL9oM
+ Bm6sQrdutcVjId8Jas8xAbCr2dVdehR2W5nKlWfkgrm6Myt5pBj6SNQu/wg985ET6r3erkzQ
+ KJbAjo7LW07/dXnuxbbQwSA/3cRTGoYnAdQDwfK8B/1UJHxsjDntuVmwymVIdf2TbEvVju86
+ apgVQLlhz0GNz4992HXl9BwgadGqx+vuxBz34jZa5yOOfFgYq3SY88VRWtZXsZQSSNBBJ+8b
+ 5ASBOYFJOpUspXxq0cLoRa4GAKiBv7gyiVQi3H43aM0zfosHxzF0gwuEN0BrGnbo9fuNKoJT
+ eC50LXEwSnfY/9Kxzvw7pXDfBA7ofGLWLJ9acTdx1UyFwPelVWft4jlPzeI3eoIsmib6eVgX
+ v+rh2A+sQF+uCSgxsMyhYXMiI4e11fJ9SF4wIYzON25R1V2bsS+EJtVsyGaNo12Qt4tQm1yv
+ yY60LIGtYSmfCgJ0ZkqwQPUZPObfYaS+B3jSPqRLilihHJjYL+xhwi//0aix+D9WMS5zllEo
+ ytYn9XQqHwAyxPe58mZRvZh4Eus1yiD2Q/O5uxAPU05m7bWJ4Ilz7Iui5cev1nOEynrk0v4i
+ 6+Wc18r+umu6+n/eLrmvJqcN4t1igH4L6QvldazAeMiMggBRWSb5Oe82bv+9kP6WLVHlv87n
+ 6rDvJ3UO8gXvKC0DxNP3oo99hqyDDGr28kCk3YdNlJKYheHgpDpO17QJPD4Cu+yg0y2nzdt2
+ v/GOafhDY/XInfZirfheLJ9609ayAouwtFT/ZVUCqsOIP7pR0/xt8TUDh4/MwOq3+bqENdw2
+ 4AEVW+BHKOVKq3fvUOS6u4xPuWBZ5cZuDPnJPgk4/7ug2U5mVgYfaSx2ZsXaXa4HulpIkmef
+ XXshcsOHnsLvgcmTezqjkeCUT9JaHqoUaI8/Co2B5i8DYfGQoCtgbqB3Dq0H5FMYWBGEF+MH
+ W31d4WHQ/sMcj6dItd9kjwYUrisU5Mu1RayuwDmyrpqNfHU+y0dtZL7ztd5/ezTlRco9Tx1F
+ cuRyW+NT3tskmMOXDA5xLp/rlBlylefzah4hORVGcFL6/NGTAg6Mp3SwfZiBt7zRw/NZs2JR
+ 0i4QtulGz88VsoxzMUIY0lgHNWilArM0zCwDL8PkryLAJ008qTB33n+Pcp9zGzG1KY7g1k7Q
+ ctDLXCphq1+9wjWH4PHi0qXmKi0e6oAwCPD8n+PwneLvE5CSg5/Tb3IU2gGaEXOotr1/ljCT
+ 6egCbk/KgVP0NaMJKRSZt3ylVVGSu/sONTAbGK1nGe9HQ6GyKqUYoTlKC0h23DlCEkAkhgLt
+ VaPNQ52Uj+hqmLYSTt1DnrmfUaq/eQo+12hSUphhTuXdFZs07792R8TirTcbOka1bYJ+W1p/
+ zF1Gkut99vMDt6BoRdxOqJGbpUg4wEUhiriqwVhM8n4fOhZjVkEflEy5hu2v/0WIoBJkMxw6
+ Wgv0BI3M6WTllVIazKf25n0fLzRMGj7uh61OObNwl+L9tGQ9+8U7egg7U35tVStF0w/411uy
+ dxR0n2B9tPNFgVUTJGiGl0v+U1coLfXKjI4+5uS0HRtNaeutTqX39MvGftmwRGrdNYKMaWeF
+ Qa0HdcyDtKrLO0shkjvaQgLev1Rp+YvJ83zUfyA1eawOfp42jKriWMS+IdmzkeF7DZxUMbQ1
+ pAJxOuRmAKdUjP9ikqx9MftlsZZZln+B0KZzi7pTM5Ub6x2J8MQDHu2ZtewzZN4joLsXHhR8
+ BiiAUkH0YmnY0jaaVu1xgBW2UkNxB7v0SKl0zx5lS0opauDzWTPxerlbh8OJm9MQiFrk17tJ
+ YG+i91SUlKvakAlkx6s5ECywKY+xuw3K2jVXFdgdjLzK2BkT7v2saCNJdNMqdspvShRTOWgc
+ AWCULeu6xAe0i7lAy5f3GVkJ3fx4NOix1og0TLOSRQ75GDUcsxx2xrFsdnVRPoLmyEDWDE9k
+ z7cQF61I9iu+9yQ0ZbFqOG3EWy7BfgxOWHmy52NsCyj6ChkGxq6yrq3m9v6AUsx1iTw1oxrU
+ z/JpVDyeKHizaG+MOR6bg9vHlC69skwSeQc2sMgwYod33QXnMDf+XsBjHfbOM9e3aP4cWpLQ
+ iQEhcPWqluAugUrPjeCwIT3UW+Yy81qaoyhY28Y7Sk66thDFKae6LEscTJdhF2+oEqRZPF8m
+ m1Y0v4y8DsAhOpPvgMxzyKbC7RUHE9CPCWqmQ7ap9a55L5aYmqia93SnAJ3gMyhAbeeowpdR
+ Gexe5EsGjV159l+N1SE2WP664Xtct3dJdwJsRjcnxDFhulTYJU/85hCzS5mP3/t/nYiwOU62
+ B1ox5Cz+oadA2x3+aa4BANIcDrvaIUO+XCljKpTmNqXw5H6G5xgHjsRW567KJDgWDkWtPnhK
+ 0OPCGhj+jHAQ/yERUnFsRc1yhCHW4qmPHyWOnQDmNBrRR3HYVdanBhRRjIx2JgwCgGtwsXlN
+ kZ//DEYoFDi+X4ugqplMQfyVmDHqUKmcDAxHdKbLRxL/kJJ4EzeMJmf6PhyFmdW5LWotgmJK
+ 2qGd0JPF25PR0/OVDWBdvG+oMLN9eSVHL/0K/rIfKXNoutVXPbdxJS104Ig8SykP9+KOnhkE
+ u193VBMG216UZe8+X1HW2kckCTDaNSerRG393hsr8yxx//sXRrm+YqFD7Y63cxH3RewjO/DM
+ ueRgHw8MjNEztYWwnSOzrED3VkUgiUodj+3EL1GuzSfBKTX0rRaCRIWcUYRfINB8r480w9RO
+ MXalsK917h2ieQwAktEUlqpk9+gZMgDKWWwfF3dA0PDOLODLDzNi8b5BMH0AaVXl/lRvgast
+ CyzC0blMjOZnn/gTRWrMOdRnGecJhMYpYL8OhdhBG7/Tc73Px22NNgk6F9+ibYwh37MKSsdK
+ W0jIwUW9PvLtWUC26Usfg4JpmBoJuSFhSuDuuzRK5JM9OBuHjwxjeVRpnIz17pS6ihAAv1zg
+ irb6NB08DTE2qGCzCRqVB1Wp3NFnoWO6A9mOKPE5tpLXn3P/UcM63+RAlIEvfNsENjruqZN2
+ p7Ijq21NTQIoLe2tYMMQtPZLs6KKi9rKR3yBDvdFxcIVxazPGfTgFZU1viI83mUqIUq7J/2l
+ 9wTSfUIMT59XuNfAUNjEtsYJZ5xVT5xir+XgvkD4n+mpQXQTsFX1ngmfuqbB/noMj/fhKNBY
+ xoO3KO+Kp4ccJD4iRQKgrxSlZ7PH0vWQMALpTduKBI38h0lGJdWR3c230PjdxPr52UcU+O3z
+ EZetw==
+IronPort-Data: A9a23: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
+ Yl2x0Ac9SRdDn2kqSj/KxB7bSpaKivm+081
+IronPort-HdrOrdr: A9a23:zuT8Na1XwdHwknD+LAaC2gqjBLckLtp133Aq2lEZdPWaSK2lfu
+ SV7ZMmPH7P+VIssRQb8uxoV5PtfZqxz/FICMwqTNGftWrdyQ6VxeNZnOjfKlTbckWVm9K1l5
+ 0QEZSWJ+eAdGSS5vyb3ODXKbgd/OU=
+X-Talos-CUID: =?us-ascii?q?9a23=3AUcPNWmugCsTP+Xok8oiArc6q6IseLy3+ymrqGnS?=
+ =?us-ascii?q?pDEVEWLKHYHKT6L1dxp8=3D?=
+X-Talos-MUID: 9a23:jeHQAgv/mLFAO1CJbs2nixJ6ZeE4542VAWsRq8w5se+4MW9fNGLI
 X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-AV: E=Sophos;i="6.23,113,1770591600"; 
-   d="scan'208";a="140977467"
-X-MGA-submission: =?us-ascii?q?MDErWc1lH5kqYotQJ5Mm7QT+hmHF+bPCi1pAQK?=
- =?us-ascii?q?GIYM6sp2V1j88HcEYbmK0fWhex7FGXQe47LRYsXKvatxMEERr3FAYv0R?=
- =?us-ascii?q?2wKWYsqw7WMv1zKyNEkvk73QkUlIK1gbhZgLxYZJKNFtLAv7w0LJtBLW?=
- =?us-ascii?q?bWoN2ndDm7XDz9Pm1cfL6wcA=3D=3D?=
+   d="scan'208";a="267189466"
+X-MGA-submission: =?us-ascii?q?MDEgdoZghIg9PxXrf8ow1SmzhNtZXlcDShacam?=
+ =?us-ascii?q?n2UmqC+3cyXEIvX07Jlp3bhIRE2CSG46ZVFCibps8B3uJ6w2HZ0i6bx2?=
+ =?us-ascii?q?mbQwtvIDSIdSGytfD42lhLEGIaydT+W+T4ZOsF6D0yyIwbaSwYVF5SOh?=
+ =?us-ascii?q?0jpUzDTF1zXTR6WOdIYAqV1A=3D=3D?=
 Received: from pandora.armlinux.org.uk ([78.32.30.218])
-  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2026 01:11:16 +0100
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57602)
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2026 01:16:18 +0100
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55974)
 	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.98.2)
 	(envelope-from <linux@armlinux.org.uk>)
-	id 1w079p-000000005ZQ-1adR;
-	Wed, 11 Mar 2026 00:10:37 +0000
+	id 1w07FF-000000005dP-41aF;
+	Wed, 11 Mar 2026 00:16:14 +0000
 Received: from linux by shell.armlinux.org.uk with local (Exim 4.98.2)
 	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1w079B-000000005hV-0rNO;
-	Wed, 11 Mar 2026 00:09:57 +0000
-Date: Wed, 11 Mar 2026 00:09:57 +0000
+	id 1w07FB-000000005hj-1vhz;
+	Wed, 11 Mar 2026 00:16:09 +0000
+Date: Wed, 11 Mar 2026 00:16:09 +0000
 From: "Russell King (Oracle)" <linux@armlinux.org.uk>
 To: Philipp Hahn <phahn-oss@avm.de>
 Cc: amd-gfx@lists.freedesktop.org, apparmor@lists.ubuntu.com,
@@ -203,116 +202,11 @@ Cc: amd-gfx@lists.freedesktop.org, apparmor@lists.ubuntu.com,
 	ntfs3@lists.linux.dev, samba-technical@lists.samba.org,
 	sched-ext@lists.linux.dev, target-devel@vger.kernel.org,
 	tipc-discussion@lists.sourceforge.net, v9fs@lists.linux.dev,
-	Julia Lawall <Julia.Lawall@inria.fr>,
-	Nicolas Palix <nicolas.palix@imag.fr>, Chris Mason <clm@fb.com>,
-	David Sterba <dsterba@suse.com>, Ilya Dryomov <idryomov@gmail.com>,
-	Alex Markuze <amarkuze@redhat.com>,
-	Viacheslav Dubeyko <slava@dubeyko.com>,
-	Theodore Ts'o <tytso@mit.edu>,
-	Andreas Dilger <adilger.kernel@dilger.ca>,
-	Steve French <sfrench@samba.org>,
-	Paulo Alcantara <pc@manguebit.org>,
-	Ronnie Sahlberg <ronniesahlberg@gmail.com>,
-	Shyam Prasad N <sprasad@microsoft.com>, Tom Talpey <tom@talpey.com>,
-	Bharath SM <bharathsm@microsoft.com>,
-	Eric Van Hensbergen <ericvh@kernel.org>,
-	Latchesar Ionkov <lucho@ionkov.net>,
-	Dominique Martinet <asmadeus@codewreck.org>,
-	Christian Schoenebeck <linux_oss@crudebyte.com>,
-	Gao Xiang <xiang@kernel.org>, Chao Yu <chao@kernel.org>,
-	Yue Hu <zbestahu@gmail.com>, Jeffle Xu <jefflexu@linux.alibaba.com>,
-	Sandeep Dhavale <dhavale@google.com>,
-	Hongbo Li <lihongbo22@huawei.com>,
-	Chunhai Guo <guochunhai@vivo.com>,
-	Miklos Szeredi <miklos@szeredi.hu>,
-	Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
-	Andreas Gruenbacher <agruenba@redhat.com>,
-	Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>,
-	"Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-	Jan Kara <jack@suse.com>, Phillip Lougher <phillip@squashfs.org.uk>,
-	Alexander Viro <viro@zeniv.linux.org.uk>,
-	Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	Tejun Heo <tj@kernel.org>, David Vernet <void@manifault.com>,
-	Andrea Righi <arighi@nvidia.com>,
-	Changwoo Min <changwoo@igalia.com>, Ingo Molnar <mingo@redhat.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Juri Lelli <juri.lelli@redhat.com>,
-	Vincent Guittot <vincent.guittot@linaro.org>,
-	Dietmar Eggemann <dietmar.eggemann@arm.com>,
-	Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-	Valentin Schneider <vschneid@redhat.com>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	Petr Pavlu <petr.pavlu@suse.com>,
-	Daniel Gomez <da.gomez@kernel.org>,
-	Sami Tolvanen <samitolvanen@google.com>,
-	Aaron Tomlin <atomlin@atomlin.com>,
-	Sylwester Nawrocki <s.nawrocki@samsung.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
-	Takashi Iwai <tiwai@suse.com>, Max Filippov <jcmvbkbc@gmail.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	John Johansen <john.johansen@canonical.com>,
-	Paul Moore <paul@paul-moore.com>, James Morris <jmorris@namei.org>,
-	"Serge E. Hallyn" <serge@hallyn.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Alasdair Kergon <agk@redhat.com>, Mike Snitzer <snitzer@kernel.org>,
-	Mikulas Patocka <mpatocka@redhat.com>,
-	Benjamin Marzinski <bmarzins@redhat.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	David Ahern <dsahern@kernel.org>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Simon Horman <horms@kernel.org>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Johan Hedberg <johan.hedberg@gmail.com>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Alexei Starovoitov <ast@kernel.org>,
-	Daniel Borkmann <daniel@iogearbox.net>,
-	Jesper Dangaard Brouer <hawk@kernel.org>,
-	John Fastabend <john.fastabend@gmail.com>,
-	Stanislav Fomichev <sdf@fomichev.me>,
-	Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-	Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-	Xin Long <lucien.xin@gmail.com>,
-	Trond Myklebust <trondmy@kernel.org>,
-	Anna Schumaker <anna@kernel.org>,
-	Chuck Lever <chuck.lever@oracle.com>,
-	Jeff Layton <jlayton@kernel.org>, NeilBrown <neil@brown.name>,
-	Olga Kornievskaia <okorniev@redhat.com>,
-	Dai Ngo <Dai.Ngo@oracle.com>, Jon Maloy <jmaloy@redhat.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	John Crispin <john@phrozen.org>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Yoshinori Sato <ysato@users.sourceforge.jp>,
-	Rich Felker <dalias@libc.org>,
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-	Andrzej Hajda <andrzej.hajda@intel.com>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Robert Foss <rfoss@kernel.org>,
-	Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-	Jonas Karlman <jonas@kwiboo.se>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Zhenyu Wang <zhenyuw.linux@gmail.com>,
-	Zhi Wang <zhi.wang.linux@gmail.com>,
-	Jani Nikula <jani.nikula@linux.intel.com>,
-	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Tvrtko Ursulin <tursulin@ursulin.net>,
-	Alex Deucher <alexander.deucher@amd.com>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	Sandy Huang <hjc@rock-chips.com>,
-	Heiko =?iso-8859-1?Q?St=FCbner?= <heiko@sntech.de>,
-	Andy Yan <andy.yan@rock-chips.com>,
 	Igor Russkikh <irusskikh@marvell.com>,
 	Andrew Lunn <andrew+netdev@lunn.ch>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
 	Pavan Chebbi <pavan.chebbi@broadcom.com>,
 	Michael Chan <mchan@broadcom.com>,
 	Potnuri Bharat Teja <bharat@chelsio.com>,
@@ -324,60 +218,21 @@ Cc: amd-gfx@lists.freedesktop.org, apparmor@lists.ubuntu.com,
 	Iyappan Subramanian <iyappan@os.amperecomputing.com>,
 	Keyur Chudgar <keyur@os.amperecomputing.com>,
 	Quan Nguyen <quan@os.amperecomputing.com>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Marc Zyngier <maz@kernel.org>, Thomas Gleixner <tglx@kernel.org>,
-	Andrew Lunn <andrew@lunn.ch>,
-	Gregory Clement <gregory.clement@bootlin.com>,
-	Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-	Vinod Koul <vkoul@kernel.org>, Linus Walleij <linusw@kernel.org>,
-	Ulf Hansson <ulf.hansson@linaro.org>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	"Martin K. Petersen" <martin.petersen@oracle.com>,
-	Eduardo Valentin <edubezval@gmail.com>, Keerthy <j-keerthy@ti.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Daniel Lezcano <daniel.lezcano@kernel.org>,
-	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-	Alex Williamson <alex@shazbot.org>,
-	Mark Greer <mgreer@animalcreek.com>,
-	Miquel Raynal <miquel.raynal@bootlin.com>,
-	Richard Weinberger <richard@nod.at>,
-	Vignesh Raghavendra <vigneshr@ti.com>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Kieran Bingham <kieran.bingham@ideasonboard.com>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Lee Jones <lee@kernel.org>,
-	Pavel Machek <pavel@kernel.org>, Dave Penkler <dpenkler@gmail.com>,
-	"K. Y. Srinivasan" <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-	Long Li <longli@microsoft.com>, Justin Sanders <justin@coraid.com>,
-	Jens Axboe <axboe@kernel.dk>, Georgi Djakov <djakov@kernel.org>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Message-ID: <abCy1Xs9yQx0Sjbn@shell.armlinux.org.uk>
+	Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <abC0Se_cstwTWp9r@shell.armlinux.org.uk>
 References: <20260310-b4-is_err_or_null-v1-0-bd63b656022d@avm.de>
+ <20260310-b4-is_err_or_null-v1-38-bd63b656022d@avm.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260310-b4-is_err_or_null-v1-0-bd63b656022d@avm.de>
+In-Reply-To: <20260310-b4-is_err_or_null-v1-38-bd63b656022d@avm.de>
 Sender: cocci-request@inria.fr
 X-Validation-by: victor.gambier@inria.fr
-Subject: Re: [cocci] [PATCH 00/61] treewide: Use IS_ERR_OR_NULL over manual
- NULL check - refactor
+Subject: Re: [cocci] [PATCH 38/61] net: Prefer IS_ERR_OR_NULL over manual
+ NULL check
 Reply-To: "Russell King (Oracle)" <linux@armlinux.org.uk>
 X-Loop: cocci@inria.fr
-X-Sequence: 3389
+X-Sequence: 3390
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -389,24 +244,23 @@ List-Unsubscribe: <https://sympa.inria.fr/sympa/signoff/cocci>, <mailto:sympa_in
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-03/X50lKQhiKVJWb3yHOJRhDw>
+Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-03/wAliJCEnsF2BncfFeVwByQ>
 
-On Tue, Mar 10, 2026 at 12:48:26PM +0100, Philipp Hahn wrote:
-> While doing some static code analysis I stumbled over a common pattern,
-> where IS_ERR() is combined with a NULL check. For that there is
-> IS_ERR_OR_NULL().
+On Tue, Mar 10, 2026 at 12:49:04PM +0100, Philipp Hahn wrote:
+> diff --git a/drivers/net/mdio/mdio-xgene.c b/drivers/net/mdio/mdio-xgene.c
+> index a8f91a4b7fed0927ee14e408000cd3a2bfb9b09a..09b30b563295c6085dc1358ac361301e5cf6b2a8 100644
+> --- a/drivers/net/mdio/mdio-xgene.c
+> +++ b/drivers/net/mdio/mdio-xgene.c
+> @@ -265,7 +265,7 @@ struct phy_device *xgene_enet_phy_register(struct mii_bus *bus, int phy_addr)
+>  	struct phy_device *phy_dev;
+>  
+>  	phy_dev = get_phy_device(bus, phy_addr, false);
+> -	if (!phy_dev || IS_ERR(phy_dev))
+> +	if (IS_ERR_OR_NULL(phy_dev))
 
-One thing you need to check for each of these cases is whether the tests
-are actually correct.
-
-There are certainly cases amongst those that you have identified where
-the check for NULL is redundant.
-
-For example, get_phy_device() never returns NULL, yet in your netdev
-patch, you have at least one instance where the return value of
-get_phy_device() is checked for NULL and IS_ERR() which you then
-turn into IS_ERR_OR_NULL(). Instead, the NULL check should be dropped
-(as a separate patch.)
+As noted in reply to your cover message, the check for NULL here is
+incorrect - get_phy_device() returns either a valid pointer or an
+error pointer, but never NULL.
 
 -- 
 RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
