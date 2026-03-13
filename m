@@ -4,21 +4,21 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5954B105F7AE
-	for <cocci@archiver.kernel.org>; Fri, 13 Mar 2026 14:12:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D61CC105F7A6
+	for <cocci@archiver.kernel.org>; Fri, 13 Mar 2026 14:15:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:in-reply-to:message-id:references:
    mime-version:subject:reply-to:sender:list-id:list-help:
    list-subscribe:list-unsubscribe:list-post:list-owner:
    list-archive;
-  bh=fwiq13gqjQdzo48CKf3t93iJb5Nel368zc3diyxPnh4=;
-  b=ON2r5//MFeniyGhAkXoEaoRRMQkKTH2R0ELnu+P4HG2OV+4WeGwMsyjR
-   UgPosOKuX1q+QQIVSLm2+5iIEypYL5FSk0Ll/42pvW0PU/COttWC2e8NE
-   yPwGDtZ4LbI1Jd5KsF5Nbb5JP5juN07kS7BYNVz4rLODvzlHfpU6rz8+0
-   c=;
-X-CSE-ConnectionGUID: cX+alKWSTCKOVGdGho8kyA==
-X-CSE-MsgGUID: eQLZ2eqqTryRQv29qU6Xzg==
+  bh=LNYgQIhXUd4O//V/uj0eiW1zPDrP1xwnUtPubn3EFnk=;
+  b=sLwYNVLMUXzG/8W6v8z8bGCax8eNuIVKKBEREUIJraA7yg9iN0rml3Ti
+   eNtF1EPMKfkAWLtIcZBs4ZMYq8h/fGz5AIq8rc+ds1dGEQKL2avNsLzId
+   spxGvSUNzihI9w89eWCReYby1BHd+a/7DHnAvAPPQkygCYFTl65c1rtqY
+   I=;
+X-CSE-ConnectionGUID: SqXYZnsnRX+YUHmSvzBizw==
+X-CSE-MsgGUID: 2imbMF27TICfvbzK1U5MgQ==
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@prod-sympa-app.inria.fr
 Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
   domain of cocci-owner@inria.fr is inclined to not designate
@@ -41,34 +41,33 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@prod-sympa-app.inria.fr";
   x-conformance=spf_only
 X-IronPort-AV: E=Sophos;i="6.23,118,1770591600"; 
-   d="scan'208";a="267692927"
+   d="scan'208";a="267693646"
 Received: from prod-sympa-app.inria.fr ([128.93.162.27])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 13 Mar 2026 15:12:45 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 13 Mar 2026 15:15:32 +0100
 Received: by prod-sympa-app.inria.fr (Postfix, from userid 990)
-	id B048781DE2; Fri, 13 Mar 2026 15:12:45 +0100 (CET)
+	id 3AAB581DE1; Fri, 13 Mar 2026 15:15:32 +0100 (CET)
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by prod-sympa-app.inria.fr (Postfix) with ESMTP id 989D381DD4
-	for <cocci@sympa.inria.fr>; Fri, 13 Mar 2026 15:12:43 +0100 (CET)
-X-CSE-ConnectionGUID: 1Pfm//3bTrm1fGfwM+HBMg==
-X-CSE-MsgGUID: lpI5BnurRZGtbeifyfrz7g==
+	by prod-sympa-app.inria.fr (Postfix) with ESMTP id 26C5981DE9
+	for <cocci@sympa.inria.fr>; Fri, 13 Mar 2026 15:15:29 +0100 (CET)
+X-CSE-ConnectionGUID: AROJnyf5Sz252LPeXTKaPA==
+X-CSE-MsgGUID: znAkxU3xTi+rdH3wiyTzxw==
 X-IronPort-AV: E=Sophos;i="6.23,118,1770591600"; 
-   d="scan'208";a="267692902"
+   d="scan'208";a="267693613"
 Received: from 88-188-149-159.subs.proxad.net (HELO hadrien) ([88.188.149.159])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 15:12:35 +0100
-Date: Fri, 13 Mar 2026 15:12:34 +0100 (CET)
+  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 15:15:29 +0100
+Date: Fri, 13 Mar 2026 15:15:29 +0100 (CET)
 From: Julia Lawall <julia.lawall@inria.fr>
 To: Alice Lee <Alice.Lee@ist.ac.at>
 cc: "cocci@inria.fr" <cocci@inria.fr>
-In-Reply-To: <274abdf3dbbe4c3e8f1f33fba516c8b3@ist.ac.at>
-Message-ID: <5cd9a9c8-9f99-417f-dcfe-5c1b136ec5bf@inria.fr>
-References: <274abdf3dbbe4c3e8f1f33fba516c8b3@ist.ac.at>
+In-Reply-To: <e2cb31cc2b0947d29b50188dab2e1097@ist.ac.at>
+Message-ID: <36eb7fe0-99b7-7191-134a-3adbe9d41d68@inria.fr>
+References: <e2cb31cc2b0947d29b50188dab2e1097@ist.ac.at>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-797032318-1773411155=:3973"
-Subject: Re: [cocci] Can Coccinelle parse files where macros are used as
- binary operations?
+Content-Type: multipart/mixed; boundary="8323329-1946142668-1773411329=:3973"
+Subject: Re: [cocci] Python script interacting with non-matching files?
 Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 3427
+X-Sequence: 3428
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -81,12 +80,12 @@ List-Unsubscribe: <https://sympa.inria.fr/sympa/signoff/cocci>, <mailto:sympa_in
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-03/9tls0KQ7YvR3qeB5fhx8LQ>
+Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-03/7qBo19zUojKX95bop7QudA>
 
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-797032318-1773411155=:3973
+--8323329-1946142668-1773411329=:3973
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8BIT
 
@@ -97,41 +96,43 @@ On Thu, 12 Mar 2026, Alice Lee wrote:
 >
 > Hello,
 >
-> I am trying to use Coccinelle to search C codebases (I split up my questions
-> to make the threads more clear) and I am struggling to understand the scope
-> of the --macro-file argument.
+> I am trying to use Coccinelle to search C code bases and I have a few
+> questions.
 >
-> Can macros used with #if in the source code be defined in a file passed with
-> --macro-file, and then the right sections of source code are ignored? I was
-> unable to get a small example to work, so I assume that I can define the
-> macro but then there is no preprocessing to drop code. If I'm not
-> overlooking something, how would you recommend I parse a file
-> including these lines and then uses LS/RS as binary operators: 
-> #if __BYTE_ORDER == __LITTLE_ENDIAN
-> #define LS >>
-> #define RS <<
-> #else
-> #define LS <<
-> #define RS >>
-> #endif
->
-> I'm especially confused by this example because Coccinelle also cannot parse
-> a version in which I remove the code above and put one of the pairs of
-> defines in the macro definition file.
+>  1. Can a python script within a Coccinelle file somehow access the names of
+>     files that are processed without matching the search? (Maybe there is
+>     some "match all" idiom that would let me get the name of every file and
+>     then move on to the relevant search?)
 
-I think you want the following command line options:
+I don't completely understand the question.  You can attach a position
+variable to some matched code and then print the file name associated with
+that code:
 
-  --defined                     <symbol> treat cpp symbol as defined in #ifdef
-  --undefined                   <symbol> treat cpp symbol as undefined in #ifdef
+@r@
+position p;
+@@
 
---macro-file is for providing dummy definitions for macros used in the
-code that you are trying to parse.
+foo@p();
+
+@script:python@
+p << r.p;
+@@
+
+print p[0].file  // put proper python code here
+
+>  2. Similarly, can a python script tell that parsing failed for a particular
+>     file?
+
+No, python doesn't have an access to the information about what could be
+parsed.  There is --verbose-parsing.  But parsing rarely fails for a whole
+file.  If it can't parse one thing, it will just move on to the next thing
+and try from there.
 
 julia
 
->
 > Thank you,
-> Alice Lee
+> Alice Lee    
 >
 >
---8323329-797032318-1773411155=:3973--
+>
+--8323329-1946142668-1773411329=:3973--
