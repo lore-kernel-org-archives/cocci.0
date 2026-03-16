@@ -4,21 +4,21 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 57539F3382A
-	for <cocci@archiver.kernel.org>; Tue, 17 Mar 2026 09:40:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BE661F3382D
+	for <cocci@archiver.kernel.org>; Tue, 17 Mar 2026 09:40:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=from:to:cc:date:message-id:references:in-reply-to:
-   mime-version:subject:reply-to:sender:list-id:list-help:
-   list-subscribe:list-unsubscribe:list-post:list-owner:
-   list-archive;
-  bh=e/5AB5xGFaEoEEq56S8gKWbUenXebQ7a8jCQOkes5lQ=;
-  b=A1/bstIu9D2HiFV2KcR2604mZ3dcje0CX9PrtX4y/zag7L48Vs28nLOf
-   f+OX4bcMa98pkkh46CyFJOE8EyD9/HIRHyHVgzUiU4WT+XSNwb04p3+rw
-   ulvMjES3ypHC+HVO6UCJGOKsuv0Lyl+2YtXtap4UhH4Kh3gcDMyb9e8uM
-   o=;
-X-CSE-ConnectionGUID: JZc2q66jT+ulMxeAjXO2MQ==
-X-CSE-MsgGUID: IpLfKBUwR/K7fBzT6zAXKA==
+  h=message-id:date:mime-version:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=5ZuqlSrxX8r0RJlIlalGnSaHgtTRi6oi0YhWSDJolTI=;
+  b=eHji7OcjQgusFKgDKuwxjorJwQgPj6Q96q0wm+W7iEpaYa78leNyK9zB
+   mLr8jMjuVI4IRQAa8Dda/DZF4hwHkhGv57yNakD36mvB6208YIAV0oLd5
+   kuuinj2tTwGHeaPoVu/K6nNPbFPP7C+ZQFNhCblnZqs/6C0lk6AnLxWp5
+   s=;
+X-CSE-ConnectionGUID: mgS/flsLTYqTiT6X2JyTtA==
+X-CSE-MsgGUID: VOwl/6DZQ+O+XYEGZQ4aGg==
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@prod-sympa-app.inria.fr
 Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
   domain of cocci-owner@inria.fr is inclined to not designate
@@ -41,152 +41,229 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@prod-sympa-app.inria.fr";
   x-conformance=spf_only
 X-IronPort-AV: E=Sophos;i="6.23,124,1770591600"; 
-   d="scan'208,217";a="268119308"
+   d="scan'208";a="268119387"
 Received: from prod-sympa-app.inria.fr ([128.93.162.27])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 17 Mar 2026 10:40:40 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 17 Mar 2026 10:40:44 +0100
 Received: by prod-sympa-app.inria.fr (Postfix, from userid 990)
-	id 30B4782300; Tue, 17 Mar 2026 10:40:40 +0100 (CET)
+	id 2859A822FF; Tue, 17 Mar 2026 10:40:44 +0100 (CET)
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by prod-sympa-app.inria.fr (Postfix) with ESMTP id B32F180E28
-	for <cocci@sympa.inria.fr>; Mon, 16 Mar 2026 13:50:07 +0100 (CET)
-X-CSE-ConnectionGUID: QZtS8UnyTluD2N5rKsNGyg==
-X-CSE-MsgGUID: S+EdEKCXT3u4MJP0Nmeesg==
-IronPort-SDR: 69b7fc7f_CgYx8abyelFdU7RMoiypBIEp1NcSHk943QhKYM+885a4M0r
- /LsT4U4jDmJSoksjb/6FDIk8akVIXAEdVm0zDFA==
+	by prod-sympa-app.inria.fr (Postfix) with ESMTP id 2054080E26
+	for <cocci@sympa.inria.fr>; Mon, 16 Mar 2026 14:30:34 +0100 (CET)
+X-CSE-ConnectionGUID: TrRS/lU6Q7qTTCjfSvip+w==
+X-CSE-MsgGUID: vi1O6qADRean0d2/iTV4QA==
+IronPort-SDR: 69b805fa_2z7w9JzvNpcTrM3dqHEt3FdzN+B4Z64SJDoZQIv6j1PyVq8
+ mZHkDdzLVNyjh44mPqj88Pccd6aY+JsitIwhLwg==
 X-ThreatScanner-Verdict: Negative
-X-IPAS-Result: =?us-ascii?q?A0H1AQBc+7dpheJU31FaHgEBCxIMggULgT0BgQOBZTQEC?=
- =?us-ascii?q?0kdli8DkheKLoFpgWkCBgkBAwENUQQBAQMBA4UAAo0jAh4HAQQzBg4BAgQBA?=
- =?us-ascii?q?QEBAwIDAQEBAQEBAQEBDQEBBQEBAQIBAQIEBgECEAEBAQFASYZPDYJiATOCF?=
- =?us-ascii?q?iwUdgEBAQECAS0TAQERJgEECwIBCBEEAQEvTggCBA4FCBOCZ4IeDCMnB7ZIe?=
- =?us-ascii?q?IE0gQGCDAEBBoJo2H8tFoFnCYFNhTwzgkoaAQEFJUlsgluBITSDZXonD4FVR?=
- =?us-ascii?q?IFKgkQxPoQOARIBJoYdIoImehQdiDWKHywmciIDJjMsAQ8RNRMXCwcFgSNDA?=
- =?us-ascii?q?4EGI0sFLR2BIyEdDwgUH1gbBwUSISpOeIIBD4ZleQMuXhoOIgI5XEo+C1IFg?=
- =?us-ascii?q?iwCJwMLB2Y9NxQbBgGBNYxWXDyBboFUAYEwWQFAWJJjSo8UR4E1giGKQpRjN?=
- =?us-ascii?q?AeCOIFngWQMn3AuF6prmQajPSyFWIF+JGxwMxqDWk8DFwIPjiEZgh7LC0YyP?=
- =?us-ascii?q?QIHAgcNAwuSHC6BHQEB?=
-IronPort-PHdr: A9a23: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
-IronPort-Data: A9a23:JdJwlqCyaYi6bhVW/3Dnw5YqxClBgxIJ4kV8jS/XYbTApGwlgTYFx
- jQfUDyDa6uNMTOhLt12aYXkp0JT6pbVmIdgOVdlrnsFo1Bi+ZOUX4zBRqvTF3rPdZObFBoPA
- +E2MISowBUcFyeEzvuVGuG86yQ6jOfQG+eU5NfsYkhZXRVjRDoqlSVtkus4hp8AqdWiCmthg
- /uryyHkEAHjgWUc3l48sfrZ9ks05aqq41v0g3RnDRx1lA+G/5UqJMlHTU2BByOQapVZGOe8W
- 9HCwNmRlkvF/w0gA8+Sib3ydEsHWNb6ZWBiXVILM0QKqkEqSh0ais7XBtJEAatko2nhc+RK9
- Tl4ncfYpTHFkUH7sL91vxFwS0mSNEDdkVPNCSDXXce7lyUqf5ZwqhnH4Y5f0YAwo45K7W9yG
- fMwEQIRVUC+gfOKxK+XEM8xnOc4Cub6M9ZK0p1g5Wmx4fcORICaBaTR+ZlR13E5mqiiH96OP
- oxDM2EpPEiGOUcRUrsUIMpWcOOAr33+eDAejF+Yjass/y7ax0p4zNABNfKPJIPbG5oJxxzwS
- mTuxCfUDjw5H+yjkifZ11CU3snKkC7gV9dHfFG/3qc03ATKlgT/EiY+XlywqviRkV+7Q9sZK
- koO+yNoo7Ja3EiiUdD5WzWqoXuOpBdaWtxKEuR85hvl90bPywOJXy4FVSIHYddgvdNeqSEWO
- kGhpuH1PmxStqypTW+xrJHJtxCpHwcEIjpXDcMbdjfp9eUPt6kasnryojdf/Eyd0YCd9dLYm
- m7iQM0Ca1M71pNjO0KTpgGvvt5UjsKVJjPZHy2ONo5f0u+GWGJVT9X2tQGCvZ6s3a6FC1yGt
- nkAloCX8fsSF5CE3COISuVlIYxFE82taWWG6XY2RslJ32r2oRaLI9sPiAyS0W8yaa7ojxeyO
- xeL4Wu8JfZ7YBOXUEOAS9jtVpRwkve6TIyNuzK9RoMmX6WdvTSvpElGDXN8FUi0+KT1ufBhY
- 8WoYoy3AGwECK9q6jOzSq1PmfUo3y0yjyebD5zy0x3tg/LUaW+3WIU1FgKETtk4y6eY/yTT0
- dJUbPWRxztlDebRXyjw8KwoF24sE0QVP57NhvZsRraxGTY+QGAFIN3N8IwlYL1gzvh0lP+X3
- 3STWX146VvYhF/fIl6zd0FcTa7eba9+iVkZPiUcG0mi9FZ+QISo7YYZL4AWe5t+/sNd7PdEd
- ds3UOTePeZuExPpoy88a7v5p6xcLCWbvxqEZXeZUWJubqxeSBzs0f66WAnWrQ0lLDe97Ok6q
- J2ejjLre4IJHVlePZyHecCU7g2DuFYGk7hPRGrOGN5YfXvs/KVMKyDcivwWIdkGGS7cxwm1h
- hqnPhMFmdbj+4MF0sHFpaShnbebF+FTGkl7HW6CyZ2UMSLc3HSowK4eceKuUA3ealjJ+/SZV
- b0I983/DfwJp0YVkoxeF70w87kyyeGyrJBnzyNlPk7xUXKVNp1aLEO7gPZ/7p92+ucBuC+de
- F6+xd1BCLDYZOLnCAEwISQmXMSi1NYVuCHZts0oEXrf+R5HxbujemdRNimqlyZyAuZUMoQk4
- OF5o+8QyVW1pSQLO+a8rBJ/1jqzPF1ZdIt/rbAcIovgqjRz+2F4eZaGVxPHusCeWetDImwBA
- 2GyhpObo59+20CbUX44NUaV7NpnnZ5U5Sx7lg4TFW+oxOjAqOQ8hiBK0DINSQ9Q8BVL/sRzN
+X-IPAS-Result: =?us-ascii?q?A0HwAQAEBbhphaxujNlaglmCQYFlNAcISYRYkXQDhDuYC?=
+ =?us-ascii?q?oNUDwEDAVsBAgQBAYUHAo0jAh8GAQQzBg4BAgQBAQEBAwIDAQEBAQEBAQEBD?=
+ =?us-ascii?q?QEBBQEBAQIBAQIEBgECEAEBAQFASYZcgmIBg38BAQEBAgEjBBFBBQsLDgoCA?=
+ =?us-ascii?q?iYCAlYGARICAQGCfoJNJwe2Tnp/M4EB3j6BcBQBgQouhW+CZQGFWhobIIQ/J?=
+ =?us-ascii?q?w+BVUSBFScLgng+hAqEFIJpBIIigQ6IUoNDhlxSeBwDWSwBVRMXCwcFgSMQM?=
+ =?us-ascii?q?wMgCi8tAhQNEBIPBBYFLR1wDCcSDx0XFB9YGwcFEiEqTniBZhsPhmV5Ay5eG?=
+ =?us-ascii?q?g4iAigRA1lKPgtSBYIsAicCAQttPTcGAwsbBD2OLTyCMwEBgQ2CKVGTFZFSo?=
+ =?us-ascii?q?UU0B4QfgV4GDJ9tBhMvhASNE4ZPkwUuh2WQcyKrHSSBXDMaI4M3TwMZD44tD?=
+ =?us-ascii?q?QmTG7oTRjI+AQcCBw4CgXODXAEBjCI0gUsBAQ?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
- sRU2dphSLbaMHcQqpIrCoPB2rU3TguFFVN4Qvpg3f0oGDiAXQrvwTPVEl2AReZQFszz8GuTK
- c9nFuRQXTuQiQeMqTE6A/YXArlWxfQG2vsLSonJF0Un7YSNiyVPm43B0BT+iEsAYcRcoexkJ
- qz/Lzu9Q3Gt311KkGrznex4E2ufY+hcQjbj3eqwod47J7havM5CKUgNg6aJ5VOLOw5a/jWRj
- gPJR4nS68dAkY1MvY/dIp9vNjWOC+HYdbq3qVioktF0c9nwH9/EtFoVpnnZLg1mB+YtdOotp
- 4udkuzc/R3jh6k3YVD7ipPaNqhu5OeOZsR1HP/zDkFnmXqlZJexzToFomy2EMkc2pcVrMyqX
- BCxZ8aMZMYYEYUVjmFcby9FVQ0REeLrZ6PnvjmwtOmIFgNb6wHcMde77jX8WAm3rMPT10HWU
- WcYespC5+y0aKxJFEZCBup6RZZzZlb/MUfjmxsdqhHAZlREQHvb0lchqfbkwTDQFj+NG4Dz/
- fopgzDgIQ+qtvigIM5x6uRPU95+MJq5qegrYgQU8Jh/l1hWyYLAwfs1af07N32frsA+OFwUq
- t0AgKvOxBgRhQh5TCg=
-IronPort-HdrOrdr: A9a23:0OF3tqPwnhoSPcBcTjujsMiBIKoaSvp037By7TEVdfRUGvb0qy
- ncpoV+6faUskdoZJhEo6H9BEDuexLhHPJOirX5eI3SPjUO21HYV72Kj7GD/9SIIUSXygce79
- YCT0EUMrHN5C1B4/oSlzPWLz9P+rO62ZHtqsub9nFpTQt7L4FMhj0JdzqzIwlYaCF9QbA9FJ
- aa+45mnlObCA4qh4+Adx44tqD41rv2fbzdEGc7OyI=
-X-Talos-CUID: =?us-ascii?q?9a23=3AKW4vDWkwRzHStadCurdnaJZs0X/XOUTv0EyAHkm?=
- =?us-ascii?q?pNWJ0ZOezFEWz44VLgsU7zg=3D=3D?=
-X-Talos-MUID: 9a23:oyhKswm+L5GWRIVivboAdnpZd+pkzoeFOHxWjMkjmfHcEyl9NiyS2WE=
+ sRU2dphSLbaMHcQqpIrCoPB2rU3TguFFVN4Qvpg3f0oGFPCc2qXxAm+CVyVf+VTLcfr6m69M
+ dRlfehUZiS91QGPjzEVPrENKLlKh8wU5MIOV7foBGweuZ2dpSpNnLOJ0QPh3kkpedlKuuQsG
+ LP7Lj6tPDSZuipJpjXrssJBBFudXfAFQw/Zh8We7+QDEsM4gtFGKE0d/OO9gCSIDVFB4RmRg
+ QLkYp3WxcxEzaBHvdPlModHNjWOBeLDbsa62yHtjI0WdvLKC9nEiC0NoFq+Pwh2A6oYa+4qq
+ Zuz6uzIzGH3l5dodVvGmquxNbhDvuSze+t1DvjZDldnmQm6Zcu9xCdbpk6ZL8VFnuoIs4PjD
+ 0G9ZdCrfNEYZ8ZFyTcHI2JCGhIaEOLsYr2muSq5qO+WBwMA1RDcaumq7mLtcXoRYxpg10cS0
+ eMok6rGChFkQIVw6NssCfZ9GNlxOlqlUqwjHzE0nSfNFXGm2ztupZO7/SfMKxmSYpVHLCo+y
+ ZvfQ171cxHaVGTg0oRCq4Ir1vEIJC8VvATzF37xP/Z/kTX8B2kDRQjY3VPqFbkM+hHPOFrEi
+ P0hoYfs5egRndiJTPkk3OneYw==
+IronPort-HdrOrdr: A9a23:iec5JKgZIR+fzrSw3Gf9aq/GmnBQXwp23DAbv31ZSRFFG/FwyP
+ rCoB1L73XJYWgqM03IwerwQ5VpQRvnhP1ICPoqTM2ftWjdySGVxeRZgbcKrAeQfBEWmtQ96U
+ 4kSdkHNDSSNyk2sS+Z2njfLz9I+rDun86VbKXlvg5QpGpRGsNdBnJCe2Km+zpNNWx77PQCdK
+ a0145qtjCgcXMYYoCBAGUZX+/MntvPlJj3Sx8LDRwq5WC1/H+VwY+/NyLd8gYVUjtJz7tn2W
+ /Zkzbh7qHmn+CnxgTa32rz6Y0TvNf60NNMCOGFl8BQc1zX+0iVTbUkf4fHkCE+oemp5lpvuN
+ 7Qoy04N8A2x2LNcnqzqR7N3RCl9Do18XftxXKRnHOmi83kQzARDdZHmOtiA1TkwntlmOs5/L
+ NA3mqfuZYSJwjHhj7B69/BUAwvvlaooFI5+NRjz0B3YM87Uvt8vIYf9ERaHNMrByTh8r0qF+
+ FoEYX1+OtWS1WHdHrU11Mfg+BEH05DXCtucHJy/vB94AIm20yRCHFogvD3q01wsa7VjaM0vt
+ gsfJ4YzI2mBfVmEJ6VTN1xPfdfTFa9AC4keVjiX2gOGMw8Sg3wgo+y77Mv6O6wfpsUiJM0hZ
+ TaSVtd8XU/YkT0FKS1rdR2Gz32MRKAtA7Wu7djzok8vqe5SKvgMCWFRlxrm8y8o+8HCsmeX/
+ qoIppZD/LqMGOrQO9yrkbDcogXLWNbXNweu949VV7LqsXXKpfyvuiedPrIPrLiHTstR2u6CH
+ oeWzr4ItlG8ymQKzfFqQmUX2modl30/Jp2HqSf9+8PyJIVPokJqQQRgUTR3LD+FdSDiN1CQK
+ JTGsKVrkrgnxjGwY/h1RQYBjNNSkBI/b7nT3RG4QcXLkKcS8dwh+mi
+X-Talos-CUID: =?us-ascii?q?9a23=3Asbhd/2vdJ0RvRJjijMneSlWg6IsZaEfmi3PtfXb?=
+ =?us-ascii?q?nEFpVY7+bckGR4OB7xp8=3D?=
+X-Talos-MUID: =?us-ascii?q?9a23=3AjBnCEAyukwH7I8pJvGL3p3tPcfqaqLqvUWdTiLw?=
+ =?us-ascii?q?qgcSNM3R8YXCcsArre6Zyfw=3D=3D?=
 X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-AV: E=Sophos;i="6.23,124,1770591600"; 
-   d="scan'208,217";a="267967412"
-X-MGA-submission: =?us-ascii?q?MDE7RlqmoD9oIVyMloFdAQ5OMX12VZ8t5YG4Fh?=
- =?us-ascii?q?og+wCI5UmJf/m04JvydsFHXzN3WzbnxYEmAS4Ejv8Qik2L+ApK9RfmzZ?=
- =?us-ascii?q?87mP/z4z6oWI42hMZgiwetGuGWhnrpe07WvEVLzf2zCR0cAfyAKAXPFf?=
- =?us-ascii?q?rzgOTQ3FIH0NLI8x8uECdNGg=3D=3D?=
-Received: from mx1.ist.ac.at ([81.223.84.226])
-  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 13:50:07 +0100
-From: Alice Lee <Alice.Lee@ist.ac.at>
-To: Julia Lawall <julia.lawall@inria.fr>
-CC: "cocci@inria.fr" <cocci@inria.fr>
-Thread-Topic: [cocci] Python script interacting with non-matching files?
-Thread-Index: AQHcsjOlMgmRQDEWeUSFt0axb4WBU7WscoWAgAStWCM=
-Date: Mon, 16 Mar 2026 12:50:05 +0000
-Message-ID: <45e5450fb5734b8091dbcf586fc880f6@ist.ac.at>
-References: <e2cb31cc2b0947d29b50188dab2e1097@ist.ac.at>,<36eb7fe0-99b7-7191-134a-3adbe9d41d68@inria.fr>
-In-Reply-To: <36eb7fe0-99b7-7191-134a-3adbe9d41d68@inria.fr>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-originating-ip: [10.15.51.121]
-Content-Type: multipart/alternative;
-	boundary="_000_45e5450fb5734b8091dbcf586fc880f6istacat_"
+   d="scan'208";a="267977918"
+X-MGA-submission: =?us-ascii?q?MDGJBrpe6oqOp+lTjjcVDF8d2oKKSVv9mYiMx7?=
+ =?us-ascii?q?ou3EPT+KVRBVKcNNFeww9qkEwXfWc9AwQNudHpeXQah+ZQZd7CgdmBQK?=
+ =?us-ascii?q?krD+NufeIKN3RP8PapyRoh7RCIRTE2KSuaiwlmxtPjXSRWPGHuSfnl/6?=
+ =?us-ascii?q?C+yTTRaiz3bvrzLrRVG6NqEA=3D=3D?=
+Received: from foss.arm.com ([217.140.110.172])
+  by mail2-smtp-roc.national.inria.fr with ESMTP; 16 Mar 2026 14:30:33 +0100
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 357291477;
+	Mon, 16 Mar 2026 06:30:25 -0700 (PDT)
+Received: from [10.57.61.116] (unknown [10.57.61.116])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9D4953F778;
+	Mon, 16 Mar 2026 06:30:22 -0700 (PDT)
+Message-ID: <2c7466f5-d952-4356-9b55-9d2ebb3471f2@arm.com>
+Date: Mon, 16 Mar 2026 13:30:19 +0000
 MIME-Version: 1.0
-X-FEAS-Client-IP: 10.17.21.11
-X-FE-Policy-ID: 1:3:0:SYSTEM
+User-Agent: Mozilla Thunderbird
+To: Philipp Hahn <phahn-oss@avm.de>, amd-gfx@lists.freedesktop.org,
+ apparmor@lists.ubuntu.com, bpf@vger.kernel.org, ceph-devel@vger.kernel.org,
+ cocci@inria.fr, dm-devel@lists.linux.dev, dri-devel@lists.freedesktop.org,
+ gfs2@lists.linux.dev, intel-gfx@lists.freedesktop.org,
+ intel-wired-lan@lists.osuosl.org, iommu@lists.linux.dev,
+ kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+ linux-btrfs@vger.kernel.org, linux-cifs@vger.kernel.org,
+ linux-clk@vger.kernel.org, linux-erofs@lists.ozlabs.org,
+ linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+ linux-gpio@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
+ linux-mips@vger.kernel.org, linux-mm@kvack.org,
+ linux-modules@vger.kernel.org, linux-mtd@lists.infradead.org,
+ linux-nfs@vger.kernel.org, linux-omap@vger.kernel.org,
+ linux-phy@lists.infradead.org, linux-pm@vger.kernel.org,
+ linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
+ linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org,
+ linux-security-module@vger.kernel.org, linux-sh@vger.kernel.org,
+ linux-sound@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+ linux-trace-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+ linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+ ntfs3@lists.linux.dev, samba-technical@lists.samba.org,
+ sched-ext@lists.linux.dev, target-devel@vger.kernel.org,
+ tipc-discussion@lists.sourceforge.net, v9fs@lists.linux.dev
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
+References: <20260310-b4-is_err_or_null-v1-0-bd63b656022d@avm.de>
+ <20260310-b4-is_err_or_null-v1-50-bd63b656022d@avm.de>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260310-b4-is_err_or_null-v1-50-bd63b656022d@avm.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Validation-by: victor.gambier@inria.fr
-Subject: Re: [cocci] Python script interacting with non-matching files?
-Reply-To: Alice Lee <Alice.Lee@ist.ac.at>
+Subject: Re: [cocci] [PATCH 50/61] iommu: Prefer IS_ERR_OR_NULL over manual
+ NULL check
+Reply-To: Robin Murphy <robin.murphy@arm.com>
 X-Loop: cocci@inria.fr
-X-Sequence: 3441
+X-Sequence: 3443
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -199,218 +276,58 @@ List-Unsubscribe: <https://sympa.inria.fr/sympa/signoff/cocci>, <mailto:sympa_in
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-03/0vICw7qCxCXeNbqRuCQMRw>
+Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-03/Xe_AxUw0bB6PExUw_QVnLA>
 
---_000_45e5450fb5734b8091dbcf586fc880f6istacat_
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+On 2026-03-10 11:49 am, Philipp Hahn wrote:
+> Prefer using IS_ERR_OR_NULL() over using IS_ERR() and a manual NULL
+> check.
 
-Hi Julia,
+AFAICS it doesn't look possible for the argument to be anything other 
+than valid at both callsites, so *both* conditions here seem in fact to 
+be entirely redundant.
 
+> Change generated with coccinelle.
 
-Thanks for getting back to me!
+Please use coccinelle responsibly. Mechanical changes are great for 
+scripted API updates, but for cleanup, whilst it's ideal for *finding* 
+areas of code that are worth looking at, the code then wants actually 
+looking at, in its whole context, because meaningful cleanup often goes 
+deeper than trivial replacement.
 
-
-  1.  Maybe it's easier to state my overall goal: I want to count the numbe=
-r of matches for some rule for each file in a directory. Currently I can ge=
-t a python dictionary correctly counting the number of matches in files in =
-which there is at least one match.
-Your particular solution wouldn't work unless I know some value is in all f=
-iles. Is the best solution just to get directory information in the initial=
-ization script to populate the dictionary instead of trying to do this thro=
-ugh Coccinelle?
-  2.  My ideal solution would make a dictionary of all matches in each file=
- and report files that don't parse as having a count of -1. Files aren't pa=
-rtially failing to parse, at least according to the --debug output, but say=
- "bad" on every line. Still no way to access that in the python script?
+In particular, anywhere IS_ERR_OR_NULL() is genuinely relevant is 
+usually a sign of bad interface design, so if you're looking at this 
+then you really should be looking first and foremost to remove any 
+checks that are already unnecessary, and for the remainder, to see if 
+the thing being checked can be improved to not mix the two different 
+styles. That would be constructive and (usually) welcome cleanup. Simply 
+churning a bunch of code with this ugly macro that's arguably less 
+readable than what it replaces, not so much.
 
 Thanks,
-Alice
-________________________________
-From: Julia Lawall <julia.lawall@inria.fr>
-Sent: Friday, March 13, 2026 3:15:29 PM
-To: Alice Lee
-Cc: cocci@inria.fr
-Subject: Re: [cocci] Python script interacting with non-matching files?
+Robin.
 
-[EXTERNAL EMAIL - USE CAUTION when clicking links or attachments]
+> To: Joerg Roedel <joro@8bytes.org>
+> To: Will Deacon <will@kernel.org>
+> To: Robin Murphy <robin.murphy@arm.com>
+> Cc: iommu@lists.linux.dev
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Philipp Hahn <phahn-oss@avm.de>
+> ---
+>   drivers/iommu/omap-iommu.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+> index 8231d7d6bb6a9202025643639a6b28e6faa84659..500a42b57a997696ff37c76f028a717ab71d01f9 100644
+> --- a/drivers/iommu/omap-iommu.c
+> +++ b/drivers/iommu/omap-iommu.c
+> @@ -881,7 +881,7 @@ static int omap_iommu_attach(struct omap_iommu *obj, u32 *iopgd)
+>    **/
+>   static void omap_iommu_detach(struct omap_iommu *obj)
+>   {
+> -	if (!obj || IS_ERR(obj))
+> +	if (IS_ERR_OR_NULL(obj))
+>   		return;
+>   
+>   	spin_lock(&obj->iommu_lock);
+> 
 
-
-
-
-On Thu, 12 Mar 2026, Alice Lee wrote:
-
->
-> Hello,
->
-> I am trying to use Coccinelle to search C code bases and I have a few
-> questions.
->
->  1. Can a python script within a Coccinelle file somehow access the names=
- of
->     files that are processed without matching the search? (Maybe there is
->     some "match all" idiom that would let me get the name of every file a=
-nd
->     then move on to the relevant search?)
-
-I don't completely understand the question.  You can attach a position
-variable to some matched code and then print the file name associated with
-that code:
-
-@r@
-position p;
-@@
-
-foo@p();
-
-@script:python@
-p << r.p;
-@@
-
-print p[0].file  // put proper python code here
-
->  2. Similarly, can a python script tell that parsing failed for a particu=
-lar
->     file?
-
-No, python doesn't have an access to the information about what could be
-parsed.  There is --verbose-parsing.  But parsing rarely fails for a whole
-file.  If it can't parse one thing, it will just move on to the next thing
-and try from there.
-
-julia
-
-> Thank you,
-> Alice Lee
->
->
->
-
---_000_45e5450fb5734b8091dbcf586fc880f6istacat_
-Content-Type: text/html; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-
-<html>
-<head>
-<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Diso-8859-=
-1">
-<meta name=3D"Generator" content=3D"Microsoft Exchange Server">
-<!-- converted from text --><style><!-- .EmailQuote { margin-left: 1pt; pad=
-ding-left: 4pt; border-left: #800000 2px solid; } --></style>
-</head>
-<body>
-<meta content=3D"text/html; charset=3DUTF-8">
-<style type=3D"text/css" style=3D"">
-<!--
-p
-	{margin-top:0;
-	margin-bottom:0}
--->
-</style>
-<div dir=3D"ltr">
-<div id=3D"x_divtagdefaultwrapper" dir=3D"ltr" style=3D"font-size:12pt; col=
-or:#000000; font-family:Calibri,Helvetica,sans-serif">
-<p>Hi Julia,&nbsp;</p>
-<p><br>
-</p>
-<p>Thanks for getting back to me!</p>
-<p><br>
-</p>
-<ol style=3D"margin-bottom:0px; margin-top:0px">
-<li>Maybe it's easier to state my overall goal: I want to count the number =
-of matches for some rule for each file in a directory. Currently I can get =
-a python dictionary correctly counting the number of matches in files in wh=
-ich there is at least one match.&nbsp;<br>
-Your particular solution wouldn't work unless I know some value is in all f=
-iles. Is the best solution just to get directory information in the initial=
-ization script to populate the dictionary instead of trying to do this thro=
-ugh Coccinelle?</li><li>My ideal solution would make a dictionary of all ma=
-tches in each file and report files that don't parse as having a count of -=
-1. Files aren't partially failing to parse, at least according to the --deb=
-ug output, but say &quot;bad&quot; on every line. Still no way
- to access that in the python script?</li></ol>
-<div><br>
-</div>
-<div>Thanks,</div>
-<div>Alice</div>
-</div>
-<hr tabindex=3D"-1" style=3D"display:inline-block; width:98%">
-<div id=3D"x_divRplyFwdMsg" dir=3D"ltr"><font face=3D"Calibri, sans-serif" =
-color=3D"#000000" style=3D"font-size:11pt"><b>From:</b> Julia Lawall &lt;ju=
-lia.lawall@inria.fr&gt;<br>
-<b>Sent:</b> Friday, March 13, 2026 3:15:29 PM<br>
-<b>To:</b> Alice Lee<br>
-<b>Cc:</b> cocci@inria.fr<br>
-<b>Subject:</b> Re: [cocci] Python script interacting with non-matching fil=
-es?</font>
-<div>&nbsp;</div>
-</div>
-</div>
-<font size=3D"2"><span style=3D"font-size:10pt;">
-<div class=3D"PlainText">[EXTERNAL EMAIL - USE CAUTION when clicking links =
-or attachments]
-<br>
-<br>
-<br>
-<br>
-<br>
-On Thu, 12 Mar 2026, Alice Lee wrote:<br>
-<br>
-&gt;<br>
-&gt; Hello,<br>
-&gt;<br>
-&gt; I am trying to use Coccinelle to search C code bases and I have a few<=
-br>
-&gt; questions.<br>
-&gt;<br>
-&gt;&nbsp; 1. Can a python script within a Coccinelle file somehow access t=
-he names of<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp; files that are processed without matching the =
-search? (Maybe there is<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp; some &quot;match all&quot; idiom that would le=
-t me get the name of every file and<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp; then move on to the relevant search?)<br>
-<br>
-I don't completely understand the question.&nbsp; You can attach a position=
-<br>
-variable to some matched code and then print the file name associated with<=
-br>
-that code:<br>
-<br>
-@r@<br>
-position p;<br>
-@@<br>
-<br>
-foo@p();<br>
-<br>
-@script:python@<br>
-p &lt;&lt; r.p;<br>
-@@<br>
-<br>
-print p[0].file&nbsp; // put proper python code here<br>
-<br>
-&gt;&nbsp; 2. Similarly, can a python script tell that parsing failed for a=
- particular<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp; file?<br>
-<br>
-No, python doesn't have an access to the information about what could be<br=
->
-parsed.&nbsp; There is --verbose-parsing.&nbsp; But parsing rarely fails fo=
-r a whole<br>
-file.&nbsp; If it can't parse one thing, it will just move on to the next t=
-hing<br>
-and try from there.<br>
-<br>
-julia<br>
-<br>
-&gt; Thank you,<br>
-&gt; Alice Lee&nbsp; &nbsp;&nbsp;<br>
-&gt;<br>
-&gt;<br>
-&gt;<br>
-</div>
-</span></font>
-</body>
-</html>
-
---_000_45e5450fb5734b8091dbcf586fc880f6istacat_--
