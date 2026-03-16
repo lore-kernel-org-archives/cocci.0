@@ -4,21 +4,21 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BE661F3382D
-	for <cocci@archiver.kernel.org>; Tue, 17 Mar 2026 09:40:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id DE481F3382E
+	for <cocci@archiver.kernel.org>; Tue, 17 Mar 2026 09:40:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=message-id:date:mime-version:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:subject:reply-to:
-   sender:list-id:list-help:list-subscribe:list-unsubscribe:
-   list-post:list-owner:list-archive;
-  bh=5ZuqlSrxX8r0RJlIlalGnSaHgtTRi6oi0YhWSDJolTI=;
-  b=eHji7OcjQgusFKgDKuwxjorJwQgPj6Q96q0wm+W7iEpaYa78leNyK9zB
-   mLr8jMjuVI4IRQAa8Dda/DZF4hwHkhGv57yNakD36mvB6208YIAV0oLd5
-   kuuinj2tTwGHeaPoVu/K6nNPbFPP7C+ZQFNhCblnZqs/6C0lk6AnLxWp5
-   s=;
-X-CSE-ConnectionGUID: mgS/flsLTYqTiT6X2JyTtA==
-X-CSE-MsgGUID: VOwl/6DZQ+O+XYEGZQ4aGg==
+  h=from:to:cc:date:message-id:references:in-reply-to:
+   mime-version:subject:reply-to:sender:list-id:list-help:
+   list-subscribe:list-unsubscribe:list-post:list-owner:
+   list-archive;
+  bh=Qv1VMF53sdKP6bJibYOvKzCWdPjDE6ssBK/hqv9X/0w=;
+  b=oMCYk1dFQ+BkyX0JeM9UjkddlG2zyHMueLwqFXUmc8uljipTxvgxa6Cp
+   E5sx4T3GKA0BK/mp813EcS5VniVrKqTJ4a28TXmMuxSiNt/LW1ML4dFv1
+   e6dUOMeEfOGzq9FYUdyCewT+XNXSe6VTX1x6XXJT6P/a9nfAFfD8nvZXk
+   I=;
+X-CSE-ConnectionGUID: cs9NDLh+QziO4jpDbA6waw==
+X-CSE-MsgGUID: I/VNK+s2QXqiFaHZtkVuRA==
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@prod-sympa-app.inria.fr
 Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
   domain of cocci-owner@inria.fr is inclined to not designate
@@ -41,229 +41,154 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@prod-sympa-app.inria.fr";
   x-conformance=spf_only
 X-IronPort-AV: E=Sophos;i="6.23,124,1770591600"; 
-   d="scan'208";a="268119387"
+   d="scan'208,217";a="268119344"
 Received: from prod-sympa-app.inria.fr ([128.93.162.27])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 17 Mar 2026 10:40:44 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 17 Mar 2026 10:40:42 +0100
 Received: by prod-sympa-app.inria.fr (Postfix, from userid 990)
-	id 2859A822FF; Tue, 17 Mar 2026 10:40:44 +0100 (CET)
+	id 607B1822FD; Tue, 17 Mar 2026 10:40:42 +0100 (CET)
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by prod-sympa-app.inria.fr (Postfix) with ESMTP id 2054080E26
-	for <cocci@sympa.inria.fr>; Mon, 16 Mar 2026 14:30:34 +0100 (CET)
-X-CSE-ConnectionGUID: TrRS/lU6Q7qTTCjfSvip+w==
-X-CSE-MsgGUID: vi1O6qADRean0d2/iTV4QA==
-IronPort-SDR: 69b805fa_2z7w9JzvNpcTrM3dqHEt3FdzN+B4Z64SJDoZQIv6j1PyVq8
- mZHkDdzLVNyjh44mPqj88Pccd6aY+JsitIwhLwg==
+	by prod-sympa-app.inria.fr (Postfix) with ESMTP id C7C3880E28
+	for <cocci@sympa.inria.fr>; Mon, 16 Mar 2026 13:56:16 +0100 (CET)
+X-CSE-ConnectionGUID: +e0L9QM6SxSWw1rMaEKs3A==
+X-CSE-MsgGUID: vwH9gGAuRUukro7l+zZLxw==
+IronPort-SDR: 69b7fdf0_sC+ijTf4DEyzd3Ab3rlCO2YakyskbuQCx1bGpQ9AeBHMKIe
+ VtzWAY1pIfV8iuW0fy2xw3oyryf2Y7/8HiJnA1Q==
 X-ThreatScanner-Verdict: Negative
-X-IPAS-Result: =?us-ascii?q?A0HwAQAEBbhphaxujNlaglmCQYFlNAcISYRYkXQDhDuYC?=
- =?us-ascii?q?oNUDwEDAVsBAgQBAYUHAo0jAh8GAQQzBg4BAgQBAQEBAwIDAQEBAQEBAQEBD?=
- =?us-ascii?q?QEBBQEBAQIBAQIEBgECEAEBAQFASYZcgmIBg38BAQEBAgEjBBFBBQsLDgoCA?=
- =?us-ascii?q?iYCAlYGARICAQGCfoJNJwe2Tnp/M4EB3j6BcBQBgQouhW+CZQGFWhobIIQ/J?=
- =?us-ascii?q?w+BVUSBFScLgng+hAqEFIJpBIIigQ6IUoNDhlxSeBwDWSwBVRMXCwcFgSMQM?=
- =?us-ascii?q?wMgCi8tAhQNEBIPBBYFLR1wDCcSDx0XFB9YGwcFEiEqTniBZhsPhmV5Ay5eG?=
- =?us-ascii?q?g4iAigRA1lKPgtSBYIsAicCAQttPTcGAwsbBD2OLTyCMwEBgQ2CKVGTFZFSo?=
- =?us-ascii?q?UU0B4QfgV4GDJ9tBhMvhASNE4ZPkwUuh2WQcyKrHSSBXDMaI4M3TwMZD44tD?=
- =?us-ascii?q?QmTG7oTRjI+AQcCBw4CgXODXAEBjCI0gUsBAQ?=
-IronPort-PHdr: A9a23:wTjX4BatvfUh+ofezqkqVcf/LTGDwYqcDmcuAnoPtbtCf+yZ8oj4O
- wSHvLMx1wOPBd2QsaMU17qempujcFJDyK7JiGoFfp1IWk1NouQttCtkLei7TGbWF7rUVRE8B
+X-IPAS-Result: =?us-ascii?q?A0E+AQB6/LdpheJU31FaHAEBAQEBAQcBARIBAQQEAQGCE?=
+ =?us-ascii?q?IE9AYEDgWU0BAtJHZYvA4ETkQSKLoFpgWkCBgkBAwENUQQBAQMBA4UAAo0jA?=
+ =?us-ascii?q?h4HAQQ0EwECBAEBAQEDAgMBAQEBAQEBAQENAQEFAQEBAgEBAgQGAQIQAQEBA?=
+ =?us-ascii?q?UBJhk8NgmIBM4IWLBR2AQEBAQIBLRMBAREmAQ8CAQgRBAEBL04IAgQOBQiCe?=
+ =?us-ascii?q?oIeDCMnB7ZAeIE0gQGCDAEBBoJo2H8tFoFnCYFNhTwzgkoaAQEFJUlsgluBI?=
+ =?us-ascii?q?TSDZXonD4FVRIEVNYI9BzE+hA4BEgEmhh0igiZ6FB2IIxKKHywmciIDJjMsA?=
+ =?us-ascii?q?Q8RNRMXCwcFgSNDA4EGIw88BS0dgSMhHRcUH1gbBwUSISpOeIIBD4ZleQMuX?=
+ =?us-ascii?q?hoOIgI5XEo+C1IFgiwCJwMLB2Y9NxQbBgGBNYxWXDyCNXoTAYFDRwsTepMtj?=
+ =?us-ascii?q?xSBfKFGNAeCOIFngWQMn3AuF6prmQajXA2FWIF/I2xwMxqDWk8DFwIPjiEZJ?=
+ =?us-ascii?q?YF5ywtGMj0CBwIHDQMLkhwuPWABAQ?=
+IronPort-PHdr: A9a23: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
- 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
+ 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
- pUAD+wdPeZDsoLxo0ICoQaiCQWwAe/izCJDiH3r0q0gy+kvEg/I0wMuENwTrnrZstv1OqcQX
- u+pw6fF1inDYvFM1Dvh9ITEbBIsrPeRVrxwa8rRzkwvGhvZgFWXsoPlPjWV3fkKvWiG9epgT
- eKvim46oAx2uDivwdwjiojPho4Pz1DE6D95wJ41Jdy4U0N0e8SkEJ5Kuy6GMIt2R9ovTmd1s
- yk11rMIo4S0fDQWyJs53R7fbeSKfpSH7x/jWuucLyt1iG97db+8mhu/81Wtx/PhW8S7zltHo
- CVLn93Mu30D2RHe6tSKR/ty80q8xzqC0w7e5O9ELE0yiKHVKIYhz6YumpYOs0nPBDL6lUrqg
- KOMa0ko5/Sk5/76brjkuJORMZJ/hBvkPaQ0gMO/BPw1MggQUGif/uSxzLPj/UriQLVRlPE5i
- LPZsJXAKcsHoa65BhdZ0ocl6xmhEzeryMoUkWQFIV5fZR6KgJTlN0vTLPzlEfuzmUmgnTV1y
- /zeO73uGJTNLnzNkLf7erZ97lZRyBA0zd9E5pJUDKsNIPfuWk/rrNzYDh84PheuzOb9DdVxz
- J8RWWWKAqOBKqPdrUeI5v4zI+mLfIIapDH9JOQ56P7vlnI5gl8cfayx3ZQNcny4H/JmI1+YY
- XX2mNsBH30KshI4TOPxkFKCSyJcZ26uX6Ig4TE2EJ+qAZ/MRo+zh7yP3z21E4VYaW5bElyMC
- 2nnd5uHVfkWcC+SLMhhkicfVbS7UYAhzxSuuBXmxLpgK+rY4jAXtZHi1Nhw/+DdjR48+jJqA
- cqBz2yDSXl4kX4NRzAsxqBwvVRwxE+a36ZgjPJUDcdT5+tHUgoiL5DR0/F0Bc3qVgLaZteJR
- k6pQtW4DjE1SdI828UAblpgFdu/3Vj/2H+SA74RlqSTTLw98qSUi2DxLsZ7jnHdz4EokVxgT
- sYZcSWvg6I6+AbDL4rIiFmC0aiweKkQ0TXO6GCbi22UswUQWRZoWL/AWmo3YkrNsc+/+0nfS
- aOzT78gN08Jw9aMArVFZ8evjlhcQvrnftPEbCb5kGqoBVOEy62BaKL0dGgHmibQEk4Jl0YU5
- 3nCfQM5DSygi2PYFj1nU1z1Jwvg9KxypW22SmcwzhqWdAtl1ryo6lgZiOLYA/8J3/cItTksr
- x1wHU2hxJTYEdeNqwd6f7lbeZU6+lgDnW3XrFZVOp27M7skgl8YbhQxs07wk112DJlNlY0lo
- mMCyAtpNbne3klMej+VxpPsPaWRLXP9uFiubbLb3hTB0cyb9uIL4fIQr1T4oBrvEVE/9G5jl
- d5P3D/U55LPCRc6VZPqTl1x8xl8uqGcbiQjo8vXy3hEL6a5qHnB1sgvCe9jzQyvO59bMaWZB
- Er7CchfBMW0LuEus1yodQ4feuFU+rQ9M86ve72BwqHvdOJhmi+2yG5D54t++lyD+jA6SePS2
- ZsBhfaC0U/PUzb6kUfkuMTqlJxDYi0SNnSwxDKiB4NLYKB2O4ERBiPmJ8yx28U7jYL3VWVw6
- lGuHRUF1dWvdB7UaEbymUVU1EIKsTmsmCWj5yJ7nitvraeF2iHKheP4e15PPm9NWXknhlPvC
- Za7gspcX0WyaQUt0hy/6gKyw6ldubQ6InPUT1xgeyntM3okVbm0v7CZJclV59dgtSRRTfT5b
- ECGFpbjrBYAlSDuBW1TwHY8bT7u8pH4mQFqzWyGIHttoX7xZ85931Hc6cbaSPoX2SAJAGF8i
- D/KFh2zJ9iu1cubmo2Fse2kUW+lEJpJfm2jyYKGqTv+5XxyDAeht+68l8ehEgUg1yL/kd5wW
- mGAqBf6f5mu1qKiLP5PYEZlHhn/5tB8F4U4lZE/wNkU2H4HltCW8GABnGPbL9pWw+T9YWALS
- DpNxMTapEDh2Ut+PjeNyo7ifmuSz9EnZNSgZG4SnCUn4IQCDKaS8awBmCZ5o1OQsw3ce75+k
- y0bxP9o72QVx6kNuQww3mCYA6gJNVdXMDaqlBmS6d266qJNayLndbm2yVo7mNWJD6+LqQIaX
- 2z2Pt8mHClt/oB6N17R1HDowp/rdcOWbt8JsBCQ1RDagKwdLJM3i+pPgDZrEWb8pmE+je89g
- wZn0ZyzsM6AMWoptKa4BANIczv7fOsN9Tz3y6VThMCb28aoBJolUjEKWob4CPWtGSo6q/vqL
- UCNHSc6p3PdHqDQWUeb6UF7vzfXE4GDM3CMOGJfzNNsXhCRKUVTxgcOU3Fymp8/CxDv3MnJb
- kh0/HYS60T+px8Kzfhnc1H7U2HCtEKybTw3Q5ieNDJS7xpe/AHUN8KE5+5+Fi0e+Yeu6ESJK
- 2qGd0FTVjBRclKLCkqlPbS049TEte+CCa72K/rIfKXLsudFVt+Wyp+1lIhr5TCBMoOIJHYmR
- /k63FdTGGtyB9zxhToCUWoUmjjLYsrdow2zvmVzr8ai4LHwVQny/4qTGv5XNtly/x2en6iOL
- aiTiTx/JDIe0YkDgTfMyb4CzBsJiwlweDS3V7cNryjASOTXgKATRxoabT5jcdBP8qQw9hdCN
- NSdid7v0LN8yPkvBBMNUV3nh9HsftAPeDuVL0+CAUrOMb2HITjCxYfsfaSmTKddlOFF8Ra3v
- HLTF07lIyTGiyPgXB3qMuxWiiyfFAJRtZv7cRt3D2XnCtX8ZVnzNN5xkC1z3KY+rm3FOHRaM
- jVmdU5J6LqK4mcQhvR5BnwE8Xt/IO2JgD2x8ebVMNAVvOFtDyAykPhVpDw8xqdZ4T9sWvN4g
- m3Ro8RorlXglfOAjnJhTBRV8R5PhZmXpgNmOKPE5t9MVGiAtAkE6G+ZTggHrNtjC9bmv4hUy
- 8PTj+ToITJI+pTT58RYT9PfKM+LdXcxLTLtGSXIF00BTDi2JSfTilIZ2O2b7HKYst02p4bhn
- LIQRbJBEl84DPUXDgJiBtNGaIt2Rjhhnb+Ah9MT/nu5qjHVRd5GpdbcUe+ICvjhLyyWgP9Ca
- gdMia2pI587Mozgx1ckblh8gZSMF0fODv5XpSg0VAg+oUMF1WVkVm0ikxb/bQms5jkWCOSsn
- g8egxF7J+8q8WG/sB8MOlPWqX5owwEKktL/jGXUKWapRE/RdYRfCi6u8lM0Lou+WQF+Kwu7g
- U1jMj7AAbNXlbppM25x20fHoZUaP/laQOVfZQMIg+mNbqAy1l5drGOi2FVf5frtAIFn0gAtd
- M3ktGpOjjpqd8V9PqnMPOxMx1lUiLiJu3qy0eowxkkbOlwV8HK6cTQN/kcPM+puPDKmq9Rl8
- hfKgD5fYC4MWv4t9+pt7V84Mv+cwjjI3blYMQa4LenZJKSc04TZveiPRF54lkYBlk0fuKNzz
- d9maU2fEUYm0LqWER0Nc8vEMwBcKcRIpjDVem6VvOPBzIgQXc31H/30TeKIqKcfg161VAcvE
- YMW680dH56qmEjGJMbjJbQBxF0j/gPubFmCCf1IflqMnlJl64mly5V2289YOysFAXRVOD+yo
- L3Qo05igfaOWss3fmZPRpENZRdUEIWxny9UuWgFDSHiiLtGjlHet3ml/3yWVWamPL8BLL+Oa
- BhhCc+742A6+qmy0xvM94nGYnv9PpJks8PO7uUTo9CGDelVRP9zqRS5+cEQSnq0XmrICdPwK
- YL3btxmd9v+C3D8V0GlkzIkZ87rOZCmKa3C0mSKDc5E9ZKW2jwuL5r3DDYUGhE2ovwZ/KJtT
- QQZZtwwZhui5GFcf+SvZQyf1NupWWOkLzBbGuJeweuNbLtS1yMwb+W+xRPMV7kCxvKsuQ4IT
- ZAO1FTFwOq7IpNZWm71E2BcfAPGoWw4kXJgP6A82LV3zBTNuFgaezeFEY4hIHZDtdA6Q1aPO
- 212G0IxXVraho3GqgKhxLEd+SJBks0ci7Qa9iGi5tmGOWrqAfPx4ZzO+zItd90nv7F8PemBa
- oOduZXSkyaeBJjcvwuZUTKrQv9Tm9xeOiVdE7FDnWAoP9BDuJIUsxNuEJ5if/oWUfFq/+/wO
- l8GRWYIwCQUVp2NxmkHi+a4gf7BkwuINY4lO1oCuYlDhd0UV2h3ZDkfremtTdaz9SfMR24VL
- QMU9QkJ6hgHk9o6ZOfv4YyOSYJW0z5Hi/tuV23AEZwipD6ZAimGxEP1TvmsibnjxwVYzfSq1
- 8QBQB5uIUFHwqBdkU5ie9QVY+EA+4XNtDGPb0bzumngnfCnKFdmwsrRb1TkDYDBuDm0QmgG9
- HYTX4MK1GDHGMFYjV9icKhy7gYpQsjuagPk6jcj3YgsA7SoSZXh2QM+tXhfDyayT4gbUr4g6
- Q6PHmw7Jcjs8s2AWd0aQ3cMqsTM8BEAyxwranHnj8IbcZ0F4yZQDmkT52zN4Z3oFJUFg5I+D
- odQcI0n5zGsQ+UUYN7I+iNx4eWKqDeR+ihg4g3imHPiQOnpEqQEoCUfAll7fjrB7Bl+SbBzt
- D6OqxjMqgwmprgAQOLT1QMg8XAsRPUsTn5IzSz3cww1EiYA6bkKbv6OL4RdW6VgO0TpYEd4T
- K55mRXQoQl1hSurPXc07VYcoH2bBlNvMEtdyrb1xW9F9of9ZW5cEsIXK2x/Jybdd1DFwmYM5
- lAGOxgsAshIStddp+NCjNoSp5eEEx/3b31UG0YzU2BwmftHyRwa4R/eI3CbVFfyM6+U7VotL
- I+QtJL7daWjul0XzNq66KZirftEHSzumBXxE42C6daj65vQ5g3UL/adUaX0YGedHmGd11bq1
- fF9U8SMr3ObMRIHecArmTx+OcenUDKUe04ce+VBeAJaTfwoM40a5LoBNok8PvxTpeg3WXflD
- lvuAND99qEAcA2VH22GaXzQqKvl8crS9eCPE7CmN5DKniafBfwrec0qjFuzU7byjd0DoAyvi
- qorrxskDwKaa2fb/JykLwcPrqFOb2Pat4YyVXPTCZZ0yj/2w11YMtAQSGus+YgZz5VQ7DDxT
- /h52w79qr8a+75h4Igxq7dnrKX8bb/VMuhfuFR7DwK8CAJx7dMkGm05TGdUKuMcM/bee60Fg
- Num8bmoUfVLsFvMorQfMISdb0ja/6v3QimRUxlFgBsMpXYBIw2Q2uTE0654RMC5pPToj0Ig5
- 1/tZhUCzb1r+cKF4v/S/bCRNkeJi+FdAu6zGZmgy9Zk81mf7vAlirMUL2l8Ygn9VfMYStZY3
- GDri6Yj0SMrFcrHWbPm4v9KEXwjzVeC09hwGUsbHvQMEP+F54Nbyy0inObYMJsTb7pamnenH
- AShVLQFzDT4jknfaHkgmRzI3xzqFCmr60TqqCZjXSbW59nkiVETX6OyQ0xVWmD6XC0w+CPKN
- w3uut3tvK0z50xjKW3ouuWGk265Ma9WFcnyd5SMZDM5r1UNgNgtV8SijMoFTMGlLo5boxQcJ
- rPOrnmmmChbr+JbiprCt4uLr+7PEyDojrXG+e/Um3YBliB+7A95spf6bpSsr5WLW6j6jjdKC
- X4k4k2YAEDz8vuB8xgVIRDZgRuNwdxXeIsFhT9iiwnn/LRxGopvslQFUNaYIapb+3eoYV6Wi
- R6ee45lDHHClWoMWAOoVwQnUKkkhDCp4p2PxSaWoAJuH9UpP03/2U4uUN5+cx51rglGhHtZd
- GpFIRGDUOP0XQK7cs1eCRhFM0/blLmiJvVphgsomfX2tLCVNLUgT6sVaqQD1UjVwR4AR9RP6
- /Z7Ivo0ekcBpvWL4FK+Ws6+D6egzCR4NOXpEJ4Bt5tD8SJyu0DmH0vo6I8fve9K2dbRK+geO
- MOK4JE7tRYCh3ZHdzQR0kEu1VXjAaZF+bqlu4OE98D5oue2CPR0Fr9RrUhyXjkmycGq3hd58
- JnWz7sOF9GT0NuitlodZSTR6eO4m1F9MbZcctPxOuwwsSxbem5OfDoPJYbEMqhspXU1b3OKu
- wMEWJlQIolHdMvVxVIO0hGvAuoCsJKdQAXETN0sEqJgp2vvlGJvqd1iCaC6sWfwfMGFqAsdd
- /Jb0Hc2zJST+K5MkaKUVnRQuyn8CVA9wzvemcTXTa+goKPVkI+SDQ9eWXRmG8JUID7IkeRGb
- uSyj46vWxmRrMT0hcBnHKp1bnWrmeIOtaMeSYaoZQ3yxD0YHYfw1av9jg==
-IronPort-Data: A9a23:Fiu4n6oVk5ac9p38NxRKyBsUM8NeBmJKYRIvgKrLsJaIsI4StFCzt
- garIBnTa66IYWr2fYhwb4i/9B4O7J+Dm4BqQAQ5/ysxFCgb+OPIVI+TRqvSF3PLf5ebFCqLz
- O1HN4KedJhsJpP4jk3wWlQ0hSAkjclkfpKlVaiZfHk3HVI5IMsYoUoLs/YjhYJ1isSODQqIu
- Nfjy+XSI1bNNwRcawr40Ird7kk01BjOkGlA5AJmPqkV5AS2e0Q9VfrzG4nhdxMUfaEPRoZWd
- 86bpJml82XQ+QsaC9/Nut7Tbk0QT7fOChOFg3xQVrLKqkAqSvsaj87XnNJFAatmo23hc+JZk
- L2hhrTsIesdBZAgrcxGO/Vu/46SCoUdkFPPCSDXXcV+VCQqeVO0qxllJBle0YH1Zo+bqIyBn
- BAVAGllU/yNuw656I6hcNIrgvl9FZbyAL80uH9b0zDBTulzFPgvQ42SjTNZ9Dk3ndsIFOzbI
- cEebFKDbjyaOkIJYwtPTstnxKHx2SOXnz5w8Dp5oYIt5GLSykp0zaL1MMv9c8aPA85Smy50o
- 0qcoTuoXU5LbYz3JTyt7HP1obHWtA/BVYsUTLHisf9WvgGq7zlGYPERfQHq/KXp0xPWt8hkA
- 0cT8SEvhbMj8VSiCNj7RRyx5nCe1iPwQPJeFPYhrgiXz+zf5APx6nU4oiBpVMYcj4gyeGITi
- Ua1o/jrCwdxsaXWVifInluLlg9eLxT5OoPrWMPpZQUC+MKlqZs2yBnIS76P8ZJZbPWlQ1kcI
- BjQ9EDSYon/a+ZXjc1XGnib01qRSmDhFFJd2+kudjvNAvlFiHGZi3yAswmGsaYZce51v3GIp
- n1Mn9SShN0z4WW2vHXVGo0lQurzj97ba2K0vLKaN8J6n9hb0yX4JdgIiNy/TW81Wvs5lcjBO
- hOO6VkOu8UKZBNHr8ZfOuqMNijj9oC4ffyNaxweRoAmjkFZJV/drhJ9L1WdxX7sm0UKmKQyc
- 8XTO8W1AHpQTewtwDOqTq1PmfUm1wIv91P1HJrb9hWA1abBRXi3TbxeDkCCQNpk54y5oSLU0
- e1lCe209ztlXtfDPxbnqbwoEQhSLFwQJ4zHlMhMR+vSfitkAD4ADtHS85MAeqtkvaRek7/Vz
- yvsRm5Z11vNqnnVIiqaan1YSe3OXLQuiVkZLCATLVKT9Hx7WrmW7YAbbMERb5Q80e5ekdpYf
- qMjVZ2bI/JtTj/nxWwsXaPlptY/SCXx1BO8ASW1RRMeIbtyTBPt0f35dFLN8CIuMHKGhfEmq
- ef96jKBEIsxfCU8PsP4c/n18kiQu0Iak+dMX0flBNlfVUHv0YpyIRzKkf4FDJAQGCrH2wel+
- V6aMTUAqcnJhr0Fwt3DqKSHjoWuSs9VPE5RGUvF5reXawje2EeewrF7beXZRgCFCVvI+5ija
- 95FkND6EvkMx2hRv6RGTr1E8KMZ5vnUnYF88DhKJnvwQm6QOutSGUXehchrnY9R94BdojqzC
- x6u+MEFGLCnO/HFMV82JSglZeHbyMBOyyXz7Os0Emr+9iRY7LqKamQMHhiu2Qh2Dqp5D5Mh+
- sgl4PUp0g2YjgFwFMSrlQVWyjioAk1adYt/rbAcIovgqjRz+2F4eZaGVxPHusCeWetDImwBA
- 2GxlqHdo59+20CbUX44NUaV7NpnnZ5U5Sx7lg4TFW+oxOjAqOQ8hiBK0DINSQ9Q8BVL/sRzN
- kVvNGx3Pa++xChptucSQ1GTHxx9OzPB9nzT01cpkEjrf3usXEHJL0w/Pr+p12Id+GR+YDNa3
- e+5zEDIbDXUR/zyjxACARNdl//eTNJK5lLjnuKjFJ+7BJUUW2furZKvQmsqkCHZJ/0NqnfJn
- sRU2dphSLbaMHcQqpIrCoPB2rU3TguFFVN4Qvpg3f0oGFPCc2qXxAm+CVyVf+VTLcfr6m69M
- dRlfehUZiS91QGPjzEVPrENKLlKh8wU5MIOV7foBGweuZ2dpSpNnLOJ0QPh3kkpedlKuuQsG
- LP7Lj6tPDSZuipJpjXrssJBBFudXfAFQw/Zh8We7+QDEsM4gtFGKE0d/OO9gCSIDVFB4RmRg
- QLkYp3WxcxEzaBHvdPlModHNjWOBeLDbsa62yHtjI0WdvLKC9nEiC0NoFq+Pwh2A6oYa+4qq
- Zuz6uzIzGH3l5dodVvGmquxNbhDvuSze+t1DvjZDldnmQm6Zcu9xCdbpk6ZL8VFnuoIs4PjD
- 0G9ZdCrfNEYZ8ZFyTcHI2JCGhIaEOLsYr2muSq5qO+WBwMA1RDcaumq7mLtcXoRYxpg10cS0
- eMok6rGChFkQIVw6NssCfZ9GNlxOlqlUqwjHzE0nSfNFXGm2ztupZO7/SfMKxmSYpVHLCo+y
- ZvfQ171cxHaVGTg0oRCq4Ir1vEIJC8VvATzF37xP/Z/kTX8B2kDRQjY3VPqFbkM+hHPOFrEi
- P0hoYfs5egRndiJTPkk3OneYw==
-IronPort-HdrOrdr: A9a23:iec5JKgZIR+fzrSw3Gf9aq/GmnBQXwp23DAbv31ZSRFFG/FwyP
- rCoB1L73XJYWgqM03IwerwQ5VpQRvnhP1ICPoqTM2ftWjdySGVxeRZgbcKrAeQfBEWmtQ96U
- 4kSdkHNDSSNyk2sS+Z2njfLz9I+rDun86VbKXlvg5QpGpRGsNdBnJCe2Km+zpNNWx77PQCdK
- a0145qtjCgcXMYYoCBAGUZX+/MntvPlJj3Sx8LDRwq5WC1/H+VwY+/NyLd8gYVUjtJz7tn2W
- /Zkzbh7qHmn+CnxgTa32rz6Y0TvNf60NNMCOGFl8BQc1zX+0iVTbUkf4fHkCE+oemp5lpvuN
- 7Qoy04N8A2x2LNcnqzqR7N3RCl9Do18XftxXKRnHOmi83kQzARDdZHmOtiA1TkwntlmOs5/L
- NA3mqfuZYSJwjHhj7B69/BUAwvvlaooFI5+NRjz0B3YM87Uvt8vIYf9ERaHNMrByTh8r0qF+
- FoEYX1+OtWS1WHdHrU11Mfg+BEH05DXCtucHJy/vB94AIm20yRCHFogvD3q01wsa7VjaM0vt
- gsfJ4YzI2mBfVmEJ6VTN1xPfdfTFa9AC4keVjiX2gOGMw8Sg3wgo+y77Mv6O6wfpsUiJM0hZ
- TaSVtd8XU/YkT0FKS1rdR2Gz32MRKAtA7Wu7djzok8vqe5SKvgMCWFRlxrm8y8o+8HCsmeX/
- qoIppZD/LqMGOrQO9yrkbDcogXLWNbXNweu949VV7LqsXXKpfyvuiedPrIPrLiHTstR2u6CH
- oeWzr4ItlG8ymQKzfFqQmUX2modl30/Jp2HqSf9+8PyJIVPokJqQQRgUTR3LD+FdSDiN1CQK
- JTGsKVrkrgnxjGwY/h1RQYBjNNSkBI/b7nT3RG4QcXLkKcS8dwh+mi
-X-Talos-CUID: =?us-ascii?q?9a23=3Asbhd/2vdJ0RvRJjijMneSlWg6IsZaEfmi3PtfXb?=
- =?us-ascii?q?nEFpVY7+bckGR4OB7xp8=3D?=
-X-Talos-MUID: =?us-ascii?q?9a23=3AjBnCEAyukwH7I8pJvGL3p3tPcfqaqLqvUWdTiLw?=
- =?us-ascii?q?qgcSNM3R8YXCcsArre6Zyfw=3D=3D?=
+ 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
+IronPort-Data: A9a23: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
+ d0DgKbOyckwYNicTSjB3Q==
+IronPort-HdrOrdr: A9a23:+zpz76jXQhkCi65xRMEwPzpdgXBQXiAji2hC6mlwRA09TyXBrb
+ HKoBwavSWYtN9jYgBFpTngAtj5fZq4z+8I3WB/B9aftWXd01dAabsSj7cKoAeQYBEWlNQ86U
+ 4IScEXNDSzNykYsS+Q2mWF+qMbruVvh5rGuQ6x9R1QZDAvRI0l1gF9CgyKVm1aLTM2eKYRJd
+ 6yyuJ84xCkeXgRc4CaPxA+LpL+Tpbw5fXbiFY9dngaASe1/EqV1II=
+X-Talos-CUID: =?us-ascii?q?9a23=3A/3J7hWpRJS0DV/oox8xrM5fmUYMoKlmM9VKOGF+?=
+ =?us-ascii?q?DNnkwUpicZHyLo4oxxg=3D=3D?=
+X-Talos-MUID: 9a23:r6Ie3QYPJJ1sCuBTqSDM1T5NHdpS3rmtEkdSldYUie2UKnkl
 X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-AV: E=Sophos;i="6.23,124,1770591600"; 
-   d="scan'208";a="267977918"
-X-MGA-submission: =?us-ascii?q?MDGJBrpe6oqOp+lTjjcVDF8d2oKKSVv9mYiMx7?=
- =?us-ascii?q?ou3EPT+KVRBVKcNNFeww9qkEwXfWc9AwQNudHpeXQah+ZQZd7CgdmBQK?=
- =?us-ascii?q?krD+NufeIKN3RP8PapyRoh7RCIRTE2KSuaiwlmxtPjXSRWPGHuSfnl/6?=
- =?us-ascii?q?C+yTTRaiz3bvrzLrRVG6NqEA=3D=3D?=
-Received: from foss.arm.com ([217.140.110.172])
-  by mail2-smtp-roc.national.inria.fr with ESMTP; 16 Mar 2026 14:30:33 +0100
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 357291477;
-	Mon, 16 Mar 2026 06:30:25 -0700 (PDT)
-Received: from [10.57.61.116] (unknown [10.57.61.116])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9D4953F778;
-	Mon, 16 Mar 2026 06:30:22 -0700 (PDT)
-Message-ID: <2c7466f5-d952-4356-9b55-9d2ebb3471f2@arm.com>
-Date: Mon, 16 Mar 2026 13:30:19 +0000
+   d="scan'208,217";a="267968837"
+X-MGA-submission: =?us-ascii?q?MDH6BUrZqXNZFsNRDOgqNnX0YCSiVw1M/t+R+i?=
+ =?us-ascii?q?tyxys2ptcFmTdO/zbJqYfcBcJbSiFZ9zlDHT/cKAYSIu2eVSJ6Jsqyny?=
+ =?us-ascii?q?DK1qUp/gwWlQUFXhlrZzyUjmP+g/nDRCHfCe3kyl3ru0QQlpXrrcgKTc?=
+ =?us-ascii?q?u7O9BfFlp+aBsh/IxNFm3GdQ=3D=3D?=
+Received: from mx1.ist.ac.at ([81.223.84.226])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 13:56:16 +0100
+From: Alice Lee <Alice.Lee@ist.ac.at>
+To: Julia Lawall <julia.lawall@inria.fr>
+CC: "cocci@inria.fr" <cocci@inria.fr>
+Thread-Topic: [cocci] Can Coccinelle parse files where macros are used as
+ binary operations?
+Thread-Index: AQHcsjYep8nLBSYGA06CAzIMKRr3TbWscbAAgASxE4I=
+Date: Mon, 16 Mar 2026 12:56:14 +0000
+Message-ID: <79a19f5adf154119b6c4d0dc7187e383@ist.ac.at>
+References: <274abdf3dbbe4c3e8f1f33fba516c8b3@ist.ac.at>,<5cd9a9c8-9f99-417f-dcfe-5c1b136ec5bf@inria.fr>
+In-Reply-To: <5cd9a9c8-9f99-417f-dcfe-5c1b136ec5bf@inria.fr>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-originating-ip: [10.15.51.121]
+Content-Type: multipart/alternative;
+	boundary="_000_79a19f5adf154119b6c4d0dc7187e383istacat_"
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-To: Philipp Hahn <phahn-oss@avm.de>, amd-gfx@lists.freedesktop.org,
- apparmor@lists.ubuntu.com, bpf@vger.kernel.org, ceph-devel@vger.kernel.org,
- cocci@inria.fr, dm-devel@lists.linux.dev, dri-devel@lists.freedesktop.org,
- gfs2@lists.linux.dev, intel-gfx@lists.freedesktop.org,
- intel-wired-lan@lists.osuosl.org, iommu@lists.linux.dev,
- kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org,
- linux-btrfs@vger.kernel.org, linux-cifs@vger.kernel.org,
- linux-clk@vger.kernel.org, linux-erofs@lists.ozlabs.org,
- linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
- linux-gpio@vger.kernel.org, linux-hyperv@vger.kernel.org,
- linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-mm@kvack.org,
- linux-modules@vger.kernel.org, linux-mtd@lists.infradead.org,
- linux-nfs@vger.kernel.org, linux-omap@vger.kernel.org,
- linux-phy@lists.infradead.org, linux-pm@vger.kernel.org,
- linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
- linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org,
- linux-security-module@vger.kernel.org, linux-sh@vger.kernel.org,
- linux-sound@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
- linux-trace-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
- linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
- ntfs3@lists.linux.dev, samba-technical@lists.samba.org,
- sched-ext@lists.linux.dev, target-devel@vger.kernel.org,
- tipc-discussion@lists.sourceforge.net, v9fs@lists.linux.dev
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-References: <20260310-b4-is_err_or_null-v1-0-bd63b656022d@avm.de>
- <20260310-b4-is_err_or_null-v1-50-bd63b656022d@avm.de>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260310-b4-is_err_or_null-v1-50-bd63b656022d@avm.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-FEAS-Client-IP: 10.17.21.11
+X-FE-Policy-ID: 1:3:0:SYSTEM
 X-Validation-by: victor.gambier@inria.fr
-Subject: Re: [cocci] [PATCH 50/61] iommu: Prefer IS_ERR_OR_NULL over manual
- NULL check
-Reply-To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [cocci] Can Coccinelle parse files where macros are used as
+ binary operations?
+Reply-To: Alice Lee <Alice.Lee@ist.ac.at>
 X-Loop: cocci@inria.fr
-X-Sequence: 3443
+X-Sequence: 3442
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -276,58 +201,227 @@ List-Unsubscribe: <https://sympa.inria.fr/sympa/signoff/cocci>, <mailto:sympa_in
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-03/Xe_AxUw0bB6PExUw_QVnLA>
+Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-03/cIIufMwdKsVVPXjAeMcEQA>
 
-On 2026-03-10 11:49 am, Philipp Hahn wrote:
-> Prefer using IS_ERR_OR_NULL() over using IS_ERR() and a manual NULL
-> check.
+--_000_79a19f5adf154119b6c4d0dc7187e383istacat_
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-AFAICS it doesn't look possible for the argument to be anything other 
-than valid at both callsites, so *both* conditions here seem in fact to 
-be entirely redundant.
+Hi Julia,
 
-> Change generated with coccinelle.
 
-Please use coccinelle responsibly. Mechanical changes are great for 
-scripted API updates, but for cleanup, whilst it's ideal for *finding* 
-areas of code that are worth looking at, the code then wants actually 
-looking at, in its whole context, because meaningful cleanup often goes 
-deeper than trivial replacement.
+Is there an alternative to --defined that allows me to actually define a ma=
+cro as in the "#define LS <<" example? If I modify the code to use a simple=
+r switch than the equality check from the original as follows:
 
-In particular, anywhere IS_ERR_OR_NULL() is genuinely relevant is 
-usually a sign of bad interface design, so if you're looking at this 
-then you really should be looking first and foremost to remove any 
-checks that are already unnecessary, and for the remainder, to see if 
-the thing being checked can be improved to not mix the two different 
-styles. That would be constructive and (usually) welcome cleanup. Simply 
-churning a bunch of code with this ugly macro that's arguably less 
-readable than what it replaces, not so much.
+#ifdef SYMB
+#define LS >>
+#define RS <<
+#else
+#define LS <<
+#define RS >>
+#endif
+
+I still get a parse error when I run "spatch --cocci-file rule_test.cocci -=
+-defined SYMB musl-1.2.5/src/string/memcpy.c --debug"'; is this actually be=
+st done by a preprocessor and out of scope for Coccinelle?
 
 Thanks,
-Robin.
+Alice
 
-> To: Joerg Roedel <joro@8bytes.org>
-> To: Will Deacon <will@kernel.org>
-> To: Robin Murphy <robin.murphy@arm.com>
-> Cc: iommu@lists.linux.dev
-> Cc: linux-kernel@vger.kernel.org
-> Signed-off-by: Philipp Hahn <phahn-oss@avm.de>
-> ---
->   drivers/iommu/omap-iommu.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-> index 8231d7d6bb6a9202025643639a6b28e6faa84659..500a42b57a997696ff37c76f028a717ab71d01f9 100644
-> --- a/drivers/iommu/omap-iommu.c
-> +++ b/drivers/iommu/omap-iommu.c
-> @@ -881,7 +881,7 @@ static int omap_iommu_attach(struct omap_iommu *obj, u32 *iopgd)
->    **/
->   static void omap_iommu_detach(struct omap_iommu *obj)
->   {
-> -	if (!obj || IS_ERR(obj))
-> +	if (IS_ERR_OR_NULL(obj))
->   		return;
->   
->   	spin_lock(&obj->iommu_lock);
-> 
+________________________________
+From: Julia Lawall <julia.lawall@inria.fr>
+Sent: Friday, March 13, 2026 3:12:34 PM
+To: Alice Lee
+Cc: cocci@inria.fr
+Subject: Re: [cocci] Can Coccinelle parse files where macros are used as bi=
+nary operations?
 
+[EXTERNAL EMAIL - USE CAUTION when clicking links or attachments]
+
+
+
+
+On Thu, 12 Mar 2026, Alice Lee wrote:
+
+>
+> Hello,
+>
+> I am trying to use Coccinelle to search C codebases (I split up my questi=
+ons
+> to make the threads more clear) and I am struggling to understand the sco=
+pe
+> of the --macro-file argument.
+>
+> Can macros used with #if in the source code be defined in a file passed w=
+ith
+> --macro-file, and then the right sections of source code are ignored? I w=
+as
+> unable to get a small example to work, so I assume that I can define the
+> macro but then there is no preprocessing to drop code. If I'm not
+> overlooking something, how would you recommend I parse a file
+> including these lines and then uses LS/RS as binary operators:
+> #if __BYTE_ORDER =3D=3D __LITTLE_ENDIAN
+> #define LS >>
+> #define RS <<
+> #else
+> #define LS <<
+> #define RS >>
+> #endif
+>
+> I'm especially confused by this example because Coccinelle also cannot pa=
+rse
+> a version in which I remove the code above and put one of the pairs of
+> defines in the macro definition file.
+
+I think you want the following command line options:
+
+  --defined                     <symbol> treat cpp symbol as defined in #if=
+def
+  --undefined                   <symbol> treat cpp symbol as undefined in #=
+ifdef
+
+--macro-file is for providing dummy definitions for macros used in the
+code that you are trying to parse.
+
+julia
+
+>
+> Thank you,
+> Alice Lee
+>
+>
+
+--_000_79a19f5adf154119b6c4d0dc7187e383istacat_
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Diso-8859-=
+1">
+<meta name=3D"Generator" content=3D"Microsoft Exchange Server">
+<!-- converted from text --><style><!-- .EmailQuote { margin-left: 1pt; pad=
+ding-left: 4pt; border-left: #800000 2px solid; } --></style>
+</head>
+<body>
+<meta content=3D"text/html; charset=3DUTF-8">
+<style type=3D"text/css" style=3D"">
+<!--
+p
+	{margin-top:0;
+	margin-bottom:0}
+-->
+</style>
+<div dir=3D"ltr">
+<div id=3D"x_divtagdefaultwrapper" dir=3D"ltr" style=3D"font-size:12pt; col=
+or:#000000; font-family:Calibri,Helvetica,sans-serif">
+<p>Hi Julia,&nbsp;</p>
+<p><br>
+</p>
+<p>Is there an alternative to --defined that allows me to actually define a=
+ macro as in the &quot;#define LS &lt;&lt;&quot; example? If I modify the c=
+ode to use a simpler switch than the equality check from the original as fo=
+llows:&nbsp;</p>
+<p></p>
+<div><br>
+</div>
+<div>#ifdef SYMB</div>
+<div>#define LS &gt;&gt;<br>
+#define RS &lt;&lt;<br>
+#else<br>
+#define LS &lt;&lt;<br>
+#define RS &gt;&gt;<br>
+#endif</div>
+<div><br>
+</div>
+<div>I still get a parse error when I run &quot;spatch --cocci-file rule_te=
+st.cocci --defined SYMB musl-1.2.5/src/string/memcpy.c --debug&quot;'; is t=
+his actually best done by a preprocessor and out of scope for Coccinelle?</=
+div>
+<div><br>
+</div>
+<div>Thanks,</div>
+<div>Alice</div>
+<p></p>
+</div>
+<hr tabindex=3D"-1" style=3D"display:inline-block; width:98%">
+<div id=3D"x_divRplyFwdMsg" dir=3D"ltr"><font face=3D"Calibri, sans-serif" =
+color=3D"#000000" style=3D"font-size:11pt"><b>From:</b> Julia Lawall &lt;ju=
+lia.lawall@inria.fr&gt;<br>
+<b>Sent:</b> Friday, March 13, 2026 3:12:34 PM<br>
+<b>To:</b> Alice Lee<br>
+<b>Cc:</b> cocci@inria.fr<br>
+<b>Subject:</b> Re: [cocci] Can Coccinelle parse files where macros are use=
+d as binary operations?</font>
+<div>&nbsp;</div>
+</div>
+</div>
+<font size=3D"2"><span style=3D"font-size:10pt;">
+<div class=3D"PlainText">[EXTERNAL EMAIL - USE CAUTION when clicking links =
+or attachments]
+<br>
+<br>
+<br>
+<br>
+<br>
+On Thu, 12 Mar 2026, Alice Lee wrote:<br>
+<br>
+&gt;<br>
+&gt; Hello,<br>
+&gt;<br>
+&gt; I am trying to use Coccinelle to search C codebases (I split up my que=
+stions<br>
+&gt; to make the threads more clear) and I am struggling to understand the =
+scope<br>
+&gt; of the --macro-file argument.<br>
+&gt;<br>
+&gt; Can macros used with #if&nbsp;in the source code be defined in a file =
+passed with<br>
+&gt; --macro-file, and then the right sections of source code are ignored? =
+I was<br>
+&gt; unable to get a small example to work, so I assume that I can define t=
+he<br>
+&gt; macro but then there is no preprocessing to drop code. If I'm not<br>
+&gt; overlooking something, how would you recommend I&nbsp;parse a file<br>
+&gt; including&nbsp;these lines and then uses LS/RS as binary operators:&nb=
+sp;<br>
+&gt; #if __BYTE_ORDER =3D=3D __LITTLE_ENDIAN<br>
+&gt; #define LS &gt;&gt;<br>
+&gt; #define RS &lt;&lt;<br>
+&gt; #else<br>
+&gt; #define LS &lt;&lt;<br>
+&gt; #define RS &gt;&gt;<br>
+&gt; #endif<br>
+&gt;<br>
+&gt; I'm especially confused by this example because Coccinelle also cannot=
+ parse<br>
+&gt; a version in which I&nbsp;remove the code above and put one of the pai=
+rs of<br>
+&gt; defines in the macro definition file.<br>
+<br>
+I think you want the following command line options:<br>
+<br>
+&nbsp; --defined&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;symbol&gt=
+; treat cpp symbol as defined in #ifdef<br>
+&nbsp; --undefined&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;symbol&gt; treat cp=
+p symbol as undefined in #ifdef<br>
+<br>
+--macro-file is for providing dummy definitions for macros used in the<br>
+code that you are trying to parse.<br>
+<br>
+julia<br>
+<br>
+&gt;<br>
+&gt; Thank you,<br>
+&gt; Alice Lee<br>
+&gt;<br>
+&gt;<br>
+</div>
+</span></font>
+</body>
+</html>
+
+--_000_79a19f5adf154119b6c4d0dc7187e383istacat_--
