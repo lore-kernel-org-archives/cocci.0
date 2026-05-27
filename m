@@ -4,21 +4,21 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id EC9E1CD6E43
-	for <cocci@archiver.kernel.org>; Wed, 27 May 2026 09:45:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4AE07CD6E45
+	for <cocci@archiver.kernel.org>; Wed, 27 May 2026 09:45:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=message-id:date:mime-version:to:cc:references:from:
    in-reply-to:content-transfer-encoding:subject:reply-to:
    sender:list-id:list-help:list-subscribe:list-unsubscribe:
    list-post:list-owner:list-archive;
-  bh=TAAbLp2fQUAnVrnlqYFhXzpPS145wekmhS1dHUoBDX8=;
-  b=onLeqYvNQlJnhD5t22itSw2Lh9N0pZuOoqxnWlDtInyx8Wme3O1hOY9t
-   HsDWvscOiN5Y0KTwCEpG89ELAvYQnzHbglL+1NHff2T1srqgMscOj/6At
-   yq+FDKsk5tUJ9inD3biT4eRyOBinS8aIiBDEIQqytOdL6amCRgJkrWdBe
-   o=;
-X-CSE-ConnectionGUID: 5FUqD0liQXmi5BU3zfwhnA==
-X-CSE-MsgGUID: wxKlHmRmSBGys1QP66J9yg==
+  bh=1pzfvV6OOHfDlcKzNH4RZ/TFvuAFBn8uHABw7OdYKA8=;
+  b=Z7a7VDG9kkSnPSMClRCACdxDweXFnpqz1CI44a89EpMlXdJZkbbDQcxV
+   oHi4gR5LXcfFsHyuYtN0JOrttFwNhCJ475rkV5SBxtF9vrJ36JQXAE8VF
+   q3D18Xhw8WESInQIzZK+RHDYAizoGrIB4W8j+GIx/3auRivbGRe5cQahL
+   U=;
+X-CSE-ConnectionGUID: galGV5YvTVy4YZo3BlHm+g==
+X-CSE-MsgGUID: YIYtPqskSbyR/WRKAUfG+w==
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@prod-sympa-app.inria.fr
 Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
   domain of cocci-owner@inria.fr is inclined to not designate
@@ -39,22 +39,22 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@prod-sympa-app.inria.fr";
   x-conformance=spf_only
 X-IronPort-AV: E=Sophos;i="6.24,171,1774306800"; 
-   d="scan'208";a="278449782"
+   d="scan'208";a="278449854"
 Received: from prod-sympa-app.inria.fr ([128.93.162.27])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 27 May 2026 11:45:20 +0200
+  by mail2-relais-roc.national.inria.fr with ESMTP; 27 May 2026 11:45:23 +0200
 Received: by prod-sympa-app.inria.fr (Postfix, from userid 990)
-	id 653EE81622; Wed, 27 May 2026 11:45:20 +0200 (CEST)
+	id C19B28162D; Wed, 27 May 2026 11:45:22 +0200 (CEST)
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by prod-sympa-app.inria.fr (Postfix) with ESMTP id BF0EA80D21
-	for <cocci@sympa.inria.fr>; Wed, 27 May 2026 11:06:31 +0200 (CEST)
-X-CSE-ConnectionGUID: IqfAyBB8S/qrT3dStBZzrA==
-X-CSE-MsgGUID: qUMW2ve9Sy20WrRoact14A==
+	by prod-sympa-app.inria.fr (Postfix) with ESMTP id 17B9E812BF
+	for <cocci@sympa.inria.fr>; Wed, 27 May 2026 11:44:35 +0200 (CEST)
+X-CSE-ConnectionGUID: O8sZ8GRfT/2DUo1h230LKA==
+X-CSE-MsgGUID: c2zJ9u3TSlebKfagX8PMQA==
 X-IronPort-AV: E=Sophos;i="6.24,171,1774306800"; 
-   d="scan'208";a="147687901"
+   d="scan'208";a="147692603"
 Received: from ptb-5cg22835fs.irisa.fr (HELO [131.254.21.198]) ([131.254.21.198])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2026 11:06:33 +0200
-Message-ID: <186417e3-b2d4-4f1c-9790-8fd1b836e946@irisa.fr>
-Date: Wed, 27 May 2026 11:06:31 +0200
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2026 11:44:34 +0200
+Message-ID: <363a5557-fcfc-4856-b4a9-17bbdadff8b0@irisa.fr>
+Date: Wed, 27 May 2026 11:44:34 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 To: Julia Lawall <julia.lawall@inria.fr>
@@ -67,16 +67,18 @@ References: <3b5a0202-0064-47cd-a4a7-a84653a7a315@irisa.fr>
  <44dd7481-648f-4ae2-ad4c-10eb0609fefb@web.de>
  <bbe18a76-0100-40ed-b6e7-f053931f51eb@irisa.fr>
  <ad06211-6441-9568-e643-c39df9bf8494@inria.fr>
+ <186417e3-b2d4-4f1c-9790-8fd1b836e946@irisa.fr>
+ <4221c671-682-68de-9a94-1634364b6685@inria.fr>
 Content-Language: fr, en-US
 From: Pierrick Philippe <pierrick.philippe@irisa.fr>
-In-Reply-To: <ad06211-6441-9568-e643-c39df9bf8494@inria.fr>
+In-Reply-To: <4221c671-682-68de-9a94-1634364b6685@inria.fr>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Validation-by: victor.gambier@inria.fr
 Subject: Re: [cocci] Adjusting attributes for variables with SmPL?
 Reply-To: Pierrick Philippe <pierrick.philippe@irisa.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 3531
+X-Sequence: 3533
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -89,103 +91,117 @@ List-Unsubscribe: <https://sympa.inria.fr/sympa/signoff/cocci>, <mailto:sympa_in
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-05/CiOzUYaZ0dUkg52744O33Q>
+Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-05/kQd0GAU5F4YuDWSLPy_IjA>
 
-On 5/27/26 10:59, Julia Lawall wrote:
->
+On 5/27/26 11:16, Julia Lawall wrote:
 > On Wed, 27 May 2026, Pierrick Philippe wrote:
+>> On 5/27/26 10:59, Julia Lawall wrote:
+>>> On Wed, 27 May 2026, Pierrick Philippe wrote:
+>>> I think that the problem is that { ... } is not actually an expression in
+>>> C.  It's a strange thing that can only exist as part of a declaration.
+>>>
+>>> But you don't want to change it, so you don't need a metavariable for it.
+>>>
+>>> Just write:
+>>>
+>>> - T F =
+>>> + T __attribute__((myattr(("X")))) F =
+>>>   { ... };
+>> It does work indeed, thanks a lot!
+>> Although the metavariable X is not interpreted in the `+` context, could
+>> it be due to the attribute or unrelated?
+> It's due to the string quotes.
 >
->> Hi Markus and Julia,
->>
->> I hope you are doing well.
->>
->> I am now trying to work with structures and basically here is the patch
->> I'd like to generate:
->>
->> ```diff
->> struct foo {
->>     int x;
->>     int y;
->> };
->> int main(void) {
->> -   struct foo f = { 42, 42 };
->> +  struct foo __attribute__((myattr (("x")))) f = { 42, 42 };
->>     int b;
->>     int *c = &b;
->>     int z = memcmp(&f.x, c, sizeof(int));
->>     return z;
->> }
->> ```
->>
->> I used the following semantic patch which is successfully parsed, but
->> not generating any diff:
->>
->> ```cocci
->> @attribute_struct_scalar_type@
->> expression E, E1, E2;
->> type T;
->> identifier F, X;
->> @@
->> -T F = E;
->> +T __attribute__((myattr(("X")))) F = E;
->> ...
->> memcmp(&F.X, E1, E2)
->> ```
-> I think that the problem is that { ... } is not actually an expression in
-> C.  It's a strange thing that can only exist as part of a declaration.
+> It nmight be possible to get around this with a fresh identifier:
 >
-> But you don't want to change it, so you don't need a metavariable for it.
->
-> Just write:
->
-> - T F =
-> + T __attribute__((myattr(("X")))) F =
->   { ... };
+> fresh identifier x = "\"" # X # "\"";
 
-It does work indeed, thanks a lot!
-Although the metavariable X is not interpreted in the `+` context, could
-it be due to the attribute or unrelated?
-I think I read something related to attribute not being parsed in `+`
-context in the documentation.
+So this work, although the output still have the escaped quote, probably
+due to the same "issue" regarding quote.
 
->
-> Lots of other decompositions are possible.  For example you can also
-> write:
->
-> T
-> + __attribute__((myattr(("X"))))
->   F = { ... };
+But there also is a possible issue with the parsing/code generation
+here, generated diff and output of spatch:
+
+```
+@attribute_struct_scalar_type_resolve@
+expression E1, E2;
+type T;
+identifier F, X;
+fresh identifier param = "\"" ## X ## "\"";
+@@
+T 
++__attribute__((myattr((param))))
+F = { ... };
+...
+memcmp(&F.X, E1, E2)
+
+warning: attribute_struct_scalar_type_resolve: metavariable param not
+used in the + code
+HANDLING: ./test.c
+-----------------------------------------------------------------------
+let's go
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+attribute_struct_scalar_type_resolve = 
+-----------------------------------------------------------------------
+dependencies for rule attribute_struct_scalar_type_resolve satisfied:
+binding in = []
+binding relevant in = []
+     transformation info returned:
+          transform state: 7
+               with rule_elem: T
+                                 >>> __attribute__ ((myattr((param))))
+                                       F = {...
+                                            ,
+                                            };
+               with binding: [attribute_struct_scalar_type_resolve.param
+--> id \"x\";
+                             attribute_struct_scalar_type_resolve.X -->
+id x]
+     binding out = []
+     transform one node: 7
+parse error 
+ = error in /tmp/cocci_small_output-112399-acda44-test.c; set
+verbose_parsing for more info
+badcount: 2
+bad: 
+bad: 
+bad: int main(void) {
+-----------------------------------------------------------------------
+Finished
+-----------------------------------------------------------------------
+parse error 
+ = error in /tmp/cocci-output-112399-6b7713-test.c; set verbose_parsing
+for more info
+badcount: 3
+bad: };
+bad: 
+bad: int main(void) {
+BAD:!!!!!     struct foo __attribute__((myattr((\"x\")))) f = { 42, 42 };
+diff = 
+--- ./test.c
++++ /tmp/cocci-output-112399-6b7713-test.c
+@@ -6,9 +6,9 @@ struct foo {
+ };
+ 
+ int main(void) {
+-    struct foo f = { 42, 42 };
++    struct foo __attribute__((myattr((\"x\")))) f = { 42, 42 };
+     int b;
+     int *c = &b;
+     int z = memcmp(&f.x, c, sizeof(int));
+     return z;
+-}
++}"
+Check duplication for 1 files
+```
+
+It seems like a quote is added at the end of the main function itself.
+
+> I haven't tried this, though.  Another more complex solution involves
+> passing through python code.  You can get inspiration from
+> demos/pythontococci.cocci.  You would want to set eg coccinelle.z to a
+> string that additionally contains the desired string quotes.
 >
 > julia
->
->> The idea is essentially the same than in my previous email, although
->> here I'm working with field access.
->> The semantic patch is clearly inspired from a previous version for
->> integer or float which was successfully parsed and spatch was generating
->> the expected diff.
->>
->> Also, from what I understand from the docs, metavariables of type
->> `field` target field declaration (meaning within the structure type
->> definition specifically).
->> And I could not wrap my head around a way to use it to achieve my goal here.
->> I also tried to used a quite simple semantic patch, which was still not
->> generating any diff and raising a warning ("should f be a metavariable?").
->> And I do not understand why this one is not working since there are
->> basically no metavariables outside the three expressions.
->> Here is the semantic patch in question:
->>
->> ```cocci
->> @attribute_struct_scalar_type_dummy@
->> expression E, E1, E2;
->> @@
->> -struct foo f = E;
->> +struct foo __attribute__((myattr(("x")))) f = E;
->> ...
->> memcmp(&f.x, E1, E2)
->> ```
->>
->> In any case, thank you for your time and your previous answers.
->>
->> Pierrick
->>
-> >
