@@ -4,21 +4,21 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BEB65C531F9
-	for <cocci@archiver.kernel.org>; Sun, 26 Jul 2026 16:11:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8607BC531C9
+	for <cocci@archiver.kernel.org>; Sun, 26 Jul 2026 16:42:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:in-reply-to:message-id:references:
    mime-version:subject:reply-to:sender:list-id:list-help:
    list-subscribe:list-unsubscribe:list-post:list-owner:
    list-archive;
-  bh=fQ7wY/c69mDre3E5Gfwi5LSSIgrgeeygssFa4FGlijw=;
-  b=u0YyareJzd9Be1BHCN44GiM1vZHwryRTb2rRB/mUlYTTrMzR6InBrkz5
-   dr0HFwzfL46x76tGB5bG0IE4qd3NY2RW4JdklXGAlT/+GSYjObaWu07Yp
-   yQMxYaF3k4UU1otTPiRCFO0jcA+L9DCMRvpaBWgbkZEFKDJv3WWwatt2G
-   I=;
-X-CSE-ConnectionGUID: LxTvNUDmQkeUC2SPlz4GLg==
-X-CSE-MsgGUID: jhrWHBqCRdy6DmNZVZGFGg==
+  bh=3K3nrIRuSQ6XAYt8X3n4dmHi0zxQfI7PovueChypdSI=;
+  b=s2wv4cQZgg5qUL1smQq8/JSU/gnXjg7bNQ4L7wMYDrgzN+3kQ99JgAYo
+   d2CLIiiqdhcLPcAMNcR6hUFRjBQNhXkRUHo251pPgZkxwENnT57PxWIJr
+   98q3pkZuhavVjO2gaFEtGk7QFUGRjoGSknGK6iuQSDLGCbUAVwZjv/ubX
+   k=;
+X-CSE-ConnectionGUID: s1H5BL17SXCrRn98lx7O/g==
+X-CSE-MsgGUID: 8H+lCYs7ROGfW46YGg8L1Q==
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@prod-sympa-app.inria.fr
 Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
   domain of cocci-owner@inria.fr is inclined to not designate
@@ -39,36 +39,36 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@prod-sympa-app.inria.fr";
   x-conformance=spf_only
 X-IronPort-AV: E=Sophos;i="6.25,186,1779141600"; 
-   d="scan'208";a="287946900"
+   d="scan'208";a="287948323"
 Received: from prod-sympa-app.inria.fr ([128.93.162.27])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 26 Jul 2026 18:11:14 +0200
+  by mail2-relais-roc.national.inria.fr with ESMTP; 26 Jul 2026 18:42:31 +0200
 Received: by prod-sympa-app.inria.fr (Postfix, from userid 990)
-	id 76212812F3; Sun, 26 Jul 2026 18:11:14 +0200 (CEST)
+	id 52CD5812FF; Sun, 26 Jul 2026 18:42:32 +0200 (CEST)
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by prod-sympa-app.inria.fr (Postfix) with ESMTP id 2036780F2D
-	for <cocci@sympa.inria.fr>; Sun, 26 Jul 2026 18:11:06 +0200 (CEST)
-X-CSE-ConnectionGUID: 9bxL3jCkTAGERKsUuEW6Sg==
-X-CSE-MsgGUID: 1GqJNy7PSuGt9a/NIp+F2Q==
+	by prod-sympa-app.inria.fr (Postfix) with ESMTP id D4A7081305
+	for <cocci@sympa.inria.fr>; Sun, 26 Jul 2026 18:42:25 +0200 (CEST)
+X-CSE-ConnectionGUID: GgriX8r2S92QvGbgKNgBug==
+X-CSE-MsgGUID: BzyMBQz3SKGmDFPhBjEaUA==
 X-IronPort-AV: E=Sophos;i="6.25,186,1779141600"; 
-   d="scan'208";a="287946891"
+   d="scan'208";a="287948307"
 Received: from 88-188-149-159.subs.proxad.net (HELO hadrien.home) ([88.188.149.159])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2026 18:11:06 +0200
-Date: Sun, 26 Jul 2026 18:11:05 +0200 (CEST)
+  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2026 18:42:25 +0200
+Date: Sun, 26 Jul 2026 18:42:25 +0200 (CEST)
 From: Julia Lawall <julia.lawall@inria.fr>
 To: Sang-Heon Jeon <ekffu200098@gmail.com>
 cc: Julia Lawall <Julia.Lawall@inria.fr>, 
     Nicolas Palix <nicolas.palix@imag.fr>, cocci@inria.fr, 
     linux-kernel@vger.kernel.org
-In-Reply-To: <20260725113303.691676-4-ekffu200098@gmail.com>
-Message-ID: <f16e75db-2e5a-81c6-76b5-dcd0583f2f8b@inria.fr>
-References: <20260725113303.691676-1-ekffu200098@gmail.com> <20260725113303.691676-4-ekffu200098@gmail.com>
+In-Reply-To: <20260725113303.691676-2-ekffu200098@gmail.com>
+Message-ID: <36ca2127-3897-367-f184-2d673993891@inria.fr>
+References: <20260725113303.691676-1-ekffu200098@gmail.com> <20260725113303.691676-2-ekffu200098@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Subject: Re: [cocci] [PATCH 3/3] coccinelle: misc: minmax: improve
- performance when no candidate exists
+Subject: Re: [cocci] [PATCH 1/3] coccinelle: mini_lock: improve performance
+ when searching loops
 Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 3662
+X-Sequence: 3663
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -81,102 +81,84 @@ List-Unsubscribe: <https://sympa.inria.fr/sympa/signoff/cocci>, <mailto:sympa_in
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-07/w7fj64iqjY5QEs2Xd1a0OQ>
+Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-07/zRPfZ1Tg4sg6aLAH_kKs_w>
 
 
 
 On Sat, 25 Jul 2026, Sang-Heon Jeon wrote:
 
-> The rules that report an opencoded min() or max() search every
-> function body, even when the file contains nothing to find.
+> The 'looped' rule collects the returns inside a for loop to
+> prevent 'err' from reporting them. It searches every for loop in
+> the file, and on files with large loop bodies the search explodes.
 >
-> To avoid this, collect the candidates first and run the search only
-> when one exists. A candidate is any conditional expression whose
-> condition is a comparison.
+> For example, kernel/bpf/verifier.c runs for over 200 seconds,
+> almost entirely in 'looped' according to --profile. Since the
+> kernel .cocciconfig sets a 200 second timeout, coccicheck silently
+> skips the file.
 >
-> Every opencoded min() or max() is also a candidate, so the same
-> opportunities are reported as before and the output does not
-> change. A report-mode run over every .c file in the tree produces
-> identical output.
-
-Applied.
-
-I also added "candidate" rules for minif and maxif, removed the outer
-parentheses on rmax etc, and disabled some isomorphisms that caused the
-introduction of useless variants of the conditional tests.
-
-julia
-
-
+> To avoid this, collect the candidate returns first, so that
+> 'looped' checks only those positions. 'err' then excludes what
+> 'looped' found.
+>
+> Every return that 'err' can report is also a candidate, so the
+> same returns are excluded as before and the output does not change.
+> A report-mode run over every .c file in the tree produces identical
+> output.
+>
+> So verifier.c now finishes well within the timeout, in a few
+> seconds.
 >
 > Signed-off-by: Sang-Heon Jeon <ekffu200098@gmail.com>
 > ---
->  scripts/coccinelle/misc/minmax.cocci | 24 +++++++++++++++++++-----
->  1 file changed, 19 insertions(+), 5 deletions(-)
+>  scripts/coccinelle/locks/mini_lock.cocci | 24 ++++++++++++++++++++++--
+>  1 file changed, 22 insertions(+), 2 deletions(-)
 >
-> diff --git a/scripts/coccinelle/misc/minmax.cocci b/scripts/coccinelle/misc/minmax.cocci
-> index ca4830ae3042..93c074b9439f 100644
-> --- a/scripts/coccinelle/misc/minmax.cocci
-> +++ b/scripts/coccinelle/misc/minmax.cocci
-> @@ -17,7 +17,21 @@ virtual org
->  virtual context
->  virtual patch
+> diff --git a/scripts/coccinelle/locks/mini_lock.cocci b/scripts/coccinelle/locks/mini_lock.cocci
+> index 71065d8a5d54..54e06cced63b 100644
+> --- a/scripts/coccinelle/locks/mini_lock.cocci
+> +++ b/scripts/coccinelle/locks/mini_lock.cocci
+> @@ -53,11 +53,31 @@ spin_lock_irq@p1
+>  spin_lock_irqsave@p1
+>  ) (E1@p,...);
 >
-> -@rmax depends on !patch@
-> +@max_candidate@
-> +expression E1, E2, E3, E4;
-> +binary operator cmp = {>, >=};
+> -@looped@
+> +@err_candidate exists@
+> +expression E1;
+> +position prelocked.p;
+> +position up != prelocked.p1;
+> +position rc;
+> +identifier lock,unlock;
 > +@@
 > +
-> +	(E1 cmp E2 ? E3 : E4)
+> +lock(E1@p,...);
+> +... when != E1
+> +    when any
+> +if (...) {
+> +  ... when != E1
+> +  return@rc ...;
+> +}
+> +... when != E1
+> +    when any
+> +unlock@up(E1,...);
 > +
-> +@min_candidate@
-> +expression E1, E2, E3, E4;
-> +binary operator cmp = {<, <=};
-> +@@
-> +
-> +	(E1 cmp E2 ? E3 : E4)
-> +
-> +@rmax depends on !patch && max_candidate@
->  identifier func;
->  expression x, y;
->  binary operator cmp = {>, >=};
-> @@ -51,7 +65,7 @@ func(...)
->  }
+> +@looped depends on err_candidate@
+> +position err_candidate.rc;
+
+If the rule depends on a metavariable defined in err_candidate, then there
+is no need for depends on err_candidate.
+
+Also, I think this rule can be exists.
+
+julia
+
+>  position r;
+>  @@
 >
->  // Ignore errcode returns.
-> -@errcode@
-> +@errcode depends on min_candidate@
->  position p;
->  identifier func;
->  expression x;
-> @@ -65,7 +79,7 @@ func(...)
->  	...>
->  }
+> -for(...;...;...) { <+... return@r ...; ...+> }
+> +for(...;...;...) { <+... return@rc@r ...; ...+> }
 >
-> -@rmin depends on !patch@
-> +@rmin depends on !patch && min_candidate@
->  identifier func;
->  expression x, y;
->  binary operator cmp = {<, <=};
-> @@ -98,7 +112,7 @@ func(...)
->  	...>
->  }
->
-> -@pmax depends on patch@
-> +@pmax depends on patch && max_candidate@
->  identifier func;
->  expression x, y;
->  binary operator cmp = {>=, >};
-> @@ -131,7 +145,7 @@ func(...)
->  	...>
->  }
->
-> -@pmin depends on patch@
-> +@pmin depends on patch && min_candidate@
->  identifier func;
->  expression x, y;
->  binary operator cmp = {<=, <};
+>  @err exists@
+>  expression E1;
 > --
 > 2.43.0
 >
