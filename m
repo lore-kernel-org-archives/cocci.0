@@ -4,21 +4,21 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 867C4C55171
-	for <cocci@archiver.kernel.org>; Sun,  2 Aug 2026 09:01:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B1A1FC55162
+	for <cocci@archiver.kernel.org>; Sun,  2 Aug 2026 19:30:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=date:from:to:cc:in-reply-to:message-id:references:
-   mime-version:subject:reply-to:sender:list-id:list-help:
-   list-subscribe:list-unsubscribe:list-post:list-owner:
-   list-archive;
-  bh=OTDMmdQ9nSkXkvKAmvVj7B94ty8/1D//TSF3Roeaubo=;
-  b=sc7AWkoNbHOZgdNZ7LdEOv9eQvA2QP7AGevA3QZFw0ao50HzRfkx/BVe
-   BQTUGehOQqhQZQPtMuBjMMrfP+OrNk36WZSEW9ICN8JLmBG9rzefdvr04
-   QXNHiKpSDoU4ziQLpDh9I7HayEK6p3AkEJl1a/ZMsBJbSUyrNtHjkzQ60
-   Y=;
-X-CSE-ConnectionGUID: huY0uI4tQSqA+5A900Vaxg==
-X-CSE-MsgGUID: UJ96lxG7QJOJujBPHXcvUg==
+  h=from:to:cc:date:message-id:mime-version:
+   content-transfer-encoding:subject:reply-to:sender:list-id:
+   list-help:list-subscribe:list-unsubscribe:list-post:
+   list-owner:list-archive;
+  bh=qZqViyDfghPjBb7mCZQVi4QVxyhF8GzsIG5qzzolxs8=;
+  b=md7rmcXPdpdoPX6uhDIj4dv9QAzftrDzwrOtQYkjPRBXGUHnCJKhlzs9
+   l5m/QA6LLP7pp9f5D5QIn1gZPqbvAbgkESZdw2DfvbdZu5L+GJuOMV9Er
+   9ItXduzUk38ynukKW2QRmHmHdB18MIoVQPs1S5GrTcy/ryFNzYU1AKNKl
+   k=;
+X-CSE-ConnectionGUID: 779BHr4URZmCyHO88hWpYQ==
+X-CSE-MsgGUID: OYhlKEV4TzCy05dZayV9cA==
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@prod-sympa-app.inria.fr
 Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
   domain of cocci-owner@inria.fr is inclined to not designate
@@ -38,38 +38,37 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@prod-sympa-app.inria.fr";
   x-conformance=spf_only
-X-IronPort-AV: E=Sophos;i="6.25,200,1779141600"; 
-   d="scan'208";a="288801299"
+X-IronPort-AV: E=Sophos;i="6.25,201,1779141600"; 
+   d="scan'208";a="288826569"
 Received: from prod-sympa-app.inria.fr ([128.93.162.27])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 02 Aug 2026 11:01:12 +0200
+  by mail2-relais-roc.national.inria.fr with ESMTP; 02 Aug 2026 21:30:15 +0200
 Received: by prod-sympa-app.inria.fr (Postfix, from userid 990)
-	id 1F91B813C0; Sun,  2 Aug 2026 11:01:12 +0200 (CEST)
+	id 6117781293; Sun,  2 Aug 2026 21:30:15 +0200 (CEST)
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by prod-sympa-app.inria.fr (Postfix) with ESMTP id D8EED813C0
-	for <cocci@sympa.inria.fr>; Sun,  2 Aug 2026 11:01:08 +0200 (CEST)
-X-CSE-ConnectionGUID: DB0M6TzFQNeNBG9Ncc2G9A==
-X-CSE-MsgGUID: mRV1q1ldRjK0LuukN0icsQ==
-X-IronPort-AV: E=Sophos;i="6.25,200,1779141600"; 
-   d="scan'208";a="153461403"
-Received: from 88-188-149-159.subs.proxad.net (HELO hadrien.home) ([88.188.149.159])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2026 11:01:08 +0200
-Date: Sun, 2 Aug 2026 11:01:08 +0200 (CEST)
-From: Julia Lawall <julia.lawall@inria.fr>
-To: Guru Das Srinagesh <linux@gurudas.dev>
-cc: Nicolas Palix <nicolas.palix@imag.fr>, 
-    Michael Turquette <mturquette@baylibre.com>, 
-    Stephen Boyd <sboyd@kernel.org>, linux-kernel@vger.kernel.org, 
-    cocci@inria.fr, Brian Masney <bmasney@redhat.com>, 
-    linux-clk@vger.kernel.org
-In-Reply-To: <20260802-cocci-clk-register-v1-1-df68afcb1eef@gurudas.dev>
-Message-ID: <31eb2139-eb3c-912b-9f61-4aa77df7a5ee@inria.fr>
-References: <20260802-cocci-clk-register-v1-1-df68afcb1eef@gurudas.dev>
+	by prod-sympa-app.inria.fr (Postfix) with ESMTP id 699D6812A8
+	for <cocci@sympa.inria.fr>; Sun,  2 Aug 2026 21:30:11 +0200 (CEST)
+X-CSE-ConnectionGUID: neFT/PIpQLuj6UReWZhOVg==
+X-CSE-MsgGUID: CNHspn7IRFqF011QcCYnGA==
+X-IronPort-AV: E=Sophos;i="6.25,201,1779141600"; 
+   d="scan'208";a="153479549"
+Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.102.196])
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2026 21:30:10 +0200
+From: Julia Lawall <Julia.Lawall@inria.fr>
+To: Julia Lawall <Julia.Lawall@inria.fr>
+Cc: rostedt@goodmis.org,
+	Nicolas Palix <nicolas.palix@imag.fr>,
+	cocci@inria.fr,
+	linux-kernel@vger.kernel.org
+Date: Sun,  2 Aug 2026 21:29:57 +0200
+Message-Id: <20260802192957.1425245-1-Julia.Lawall@inria.fr>
+X-Mailer: git-send-email 2.39.5
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Subject: Re: [cocci] [PATCH] coccinelle: Detect clk_register() anti-pattern
-Reply-To: Julia Lawall <julia.lawall@inria.fr>
+Content-Transfer-Encoding: 8bit
+Subject: [cocci] [PATCH] Coccinelle: alloc_cast: coccinelle: api: check for
+ macro context
+Reply-To: Julia Lawall <Julia.Lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 3666
+X-Sequence: 3667
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -82,243 +81,67 @@ List-Unsubscribe: <https://sympa.inria.fr/sympa/signoff/cocci>, <mailto:sympa_in
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-08/vS600TYKJxIIjYDBwT3rcw>
+Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-08/ostgfuUv4bPtE1BmYf-7Zw>
 
+A cast on a call to an allocation function that is the body of a macro can
+be useful, as it ensures tha the macro is used for allocating objects of
+the right type.  Add two new rules to ignore the macro case.
 
+Suggested-by: Steven Rostedt <rostedt@goodmis.org>
+Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
-On Sun, 2 Aug 2026, Guru Das Srinagesh wrote:
+---
+ scripts/coccinelle/api/alloc/alloc_cast.cocci |   23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
 
-> Enforce commit 12a0fd23e870 ("clk: Print an error when clk registration
-> fails"): clk_register(), clk_hw_register(), and their devm_/of_ variants
-> log their own error on failure, so driver-side error prints after these
-> calls are redundant.
->
-> Two independent match families, one per return-value convention:
-> pointer return checked via IS_ERR() (clk_register()/devm_clk_register()),
-> and int return checked via a nonzero value (clk_hw_register()/
-> devm_clk_hw_register()/of_clk_hw_register()).
->
-> Assisted-by: Claude:claude-sonnet-5 coccinelle
-> Signed-off-by: Guru Das Srinagesh <linux@gurudas.dev>
-> ---
-> Add a Coccinelle semantic patch enforcing commit 12a0fd23e870 ("clk:
-> Print an error when clk registration fails"): flags, and in "patch"
-> mode removes, driver-side error prints that are now redundant after
-> clk_register()/clk_hw_register() and their devm_/of_ variants.
->
-> Two independent match families, one per return-value convention.
->
-> Pointer return, IS_ERR()-checked (clk_register()/devm_clk_register()),
-> e.g. drivers/clk/clk-xgene.c:152-157:
->
->     clk = clk_register(dev, &apmclk->hw);
->     if (IS_ERR(clk)) {
-> -       pr_err("%s: could not register clk %s\n", __func__, name);
->         kfree(apmclk);
->         return NULL;
->     }
->
-> Int return, nonzero-checked (clk_hw_register()/devm_clk_hw_register()/
-> of_clk_hw_register()), e.g. drivers/clk/meson/meson-clkc-utils.c:49-54:
->
->     ret = devm_clk_hw_register(dev, hw);
->     if (ret) {
-> -       dev_err(dev, "registering %s clock failed\n",
-> -               hw->init->name);
->         return ret;
->     }
->
-> Testing:
-> - Baseline: coccinelle 1.3.1, the Torvalds tree at v7.2-rc5.
-> - "make coccicheck COCCI=<path> MODE=report M=drivers/clk" produced 73
->   hits and verified to have zero false positives.
-> - "MODE=patch" verified separately on scratch copies of affected files
->   to confirm minimal, correct diffs.
->
-> checkpatch flagged that this new file needs a MAINTAINERS entry, and I'd
+diff --git a/scripts/coccinelle/api/alloc/alloc_cast.cocci b/scripts/coccinelle/api/alloc/alloc_cast.cocci
+index f6f0ccdb6409..958c914f8ba6 100644
+--- a/scripts/coccinelle/api/alloc/alloc_cast.cocci
++++ b/scripts/coccinelle/api/alloc/alloc_cast.cocci
+@@ -20,6 +20,24 @@ virtual patch
+ virtual org
+ virtual report
+ 
++@m1@
++identifier i;
++expression e;
++type T;
++position p1;
++@@
++
++#define i (T@p1 *)e
++
++@m2@
++identifier i;
++expression e;
++type T;
++position p2;
++@@
++
++#define i(...) (T@p2 *)e
++
+ @initialize:python@
+ @@
+ import re
+@@ -28,9 +46,10 @@ m = re.compile(pattern)
+ 
+ @r1 depends on context || patch@
+ type T;
++position p != {m1.p1,m2.p2};
+ @@
+ 
+-  (T *)
++  (T@p *)
+   \(kmalloc\|kzalloc\|kcalloc\|kmem_cache_alloc\|kmem_cache_zalloc\|
+    kmem_cache_alloc_node\|kmalloc_node\|kzalloc_node\|vmalloc\|vzalloc\|
+    dma_alloc_coherent\|devm_kmalloc\|devm_kzalloc\|
+@@ -90,7 +109,7 @@ type r1.T;
+ 
+ @r2 depends on org || report@
+ type T;
+-position p;
++position p != {m1.p1,m2.p2};
+ @@
+ 
+  (T@p *)
 
-I don't have an opinion about this.  If you want to be responsible for it
-that's fine with me.
-
-> like to maintain it, so this adds a standalone entry rather than leaving
-> the file uncovered. There's no direct precedent for an individual .cocci
-> file getting its own entry - the only other named .cocci file in
-> MAINTAINERS, scripts/coccinelle/api/string_choices.cocci, was added to
-> the existing GENERIC STRING LIBRARY entry by that subsystem's
-> maintainer, not as a new one. Happy to fold this into COMMON CLK
-> FRAMEWORK or drop it entirely depending on what the maintainers prefer.
-> ---
->  MAINTAINERS                               |   5 ++
->  scripts/coccinelle/api/clk_register.cocci | 125 ++++++++++++++++++++++++++++++
->  2 files changed, 130 insertions(+)
->
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 716acfc3d7c1..26788ccbf98c 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -6363,6 +6363,11 @@ L:	linux-clk@vger.kernel.org
->  S:	Maintained
->  F:	include/linux/clk.h
->
-> +CLK_REGISTER() COCCINELLE CHECK
-> +M:	Guru Das Srinagesh <linux@gurudas.dev>
-> +S:	Maintained
-> +F:	scripts/coccinelle/api/clk_register.cocci
-> +
->  CLOCKSOURCE, CLOCKEVENT DRIVERS
->  M:	Daniel Lezcano <daniel.lezcano@kernel.org>
->  M:	Thomas Gleixner <tglx@kernel.org>
-> diff --git a/scripts/coccinelle/api/clk_register.cocci b/scripts/coccinelle/api/clk_register.cocci
-> new file mode 100644
-> index 000000000000..fe5bcd4b00d4
-> --- /dev/null
-> +++ b/scripts/coccinelle/api/clk_register.cocci
-> @@ -0,0 +1,125 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/// Remove error messages after clk registration failures, because
-> +/// clk_register(), clk_hw_register(), and their variants already log
-> +/// an error when they fail. See commit 12a0fd23e870 ("clk: Print an
-> +/// error when clk registration fails").
-> +//
-> +// Confidence: Medium
-> +// Options: --include-headers
-> +
-> +virtual patch
-> +virtual context
-> +virtual org
-> +virtual report
-> +
-> +@depends on context@
-> +expression clk;
-> +identifier reg =~ "^(devm_)?clk_register$";
-> +identifier voidfn =~ "^(dev_err|dev_warn|pr_err|pr_warn)$";
-> +@@
-> +
-> +clk = reg(...);
-
-From a performance point of view, it would be desirable to put instead
-\(devm_clk_register\|clk_register\).  This will trigger some
-optimizations that won't be triggered by a regular expression.
-
-
-> +if ( \( IS_ERR(clk) \| IS_ERR(clk) == 1 \) )
-> +{
-> +...
-> +*voidfn(...);
-> +...
-> +}
-> +
-> +@depends on patch@
-> +expression clk;
-> +identifier reg =~ "^(devm_)?clk_register$";
-> +identifier voidfn =~ "^(dev_err|dev_warn|pr_err|pr_warn)$";
-> +@@
-> +
-> +clk = reg(...);
-> +if ( \( IS_ERR(clk) \| IS_ERR(clk) == 1 \) )
-> +{
-> +...
-> +-voidfn(...);
-> +...
-> +}
-> +
-> +@r1 depends on org || report@
-> +position p1;
-> +expression clk;
-> +identifier reg =~ "^(devm_)?clk_register$";
-> +identifier voidfn =~ "^(dev_err|dev_warn|pr_err|pr_warn)$";
-> +@@
-> +
-> +clk = reg(...);
-> +if ( \( IS_ERR(clk) \| IS_ERR(clk) == 1 \) )
-> +{
-> +...
-> +voidfn@p1(...);
-> +...
-> +}
-> +
-> +@depends on context@
-> +expression ret;
-> +identifier reg =~ "^(devm_)?(of_)?clk_hw_register$";
-> +identifier voidfn =~ "^(dev_err|dev_warn|pr_err|pr_warn)$";
-> +@@
-> +
-> +ret = reg(...);
-> +if ( \( ret \| ret != 0 \| ret < 0 \) )
-> +{
-> +...
-> +*voidfn(...);
-> +...
-> +}
-> +
-> +@depends on patch@
-> +expression ret;
-> +identifier reg =~ "^(devm_)?(of_)?clk_hw_register$";
-> +identifier voidfn =~ "^(dev_err|dev_warn|pr_err|pr_warn)$";
-> +@@
-> +
-> +ret = reg(...);
-> +if ( \( ret \| ret != 0 \| ret < 0 \) )
-> +{
-> +...
-> +-voidfn(...);
-> +...
-> +}
-
-I think yourpatch rule should have an extra case for where there are
-currently only two statements in the if branch.  In that case the {}
-should be removed.
-
-julia
-
-> +
-> +@r2 depends on org || report@
-> +position p2;
-> +expression ret;
-> +identifier reg =~ "^(devm_)?(of_)?clk_hw_register$";
-> +identifier voidfn =~ "^(dev_err|dev_warn|pr_err|pr_warn)$";
-> +@@
-> +
-> +ret = reg(...);
-> +if ( \( ret \| ret != 0 \| ret < 0 \) )
-> +{
-> +...
-> +voidfn@p2(...);
-> +...
-> +}
-> +
-> +@script:python depends on org@
-> +p1 << r1.p1;
-> +@@
-> +
-> +cocci.print_main(p1)
-> +
-> +@script:python depends on report@
-> +p1 << r1.p1;
-> +@@
-> +
-> +msg = "line %s is redundant because clk_register() already prints an error on failure" % (p1[0].line)
-> +coccilib.report.print_report(p1[0], msg)
-> +
-> +@script:python depends on org@
-> +p2 << r2.p2;
-> +@@
-> +
-> +cocci.print_main(p2)
-> +
-> +@script:python depends on report@
-> +p2 << r2.p2;
-> +@@
-> +
-> +msg = "line %s is redundant because clk_hw_register() already prints an error on failure" % (p2[0].line)
-> +coccilib.report.print_report(p2[0], msg)
->
-> ---
-> base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
-> change-id: 20260802-cocci-clk-register-951d94251af4
->
-> Best regards,
-> --
-> Guru Das Srinagesh <linux@gurudas.dev>
->
->
