@@ -4,21 +4,21 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AC9D3C55174
-	for <cocci@archiver.kernel.org>; Sat,  1 Aug 2026 08:18:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 867C4C55171
+	for <cocci@archiver.kernel.org>; Sun,  2 Aug 2026 09:01:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:in-reply-to:message-id:references:
    mime-version:subject:reply-to:sender:list-id:list-help:
    list-subscribe:list-unsubscribe:list-post:list-owner:
    list-archive;
-  bh=qdqsv5AkPRtsvfQw7ries6OHtAwQs1BekKY/HE6SBI4=;
-  b=MqUg6L5GYcEXIg1SCFXfvZDDwwXiSrh/V/GX+NMbG3Vt1p64xDEJhdjE
-   PIHVsc81QOk6xKUHJ+V3J8TiqMDcSQOU2HDxhafP+irc9GQwyUuPT2uhx
-   OCc1xWWPcDABh0utwQldsYIViHoId5UMe2tgDW9WQYS8O8Smb2RnEqCxx
-   U=;
-X-CSE-ConnectionGUID: MLDTSK24QxGbY1uN81HUgA==
-X-CSE-MsgGUID: AOv4TdHtQ7S0Ec2510HLSQ==
+  bh=OTDMmdQ9nSkXkvKAmvVj7B94ty8/1D//TSF3Roeaubo=;
+  b=sc7AWkoNbHOZgdNZ7LdEOv9eQvA2QP7AGevA3QZFw0ao50HzRfkx/BVe
+   BQTUGehOQqhQZQPtMuBjMMrfP+OrNk36WZSEW9ICN8JLmBG9rzefdvr04
+   QXNHiKpSDoU4ziQLpDh9I7HayEK6p3AkEJl1a/ZMsBJbSUyrNtHjkzQ60
+   Y=;
+X-CSE-ConnectionGUID: huY0uI4tQSqA+5A900Vaxg==
+X-CSE-MsgGUID: UJ96lxG7QJOJujBPHXcvUg==
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@prod-sympa-app.inria.fr
 Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
   domain of cocci-owner@inria.fr is inclined to not designate
@@ -38,35 +38,38 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@prod-sympa-app.inria.fr";
   x-conformance=spf_only
-X-IronPort-AV: E=Sophos;i="6.25,198,1779141600"; 
-   d="scan'208";a="288736128"
+X-IronPort-AV: E=Sophos;i="6.25,200,1779141600"; 
+   d="scan'208";a="288801299"
 Received: from prod-sympa-app.inria.fr ([128.93.162.27])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 01 Aug 2026 10:18:42 +0200
+  by mail2-relais-roc.national.inria.fr with ESMTP; 02 Aug 2026 11:01:12 +0200
 Received: by prod-sympa-app.inria.fr (Postfix, from userid 990)
-	id 7244F81B16; Sat,  1 Aug 2026 10:18:42 +0200 (CEST)
+	id 1F91B813C0; Sun,  2 Aug 2026 11:01:12 +0200 (CEST)
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by prod-sympa-app.inria.fr (Postfix) with ESMTP id BFC9D805C3
-	for <cocci@sympa.inria.fr>; Sat,  1 Aug 2026 10:18:39 +0200 (CEST)
-X-CSE-ConnectionGUID: vHgSfTYMSeehxUGE6sV49Q==
-X-CSE-MsgGUID: hd0LxffORvSmeTwj/cj4kQ==
-X-IronPort-AV: E=Sophos;i="6.25,198,1779141600"; 
-   d="scan'208";a="153419013"
+	by prod-sympa-app.inria.fr (Postfix) with ESMTP id D8EED813C0
+	for <cocci@sympa.inria.fr>; Sun,  2 Aug 2026 11:01:08 +0200 (CEST)
+X-CSE-ConnectionGUID: DB0M6TzFQNeNBG9Ncc2G9A==
+X-CSE-MsgGUID: mRV1q1ldRjK0LuukN0icsQ==
+X-IronPort-AV: E=Sophos;i="6.25,200,1779141600"; 
+   d="scan'208";a="153461403"
 Received: from 88-188-149-159.subs.proxad.net (HELO hadrien.home) ([88.188.149.159])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2026 10:18:39 +0200
-Date: Sat, 1 Aug 2026 10:18:39 +0200 (CEST)
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2026 11:01:08 +0200
+Date: Sun, 2 Aug 2026 11:01:08 +0200 (CEST)
 From: Julia Lawall <julia.lawall@inria.fr>
-To: Markus Elfring <Markus.Elfring@web.de>
-cc: cocci@inria.fr, LKML <linux-kernel@vger.kernel.org>, 
-    kernel-janitors@vger.kernel.org
-In-Reply-To: <9f8ce18d-67bc-4c01-b3fa-8605c9856b82@web.de>
-Message-ID: <9e187875-e472-911-c280-59dff6b7c80@inria.fr>
-References: <202dfb21-f5a2-4550-8a1f-aa07d84db345@web.de> <be2727e1-907e-487f-8522-e5aa694b1c38@web.de> <9f8ce18d-67bc-4c01-b3fa-8605c9856b82@web.de>
+To: Guru Das Srinagesh <linux@gurudas.dev>
+cc: Nicolas Palix <nicolas.palix@imag.fr>, 
+    Michael Turquette <mturquette@baylibre.com>, 
+    Stephen Boyd <sboyd@kernel.org>, linux-kernel@vger.kernel.org, 
+    cocci@inria.fr, Brian Masney <bmasney@redhat.com>, 
+    linux-clk@vger.kernel.org
+In-Reply-To: <20260802-cocci-clk-register-v1-1-df68afcb1eef@gurudas.dev>
+Message-ID: <31eb2139-eb3c-912b-9f61-4aa77df7a5ee@inria.fr>
+References: <20260802-cocci-clk-register-v1-1-df68afcb1eef@gurudas.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Subject: Re: [cocci] Improving output for single characters (with SmPL)?
+Subject: Re: [cocci] [PATCH] coccinelle: Detect clk_register() anti-pattern
 Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 3665
+X-Sequence: 3666
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -79,53 +82,243 @@ List-Unsubscribe: <https://sympa.inria.fr/sympa/signoff/cocci>, <mailto:sympa_in
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-08/nhQuX-6SpRps7kmA-bJN3A>
+Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-08/vS600TYKJxIIjYDBwT3rcw>
 
 
 
-On Sat, 1 Aug 2026, Markus Elfring wrote:
+On Sun, 2 Aug 2026, Guru Das Srinagesh wrote:
 
-> >> Which implementation details should be reconsidered here for an affected macro?
-> >> https://elixir.bootlin.com/linux/v7.2-rc4/source/tools/bpf/bpftool/netlink_dumper.h#L25
-> >
-> > The shown source code transformation approach can be repeated on demand
-> > for selected areas.
+> Enforce commit 12a0fd23e870 ("clk: Print an error when clk registration
+> fails"): clk_register(), clk_hw_register(), and their devm_/of_ variants
+> log their own error on failure, so driver-side error prints after these
+> calls are redundant.
 >
-> I would like to add that only a single diff hunk is generated for the following script variant
-> of the semantic patch language (as it would usually be expected for the mentioned software component).
+> Two independent match families, one per return-value convention:
+> pointer return checked via IS_ERR() (clk_register()/devm_clk_register()),
+> and int return checked via a nonzero value (clk_hw_register()/
+> devm_clk_hw_register()/of_clk_hw_register()).
 >
-> @replacement@
-> @@
-> -fprintf
-> +putchar
->  (
-> -stdout, "\n"
-> +'\n'
->  )
+> Assisted-by: Claude:claude-sonnet-5 coccinelle
+> Signed-off-by: Guru Das Srinagesh <linux@gurudas.dev>
+> ---
+> Add a Coccinelle semantic patch enforcing commit 12a0fd23e870 ("clk:
+> Print an error when clk registration fails"): flags, and in "patch"
+> mode removes, driver-side error prints that are now redundant after
+> clk_register()/clk_hw_register() and their devm_/of_ variants.
 >
+> Two independent match families, one per return-value convention.
 >
-> > Now I wonder about the following information.
-> >
-> > Markus_Elfring@Sonne:/home/altes_Heim2/elfring/Projekte/Linux/next-analyses> grep 'diff -u -p a/netlink_dumper.h b/netlink_dumper.h' /home/altes_Heim2/elfring/Projekte/Bau/Linux/scripts/Coccinelle/tuning1/next/20260721/use_fputc-bpftool-2.diff | wc -l
-> > 2
+> Pointer return, IS_ERR()-checked (clk_register()/devm_clk_register()),
+> e.g. drivers/clk/clk-xgene.c:152-157:
 >
-> How can the generation of duplicate difference output be avoided here
-> for other SmPL script variations?
+>     clk = clk_register(dev, &apmclk->hw);
+>     if (IS_ERR(clk)) {
+> -       pr_err("%s: could not register clk %s\n", __func__, name);
+>         kfree(apmclk);
+>         return NULL;
+>     }
+>
+> Int return, nonzero-checked (clk_hw_register()/devm_clk_hw_register()/
+> of_clk_hw_register()), e.g. drivers/clk/meson/meson-clkc-utils.c:49-54:
+>
+>     ret = devm_clk_hw_register(dev, hw);
+>     if (ret) {
+> -       dev_err(dev, "registering %s clock failed\n",
+> -               hw->init->name);
+>         return ret;
+>     }
+>
+> Testing:
+> - Baseline: coccinelle 1.3.1, the Torvalds tree at v7.2-rc5.
+> - "make coccicheck COCCI=<path> MODE=report M=drivers/clk" produced 73
+>   hits and verified to have zero false positives.
+> - "MODE=patch" verified separately on scratch copies of affected files
+>   to confirm minimal, correct diffs.
+>
+> checkpatch flagged that this new file needs a MAINTAINERS entry, and I'd
 
-I don't know the details o what you are doing, but if you have duplicated
-output about herder files, it would be because the header file is included
-in other files.  If there is no need to process the header file
-specifically based on a given .c file (which would be the case for the rul
-shown above), then you can use the option --no-includes.  If you want some
-type information from header files but you don't want to transform them in
-a way that is specific to the .c file in which they are included then you
-can also use --include-headers-for-types.
+I don't have an opinion about this.  If you want to be responsible for it
+that's fine with me.
+
+> like to maintain it, so this adds a standalone entry rather than leaving
+> the file uncovered. There's no direct precedent for an individual .cocci
+> file getting its own entry - the only other named .cocci file in
+> MAINTAINERS, scripts/coccinelle/api/string_choices.cocci, was added to
+> the existing GENERIC STRING LIBRARY entry by that subsystem's
+> maintainer, not as a new one. Happy to fold this into COMMON CLK
+> FRAMEWORK or drop it entirely depending on what the maintainers prefer.
+> ---
+>  MAINTAINERS                               |   5 ++
+>  scripts/coccinelle/api/clk_register.cocci | 125 ++++++++++++++++++++++++++++++
+>  2 files changed, 130 insertions(+)
+>
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 716acfc3d7c1..26788ccbf98c 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -6363,6 +6363,11 @@ L:	linux-clk@vger.kernel.org
+>  S:	Maintained
+>  F:	include/linux/clk.h
+>
+> +CLK_REGISTER() COCCINELLE CHECK
+> +M:	Guru Das Srinagesh <linux@gurudas.dev>
+> +S:	Maintained
+> +F:	scripts/coccinelle/api/clk_register.cocci
+> +
+>  CLOCKSOURCE, CLOCKEVENT DRIVERS
+>  M:	Daniel Lezcano <daniel.lezcano@kernel.org>
+>  M:	Thomas Gleixner <tglx@kernel.org>
+> diff --git a/scripts/coccinelle/api/clk_register.cocci b/scripts/coccinelle/api/clk_register.cocci
+> new file mode 100644
+> index 000000000000..fe5bcd4b00d4
+> --- /dev/null
+> +++ b/scripts/coccinelle/api/clk_register.cocci
+> @@ -0,0 +1,125 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/// Remove error messages after clk registration failures, because
+> +/// clk_register(), clk_hw_register(), and their variants already log
+> +/// an error when they fail. See commit 12a0fd23e870 ("clk: Print an
+> +/// error when clk registration fails").
+> +//
+> +// Confidence: Medium
+> +// Options: --include-headers
+> +
+> +virtual patch
+> +virtual context
+> +virtual org
+> +virtual report
+> +
+> +@depends on context@
+> +expression clk;
+> +identifier reg =~ "^(devm_)?clk_register$";
+> +identifier voidfn =~ "^(dev_err|dev_warn|pr_err|pr_warn)$";
+> +@@
+> +
+> +clk = reg(...);
+
+From a performance point of view, it would be desirable to put instead
+\(devm_clk_register\|clk_register\).  This will trigger some
+optimizations that won't be triggered by a regular expression.
+
+
+> +if ( \( IS_ERR(clk) \| IS_ERR(clk) == 1 \) )
+> +{
+> +...
+> +*voidfn(...);
+> +...
+> +}
+> +
+> +@depends on patch@
+> +expression clk;
+> +identifier reg =~ "^(devm_)?clk_register$";
+> +identifier voidfn =~ "^(dev_err|dev_warn|pr_err|pr_warn)$";
+> +@@
+> +
+> +clk = reg(...);
+> +if ( \( IS_ERR(clk) \| IS_ERR(clk) == 1 \) )
+> +{
+> +...
+> +-voidfn(...);
+> +...
+> +}
+> +
+> +@r1 depends on org || report@
+> +position p1;
+> +expression clk;
+> +identifier reg =~ "^(devm_)?clk_register$";
+> +identifier voidfn =~ "^(dev_err|dev_warn|pr_err|pr_warn)$";
+> +@@
+> +
+> +clk = reg(...);
+> +if ( \( IS_ERR(clk) \| IS_ERR(clk) == 1 \) )
+> +{
+> +...
+> +voidfn@p1(...);
+> +...
+> +}
+> +
+> +@depends on context@
+> +expression ret;
+> +identifier reg =~ "^(devm_)?(of_)?clk_hw_register$";
+> +identifier voidfn =~ "^(dev_err|dev_warn|pr_err|pr_warn)$";
+> +@@
+> +
+> +ret = reg(...);
+> +if ( \( ret \| ret != 0 \| ret < 0 \) )
+> +{
+> +...
+> +*voidfn(...);
+> +...
+> +}
+> +
+> +@depends on patch@
+> +expression ret;
+> +identifier reg =~ "^(devm_)?(of_)?clk_hw_register$";
+> +identifier voidfn =~ "^(dev_err|dev_warn|pr_err|pr_warn)$";
+> +@@
+> +
+> +ret = reg(...);
+> +if ( \( ret \| ret != 0 \| ret < 0 \) )
+> +{
+> +...
+> +-voidfn(...);
+> +...
+> +}
+
+I think yourpatch rule should have an extra case for where there are
+currently only two statements in the if branch.  In that case the {}
+should be removed.
 
 julia
 
-
+> +
+> +@r2 depends on org || report@
+> +position p2;
+> +expression ret;
+> +identifier reg =~ "^(devm_)?(of_)?clk_hw_register$";
+> +identifier voidfn =~ "^(dev_err|dev_warn|pr_err|pr_warn)$";
+> +@@
+> +
+> +ret = reg(...);
+> +if ( \( ret \| ret != 0 \| ret < 0 \) )
+> +{
+> +...
+> +voidfn@p2(...);
+> +...
+> +}
+> +
+> +@script:python depends on org@
+> +p1 << r1.p1;
+> +@@
+> +
+> +cocci.print_main(p1)
+> +
+> +@script:python depends on report@
+> +p1 << r1.p1;
+> +@@
+> +
+> +msg = "line %s is redundant because clk_register() already prints an error on failure" % (p1[0].line)
+> +coccilib.report.print_report(p1[0], msg)
+> +
+> +@script:python depends on org@
+> +p2 << r2.p2;
+> +@@
+> +
+> +cocci.print_main(p2)
+> +
+> +@script:python depends on report@
+> +p2 << r2.p2;
+> +@@
+> +
+> +msg = "line %s is redundant because clk_hw_register() already prints an error on failure" % (p2[0].line)
+> +coccilib.report.print_report(p2[0], msg)
 >
-> Regards,
-> Markus
+> ---
+> base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
+> change-id: 20260802-cocci-clk-register-951d94251af4
+>
+> Best regards,
+> --
+> Guru Das Srinagesh <linux@gurudas.dev>
 >
 >
