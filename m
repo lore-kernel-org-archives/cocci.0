@@ -4,21 +4,21 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DF298C5DF94
-	for <cocci@archiver.kernel.org>; Mon, 24 Aug 2026 07:35:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9231FC61CE4
+	for <cocci@archiver.kernel.org>; Mon, 24 Aug 2026 07:35:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:message-id:references:mime-version:
-   in-reply-to:subject:reply-to:sender:list-id:list-help:
-   list-subscribe:list-unsubscribe:list-post:list-owner:
-   list-archive;
-  bh=Z4IFTisua/RegQxEP1MskZjCmSMfAF370cvKdqSQxLI=;
-  b=qxSK15AD3ua0aJLiK9cEZqLsJu6e7bM7EbOH61zzOw874egHMrdFf8EU
-   PuJR6+1xwUp7meTiH2SjEmPQV6cSrEkWwlUTL5S0CU7FAFIrVZOszFKdd
-   fID3KAvsRtJJTbk6jxEmMRMUKQ0kONHl3UhdNcVMV6DtrnvhH43OOGeVX
+   content-transfer-encoding:in-reply-to:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=u7n5nk1Q6WJ0NpVun5yyD9tXGMGsft6OO/yOgrv960I=;
+  b=vjBdnVh27INAtJH/4EcevRM+iMc0/kqaKsA+vVKRNiiDadE8zPSj2Lzy
+   zdaadVXdOYb8IeyHBru+tePcVZ472xpcJRnQJDW0LEBrCHUbxegyOLaM7
+   dl44PEimEb6KsWVnBjr1zYG+2vXOzoFMFyCasmILTavADLBg1DmDtbEP2
    w=;
-X-CSE-ConnectionGUID: My8MSJqjQ16GVU2AyX+hFg==
-X-CSE-MsgGUID: MdgxJfwtTG+YpVyc5PPyRg==
+X-CSE-ConnectionGUID: zDAkvHzzTfW4vQ4EMiX4DQ==
+X-CSE-MsgGUID: 7oVRn6BIQRS4/f00yvS50w==
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@prod-sympa-app.inria.fr
 Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
   domain of cocci-owner@inria.fr is inclined to not designate
@@ -39,140 +39,141 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@prod-sympa-app.inria.fr";
   x-conformance=spf_only
 X-IronPort-AV: E=Sophos;i="6.25,240,1779141600"; 
-   d="scan'208";a="291206695"
+   d="scan'208";a="291206777"
 Received: from prod-sympa-app.inria.fr ([128.93.162.27])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 24 Aug 2026 09:34:59 +0200
+  by mail2-relais-roc.national.inria.fr with ESMTP; 24 Aug 2026 09:35:02 +0200
 Received: by prod-sympa-app.inria.fr (Postfix, from userid 990)
-	id 1D27A81673; Mon, 24 Aug 2026 09:34:59 +0200 (CEST)
+	id A56DD8147B; Mon, 24 Aug 2026 09:35:02 +0200 (CEST)
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by prod-sympa-app.inria.fr (Postfix) with ESMTP id 2DFEC80F45
-	for <cocci@sympa.inria.fr>; Mon, 10 Aug 2026 08:31:09 +0200 (CEST)
-X-CSE-ConnectionGUID: tVV9gxsNQuqgmLf+F8cHvQ==
-X-CSE-MsgGUID: BZGKN3xAT3+h7c/s4CWXKg==
-IronPort-SDR: 6a79702c_iFeRaeciwpdSOqGRwQl/R8+OK1OiDf/gflFA8omJ/fOFqkH
- dFmQ8bO7+EZ135rIjUgBUxk7eaGOcLFDLGGBD6g==
+	by prod-sympa-app.inria.fr (Postfix) with ESMTP id 6BA3F80F7C
+	for <cocci@sympa.inria.fr>; Mon, 10 Aug 2026 09:13:13 +0200 (CEST)
+X-CSE-ConnectionGUID: +IfYdIW7R2G1d2Zev1fVxw==
+X-CSE-MsgGUID: VwMAKJchSgS5KuLCWCei4Q==
+IronPort-SDR: 6a797a08_tTWDOYWh2IJ2Se2ArYzPHwMqLcBl9r9rl9gDxANMNutaD3m
+ DezGkizc2/Ni9G2k1IUtnAxIvmBiGyYqO1GAOLQ==
 X-ThreatScanner-Verdict: Negative
-X-IPAS-Result: =?us-ascii?q?A0E1ADOlbnlqhRJEz2haHQEBAQEJARIBBQUBTIEyBgELA?=
- =?us-ascii?q?YJAgQpfMwcISYgnhSuIXB0DnhsUgWgCDwEDAQ1ECwIEAQEBAgEDhH4CTxWNA?=
- =?us-ascii?q?wIfBgEEMgcOAQIEAwIDAQEBAQEBAQEBAQELAQEBBAEBAQIBAQIEAwEBAQECE?=
- =?us-ascii?q?AEBAQFASYZPDYJiATOCFiwNfQEBAQECAScTBgEBLgkBDwsYHBIQRgYTgwIBg?=
- =?us-ascii?q?iIHJCcDEQUBxGZ4gQEzgQGCDAEBBoEI3RMDBhQBgTgBiFwBhXhEglVpeicVB?=
- =?us-ascii?q?kCBTYEVgys+hCmGX4ESgRSBDIF4iwiFZlJ4HANZLAFVExcLBwWBI0MDgQYjS?=
+X-IPAS-Result: =?us-ascii?q?A0GVAgCHeXlqdxpEz2haHgEBCxIMggULghgpgQpfMwcIS?=
+ =?us-ascii?q?YRYiHqIeQOcRoNRAg8BAwENRAsCBAEBAQIEhH4CjWcCHwYBBDMGDgECBAMCA?=
+ =?us-ascii?q?wEBAQEBAQEBAQEBCwEBAQQBAQECAQECBAMBAQEBAhABQ0mGTw2CYgGBJIEmA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBHQINfQEBAQECASMPAQ0BATcBBAsLGAICGA4CAhBGBoMWg?=
+ =?us-ascii?q?iIHJCcDEQagCnqBMoEBggwBAQaBWxjcKAMGFYEKLohBHAEFboUFhAJ6JxUGQ?=
+ =?us-ascii?q?IFNgRWDKz6CYQECAYU5gmqCJoEMjAiGXlJ4HANZLAFVExcLBwWBI0MDgQYjS?=
  =?us-ascii?q?wUtHYEMFyEdFxceWBsGBRIgKkFEIwM+HUMFgU4CgXQ/Ixk2fIEJXoErKmQBA?=
- =?us-ascii?q?hAXRi4VgjUCgnaBLQQRC209NxQZBI8qIII/BgEBVyMJCgEFJlANgSABIT+Sf?=
- =?us-ascii?q?JAngiGBNYpDlReEKIwhlgeqbC6YWowQgXqKHotKhVGBbw4lgVwzGggwgyJQA?=
- =?us-ascii?q?xkPjiEZhCqDEchnJDUCOwIHAgcOAwuFQ4EDi1ZsYAEB?=
-IronPort-PHdr: A9a23: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
-IronPort-Data: A9a23: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
-IronPort-HdrOrdr: A9a23:s2opcqnMXyJBtEhkAhAS/uJhWBfpDfIG3DAbv31ZSRFFG/FwWf
- rBoB0+726StN9xYgBFpTnkAsO9qBznmKKdjbN8AV7mZniBhILKFvAG0aLHyz3kXwL58+tay7
- t4N5V5YeeAbmSS7/yb3ODQKb9Jq+VvsprY59s2pE0NcegFUc5dB1gQMHfjLnFL
-X-Talos-CUID: 9a23:fSJnuW2isGGInqqm2boYJrxfBv4bI3LN11HpPla3DEJnC5PFQn+OwfYx
-X-Talos-MUID: =?us-ascii?q?9a23=3ATQ7MRQ6g7s2GDabARuyVvW/rxoxC0YuNLhsduKl?=
- =?us-ascii?q?d+MnbPmtrZxyivBe4F9o=3D?=
+ =?us-ascii?q?hAXRi4VgjUCgnaBLQQRC209NxQZBI8qIIFTbAdhGgkFLwIvgU4BBnOlK4t4l?=
+ =?us-ascii?q?ReEKIwhhyeOYIQEnyKHRi6YWoJZhyiBL4JalWAEhVWBfiSBXDMaCDCDIlADG?=
+ =?us-ascii?q?Q+OIYE2AQmDA4RSxyYkNQIBOgIHAgcOAwuFQ4xZgUwBAQ?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+ XcdHQh5fa1wdaI9/QuMtZKY9NH1cQ4DFwkVUBo=
+IronPort-HdrOrdr: A9a23:5vfbtaC/afQRka7lHemM55DYdb4zR+YMi2TDGXoedfVwSL3+qy
+ nIpoV86faUskd0ZJhEo7q90ca7LE80maQY3WBVB8baYOCEghrMEKhH5YvmhxLnHij56PJFkZ
+ pnGpIOa+EYb2IbsS+S2mDReOrIguP3kpxA7t2+854Cd25Xg/4J1XYANjqm
+X-Talos-CUID: =?us-ascii?q?9a23=3A81COtGg+zchRGvKIJMm0GYSZLTJuMVzT/XvxHBC?=
+ =?us-ascii?q?CU0kwROenREHJ9p10jJ87?=
+X-Talos-MUID: =?us-ascii?q?9a23=3ABIa5tA7/o8VPbXDhdkRHL+HRxoxW/IGHK2IGka4?=
+ =?us-ascii?q?JgJSnKAhbBByQjWiOF9o=3D?=
 X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-AV: E=Sophos;i="6.25,215,1779141600"; 
-   d="scan'208";a="153946945"
-X-IronPort-Outbreak-Status: No, level 1, Phish - Phish
-X-MGA-submission: =?us-ascii?q?MDFyUEMYm7RwKiBR+gwfu+k7/soOpVAFrURkFf?=
- =?us-ascii?q?ROgyui/c8iDnB9/s5eFlbG3KrAQeRmiIKlPnI849iIrNWIjX4h4cHwWT?=
- =?us-ascii?q?pD+BnEEXAY/plh6ap6h7dJCTZ2A5sUyNr6cJSjfM4Uj4H1ASv4u8ROwy?=
- =?us-ascii?q?mjLZMXHScPSzUkAqqnxdfr/A=3D=3D?=
-Received: from out-93wp-a18.jellyfish.systems ([104.207.68.18])
-  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 08:31:08 +0200
+   d="scan'208";a="153949520"
+X-IronPort-Outbreak-Status: No, level 0, Unknown - Unknown
+X-MGA-submission: =?us-ascii?q?MDEtMNbBr/mTaEYgtHx6aoAgu8dXyedStm5/ye?=
+ =?us-ascii?q?JDwIs/GwxdRuQzUyad4CViZyU0eHwNjfroN7YoTYN+hmVjVr6VAPwer2?=
+ =?us-ascii?q?5wFtU7b9OR05iSk4A0Lz7OzSMcLA5vgFQ/YbpNOSENdFqwoSq5ehaToF?=
+ =?us-ascii?q?uGDHQp/Fn7/LzfCnpBuDvz5Q=3D=3D?=
+Received: from out-93wp-a26.jellyfish.systems ([104.207.68.26])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 09:13:12 +0200
 Received: from gurudas.dev (107-194-158-19.lightspeed.sntcca.sbcglobal.net [107.194.158.19])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.spacemail.com (Postfix) with ESMTPSA id 4hJPyh74zcz2x9F;
-	Mon, 10 Aug 2026 06:30:52 +0000 (UTC)
-Date: Sun, 9 Aug 2026 23:30:47 -0700
+	by mail.spacemail.com (Postfix) with ESMTPSA id 4hJQvP45D5z2xBB;
+	Mon, 10 Aug 2026 07:13:05 +0000 (UTC)
+Date: Mon, 10 Aug 2026 00:13:03 -0700
 From: Guru Das Srinagesh <linux@gurudas.dev>
 To: Julia Lawall <julia.lawall@inria.fr>
 Cc: Nicolas Palix <nicolas.palix@imag.fr>,
@@ -180,26 +181,27 @@ Cc: Nicolas Palix <nicolas.palix@imag.fr>,
 	Stephen Boyd <sboyd@kernel.org>, linux-kernel@vger.kernel.org,
 	cocci@inria.fr, Brian Masney <bmasney@redhat.com>,
 	linux-clk@vger.kernel.org
-Message-ID: <anlwF9n1KVaYcnH1@gurudas.dev>
+Message-ID: <anl5_3932XfoJH9P@gurudas.dev>
 Mail-Followup-To: Julia Lawall <julia.lawall@inria.fr>,
 	Nicolas Palix <nicolas.palix@imag.fr>,
 	Michael Turquette <mturquette@baylibre.com>,
 	Stephen Boyd <sboyd@kernel.org>, linux-kernel@vger.kernel.org,
 	cocci@inria.fr, Brian Masney <bmasney@redhat.com>,
 	linux-clk@vger.kernel.org
-References: <20260803-cocci-clk-register-v2-1-22e789f75f98@gurudas.dev>
- <b351e95-b3e5-b947-ccd3-64be2971e835@inria.fr>
+References: <20260809-cocci-clk-register-v3-1-60d036e13370@gurudas.dev>
+ <b93bd4ac-d76b-2dfe-6945-7111ff20f41b@inria.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <b351e95-b3e5-b947-ccd3-64be2971e835@inria.fr>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b93bd4ac-d76b-2dfe-6945-7111ff20f41b@inria.fr>
 X-Envelope-From: linux@gurudas.dev
 X-Validation-by: julia.lawall@inria.fr
-Subject: Re: [cocci] [PATCH v2] coccinelle: Detect clk_register()
+Subject: Re: [cocci] [PATCH v3] coccinelle: Detect clk_register()
  anti-pattern
 Reply-To: Guru Das Srinagesh <linux@gurudas.dev>
 X-Loop: cocci@inria.fr
-X-Sequence: 3694
+X-Sequence: 3696
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -212,12 +214,12 @@ List-Unsubscribe: <https://sympa.inria.fr/sympa/signoff/cocci>, <mailto:sympa_in
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-08/yBqMACJpJBj3b7fosOWu8Q>
+Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-08/NtNf-UCFdX2ApI6td14WQg>
 
-On Sun, Aug 09, 2026 at 10:00:22PM +0200, Julia Lawall wrote:
+On Mon, Aug 10, 2026 at 08:53:35AM +0200, Julia Lawall wrote:
 > 
 > 
-> On Mon, 3 Aug 2026, Guru Das Srinagesh wrote:
+> On Sun, 9 Aug 2026, Guru Das Srinagesh wrote:
 > 
 > > Enforce commit 12a0fd23e870 ("clk: Print an error when clk registration
 > > fails"): clk_register(), clk_hw_register(), and their devm_/of_ variants
@@ -227,7 +229,9 @@ On Sun, Aug 09, 2026 at 10:00:22PM +0200, Julia Lawall wrote:
 > > Two independent match families, one per return-value convention:
 > > pointer return checked via IS_ERR() (clk_register()/devm_clk_register()),
 > > and int return checked via a nonzero value (clk_hw_register()/
-> > devm_clk_hw_register()/of_clk_hw_register()).
+> > devm_clk_hw_register()/of_clk_hw_register()). Both families match
+> > regardless of whether the redundant message's "if" also has a trailing
+> > "else", via an "else S" clause with S otherwise unused.
 > >
 > > In "patch" mode, removing the redundant message also collapses the
 > > enclosing braces when only one statement remains, and deletes the whole
@@ -236,184 +240,59 @@ On Sun, Aug 09, 2026 at 10:00:22PM +0200, Julia Lawall wrote:
 > > Assisted-by: Claude:claude-sonnet-5 coccinelle
 > > Signed-off-by: Guru Das Srinagesh <linux@gurudas.dev>
 > > ---
-> > Add a Coccinelle semantic patch enforcing commit 12a0fd23e870 ("clk:
-> > Print an error when clk registration fails"): flags, and in "patch"
-> > mode removes, driver-side error prints that are now redundant after
-> > clk_register()/clk_hw_register() and their devm_/of_ variants.
-> >
-> > Two independent match families, one per return-value convention.
-> >
-> > Pointer return, IS_ERR()-checked (clk_register()/devm_clk_register()),
-> > e.g. drivers/clk/clk-xgene.c:152-157:
-> >
-> >     clk = clk_register(dev, &apmclk->hw);
-> >     if (IS_ERR(clk)) {
-> > -       pr_err("%s: could not register clk %s\n", __func__, name);
-> >         kfree(apmclk);
-> >         return NULL;
-> >     }
-> >
-> > Int return, nonzero-checked (clk_hw_register()/devm_clk_hw_register()/
-> > of_clk_hw_register()), e.g. drivers/clk/meson/meson-clkc-utils.c:49-54:
-> >
-> >     ret = devm_clk_hw_register(dev, hw);
-> > -   if (ret) {
-> > -           dev_err(dev, "registering %s clock failed\n",
-> > -                   hw->init->name);
-> > +   if (ret)
-> >         return ret;
-> > -   }
-> >
-> > Already-braceless single-statement case: the whole "if" is deleted
-> > instead of just the message, e.g. drivers/clk/ux500/clk-sysctrl.c:171-175:
-> >
-> >     clk_reg = devm_clk_register(clk->dev, &clk->hw);
-> > -   if (IS_ERR(clk_reg))
-> > -           dev_err(dev, "clk_sysctrl: clk_register failed\n");
-> >
-> >     return clk_reg;
-> >
-> > Testing:
-> > - Baseline: coccinelle 1.3.1, the Torvalds tree at v7.2-rc5.
-> > - "make coccicheck COCCI=<path> MODE=report M=drivers/clk" produced 73
-> >   hits and verified to have zero false positives.
-> > - "MODE=patch" verified separately on scratch copies of affected files
-> >   to confirm minimal, correct diffs.
-> >
-> > checkpatch flagged that this new file needs a MAINTAINERS entry, and I'd
-> > like to maintain it, so this adds a standalone entry rather than leaving
-> > the file uncovered. There's no direct precedent for an individual .cocci
-> > file getting its own entry - the only other named .cocci file in
-> > MAINTAINERS, scripts/coccinelle/api/string_choices.cocci, was added to
-> > the existing GENERIC STRING LIBRARY entry by that subsystem's
-> > maintainer, not as a new one. Happy to fold this into COMMON CLK
-> > FRAMEWORK or drop it entirely depending on what the maintainers prefer.
-> > ---
-> > Changes in v2 (Julia):
-> > - Use a literal function-name disjunction instead of a regex identifier,
-> >   enabling spatch's file pre-filter optimization.
-> > - In "patch" mode, drop braces when only one statement remains, and
-> >   delete the whole "if" when the message was the only (braceless)
-> >   statement.
-> > - Drop two never-observed condition variants (IS_ERR(clk) == 1, ret !=
-> >   0); keep the one with real precedent (ret < 0).
-> > - Link to v1: https://patch.msgid.link/20260802-cocci-clk-register-v1-1-df68afcb1eef@gurudas.dev
-> > ---
-> >  MAINTAINERS                               |   5 +
-> >  scripts/coccinelle/api/clk_register.cocci | 153 ++++++++++++++++++++++++++++++
-> >  2 files changed, 158 insertions(+)
-> >
-> > diff --git a/MAINTAINERS b/MAINTAINERS
-> > index 716acfc3d7c1..26788ccbf98c 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -6363,6 +6363,11 @@ L:	linux-clk@vger.kernel.org
-> >  S:	Maintained
-> >  F:	include/linux/clk.h
-> >
-> > +CLK_REGISTER() COCCINELLE CHECK
-> > +M:	Guru Das Srinagesh <linux@gurudas.dev>
-> > +S:	Maintained
-> > +F:	scripts/coccinelle/api/clk_register.cocci
-> > +
 > 
-> I don't think there needs to be a specific maintainer for this file.
+> Hello,
+> 
+> Thanks for the update, which I will look into shortly.
 
-Removed.
+Thank you for reviewing.
 
 > 
-> >  CLOCKSOURCE, CLOCKEVENT DRIVERS
-> >  M:	Daniel Lezcano <daniel.lezcano@kernel.org>
-> >  M:	Thomas Gleixner <tglx@kernel.org>
-> > diff --git a/scripts/coccinelle/api/clk_register.cocci b/scripts/coccinelle/api/clk_register.cocci
-> > new file mode 100644
-> > index 000000000000..86a8be92f2a2
-> > --- /dev/null
-> > +++ b/scripts/coccinelle/api/clk_register.cocci
-> > @@ -0,0 +1,153 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/// Remove error messages after clk registration failures, because
-> > +/// clk_register(), clk_hw_register(), and their variants already log
-> > +/// an error when they fail. See commit 12a0fd23e870 ("clk: Print an
-> > +/// error when clk registration fails").
-> > +//
-> > +// Confidence: Medium
-> > +// Options: --include-headers
-> > +
-> > +virtual patch
-> > +virtual context
-> > +virtual org
-> > +virtual report
-> > +
-> > +@depends on context@
-> > +expression clk;
-> > +identifier voidfn =~ "^(dev_err|dev_warn|pr_err|pr_warn)$";
-> > +@@
-> > +
-> > +clk = \(clk_register\|devm_clk_register\)(...);
-> > +if ( IS_ERR(clk) )
-> > +{
-> > +...
-> > +*voidfn(...);
-> > +...
-> > +}
+> But you are not structuring your patches in the right way.  The part above
+> the first --- is what will go into the git comit.  That looks fine.
 > 
-> This will only match an if with a then branch, no else branch.  There is
-> actually one case in the kernel where there is a relevant if with an else
-> branch, so you may as well extend this to match that cas too.  If you just
-> add else S, where S is a statement metavariable that is not used
-> elsewhere, then it will match either the case with an else or the case
-> with a then branch only.
-> 
-> Likewise for the other rules.
+> But I don't understand what is the big pile of text below the ---.  When
 
-Done, thank you for catching the edge case which I'm guessing is
-drivers/media/platform/microchip/microchip-isc-clk.c.
+That is the cover letter for the patch.
+
+I use the b4 tool [1] which is increasingly being used by kernel maintainers and
+contributors alike to work with LKML.
+
+When there is only one patch in a patchset/series, b4 puts the cover letter under the
+first --- of the patch as described in [2]:
+
+	When you only have a single patch, b4 should “mix-in” the contents of the cover
+	letter into the “under-the-cut” portion of the patch itself, where it serves as a
+	source of additional information for the reviewers, but never makes it into the
+	actual commit.
+
+[1]: https://b4.docs.kernel.org/en/latest/index.html 
+[2]: https://b4.docs.kernel.org/en/latest/contributor/prep.html#what-if-the-series-only-has-a-single-patch
+
+> there is a new version, I want to see what has changed as quickly as
+> possible.  So the changes in v3 should be the first thing that I see below
+> the ---, not the last thing.
+
+Sure thing - I will make sure to put the changelog right under the --- as you
+described for any future revisions.
 
 > 
-> [...]
-> 
-> > +@script:python depends on report@
-> > +p1 << r1.p1;
-> > +@@
-> > +
-> > +msg = "line %s is redundant because clk_register() already prints an error on failure" % (p1[0].line)
-> > +coccilib.report.print_report(p1[0], msg)
-> > +
-> > +@script:python depends on org@
-> > +p2 << r2.p2;
-> > +@@
-> > +
-> > +cocci.print_main(p2)
-> 
-> This code is not correct. print_main seens a string as the first argument
-> and a position (which you have) as the second argument.  You can make a
-> string in the same was as in the report rules.
-> 
-> The same is true for the other org mode rule.  If you don't have org mode,
-> you can still check that the code works by testing the semantic patch with
-> -D org.  It's just a text format.
-
-Done, sorry for the oversight.
-
+> For the following information, I'm not sure it should be here at all.
+> Either it is important, in which case it should be above the --- so people
+> in the future can easily benefit from it, or it is not important, in which
+> case it should be dropped.
 > 
 > julia
-> 
-> > +
-> > +@script:python depends on report@
-> > +p2 << r2.p2;
-> > +@@
-> > +
-> > +msg = "line %s is redundant because clk_hw_register() already prints an error on failure" % (p2[0].line)
-> > +coccilib.report.print_report(p2[0], msg)
-> >
-> > ---
-> > base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
-> > change-id: 20260802-cocci-clk-register-951d94251af4
-> >
-> > Best regards,
-> > --
-> > Guru Das Srinagesh <linux@gurudas.dev>
-> >
-> >
-> 
+
+For reviewers' convenience, the cover letter contains examples of the kind of
+transformations that this script will create when used which I think would be too
+verbose for inclusion in the commit message but useful for reviewing otherwise.
+
+If you feel it is not required/helpful, I could remove everything but the changelog
+from the cover letter for future revisions. Alternatively, I could put the changelog
+right at the top so that it appears right under the first --- with the examples and
+other stuff following that. Going with the former unless you say otherwise.
+
+Thank you.
+
+Guru Das.
