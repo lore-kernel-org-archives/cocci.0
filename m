@@ -4,21 +4,21 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E4FCAC5AD55
-	for <cocci@archiver.kernel.org>; Mon, 10 Aug 2026 13:00:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 38C1CC5DF6A
+	for <cocci@archiver.kernel.org>; Sun, 16 Aug 2026 08:01:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:in-reply-to:message-id:references:
    mime-version:subject:reply-to:sender:list-id:list-help:
    list-subscribe:list-unsubscribe:list-post:list-owner:
    list-archive;
-  bh=SK0uVMXKBvLDqzCJ0FaLrmDzbUdUESbnQv00OPAi1PI=;
-  b=R5VE77WZNTaQCrydDx9iy5sSOlxfz9n6Dqo/KuLbXNDRSxw6griGnf6P
-   xe/XANHhr4jGoH8mHyDg2XVrTUM+QZ2zXqNTA3YlfNHO112CwJFK6WEGr
-   l3nDJ2y62ZYg+/exF9dKq6X0AguMgNwtsI/1OSN/bHC/XPJOR7Bora1/Z
-   Q=;
-X-CSE-ConnectionGUID: Sl8bDog0Rf2eDoxFZpY1sA==
-X-CSE-MsgGUID: LUS0hyFjRxmwIcLJmvL8tw==
+  bh=U5u4V/KtzVbwsz6qbfYI3EG4teH3zLAIQDNOpvUHvRo=;
+  b=RhsGuF/j34jCcyYT07t8ZMFoyE/FATxq2QoKmhgb7o+8ir2NwuizRxnd
+   1SH+vbCCd8490+QwivH0IyJuLaLK5lddprkQI1ys+ygYQnLTUDsKq04Jo
+   HHdUm9eIOdB3ipXKoojfJXHek+tVV5azGW1tvHYaJ8zsIq8mnxSmcxmCx
+   A=;
+X-CSE-ConnectionGUID: +f4YXr8+Rj68FV5xjREdow==
+X-CSE-MsgGUID: aD68lGI5QR6izMQwEkOLyg==
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@prod-sympa-app.inria.fr
 Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
   domain of cocci-owner@inria.fr is inclined to not designate
@@ -38,37 +38,39 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@prod-sympa-app.inria.fr";
   x-conformance=spf_only
-X-IronPort-AV: E=Sophos;i="6.25,215,1779141600"; 
-   d="scan'208";a="289686579"
+X-IronPort-AV: E=Sophos;i="6.25,226,1779141600"; 
+   d="scan'208";a="290274688"
 Received: from prod-sympa-app.inria.fr ([128.93.162.27])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 10 Aug 2026 15:00:37 +0200
+  by mail2-relais-roc.national.inria.fr with ESMTP; 16 Aug 2026 10:01:22 +0200
 Received: by prod-sympa-app.inria.fr (Postfix, from userid 990)
-	id 84B82816A6; Mon, 10 Aug 2026 15:00:37 +0200 (CEST)
-Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by prod-sympa-app.inria.fr (Postfix) with ESMTP id 788788169D
-	for <cocci@sympa.inria.fr>; Mon, 10 Aug 2026 15:00:35 +0200 (CEST)
-X-CSE-ConnectionGUID: FQ8tflZuTHia0pzZKhEHKw==
-X-CSE-MsgGUID: ANVVolDBQC20/UPNcLuo6Q==
-X-IronPort-AV: E=Sophos;i="6.25,215,1779141600"; 
-   d="scan'208";a="153973074"
-Received: from dt-lawall.paris.inria.fr ([128.93.67.65])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 15:00:35 +0200
-Date: Mon, 10 Aug 2026 15:00:34 +0200 (CEST)
+	id D35A7813BD; Sun, 16 Aug 2026 10:01:21 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by prod-sympa-app.inria.fr (Postfix) with ESMTP id C1784813BD
+	for <cocci@sympa.inria.fr>; Sun, 16 Aug 2026 10:01:17 +0200 (CEST)
+X-CSE-ConnectionGUID: vxeGJ3IKRhy0CfnUKG2u2A==
+X-CSE-MsgGUID: fDQSmrgSSkiITOgrhC5Peg==
+X-IronPort-AV: E=Sophos;i="6.25,226,1779141600"; 
+   d="scan'208";a="290274675"
+Received: from 88-188-149-159.subs.proxad.net (HELO hadrien.home) ([88.188.149.159])
+  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2026 10:01:17 +0200
+Date: Sun, 16 Aug 2026 10:01:17 +0200 (CEST)
 From: Julia Lawall <julia.lawall@inria.fr>
-To: Sang-Heon Jeon <ekffu200098@gmail.com>
+To: Guru Das Srinagesh <linux@gurudas.dev>
 cc: Nicolas Palix <nicolas.palix@imag.fr>, 
-    Jani Nikula <jani.nikula@linux.intel.com>, cocci@inria.fr, 
-    linux-kernel@vger.kernel.org
-In-Reply-To: <20260806174953.401869-1-ekffu200098@gmail.com>
-Message-ID: <429fd2aa-3447-e16c-63b9-20f501940c1@inria.fr>
-References: <20260806174953.401869-1-ekffu200098@gmail.com>
+    Michael Turquette <mturquette@baylibre.com>, 
+    Stephen Boyd <sboyd@kernel.org>, linux-kernel@vger.kernel.org, 
+    cocci@inria.fr, Brian Masney <bmasney@redhat.com>, 
+    linux-clk@vger.kernel.org
+In-Reply-To: <20260809-cocci-clk-register-v3-1-60d036e13370@gurudas.dev>
+Message-ID: <bbc7fb40-7650-c81-6e19-f7baba188e86@inria.fr>
+References: <20260809-cocci-clk-register-v3-1-60d036e13370@gurudas.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Subject: Re: [cocci] [PATCH v2] coccinelle: misc: add
- cond_return_no_effect.cocci
+Subject: Re: [cocci] [PATCH v3] coccinelle: Detect clk_register()
+ anti-pattern
 Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 3675
+X-Sequence: 3676
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -81,217 +83,324 @@ List-Unsubscribe: <https://sympa.inria.fr/sympa/signoff/cocci>, <mailto:sympa_in
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-08/-_DUbbrqF6IFKdpjqky2KA>
+Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-08/Qrzk_cBSVH7xMtMKetD3Tw>
 
-Jani,
 
-Yes or no?  The resulting patches have mostly gotten a positive response
-so far, but maybe this is something that one doesn't mind seeing from time
-to time, but doesn't want to be bothered with on a daily basis?
 
-It is possible to make all the rules depend on something that has to be
-provided as a special argument on the command line.  This introduces a
-small barrier to entry...
+On Sun, 9 Aug 2026, Guru Das Srinagesh wrote:
 
-thanks,
+> Enforce commit 12a0fd23e870 ("clk: Print an error when clk registration
+> fails"): clk_register(), clk_hw_register(), and their devm_/of_ variants
+> log their own error on failure, so driver-side error prints after these
+> calls are redundant.
+
+Hello,
+
+This neglects a few cases found in current code: pr_crit, printk, and
+DRM_DEV_ERROR
+
+A more extreme solution would be to not name the printing functions
+explicitly, but have it be any function that is not returning a value
+and that is taking a string as an argument.
+
+You can match a string with a metavariable like this:
+
+constant char [] c;
+
+and then the call site would be:
+
+*voidfn(...,c,...);
+
+another issue is that in one case, removing the error message leaves:
+
+ret = PTR_ERR(inno->phyclk);
+return ret;
+
+This could be cleaned up to just return PTR_ERR(inno->phyclk)
+
 julia
 
-On Fri, 7 Aug 2026, Sang-Heon Jeon wrote:
 
-> Add a new Coccinelle script which removes a conditional return that
-> has no effect:
 >
-> 	if (ret)
-> 		return ret;
-> 	return ret;
+> Two independent match families, one per return-value convention:
+> pointer return checked via IS_ERR() (clk_register()/devm_clk_register()),
+> and int return checked via a nonzero value (clk_hw_register()/
+> devm_clk_hw_register()/of_clk_hw_register()). Both families match
+> regardless of whether the redundant message's "if" also has a trailing
+> "else", via an "else S" clause with S otherwise unused.
 >
-> Both branches return the same value, so the check can be removed.
-> The condition can also be a negation or a comparison with a
-> constant. Such code is usually a leftover from removing a
-> statement between the two returns.
+> In "patch" mode, removing the redundant message also collapses the
+> enclosing braces when only one statement remains, and deletes the whole
+> "if" when the message was already the only (braceless) statement.
 >
-> When a local variable is assigned right before the check, the
-> assignment and the two returns turn into a single return of the
-> assigned expression, and the declaration is dropped if nothing
-> else uses the variable. Otherwise only the check is removed.
->
-> The fold can delete comments between the check and the final
-> return, so the generated patch should be reviewed.
->
-> Signed-off-by: Sang-Heon Jeon <ekffu200098@gmail.com>
+> Assisted-by: Claude:claude-sonnet-5 coccinelle
+> Signed-off-by: Guru Das Srinagesh <linux@gurudas.dev>
 > ---
-> Changes from v1 [1]
-> - fix unexpected removal of global or static declarations, as Julia
->   suggested
-> - send the patch separately from the treewide series, as Mark
->   suggested
+> Add a Coccinelle semantic patch enforcing commit 12a0fd23e870 ("clk:
+> Print an error when clk registration fails"): flags, and in "patch"
+> mode removes, driver-side error prints that are now redundant after
+> clk_register()/clk_hw_register() and their devm_/of_ variants.
 >
-> [1] https://lore.kernel.org/all/20260723184538.3888637-1-ekffu200098@gmail.com/
+> Two independent match families, one per return-value convention.
+>
+> Pointer return, IS_ERR()-checked (clk_register()/devm_clk_register()),
+> e.g. drivers/clk/clk-xgene.c:152-157:
+>
+>     clk = clk_register(dev, &apmclk->hw);
+>     if (IS_ERR(clk)) {
+> -       pr_err("%s: could not register clk %s\n", __func__, name);
+>         kfree(apmclk);
+>         return NULL;
+>     }
+>
+> Int return, nonzero-checked (clk_hw_register()/devm_clk_hw_register()/
+> of_clk_hw_register()), e.g. drivers/clk/meson/meson-clkc-utils.c:49-54:
+>
+>     ret = devm_clk_hw_register(dev, hw);
+> -   if (ret) {
+> -           dev_err(dev, "registering %s clock failed\n",
+> -                   hw->init->name);
+> +   if (ret)
+>         return ret;
+> -   }
+>
+> Already-braceless single-statement case: the whole "if" is deleted
+> instead of just the message, e.g. drivers/clk/ux500/clk-sysctrl.c:171-175:
+>
+>     clk_reg = devm_clk_register(clk->dev, &clk->hw);
+> -   if (IS_ERR(clk_reg))
+> -           dev_err(dev, "clk_sysctrl: clk_register failed\n");
+>
+>     return clk_reg;
+>
+> Matches regardless of whether the "if" also has a trailing "else", via
+> an "else S" clause with S otherwise unused, e.g.
+> drivers/media/platform/microchip/microchip-isc-clk.c:269-275:
+>
+>     isc_clk->clk = clk_register(isc->dev, &isc_clk->hw);
+> -   if (IS_ERR(isc_clk->clk)) {
+> -           dev_err(isc->dev, "%s: clock register fail\n", clk_name);
+> +   if (IS_ERR(isc_clk->clk))
+>         return PTR_ERR(isc_clk->clk);
+> -   } else if (id == ISC_MCK) {
+> +   else if (id == ISC_MCK) {
+>         of_clk_add_provider(np, of_clk_src_simple_get, isc_clk->clk);
+>     }
+>
+> Testing:
+> - Baseline: coccinelle 1.3.1, the Torvalds tree at v7.2-rc5.
+> - "make coccicheck COCCI=<path> MODE=report M=drivers/clk" produced 73
+>   hits, unchanged after this revision, and verified to have zero false
+>   positives.
+> - All four modes (report/context/patch/org) verified via "make
+>   coccicheck COCCI=<path> MODE=<mode> [M=<path>]" against the
+>   drivers/clk baseline and the new else-branch case above.
+> - "make coccicheck COCCI=<path> MODE=report" (whole tree, no M=) finds
+>   94 hits; the 21 outside drivers/clk are not part of this series.
 > ---
-> In the v1 thread, Jani shared the history of removing a similar
-> script that matched an explicit return 0 at the end [1].
+> Changes in v3 (Julia):
+> - Match an "if" regardless of a trailing "else" (else S, S unused),
+>   across context/patch/report/org rules for both families. Found via
+>   this to be a real, previously-invisible case in
+>   drivers/media/platform/microchip/microchip-isc-clk.c.
+> - Fix the org-mode script rules: cocci.print_main() takes (message,
+>   position), not just a position; the previous calls omitted the
+>   message entirely.
+> - Drop the MAINTAINERS addition from v2 per Julia's comment that a
+>   specific maintainer isn't needed for this file.
+> - Link to v2: https://patch.msgid.link/20260803-cocci-clk-register-v2-1-22e789f75f98@gurudas.dev
 >
-> Current status of the cleanup patches, two weeks after v1:
-> - 17/35 merged (2 sites changed to explicit return 0 as requested)
-> - 3/35 reviewed
-> - 15/35 no response yet
->
-> [1] https://lore.kernel.org/all/0ee1ef4aa7daa908bf28397ccc639c89b6aabd9c@intel.com/
+> Changes in v2 (Julia):
+> - Use a literal function-name disjunction instead of a regex identifier,
+>   enabling spatch's file pre-filter optimization.
+> - In "patch" mode, drop braces when only one statement remains, and
+>   delete the whole "if" when the message was the only (braceless)
+>   statement.
+> - Drop two never-observed condition variants (IS_ERR(clk) == 1, ret !=
+>   0); keep the one with real precedent (ret < 0).
+> - Link to v1: https://patch.msgid.link/20260802-cocci-clk-register-v1-1-df68afcb1eef@gurudas.dev
 > ---
->  .../misc/cond_return_no_effect.cocci          | 143 ++++++++++++++++++
->  1 file changed, 143 insertions(+)
->  create mode 100644 scripts/coccinelle/misc/cond_return_no_effect.cocci
+>  scripts/coccinelle/api/clk_register.cocci | 165 ++++++++++++++++++++++++++++++
+>  1 file changed, 165 insertions(+)
 >
-> diff --git a/scripts/coccinelle/misc/cond_return_no_effect.cocci b/scripts/coccinelle/misc/cond_return_no_effect.cocci
+> diff --git a/scripts/coccinelle/api/clk_register.cocci b/scripts/coccinelle/api/clk_register.cocci
 > new file mode 100644
-> index 000000000000..334a9bcd2d6e
+> index 000000000000..150279827bf4
 > --- /dev/null
-> +++ b/scripts/coccinelle/misc/cond_return_no_effect.cocci
-> @@ -0,0 +1,143 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +///
-> +/// Remove a conditional return that has no effect:
-> +///
-> +///	if (ret)
-> +///		return ret;
-> +///	return ret;
-> +///
-> +/// Both branches return the same variable, so the check has no
-> +/// effect. It can also be a negation or a comparison with a
-> +/// constant.
-> +///
-> +/// When a local variable is assigned right before the check, the
-> +/// assignment and the two returns turn into a single return of the
-> +/// assigned expression, and the declaration is dropped if nothing
-> +/// else uses the variable. Otherwise only the check is removed.
-> +///
-> +// Such code is usually a leftover from removing a statement between
-> +// the two returns.
+> +++ b/scripts/coccinelle/api/clk_register.cocci
+> @@ -0,0 +1,165 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/// Remove error messages after clk registration failures, because
+> +/// clk_register(), clk_hw_register(), and their variants already log
+> +/// an error when they fail. See commit 12a0fd23e870 ("clk: Print an
+> +/// error when clk registration fails").
 > +//
-> +// Confidence: High
-> +// Copyright: (C) 2026 Sang-Heon Jeon
-> +// Comments: The fold can delete comments between the check and the
-> +//           final return, so review the generated patch.
-> +// Options: --no-includes --include-headers
+> +// Confidence: Medium
+> +// Options: --include-headers
 > +
 > +virtual patch
 > +virtual context
 > +virtual org
 > +virtual report
 > +
-> +//----------------------------------------------------------
-> +//  For patch mode
-> +//----------------------------------------------------------
-> +
-> +@collect depends on patch@
-> +identifier ret;
-> +expression E;
-> +binary operator cmp = {<, <=, >, >=, ==, !=};
-> +constant C;
-> +@@
-> +	ret = E;
-> +	if (\(ret \| !ret \| ret cmp C\))
-> +		return ret;
-> +	return ret;
-> +
-> +@depends on patch@
-> +local idexpression ret;
-> +expression E;
-> +binary operator cmp = {<, <=, >, >=, ==, !=};
-> +constant C;
-> +@@
-> +-	ret = E;
-> +-	if (\(ret \| !ret \| ret cmp C\))
-> +-		return ret;
-> +-	return ret;
-> ++	return E;
-> +
-> +@depends on patch@
-> +idexpression ret;
-> +binary operator cmp = {<, <=, >, >=, ==, !=};
-> +constant C;
-> +@@
-> +-	if (\(ret \| !ret \| ret cmp C\))
-> +-		return ret;
-> +	return ret;
-> +
-> +@depends on patch disable optional_storage@
-> +type T;
-> +identifier collect.ret;
-> +declaration D;
+> +@depends on context@
+> +expression clk;
+> +identifier voidfn =~ "^(dev_err|dev_warn|pr_err|pr_warn)$";
 > +statement S;
 > +@@
-> +(
-> +-	T ret;
-> +(
-> +	D
-> +|
-> +	S
-> +)
-> +&
-> +	T ret;
-> +	... when != ret
-> +	    when strict
-> +)
 > +
-> +@depends on patch disable optional_storage@
-> +type T;
-> +identifier collect.ret;
-> +constant C;
-> +declaration D;
+> +clk = \(clk_register\|devm_clk_register\)(...);
+> +if ( IS_ERR(clk) )
+> +{
+> +...
+> +*voidfn(...);
+> +...
+> +}
+> +else S
+> +
+> +@depends on patch@
+> +expression clk;
+> +identifier voidfn =~ "^(dev_err|dev_warn|pr_err|pr_warn)$";
+> +@@
+> +
+> +clk = \(clk_register\|devm_clk_register\)(...);
+> +-if ( IS_ERR(clk) )
+> +-voidfn(...);
+> +
+> +@depends on patch@
+> +expression clk;
+> +identifier voidfn =~ "^(dev_err|dev_warn|pr_err|pr_warn)$";
+> +statement S, S_else;
+> +@@
+> +
+> +clk = \(clk_register\|devm_clk_register\)(...);
+> +if ( IS_ERR(clk) )
+> +(
+> +-{
+> +-voidfn(...);
+> +S
+> +-}
+> +|
+> +{
+> +...
+> +-voidfn(...);
+> +...
+> +}
+> +)
+> +else S_else
+> +
+> +@r1 depends on org || report@
+> +position p1;
+> +expression clk;
+> +identifier voidfn =~ "^(dev_err|dev_warn|pr_err|pr_warn)$";
 > +statement S;
 > +@@
-> +(
-> +-	T ret = C;
-> +(
-> +	D
-> +|
-> +	S
-> +)
-> +&
-> +	T ret = C;
-> +	... when != ret
-> +	    when strict
-> +)
 > +
-> +
-> +//----------------------------------------------------------
-> +//  For context mode
-> +//----------------------------------------------------------
+> +clk = \(clk_register\|devm_clk_register\)(...);
+> +if ( IS_ERR(clk) )
+> +{
+> +...
+> +voidfn@p1(...);
+> +...
+> +}
+> +else S
 > +
 > +@depends on context@
-> +idexpression ret;
-> +binary operator cmp = {<, <=, >, >=, ==, !=};
-> +constant C;
+> +expression ret;
+> +identifier voidfn =~ "^(dev_err|dev_warn|pr_err|pr_warn)$";
+> +statement S;
 > +@@
-> +*	if (\(ret \| !ret \| ret cmp C\))
-> +*		return ret;
-> +	return ret;
 > +
-> +//----------------------------------------------------------
-> +//  For org and report mode
-> +//----------------------------------------------------------
+> +ret = \(clk_hw_register\|devm_clk_hw_register\|of_clk_hw_register\)(...);
+> +if ( \( ret \| ret < 0 \) )
+> +{
+> +...
+> +*voidfn(...);
+> +...
+> +}
+> +else S
 > +
-> +@r depends on org || report@
-> +idexpression ret;
-> +binary operator cmp = {<, <=, >, >=, ==, !=};
-> +constant C;
-> +position p;
+> +@depends on patch@
+> +expression ret;
+> +identifier voidfn =~ "^(dev_err|dev_warn|pr_err|pr_warn)$";
 > +@@
-> +	if@p (\(ret \| !ret \| ret cmp C\))
-> +		return ret;
-> +	return ret;
+> +
+> +ret = \(clk_hw_register\|devm_clk_hw_register\|of_clk_hw_register\)(...);
+> +-if ( \( ret \| ret < 0 \) )
+> +-voidfn(...);
+> +
+> +@depends on patch@
+> +expression ret;
+> +identifier voidfn =~ "^(dev_err|dev_warn|pr_err|pr_warn)$";
+> +statement S, S_else;
+> +@@
+> +
+> +ret = \(clk_hw_register\|devm_clk_hw_register\|of_clk_hw_register\)(...);
+> +if ( \( ret \| ret < 0 \) )
+> +(
+> +-{
+> +-voidfn(...);
+> +S
+> +-}
+> +|
+> +{
+> +...
+> +-voidfn(...);
+> +...
+> +}
+> +)
+> +else S_else
+> +
+> +@r2 depends on org || report@
+> +position p2;
+> +expression ret;
+> +identifier voidfn =~ "^(dev_err|dev_warn|pr_err|pr_warn)$";
+> +statement S;
+> +@@
+> +
+> +ret = \(clk_hw_register\|devm_clk_hw_register\|of_clk_hw_register\)(...);
+> +if ( \( ret \| ret < 0 \) )
+> +{
+> +...
+> +voidfn@p2(...);
+> +...
+> +}
+> +else S
 > +
 > +@script:python depends on org@
-> +p << r.p;
+> +p1 << r1.p1;
 > +@@
-> +cocci.print_main("WARNING: conditional return with no effect (both branches return the same value)", p)
+> +
+> +msg = "line %s is redundant because clk_register() already prints an error on failure" % (p1[0].line)
+> +cocci.print_main(msg, p1)
 > +
 > +@script:python depends on report@
-> +p << r.p;
+> +p1 << r1.p1;
 > +@@
-> +coccilib.report.print_report(p[0], "WARNING: conditional return with no effect (both branches return the same value)")
+> +
+> +msg = "line %s is redundant because clk_register() already prints an error on failure" % (p1[0].line)
+> +coccilib.report.print_report(p1[0], msg)
+> +
+> +@script:python depends on org@
+> +p2 << r2.p2;
+> +@@
+> +
+> +msg = "line %s is redundant because clk_hw_register() already prints an error on failure" % (p2[0].line)
+> +cocci.print_main(msg, p2)
+> +
+> +@script:python depends on report@
+> +p2 << r2.p2;
+> +@@
+> +
+> +msg = "line %s is redundant because clk_hw_register() already prints an error on failure" % (p2[0].line)
+> +coccilib.report.print_report(p2[0], msg)
+>
+> ---
+> base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
+> change-id: 20260802-cocci-clk-register-951d94251af4
+>
+> Best regards,
 > --
-> 2.43.0
+> Guru Das Srinagesh <linux@gurudas.dev>
 >
 >
