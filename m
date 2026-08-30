@@ -4,21 +4,21 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 72812C61DBD
-	for <cocci@archiver.kernel.org>; Fri, 28 Aug 2026 16:09:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1183FC61DB9
+	for <cocci@archiver.kernel.org>; Sun, 30 Aug 2026 09:22:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=date:from:to:cc:in-reply-to:message-id:references:
-   mime-version:subject:reply-to:sender:list-id:list-help:
-   list-subscribe:list-unsubscribe:list-post:list-owner:
-   list-archive;
-  bh=VTHvxHk58Hy9yWVXIJFZsnvlgi5O/jd00ePVFdBnr0M=;
-  b=ucFzNwmWciTLnWREY2POm6bqRlBDvImVtzq9VA5+0JG/QKwzg5NdE6ys
-   jpaXzJOFngsmrt6uEiEN0rwqJ00VlK54FSuRPnJXykYpWfmaK1eHiDeLo
-   BErvMp/18FJYgb2epxMuvc/X2h0PDckW2R3CzpnxghvM/nbhOWF6IJrmf
-   8=;
-X-CSE-ConnectionGUID: X7VZ8WtySdCY0BYjI5FB5A==
-X-CSE-MsgGUID: IGS4rd1hQs+lZmSl+kM7Ag==
+  h=date:from:to:cc:message-id:in-reply-to:references:
+   mime-version:content-transfer-encoding:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=ghTUeDMLtevbpI2kelg7teyoeNgEh4fqMmUgF/ewQFA=;
+  b=kg1d2qPeUnoZq0YCROAlJEL0wEXuJ7wThPj6C/DCvzAfU9HH4UWchLv7
+   MilNTByhZzzyElfPLmNsyKqvCzHf2ayvNMI8TXRybLVT9FWmDQNwuZF+N
+   bC+2adFKTM4k1CLrSzeAmWy/z3c8Sk6vAzKbr3GTJ8tz09bSN1vwsdSWh
+   k=;
+X-CSE-ConnectionGUID: WPZkzJhRTauUCRy+hJNfRA==
+X-CSE-MsgGUID: ocLo+m0uR7iflYPG1Mr2Lw==
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@prod-sympa-app.inria.fr
 Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
   domain of cocci-owner@inria.fr is inclined to not designate
@@ -38,36 +38,66 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@prod-sympa-app.inria.fr";
   x-conformance=spf_only
-X-IronPort-AV: E=Sophos;i="6.25,248,1779141600"; 
-   d="scan'208";a="292056094"
+X-IronPort-AV: E=Sophos;i="6.25,251,1779141600"; 
+   d="scan'208";a="292178063"
 Received: from prod-sympa-app.inria.fr ([128.93.162.27])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 28 Aug 2026 18:09:38 +0200
+  by mail2-relais-roc.national.inria.fr with ESMTP; 30 Aug 2026 11:22:21 +0200
 Received: by prod-sympa-app.inria.fr (Postfix, from userid 990)
-	id 3049781AFB; Fri, 28 Aug 2026 18:09:38 +0200 (CEST)
+	id ECEEE805B0; Sun, 30 Aug 2026 11:22:20 +0200 (CEST)
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by prod-sympa-app.inria.fr (Postfix) with ESMTP id 2689D802FC
-	for <cocci@sympa.inria.fr>; Fri, 28 Aug 2026 18:09:37 +0200 (CEST)
-X-CSE-ConnectionGUID: FDz94qMtSJ6RQ0L/wZIqaA==
-X-CSE-MsgGUID: AXz4ZtmBQbOUCGb7Eb4Mnw==
-X-IronPort-AV: E=Sophos;i="6.25,248,1779141600"; 
-   d="scan'208";a="292056086"
-Received: from dt-lawall.paris.inria.fr ([128.93.67.65])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2026 18:09:37 +0200
-Date: Fri, 28 Aug 2026 18:09:37 +0200 (CEST)
+	by prod-sympa-app.inria.fr (Postfix) with ESMTP id 2A7FF805B0
+	for <cocci@sympa.inria.fr>; Sun, 30 Aug 2026 11:22:19 +0200 (CEST)
+X-CSE-ConnectionGUID: 8SaXmtmURqSY86HGyiTpbQ==
+X-CSE-MsgGUID: GrOCKUOJTI6E86+mvvYlBg==
+X-ThreatScanner-Verdict: Negative
+IronPort-Data: A9a23:fk3knaiy1l7AZqsuCtF65uupX1615xEKZh0ujC45NGQN5FlHY01je
+ htvXzjXP/7eNGrwL49yb4/i8BsGv5bdyNAyGwQ4pShhRioW8JqUDtmncnv9bniYRiHhZBI+v
+ p9GMrEsD+htEySC/k/1WlTFhSMhvU1dbuOkUIYoAggoG0k8Dntn0Us98wIAqtYAqcCjBA+Qs
+ s/FrcTaOVu0sxZ5KWt8B5ir8XuDh9ys/mlF1rACTaoT5gGGxyNEVMh3yZyZdBMUfKEERoZWe
+ M6YlNlVzkuBlz8xB9WslKrMc0Fiatb6IQiUh3NKbLOpix5EqzZa+v5T2C00NC+7Ix3Q9zxA4
+ I0lWa6YEG/FDYWV8AgpaCS0JgkiVUFw0O+ecCLn6aR/+GWdG5fk660G4EjbpuT08M4vaY1F3
+ aVwxDzg8nlvLg95qV62YrAEuygtECXkFNMks0Fl0TTkN+8dcMCdY4rb5ONA1g5l06iiHd6GD
+ yYYQShkd06FeAFIIFpGTpM4huahwHflG9FagAvP9exmuC6KkFY3jNABM/KNEjCObcdImkeR4
+ GbP4G39BjkbMsaewHyL6BpAg8eVzHmiB9JKSeHQGvhCr0e07U8uLz8qdAWW8af6j1CgatZ1J
+ BlBksYphe1onKCxdfHwXBO2vSTc5kZNC/JfFuQ77EeGza+8ywCYDW8ARyUHcNUitd8eRDkj2
+ RmHhbvBDjtku7y9UmOY7r7SrDWoOCFTI3VqTSsFSxYVptruuoc+ijrRQdt5Vq24lNv4HXf32
+ T/ikcQlr6cYlpROzLm8512WxTOqvJnACAAvjunKYl+YAspCTNbNT+SVBZLztJ6s8K7xopi9U
+ Hk4dwy2/usVV9SWiCuXTbRLHbez5v/DPie0bZuD2XU+32zFxpJhVdg4DPJCyINBM8AeeDavb
+ lW7VcZ5+spIJHXzBUNoS9vZNvnGBpQM2Tgouj44ozaOjlVMmNe7wRxT
+IronPort-HdrOrdr: A9a23:HjcDYa8/JtjS1LXOLIJuk+DxI+orL9Y04lQ7vn2YcXduA6mlfq
+ GV7ZcmPHrP41wssR4b9OxoR5PwOU80maQY3WBpB8bFYOC+ghrOEGgA1+vfKl/bdREWn9Q1vZ
+ uIGJIeNDSfNzdHZeGQ2njbLz4aq+P3lJxBvIzlvg5QpAhRGtpd0zs=
+X-Talos-CUID: 9a23:ccljnWD0ql+s8dX6E3lc/X4RBsUYSGTm/SeOA2CpCFpxQoTAHA==
+X-Talos-MUID: 9a23:en3wEQg8YKGMNxPAuom4qcMpG91PyIeTL2IxsMsr65fHMDJuCjO3g2Hi
+X-IronPort-AV: E=Sophos;i="6.25,251,1779141600"; 
+   d="scan'208";a="292178054"
+X-IronPort-Outbreak-Status: No, level 0, Unknown - Unknown
+X-MGA-submission: =?us-ascii?q?MDHCmgQCyeqDItQtj02xmrD6W+m7rfy9Ya92LD?=
+ =?us-ascii?q?7xJfjOiO3nmGgUOkAHghmIXUyKi4VnMJc/2pYqdjaExPNMp5OQb1e/OT?=
+ =?us-ascii?q?4R0dTdwvCsQA3HCUhXHc8fSd3E6+DJOwMxMyWEeefiNwfnJ/H0nydXX7?=
+ =?us-ascii?q?j8B8SwoVxnImEAeF/6PCuWqA=3D=3D?=
+Received: from zcs2-store9.inria.fr ([128.93.142.4])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 30 Aug 2026 11:22:19 +0200
+Date: Sun, 30 Aug 2026 11:22:19 +0200 (CEST)
 From: Julia Lawall <julia.lawall@inria.fr>
-To: Markus Elfring <Markus.Elfring@web.de>
-cc: Julia Lawall <julia.lawall@inria.fr>, cocci@inria.fr, 
-    kernel-janitors@vger.kernel.org
-In-Reply-To: <3e20eaeb-797e-47e9-8dee-a6c97f360a46@web.de>
-Message-ID: <1adbaba0-d3be-a8f7-54ef-933a4fe02250@inria.fr>
-References: <9e729258-a720-4b8f-b0f0-e84f3a984aef@web.de> <a0b9259-987b-1c92-2e86-3409ecf87e@inria.fr> <b2fd77fe-fc97-412e-a5d1-69b88e27f61b@web.de> <47b6b35-2cfc-b5e-f96-8ec6548cd9@inria.fr> <3e20eaeb-797e-47e9-8dee-a6c97f360a46@web.de>
+To: Sang-Heon Jeon <ekffu200098@gmail.com>
+Cc: nicolas palix <nicolas.palix@imag.fr>, cocci <cocci@inria.fr>, 
+	linux-kernel <linux-kernel@vger.kernel.org>
+Message-ID: <161516053.8619221.1788081739076.JavaMail.zimbra@inria.fr>
+In-Reply-To: <20260823161826.3805598-5-ekffu200098@gmail.com>
+References: <20260823161826.3805598-1-ekffu200098@gmail.com> <20260823161826.3805598-5-ekffu200098@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1769865536-1787933377=:104528"
-Subject: Re: [cocci] Improving support for replacing expression parts by
- SmPL
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+X-Originating-IP: [88.188.149.159]
+X-Mailer: Zimbra 10.1.20_GA_4893 (ZimbraWebClient - FF154 (Linux)/10.1.20_GA_4894)
+Thread-Topic: coccinelle: pool_zalloc-simple: drop the pci_pool_alloc rules
+Thread-Index: Z+Nmc7pw3/2DslLTxqGswtDDrCRUcA==
+Subject: Re: [cocci] [PATCH 4/7] coccinelle: pool_zalloc-simple: drop the
+ pci_pool_alloc rules
 Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 3722
+X-Sequence: 3723
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -80,62 +110,86 @@ List-Unsubscribe: <https://sympa.inria.fr/sympa/signoff/cocci>, <mailto:sympa_in
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-08/T2alrrHPVJ1iwhC89FYsqQ>
-
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-1769865536-1787933377=:104528
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-08/lnr4oPsEfJLXEgJBijuqpw>
 
 
 
-On Fri, 28 Aug 2026, Markus Elfring wrote:
+----- Mail original -----
+> De: "Sang-Heon Jeon" <ekffu200098@gmail.com>
+> =C0: "Julia Lawall" <Julia.Lawall@inria.fr>, "nicolas palix" <nicolas.pal=
+ix@imag.fr>
+> Cc: "cocci" <cocci@inria.fr>, "linux-kernel" <linux-kernel@vger.kernel.or=
+g>
+> Envoy=E9: Dimanche 23 Ao=FBt 2026 18:18:16
+> Objet: [PATCH 4/7] coccinelle: pool_zalloc-simple: drop the pci_pool_allo=
+c rules
 
-> >> I got the impression that some expression parts would be replaceable.
-> > If you expected it to be replaced, you have to specify with what.
->
-> I would like to achieve something also for another more detailed SmPL script.
->
-> See also:
-> https://elixir.bootlin.com/linux/v7.2/source/include/net/pkt_sched.h#L128-L134
->
->
-> SmPL code sketch:
-> @replacements@
-> expression …, dev, …;
-> @@
-> (
-> -container_of ( link , struct tcx_link , link )
-> +tcx_link(link)
-> |
-> - READ_ONCE ( dev -> mtu ) + dev -> hard_header_len
-> +psched_mtu(dev)
-> |
-> …
-> |
-> -refcount_inc_not_zero ( & r -> refcount )
-> +p9_req_try_get(r)
-> )
->
->
-> Markus_Elfring@Sonne:~> spatch --parse-cocci /home/altes_Heim2/elfring/Projekte/Bau/Linux/scripts/Coccinelle/list_inline_non-void_functions5-net-20251114-adjusted.cocci
-> …
-> minus: parse error:
->   File "/home/altes_Heim2/elfring/Projekte/Bau/Linux/scripts/Coccinelle/list_inline_non-void_functions5-net-20251114-adjusted.cocci", line 8, column 21, charpos = 2685
->   around = 'mtu',
->   whole content = - READ_ONCE ( dev -> mtu ) + dev -> hard_header_len
+> pci_pool_alloc() and pci_pool_zalloc() were removed by commit
+> 88dee3b0efe4 ("PCI: Remove unused pci_pool wrappers").
+>=20
+> So drop the pci_pool_alloc rules.
+>=20
+> No functional change.
 
-Well, it seems that you have not provided a complete semantic patch, since
-there are ...s in the list of metavariables, so I can't answer the
-question.
+Applied.  In the last SmPL rule, I removed the \(\) in the + code and move =
+the @p one space to the left, to more obviously attach to the =3D.
 
 julia
 
->
->
-> Regards,
-> Markus
->
---8323329-1769865536-1787933377=:104528--
+> Signed-off-by: Sang-Heon Jeon <ekffu200098@gmail.com>
+> ---
+> .../api/alloc/pool_zalloc-simple.cocci          | 17 +++--------------
+> 1 file changed, 3 insertions(+), 14 deletions(-)
+>=20
+> diff --git a/scripts/coccinelle/api/alloc/pool_zalloc-simple.cocci
+> b/scripts/coccinelle/api/alloc/pool_zalloc-simple.cocci
+> index 9c61a23b34db..2c36fb70e0ab 100644
+> --- a/scripts/coccinelle/api/alloc/pool_zalloc-simple.cocci
+> +++ b/scripts/coccinelle/api/alloc/pool_zalloc-simple.cocci
+> @@ -5,7 +5,7 @@
+> // Copyright: (C) 2015 Intel Corp.
+> // Options: --no-includes --include-headers
+> //
+> -// Keywords: dma_pool_zalloc, pci_pool_zalloc
+> +// Keywords: dma_pool_zalloc
+> //
+>=20
+> virtual context
+> @@ -22,7 +22,7 @@ expression x;
+> statement S;
+> @@
+>=20
+> -* x =3D \(dma_pool_alloc\|pci_pool_alloc\)(...);
+> +* x =3D dma_pool_alloc(...);
+>   if ((x=3D=3DNULL) || ...) S
+> * memset(x,0, ...);
+>=20
+> @@ -41,17 +41,6 @@ statement S;
+>   if ((x=3D=3DNULL) || ...) S
+> - memset(x,0,...);
+>=20
+> -@depends on patch@
+> -expression x;
+> -expression a,b,c;
+> -statement S;
+> -@@
+> -
+> -- x =3D pci_pool_alloc(a,b,c);
+> -+ x =3D pci_pool_zalloc(a,b,c);
+> -  if ((x=3D=3DNULL) || ...) S
+> -- memset(x,0,...);
+> -
+> //----------------------------------------------------------
+> //  For org and report mode
+> //----------------------------------------------------------
+> @@ -63,7 +52,7 @@ statement S;
+> position p;
+> @@
+>=20
+> - x =3D @p\(dma_pool_alloc\|pci_pool_alloc\)(a,b,c);
+> + x =3D @p\(dma_pool_alloc\)(a,b,c);
+>  if ((x=3D=3DNULL) || ...) S
+>  memset(x,0, ...);
+>=20
+> --
+> 2.43.0
