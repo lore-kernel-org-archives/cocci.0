@@ -4,7 +4,7 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8AA5AC88E7F
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7B079C88E53
 	for <cocci@archiver.kernel.org>; Tue, 15 Sep 2026 08:45:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
@@ -12,13 +12,13 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
    content-transfer-encoding:subject:reply-to:sender:list-id:
    list-help:list-subscribe:list-unsubscribe:list-post:
    list-owner:list-archive;
-  bh=fzY2Gx3kYKcibKIt2+RyfZ1K0b9WPd5KwFe7/f1Irqk=;
-  b=Z4vG53MrFRelns3KPDrw2ssnm4KtssJ+CmRo/v1pFIEHZD5zFmYfyM74
-   ZIeCi5enEe/JlzAWxsVQBoTJViW6mVYBqlpK5sovw66PLoFi8N4O0WRtD
-   P2sIYT3ZRlAYdhZOerK38WZbYjSpchg2wdHE0ynOvsao8BZmFWd2uBSkk
-   o=;
-X-CSE-ConnectionGUID: dKFTMlFQQLaF3HugbSlC9A==
-X-CSE-MsgGUID: cP9UQYnESCauWi6NF0goNQ==
+  bh=oFoR9qQIdwt3+vZZkEYKmSOPISctBhe05eYTvaM9nRc=;
+  b=kCtVvIMYJ4yytspzw0XvO0IbRKWNumFNjTLpgb1AY9ONPBI4zRvXAyps
+   11u4QDNgeUC6cZ1bVISy6g/IeAcue58wHox6Jg+lZwcAUIs6y8jSW3mYX
+   5g+BpRzvUZ8GtOElLukOvjk4mlXD5rJbwDbJjEndFycf6UPMTlbV24c7h
+   g=;
+X-CSE-ConnectionGUID: hjVhS8HvQ6yMTVl8o9yrpQ==
+X-CSE-MsgGUID: +YvSrCWwQKiKcUxZOD4DXA==
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@prod-sympa-app.inria.fr
 Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
   domain of cocci-owner@inria.fr is inclined to not designate
@@ -39,210 +39,153 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@prod-sympa-app.inria.fr";
   x-conformance=spf_only
 X-IronPort-AV: E=Sophos;i="6.27,103,1787004000"; 
-   d="scan'208";a="294998449"
+   d="scan'208";a="294998424"
 Received: from prod-sympa-app.inria.fr ([128.93.162.27])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 15 Sep 2026 10:45:53 +0200
+  by mail2-relais-roc.national.inria.fr with ESMTP; 15 Sep 2026 10:45:52 +0200
 Received: by prod-sympa-app.inria.fr (Postfix, from userid 990)
-	id 49A27826F6; Tue, 15 Sep 2026 10:45:53 +0200 (CEST)
+	id 307DB826FD; Tue, 15 Sep 2026 10:45:52 +0200 (CEST)
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by prod-sympa-app.inria.fr (Postfix) with ESMTP id 4EB978050A
-	for <cocci@sympa.inria.fr>; Tue, 15 Sep 2026 08:44:33 +0200 (CEST)
-X-CSE-ConnectionGUID: eH5hsAa3Q1iDffCNix4oPQ==
-X-CSE-MsgGUID: tA1BFomWRKCc0wV2VirxJw==
-IronPort-SDR: 6aa8e950_+8dli7eDcH68MRLN38/KN1IW7Admi2IIEc9KgsOdaGe5833
- C5utNPJQxETH/uDZe43Wh0JnIeefGOk+dfCPmqw==
+	by prod-sympa-app.inria.fr (Postfix) with ESMTP id 367AE8072E
+	for <cocci@sympa.inria.fr>; Tue, 15 Sep 2026 00:37:55 +0200 (CEST)
+X-CSE-ConnectionGUID: GngilK3nSxaZy/Ios3dapg==
+X-CSE-MsgGUID: 3pk7rDM2TNW0h3e8dgGQ0A==
+IronPort-SDR: 6aa87742_rK+1XLGPCzKEH+sQ/CfpUMVYOtrEjNyna1yEwH7cI/lpCBV
+ 8ou8d+a/danK8O62rhAK9iHpq7+FhSL53DlqL7g==
 X-ThreatScanner-Verdict: Negative
-X-IPAS-Result: =?us-ascii?q?A0FMBQBG6KhqfEzkfUpaglkCgj+BC2QwBFSNUoh5i3yMR?=
- =?us-ascii?q?IVeFIErPQIPAQMBCwEBPRQEAQEBAgMBNwGERo4KAh4HAQQwCQ4BAgQDAgMBA?=
- =?us-ascii?q?QEBAQEBAQEBAQsBAQEEAQEBAgEBAgQDAQEBAQIQAQEiGQcOEimGTw1JAUuGR?=
- =?us-ascii?q?YI0AYILAYEkYQIFAzsBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
- =?us-ascii?q?QEBAQEBAQEBAQIsPwEhNgENARsdAQMSEFsCEQEFASIBEoMCAYIiAQYQAQM3A?=
- =?us-ascii?q?wMOtiSNBwUCFoEBgg0GgmvYAAoZKA1yA4FmAgIBBgkBCgEBgTeEeCpPDoI/A?=
- =?us-ascii?q?YUidkSCVWmBIYIogRWDaYIfgWdShjAEgy6ULAEHBx8SCAEcBggCAkgVEgMEA?=
- =?us-ascii?q?wQEAQILEwkDAwIOAggDAggGGQE/EgQTAggDBgQLBwUfCgIMFAooIhIrCgMqC?=
- =?us-ascii?q?xIPAxgVAQgGAgIEBAIEDAIJAgIFAwQCBA0DBAEBCAICLQMBAxkICQgCCwURG?=
- =?us-ascii?q?AwLBzEDEAkDHwMUFghFCAYWARoGBQYLNxUFDBEBAhsCHwQdEQgDARsEAgEHA?=
- =?us-ascii?q?gMEFgQCFAohAwMCAwUBAwMDBQICCgYHAQEBAwICCAMGAwoJAgUDGxgEAQICA?=
- =?us-ascii?q?wIBAggDBwgDDQMEAgMDAwQBAgIBAQECAwEDAwQDAQMDAgEDBwICAwMDCwECA?=
- =?us-ascii?q?wMFAwMFBQICBQUDBQICCgIDAwMCAQMCGggDBgMSARADAwYBAwcDBwIEAwkCC?=
- =?us-ascii?q?AMDCAgDFwMDBQECAgQDAwgIBAMDBAICAwwFAwIDAwUDAwcCBAIEAwMBBQECB?=
- =?us-ascii?q?wIDBwIBGAMCBAgHBwUCCwQCCAQNCQQCBAICDwQGAwMHAQECAQcFBgMCAhABC?=
- =?us-ascii?q?AoFBgICAhwDHQEDDwYBCQUCAQUOBwUCAhgDBgIDBgUBAwEKCwEBAgMKAQIEA?=
- =?us-ascii?q?gUDAwEDAgMCBgMDAgUFBQMJBwUOCQEDAwYFAgIDAgMBAggEBgUDAgIDBQEEA?=
- =?us-ascii?q?wQDCgMCCAMDCAMMAhoCBQMDAwYJAwcHAgMHAwIFAgcFAwMFAwYBAwIBAwMIC?=
- =?us-ascii?q?xUiAwEFAwMCAQMCBQMDGAICBAUDAwMDAwgEAgIBBwYEAgICAQUFBQQFBgIEA?=
- =?us-ascii?q?wgBAQUDAwoNAQIHDAMMBgMHAwMEBAMCBQoCBAEHBgcHCQcDAgMIAQELBAEDA?=
- =?us-ascii?q?woDAwUCAQEHBQMGAwcCAwMDBQQFAwILAwcCAgMDAwIpAQEBAwMDAwMEAwEDA?=
- =?us-ascii?q?QMDBwMFAwIOAggBCgMCBgMHBgMFAwMCAQIDAwURAwYEBQYZAgYROgEIAgMDA?=
- =?us-ascii?q?RQEBAUFAgUVAggBAwMFAwMDAwIFAwEFAQEDAwUDAwMDAwMEAQMEAgMHBggBA?=
- =?us-ascii?q?QECCAMDAgUDAwMEAwMCAQIUCQgHDAE8DAcKJAQEDCoBFRQFBCUZZwcHjysfg?=
- =?us-ascii?q?l+BDiyBfoFQAZIcC7JKNDMKBgGCSYEKToFmijyPPoV8GjOXU5MaLodmkHQjj?=
- =?us-ascii?q?WeECZIQN4Q+AgoHBxEkEoEyOoFcMxojgQFtgUlQAxkPkiSBPspbeQI7AgcCB?=
- =?us-ascii?q?w4DC4pTh0mBTAEB?=
-IronPort-PHdr: A9a23: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
- gnQwlOrnUADUvMrprRh8UZvY4y9
-IronPort-Data: A9a23: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
- E4bn1ew3l0=
-IronPort-HdrOrdr: A9a23:OZNP76/jkduS5s2BcSNuk+Fudb1zdoMgy1knxilNoENuH/Bwxv
- rFoB1E73TJYW4qKRcdcKO7SdC9qBLnhOhICOwqUYtKMzOW3FdAQLsC0WKA+UyoJ8SdzJ876U
- 4IScEXZ7PN5DNB/KXHCXyDYrMdKa68gcKVbInlr0tFfEVPUeVN/g15AgGUHgldXw9dH6c0E5
- Ka+45uuyegUW5/VLXxOlA1G8z44/HbnpPvZhALQzQ97hOVsD+u4LnmVzCFwxYlVS9Vy7tKyx
- mOr+W53NTvjxiI8G6S64bh1eUZpDIn8KoDOCW4sLlYFtwrsHfpWG0uYczAgNl/mpDW1L9jqq
- i2n/5nBbU615qZRBDJnTL9nwbnyzog8Hnk1BuRhmbiu9XwQHYgB9NGnp8xSGqt16MMhqAO7E
- tw5RPqi7NHSRfb2Cjt7dnBUB9n0kKyvHo5iOYWy3hSS5EXZrNdpZEWuBo9KuZ2IAvqrIQ8VO
- V+BsDV4/hbNVuccnDCp2FqhNihRG46EBuKSlUL/saVzz9VlnZkyFZw/r1qol4QsJYmD5VU7e
- XNNapl0LlIU88NdKp4QPwMRMOmY1a9MS7kISaXOxDqBasHM3XCp9r86LA44+yjY9gTwIAzlI
- 6EUFRDqGY0cU6rCcDm5uw2zvkMehTNYd3A8LAh23EigMyHeFPCC1z9dGwT
-X-Talos-CUID: =?us-ascii?q?9a23=3ATgH0rWoYkN8kQtFOCm3GsCXmUc0FL33G5X6LGha?=
- =?us-ascii?q?5JWhnY5uUWQOXwJoxxg=3D=3D?=
-X-Talos-MUID: 9a23:d0JK8wb9IOIy5uBTqxa1rh9lMfhSwI+lUF8zy6sHodmmKnkl
+X-IPAS-Result: =?us-ascii?q?A0GcAAANdqhqj/4EaaxaglmCQRaBVjMEC0mNUooPnQiBf?=
+ =?us-ascii?q?AIPAQMBDVEEAQEBAgSEfo4JAh4HAQQwCQ4BAgQDAgMBAQEBAQEBAQEBAQsBA?=
+ =?us-ascii?q?QEEAQEBAgEBAgQDAQEBAQIQAQEBAQEBOQVJhk8NjBoBgSSBJgEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAR0CDYEAKwsBDQEBNwGBPBODAoIjB0sDxgwzgQGCDAEBBtw0gWgBAgkUA?=
+ =?us-ascii?q?YE4hXGHcIE6gz6BIRuCDYEVMoJBdoRYhjCDMoJmkUVIgR4DWSwBVRMNCgsHB?=
+ =?us-ascii?q?V6BCAM1EioVbjIdgSM+F4EHGwYFgR2BJ4JiIxk2eoEJXoErKWABEheBCYIIA?=
+ =?us-ascii?q?oJUggECAUlDDgdFUwknSxJMKSIIEgkBExoWGA1IESw3FRkEPm4HjysfglgHW?=
+ =?us-ascii?q?DaWDjyPY4IhoQ+EKIFmn3YaM4FLlgiTGQEumFqjcmiEaYFoOoFcMxoIKAg7g?=
+ =?us-ascii?q?mdQAxkPjisDDQmIc8cmJDU9AgcCBw4DC5IcgUwBAQ?=
+IronPort-PHdr: A9a23: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
+ YAIR7sdU0Y6RKty4qtNH9EYJppzGDQ+nuzC5PM=
+IronPort-Data: A9a23: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
+ 4T4qaCojXxXkXLMLPs=
+IronPort-HdrOrdr: A9a23:Q95sUqrc/i+nUYbPJr78fucaV5oIeYIsimQD101hICG9vPb3qy
+ nIpoV86faQslsssR4b+exoVJPtfZq+z+8R3WBuB8bAYOCOggLBR+tfBODZogEIdReQysdtkY
+ ptbKR6DsT9FhxZgdaS2njeL/8QhPSK76ysg/7T1DNWTQ9sY7x99AsRMHf+LqQPfnglOaYE
+X-Talos-CUID: 9a23:QTYnaWxY3vAYKv2Xyk8zBgU7HM8kdl6GykzAKn2pTkduU+aZQEefrfY=
+X-Talos-MUID: =?us-ascii?q?9a23=3ApC2PPw+ntPFFwHPhuACSauiQf5xw4Pu0JGVXrbM?=
+ =?us-ascii?q?548nfOHx8NBik1B3iFw=3D=3D?=
 X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-AV: E=Sophos;i="6.27,103,1787004000"; 
-   d="scan'208";a="156920291"
+   d="scan'208";a="156901549"
 X-IronPort-Outbreak-Status: No, level 0, Unknown - Unknown
-X-MGA-submission: =?us-ascii?q?MDG8aaupmG7pwuZqU2UOLQJRS5AUmGwVVtTBRR?=
- =?us-ascii?q?2gGaBDl8rKhg5E5Sr9cnftWJaUomcx1KnZdrkXuXChcQMIoYMnUa1xFA?=
- =?us-ascii?q?VjFF0sGPHRbtq05hfogahqx2ikIOS//n4OTOjIJuLGTGxh7JNYM/Z9+6?=
- =?us-ascii?q?Op+UcRB6qNWgbP3ETu6d+L1g=3D=3D?=
-Received: from mail-ed2-f12.google.com ([74.125.228.76])
-  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2026 08:44:33 +0200
-Received: by mail-ed2-f12.google.com with SMTP id 4fb4d7f45d1cf-6a67fa7a64eso5007135a12.1
-        for <cocci@inria.fr>; Mon, 14 Sep 2026 23:44:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789454672; x=1790059472;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=fzY2Gx3kYKcibKIt2+RyfZ1K0b9WPd5KwFe7/f1Irqk=;
-        b=Z1tYeRCtNnZYM8W0CW1BxqPRpHxNSqntfFSwxFDRjh4oVZjBQIogNAfcjSvqi3yvH9
-         Ss3V93pRQoex4kkukzHU0RYd7n0rftjgFHQbYQa7sJau0nsCrW8ekTsCD4r/dedcEG0V
-         McCcmz2W9Y9uXyQSgAMvBh0OIrfTGEcDrQD+sDJ28qT+ZibeIL99EEfe4AYiXnrsVE1h
-         MiAvfFY0IYpjBiwp2sKdXpGSvqVQwVZn8/eQ0xYP7EGR7e7xhJrAc2g8sIEa21TyUZAM
-         f2bbsADUyZlfFDO6k1ub41NLlmqd4r259B8A/5+JQBFp0B+4rqwKJAorkW7CcmpiiaTO
-         rp4w==
-X-Forwarded-Encrypted: i=1; AKwUvBzLsgPOfM+TKTJedMyegHRo5iFEcIGpBL/nuS6WgYVthJS6y4cTUfxas1MNJn5V9sGsM7A3gA==@inria.fr
-X-Gm-Message-State: AFuF++lIzgUf0/rWWs5fTmLsTxHTs2qpqQMSm0ZeC2zpQoz4TjTjsFG6
-	Kw8ntmGet8Z6PTDRLOSxzVP1epVcVGJ0dboViOW1+1euODWkh29Pi+N5LFhPhPcGqAE=
-X-Gm-Gg: AYBFou1Y+qkjXNe2iHxltw/KhAeVcQjoS+kQ9tm8DgmkuXSuDdJkzhZRLo9IU1HQvr1
-	cj/dTcULKZMNOM+w8s/A4DqGn701z5OdzUjyyeI9l1CKltiOuSWAoTFndI6Nj+fWl58wucLgsqB
-	mykGAZBQkFHPZjOrqnVt5RoEHPQ6vLI5xg08DnuU8tpXj0BGfhteOekNUGampMoTUx+TLFChqpk
-	OZ56sRvFG3Dd5NVDAl1V39r7rRRTNOjw+dMYx5S3O6JHlmOAaM5MgeAeyG3LH8gG7ncwi6w41ws
-	LkPDNGGjSPLn/gekMphOWkPHXWfb3psT8t2G9YGR13v8Y8GyflaHVQNlLh+/IELfgZHSY4x21zF
-	MJYzI2vbxyCiIDnhIjHDN/uG2MXfzTUZbefBVRmPZYloqAKK+lH5aRBFZLHACF01PB4wbWivIEb
-	h/kwLz0d42jJr0MXdGejkD31dr49TmWSLNKqq00dK6GC/pj1nA3KcfM48ROvet8MFW7IRCO6KxN
-	+yfaK750htJtbsx/FzCgaHG4o2Qu9a3euw9S+LadthFMKGXgpYd2dE7idnJPEXI8Lr0Vr8tlwjd
-	F06wlM5fIk2Vi0Zo/oCnXTHA3kbYb2XPXydI5MnK42q2m8JF8cyjtbEqBRVTfrVm3ospZFTVsyS
-	FBOqN5t49cew83YnvzgKWjhIKYGl1u0XVxUL8FrcnuT+hzNQEKJj4/0Xw+uz7A+Dnve3qacy2bo
-	uF6K16nzxtekGby/Q+7Mj1ytVSVc9kCQz++3FgVJhkP0nNW+QyFlWlbMy+CoBOE0/8KyzoWHY+h
-	BnJmIW4znABCrf3LXQ=
-X-Received: by 2002:a05:6402:43c5:b0:6a9:5669:9b77 with SMTP id 4fb4d7f45d1cf-6a9f641ad5emr3599248a12.44.1789454671796;
-        Mon, 14 Sep 2026 23:44:31 -0700 (PDT)
-Received: from cs-280612103108-default.europe-west4-a.c.oa7bb030819b2a894-tp.internal (184.149.204.35.bc.googleusercontent.com. [35.204.149.184])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a9b5920f4asm5081640a12.16.2026.09.14.23.44.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Sep 2026 23:44:31 -0700 (PDT)
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Julia Lawall <Julia.Lawall@inria.fr>,
-	Nicolas Palix <nicolas.palix@imag.fr>
-Cc: linux-kernel@vger.kernel.org,
-	cocci@inria.fr
-Date: Tue, 15 Sep 2026 06:43:27 +0000
-Message-ID: <20260915064327.1377-1-joshua.crofts1@gmail.com>
-X-Mailer: git-send-email 2.43.0
+X-MGA-submission: =?us-ascii?q?MDE83Po0dMngahvHbuGDOSvqrC2bYScDrAK9E5?=
+ =?us-ascii?q?M+nvi6cPWvRPyib6+0uxuPC7xZEbhxh8bizCzYMg+5bmFoFeH8t1XglP?=
+ =?us-ascii?q?hq9mNjbmO9FYqP0Sp9N5rD0sJzaqaYb4NfpLQDMBJyHkrIKCLIgGHQ5s?=
+ =?us-ascii?q?dyKO3Z9tDKEWCJJhEP3WexbA=3D=3D?=
+Received: from tor.source.kernel.org ([172.105.4.254])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2026 00:37:54 +0200
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	by tor.source.kernel.org (Postfix) with ESMTP id B3CF06025B;
+	Mon, 14 Sep 2026 22:37:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66C9C1F000FF;
+	Mon, 14 Sep 2026 22:37:50 +0000 (UTC)
+From: Kees Cook <kees@kernel.org>
+To: Julia Lawall <Julia.Lawall@inria.fr>
+Cc: Kees Cook <kees@kernel.org>,
+	Nicolas Palix <nicolas.palix@imag.fr>,
+	cocci@inria.fr,
+	linux-kernel@vger.kernel.org,
+	linux-hardening@vger.kernel.org
+Date: Mon, 14 Sep 2026 15:37:49 -0700
+Message-Id: <20260914223748.i.971-kees@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=11778; i=kees@kernel.org; h=from:subject:message-id; bh=5Y3Qv8aSWtG1ldbvwnoLA2PLP4W7OW/PZbwFVfjYd74=; b=owGbwMvMwCVmps19z/KJym7G02pJDFkrym2SOLM6ZnZl3HqwQu5f07ID4jlbZeO+8tTtCNURf ZCZtN+oo5SFQYyLQVZMkSXIzj3OxeNte7j7XEWYOaxMIEMYuDgFYCLHCxgZlm37xp/3hjtz2gfP A8vFhaM4Fp5mzvu5VDeRKaBAtSTSg5Hhye/S/2KHkpoCFl090HzIjz/C1mlW6tbfquc86rfU6Ac xAAA=
+X-Developer-Key: i=kees@kernel.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 X-Validation-by: victor.gambier@inria.fr
-Subject: [cocci] [PATCH v2] coccinelle: api: add a checker for
- pm_runtime_use_autosuspend() usage
-Reply-To: Joshua Crofts <joshua.crofts1@gmail.com>
+Subject: [cocci] [PATCH] coccinelle: kmalloc_obj: Convert multi-byte
+ integral allocations
+Reply-To: Kees Cook <kees@kernel.org>
 X-Loop: cocci@inria.fr
-X-Sequence: 3734
+X-Sequence: 3733
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -255,91 +198,280 @@ List-Unsubscribe: <https://sympa.inria.fr/sympa/signoff/cocci>, <mailto:sympa_in
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-09/uNu8ib7oxMP_qKt61y7y1w>
+Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-09/-VqcPmMEn9CdyYZ9zWeRww>
 
-Add a checker for ensuring that pm_runtime_dont_use_autosuspend() is
-called in a file if pm_runtime_use_autosuspend() is called and its
-devm_* counterpart isn't present.
+Currently the kmalloc_obj conversion rules leave alone every allocation
+sized to an integral type, or assigned to a pointer to one, so that byte
+buffers keep being allocated with a byte count. That also leaves alone
+arrays of multi-byte integers, such as
 
-Without _dont_use_autosuspend(), removing devices causes resource leaks.
+	vals = kcalloc(n, sizeof(u32), GFP_KERNEL);
 
-Assisted-by: LLM
-Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
+which count objects like any other array. At the same time the signed
+types (s8 through s64 and their variants) were not in the list at all.
+But these multi-byte types are better handled through the full
+kmalloc_obj-style allocation, as they are, in fact, typed and aren't
+just a byte string, so they would benefit from type checking.
+
+Split INTEGRAL into BYTE_TYPES and MULTIBYTE_TYPES:
+
+ - Allocations sized by a byte type or a string literal, or assigned to
+   a pointer to a byte type, are still left alone.
+ - Allocations sized by a multi-byte type are converted when they are
+   assigned to a pointer, or a pointer to const, of that same type.
+   Other allocations sized by a multi-byte type are left alone, as their
+   target may be a pointer to an array.
+ - Allocations of other types assigned to a pointer to a multi-byte type
+   are still left alone.
+ - Arrays of pointers to integral types sized by type, such as
+   sizeof(char *), are still left alone, now including the signed
+   types, as their target may be a pointer to an array of pointers, like
+   "const char *(*fmts)[]". Sized as sizeof(*target), they are converted
+   like any other array.
+
+List the signed types and the other spellings of the standard integer
+types (short int, unsigned, long long int, and so on), so that a
+declaration and a sizeof() that spell the same type differently still
+match.
+
+Assisted-by: LLM coccinelle
+Signed-off-by: Kees Cook <kees@kernel.org>
 ---
- scripts/coccinelle/api/pm_autosuspend.cocci | 64 +++++++++++++++++++++
- 1 file changed, 64 insertions(+)
- create mode 100644 scripts/coccinelle/api/pm_autosuspend.cocci
+Cc: Julia Lawall <Julia.Lawall@inria.fr>
+Cc: Nicolas Palix <nicolas.palix@imag.fr>
+Cc: <cocci@inria.fr>
+---
+ scripts/coccinelle/api/kmalloc_objs.cocci | 161 +++++++++++++++++-----
+ 1 file changed, 129 insertions(+), 32 deletions(-)
 
-diff --git a/scripts/coccinelle/api/pm_autosuspend.cocci b/scripts/coccinelle/api/pm_autosuspend.cocci
-new file mode 100644
-index 000000000000..581e874cd10b
---- /dev/null
-+++ b/scripts/coccinelle/api/pm_autosuspend.cocci
-@@ -0,0 +1,64 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/// Find drivers that enable autosuspend via pm_runtime_use_autosuspend()
-+/// but never call pm_runtime_dont_use_autosuspend() anywhere in the file,
-+/// while not using devm_pm_runtime_enable().
+diff --git a/scripts/coccinelle/api/kmalloc_objs.cocci b/scripts/coccinelle/api/kmalloc_objs.cocci
+index e9a415b7b6f4..0a98ddf03eca 100644
+--- a/scripts/coccinelle/api/kmalloc_objs.cocci
++++ b/scripts/coccinelle/api/kmalloc_objs.cocci
+@@ -24,27 +24,57 @@ def alloc_array(name):
+ 		print(f"Unknown transform for {name}", file=sys.stderr)
+ 	return func
+ 
+-// This excludes anything that is assigning to or from integral types or
+-// string literals. Everything else gets the sizeof() extracted for the
+-// kmalloc_obj() type/var argument. sizeof(void *) is also excluded because
+-// it will need case-by-case double-checking to make sure the right type is
++// Allocations sized by a byte-sized type (BYTE_TYPES) or a string literal,
++// and allocations assigned to a pointer to a byte-sized type, are byte
++// buffers and are left alone. sizeof(void *) is also excluded because it
++// will need case-by-case double-checking to make sure the right type is
+ // being assigned.
 +//
-+// Confidence: High
-+// Copyright: (C) 2026 Joshua Crofts
-+// URL: https://coccinelle.gitlabpages.inria.fr/website
-+// Options: --no-includes
-+
-+virtual context
-+virtual org
-+virtual report
-+
-+//----------------------------------------------------------
-+// Detection
-+//----------------------------------------------------------
-+
-+@has_use@
-+expression dev;
-+position p;
-+@@
-+
-+pm_runtime_use_autosuspend@p(dev)
-+
-+@has_dont@
-+expression dev;
-+@@
-+
-+pm_runtime_dont_use_autosuspend(dev)
-+
-+@has_devm@
-+expression dev;
-+@@
-+
-+devm_pm_runtime_enable(dev)
-+
-+//----------------------------------------------------------
-+// Context mode
-+//----------------------------------------------------------
-+
-+@depends on context && has_use && !has_dont && !has_devm@
-+expression dev;
-+@@
-+
-+* pm_runtime_use_autosuspend(dev)
-+
-+//----------------------------------------------------------
-+// Org and report mode
-+//----------------------------------------------------------
-+
-+@script:python depends on org && !has_dont && !has_devm@
-+p << has_use.p;
-+@@
-+
-+msg = "WARNING: pm_runtime_use_autosuspend() called without matching pm_runtime_dont_use_autosuspend() or devm_pm_runtime_enable()"
-+cocci.print_main(msg, p)
-+
-+@script:python depends on report && !has_dont && !has_devm@
-+p << has_use.p;
-+@@
-+
-+msg = "WARNING: pm_runtime_use_autosuspend() called without matching pm_runtime_dont_use_autosuspend() or devm_pm_runtime_enable()"
-+coccilib.report.print_report(p[0], msg)
++// Allocations sized by a multi-byte integral type (MULTIBYTE_TYPES) are
++// converted when they are assigned to a pointer to that same type.
++// Otherwise they are left alone: the target may be a pointer to an array
++// of that type, such as "s16 (*pairs)[2]", for which the converted
++// allocation would have the wrong pointer type. For the same reason,
++// arrays of pointers to integral types sized as sizeof(char *) and the
++// like are left alone. Allocations of other types assigned to a pointer to
++// a multi-byte integral type are left alone too.
++//
++// Everything else gets the sizeof() extracted for the kmalloc_obj()
++// type/var argument.
++//
++// The first matching alternative below wins, so the exclusions must come
++// before the more general conversions.
+ @direct depends on patch && !(file in "tools") && !(file in "samples")@
+ typedef u8, u16, u32, u64;
+ typedef __u8, __u16, __u32, __u64;
+ typedef uint8_t, uint16_t, uint32_t, uint64_t;
++typedef s8, s16, s32, s64;
++typedef __s8, __s16, __s32, __s64;
++typedef int8_t, int16_t, int32_t, int64_t;
+ typedef uchar, ushort, uint, ulong;
+ typedef __le16, __le32, __le64;
+ typedef __be16, __be32, __be64;
+ typedef wchar_t;
+-type INTEGRAL = {u8,__u8,uint8_t,char,unsigned char,uchar,wchar_t,
+-		 u16,__u16,uint16_t,unsigned short,ushort,
+-		 u32,__u32,uint32_t,unsigned int,uint,
+-		 u64,__u64,uint64_t,unsigned long,ulong,
+-		 __le16,__le32,__le64,__be16,__be32,__be64};
++type BYTE_TYPES = {char,signed char,unsigned char,uchar,
++		   u8,__u8,uint8_t,s8,__s8,int8_t};
++type MULTIBYTE_TYPES = {short,short int,signed short,signed short int,
++			unsigned short,unsigned short int,ushort,
++			int,signed,signed int,unsigned,unsigned int,uint,
++			long,long int,signed long,signed long int,
++			unsigned long,unsigned long int,ulong,
++			long long,long long int,
++			signed long long,signed long long int,
++			unsigned long long,unsigned long long int,
++			u16,__u16,uint16_t,s16,__s16,int16_t,
++			u32,__u32,uint32_t,s32,__s32,int32_t,
++			u64,__u64,uint64_t,s64,__s64,int64_t,
++			__le16,__le32,__le64,__be16,__be32,__be64,
++			wchar_t};
+ char [] STRING;
+-INTEGRAL *BYTES;
+-INTEGRAL **BYTES_PTRS;
++BYTE_TYPES *BYTES;
++MULTIBYTE_TYPES *MULTIBYTES;
++const MULTIBYTE_TYPES *CONST_MULTIBYTES;
++MULTIBYTE_TYPES MULTIBYTE;
+ type TYPE;
+ expression VAR;
+ expression GFP;
+@@ -59,66 +89,133 @@ fresh identifier ALLOC_OBJS = script:python(ALLOC_ARRAY) { alloc_array(ALLOC_ARR
+ @@
+ 
+ (
++// Convert a single object sized by its target: p = kmalloc(sizeof(*p), gfp)
+ -	VAR = ALLOC((sizeof(*VAR)), GFP)
+ +	VAR = ALLOC_OBJ(*VAR, GFP)
+ |
+-	ALLOC((\(sizeof(STRING)\|sizeof(INTEGRAL)\|sizeof(INTEGRAL *)\)), GFP)
++// Exclude byte buffers and integral pointers: kmalloc(sizeof(u8), gfp),
++//   kmalloc(sizeof("str"), gfp), kmalloc(sizeof(char *), gfp)
++	ALLOC((\(sizeof(STRING)\|sizeof(BYTE_TYPES)\|
++		sizeof(BYTE_TYPES *)\|sizeof(MULTIBYTE_TYPES *)\)), GFP)
+ |
+-	BYTES = ALLOC((sizeof(E)), GFP)
++// Exclude anything assigned to a byte pointer:
++//   u8 *buf = kmalloc(sizeof(*hdr), gfp)
++	BYTES = ALLOC((\(sizeof(E)\|sizeof(TYPE)\)), GFP)
+ |
+-	BYTES = ALLOC((sizeof(TYPE)), GFP)
++// Convert a multi-byte type to a pointer to it:
++//   u32 *p = kmalloc(sizeof(u32), gfp)
++	\(MULTIBYTES\|CONST_MULTIBYTES\) =
++-		ALLOC((sizeof(MULTIBYTE_TYPES)), GFP)
+++		ALLOC_OBJ(MULTIBYTE_TYPES, GFP)
+ |
+-	BYTES_PTRS = ALLOC((sizeof(E)), GFP)
++// Same by expression: u32 *p = kmalloc(sizeof(p[0]), gfp)
++	\(MULTIBYTES\|CONST_MULTIBYTES\) =
++-		ALLOC((sizeof(MULTIBYTE)), GFP)
+++		ALLOC_OBJ(MULTIBYTE, GFP)
+ |
+-	BYTES_PTRS = ALLOC((sizeof(TYPE)), GFP)
++// Exclude other multi-byte sizes, e.g. to pointers to arrays: s16 (*p)[2] = ...
++	ALLOC((\(sizeof(MULTIBYTE_TYPES)\|sizeof(MULTIBYTE)\)), GFP)
+ |
++// Exclude anything else assigned to a multi-byte pointer:
++//   u32 *p = kmalloc(sizeof(*hdr), gfp)
++	\(MULTIBYTES\|CONST_MULTIBYTES\) = ALLOC((\(sizeof(E)\|sizeof(TYPE)\)), GFP)
++|
++// Exclude void pointers, to be checked by hand: kmalloc(sizeof(void *), gfp)
+ 	ALLOC((sizeof(void *)), GFP)
+ |
++// Convert any other expression: p = kmalloc(sizeof(s->item), gfp)
+ -	ALLOC((sizeof(E)), GFP)
+ +	ALLOC_OBJ(E, GFP)
+ |
++// Convert any other type: p = kmalloc(sizeof(struct item), gfp)
+ -	ALLOC((sizeof(TYPE)), GFP)
+ +	ALLOC_OBJ(TYPE, GFP)
+ |
+-	ALLOC_ARRAY(COUNT, (\(sizeof(STRING)\|sizeof(INTEGRAL)\|sizeof(INTEGRAL *)\)), GFP)
+-|
+-	BYTES = ALLOC_ARRAY(COUNT, (sizeof(E)), GFP)
+-|
+-	BYTES = ALLOC_ARRAY(COUNT, (sizeof(TYPE)), GFP)
+-|
+-	BYTES_PTRS = ALLOC_ARRAY(COUNT, (sizeof(E)), GFP)
++// The same, for arrays allocated as (count, size):
++// Exclude byte buffers and integral pointers: kcalloc(n, sizeof(u8), gfp),
++//   kcalloc(n, sizeof(char *), gfp)
++	ALLOC_ARRAY(COUNT, (\(sizeof(STRING)\|sizeof(BYTE_TYPES)\|
++			    sizeof(BYTE_TYPES *)\|sizeof(MULTIBYTE_TYPES *)\)), GFP)
+ |
+-	BYTES_PTRS = ALLOC_ARRAY(COUNT, (sizeof(TYPE)), GFP)
++// Exclude arrays assigned to a byte pointer:
++//   u8 *buf = kcalloc(n, sizeof(*hdr), gfp)
++	BYTES = ALLOC_ARRAY(COUNT, (\(sizeof(E)\|sizeof(TYPE)\)), GFP)
+ |
+-	ALLOC_ARRAY((\(sizeof(STRING)\|sizeof(INTEGRAL)\|sizeof(INTEGRAL *)\)), COUNT, GFP)
++// Convert a multi-byte array to a pointer to it:
++//   u32 *p = kcalloc(n, sizeof(u32), gfp)
++	\(MULTIBYTES\|CONST_MULTIBYTES\) =
++-		ALLOC_ARRAY(COUNT, (sizeof(MULTIBYTE_TYPES)), GFP)
+++		ALLOC_OBJS(MULTIBYTE_TYPES, COUNT, GFP)
+ |
+-	BYTES = ALLOC_ARRAY((sizeof(E)), COUNT, GFP)
++// Same by expression: u32 *p = kcalloc(n, sizeof(*p), gfp)
++	\(MULTIBYTES\|CONST_MULTIBYTES\) =
++-		ALLOC_ARRAY(COUNT, (sizeof(MULTIBYTE)), GFP)
+++		ALLOC_OBJS(MULTIBYTE, COUNT, GFP)
+ |
+-	BYTES = ALLOC_ARRAY((sizeof(TYPE)), COUNT, GFP)
++// Exclude other multi-byte arrays:
++//   s16 (*pairs)[2] = kcalloc(n, sizeof(s16), gfp)
++	ALLOC_ARRAY(COUNT, (\(sizeof(MULTIBYTE_TYPES)\|sizeof(MULTIBYTE)\)), GFP)
+ |
+-	BYTES_PTRS = ALLOC_ARRAY((sizeof(E)), COUNT, GFP)
+-|
+-	BYTES_PTRS = ALLOC_ARRAY((sizeof(TYPE)), COUNT, GFP)
++// Exclude other arrays assigned to a multi-byte pointer:
++//   u32 *p = kcalloc(n, sizeof(*hdr), gfp)
++	\(MULTIBYTES\|CONST_MULTIBYTES\) = ALLOC_ARRAY(COUNT, (\(sizeof(E)\|sizeof(TYPE)\)), GFP)
+ |
++// Exclude arrays of void pointers: kcalloc(n, sizeof(void *), gfp)
+ 	ALLOC_ARRAY(COUNT, (sizeof(void *)), GFP)
+ |
+-	ALLOC_ARRAY((sizeof(void *)), COUNT, GFP)
+-|
++// Convert any other expression: p = kcalloc(n, sizeof(*p), gfp)
+ -	ALLOC_ARRAY(COUNT, (sizeof(E)), GFP)
+ +	ALLOC_OBJS(E, COUNT, GFP)
+ |
++// Convert any other type: p = kcalloc(n, sizeof(struct item), gfp)
+ -	ALLOC_ARRAY(COUNT, (sizeof(TYPE)), GFP)
+ +	ALLOC_OBJS(TYPE, COUNT, GFP)
+ |
++// The same, for arrays allocated as (size, count):
++// Exclude byte buffers and integral pointers: kcalloc(sizeof(u8), n, gfp),
++//   kcalloc(sizeof(char *), n, gfp)
++	ALLOC_ARRAY((\(sizeof(STRING)\|sizeof(BYTE_TYPES)\|
++		      sizeof(BYTE_TYPES *)\|sizeof(MULTIBYTE_TYPES *)\)), COUNT, GFP)
++|
++// Exclude arrays assigned to a byte pointer:
++//   u8 *buf = kcalloc(sizeof(*hdr), n, gfp)
++	BYTES = ALLOC_ARRAY((\(sizeof(E)\|sizeof(TYPE)\)), COUNT, GFP)
++|
++// Convert a multi-byte array to a pointer to it:
++//   u32 *p = kcalloc(sizeof(u32), n, gfp)
++	\(MULTIBYTES\|CONST_MULTIBYTES\) =
++-		ALLOC_ARRAY((sizeof(MULTIBYTE_TYPES)), COUNT, GFP)
+++		ALLOC_OBJS(MULTIBYTE_TYPES, COUNT, GFP)
++|
++// Same by expression: u32 *p = kcalloc(sizeof(*p), n, gfp)
++	\(MULTIBYTES\|CONST_MULTIBYTES\) =
++-		ALLOC_ARRAY((sizeof(MULTIBYTE)), COUNT, GFP)
+++		ALLOC_OBJS(MULTIBYTE, COUNT, GFP)
++|
++// Exclude other multi-byte arrays:
++//   s16 (*pairs)[2] = kcalloc(sizeof(s16), n, gfp)
++	ALLOC_ARRAY((\(sizeof(MULTIBYTE_TYPES)\|sizeof(MULTIBYTE)\)), COUNT, GFP)
++|
++// Exclude other arrays assigned to a multi-byte pointer:
++//   u32 *p = kcalloc(sizeof(*hdr), n, gfp)
++	\(MULTIBYTES\|CONST_MULTIBYTES\) = ALLOC_ARRAY((\(sizeof(E)\|sizeof(TYPE)\)), COUNT, GFP)
++|
++// Exclude arrays of void pointers: kcalloc(sizeof(void *), n, gfp)
++	ALLOC_ARRAY((sizeof(void *)), COUNT, GFP)
++|
++// Convert any other expression: p = kcalloc(sizeof(*p), n, gfp)
+ -	ALLOC_ARRAY((sizeof(E)), COUNT, GFP)
+ +	ALLOC_OBJS(E, COUNT, GFP)
+ |
++// Convert any other type: p = kcalloc(sizeof(struct item), n, gfp)
+ -	ALLOC_ARRAY((sizeof(TYPE)), COUNT, GFP)
+ +	ALLOC_OBJS(TYPE, COUNT, GFP)
+ |
++// Convert flexible array structures: p = kmalloc(struct_size(p, data, n), gfp)
+ -	ALLOC(struct_size(VAR, FLEX, COUNT), GFP)
+ +	ALLOC_FLEX(*VAR, FLEX, COUNT, GFP)
+ |
++// Same by type: kmalloc(struct_size_t(struct item, data, n), gfp)
+ -	ALLOC(struct_size_t(TYPE, FLEX, COUNT), GFP)
+ +	ALLOC_FLEX(TYPE, FLEX, COUNT, GFP)
+ )
 -- 
-2.47.3
+2.34.1
 
