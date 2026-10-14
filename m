@@ -4,21 +4,21 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DC37ACC6B1A
-	for <cocci@archiver.kernel.org>; Wed, 14 Oct 2026 14:19:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id DAE2ECC6B2A
+	for <cocci@archiver.kernel.org>; Wed, 14 Oct 2026 14:19:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
-  h=date:from:to:cc:message-id:in-reply-to:references:
-   mime-version:content-transfer-encoding:subject:reply-to:
-   sender:list-id:list-help:list-subscribe:list-unsubscribe:
-   list-post:list-owner:list-archive;
-  bh=KKHjvAionpRnh537vE64rAPf/zZKwgVi1HI9ARBHrww=;
-  b=VPWgv/nRQXqYXt6q8ZrkKKqwwrHR1cF1AI0e1vG/G9Ol6f+n86a35iXg
-   0e8zLgm2cQCieB5TlSiq7mxVPum6FAVlJi1Wzq/uKYl8i33drbWtr6mov
-   d1319avtyY2PjMJwdULSXETULKUMML+2ty8RcJJ0aR4wwz3PIDd22hjum
+  h=from:to:cc:date:message-id:mime-version:
+   content-transfer-encoding:subject:reply-to:sender:list-id:
+   list-help:list-subscribe:list-unsubscribe:list-post:
+   list-owner:list-archive;
+  bh=1ETuZw4ez4gymC0BsStCwdItMw1Wvv8CIHKwpyV2/zk=;
+  b=owHuoVWHFnlpjJjyLuR3sqYqZcq9UMAMtoczzufo0jr2ybrEhqwewGg3
+   6Wjby+lmODWojvqZrOku2f+8TnyrZ2OmcAZhbdLYvkbwzDrW09RMYY3Yn
+   QGoiJ2P7jqBQkeRaGaCaBYlESYAcn8tirPDCTvOmKI3ZBcQUG9F1A/Rn4
    A=;
-X-CSE-ConnectionGUID: Ku46qhtvT9yhyGGPSIUlHQ==
-X-CSE-MsgGUID: KO/e8DFHSXKdD5L3s8VHyQ==
+X-CSE-ConnectionGUID: i97CVRLSSvmgd70Qt9u8/Q==
+X-CSE-MsgGUID: +ZA/V66hTCqosAQ2y7cTHQ==
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@prod-sympa-app.inria.fr
 Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
   domain of cocci-owner@inria.fr is inclined to not designate
@@ -39,210 +39,187 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   x-sender="postmaster@prod-sympa-app.inria.fr";
   x-conformance=spf_only
 X-IronPort-AV: E=Sophos;i="6.27,158,1787004000"; 
-   d="scan'208";a="300198198"
+   d="scan'208";a="300198249"
 Received: from prod-sympa-app.inria.fr ([128.93.162.27])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 14 Oct 2026 16:19:06 +0200
+  by mail2-relais-roc.national.inria.fr with ESMTP; 14 Oct 2026 16:19:08 +0200
 Received: by prod-sympa-app.inria.fr (Postfix, from userid 990)
-	id 5082080E5A; Wed, 14 Oct 2026 16:19:06 +0200 (CEST)
+	id 5D5BE807C5; Wed, 14 Oct 2026 16:19:08 +0200 (CEST)
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-	by prod-sympa-app.inria.fr (Postfix) with ESMTP id 97580812FE
-	for <cocci@sympa.inria.fr>; Sun, 11 Oct 2026 19:28:42 +0200 (CEST)
-X-CSE-ConnectionGUID: 5OijCWJLQMWR4ue7gO50AQ==
-X-CSE-MsgGUID: p24Wt2xrT++MwQXlt4vJUQ==
-IronPort-SDR: 6acbc749_2wa2cKp9/jzS/fM4CzhrdOI4w2AC27QOg3w5umhsEsu0zwl
- r0yDsh5OA17Rh3c2UGgEB+e8MXX18P/qylEYEUQ==
+	by prod-sympa-app.inria.fr (Postfix) with ESMTP id 0A3BE82839
+	for <cocci@sympa.inria.fr>; Wed, 14 Oct 2026 15:48:07 +0200 (CEST)
+X-CSE-ConnectionGUID: YmV/cTkcSiGXA7iux1755A==
+X-CSE-MsgGUID: AHsgR26jR92O5v6GhVa/9A==
+IronPort-SDR: 6acf8815_5GrbozDi0mOuFxeImDHAtOJM37BaLt6c8+D2QkMPYW60P6/
+ T6aiR9grLuoEJe0FrbWcz2m087jLHynSzB4maQA==
 X-ThreatScanner-Verdict: Negative
-X-IPAS-Result: =?us-ascii?q?A0EDAQBUxstqfDPdVdFaHQEBAQEJARIBBQUBgXwIAQsBA?=
- =?us-ascii?q?YFsU4ELYTMEVASMb4c3giSLeYdShHGECYFVgT89Ag8BAwELAQFECwIEAQEBA?=
- =?us-ascii?q?gQ4gRIBgzMCjhMCHgcBBDAJDgECBAMCAwEBAQEBAQEBAQEBCwEBAQQBAQECA?=
- =?us-ascii?q?QECBAMBAQEBAhABATsHDhIphk8NSQEBAYk7AQYBCAGCAgGBJGECBQM7AQEBA?=
- =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBBQINH18BAQECAToGA?=
- =?us-ascii?q?RsdAQMBCwYFRiACEQEFARwGARKDA4IiAQYQAQMQJwMBELJJi3CBFwUCFoEBg?=
- =?us-ascii?q?g0G2msKGSgNcgOBaAIBBgkBCwGBNwGEeCpPDoI/AR8BhXk7g0d6J4IohEA+g?=
- =?us-ascii?q?h8rghKGLASCIoEMlhgBBwcxCAEJEwYIAgJICwoSAwQDBAQBAgsTCQMDAg4CC?=
- =?us-ascii?q?AMCCAYZAT8MBgQTAggDBgQLBwUfCgIIBBQKKCIEDisKAyoLEg8DGBUBCAYCA?=
- =?us-ascii?q?gQEAgQCCgIJAgIFAwQCBA0DBAEBCAICAyoDAQMGEwgJCAILBREWAgwEBwcxA?=
- =?us-ascii?q?xAJAwIdAxQRBQgRNAUCAQYWARoGBQYLASARBRQBBQwRAQIbAh8EHQEQCAMBF?=
- =?us-ascii?q?AQCAQcCAwQWBAIUCh8CAwMGAgEKCQIFAxsYBAECAgMCAQIIAwcIAwgFAwQCA?=
- =?us-ascii?q?wMDBAECAgEBAQIDAQMDBAQDAgEDBwICAwMDCwECAwMFAwMFBQICBQUDBQICC?=
- =?us-ascii?q?gIDAwMCAQMCGggDBgMSARADAwYBAwcDBwIEAwkCCAMDCAgDFwMDBQECAgQDA?=
- =?us-ascii?q?wgIBAMDBAICAwwFAwIDAwUDAwcCBAIEAwMBBQECBwIDBwIBGAMCBAgHBwUCC?=
- =?us-ascii?q?wQCCAQNBwIEAgQCAg8EBgMDBwEBAgEHBQYDAgIQAQgKBQYCAgIcAx0BAgENB?=
- =?us-ascii?q?gEJBQIBBQ4HBQICGAMGAQEDBgUBAwEKCwEBAgECCgECBAIFAwMBAwIDAgYDA?=
- =?us-ascii?q?wIFBQUDCQcFDgkBAwMGBQICAwIDAQIIBAYFAwICAwUBAwMEAwoDAggDAwgDD?=
- =?us-ascii?q?AIaAgUDAwMGCQMHBwIDBwMCBQIHBQMDBQMGAQMCAQMDCAsVIgMBBQMDAgEDA?=
- =?us-ascii?q?gUDAxgCAgQFAwMDAwMIBAICAQcGBAICAgEFBQUEBQYCBAMIAQEFAwMKDQECB?=
- =?us-ascii?q?wwDDAYDBwMDBAQDAgUKAgQBBwMDBAMHCQcDAgMHAQELBAEDAwoDAwUCAQEHB?=
- =?us-ascii?q?QMGAwcCAwMDBQQFAwILAwcCAgMDAwInAQEBAwMDAwMEAwEDAQMDBwMFAwIOA?=
- =?us-ascii?q?ggBCgMCBgMHBgMFAwMCAQIDAwURAwYEBQYXAgYRMgEIAgMDARQEBAUCBRUCC?=
- =?us-ascii?q?AEDBQMDAwMCBQMBBQEBAwMFAwMDAwMDBAEDBAIDBwYIAQEBAggDAwIFAwMDB?=
- =?us-ascii?q?AMDAgENBAIFAwYCAgQCBAEHAwECAgMDAwMBAgQEAgcEBQIMAwQCAwMFAgMCA?=
- =?us-ascii?q?wsGAgsEAgMDAwMDDQECCwYDFAUJBAgFAw8FAQUHBwkBAwgFAwYDCwMUAwMGA?=
- =?us-ascii?q?wMDCgQCBQEGEAwNAQQBAgQJAwICBAIPFQQEAwcBAQ0LAQEEDwkIBwwBPAwHC?=
- =?us-ascii?q?iQEBAwqARUUBSkZZwcHkRIeg28sLyGBLTWBHAGjaIxjlCY0MwoGAYJJgQpOg?=
- =?us-ascii?q?WaKPIhhhl2FfE0TA5c9kxwuh2aQdCOLbYF6hAmSR4Q+AgoHBxEkEoEyOoFcM?=
- =?us-ascii?q?xojgW6BSRIBPQMZD44iPoNEhRPHCEI1AgEBOQIHAgcOAwuFZ4E6YYJRhVWBd?=
- =?us-ascii?q?IFMAQE?=
-IronPort-PHdr: A9a23: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
+X-IPAS-Result: =?us-ascii?q?A0HpAABSh89qhaxujNlaHgEBCxIMggULgkEWgVU0BwhJj?=
+ =?us-ascii?q?VKIeZ4dFIErPQIPAQMBWwECBAEBAQIEhH6OFwIfBgEEMAkOAQIEAwIDAQEBA?=
+ =?us-ascii?q?QEBAQEBAQELAQEBBAEBAQIBAQIEAwEBAQECEAEBAQFASYZPDYwaAYEkXkgBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQEUAghjASErCwENAQE3ASiBFAESgwKCIwdLB?=
+ =?us-ascii?q?70EM4EBggwBAQbcNIFoAQIJFAGBOIVyh3GEeIEhD4FVRIEVg2mEKYZfgzKKE?=
+ =?us-ascii?q?AOMVEiBHgNZLAFVEw0KCwcFgTUzAyAKCxISGBUCFC8PGjIdcAwnEiwXgQcbB?=
+ =?us-ascii?q?gWBHXUrghYjGTZ6gQlegSspYAEQF4EJggcCglSCAAIBSUEOB0VTCSVDEkcmI?=
+ =?us-ascii?q?ggSCQETGjALgRs4PAkoQRcMcQIJAx0FTgIRGA1IESw3Bg8ZBD5uB5FaHoJig?=
+ =?us-ascii?q?Q4BgUNlYZYxrmSBCjQHhCGBYAYMn2pNhASUF5JTAS6HZpB0I4I2qFI6gVwzG?=
+ =?us-ascii?q?iODN1ADGQ+OIgwNCYNgzjhGMj0CBwIHDgMLhUQBAYxWgUwBAQ?=
+IronPort-PHdr: A9a23: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
- FbSTbCYwVNS0ST4H3ZXgjshcD+2oczRkBlziWbbJ3F27TLYdcx22RbD9YnEX/cCu1hODCJ8i
- DTRGh29J4zzpYTSx8qF6LrnET/4BfgxOWHxwIiNtTW2/zhvCBy7xLWon8H/VBM9yWn93sVrU
- iPBqFD9ZJPq3uK0K7ECHAEgCVni5s59Aow7nJE3gcRa238Bhoicu3EdlmnvKoxz1qf3bX5LT
- jkOiY2wgkCtyAh4I3SFypisHHea2ct8bp+xeGQYxjlkx89PAaaQqrdDmGEmxzjw5RKUav97k
- DAHzPIo43NPmOAFtj0mySCFC6wTF01VVcD1vyyB9Mv27KBeZWL0NKO1yFI7hte5SreLvgBbX
- n/9PJYkBy55qMtlYhrA13j664esf9e1D5pbtBqPkwrJyeNPL5wtjaMiii9uOGa7tnogg+I2l
- h1h25imsZPPcT08uvLkREQCb3uoPosa4VSPxe5Gk9yT3pyzE5kpATgNUJbyDLqpHD8UqfX7J
- lOLGTw4pG2cHOmXFgue5UF66nPXRsrzZjfHeT9Dl4wkGUDOQS4XyBoZVzg7gJMjQwWjxci6N
- Vx8+ihU/Vng7B1F1uNvMRD7FGbZvgahLDkuG/39ZFJb6B9P40DNPImQ9OV2Smta+YahsQXLI
- XacaRhTVEkGX0WFAxboObzktryiu6CIQ/GzKffDe+DEq+tFV+qBg5m11YV65G+kOcCGP30kB
- Po+kBkmPzgxC4HSnDMBTDYSniTGYpuApRuyzSZwq9i27PXhXA+8rZvKEbZZNs9jvgynmarWf
- fDFnz53cHwLs/FEjW+N0rUU20Qezj1jZyX4W6pVrjbDFerRgvMFUEJdMnkucpMOt+VlgEFMI
- ZKJ0IukkO4lyKdvWxEdEgW+/6PhLc0SfTPnbAueVhrbauzUeW2Vn5OlJv7iAbxI0rcO60Xs6
- 2jLSxexYmTdy2u7EE3xVIMExCCDYk4E5tniIBg9AzCxEIK4Nk/pd4IpxTwun+9u1iuSZzUSa
- WogIx0R/O/XsH094L03GnQfvCBsdbHWwnrEt7uEeshK46ksX3o8lvoEsi4xk7UH4isZHK4py
- HWO/Iwp/g/uhOCLznAPvANmjDFNicrLuExjPf6c7ZxcQTPf+wpL62yMChMMrt8jC9v1uqkWx
- MKd3KT0YCxP9d7Z565+T4DdNd6HPXw9MBHoBC+cDQ0LSiSuPH3egEoVme+b93mcpJw34pb2n
- 59GRrheXV0zXvQUbyYtVMQFO4tyVyg4nKSziccJ4T+htkCUSpgD+J/AUf2WDLPkLzPYxbhIa
- h0UwK/peIQeMoqovi4qIlJ+nYnMBw/RRYUX+nwnPlJy+h8UtiUnHQhRkwr/Zwig4WEeD6uxl
- x8y0U5lZPg1sSzr+xExL0bLoy05lA8wn8/kiHafam2UTu/4UIdIBi7zr0V0PIn8RlM/bwqpn
- VFtcjzeQLxNlOJIemViiQuaspxKU605L+UMcFoLyPebau99m0xbsTmizFRb6PHtDJJjkE41a
- 8fpoS8ZnQ1ka9ExKOrbI68DnT0yzuqe+ySv0O422goXIU0ApXiTdCA/s0sNLrA6JiCs84SEB
- iSNnjJCfC4HUP94+5qCF2s4MuWEij36ivtNdxn3OOuYIKeU/WPHkJzQKrvV/kwNnkhBu7Nx1
- JV7G3c=
-IronPort-Data: A9a23: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
- J8ve1aw3g==
-IronPort-HdrOrdr: A9a23:lrRpKK3D9YLofWzTT+7S2wqjBFckLtp133Aq2lEZdPUMSL3jqy
- iv9M5rsSMc+wxhJU3I+OrwSZVoLkmsjaKdjbNhX4tKPzOWyFdATrsSlrcKqgeIc0aVm4Izu8
- YBAstD4bbLfD9HZLPBkXCF+qEbsb+6Gc6T9ILjJjxWPH1XgulbnnhE49GgYz5LbRgDDZQwD5
- rZ7tZbpjamZHQcZtm6AH5AROTYu9jXjvvdEGw7Lg9i7BORyTCl7LO/FBSHxBITTi5C2t4ZgB
- 34eiLCl9uej80=
-X-Talos-CUID: 9a23:XHBFcmNvU88/2e5DBQ5m9mUrOOQcV0LnkGrdfECfVD5AcejA
-X-Talos-MUID: 9a23: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
+ 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
+IronPort-Data: A9a23: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
+ ajZiF2omH2GdHM=
+IronPort-HdrOrdr: A9a23:NgwLq6vw6qAMqykTtosrN3aT7skDZdV00zEX/kB9WHVpmwKj+f
+ xG+85rsSMc7Qx9ZJhOo7C90cW7LU80lqQFhLX5Q43SPzUO0VHAROoJ0WKI+Vzd8kPFmdK1rZ
+ 0QEZRDNA==
+X-Talos-CUID: =?us-ascii?q?9a23=3AC8r8vGmbFentx0DvbRCvjCNlj0rXOUzY8jDbH0y?=
+ =?us-ascii?q?zMmdGeJTKSEKAofw5zuM7zg=3D=3D?=
+X-Talos-MUID: =?us-ascii?q?9a23=3AYDOxEA3aKm0dVTUFEPPjDe3wcjUjyoS1B3pXz5c?=
+ =?us-ascii?q?86pOjaDIuFDejhXPma9py?=
 X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-AV: E=Sophos;i="6.27,152,1787004000"; 
-   d="scan'208";a="159477418"
+X-IronPort-AV: E=Sophos;i="6.27,157,1787004000"; 
+   d="scan'208";a="159813325"
 X-IronPort-Outbreak-Status: No, level 0, Unknown - Unknown
-X-MGA-submission: =?us-ascii?q?MDEl6PHxAoM8W8GfO1rUd3kaH4rBGEe9qt5jQA?=
- =?us-ascii?q?ZhsAMtIkfvlucyNtg/PAGyOyWayIxHY6Ky0ulkEhae99jT0hNnZ7pIIP?=
- =?us-ascii?q?0cueRcQr4NxlsQuiukCGwF/MtY7b3MlKLofehGfmm4BhL052s0uvniyt?=
- =?us-ascii?q?K2NXWmeP4Wmf2Q+F9V08n1cA=3D=3D?=
-Received: from mail-wr1-f51.google.com ([209.85.221.51])
-  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Oct 2026 19:28:42 +0200
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-48b001cd92bso666488f8f.2
-        for <cocci@inria.fr>; Sun, 11 Oct 2026 10:28:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791739721; x=1792344521;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=KKHjvAionpRnh537vE64rAPf/zZKwgVi1HI9ARBHrww=;
-        b=PqFdwARXAO5QFdQAwmLWhi/NdN+dyW3a74zZ7XTJGXazIsHTvObvXQ+K1X2iHfCpep
-         L1R/UGFQsTVHQQehDh0xzljef9GeH4knFyYu87SfLGePIfKU0OHjF3Lhdz7Sw7/tdITM
-         iluuIF6KhcZ1BllSK2na8Gw2o9DkzRAd4i6YDAPENvjgFKbFMXWFBHmTyU7S9pYEXm5w
-         J8Z6oXd9frCFoI5KsvFZTD4nVh1uU7BcExSNZa1NvaZnhxLMrTFt/53wi2Boid2SQul7
-         cFRiDY5sqDLXL2CJSzwidPJ3AyZ+vWaegs9270sa+QDPFmkF1jyNCDUf/9nP/5+ihO7Z
-         lBpg==
-X-Forwarded-Encrypted: i=1; AKwUvBx10YEPlK+nbODkvVWH8tG7RoFsA+j8dVpzqWXd/RohvnsoS5ZDLb7Fpn4aWoQs8m8gfL1Xhw==@inria.fr
-X-Gm-Message-State: AFq9FYLw8Rzt+pJRXN0wyVpVzpun2B13QkJY/5dI+Za1lxgNAMRlroFP
-	oFq0jTRYGg9PpqmdNi3Xg+34uf+ZLblpbkuwD/YGJJSlpFKP6cP1XbY15OPoVA==
-X-Gm-Gg: AYBFou0U2SDq7dsxZi2coAlCv33XVL7BQX+HOzWQ5KJXwPTRbBQxhi9GSMugGhDCfam
-	cukyVF30so2zOfdwVRxMwAAPI49HWhLAed2o1kY61+/gVWKEwKQbFkpzWeUDhtxRzl/9S43IHqA
-	21dBF61JAKDzz1EtEnNGcXWJ5hZ3ORzC37tCBpKd9fm5rUAVCMPy3A/mBl7Ef76JMZrN4H5Xkep
-	vHFf8/JjFqcrDWWu3Ukkl/a/bNpyD6eVe5cLMi8bJINQMN0opBeYu4Ao2r06RGA1MQcTBPv4VGc
-	bHJ6lVW0GdOaez9HW+EMoaBdcLAV2FI5iWjvTV8e5vUQXrJd88AIfBKbzMUHORZhBzj+z0bOgQ8
-	q/0df0I8oVp50U+bgUD8Pv+ZWX/i/hHGXLd+bYTgc92K75LyqE1rp7gzOQq7YSDd+rxRwCspUT6
-	n5jrBHzy2LEZ56O2YhllZeHGYTPtqxUIO5StZRt3JbdevXcd58aWXz6fRE43BPOpoAOx4AsKBdT
-	CaFNOVAtK7oFwMzJ9OxWqZsSP4df0yGsoW0VIM4tBAeaAa1hjMxOzQK2FNtY2hXxUmcEWkSFwHc
-	850Q0Y+5hXWTiSCndCjMPKuQu7ivaGcqAnaRP08ymMG2CB/Z7mbmp1HzXt3B+b4R5zVomzDFk1x
-	WnoUzP0jyawxNy0jFOp5Y0Fe8q1SBM3M=
-X-Received: by 2002:a05:6000:2c05:b0:48b:118e:7454 with SMTP id ffacd0b85a97d-48dbaaed0fbmr12464725f8f.31.1791739720893;
-        Sun, 11 Oct 2026 10:28:40 -0700 (PDT)
-Received: from systembl0wer ([2a02:8308:4092:11f0::f9f])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48db99b800asm14739092f8f.22.2026.10.11.10.28.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 Oct 2026 10:28:40 -0700 (PDT)
-Date: Sun, 11 Oct 2026 19:28:38 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Julia Lawall <Julia.Lawall@inria.fr>, Nicolas Palix
- <nicolas.palix@imag.fr>
-Cc: linux-kernel@vger.kernel.org, cocci@inria.fr
-Message-ID: <20261011192838.4f9a8b44@systembl0wer>
-In-Reply-To: <20260916095616.1394-1-joshua.crofts1@gmail.com>
-References: <20260916095616.1394-1-joshua.crofts1@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
+X-MGA-submission: =?us-ascii?q?MDE+RkxuNfbP49GcZiutotgQXlmBHqvF7TLgK3?=
+ =?us-ascii?q?SRsNE6pMoGwpUXV2IGshUiMYwMXY2qum09DlGUztaIzR8riKytxuYuD0?=
+ =?us-ascii?q?k7XHCiz7IAIkeeCPUvX4gw9Io6gd5LaBoqXF5jlLKWX+GQYN7UIgTRfj?=
+ =?us-ascii?q?xyCMptO+YrKsHQXE0l5WhHOg=3D=3D?=
+Received: from foss.arm.com ([217.140.110.172])
+  by mail3-smtp-sop.national.inria.fr with ESMTP; 14 Oct 2026 15:48:05 +0200
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DD45A1570;
+	Wed, 14 Oct 2026 06:47:58 -0700 (PDT)
+Received: from e127648.cambridge.arm.com (e127648.arm.com [10.0.128.106])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id C0F623F7B4;
+	Wed, 14 Oct 2026 06:47:57 -0700 (PDT)
+From: Christian Loehle <christian.loehle@arm.com>
+To: Ingo Molnar <mingo@redhat.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Juri Lelli <juri.lelli@redhat.com>,
+	Vincent Guittot <vincent.guittot@linaro.org>
+Cc: Dietmar Eggemann <dietmar.eggemann@arm.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Ben Segall <bsegall@google.com>,
+	Mel Gorman <mgorman@suse.de>,
+	Valentin Schneider <vschneid@redhat.com>,
+	K Prateek Nayak <kprateek.nayak@amd.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Julia Lawall <Julia.Lawall@inria.fr>,
+	Nicolas Palix <nicolas.palix@imag.fr>,
+	linux-s390@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	cocci@inria.fr,
+	Christian Loehle <christian.loehle@arm.com>
+Date: Wed, 14 Oct 2026 14:47:45 +0100
+Message-Id: <20261014134745.3032405-1-christian.loehle@arm.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-Validation-by: victor.gambier@inria.fr
-Subject: Re: [cocci] [PATCH v3] coccinelle: api: add a checker for
- pm_runtime_use_autosuspend() usage
-Reply-To: Joshua Crofts <joshua.crofts1@gmail.com>
+Subject: [cocci] [PATCH] sched: Replace nr_iowait_cpu() with a bool accessor
+Reply-To: Christian Loehle <christian.loehle@arm.com>
 X-Loop: cocci@inria.fr
-X-Sequence: 3750
+X-Sequence: 3751
 Errors-To: cocci-owner@inria.fr
 Precedence: list
 Precedence: bulk
@@ -255,38 +232,210 @@ List-Unsubscribe: <https://sympa.inria.fr/sympa/signoff/cocci>, <mailto:sympa_in
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-10/sobzks1c11pSI5_8VA0MzQ>
+Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-10/BgyZRnSOk5NJIQRBFRLksA>
 
-On Wed, 16 Sep 2026 09:56:16 +0000
-Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+The menu governor was the last consumer of the per-CPU I/O-wait count
+that needed its magnitude, apart from nr_iowait() summing it globally.
+Commit 38f83090f515 ("cpuidle: menu: Remove iowait influence") removed
+that use. All remaining per-CPU consumers only test for zero/nonzero.
 
-> Add a checker for ensuring that pm_runtime_dont_use_autosuspend() is
-> called in a file if pm_runtime_use_autosuspend() is called and its
-> devm_* counterpart isn't present.
-> 
-> Assisted-by: LLM
-> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> ---
-> Running this in drivers/ yields 195 results, due to
-> pm_runtime_dont_use_autosuspend() not being documented well enough.
-> 
-> Changes in v3:
-> - Remove note about resource leak from commit message
-> - Link to v2: https://lore.kernel.org/lkml/20260915064327.1377-1-joshua.crofts1@gmail.com/
-> 
-> Changes in v2:
-> - Send correct version
-> - Remove unnecessary position variable
-> - Remove metavariable
-> - Link to v1: https://lore.kernel.org/lkml/20260914151145.1328-1-joshua.crofts1@gmail.com/
+Replace nr_iowait_cpu() with bool cpu_has_iowait() and update the generic
+and s390 idle accounting callers. Have nr_iowait() read the counters
+directly so that the global total and existing accounting are preserved.
+Replace the stale menu comment with a description of the predicate.
 
-Hi, you can drop this patch. I have a patch merged that removes the
-need for calling dont_use_autosuspend() on unbind.
+Include the Coccinelle recipe for the code conversion, verified against
+the original files. The helper's comment is updated manually. Reproduce
+the conversion with:
 
-https://lore.kernel.org/all/20260919-move-dont-use-autosuspend-v1-1-f6e2d1315c23@gmail.com/
+  make coccicheck COCCI=scripts/coccinelle/api/cpu_has_iowait.cocci MODE=patch
 
-Thanks.
+Signed-off-by: Christian Loehle <christian.loehle@arm.com>
+---
+ arch/s390/kernel/idle.c                     |  4 +-
+ include/linux/sched/stat.h                  |  2 +-
+ kernel/sched/core.c                         | 13 ++---
+ kernel/sched/cputime.c                      | 10 ++--
+ scripts/coccinelle/api/cpu_has_iowait.cocci | 56 +++++++++++++++++++++
+ 5 files changed, 69 insertions(+), 16 deletions(-)
+ create mode 100644 scripts/coccinelle/api/cpu_has_iowait.cocci
 
+diff --git a/arch/s390/kernel/idle.c b/arch/s390/kernel/idle.c
+index dd12efb58201..ff9732ef494c 100644
+--- a/arch/s390/kernel/idle.c
++++ b/arch/s390/kernel/idle.c
+@@ -82,13 +82,13 @@ static u64 arch_cpu_idle_time(int cpu, enum cpu_usage_stat idx, bool compute_del
+ 
+ u64 arch_kcpustat_field_idle(int cpu)
+ {
+-	return arch_cpu_idle_time(cpu, CPUTIME_IDLE, !nr_iowait_cpu(cpu));
++	return arch_cpu_idle_time(cpu, CPUTIME_IDLE, !cpu_has_iowait(cpu));
+ }
+ EXPORT_SYMBOL_GPL(arch_kcpustat_field_idle);
+ 
+ u64 arch_kcpustat_field_iowait(int cpu)
+ {
+-	return arch_cpu_idle_time(cpu, CPUTIME_IOWAIT, nr_iowait_cpu(cpu));
++	return arch_cpu_idle_time(cpu, CPUTIME_IOWAIT, cpu_has_iowait(cpu));
+ }
+ EXPORT_SYMBOL_GPL(arch_kcpustat_field_iowait);
+ 
+diff --git a/include/linux/sched/stat.h b/include/linux/sched/stat.h
+index 0108a38bb64d..4810b14d0372 100644
+--- a/include/linux/sched/stat.h
++++ b/include/linux/sched/stat.h
+@@ -20,7 +20,7 @@ extern int nr_processes(void);
+ extern unsigned int nr_running(void);
+ extern bool single_task_running(void);
+ extern unsigned int nr_iowait(void);
+-extern unsigned int nr_iowait_cpu(int cpu);
++extern bool cpu_has_iowait(int cpu);
+ 
+ static inline int sched_info_on(void)
+ {
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 1fe40de6ebe3..1bde5187dafd 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -5588,15 +5588,12 @@ unsigned long long nr_context_switches(void)
+ }
+ 
+ /*
+- * Consumers of these two interfaces, like for example the cpuidle menu
+- * governor, are using nonsensical data. Preferring shallow idle state selection
+- * for a CPU that has IO-wait which might not even end up running the task when
+- * it does become runnable.
++ * Return whether any tasks are accounted as I/O waiters on this CPU.
++ * They may wake up on a different CPU.
+  */
+-
+-unsigned int nr_iowait_cpu(int cpu)
++bool cpu_has_iowait(int cpu)
+ {
+-	return atomic_read(&cpu_rq(cpu)->nr_iowait);
++	return atomic_read(&cpu_rq(cpu)->nr_iowait) != 0;
+ }
+ 
+ /*
+@@ -5634,7 +5631,7 @@ unsigned int nr_iowait(void)
+ 	unsigned int i, sum = 0;
+ 
+ 	for_each_possible_cpu(i)
+-		sum += nr_iowait_cpu(i);
++		sum += atomic_read(&cpu_rq(i)->nr_iowait);
+ 
+ 	return sum;
+ }
+diff --git a/kernel/sched/cputime.c b/kernel/sched/cputime.c
+index 06bddaa738e5..1f84a950abed 100644
+--- a/kernel/sched/cputime.c
++++ b/kernel/sched/cputime.c
+@@ -431,7 +431,7 @@ static void kcpustat_idle_stop(struct kernel_cpustat *kc, u64 now)
+ 	if (!kc->idle_elapse)
+ 		return;
+ 
+-	iowait = nr_iowait_cpu(smp_processor_id()) > 0;
++	iowait = cpu_has_iowait(smp_processor_id());
+ 	delta = now - kc->idle_entrytime;
+ 	steal = steal_account_process_time(delta);
+ 
+@@ -544,14 +544,14 @@ static u64 kcpustat_field_dyntick(int cpu, enum cpu_usage_stat idx,
+ u64 kcpustat_field_idle(int cpu)
+ {
+ 	return kcpustat_field_dyntick(cpu, CPUTIME_IDLE,
+-				      !nr_iowait_cpu(cpu), ktime_get());
++				      !cpu_has_iowait(cpu), ktime_get());
+ }
+ EXPORT_SYMBOL_GPL(kcpustat_field_idle);
+ 
+ u64 kcpustat_field_iowait(int cpu)
+ {
+ 	return kcpustat_field_dyntick(cpu, CPUTIME_IOWAIT,
+-				      nr_iowait_cpu(cpu), ktime_get());
++				      cpu_has_iowait(cpu), ktime_get());
+ }
+ EXPORT_SYMBOL_GPL(kcpustat_field_iowait);
+ #else
+@@ -601,7 +601,7 @@ static u64 get_cpu_sleep_time_us(int cpu, enum cpu_usage_stat idx,
+ u64 get_cpu_idle_time_us(int cpu, u64 *last_update_time)
+ {
+ 	return get_cpu_sleep_time_us(cpu, CPUTIME_IDLE,
+-				     !nr_iowait_cpu(cpu), last_update_time);
++				     !cpu_has_iowait(cpu), last_update_time);
+ }
+ EXPORT_SYMBOL_GPL(get_cpu_idle_time_us);
+ 
+@@ -625,7 +625,7 @@ EXPORT_SYMBOL_GPL(get_cpu_idle_time_us);
+ u64 get_cpu_iowait_time_us(int cpu, u64 *last_update_time)
+ {
+ 	return get_cpu_sleep_time_us(cpu, CPUTIME_IOWAIT,
+-				     nr_iowait_cpu(cpu), last_update_time);
++				     cpu_has_iowait(cpu), last_update_time);
+ }
+ EXPORT_SYMBOL_GPL(get_cpu_iowait_time_us);
+ 
+diff --git a/scripts/coccinelle/api/cpu_has_iowait.cocci b/scripts/coccinelle/api/cpu_has_iowait.cocci
+new file mode 100644
+index 000000000000..cc903b1d2586
+--- /dev/null
++++ b/scripts/coccinelle/api/cpu_has_iowait.cocci
+@@ -0,0 +1,56 @@
++// SPDX-License-Identifier: GPL-2.0-only
++// Replace nr_iowait_cpu() with a boolean accessor after menu stopped using
++// the per-CPU count. Preserve the count used by nr_iowait().
++//
++// The accompanying update to the helper's comment is manual.
++//
++// Options: --include-headers
++
++virtual patch
++
++@ definition depends on patch @
++identifier cpu;
++typedef bool;
++@@
++
++- unsigned int nr_iowait_cpu(int cpu)
+++ bool cpu_has_iowait(int cpu)
++  {
++-	return atomic_read(&cpu_rq(cpu)->nr_iowait);
+++	return atomic_read(&cpu_rq(cpu)->nr_iowait) != 0;
++  }
++
++@ prototype_rule depends on patch @
++identifier cpu;
++typedef bool;
++@@
++
++- extern unsigned int nr_iowait_cpu
+++ extern bool cpu_has_iowait
++  (int cpu);
++
++@ total depends on patch @
++expression cpu;
++@@
++
++ unsigned int nr_iowait(void)
++ {
++ <...
++- nr_iowait_cpu(cpu)
+++ atomic_read(&cpu_rq(cpu)->nr_iowait)
++ ...>
++ }
++
++@ predicate depends on patch @
++expression cpu;
++@@
++
++- nr_iowait_cpu(cpu) > 0
+++ cpu_has_iowait(cpu)
++
++@ callers depends on patch @
++expression cpu;
++@@
++
++- nr_iowait_cpu(cpu)
+++ cpu_has_iowait(cpu)
 -- 
-Kind regards,
-Joshua Crofts
+2.34.1
+
