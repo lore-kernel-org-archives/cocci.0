@@ -1,23 +1,23 @@
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D978606A326
-	for <cocci@archiver.kernel.org>; Sun,  1 Nov 2026 23:52:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE1D3606A336
+	for <cocci@archiver.kernel.org>; Mon,  2 Nov 2026 09:08:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=RZD3UI3q
+	dkim=pass (1024-bit key, unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=kVKBMkq/
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=date:from:to:cc:in-reply-to:message-id:references:
    mime-version:subject:reply-to:sender:list-id:list-help:
    list-subscribe:list-unsubscribe:list-post:list-owner:
    list-archive;
-  bh=KIvY7c6eGNR1PYr4Rw2sHXHPIR5Jl1oXe/FN4rg1gXs=;
-  b=RZD3UI3qtcMyfQsH4B17r7z3mPwTSE36WJbNCvTz61e0YN9E5ttbzbNt
-   ILtUDufiSOmTuxFGSnB9wk+OsPukG12GvGY46K002+6YKttb7N8OosP6U
-   jrl/Sd8vQV3qh9YF7RvRSBbsr/TRzHk/NW8noh8be6dYNdCB/ndCHUhhp
-   I=;
-X-CSE-ConnectionGUID: L0KWpVwJQ1C0BNrtkNeyxQ==
-X-CSE-MsgGUID: rv9VPibMQreskAJ2z+wU6A==
+  bh=6HEVlUXJ0ULaPW/OwxmHWHvY0QEmaSvRkCaARK7rRpQ=;
+  b=kVKBMkq/4mFB5PCWOqCWt0SFsOvnDNnTTjFjS1+/sl3DefZfRxD8fH87
+   xvFkfPDddfXpjuE/rSfr6aYdpUJDaDZlxaR0GqRS5nTsA0lC6M31xwMwL
+   Cy9ADhk3/L4SjhM3EJvuD8c2fEjP8tQTc3AkUX18UM0OfQmGfakXt49KM
+   4=;
+X-CSE-ConnectionGUID: 2qmq7GCbRgy7qW7HKXCBxg==
+X-CSE-MsgGUID: 8G1gxBniRKqHuw01nLp3UA==
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=cocci-owner@inria.fr; spf=None smtp.helo=postmaster@prod-sympa-app.inria.fr
 Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
   cocci-owner@inria.fr designates 128.93.162.27 as permitted
@@ -36,40 +36,37 @@ Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
   envelope-from="cocci-owner@inria.fr";
   x-sender="postmaster@prod-sympa-app.inria.fr";
   x-conformance=spf_only
-X-IronPort-AV: E=Sophos;i="6.27,190,1787004000"; 
-   d="scan'208";a="303236724"
+X-IronPort-AV: E=Sophos;i="6.27,191,1787004000"; 
+   d="scan'208";a="303298547"
 Received: from prod-sympa-app.inria.fr ([128.93.162.27])
-  by mail2-relais-roc.national.inria.fr with ESMTP; 02 Nov 2026 00:52:00 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP; 02 Nov 2026 10:08:54 +0100
 Received: by prod-sympa-app.inria.fr (Postfix, from userid 990)
-	id D814780E5C; Mon,  2 Nov 2026 00:51:59 +0100 (CET)
-Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-	by prod-sympa-app.inria.fr (Postfix) with ESMTP id F29B680E5C
-	for <cocci@sympa.inria.fr>; Mon,  2 Nov 2026 00:51:53 +0100 (CET)
-X-CSE-ConnectionGUID: KvlqFKkSQByscQ4HsivZmQ==
-X-CSE-MsgGUID: cwhUsx3XTdCozV56cvniZA==
-X-IronPort-AV: E=Sophos;i="6.27,190,1787004000"; 
-   d="scan'208";a="303236714"
-Received: from 88-188-149-159.subs.proxad.net (HELO hadrien.home) ([88.188.149.159])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2026 00:51:54 +0100
-Date: Mon, 2 Nov 2026 00:51:53 +0100 (CET)
+	id 99B7A819CB; Mon,  2 Nov 2026 10:08:54 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by prod-sympa-app.inria.fr (Postfix) with ESMTP id A8AD0819A6
+	for <cocci@sympa.inria.fr>; Mon,  2 Nov 2026 10:08:53 +0100 (CET)
+X-CSE-ConnectionGUID: FIpH9G/JShiE/esooVp5kQ==
+X-CSE-MsgGUID: fikoLBn9Tyua+AjFAnKiiQ==
+X-IronPort-AV: E=Sophos;i="6.27,191,1787004000"; 
+   d="scan'208";a="161464340"
+Received: from dt-lawall.paris.inria.fr ([128.93.67.65])
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2026 10:08:53 +0100
+Date: Mon, 2 Nov 2026 10:08:53 +0100 (CET)
 From: Julia Lawall <julia.lawall@inria.fr>
-To: Joe Perches <joe@perches.com>
-cc: Greg KH <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, 
-    Linus Torvalds <torvalds@linux-foundation.org>, 
-    Kees Cook <kees@kernel.org>, driver-core@lists.linux.dev, 
-    Julia Lawall <Julia.Lawall@inria.fr>, 
-    Nicolas Palix <nicolas.palix@imag.fr>, cocci@inria.fr
-In-Reply-To: <9b55b3e3269ef43ede64fff34f42121f7aa47979.camel@perches.com>
-Message-ID: <1a6026c4-3e19-a1a9-e637-f1842172482b@inria.fr>
-References: <9b55b3e3269ef43ede64fff34f42121f7aa47979.camel@perches.com>
+To: Ella Ma <alansnape3058@gmail.com>
+cc: cocci@inria.fr, linux-kernel@vger.kernel.org, nicolas.palix@imag.fr
+In-Reply-To: <20261102090137.6brrzpq2zohop2il@ptb-02009389.paris.inria.fr>
+Message-ID: <d1843a68-de61-2e6a-5e1-0966294a6e6@inria.fr>
+References: <ec578f57-a7f5-7afc-ec2-9156c336187@inria.fr> <20261007164316.15102-1-alansnape3058@gmail.com> <f635d9fd-8dd5-47f-7996-239bc74bd828@inria.fr> <20261016135718.ab5322cdyozostuj@ptb-02009389.paris.inria.fr> <cd96489d-e980-c4a-9990-7a96e8b31ea@inria.fr>
+ <20261102090137.6brrzpq2zohop2il@ptb-02009389.paris.inria.fr>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Subject: Re: [cocci] [resend PATCH] coccinelle: Add devm_kmalloc_objs
- conversion script
+Subject: Re: [cocci] [PATCH v3] coccinelle: free: add a checker for
+ `__cleanup(kfree)` usage
 Reply-To: Julia Lawall <julia.lawall@inria.fr>
 X-Loop: cocci@inria.fr
-X-Sequence: 3759
+X-Sequence: 3760
 Precedence: list
 Precedence: bulk
 Sender: cocci-request@inria.fr
@@ -80,204 +77,251 @@ List-Subscribe: <https://sympa.inria.fr/sympa/subscribe/cocci>, <mailto:sympa_in
 List-Post: <mailto:cocci@inria.fr>
 List-Owner: <mailto:cocci-request@inria.fr>
 List-Archive: <https://sympa.inria.fr/sympa/arc/cocci>
-Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-11/BHZxwvjw3U2SFRTnxKuXbQ>
+Archived-At: <https://sympa.inria.fr/sympa/msg/cocci/2026-11/UvXlmUBCf9sU61PSOH2Taw>
 X-Spam-Status: No, score=-16.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=4.0.1
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+	autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
 
 
-On Sun, 1 Nov 2026, Joe Perches wrote:
+On Mon, 2 Nov 2026, Ella Ma wrote:
 
-> Like commit bdc5071d7f7b ("coccinelle: Add kmalloc_objs conversion script")
-> with commit 1c7bbaeed110 ("coccinelle: kmalloc_obj: Remove default GFP_KERNEL arg")
+> On Mon, Nov 02, 2026 at 12:46:11AM +0100, Julia Lawall wrote:
+> >
+> >
+> > On Fri, 16 Oct 2026, Ella Ma wrote:
+> >
+> > > On Wed, Oct 07, 2026 at 08:27:33PM +0200, Julia Lawall wrote:
+> > > >
+> > > >
+> > > > On Wed, 7 Oct 2026, Ella Ma wrote:
+> > > >
+> > > > > Using __cleanup(kfree) will pass the stack address of the annotated
+> > > > > local variable to kfree functions. This will lead to invalid
+> > > > > deallocation issues. Inspired by CVE-2026-45959 and similar bugs
+> > > > > recently detected.
+> > > > >
+> > > > > Signed-off-by: Ella Ma <alansnape3058@gmail.com>
+> > > > > ---
+> > > > >
+> > > > > Changes in v2:
+> > > > > - Add virtual rules `report` and `org` as suggested by Sashiko
+> > > > > - Remove `kvfree_sensitive` from rule `cleanup` as suggested by Sashiko
+> > > > > - Add `free_percpu` to rule `free`
+> > > > > - Add `kfree_const` to rule `cleanup`
+> > > > >
+> > > > > Changes in v3:
+> > > > > - Edit the error messages to clarify the reasons and results
+> >
+> > I applied this, but I changed the first error message to:
+> >
+> > "ERROR: __cleanup({n}) will cause an invalid free: the stack address of
+> > the annotated variable will be passed to {n}; declare the variable using
+> > __free({n}) to cause the pointee to be freed"
+> >
+> > The original message made it look like one should use __free when calling
+> > kfree.
 >
-> Finds and converts sized devm_kmalloc-family of allocations into the typed
-> devm_kmalloc_obj-family of allocations.
+> OK. Thank you for the change.
+>
+> >
+> > Furthermore, there is one report in the kernel for this case.  It would be
+> > worth fixing it or checking whether it is dead code (it's immediately
+> > under an ifdef).
+>
+> A patch fixing it has been reviewed by Thomas Huth <thuth@redhat.com> in
+> https://lore.kernel.org/lkml/ffebbb7b-a4f9-488e-8834-199da3073b96@redhat.com/
+> Should I reply something to the thread about this new coccinelle report?
 
-Applied
-
->
-> Signed-off-by: Joe Perches <joe@perches.com>
-> ---
->
-> Maybe this might be useful to run and apply just prior to some -rc1
->
-> This script would change more than 8000 instances in more than
-> 5000 files in Linus' current master.
->
-> $ spatch -D patch --very-quiet --cocci-file ./scripts/coccinelle/api/devm_kmalloc_objs.cocci \
->     --include-headers-for-types --all-includes --include-headers --keep-comments \
->     -I ./arch/x86/include -I ./arch/x86/include/generated -I ./include \
->     -I ./arch/x86/include/uapi -I ./arch/x86/include/generated/uapi -I ./include/uapi \
->     -I ./include/generated/uapi --include ./include/linux/compiler-version.h \
->     --include ./include/linux/kconfig.h .
-
-I'm not sure that --include-headers-for-types is useful.  That is useful
-when there is an expression metavariable that is required to have a
-particular type.  I don't see that here.  I also got around 5000 changes
-in Linus's current master without using that argument.  I didn't try it,
-but I think --no-includes would thus be fine.  --include-headers will get
-the changes in the header files.
-
-If the --keep comments argument is useful, it could be added to the
-semantic patch, by putting #spatch --keep-comments at the top of the file.
+No need, I was just wondering.
 
 julia
 
 >
-> Lightly tested but directly copied and modified to update the devm_ uses
+> ella
 >
-> Its been a bit.
-> Any comments or negatives about using or running this script?
->
->  .../coccinelle/api/devm_kmalloc_objs.cocci    | 136 ++++++++++++++++++
->  1 file changed, 136 insertions(+)
->  create mode 100644 scripts/coccinelle/api/devm_kmalloc_objs.cocci
->
-> diff --git a/scripts/coccinelle/api/devm_kmalloc_objs.cocci b/scripts/coccinelle/api/devm_kmalloc_objs.cocci
-> new file mode 100644
-> index 0000000000000..322f79a2d9654
-> --- /dev/null
-> +++ b/scripts/coccinelle/api/devm_kmalloc_objs.cocci
-> @@ -0,0 +1,136 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/// Use devm_kmalloc_obj family of macros for allocations
-> +///
-> +// Confidence: High
-> +// Options: --include-headers-for-types --all-includes --include-headers --keep-comments
-> +
-> +virtual patch
-> +
-> +@initialize:python@
-> +@@
-> +import sys
-> +
-> +def alloc_array(name):
-> +	func = "FAILED_RENAME"
-> +	if name == "devm_kmalloc_array":
-> +		func = "devm_kmalloc_objs"
-> +	elif name == "devm_kvmalloc_array":
-> +		func = "devm_kvmalloc_objs"
-> +	elif name == "devm_kcalloc":
-> +		func = "devm_kzalloc_objs"
-> +	elif name == "devm_kvcalloc":
-> +		func = "devm_kvzalloc_objs"
-> +	else:
-> +		print(f"Unknown transform for {name}", file=sys.stderr)
-> +	return func
-> +
-> +// This excludes anything that is assigning to or from integral types or
-> +// string literals. Everything else gets the sizeof() extracted for the
-> +// kmalloc_obj() type/var argument. sizeof(void *) is also excluded because
-> +// it will need case-by-case double-checking to make sure the right type is
-> +// being assigned.
-> +@direct depends on patch && !(file in "tools") && !(file in "samples")@
-> +typedef u8, u16, u32, u64;
-> +typedef __u8, __u16, __u32, __u64;
-> +typedef uint8_t, uint16_t, uint32_t, uint64_t;
-> +typedef uchar, ushort, uint, ulong;
-> +typedef __le16, __le32, __le64;
-> +typedef __be16, __be32, __be64;
-> +typedef wchar_t;
-> +type INTEGRAL = {u8,__u8,uint8_t,char,unsigned char,uchar,wchar_t,
-> +		 u16,__u16,uint16_t,unsigned short,ushort,
-> +		 u32,__u32,uint32_t,unsigned int,uint,
-> +		 u64,__u64,uint64_t,unsigned long,ulong,
-> +		 __le16,__le32,__le64,__be16,__be32,__be64};
-> +char [] STRING;
-> +INTEGRAL *BYTES;
-> +INTEGRAL **BYTES_PTRS;
-> +type TYPE;
-> +expression VAR;
-> +expression GFP;
-> +expression COUNT;
-> +expression FLEX;
-> +expression E;
-> +expression DEV;
-> +identifier ALLOC =~ "^devm_kv?[mz]alloc$";
-> +fresh identifier ALLOC_OBJ = ALLOC ## "_obj";
-> +fresh identifier ALLOC_FLEX = ALLOC ## "_flex";
-> +identifier ALLOC_ARRAY = {devm_kmalloc_array,devm_kvmalloc_array,devm_kcalloc,devm_kvcalloc};
-> +fresh identifier ALLOC_OBJS = script:python(ALLOC_ARRAY) { alloc_array(ALLOC_ARRAY) };
-> +@@
-> +
-> +(
-> +-	VAR = ALLOC(DEV,(sizeof(*VAR)), GFP)
-> ++	VAR = ALLOC_OBJ(DEV,*VAR, GFP)
-> +|
-> +	ALLOC(DEV,(\(sizeof(STRING)\|sizeof(INTEGRAL)\|sizeof(INTEGRAL *)\)), GFP)
-> +|
-> +	BYTES = ALLOC(DEV,(sizeof(E)), GFP)
-> +|
-> +	BYTES = ALLOC(DEV,(sizeof(TYPE)), GFP)
-> +|
-> +	BYTES_PTRS = ALLOC(DEV,(sizeof(E)), GFP)
-> +|
-> +	BYTES_PTRS = ALLOC(DEV,(sizeof(TYPE)), GFP)
-> +|
-> +	ALLOC(DEV,(sizeof(void *)), GFP)
-> +|
-> +-	ALLOC(DEV,(sizeof(E)), GFP)
-> ++	ALLOC_OBJ(DEV, E, GFP)
-> +|
-> +-	ALLOC(DEV,(sizeof(TYPE)), GFP)
-> ++	ALLOC_OBJ(DEV,TYPE, GFP)
-> +|
-> +	ALLOC_ARRAY(DEV,COUNT, (\(sizeof(STRING)\|sizeof(INTEGRAL)\|sizeof(INTEGRAL *)\)), GFP)
-> +|
-> +	BYTES = ALLOC_ARRAY(DEV, COUNT, (sizeof(E)), GFP)
-> +|
-> +	BYTES = ALLOC_ARRAY(DEV,COUNT, (sizeof(TYPE)), GFP)
-> +|
-> +	BYTES_PTRS = ALLOC_ARRAY(DEV, COUNT, (sizeof(E)), GFP)
-> +|
-> +	BYTES_PTRS = ALLOC_ARRAY(DEV, COUNT, (sizeof(TYPE)), GFP)
-> +|
-> +	ALLOC_ARRAY(DEV, (\(sizeof(STRING)\|sizeof(INTEGRAL)\|sizeof(INTEGRAL *)\)), COUNT, GFP)
-> +|
-> +	BYTES = ALLOC_ARRAY(DEV, (sizeof(E)), COUNT, GFP)
-> +|
-> +	BYTES = ALLOC_ARRAY(DEV, (sizeof(TYPE)), COUNT, GFP)
-> +|
-> +	BYTES_PTRS = ALLOC_ARRAY(DEV, (sizeof(E)), COUNT, GFP)
-> +|
-> +	BYTES_PTRS = ALLOC_ARRAY(DEV, (sizeof(TYPE)), COUNT, GFP)
-> +|
-> +	ALLOC_ARRAY(DEV, COUNT, (sizeof(void *)), GFP)
-> +|
-> +	ALLOC_ARRAY(DEV, (sizeof(void *)), COUNT, GFP)
-> +|
-> +-	ALLOC_ARRAY(DEV, COUNT, (sizeof(E)), GFP)
-> ++	ALLOC_OBJS(DEV, E, COUNT, GFP)
-> +|
-> +-	ALLOC_ARRAY(DEV, COUNT, (sizeof(TYPE)), GFP)
-> ++	ALLOC_OBJS(DEV, TYPE, COUNT, GFP)
-> +|
-> +-	ALLOC_ARRAY(DEV, (sizeof(E)), COUNT, GFP)
-> ++	ALLOC_OBJS(DEV, E, COUNT, GFP)
-> +|
-> +-	ALLOC_ARRAY(DEV, (sizeof(TYPE)), COUNT, GFP)
-> ++	ALLOC_OBJS(DEV, TYPE, COUNT, GFP)
-> +|
-> +-	ALLOC(DEV, struct_size(VAR, FLEX, COUNT), GFP)
-> ++	ALLOC_FLEX(DEV, *VAR, FLEX, COUNT, GFP)
-> +|
-> +-	ALLOC(DEV, struct_size_t(TYPE, FLEX, COUNT), GFP)
-> ++	ALLOC_FLEX(DEV, TYPE, FLEX, COUNT, GFP)
-> +)
-> +
-> +@drop_gfp_kernel depends on patch && !(file in "tools") && !(file in "samples")@
-> +identifier ALLOC = {devm_kmalloc_obj,devm_kmalloc_objs,devm_kmalloc_flex,
-> +		    devm_kzalloc_obj,devm_kzalloc_objs,devm_kzalloc_flex,
-> +		    devm_kvmalloc_obj,devm_kvmalloc_objs,devm_kvmalloc_flex,
-> +		    devm_kvzalloc_obj,devm_kvzalloc_objs,devm_kvzalloc_flex};
-> +@@
-> +
-> +	ALLOC(...
-> +-		 , GFP_KERNEL
-> +	     )
+> >
+> > julia
+> >
+> >
+> > > > >
+> > > > >  scripts/coccinelle/free/cleanup-free.cocci | 112 +++++++++++++++++++++
+> > > > >  1 file changed, 112 insertions(+)
+> > > > >  create mode 100644 scripts/coccinelle/free/cleanup-free.cocci
+> > > > >
+> > > > > diff --git a/scripts/coccinelle/free/cleanup-free.cocci b/scripts/coccinelle/free/cleanup-free.cocci
+> > > > > new file mode 100644
+> > > > > index 000000000000..48e47ed2186a
+> > > > > --- /dev/null
+> > > > > +++ b/scripts/coccinelle/free/cleanup-free.cocci
+> > > > > @@ -0,0 +1,112 @@
+> > > > > +// SPDX-License-Identifier: GPL-2.0-only
+> > > > > +///
+> > > > > +/// Find __cleanup(kfree)
+> > > > > +/// Using __cleanup(kfree) will pass the stack address of the annotated
+> > > > > +/// local variable to kfree, causing an invalid free.
+> > > > > +/// I.e., `T v __cleanup(kfree);` --> `kfree(&v);`
+> > > > > +/// Such usage is impossible to be correct.
+> > > > > +///
+> > > > > +// Confidence: High
+> > > > > +// Copyright: (C) 2026 Ella Ma
+> > > > > +// Options: --no-includes --include-headers
+> > > > > +
+> > > > > +virtual report
+> > > > > +virtual org
+> > > > > +
+> > > > > +// Suggesting using __free for the functions with a DEFINE_FREE definition.
+> > > > > +// Update this list when new DEFINE_FREE definitions are added.
+> > > > > +@free@
+> > > > > +attribute name __cleanup;
+> > > > > +symbol kfree, kfree_sensitive, kvfree, kvfree_atomic, free_percpu;
+> > > > > +type T;
+> > > > > +identifier v, n;
+> > > > > +position p;
+> > > > > +@@
+> > > > > +
+> > > > > +(
+> > > > > +  T v __cleanup@p(
+> > > > > +(
+> > > > > +  n
+> > > > > +&
+> > > > > +(
+> > > > > +  kfree \| kfree_sensitive \| kvfree \| kvfree_atomic \| free_percpu
+> > > > > +)
+> > > > > +)
+> > > > > +  );
+> > > > > +|
+> > > > > +  T v __cleanup@p(
+> > > > > +(
+> > > > > +  n
+> > > > > +&
+> > > > > +(
+> > > > > +  kfree \| kfree_sensitive \| kvfree \| kvfree_atomic \| free_percpu
+> > > > > +)
+> > > > > +)
+> > > > > +  ) = ...;
+> > > > > +)
+> > > > > +
+> > > > > +@script:python depends on report@
+> > > > > +p << free.p;
+> > > > > +n << free.n;
+> > > > > +@@
+> > > > > +
+> > > > > +msg = f"ERROR: __cleanup({n}) will cause an invalid free: the stack address of the annotated variable will be passed to {n}; use __free({n}) to free the pointee"
+> > > > > +coccilib.report.print_report(p[0], msg)
+> > > > > +
+> > > > > +@script:python depends on org@
+> > > > > +p << free.p;
+> > > > > +n << free.n;
+> > > > > +@@
+> > > > > +
+> > > > > +msg = f"ERROR: __cleanup({n}) will cause an invalid free: the stack address of the annotated variable will be passed to {n}; use __free({n}) to free the pointee"
+> > > > > +coccilib.org.print_todo(p[0], msg)
+> > > > > +
+> > > > > +
+> > > > > +// Reporting __cleanup usage for the functions without a DEFINE_FREE definition.
+> > > > > +// The following list only contains frequently used functions. Supplement it if
+> > > > > +// necessary.
+> > > > > +@cleanup@
+> > > > > +attribute name __cleanup;
+> > > > > +symbol vfree, vfree_atomic, kfree_const;
+> > > > > +type T;
+> > > > > +identifier v, n;
+> > > > > +position p;
+> > > > > +@@
+> > > > > +
+> > > > > +(
+> > > > > +  T v __cleanup@p(
+> > > > > +(
+> > > > > +  n
+> > > > > +&
+> > > > > +(
+> > > > > +  vfree \| vfree_atomic \| kfree_const
+> > > > > +)
+> > > > > +)
+> > > > > +  );
+> > > > > +|
+> > > > > +  T v __cleanup@p(
+> > > > > +(
+> > > > > +  n
+> > > > > +&
+> > > > > +(
+> > > > > +  vfree \| vfree_atomic \| kfree_const
+> > > > > +)
+> > > > > +)
+> > > > > +  ) = ...;
+> > > > > +)
+> > > > > +
+> > > > > +@script:python depends on report@
+> > > > > +p << cleanup.p;
+> > > > > +n << cleanup.n;
+> > > > > +@@
+> > > > > +
+> > > > > +msg = f"ERROR: __cleanup({n}) will cause an invalid free: the stack address of the annotated variable will be passed to {n}"
+> > > > > +coccilib.report.print_report(p[0], msg)
+> > > >
+> > > > Hello, this is more words, but is not what I was hoping for.  You explain
+> > > > the effect, but not the cause.  And to fix the bug with confidence the
+> > > > reader wants to know the cause.  Here I would have expected something like
+> > > > "__cleanup usage for a function without a DEFINE_FREE definition. This will cause an invalid free"
+> > >
+> > > Do you mean only the second rule needs a refinement, or both rules?
+> > >
+> > > ==> __cleanup vs __free, both rules:
+> > >
+> > > Using DEFINE_FREE declarer only defines a forwarding function that can
+> > > be annotated to a local variable via __free attribute. Defining such a
+> > > function with DEFINE_FREE will not automatically make __cleanup correct.
+> > > User still need to use __free instead.
+> > >
+> > > FYI: __cleanup will pass the stack address to the annotated function
+> > > directly; while __free will first call the forwarding function defined
+> > > with DEFINE_FREE, and then the forwarding function will correctly pass
+> > > the pointee address to the annotated function.
+> > >
+> > > ==> Only the second rule:
+> > >
+> > > Yes. For the functions without a forwarding function definition, one of
+> > > the root cause is lacking the definition. But I am not sure whether this
+> > > semantic patch should suggest adding one.  As these free functions are
+> > > all those frequently used, perhaps the DEFINE_FREE definition should be
+> > > added to the corresponding public header files.  Or, do you mean this
+> > > semantic rule only needs to report this missing, and the users will add
+> > > them where they think is good?
+> > >
+> > > Besides, after adding a definition, the current error message will
+> > > become misleading, as there are no rules to search for existing
+> > > DEFINE_FREE definitions in the code base. Do you think it is necessary
+> > > for this semantic patch to search for the corresponding DEFINE_FREE
+> > > definitions first and then generate the error message accordingly?
+> > >
+> > > I.e.,
+> > > with DEFINE_FREE:
+> > > requiring replacing __cleanup with __free.
+> > > without DEFINE_FREE:
+> > > reporting missing DEFINE_FREE and also requiring replacing __cleanup
+> > > with __free.
+> > >
+> > > ella
+> > >
+> > > >
+> > > > julia
+> > > >
+> > > >
+> > > > > +
+> > > > > +@script:python depends on org@
+> > > > > +p << cleanup.p;
+> > > > > +n << cleanup.n;
+> > > > > +@@
+> > > > > +
+> > > > > +msg = f"ERROR: __cleanup({n}) will cause an invalid free: the stack address of the annotated variable will be passed to {n}"
+> > > > > +coccilib.org.print_todo(p[0], msg)
+> > > > > --
+> > > > > 2.34.1
+> > > > >
+> > > > >
+> > >
 >
